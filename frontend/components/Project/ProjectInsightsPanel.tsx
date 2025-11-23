@@ -100,16 +100,23 @@ const ProjectInsightsPanel: React.FC<ProjectInsightsPanelProps> = ({
 
                     <div className="flex-1 space-y-3">
                         <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300">
-                            <span>{t('projects.activeTasks', 'Active tasks')}</span>
+                            <span>
+                                {t('projects.activeTasks', 'Active tasks')}
+                            </span>
                             <span className="font-semibold text-gray-900 dark:text-gray-100">
-                                {Math.max(taskStats.total - taskStats.completed, 0)}
+                                {Math.max(
+                                    taskStats.total - taskStats.completed,
+                                    0
+                                )}
                             </span>
                         </div>
                         <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                             <span className="w-2 h-2 rounded-full bg-red-500"></span>
                             <span>
-                                {taskStats.overdue} {t('tasks.overdue', 'overdue')},{' '}
-                                {taskStats.dueSoon} {t('tasks.dueSoon', 'due soon')}
+                                {taskStats.overdue}{' '}
+                                {t('tasks.overdue', 'overdue')},{' '}
+                                {taskStats.dueSoon}{' '}
+                                {t('tasks.dueSoon', 'due soon')}
                             </span>
                         </div>
                         <div>
@@ -130,7 +137,7 @@ const ProjectInsightsPanel: React.FC<ProjectInsightsPanelProps> = ({
                         </div>
                     </div>
                 </div>
-        </div>
+            </div>
 
             <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm p-5">
                 <div className="flex items-center justify-between">
@@ -146,12 +153,19 @@ const ProjectInsightsPanel: React.FC<ProjectInsightsPanelProps> = ({
                         <div className="mt-3 flex flex-wrap gap-1">
                             {upcomingDueTrend.map((d, idx) => {
                                 const intensity =
-                                    maxUpcoming > 0 ? Math.max((d.count / maxUpcoming) * 0.8, 0.12) : 0;
+                                    maxUpcoming > 0
+                                        ? Math.max(
+                                              (d.count / maxUpcoming) * 0.8,
+                                              0.12
+                                          )
+                                        : 0;
                                 return (
                                     <div
                                         key={idx}
                                         className="flex flex-col items-center"
-                                        style={{ width: 'calc(100% / 7 - 4px)' }}
+                                        style={{
+                                            width: 'calc(100% / 7 - 4px)',
+                                        }}
                                     >
                                         <div
                                             className="w-full h-10 rounded-md border border-amber-200 dark:border-amber-800 transition-all duration-300"
@@ -178,17 +192,22 @@ const ProjectInsightsPanel: React.FC<ProjectInsightsPanelProps> = ({
                                         : t('projects.none', 'None')}
                                 </span>
                                 <span className="px-2 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-200">
-                                    {t('projects.next3days', 'Next 3 days')}: {upcomingInsights.nextThreeDays}
+                                    {t('projects.next3days', 'Next 3 days')}:{' '}
+                                    {upcomingInsights.nextThreeDays}
                                 </span>
                                 <span className="px-2 py-1 rounded-full bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-200">
-                                    {t('projects.nextWeek', 'Next 7 days')}: {upcomingInsights.nextWeek}
+                                    {t('projects.nextWeek', 'Next 7 days')}:{' '}
+                                    {upcomingInsights.nextWeek}
                                 </span>
                             </div>
                         )}
                     </>
                 ) : (
                     <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
-                        {t('projects.noUpcomingDue', 'No due dates in the next 14 days.')}
+                        {t(
+                            'projects.noUpcomingDue',
+                            'No due dates in the next 14 days.'
+                        )}
                     </p>
                 )}
             </div>
@@ -213,9 +232,13 @@ const ProjectInsightsPanel: React.FC<ProjectInsightsPanelProps> = ({
                                 {weeklyPace.lastWeek}
                             </p>
                             <p className="text-[11px] text-gray-500 dark:text-gray-400">
-                                {t('projects.prevWeekCompleted', '{{count}} prior week', {
-                                    count: weeklyPace.prevWeek,
-                                })}
+                                {t(
+                                    'projects.prevWeekCompleted',
+                                    '{{count}} prior week',
+                                    {
+                                        count: weeklyPace.prevWeek,
+                                    }
+                                )}
                             </p>
                         </div>
                         <div className="flex items-center gap-3 flex-shrink-0">
@@ -227,7 +250,8 @@ const ProjectInsightsPanel: React.FC<ProjectInsightsPanelProps> = ({
                                 }`}
                             >
                                 {weeklyPace.delta >= 0 ? '+' : ''}
-                                {weeklyPace.delta} {t('projects.vsPrevWeek', 'vs prev week')}
+                                {weeklyPace.delta}{' '}
+                                {t('projects.vsPrevWeek', 'vs prev week')}
                             </div>
                             <div className="w-32 h-1.5 rounded-full bg-gray-200 dark:bg-gray-800 overflow-hidden">
                                 <div
@@ -235,7 +259,13 @@ const ProjectInsightsPanel: React.FC<ProjectInsightsPanelProps> = ({
                                     style={{
                                         width: `${Math.min(
                                             (weeklyPace.lastWeek /
-                                                Math.max(Math.max(weeklyPace.lastWeek, weeklyPace.prevWeek), 1)) *
+                                                Math.max(
+                                                    Math.max(
+                                                        weeklyPace.lastWeek,
+                                                        weeklyPace.prevWeek
+                                                    ),
+                                                    1
+                                                )) *
                                                 100,
                                             100
                                         )}%`,
@@ -248,7 +278,10 @@ const ProjectInsightsPanel: React.FC<ProjectInsightsPanelProps> = ({
                     <div className="flex items-center justify-between gap-4">
                         <div className="min-w-0">
                             <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                                {t('projects.monthlyCompletion', '30-day completions')}
+                                {t(
+                                    'projects.monthlyCompletion',
+                                    '30-day completions'
+                                )}
                             </p>
                             <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                                 {monthlyCompleted}
@@ -296,14 +329,22 @@ const ProjectInsightsPanel: React.FC<ProjectInsightsPanelProps> = ({
                             accent: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-200',
                         },
                         {
-                            label: t('projects.notUrgentNotImportant', 'Drop/avoid'),
+                            label: t(
+                                'projects.notUrgentNotImportant',
+                                'Drop/avoid'
+                            ),
                             value: eisenhower.notUrgentNotImportant,
                             accent: 'bg-gray-100 text-gray-700 dark:bg-gray-800/60 dark:text-gray-200',
                         },
                     ].map((item, idx) => (
-                        <div key={idx} className={`rounded-lg p-3 border border-gray-200 dark:border-gray-800 ${item.accent}`}>
+                        <div
+                            key={idx}
+                            className={`rounded-lg p-3 border border-gray-200 dark:border-gray-800 ${item.accent}`}
+                        >
                             <div className="flex items-center justify-between">
-                                <span className="font-semibold">{item.value}</span>
+                                <span className="font-semibold">
+                                    {item.value}
+                                </span>
                                 <span className="text-[11px] uppercase tracking-wide">
                                     {item.label}
                                 </span>
@@ -356,7 +397,8 @@ const ProjectInsightsPanel: React.FC<ProjectInsightsPanelProps> = ({
                         <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 flex-wrap">
                             {nextBestAction.priority && (
                                 <span className="px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-800">
-                                    {t('tasks.priority', 'Priority')}: {String(nextBestAction.priority)}
+                                    {t('tasks.priority', 'Priority')}:{' '}
+                                    {String(nextBestAction.priority)}
                                 </span>
                             )}
                             {nextBestAction.today && (
@@ -364,7 +406,8 @@ const ProjectInsightsPanel: React.FC<ProjectInsightsPanelProps> = ({
                                     {t('tasks.todayPlan', 'Today plan')}
                                 </span>
                             )}
-                            {(nextBestAction.status === 'in_progress' || nextBestAction.status === 1) && (
+                            {(nextBestAction.status === 'in_progress' ||
+                                nextBestAction.status === 1) && (
                                 <span className="px-2 py-1 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-200">
                                     {t('task.status.inProgress', 'In progress')}
                                 </span>
@@ -394,17 +437,22 @@ const ProjectInsightsPanel: React.FC<ProjectInsightsPanelProps> = ({
                                     : t('tasks.startNow', 'Start now')}
                             </button>
                             <span className="text-xs text-gray-500 dark:text-gray-400">
-                                {t('projects.focusHint', 'Shifts this task to in progress and today')}
+                                {t(
+                                    'projects.focusHint',
+                                    'Shifts this task to in progress and today'
+                                )}
                             </span>
                         </div>
                     </div>
                 ) : (
                     <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
-                        {t('projects.noNextAction', 'All clear—no outstanding tasks.')}
+                        {t(
+                            'projects.noNextAction',
+                            'All clear—no outstanding tasks.'
+                        )}
                     </p>
                 )}
             </div>
-
         </div>
     );
 };

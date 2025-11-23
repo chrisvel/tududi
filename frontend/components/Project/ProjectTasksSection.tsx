@@ -76,9 +76,15 @@ const ProjectTasksSection: React.FC<ProjectTasksSectionProps> = ({
                     <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0">
                         <p className="text-gray-500 dark:text-gray-400">
                             {taskSearchQuery.trim()
-                                ? t('tasks.noTasksAvailable', 'No tasks available.')
+                                ? t(
+                                      'tasks.noTasksAvailable',
+                                      'No tasks available.'
+                                  )
                                 : showCompleted
-                                  ? t('project.noCompletedTasks', 'No completed tasks.')
+                                  ? t(
+                                        'project.noCompletedTasks',
+                                        'No completed tasks.'
+                                    )
                                   : t('project.noTasks', 'No tasks.')}
                         </p>
                     </div>

@@ -668,7 +668,7 @@ router.put('/profile/today-settings', async (req, res) => {
             projectShowMetrics:
                 projectShowMetrics !== undefined
                     ? projectShowMetrics
-                    : user.today_settings?.projectShowMetrics ?? true,
+                    : (user.today_settings?.projectShowMetrics ?? true),
             showMetrics:
                 showMetrics !== undefined
                     ? showMetrics
@@ -768,10 +768,10 @@ router.put('/profile/ui-settings', async (req, res) => {
 
         const { project } = req.body;
 
-        const currentSettings =
-            (user.ui_settings && typeof user.ui_settings === 'object'
-                ? user.ui_settings
-                : {}) || { project: { details: {} } };
+        const currentSettings = (user.ui_settings &&
+        typeof user.ui_settings === 'object'
+            ? user.ui_settings
+            : {}) || { project: { details: {} } };
 
         const newSettings = {
             ...currentSettings,
@@ -779,7 +779,9 @@ router.put('/profile/ui-settings', async (req, res) => {
                 ...(currentSettings.project || {}),
                 ...(project || {}),
                 details: {
-                    ...((currentSettings.project && currentSettings.project.details) || {}),
+                    ...((currentSettings.project &&
+                        currentSettings.project.details) ||
+                        {}),
                     ...((project && project.details) || {}),
                 },
             },

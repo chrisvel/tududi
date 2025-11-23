@@ -267,8 +267,12 @@ export const useProjectMetrics = (
             (acc, cur) => (cur.count > acc.count ? cur : acc),
             { label: '', count: 0 }
         );
-        const nextThreeDays = upcomingDueTrend.slice(0, 3).reduce((sum, d) => sum + d.count, 0);
-        const nextWeek = upcomingDueTrend.slice(0, 7).reduce((sum, d) => sum + d.count, 0);
+        const nextThreeDays = upcomingDueTrend
+            .slice(0, 3)
+            .reduce((sum, d) => sum + d.count, 0);
+        const nextWeek = upcomingDueTrend
+            .slice(0, 7)
+            .reduce((sum, d) => sum + d.count, 0);
 
         return {
             peakLabel: peak.label,
@@ -404,7 +408,8 @@ export const useProjectMetrics = (
             })
             .sort((a, b) => {
                 if (a.score !== b.score) return a.score - b.score;
-                if (a.createdAt !== b.createdAt) return a.createdAt - b.createdAt;
+                if (a.createdAt !== b.createdAt)
+                    return a.createdAt - b.createdAt;
                 return (a.task.id || 0) - (b.task.id || 0);
             });
 
@@ -422,11 +427,11 @@ export const useProjectMetrics = (
                 now.getDate()
             );
             const due = new Date(task.due_date);
-            if (Number.isNaN(due.getTime())) return t('tasks.noDue', 'No due date');
+            if (Number.isNaN(due.getTime()))
+                return t('tasks.noDue', 'No due date');
 
             const diffDays = Math.floor(
-                (due.getTime() - startOfToday.getTime()) /
-                    (1000 * 60 * 60 * 24)
+                (due.getTime() - startOfToday.getTime()) / (1000 * 60 * 60 * 24)
             );
 
             if (diffDays < 0) {
@@ -436,8 +441,7 @@ export const useProjectMetrics = (
                 } as any);
             }
             if (diffDays === 0) return t('dateIndicators.today', 'Today');
-            if (diffDays === 1)
-                return t('dateIndicators.tomorrow', 'Tomorrow');
+            if (diffDays === 1) return t('dateIndicators.tomorrow', 'Tomorrow');
             if (diffDays <= 7)
                 return t('tasks.dueInDays', {
                     defaultValue: 'Due in {{days}}d',
@@ -476,8 +480,12 @@ export const useProjectMetrics = (
     }, [handleTaskUpdate, nextBestAction]);
 
     const weeklyPace = useMemo(() => {
-        const lastWeek = completionTrend.slice(-7).reduce((sum, d) => sum + d.count, 0);
-        const prevWeek = completionTrend.slice(0, -7).reduce((sum, d) => sum + d.count, 0);
+        const lastWeek = completionTrend
+            .slice(-7)
+            .reduce((sum, d) => sum + d.count, 0);
+        const prevWeek = completionTrend
+            .slice(0, -7)
+            .reduce((sum, d) => sum + d.count, 0);
         const delta = lastWeek - prevWeek;
         return { lastWeek, prevWeek, delta };
     }, [completionTrend]);
@@ -490,7 +498,10 @@ export const useProjectMetrics = (
         tasks.forEach((task) => {
             if (!task.completed_at) return;
             const completedDate = new Date(task.completed_at);
-            if (!Number.isNaN(completedDate.getTime()) && completedDate >= startWindow) {
+            if (
+                !Number.isNaN(completedDate.getTime()) &&
+                completedDate >= startWindow
+            ) {
                 count += 1;
             }
         });

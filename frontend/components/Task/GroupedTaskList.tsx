@@ -206,7 +206,9 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
         // Apply search
         const filteredBySearch = searchQuery.trim()
             ? filtered.filter((task) =>
-                  (task.name || '').toLowerCase().includes(searchQuery.toLowerCase())
+                  (task.name || '')
+                      .toLowerCase()
+                      .includes(searchQuery.toLowerCase())
               )
             : filtered;
 
@@ -217,10 +219,12 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
             arr.push(task);
             byProject.set(key, arr);
         });
-        return Array.from(byProject.entries()).map(([projectId, projectTasks]) => ({
-            projectId,
-            tasks: projectTasks,
-        }));
+        return Array.from(byProject.entries()).map(
+            ([projectId, projectTasks]) => ({
+                projectId,
+                tasks: projectTasks,
+            })
+        );
     }, [groupBy, tasks, showCompletedTasks, searchQuery]);
 
     const toggleRecurringGroup = (templateId: number) => {
@@ -358,45 +362,52 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
         <div className="task-list-container space-y-1.5">
             {/* Standalone tasks */}
             {groupBy === 'project' && groupedByProject
-                ? groupedByProject.map(({ projectId, tasks: projectTasks }, index) => {
-                      const projectName =
-                          projects.find((p) => p.id === projectId)?.name ||
-                          (projectId === 'no_project'
-                              ? t('tasks.noProject', 'No project')
-                              : t('tasks.unknownProject', 'Unknown project'));
-                      return (
-                          <div
-                              key={String(projectId)}
-                              className={`space-y-1.5 pb-4 mb-2 border-b border-gray-200/50 dark:border-gray-800/60 last:border-b-0 ${index > 0 ? 'pt-4' : ''}`}
-                          >
-                              <div className="flex items-center justify-between px-1 text-base font-semibold text-gray-900 dark:text-gray-100">
-                                  <span className="truncate">{projectName}</span>
-                                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                                      {projectTasks.length}{' '}
-                                      {t('tasks.tasks', 'tasks')}
-                                  </span>
-                              </div>
-                              {projectTasks.map((task) => (
-                                  <div
-                                      key={task.id}
-                                      className="task-item-wrapper transition-all duration-200 ease-in-out"
-                                  >
-                                      <TaskItem
-                                          task={task}
-                                          onTaskUpdate={onTaskUpdate}
-                                          onTaskCompletionToggle={
-                                              onTaskCompletionToggle
-                                          }
-                                          onTaskDelete={onTaskDelete}
-                                          projects={projects}
-                                          hideProjectName={hideProjectName}
-                                          onToggleToday={onToggleToday}
-                                      />
+                ? groupedByProject.map(
+                      ({ projectId, tasks: projectTasks }, index) => {
+                          const projectName =
+                              projects.find((p) => p.id === projectId)?.name ||
+                              (projectId === 'no_project'
+                                  ? t('tasks.noProject', 'No project')
+                                  : t(
+                                        'tasks.unknownProject',
+                                        'Unknown project'
+                                    ));
+                          return (
+                              <div
+                                  key={String(projectId)}
+                                  className={`space-y-1.5 pb-4 mb-2 border-b border-gray-200/50 dark:border-gray-800/60 last:border-b-0 ${index > 0 ? 'pt-4' : ''}`}
+                              >
+                                  <div className="flex items-center justify-between px-1 text-base font-semibold text-gray-900 dark:text-gray-100">
+                                      <span className="truncate">
+                                          {projectName}
+                                      </span>
+                                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                                          {projectTasks.length}{' '}
+                                          {t('tasks.tasks', 'tasks')}
+                                      </span>
                                   </div>
-                              ))}
-                          </div>
-                      );
-                  })
+                                  {projectTasks.map((task) => (
+                                      <div
+                                          key={task.id}
+                                          className="task-item-wrapper transition-all duration-200 ease-in-out"
+                                      >
+                                          <TaskItem
+                                              task={task}
+                                              onTaskUpdate={onTaskUpdate}
+                                              onTaskCompletionToggle={
+                                                  onTaskCompletionToggle
+                                              }
+                                              onTaskDelete={onTaskDelete}
+                                              projects={projects}
+                                              hideProjectName={hideProjectName}
+                                              onToggleToday={onToggleToday}
+                                          />
+                                      </div>
+                                  ))}
+                              </div>
+                          );
+                      }
+                  )
                 : standaloneTask.map((task) => (
                       <div
                           key={task.id}

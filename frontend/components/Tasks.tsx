@@ -73,7 +73,8 @@ const Tasks: React.FC = () => {
     const navigate = useNavigate();
 
     const query = new URLSearchParams(location.search);
-    const isUpcomingView = query.get('type') === 'upcoming' || location.pathname === '/upcoming';
+    const isUpcomingView =
+        query.get('type') === 'upcoming' || location.pathname === '/upcoming';
     const status = query.get('status');
     const tag = query.get('tag');
 
@@ -249,8 +250,7 @@ const Tasks: React.FC = () => {
                     setTasks(tasksData.tasks || []);
                     setGroupedTasks(tasksData.groupedTasks || null);
                     if (!options?.disablePagination) {
-                        const limitToUse =
-                            options?.limitOverride ?? limit;
+                        const limitToUse = options?.limitOverride ?? limit;
                         setOffset(limitToUse);
                     }
                 } else {
@@ -266,14 +266,15 @@ const Tasks: React.FC = () => {
                         });
                     }
                     if (!options?.disablePagination) {
-                        const limitToUse =
-                            options?.limitOverride ?? limit;
+                        const limitToUse = options?.limitOverride ?? limit;
                         setOffset((prev) => prev + limitToUse);
                     }
                 }
 
                 setHasMore(
-                    options?.disableHasMore || options?.disablePagination || type === 'upcoming'
+                    options?.disableHasMore ||
+                        options?.disablePagination ||
+                        type === 'upcoming'
                         ? false
                         : tasksData.pagination?.hasMore || false
                 );
@@ -299,7 +300,8 @@ const Tasks: React.FC = () => {
         if (isLoadingMore) return;
         if (!hasMore && !all) return;
         setIsLoadingMore(true);
-        const shouldDisablePagination = !isUpcomingView && groupBy === 'project';
+        const shouldDisablePagination =
+            !isUpcomingView && groupBy === 'project';
         if (all || shouldDisablePagination) {
             const newLimit = totalCount > 0 ? totalCount : 10000;
             await fetchData(true, {
@@ -321,23 +323,26 @@ const Tasks: React.FC = () => {
     useEffect(() => {
         // Disable pagination for: upcoming view OR when grouping by project
         const shouldDisablePagination = isUpcomingView || groupBy === 'project';
-        fetchData(true, shouldDisablePagination
-            ? {
-                  disablePagination: true,
-                  disableHasMore: true,
-                  limitOverride: 10000,
-                  forceOffset: 0,
-              }
-            : undefined);
+        fetchData(
+            true,
+            shouldDisablePagination
+                ? {
+                      disablePagination: true,
+                      disableHasMore: true,
+                      limitOverride: 10000,
+                      forceOffset: 0,
+                  }
+                : undefined
+        );
     }, [location, isSidebarOpen, isMobile, groupBy, isUpcomingView]);
 
     // Handle window resize for mobile detection
     useEffect(() => {
         const handleResize = () => {
-        const newIsMobile = window.innerWidth < 768;
-        if (newIsMobile !== isMobile) {
-            setIsMobile(newIsMobile);
-        }
+            const newIsMobile = window.innerWidth < 768;
+            if (newIsMobile !== isMobile) {
+                setIsMobile(newIsMobile);
+            }
         };
 
         window.addEventListener('resize', handleResize);
@@ -657,30 +662,46 @@ const Tasks: React.FC = () => {
                                                 {t('tasks.groupBy', 'Group by')}
                                             </div>
                                             <div className="py-1">
-                                                {['none', 'project'].map((val) => (
-                                                    <button
-                                                        key={val}
-                                                        onClick={() => {
-                                                            setGroupBy(val as 'none' | 'project');
-                                                            localStorage.setItem(
-                                                                'tasks_group_by',
-                                                                val
-                                                            );
-                                                        }}
-                                                        className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
-                                                            groupBy === val
-                                                                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                                                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                                        }`}
-                                                    >
-                                                        <span>
-                                                            {val === 'project'
-                                                                ? t('tasks.groupByProject', 'Project')
-                                                                : t('tasks.grouping.none', 'None')}
-                                                        </span>
-                                                        {groupBy === val && <CheckIcon className="h-4 w-4" />}
-                                                    </button>
-                                                ))}
+                                                {['none', 'project'].map(
+                                                    (val) => (
+                                                        <button
+                                                            key={val}
+                                                            onClick={() => {
+                                                                setGroupBy(
+                                                                    val as
+                                                                        | 'none'
+                                                                        | 'project'
+                                                                );
+                                                                localStorage.setItem(
+                                                                    'tasks_group_by',
+                                                                    val
+                                                                );
+                                                            }}
+                                                            className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                                                                groupBy === val
+                                                                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                                                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                            }`}
+                                                        >
+                                                            <span>
+                                                                {val ===
+                                                                'project'
+                                                                    ? t(
+                                                                          'tasks.groupByProject',
+                                                                          'Project'
+                                                                      )
+                                                                    : t(
+                                                                          'tasks.grouping.none',
+                                                                          'None'
+                                                                      )}
+                                                            </span>
+                                                            {groupBy ===
+                                                                val && (
+                                                                <CheckIcon className="h-4 w-4" />
+                                                            )}
+                                                        </button>
+                                                    )
+                                                )}
                                             </div>
                                         </div>
                                         <div>
@@ -689,49 +710,105 @@ const Tasks: React.FC = () => {
                                             </div>
                                             <div className="py-1 space-y-1">
                                                 {[
-                                                    { key: 'active', label: t('tasks.open', 'Open') },
-                                                    { key: 'all', label: t('tasks.all', 'All') },
-                                                    { key: 'completed', label: t('tasks.completed', 'Completed') },
+                                                    {
+                                                        key: 'active',
+                                                        label: t(
+                                                            'tasks.open',
+                                                            'Open'
+                                                        ),
+                                                    },
+                                                    {
+                                                        key: 'all',
+                                                        label: t(
+                                                            'tasks.all',
+                                                            'All'
+                                                        ),
+                                                    },
+                                                    {
+                                                        key: 'completed',
+                                                        label: t(
+                                                            'tasks.completed',
+                                                            'Completed'
+                                                        ),
+                                                    },
                                                 ].map((opt) => {
                                                     const isActive =
-                                                        (opt.key === 'all' && status === null) ||
-                                                        (opt.key === 'completed' && status === 'completed') ||
-                                                        (opt.key === 'active' && status === 'active');
+                                                        (opt.key === 'all' &&
+                                                            status === null) ||
+                                                        (opt.key ===
+                                                            'completed' &&
+                                                            status ===
+                                                                'completed') ||
+                                                        (opt.key === 'active' &&
+                                                            status ===
+                                                                'active');
                                                     return (
                                                         <button
                                                             key={opt.key}
                                                             type="button"
                                                             onClick={() => {
-                                                                if (opt.key === 'completed') {
-                                                                    const params = new URLSearchParams(location.search);
-                                                                    params.set('status', 'completed');
-                                                                    navigate(
-                                                                        {
-                                                                            pathname: location.pathname,
-                                                                            search: `?${params.toString()}`,
-                                                                        },
-                                                                        { replace: true }
+                                                                if (
+                                                                    opt.key ===
+                                                                    'completed'
+                                                                ) {
+                                                                    const params =
+                                                                        new URLSearchParams(
+                                                                            location.search
+                                                                        );
+                                                                    params.set(
+                                                                        'status',
+                                                                        'completed'
                                                                     );
-                                                                } else if (opt.key === 'all') {
-                                                                    const params = new URLSearchParams(location.search);
-                                                                    params.delete('status');
                                                                     navigate(
                                                                         {
-                                                                            pathname: location.pathname,
+                                                                            pathname:
+                                                                                location.pathname,
                                                                             search: `?${params.toString()}`,
                                                                         },
-                                                                        { replace: true }
+                                                                        {
+                                                                            replace: true,
+                                                                        }
+                                                                    );
+                                                                } else if (
+                                                                    opt.key ===
+                                                                    'all'
+                                                                ) {
+                                                                    const params =
+                                                                        new URLSearchParams(
+                                                                            location.search
+                                                                        );
+                                                                    params.delete(
+                                                                        'status'
+                                                                    );
+                                                                    navigate(
+                                                                        {
+                                                                            pathname:
+                                                                                location.pathname,
+                                                                            search: `?${params.toString()}`,
+                                                                        },
+                                                                        {
+                                                                            replace: true,
+                                                                        }
                                                                     );
                                                                 } else {
                                                                     // active (not completed)
-                                                                    const params = new URLSearchParams(location.search);
-                                                                    params.set('status', 'active');
+                                                                    const params =
+                                                                        new URLSearchParams(
+                                                                            location.search
+                                                                        );
+                                                                    params.set(
+                                                                        'status',
+                                                                        'active'
+                                                                    );
                                                                     navigate(
                                                                         {
-                                                                            pathname: location.pathname,
+                                                                            pathname:
+                                                                                location.pathname,
                                                                             search: `?${params.toString()}`,
                                                                         },
-                                                                        { replace: true }
+                                                                        {
+                                                                            replace: true,
+                                                                        }
                                                                     );
                                                                 }
                                                             }}
@@ -741,8 +818,12 @@ const Tasks: React.FC = () => {
                                                                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                                                             }`}
                                                         >
-                                                            <span>{opt.label}</span>
-                                                            {isActive && <CheckIcon className="h-4 w-4" />}
+                                                            <span>
+                                                                {opt.label}
+                                                            </span>
+                                                            {isActive && (
+                                                                <CheckIcon className="h-4 w-4" />
+                                                            )}
                                                         </button>
                                                     );
                                                 })}
@@ -750,22 +831,46 @@ const Tasks: React.FC = () => {
                                         </div>
                                         <div>
                                             <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-t border-b border-gray-200 dark:border-gray-700">
-                                                {t('tasks.direction', 'Direction')}
+                                                {t(
+                                                    'tasks.direction',
+                                                    'Direction'
+                                                )}
                                             </div>
                                             <div className="py-1">
                                                 {[
-                                                    { key: 'asc', label: t('tasks.ascending', 'Ascending') },
-                                                    { key: 'desc', label: t('tasks.descending', 'Descending') },
+                                                    {
+                                                        key: 'asc',
+                                                        label: t(
+                                                            'tasks.ascending',
+                                                            'Ascending'
+                                                        ),
+                                                    },
+                                                    {
+                                                        key: 'desc',
+                                                        label: t(
+                                                            'tasks.descending',
+                                                            'Descending'
+                                                        ),
+                                                    },
                                                 ].map((dir) => {
-                                                    const currentDirection = orderBy.split(':')[1] || 'asc';
-                                                    const isActive = currentDirection === dir.key;
+                                                    const currentDirection =
+                                                        orderBy.split(':')[1] ||
+                                                        'asc';
+                                                    const isActive =
+                                                        currentDirection ===
+                                                        dir.key;
                                                     return (
                                                         <button
                                                             key={dir.key}
                                                             onClick={() => {
-                                                                const [field] = orderBy.split(':');
+                                                                const [field] =
+                                                                    orderBy.split(
+                                                                        ':'
+                                                                    );
                                                                 const newOrderBy = `${field}:${dir.key}`;
-                                                                handleSortChange(newOrderBy);
+                                                                handleSortChange(
+                                                                    newOrderBy
+                                                                );
                                                             }}
                                                             className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
                                                                 isActive
@@ -773,8 +878,12 @@ const Tasks: React.FC = () => {
                                                                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                                                             }`}
                                                         >
-                                                            <span>{dir.label}</span>
-                                                            {isActive && <CheckIcon className="h-4 w-4" />}
+                                                            <span>
+                                                                {dir.label}
+                                                            </span>
+                                                            {isActive && (
+                                                                <CheckIcon className="h-4 w-4" />
+                                                            )}
                                                         </button>
                                                     );
                                                 })}
@@ -907,7 +1016,7 @@ const Tasks: React.FC = () => {
                                 )}
                                 {/* Load more button - hide in upcoming view */}
                                 {!isUpcomingView && hasMore && (
-                            <div className="flex justify-center pt-4 gap-3">
+                                    <div className="flex justify-center pt-4 gap-3">
                                         <button
                                             onClick={() => loadMore(false)}
                                             disabled={isLoadingMore}

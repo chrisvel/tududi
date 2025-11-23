@@ -80,9 +80,14 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                                                 if (tag.uid) {
                                                     const slug = tag.name
                                                         .toLowerCase()
-                                                        .replace(/[^a-z0-9]+/g, '-')
+                                                        .replace(
+                                                            /[^a-z0-9]+/g,
+                                                            '-'
+                                                        )
                                                         .replace(/^-|-$/g, '');
-                                                    navigate(`/tag/${tag.uid}-${slug}`);
+                                                    navigate(
+                                                        `/tag/${tag.uid}-${slug}`
+                                                    );
                                                 } else {
                                                     navigate(
                                                         `/tag/${encodeURIComponent(tag.name)}`
@@ -93,8 +98,11 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                                         >
                                             {tag.name}
                                         </button>
-                                        {index < (project.tags?.length || 0) - 1 && (
-                                            <span className="text-white/60">, </span>
+                                        {index <
+                                            (project.tags?.length || 0) - 1 && (
+                                            <span className="text-white/60">
+                                                ,{' '}
+                                            </span>
                                         )}
                                     </React.Fragment>
                                 ))}
@@ -107,15 +115,20 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                             <Squares2X2Icon className="h-3 w-3 text-white/70 flex-shrink-0 mt-0.5" />
                             <button
                                 onClick={() => {
-                                    const projectArea = project.area || (project as any).Area;
-                                    const area = areas.find((a) => a.id === projectArea.id);
+                                    const projectArea =
+                                        project.area || (project as any).Area;
+                                    const area = areas.find(
+                                        (a) => a.id === projectArea.id
+                                    );
                                     const areaUid = area?.uid;
                                     if (!areaUid) return;
                                     const areaSlug = projectArea.name
                                         .toLowerCase()
                                         .replace(/[^a-z0-9]+/g, '-')
                                         .replace(/^-|-$/g, '');
-                                    navigate(`/projects?area=${areaUid}-${areaSlug}`);
+                                    navigate(
+                                        `/projects?area=${areaUid}-${areaSlug}`
+                                    );
                                 }}
                                 className="text-xs text-white/90 hover:text-blue-200 transition-colors cursor-pointer font-medium"
                             >

@@ -97,11 +97,7 @@ export const toggleTaskCompletion = async (
     const task = currentTask ?? (await fetchTaskById(taskId));
 
     const newStatus =
-        task.status === 2 || task.status === 'done'
-            ? task.note
-                ? 1
-                : 0
-            : 2;
+        task.status === 2 || task.status === 'done' ? (task.note ? 1 : 0) : 2;
 
     return await updateTask(taskId, { status: newStatus });
 };

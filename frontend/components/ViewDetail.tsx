@@ -53,7 +53,9 @@ const ViewDetail: React.FC = () => {
     // Search, filter, and sort state
     const [taskSearchQuery, setTaskSearchQuery] = useState<string>('');
     const [isSearchExpanded, setIsSearchExpanded] = useState(false);
-    const [taskStatusFilter, setTaskStatusFilter] = useState<'all' | 'active' | 'completed'>('active');
+    const [taskStatusFilter, setTaskStatusFilter] = useState<
+        'all' | 'active' | 'completed'
+    >('active');
     const [orderBy, setOrderBy] = useState<string>('created_at:desc');
 
     // Pagination state
@@ -545,16 +547,43 @@ const ViewDetail: React.FC = () => {
                                         </div>
                                         <div className="py-1 space-y-1">
                                             {[
-                                                { key: 'active', label: t('tasks.open', 'Open') },
-                                                { key: 'all', label: t('tasks.all', 'All') },
-                                                { key: 'completed', label: t('tasks.completed', 'Completed') },
+                                                {
+                                                    key: 'active',
+                                                    label: t(
+                                                        'tasks.open',
+                                                        'Open'
+                                                    ),
+                                                },
+                                                {
+                                                    key: 'all',
+                                                    label: t(
+                                                        'tasks.all',
+                                                        'All'
+                                                    ),
+                                                },
+                                                {
+                                                    key: 'completed',
+                                                    label: t(
+                                                        'tasks.completed',
+                                                        'Completed'
+                                                    ),
+                                                },
                                             ].map((opt) => {
-                                                const isActive = taskStatusFilter === opt.key;
+                                                const isActive =
+                                                    taskStatusFilter ===
+                                                    opt.key;
                                                 return (
                                                     <button
                                                         key={opt.key}
                                                         type="button"
-                                                        onClick={() => setTaskStatusFilter(opt.key as 'all' | 'active' | 'completed')}
+                                                        onClick={() =>
+                                                            setTaskStatusFilter(
+                                                                opt.key as
+                                                                    | 'all'
+                                                                    | 'active'
+                                                                    | 'completed'
+                                                            )
+                                                        }
                                                         className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
                                                             isActive
                                                                 ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
@@ -562,7 +591,9 @@ const ViewDetail: React.FC = () => {
                                                         }`}
                                                     >
                                                         <span>{opt.label}</span>
-                                                        {isActive && <CheckIcon className="h-4 w-4" />}
+                                                        {isActive && (
+                                                            <CheckIcon className="h-4 w-4" />
+                                                        )}
                                                     </button>
                                                 );
                                             })}
@@ -574,17 +605,38 @@ const ViewDetail: React.FC = () => {
                                         </div>
                                         <div className="py-1">
                                             {[
-                                                { key: 'asc', label: t('tasks.ascending', 'Ascending') },
-                                                { key: 'desc', label: t('tasks.descending', 'Descending') },
+                                                {
+                                                    key: 'asc',
+                                                    label: t(
+                                                        'tasks.ascending',
+                                                        'Ascending'
+                                                    ),
+                                                },
+                                                {
+                                                    key: 'desc',
+                                                    label: t(
+                                                        'tasks.descending',
+                                                        'Descending'
+                                                    ),
+                                                },
                                             ].map((dir) => {
-                                                const currentDirection = orderBy.split(':')[1] || 'asc';
-                                                const isActive = currentDirection === dir.key;
+                                                const currentDirection =
+                                                    orderBy.split(':')[1] ||
+                                                    'asc';
+                                                const isActive =
+                                                    currentDirection ===
+                                                    dir.key;
                                                 return (
                                                     <button
                                                         key={dir.key}
                                                         onClick={() => {
-                                                            const [field] = orderBy.split(':');
-                                                            setOrderBy(`${field}:${dir.key}`);
+                                                            const [field] =
+                                                                orderBy.split(
+                                                                    ':'
+                                                                );
+                                                            setOrderBy(
+                                                                `${field}:${dir.key}`
+                                                            );
                                                         }}
                                                         className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
                                                             isActive
@@ -593,7 +645,9 @@ const ViewDetail: React.FC = () => {
                                                         }`}
                                                     >
                                                         <span>{dir.label}</span>
-                                                        {isActive && <CheckIcon className="h-4 w-4" />}
+                                                        {isActive && (
+                                                            <CheckIcon className="h-4 w-4" />
+                                                        )}
                                                     </button>
                                                 );
                                             })}

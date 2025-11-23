@@ -66,7 +66,9 @@ const ProjectDetails: React.FC = () => {
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
     const [activeTab, setActiveTab] = useState<'tasks' | 'notes'>('tasks');
-    const [taskStatusFilter, setTaskStatusFilter] = useState<'all' | 'active' | 'completed'>(() => {
+    const [taskStatusFilter, setTaskStatusFilter] = useState<
+        'all' | 'active' | 'completed'
+    >(() => {
         const saved = localStorage.getItem('project_task_status_filter');
         return (saved as 'all' | 'active' | 'completed') || 'active';
     });
@@ -85,7 +87,10 @@ const ProjectDetails: React.FC = () => {
     const editButtonRef = useRef<HTMLButtonElement>(null);
     const sortOptions = useMemo(
         () => [
-            { value: 'status:inProgressFirst', label: t('tasks.status', 'Status') },
+            {
+                value: 'status:inProgressFirst',
+                label: t('tasks.status', 'Status'),
+            },
             { value: 'created_at:desc', label: 'Created at' },
             { value: 'due_date:asc', label: 'Due date' },
             { value: 'priority:desc', label: 'Priority' },
@@ -131,13 +136,18 @@ const ProjectDetails: React.FC = () => {
                     const profile = await response.json();
                     if (
                         profile.ui_settings &&
-                        typeof profile.ui_settings.project?.details?.showMetrics === 'boolean'
+                        typeof profile.ui_settings.project?.details
+                            ?.showMetrics === 'boolean'
                     ) {
-                        setShowMetrics(profile.ui_settings.project.details.showMetrics);
+                        setShowMetrics(
+                            profile.ui_settings.project.details.showMetrics
+                        );
                         localStorage.setItem(
                             UI_OPTIONS_KEY,
                             JSON.stringify({
-                                showMetrics: profile.ui_settings.project.details.showMetrics,
+                                showMetrics:
+                                    profile.ui_settings.project.details
+                                        .showMetrics,
                             })
                         );
                     } else if (localShow === undefined) {
@@ -193,7 +203,9 @@ const ProjectDetails: React.FC = () => {
 
     useEffect(() => {
         if (allProjects.length === 0) {
-            fetchProjects().then(setAllProjects).catch(() => undefined);
+            fetchProjects()
+                .then(setAllProjects)
+                .catch(() => undefined);
         }
     }, [allProjects.length]);
 
@@ -221,7 +233,8 @@ const ProjectDetails: React.FC = () => {
                 if (!savedSort && projectData.task_sort_order) {
                     setOrderBy(projectData.task_sort_order);
                 }
-                const fetchedNotes = projectData.notes || projectData.Notes || [];
+                const fetchedNotes =
+                    projectData.notes || projectData.Notes || [];
                 setNotes(
                     fetchedNotes.map((note) => {
                         if (note.Tags && !note.tags) note.tags = note.Tags;
@@ -250,7 +263,13 @@ const ProjectDetails: React.FC = () => {
     }, [openModal]);
 
     useEffect(() => {
-        if (project && tasks.length === 0 && !loading && taskStatusFilter === 'active' && autoSuggestEnabled) {
+        if (
+            project &&
+            tasks.length === 0 &&
+            !loading &&
+            taskStatusFilter === 'active' &&
+            autoSuggestEnabled
+        ) {
             setShowAutoSuggestForm(true);
         } else {
             setShowAutoSuggestForm(false);
@@ -269,7 +288,10 @@ const ProjectDetails: React.FC = () => {
         const taskLink = (
             <span>
                 {t('task.created', 'Task')}{' '}
-                <a href={`/task/${newTask.uid}`} className="text-green-200 underline hover:text-green-100">
+                <a
+                    href={`/task/${newTask.uid}`}
+                    className="text-green-200 underline hover:text-green-100"
+                >
                     {newTask.name}
                 </a>{' '}
                 {t('task.createdSuccessfully', 'created successfully!')}
@@ -280,7 +302,8 @@ const ProjectDetails: React.FC = () => {
 
     const handleTaskUpdate = async (updatedTask: Task) => {
         if (!updatedTask.id) return;
-        const hasUpdatedData = updatedTask.parent_child_logic_executed !== undefined;
+        const hasUpdatedData =
+            updatedTask.parent_child_logic_executed !== undefined;
         if (hasUpdatedData) {
             setTasks((prev) =>
                 prev.map((task) =>
@@ -389,7 +412,11 @@ const ProjectDetails: React.FC = () => {
             setTasks((prev) =>
                 prev.map((t) =>
                     t.id === taskId
-                        ? { ...t, today: updatedTask.today, today_move_count: updatedTask.today_move_count }
+                        ? {
+                              ...t,
+                              today: updatedTask.today,
+                              today_move_count: updatedTask.today_move_count,
+                          }
                         : t
                 )
             );
@@ -399,7 +426,8 @@ const ProjectDetails: React.FC = () => {
                 const projectData = await fetchProjectBySlug(uidSlug);
                 setProject(projectData);
                 setTasks(projectData.tasks || projectData.Tasks || []);
-                const fetchedNotes = projectData.notes || projectData.Notes || [];
+                const fetchedNotes =
+                    projectData.notes || projectData.Notes || [];
                 setNotes(
                     fetchedNotes.map((note) => {
                         if (note.Tags && !note.tags) note.tags = note.Tags;
@@ -414,7 +442,10 @@ const ProjectDetails: React.FC = () => {
 
     const handleSaveProject = async (updatedProject: Project) => {
         if (!updatedProject.uid) return;
-        const savedProject = await updateProject(updatedProject.uid, updatedProject);
+        const savedProject = await updateProject(
+            updatedProject.uid,
+            updatedProject
+        );
         setProject((prev) => ({
             ...savedProject,
             area: savedProject.area || prev?.area,
@@ -423,7 +454,10 @@ const ProjectDetails: React.FC = () => {
         closeModal();
     };
 
-    const handleCreateNextAction = async (projectId: number, actionDescription: string) => {
+    const handleCreateNextAction = async (
+        projectId: number,
+        actionDescription: string
+    ) => {
         const newTask = await createTask({
             name: actionDescription,
             status: 0,
@@ -436,7 +470,10 @@ const ProjectDetails: React.FC = () => {
         const taskLink = (
             <span>
                 {t('task.created', 'Task')}{' '}
-                <a href={`/task/${newTask.uid}`} className="text-green-200 underline hover:text-green-100">
+                <a
+                    href={`/task/${newTask.uid}`}
+                    className="text-green-200 underline hover:text-green-100"
+                >
                     {newTask.name}
                 </a>{' '}
                 {t('task.createdSuccessfully', 'created successfully!')}
@@ -447,7 +484,9 @@ const ProjectDetails: React.FC = () => {
 
     const handleSkipNextAction = () => setShowAutoSuggestForm(false);
 
-    const handleTaskStatusFilterChange = (status: 'all' | 'active' | 'completed') => {
+    const handleTaskStatusFilterChange = (
+        status: 'all' | 'active' | 'completed'
+    ) => {
         setTaskStatusFilter(status);
         localStorage.setItem('project_task_status_filter', status);
     };
@@ -460,7 +499,9 @@ const ProjectDetails: React.FC = () => {
     const handleDeleteProject = async () => {
         if (!project?.uid) return;
         await deleteProject(project.uid);
-        const updatedProjects = projectsStore.projects.filter((p) => p.uid !== project.uid);
+        const updatedProjects = projectsStore.projects.filter(
+            (p) => p.uid !== project.uid
+        );
         projectsStore.setProjects(updatedProjects);
         navigate('/projects');
     };
@@ -488,19 +529,20 @@ const ProjectDetails: React.FC = () => {
         await apiDeleteNote(noteIdentifier);
         setNotes(
             notes.filter((n) => {
-                const currentIdentifier = n.uid ?? (n.id !== undefined ? String(n.id) : undefined);
+                const currentIdentifier =
+                    n.uid ?? (n.id !== undefined ? String(n.id) : undefined);
                 return currentIdentifier !== noteIdentifier;
             })
         );
         const globalNotes = useStore.getState().notesStore.notes;
-        useStore
-            .getState()
-            .notesStore.setNotes(
-                globalNotes.filter((note) => {
-                    const currentIdentifier = note.uid ?? (note.id !== undefined ? String(note.id) : undefined);
-                    return currentIdentifier !== noteIdentifier;
-                })
-            );
+        useStore.getState().notesStore.setNotes(
+            globalNotes.filter((note) => {
+                const currentIdentifier =
+                    note.uid ??
+                    (note.id !== undefined ? String(note.id) : undefined);
+                return currentIdentifier !== noteIdentifier;
+            })
+        );
         setNoteToDelete(null);
         setIsConfirmDialogOpen(false);
     };
@@ -508,7 +550,9 @@ const ProjectDetails: React.FC = () => {
     const handleSaveNote = async (noteData: Note) => {
         try {
             let savedNote: Note;
-            const noteIdentifier = noteData.uid ?? (noteData.id !== undefined ? String(noteData.id) : null);
+            const noteIdentifier =
+                noteData.uid ??
+                (noteData.id !== undefined ? String(noteData.id) : null);
             let isUpdate = false;
             if (noteIdentifier) {
                 savedNote = await updateNote(noteIdentifier, noteData);
@@ -526,23 +570,39 @@ const ProjectDetails: React.FC = () => {
                 const globalNotes = useStore.getState().notesStore.notes;
                 useStore
                     .getState()
-                    .notesStore.setNotes(globalNotes.map((note) => (note.uid === savedNote.uid ? savedNote : note)));
+                    .notesStore.setNotes(
+                        globalNotes.map((note) =>
+                            note.uid === savedNote.uid ? savedNote : note
+                        )
+                    );
             } else if (isUpdate) {
-                const savedIdentifier = savedNote.uid ?? (savedNote.id !== undefined ? String(savedNote.id) : null);
+                const savedIdentifier =
+                    savedNote.uid ??
+                    (savedNote.id !== undefined ? String(savedNote.id) : null);
                 setNotes(
                     notes.map((n) => {
-                        const currentIdentifier = n.uid ?? (n.id !== undefined ? String(n.id) : undefined);
-                        return currentIdentifier === savedIdentifier ? savedNote : n;
+                        const currentIdentifier =
+                            n.uid ??
+                            (n.id !== undefined ? String(n.id) : undefined);
+                        return currentIdentifier === savedIdentifier
+                            ? savedNote
+                            : n;
                     })
                 );
                 const globalNotes = useStore.getState().notesStore.notes;
                 useStore
                     .getState()
-                    .notesStore.setNotes(globalNotes.map((note) => (note.uid === savedNote.uid ? savedNote : note)));
+                    .notesStore.setNotes(
+                        globalNotes.map((note) =>
+                            note.uid === savedNote.uid ? savedNote : note
+                        )
+                    );
             } else {
                 setNotes([savedNote, ...notes]);
                 const globalNotes = useStore.getState().notesStore.notes;
-                useStore.getState().notesStore.setNotes([savedNote, ...globalNotes]);
+                useStore
+                    .getState()
+                    .notesStore.setNotes([savedNote, ...globalNotes]);
             }
             setIsNoteModalOpen(false);
             setSelectedNote(null);
@@ -598,8 +658,12 @@ const ProjectDetails: React.FC = () => {
                 const rankA = getStatusRank(a.status);
                 const rankB = getStatusRank(b.status);
                 if (rankA !== rankB) return rankA - rankB;
-                const dueA = a.due_date ? new Date(a.due_date).getTime() : Number.MAX_SAFE_INTEGER;
-                const dueB = b.due_date ? new Date(b.due_date).getTime() : Number.MAX_SAFE_INTEGER;
+                const dueA = a.due_date
+                    ? new Date(a.due_date).getTime()
+                    : Number.MAX_SAFE_INTEGER;
+                const dueB = b.due_date
+                    ? new Date(b.due_date).getTime()
+                    : Number.MAX_SAFE_INTEGER;
                 if (dueA !== dueB) return dueA - dueB;
                 return (a.id || 0) - (b.id || 0);
             }
@@ -612,7 +676,10 @@ const ProjectDetails: React.FC = () => {
             };
             switch (field) {
                 case 'name':
-                    return compare(a.name?.toLowerCase() || '', b.name?.toLowerCase() || '');
+                    return compare(
+                        a.name?.toLowerCase() || '',
+                        b.name?.toLowerCase() || ''
+                    );
                 case 'due_date':
                     return compare(
                         a.due_date ? new Date(a.due_date).getTime() : 0,
@@ -620,8 +687,14 @@ const ProjectDetails: React.FC = () => {
                     );
                 case 'priority': {
                     const priorityMap = { high: 2, medium: 1, low: 0 };
-                    const valueA = typeof a.priority === 'string' ? priorityMap[a.priority] || 0 : a.priority || 0;
-                    const valueB = typeof b.priority === 'string' ? priorityMap[b.priority] || 0 : b.priority || 0;
+                    const valueA =
+                        typeof a.priority === 'string'
+                            ? priorityMap[a.priority] || 0
+                            : a.priority || 0;
+                    const valueB =
+                        typeof b.priority === 'string'
+                            ? priorityMap[b.priority] || 0
+                            : b.priority || 0;
                     return compare(valueA, valueB);
                 }
                 case 'status':
@@ -659,17 +732,29 @@ const ProjectDetails: React.FC = () => {
     const getStateIcon = (state: string) => {
         switch (state) {
             case 'idea':
-                return <LightBulbIcon className="h-3 w-3 text-yellow-500 flex-shrink-0 mt-0.5" />;
+                return (
+                    <LightBulbIcon className="h-3 w-3 text-yellow-500 flex-shrink-0 mt-0.5" />
+                );
             case 'planned':
-                return <ClipboardDocumentListIcon className="h-3 w-3 text-blue-500 flex-shrink-0 mt-0.5" />;
+                return (
+                    <ClipboardDocumentListIcon className="h-3 w-3 text-blue-500 flex-shrink-0 mt-0.5" />
+                );
             case 'in_progress':
-                return <PlayIcon className="h-3 w-3 text-green-500 flex-shrink-0 mt-0.5" />;
+                return (
+                    <PlayIcon className="h-3 w-3 text-green-500 flex-shrink-0 mt-0.5" />
+                );
             case 'blocked':
-                return <ExclamationTriangleIcon className="h-3 w-3 text-red-500 flex-shrink-0 mt-0.5" />;
+                return (
+                    <ExclamationTriangleIcon className="h-3 w-3 text-red-500 flex-shrink-0 mt-0.5" />
+                );
             case 'completed':
-                return <CheckCircleIcon className="h-3 w-3 text-gray-500 flex-shrink-0 mt-0.5" />;
+                return (
+                    <CheckCircleIcon className="h-3 w-3 text-gray-500 flex-shrink-0 mt-0.5" />
+                );
             default:
-                return <PlayIcon className="h-3 w-3 text-white/70 flex-shrink-0 mt-0.5" />;
+                return (
+                    <PlayIcon className="h-3 w-3 text-white/70 flex-shrink-0 mt-0.5" />
+                );
         }
     };
 
@@ -677,7 +762,9 @@ const ProjectDetails: React.FC = () => {
     if (error)
         return (
             <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
-                <div className="text-red-500 text-lg">Failed to load project details.</div>
+                <div className="text-red-500 text-lg">
+                    Failed to load project details.
+                </div>
             </div>
         );
     if (!project)
@@ -688,69 +775,85 @@ const ProjectDetails: React.FC = () => {
         );
 
     const renderStatusFilter = () => (
-            <div className="space-y-3">
-                <div>
-                    <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-t border-b border-gray-200 dark:border-gray-700">
-                        {t('tasks.show', 'Show')}
-                    </div>
-                    <div className="py-1 space-y-1">
-                        {[
-                            { key: 'active', label: t('tasks.open', 'Open') },
-                            { key: 'all', label: t('tasks.all', 'All') },
-                            { key: 'completed', label: t('tasks.completed', 'Completed') },
-                        ].map((opt) => {
-                            const isActive = taskStatusFilter === opt.key;
-                            return (
-                                <button
-                                    key={opt.key}
-                                    type="button"
-                                    onClick={() => handleTaskStatusFilterChange(opt.key as 'all' | 'active' | 'completed')}
-                                    className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
-                                        isActive
-                                            ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                    }`}
-                                >
-                                    <span>{opt.label}</span>
-                                    {isActive && <CheckIcon className="h-4 w-4" />}
-                                </button>
-                            );
-                        })}
-                    </div>
+        <div className="space-y-3">
+            <div>
+                <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-t border-b border-gray-200 dark:border-gray-700">
+                    {t('tasks.show', 'Show')}
                 </div>
-                <div>
-                    <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-t border-b border-gray-200 dark:border-gray-700">
-                        {t('tasks.direction', 'Direction')}
-                    </div>
-                    <div className="py-1">
-                        {[
-                            { key: 'asc', label: t('tasks.ascending', 'Ascending') },
-                            { key: 'desc', label: t('tasks.descending', 'Descending') },
-                        ].map((dir) => {
-                            const currentDirection = orderBy.split(':')[1] || 'asc';
-                            const isActive = currentDirection === dir.key;
-                            return (
-                                <button
-                                    key={dir.key}
-                                    onClick={() => {
-                                        const [field] = orderBy.split(':');
-                                        const newOrderBy = `${field}:${dir.key}`;
-                                        handleSortChange(newOrderBy);
-                                    }}
-                                    className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
-                                        isActive
-                                            ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                    }`}
-                                >
-                                    <span>{dir.label}</span>
-                                    {isActive && <CheckIcon className="h-4 w-4" />}
-                                </button>
-                            );
-                        })}
-                    </div>
+                <div className="py-1 space-y-1">
+                    {[
+                        { key: 'active', label: t('tasks.open', 'Open') },
+                        { key: 'all', label: t('tasks.all', 'All') },
+                        {
+                            key: 'completed',
+                            label: t('tasks.completed', 'Completed'),
+                        },
+                    ].map((opt) => {
+                        const isActive = taskStatusFilter === opt.key;
+                        return (
+                            <button
+                                key={opt.key}
+                                type="button"
+                                onClick={() =>
+                                    handleTaskStatusFilterChange(
+                                        opt.key as
+                                            | 'all'
+                                            | 'active'
+                                            | 'completed'
+                                    )
+                                }
+                                className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                                    isActive
+                                        ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                }`}
+                            >
+                                <span>{opt.label}</span>
+                                {isActive && <CheckIcon className="h-4 w-4" />}
+                            </button>
+                        );
+                    })}
                 </div>
             </div>
+            <div>
+                <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-t border-b border-gray-200 dark:border-gray-700">
+                    {t('tasks.direction', 'Direction')}
+                </div>
+                <div className="py-1">
+                    {[
+                        {
+                            key: 'asc',
+                            label: t('tasks.ascending', 'Ascending'),
+                        },
+                        {
+                            key: 'desc',
+                            label: t('tasks.descending', 'Descending'),
+                        },
+                    ].map((dir) => {
+                        const currentDirection = orderBy.split(':')[1] || 'asc';
+                        const isActive = currentDirection === dir.key;
+                        return (
+                            <button
+                                key={dir.key}
+                                onClick={() => {
+                                    const [field] = orderBy.split(':');
+                                    const newOrderBy = `${field}:${dir.key}`;
+                                    handleSortChange(newOrderBy);
+                                }}
+                                className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                                    isActive
+                                        ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                }`}
+                            >
+                                <span>{dir.label}</span>
+                                {isActive && <CheckIcon className="h-4 w-4" />}
+                            </button>
+                        );
+                    })}
+                </div>
+            </div>
+        </div>
     );
 
     return (
@@ -816,13 +919,25 @@ const ProjectDetails: React.FC = () => {
                                         aria-pressed={showMetrics}
                                         aria-label={
                                             showMetrics
-                                                ? t('projects.hideMetrics', 'Hide metrics')
-                                                : t('projects.showMetrics', 'Show metrics')
+                                                ? t(
+                                                      'projects.hideMetrics',
+                                                      'Hide metrics'
+                                                  )
+                                                : t(
+                                                      'projects.showMetrics',
+                                                      'Show metrics'
+                                                  )
                                         }
                                         title={
                                             showMetrics
-                                                ? t('projects.hideMetrics', 'Hide metrics')
-                                                : t('projects.showMetrics', 'Show metrics')
+                                                ? t(
+                                                      'projects.hideMetrics',
+                                                      'Hide metrics'
+                                                  )
+                                                : t(
+                                                      'projects.showMetrics',
+                                                      'Show metrics'
+                                                  )
                                         }
                                     >
                                         <ChartBarIcon
@@ -834,7 +949,9 @@ const ProjectDetails: React.FC = () => {
                                         />
                                     </button>
                                     <button
-                                        onClick={() => setIsSearchExpanded((v) => !v)}
+                                        onClick={() =>
+                                            setIsSearchExpanded((v) => !v)
+                                        }
                                         className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-0 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset rounded-lg p-2 ${
                                             isSearchExpanded
                                                 ? 'bg-blue-50/70 dark:bg-blue-900/20'
@@ -842,7 +959,9 @@ const ProjectDetails: React.FC = () => {
                                         }`}
                                         aria-expanded={isSearchExpanded}
                                         aria-label={
-                                            isSearchExpanded ? 'Collapse search panel' : 'Show search input'
+                                            isSearchExpanded
+                                                ? 'Collapse search panel'
+                                                : 'Show search input'
                                         }
                                     >
                                         <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-200" />
@@ -851,9 +970,18 @@ const ProjectDetails: React.FC = () => {
                                         options={sortOptions}
                                         value={orderBy}
                                         onChange={handleSortChange}
-                                        ariaLabel={t('projects.sortTasks', 'Sort tasks')}
-                                        title={t('projects.sortTasks', 'Sort tasks')}
-                                        dropdownLabel={t('tasks.sortBy', 'Sort by')}
+                                        ariaLabel={t(
+                                            'projects.sortTasks',
+                                            'Sort tasks'
+                                        )}
+                                        title={t(
+                                            'projects.sortTasks',
+                                            'Sort tasks'
+                                        )}
+                                        dropdownLabel={t(
+                                            'tasks.sortBy',
+                                            'Sort by'
+                                        )}
                                         footerContent={renderStatusFilter()}
                                     />
                                 </div>
@@ -865,16 +993,23 @@ const ProjectDetails: React.FC = () => {
                         <>
                             <div
                                 className={`transition-all duration-300 ease-in-out ${
-                                    isSearchExpanded ? 'max-h-24 opacity-100 mb-4' : 'max-h-0 opacity-0 mb-0'
+                                    isSearchExpanded
+                                        ? 'max-h-24 opacity-100 mb-4'
+                                        : 'max-h-0 opacity-0 mb-0'
                                 } overflow-hidden`}
                             >
                                 <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-4 py-3">
                                     <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-400 mr-2" />
                                     <input
                                         type="text"
-                                        placeholder={t('tasks.searchPlaceholder', 'Search tasks...')}
+                                        placeholder={t(
+                                            'tasks.searchPlaceholder',
+                                            'Search tasks...'
+                                        )}
                                         value={taskSearchQuery}
-                                        onChange={(e) => setTaskSearchQuery(e.target.value)}
+                                        onChange={(e) =>
+                                            setTaskSearchQuery(e.target.value)
+                                        }
                                         className="w-full bg-transparent border-none focus:ring-0 focus:outline-none dark:text-white"
                                     />
                                 </div>
@@ -883,27 +1018,41 @@ const ProjectDetails: React.FC = () => {
                             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start transition-all duration-300">
                                 <div
                                     className={`flex justify-center transition-all duration-300 ${
-                                        showMetrics ? 'xl:col-span-2 translate-x-0' : 'xl:col-span-3 translate-x-0'
+                                        showMetrics
+                                            ? 'xl:col-span-2 translate-x-0'
+                                            : 'xl:col-span-3 translate-x-0'
                                     }`}
                                 >
                                     <div
                                         className={`w-full max-w-5xl transition-all duration-300 ${
-                                            showMetrics ? 'xl:translate-x-0' : 'xl:translate-x-6'
+                                            showMetrics
+                                                ? 'xl:translate-x-0'
+                                                : 'xl:translate-x-6'
                                         }`}
                                     >
                                         <ProjectTasksSection
                                             project={project}
                                             displayTasks={displayTasks}
-                                            showAutoSuggestForm={showAutoSuggestForm}
-                                            onAddNextAction={handleCreateNextAction}
-                                            onDismissNextAction={handleSkipNextAction}
+                                            showAutoSuggestForm={
+                                                showAutoSuggestForm
+                                            }
+                                            onAddNextAction={
+                                                handleCreateNextAction
+                                            }
+                                            onDismissNextAction={
+                                                handleSkipNextAction
+                                            }
                                             onTaskCreate={handleTaskCreate}
                                             onTaskUpdate={handleTaskUpdate}
-                                            onTaskCompletionToggle={handleTaskCompletionToggle}
+                                            onTaskCompletionToggle={
+                                                handleTaskCompletionToggle
+                                            }
                                             onTaskDelete={handleTaskDelete}
                                             onToggleToday={handleToggleToday}
                                             allProjects={allProjects}
-                                            showCompleted={taskStatusFilter !== 'active'}
+                                            showCompleted={
+                                                taskStatusFilter !== 'active'
+                                            }
                                             taskSearchQuery={taskSearchQuery}
                                             t={t}
                                         />
@@ -912,22 +1061,26 @@ const ProjectDetails: React.FC = () => {
 
                                 <div className="xl:col-span-1">
                                     <div
-                                    className={`transition-all duration-300 ease-in-out ${
-                                        showMetrics
-                                            ? 'max-h-[2000px] opacity-100 translate-x-0'
-                                            : 'max-h-0 opacity-0 translate-x-8 pointer-events-none'
-                                    }`}
-                                    style={{ overflow: 'hidden' }}
-                                    aria-hidden={!showMetrics}
-                                >
-                                    <ProjectInsightsPanel
+                                        className={`transition-all duration-300 ease-in-out ${
+                                            showMetrics
+                                                ? 'max-h-[2000px] opacity-100 translate-x-0'
+                                                : 'max-h-0 opacity-0 translate-x-8 pointer-events-none'
+                                        }`}
+                                        style={{ overflow: 'hidden' }}
+                                        aria-hidden={!showMetrics}
+                                    >
+                                        <ProjectInsightsPanel
                                             taskStats={taskStats}
-                                            completionGradient={completionGradient}
+                                            completionGradient={
+                                                completionGradient
+                                            }
                                             dueBuckets={dueBuckets}
                                             dueHighlights={dueHighlights}
                                             nextBestAction={nextBestAction}
                                             getDueDescriptor={getDueDescriptor}
-                                            onStartNextAction={handleStartNextAction}
+                                            onStartNextAction={
+                                                handleStartNextAction
+                                            }
                                             t={t}
                                             completionTrend={completionTrend}
                                             upcomingDueTrend={upcomingDueTrend}
@@ -954,7 +1107,11 @@ const ProjectDetails: React.FC = () => {
                                     content: '',
                                     tags: [],
                                     project_id: project.id,
-                                    project: { id: project.id, name: project.name, uid: project.uid },
+                                    project: {
+                                        id: project.id,
+                                        name: project.name,
+                                        uid: project.uid,
+                                    },
                                     project_uid: project.uid,
                                 });
                                 setIsNoteModalOpen(true);
@@ -993,7 +1150,9 @@ const ProjectDetails: React.FC = () => {
                             onConfirm={() => {
                                 const identifier =
                                     noteToDelete?.uid ??
-                                    (noteToDelete?.id !== undefined ? String(noteToDelete.id) : null);
+                                    (noteToDelete?.id !== undefined
+                                        ? String(noteToDelete.id)
+                                        : null);
                                 if (identifier) handleDeleteNote(identifier);
                             }}
                             onCancel={() => {
@@ -1004,7 +1163,10 @@ const ProjectDetails: React.FC = () => {
                     )}
                     {isConfirmDialogOpen && !noteToDelete && (
                         <ConfirmDialog
-                            title={t('modals.deleteProject.title', 'Delete Project')}
+                            title={t(
+                                'modals.deleteProject.title',
+                                'Delete Project'
+                            )}
                             message={t(
                                 'modals.deleteProject.message',
                                 'Deleting this project will remove the project only. All items inside will be retained but will no longer belong to any project. Continue?'

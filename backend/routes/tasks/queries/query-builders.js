@@ -182,11 +182,21 @@ async function filterTasksByParams(
 
             if (params.status === 'done' || params.status === 'completed') {
                 whereClause.status = {
-                    [Op.in]: [Task.STATUS.DONE, Task.STATUS.ARCHIVED, 'done', 'archived'],
+                    [Op.in]: [
+                        Task.STATUS.DONE,
+                        Task.STATUS.ARCHIVED,
+                        'done',
+                        'archived',
+                    ],
                 };
             } else if (params.status === 'active') {
                 whereClause.status = {
-                    [Op.notIn]: [Task.STATUS.DONE, Task.STATUS.ARCHIVED, 'done', 'archived'],
+                    [Op.notIn]: [
+                        Task.STATUS.DONE,
+                        Task.STATUS.ARCHIVED,
+                        'done',
+                        'archived',
+                    ],
                 };
             } else if (!params.client_side_filtering) {
                 whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
@@ -213,11 +223,21 @@ async function filterTasksByParams(
         case 'all':
             if (params.status === 'done' || params.status === 'completed') {
                 whereClause.status = {
-                    [Op.in]: [Task.STATUS.DONE, Task.STATUS.ARCHIVED, 'done', 'archived'],
+                    [Op.in]: [
+                        Task.STATUS.DONE,
+                        Task.STATUS.ARCHIVED,
+                        'done',
+                        'archived',
+                    ],
                 };
             } else if (params.status === 'active') {
                 whereClause.status = {
-                    [Op.notIn]: [Task.STATUS.DONE, Task.STATUS.ARCHIVED, 'done', 'archived'],
+                    [Op.notIn]: [
+                        Task.STATUS.DONE,
+                        Task.STATUS.ARCHIVED,
+                        'done',
+                        'archived',
+                    ],
                 };
             } else if (!params.client_side_filtering) {
                 whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
@@ -229,11 +249,21 @@ async function filterTasksByParams(
             }
             if (params.status === 'done' || params.status === 'completed') {
                 whereClause.status = {
-                    [Op.in]: [Task.STATUS.DONE, Task.STATUS.ARCHIVED, 'done', 'archived'],
+                    [Op.in]: [
+                        Task.STATUS.DONE,
+                        Task.STATUS.ARCHIVED,
+                        'done',
+                        'archived',
+                    ],
                 };
             } else if (params.status === 'active') {
                 whereClause.status = {
-                    [Op.notIn]: [Task.STATUS.DONE, Task.STATUS.ARCHIVED, 'done', 'archived'],
+                    [Op.notIn]: [
+                        Task.STATUS.DONE,
+                        Task.STATUS.ARCHIVED,
+                        'done',
+                        'archived',
+                    ],
                 };
             } else if (!params.client_side_filtering) {
                 whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
