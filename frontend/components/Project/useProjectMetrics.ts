@@ -224,25 +224,6 @@ export const useProjectMetrics = (
         }));
     }, [tasks]);
 
-    const priorityMix = useMemo(() => {
-        const mix = { high: 0, medium: 0, low: 0, none: 0 };
-        const isCompleted = (status: Task['status']) =>
-            status === 'done' ||
-            status === 'archived' ||
-            status === 2 ||
-            status === 3;
-
-        tasks.forEach((task) => {
-            if (isCompleted(task.status)) return;
-            const p = task.priority;
-            if (p === 'high' || p === 2) mix.high += 1;
-            else if (p === 'medium' || p === 1) mix.medium += 1;
-            else if (p === 'low' || p === 0) mix.low += 1;
-            else mix.none += 1;
-        });
-        return mix;
-    }, [tasks]);
-
     const upcomingDueTrend = useMemo(() => {
         const days = 14;
         const today = new Date();
