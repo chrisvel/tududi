@@ -1,5 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { PaperAirplaneIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import {
+    PaperAirplaneIcon,
+    SparklesIcon,
+    TrashIcon,
+} from '@heroicons/react/24/outline';
 import 'highlight.js/styles/github-dark.css';
 import ChatItemRenderer from './ChatItemRenderer';
 
@@ -14,8 +18,19 @@ interface Message {
     } | null;
 }
 
+const STORAGE_KEY = 'tududi_chat_history';
+const CONVERSATION_ID_KEY = 'tududi_chat_conversation_id';
+
 const ChatPage: React.FC = () => {
-    const [messages, setMessages] = useState<Message[]>([]);
+    // Initialize messages from localStorage
+    const [messages, setMessages] = useState<Message[]>(() => {
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            return saved ? JSON.parse(saved) : [];
+        } catch {
+            return [];
+        }
+    });
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isEnabled, setIsEnabled] = useState(true);
@@ -23,8 +38,29 @@ const ChatPage: React.FC = () => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const conversationIdRef = useRef<string>(
-        `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+        (() => {
+            const saved = localStorage.getItem(CONVERSATION_ID_KEY);
+            if (saved) return saved;
+            const newId = `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            localStorage.setItem(CONVERSATION_ID_KEY, newId);
+            return newId;
+        })()
     );
+
+    // Persist messages to localStorage whenever they change
+    useEffect(() => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+    }, [messages]);
+
+    const resetChat = useCallback(() => {
+        setMessages([]);
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(CONVERSATION_ID_KEY);
+        const newId = `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        conversationIdRef.current = newId;
+        localStorage.setItem(CONVERSATION_ID_KEY, newId);
+        setError(null);
+    }, []);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -135,16 +171,28 @@ const ChatPage: React.FC = () => {
         <div className="fixed inset-0 top-16 lg:left-72 flex flex-col bg-gray-50 dark:bg-gray-900 z-10">
             {/* Header */}
             <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
-                <div className="flex items-center gap-3">
-                    <SparklesIcon className="h-8 w-8 text-blue-600 dark:text-blue-400" />
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                            AI Assistant
-                        </h1>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                            Chat with your tasks, projects, and notes
-                        </p>
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <SparklesIcon className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                        <div>
+                            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                                AI Assistant
+                            </h1>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                Chat with your tasks, projects, and notes
+                            </p>
+                        </div>
                     </div>
+                    {messages.length > 0 && (
+                        <button
+                            onClick={resetChat}
+                            className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                            title="Clear chat history"
+                        >
+                            <TrashIcon className="h-5 w-5" />
+                            <span className="hidden sm:inline">Reset</span>
+                        </button>
+                    )}
                 </div>
                 {error && (
                     <div className="mt-3 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">

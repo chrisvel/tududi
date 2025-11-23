@@ -52,7 +52,8 @@
     "createNew": "Neu erstellen",
     "views": "Ansichten",
     "unpinView": "Ansicht lösen",
-    "pinView": "Ansicht anheften"
+    "pinView": "Ansicht anheften",
+    "aiAssistant": "KI-Assistent"
   },
   "navigation": {
     "home": "Startseite",

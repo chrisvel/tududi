@@ -1,3 +1,5 @@
+// Import tfjs-node first to register the backend
+require('@tensorflow/tfjs-node');
 const use = require('@tensorflow-models/universal-sentence-encoder');
 const { logError } = require('./logService');
 

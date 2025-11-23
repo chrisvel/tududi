@@ -52,7 +52,8 @@
     "allTasks": "Alla uppgifter",
     "views": "Vy",
     "unpinView": "Ta bort fästning av vy",
-    "pinView": "Fäst vy"
+    "pinView": "Fäst vy",
+    "aiAssistant": "AI-assistent"
   },
   "navigation": {
     "home": "Hem",

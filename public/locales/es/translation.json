@@ -52,7 +52,8 @@
     "createNew": "Crear nuevo",
     "views": "Vistas",
     "unpinView": "Desanclar vista",
-    "pinView": "Anclar vista"
+    "pinView": "Anclar vista",
+    "aiAssistant": "Asistente IA"
   },
   "navigation": {
     "home": "Inicio",

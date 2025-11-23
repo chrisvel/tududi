@@ -84,24 +84,6 @@ router.get('/', async (req, res) => {
             }
         }
 
-        // If tags are specified, find their IDs first
-        let tagIds = [];
-        if (tagNames.length > 0) {
-            const tags = await Tag.findAll({
-                where: {
-                    user_id: userId,
-                    name: { [Op.in]: tagNames },
-                },
-                attributes: ['id'],
-            });
-            tagIds = tags.map((tag) => tag.id);
-
-            // If no matching tags found, return empty results
-            if (tagIds.length === 0) {
-                return res.json({ results: [] });
-            }
-        }
-
         // Calculate due date range based on filter
         let dueDateCondition = null;
         if (due) {
@@ -247,31 +229,6 @@ router.get('/', async (req, res) => {
                     where: taskConditions,
                     include: tagIds.length > 0 ? taskInclude : undefined,
                     distinct: true,
-                });
-            }
-
-            // Add due date filter if specified
-            if (dueDateCondition) {
-                Object.assign(taskConditions, dueDateCondition);
-            }
-
-            const taskInclude = [
-                {
-                    model: Project,
-                    attributes: ['id', 'uid', 'name'],
-                },
-            ];
-
-            // Add tag filter if specified
-            if (tagIds.length > 0) {
-                taskInclude.push({
-                    model: Tag,
-                    where: {
-                        id: { [Op.in]: tagIds },
-                    },
-                    through: { attributes: [] },
-                    attributes: [],
-                    required: true,
                 });
             }
 

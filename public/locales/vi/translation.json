@@ -52,7 +52,8 @@
     "createNew": "Tạo mới",
     "views": "Chế độ xem",
     "unpinView": "Bỏ ghim chế độ xem",
-    "pinView": "Ghim chế độ xem"
+    "pinView": "Ghim chế độ xem",
+    "aiAssistant": "Trợ lý AI"
   },
   "navigation": {
     "home": "Trang chủ",
