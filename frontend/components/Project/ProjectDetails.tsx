@@ -9,6 +9,7 @@ import {
     ExclamationTriangleIcon,
     CheckCircleIcon,
     ChartBarIcon,
+    CheckIcon,
 } from '@heroicons/react/24/outline';
 import { useToast } from '../Shared/ToastContext';
 import ProjectModal from './ProjectModal';
@@ -67,7 +68,10 @@ const ProjectDetails: React.FC = () => {
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
     const [activeTab, setActiveTab] = useState<'tasks' | 'notes'>('tasks');
-    const [showCompleted, setShowCompleted] = useState(false);
+    const [taskStatusFilter, setTaskStatusFilter] = useState<'all' | 'active' | 'completed'>(() => {
+        const saved = localStorage.getItem('project_task_status_filter');
+        return (saved as 'all' | 'active' | 'completed') || 'active';
+    });
     const [showMetrics, setShowMetrics] = useState(true);
     const [isSavingUiPrefs, setIsSavingUiPrefs] = useState(false);
     const [showAutoSuggestForm, setShowAutoSuggestForm] = useState(false);
@@ -208,10 +212,6 @@ const ProjectDetails: React.FC = () => {
         } else {
             setOrderBy(storedSort);
         }
-        const savedShowCompleted = localStorage.getItem('project_show_completed');
-        if (savedShowCompleted !== null) {
-            setShowCompleted(JSON.parse(savedShowCompleted));
-        }
     }, []);
 
     useEffect(() => {
@@ -223,10 +223,6 @@ const ProjectDetails: React.FC = () => {
                 const projectData = await fetchProjectBySlug(uidSlug);
                 setProject(projectData);
                 setTasks(projectData.tasks || projectData.Tasks || []);
-                const savedShowCompleted = localStorage.getItem('project_show_completed');
-                if (savedShowCompleted === null && projectData.task_show_completed !== undefined) {
-                    setShowCompleted(projectData.task_show_completed);
-                }
                 const savedSort = localStorage.getItem('project_order_by');
                 if (!savedSort && projectData.task_sort_order) {
                     setOrderBy(projectData.task_sort_order);
@@ -260,12 +256,12 @@ const ProjectDetails: React.FC = () => {
     }, [openModal]);
 
     useEffect(() => {
-        if (project && tasks.length === 0 && !loading && !showCompleted && autoSuggestEnabled) {
+        if (project && tasks.length === 0 && !loading && taskStatusFilter === 'active' && autoSuggestEnabled) {
             setShowAutoSuggestForm(true);
         } else {
             setShowAutoSuggestForm(false);
         }
-    }, [project, tasks.length, loading, showCompleted, autoSuggestEnabled]);
+    }, [project, tasks.length, loading, taskStatusFilter, autoSuggestEnabled]);
 
     const handleTaskCreate = async (taskName: string) => {
         if (!project) throw new Error('Cannot create task: Project is missing');
@@ -457,34 +453,14 @@ const ProjectDetails: React.FC = () => {
 
     const handleSkipNextAction = () => setShowAutoSuggestForm(false);
 
-    const saveProjectPreferences = async (showCompletedValue: boolean, orderValue: string) => {
-        if (!project?.id) return;
-        try {
-            const response = await fetch(getApiPath(`project/${project.id}`), {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({
-                    task_show_completed: showCompletedValue,
-                    task_sort_order: orderValue,
-                }),
-            });
-            if (!response.ok) throw new Error('Failed to save project preferences');
-        } catch (err) {
-            console.error('Error saving project preferences:', err);
-        }
-    };
-
-    const handleShowCompletedChange = (checked: boolean) => {
-        setShowCompleted(checked);
-        localStorage.setItem('project_show_completed', JSON.stringify(checked));
-        saveProjectPreferences(checked, orderBy);
+    const handleTaskStatusFilterChange = (status: 'all' | 'active' | 'completed') => {
+        setTaskStatusFilter(status);
+        localStorage.setItem('project_task_status_filter', status);
     };
 
     const handleSortChange = (newOrderBy: string) => {
         setOrderBy(newOrderBy);
         localStorage.setItem('project_order_by', newOrderBy);
-        saveProjectPreferences(showCompleted, newOrderBy);
     };
 
     const handleDeleteProject = async () => {
@@ -582,8 +558,9 @@ const ProjectDetails: React.FC = () => {
     };
 
     const displayTasks = useMemo(() => {
-        let filteredTasks;
-        if (showCompleted) {
+        let filteredTasks: Task[];
+
+        if (taskStatusFilter === 'completed') {
             filteredTasks = tasks.filter(
                 (task) =>
                     task.status === 'done' ||
@@ -591,14 +568,19 @@ const ProjectDetails: React.FC = () => {
                     task.status === 2 ||
                     task.status === 3
             );
-        } else {
+        } else if (taskStatusFilter === 'active') {
             filteredTasks = tasks.filter(
                 (task) =>
                     task.status === 'not_started' ||
                     task.status === 'in_progress' ||
+                    task.status === 'waiting' ||
                     task.status === 0 ||
-                    task.status === 1
+                    task.status === 1 ||
+                    task.status === 4
             );
+        } else {
+            // taskStatusFilter === 'all'
+            filteredTasks = tasks;
         }
         if (taskSearchQuery.trim()) {
             const query = taskSearchQuery.toLowerCase();
@@ -661,7 +643,7 @@ const ProjectDetails: React.FC = () => {
                     );
             }
         });
-    }, [tasks, showCompleted, orderBy, taskSearchQuery]);
+    }, [tasks, taskStatusFilter, orderBy, taskSearchQuery]);
 
     const {
         taskStats,
@@ -711,26 +693,36 @@ const ProjectDetails: React.FC = () => {
             </div>
         );
 
-    const renderShowCompletedToggle = () => (
-        <button
-            type="button"
-            onClick={() => handleShowCompletedChange(!showCompleted)}
-            className="w-full flex items-center justify-between text-sm text-gray-700 dark:text-gray-300"
-            aria-pressed={showCompleted}
-        >
-            <span>{t('common.showCompleted', 'Show completed')}</span>
-            <span
-                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                    showCompleted ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-600'
-                }`}
-            >
-                <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        showCompleted ? 'translate-x-4' : 'translate-x-0.5'
-                    }`}
-                />
-            </span>
-        </button>
+    const renderStatusFilter = () => (
+            <div>
+                <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-t border-b border-gray-200 dark:border-gray-700">
+                    {t('tasks.show', 'Show')}
+                </div>
+                <div className="py-1 space-y-1">
+                    {[
+                        { key: 'active', label: t('tasks.notCompleted', 'Not completed') },
+                        { key: 'all', label: t('tasks.all', 'All') },
+                        { key: 'completed', label: t('tasks.completedOnly', 'Completed only') },
+                    ].map((opt) => {
+                        const isActive = taskStatusFilter === opt.key;
+                        return (
+                            <button
+                                key={opt.key}
+                                type="button"
+                                onClick={() => handleTaskStatusFilterChange(opt.key as 'all' | 'active' | 'completed')}
+                                className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                                    isActive
+                                        ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                }`}
+                            >
+                                <span>{opt.label}</span>
+                                {isActive && <CheckIcon className="h-4 w-4" />}
+                            </button>
+                        );
+                    })}
+                </div>
+            </div>
     );
 
     return (
@@ -834,7 +826,7 @@ const ProjectDetails: React.FC = () => {
                                         ariaLabel={t('projects.sortTasks', 'Sort tasks')}
                                         title={t('projects.sortTasks', 'Sort tasks')}
                                         dropdownLabel={t('tasks.sortBy', 'Sort by')}
-                                        extraContent={renderShowCompletedToggle()}
+                                        footerContent={renderStatusFilter()}
                                     />
                                 </div>
                             )}
@@ -883,7 +875,7 @@ const ProjectDetails: React.FC = () => {
                                             onTaskDelete={handleTaskDelete}
                                             onToggleToday={handleToggleToday}
                                             allProjects={allProjects}
-                                            showCompleted={showCompleted}
+                                            showCompleted={taskStatusFilter !== 'active'}
                                             taskSearchQuery={taskSearchQuery}
                                             t={t}
                                         />
