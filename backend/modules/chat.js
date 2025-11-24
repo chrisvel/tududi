@@ -4,13 +4,19 @@ const { logError } = require('../services/logService');
 const { Task, Project, Note, Tag } = require('../models');
 const router = express.Router();
 
-// Check if AI is enabled
-router.get('/chat/enabled', (req, res) => {
-    res.json({
-        enabled: aiChatService.isEnabled(),
-        provider: process.env.AI_PROVIDER || 'openai',
-        model: process.env.AI_MODEL || 'gpt-3.5-turbo',
-    });
+// Check if AI is enabled for current user
+router.get('/chat/enabled', async (req, res) => {
+    try {
+        const config = await aiChatService.getConfigForUser(req.session.userId);
+        res.json(config);
+    } catch (error) {
+        logError('Get AI config error:', error);
+        res.json({
+            enabled: false,
+            provider: null,
+            model: null,
+        });
+    }
 });
 
 // Send message (non-streaming)
@@ -22,9 +28,12 @@ router.post('/chat/message', async (req, res) => {
             return res.status(400).json({ error: 'Message is required' });
         }
 
-        if (!aiChatService.isEnabled()) {
+        const isEnabled = await aiChatService.isEnabledForUser(
+            req.session.userId
+        );
+        if (!isEnabled) {
             return res.status(503).json({
-                error: 'AI chat is not enabled. Please configure API keys.',
+                error: 'AI chat is not enabled. Please configure your API key in Profile Settings.',
             });
         }
 
@@ -41,9 +50,9 @@ router.post('/chat/message', async (req, res) => {
 
         // Handle specific OpenAI errors
         if (error.code === 'invalid_api_key') {
-            return res
-                .status(401)
-                .json({ error: 'Invalid API key configured' });
+            return res.status(401).json({
+                error: 'Invalid API key. Please check your API key in Profile Settings.',
+            });
         }
 
         if (error.code === 'rate_limit_exceeded') {
@@ -67,9 +76,12 @@ router.post('/chat/stream', async (req, res) => {
             return res.status(400).json({ error: 'Message is required' });
         }
 
-        if (!aiChatService.isEnabled()) {
+        const isEnabled = await aiChatService.isEnabledForUser(
+            req.session.userId
+        );
+        if (!isEnabled) {
             return res.status(503).json({
-                error: 'AI chat is not enabled. Please configure API keys.',
+                error: 'AI chat is not enabled. Please configure your API key in Profile Settings.',
             });
         }
 
@@ -150,6 +162,39 @@ router.get('/chat/item/:type/:uid', async (req, res) => {
     } catch (error) {
         logError('Get item error:', error);
         res.status(500).json({ error: 'Failed to fetch item' });
+    }
+});
+
+// Structured chat endpoint (plan -> execute -> answer)
+router.post('/chat/plan', async (req, res) => {
+    try {
+        const { message, conversationId } = req.body;
+
+        if (!message || typeof message !== 'string') {
+            return res.status(400).json({ error: 'Message is required' });
+        }
+
+        const isEnabled = await aiChatService.isEnabledForUser(
+            req.session.userId
+        );
+        if (!isEnabled) {
+            return res.status(503).json({
+                error: 'AI chat is not enabled. Please configure your API key in Profile Settings.',
+            });
+        }
+
+        const result = await aiChatService.chatStructured(
+            req.session.userId,
+            message,
+            conversationId || null
+        );
+
+        res.json(result);
+    } catch (error) {
+        logError('Chat plan error:', error);
+        res.status(500).json({
+            error: 'Failed to process chat message. Please try again.',
+        });
     }
 });
 
