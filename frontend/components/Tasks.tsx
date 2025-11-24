@@ -87,8 +87,8 @@ const Tasks: React.FC = () => {
         } else if (status === 'active') {
             setShowCompleted(false);
         } else if (status === null) {
-            // When status is null, we show "All" (both completed and active)
-            setShowCompleted(true);
+            // When status is null, show only open/active tasks by default
+            setShowCompleted(false);
         }
     }, [status, isUpcomingView]);
 
@@ -107,8 +107,8 @@ const Tasks: React.FC = () => {
                     task.status === 3;
                 return isCompleted;
             });
-        } else if (status === 'active') {
-            // Show only active (not completed) tasks
+        } else if (status === 'active' || status === null) {
+            // Show only active (not completed) tasks by default
             filteredTasks = filteredTasks.filter((task: Task) => {
                 const isCompleted =
                     task.status === 'done' ||
@@ -118,7 +118,7 @@ const Tasks: React.FC = () => {
                 return !isCompleted;
             });
         }
-        // When status is null, show all tasks (no filtering)
+        // When status is 'all', show all tasks (no filtering needed)
 
         // Then filter by search query if provided (skip for upcoming view)
         if (taskSearchQuery.trim() && !isUpcomingView) {
