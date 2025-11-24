@@ -536,15 +536,20 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
                 // Fetch AI settings
                 try {
-                    const aiResponse = await fetch(getApiPath('profile/ai-settings'), {
-                        credentials: 'include',
-                    });
+                    const aiResponse = await fetch(
+                        getApiPath('profile/ai-settings'),
+                        {
+                            credentials: 'include',
+                        }
+                    );
                     if (aiResponse.ok) {
                         const aiData = await aiResponse.json();
                         setAiSettings({
                             ai_provider: aiData.ai_provider || 'openai',
                             openai_api_key: '', // Never returned from server for security
-                            ollama_base_url: aiData.ollama_base_url || 'http://localhost:11434',
+                            ollama_base_url:
+                                aiData.ollama_base_url ||
+                                'http://localhost:11434',
                             ollama_model: aiData.ollama_model || 'llama3',
                         });
                         setHasExistingApiKey(aiData.has_openai_key || false);

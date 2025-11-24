@@ -115,7 +115,10 @@ const IntegrationsTab: React.FC<IntegrationsTabProps> = ({
                 <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mb-4">
                     <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-4 flex items-center">
                         <KeyIcon className="w-5 h-5 mr-2 text-green-500" />
-                        {t('profile.integrations.openaiSettings', 'OpenAI Settings')}
+                        {t(
+                            'profile.integrations.openaiSettings',
+                            'OpenAI Settings'
+                        )}
                     </h4>
 
                     <div className="mb-4">
@@ -171,7 +174,10 @@ const IntegrationsTab: React.FC<IntegrationsTabProps> = ({
                 <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mb-4">
                     <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-4 flex items-center">
                         <ServerIcon className="w-5 h-5 mr-2 text-purple-500" />
-                        {t('profile.integrations.ollamaSettings', 'Ollama Settings')}
+                        {t(
+                            'profile.integrations.ollamaSettings',
+                            'Ollama Settings'
+                        )}
                     </h4>
 
                     <div className="mb-4">
@@ -252,7 +258,10 @@ const IntegrationsTab: React.FC<IntegrationsTabProps> = ({
                 >
                     {testing
                         ? t('profile.integrations.testing', 'Testing...')
-                        : t('profile.integrations.testConnection', 'Test Connection')}
+                        : t(
+                              'profile.integrations.testConnection',
+                              'Test Connection'
+                          )}
                 </button>
             </div>
         </div>

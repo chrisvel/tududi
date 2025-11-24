@@ -111,7 +111,14 @@ const intentExamples = {
 // Entity extraction patterns
 const entityPatterns = {
     priority: {
-        high: ['high', 'urgent', 'important', 'critical', 'high priority', 'asap'],
+        high: [
+            'high',
+            'urgent',
+            'important',
+            'critical',
+            'high priority',
+            'asap',
+        ],
         medium: ['medium', 'normal', 'moderate'],
         low: ['low', 'minor', 'someday', 'maybe'],
     },
