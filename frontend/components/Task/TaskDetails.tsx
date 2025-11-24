@@ -358,10 +358,7 @@ const TaskDetails: React.FC = () => {
             setIsEditingDeferUntil(false);
             setTimelineRefreshKey((prev) => prev + 1);
             showSuccessToast(
-                t(
-                    'task.deferUntilUpdated',
-                    'Defer until successfully updated'
-                )
+                t('task.deferUntilUpdated', 'Defer until successfully updated')
             );
         } catch (error: any) {
             showErrorToast(

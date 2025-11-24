@@ -78,14 +78,18 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
         ];
     };
 
-    const parseDateTime = (isoString: string): { date: Date | null; time: string } => {
+    const parseDateTime = (
+        isoString: string
+    ): { date: Date | null; time: string } => {
         if (!isoString) return { date: null, time: '12:00' };
         try {
             const date = new Date(isoString);
             if (isNaN(date.getTime())) return { date: null, time: '12:00' };
 
             const hours = String(date.getHours()).padStart(2, '0');
-            const minutes = String(Math.floor(date.getMinutes() / 15) * 15).padStart(2, '0');
+            const minutes = String(
+                Math.floor(date.getMinutes() / 15) * 15
+            ).padStart(2, '0');
             return { date, time: `${hours}:${minutes}` };
         } catch {
             return { date: null, time: '12:00' };
@@ -397,14 +401,21 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
                             </label>
                             <select
                                 value={selectedTime}
-                                onChange={(e) => setSelectedTime(e.target.value)}
+                                onChange={(e) =>
+                                    setSelectedTime(e.target.value)
+                                }
                                 className="w-full px-2 py-1.5 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 max-h-32"
                             >
                                 {timeOptions.map((time) => {
                                     const [h, m] = time.split(':');
                                     const hour = parseInt(h);
                                     const ampm = hour >= 12 ? 'PM' : 'AM';
-                                    const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+                                    const displayHour =
+                                        hour === 0
+                                            ? 12
+                                            : hour > 12
+                                              ? hour - 12
+                                              : hour;
                                     return (
                                         <option key={time} value={time}>
                                             {displayHour}:{m} {ampm}
@@ -421,8 +432,12 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
                                 onClick={() => {
                                     const now = new Date();
                                     setSelectedDate(now);
-                                    const hours = String(now.getHours()).padStart(2, '0');
-                                    const minutes = String(Math.floor(now.getMinutes() / 15) * 15).padStart(2, '0');
+                                    const hours = String(
+                                        now.getHours()
+                                    ).padStart(2, '0');
+                                    const minutes = String(
+                                        Math.floor(now.getMinutes() / 15) * 15
+                                    ).padStart(2, '0');
                                     setSelectedTime(`${hours}:${minutes}`);
                                 }}
                                 className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"

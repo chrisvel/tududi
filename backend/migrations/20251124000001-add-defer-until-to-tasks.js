@@ -10,7 +10,8 @@ module.exports = {
                 definition: {
                     type: Sequelize.DATE,
                     allowNull: true,
-                    comment: 'Date and time when the task becomes visible/actionable',
+                    comment:
+                        'Date and time when the task becomes visible/actionable',
                 },
             },
         ]);

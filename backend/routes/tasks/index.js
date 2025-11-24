@@ -27,6 +27,7 @@ const {
 const {
     validateProjectAccess,
     validateParentTaskAccess,
+    validateDeferUntilAndDueDate,
 } = require('./utils/validation');
 const {
     buildTaskAttributes,
