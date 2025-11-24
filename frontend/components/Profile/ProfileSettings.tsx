@@ -17,6 +17,7 @@ import {
     CheckIcon,
     BellIcon,
     CommandLineIcon,
+    CpuChipIcon,
 } from '@heroicons/react/24/outline';
 import TelegramIcon from '../Shared/Icons/TelegramIcon';
 import { useToast } from '../Shared/ToastContext';
@@ -45,6 +46,7 @@ import AiTab from './tabs/AiTab';
 import NotificationsTab from './tabs/NotificationsTab';
 import KeyboardShortcutsTab from './tabs/KeyboardShortcutsTab';
 import { getDefaultConfig } from '../../utils/keyboardShortcutsService';
+import IntegrationsTab, { type AISettings } from './tabs/IntegrationsTab';
 import type {
     ProfileSettingsProps,
     Profile,
@@ -199,6 +201,13 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const [removeAvatar, setRemoveAvatar] = useState(false);
+    const [aiSettings, setAiSettings] = useState<AISettings>({
+        ai_provider: 'openai',
+        openai_api_key: '',
+        ollama_base_url: 'http://localhost:11434',
+        ollama_model: 'llama3',
+    });
+    const [hasExistingApiKey, setHasExistingApiKey] = useState(false);
 
     const forceUpdate = useCallback(() => {
         setUpdateKey((prevKey) => prevKey + 1);
@@ -523,6 +532,25 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
                 if (data.telegram_bot_token) {
                     fetchPollingStatus();
+                }
+
+                // Fetch AI settings
+                try {
+                    const aiResponse = await fetch(getApiPath('profile/ai-settings'), {
+                        credentials: 'include',
+                    });
+                    if (aiResponse.ok) {
+                        const aiData = await aiResponse.json();
+                        setAiSettings({
+                            ai_provider: aiData.ai_provider || 'openai',
+                            openai_api_key: '', // Never returned from server for security
+                            ollama_base_url: aiData.ollama_base_url || 'http://localhost:11434',
+                            ollama_model: aiData.ollama_model || 'llama3',
+                        });
+                        setHasExistingApiKey(aiData.has_openai_key || false);
+                    }
+                } catch (aiError) {
+                    console.error('Failed to fetch AI settings:', aiError);
                 }
             } catch (error) {
                 showErrorToast((error as Error).message);
@@ -967,6 +995,22 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 setUserTimezone(updatedProfile.timezone);
             }
 
+            // Save AI settings
+            const aiResponse = await fetch(getApiPath('profile/ai-settings'), {
+                method: 'PATCH',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(aiSettings),
+            });
+
+            if (aiResponse.ok) {
+                // Clear the API key from state after saving (for security)
+                if (aiSettings.openai_api_key) {
+                    setHasExistingApiKey(true);
+                    setAiSettings((prev) => ({ ...prev, openai_api_key: '' }));
+                }
+            }
+
             setProfile(updatedProfile);
 
             setFormData((prev) => ({
@@ -1126,6 +1170,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             id: 'keyboard-shortcuts',
             name: t('profile.tabs.keyboardShortcuts', 'Shortcuts'),
             icon: <CommandLineIcon className="w-5 h-5" />,
+        },
+        {
+            id: 'integrations',
+            name: t('profile.tabs.integrations', 'Integrations'),
+            icon: <CpuChipIcon className="w-5 h-5" />,
         },
     ];
 
@@ -1316,6 +1365,13 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                             keyboard_shortcuts: config,
                                         }))
                                     }
+                                />
+
+                                <IntegrationsTab
+                                    isActive={activeTab === 'integrations'}
+                                    settings={aiSettings}
+                                    hasExistingKey={hasExistingApiKey}
+                                    onChange={setAiSettings}
                                 />
 
                                 <div className="flex justify-end dark:border-gray-700">
