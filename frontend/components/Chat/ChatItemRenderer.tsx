@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, memo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import remarkGfm from 'remark-gfm';
@@ -32,7 +32,7 @@ const ChatItemRenderer: React.FC<ChatItemRendererProps> = ({
         return { metadata: null, cleanContent: text };
     };
 
-    const { metadata, cleanContent } = extractMetadata(content);
+    const { cleanContent } = extractMetadata(content);
 
     const parseContent = (text: string) => {
         // Pattern: [TYPE:id] Item name
@@ -254,7 +254,7 @@ const ChatItemRenderer: React.FC<ChatItemRendererProps> = ({
                 setItemData(updatedTask);
             };
 
-            const handleTaskDelete = (taskId: number) => {
+            const handleTaskDelete = () => {
                 setIsDeleted(true);
             };
 
@@ -604,4 +604,4 @@ const ChatItemRenderer: React.FC<ChatItemRendererProps> = ({
     );
 };
 
-export default ChatItemRenderer;
+export default memo(ChatItemRenderer);

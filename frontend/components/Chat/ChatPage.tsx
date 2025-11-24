@@ -8,6 +8,7 @@ import 'highlight.js/styles/github-dark.css';
 import ChatItemRenderer from './ChatItemRenderer';
 
 interface Message {
+    id: string;
     role: 'user' | 'assistant';
     content: string;
     plan?: any;
@@ -20,6 +21,8 @@ interface Message {
     } | null;
 }
 
+const generateMessageId = () => `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
 const STORAGE_KEY = 'tududi_chat_history';
 const CONVERSATION_ID_KEY = 'tududi_chat_conversation_id';
 
@@ -28,7 +31,15 @@ const ChatPage: React.FC = () => {
     const [messages, setMessages] = useState<Message[]>(() => {
         try {
             const saved = localStorage.getItem(STORAGE_KEY);
-            return saved ? JSON.parse(saved) : [];
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                // Ensure all messages have IDs (for backwards compatibility)
+                return parsed.map((msg: Message) => ({
+                    ...msg,
+                    id: msg.id || generateMessageId(),
+                }));
+            }
+            return [];
         } catch {
             return [];
         }
@@ -106,7 +117,7 @@ const ChatPage: React.FC = () => {
     const sendMessage = async () => {
         if (!input.trim() || isLoading || !isEnabled) return;
 
-        const userMessage: Message = { role: 'user', content: input };
+        const userMessage: Message = { id: generateMessageId(), role: 'user', content: input };
         setMessages((prev) => [...prev, userMessage]);
         setInput('');
         setIsLoading(true);
@@ -132,6 +143,7 @@ const ChatPage: React.FC = () => {
             const data = await response.json();
             const answer = data.answer || data.message;
             const assistantMessage: Message = {
+                id: generateMessageId(),
                 role: 'assistant',
                 content: answer,
                 plan: data.plan,
@@ -143,6 +155,7 @@ const ChatPage: React.FC = () => {
         } catch (err) {
             console.error('Chat error:', err);
             const errorMessage: Message = {
+                id: generateMessageId(),
                 role: 'assistant',
                 content: `Sorry, I encountered an error: ${err instanceof Error ? err.message : 'Unknown error'}. Please try again.`,
             };
@@ -295,7 +308,7 @@ const ChatPage: React.FC = () => {
                         </div>
                     )}
 
-                    {messages.map((message, index) => {
+                    {messages.map((message) => {
                         const isAssistant = message.role === 'assistant';
                         const isStructuredResponse =
                             message.content.includes('[TASK:') ||
@@ -311,7 +324,7 @@ const ChatPage: React.FC = () => {
 
                         return (
                             <div
-                                key={index}
+                                key={message.id}
                                 className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                             >
                                 <div

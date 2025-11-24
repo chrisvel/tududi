@@ -60,7 +60,7 @@ const IntegrationsTab: React.FC<IntegrationsTabProps> = ({
                 success: response.ok,
                 message: data.message || data.error,
             });
-        } catch (error) {
+        } catch {
             setTestResult({
                 success: false,
                 message: 'Connection test failed',
