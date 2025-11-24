@@ -15,8 +15,6 @@ import {
     TaskIteration,
 } from '../../utils/tasksService';
 import { createProject } from '../../utils/projectsService';
-import { getApiPath } from '../../config/paths';
-import { getPostHeaders } from '../../utils/authUtils';
 import { useStore } from '../../store/useStore';
 import { useToast } from '../Shared/ToastContext';
 import LoadingScreen from '../Shared/LoadingScreen';

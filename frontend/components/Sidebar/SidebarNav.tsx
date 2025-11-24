@@ -49,7 +49,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
             icon: <ClockIcon className="h-5 w-5" />,
         },
         {
-            path: '/tasks',
+            path: '/tasks?status=active',
             title: t('sidebar.allTasks', 'All Tasks'),
             icon: <ListBulletIcon className="h-5 w-5" />,
         },
