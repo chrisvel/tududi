@@ -19,6 +19,19 @@ const intentExamples = {
         'recent tasks',
         'show me 5 latest tasks',
         'show me recent tasks',
+        'where are my tasks',
+        'tasks',
+        'what are my tasks',
+        'show tasks',
+        'list tasks',
+        'which tasks are due',
+        'which are due tasks',
+        'what tasks are overdue',
+        'show overdue tasks',
+        'list overdue tasks',
+        'which tasks are overdue',
+        'tasks that are late',
+        'what is overdue',
     ],
     list_projects: [
         'show my projects',
@@ -26,6 +39,11 @@ const intentExamples = {
         'what projects am I working on',
         'my active projects',
         'all projects',
+        'show me my projects',
+        'what projects do I have',
+        'where are my projects',
+        'projects',
+        'my projects',
     ],
     list_notes: [
         'show my notes',
@@ -93,7 +111,7 @@ const intentExamples = {
 // Entity extraction patterns
 const entityPatterns = {
     priority: {
-        high: ['urgent', 'important', 'critical', 'high priority', 'asap'],
+        high: ['high', 'urgent', 'important', 'critical', 'high priority', 'asap'],
         medium: ['medium', 'normal', 'moderate'],
         low: ['low', 'minor', 'someday', 'maybe'],
     },

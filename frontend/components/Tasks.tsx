@@ -82,7 +82,8 @@ const Tasks: React.FC = () => {
         } else if (status === 'active') {
             setShowCompleted(false);
         } else if (status === null) {
-            setShowCompleted(true);
+            // When status is null, show only open/active tasks by default
+            setShowCompleted(false);
         }
     }, [status, isUpcomingView]);
 
@@ -98,7 +99,8 @@ const Tasks: React.FC = () => {
                     task.status === 3;
                 return isCompleted;
             });
-        } else if (status === 'active') {
+        } else if (status === 'active' || status === null) {
+            // Show only active (not completed) tasks by default
             filteredTasks = filteredTasks.filter((task: Task) => {
                 const isCompleted =
                     task.status === 'done' ||
@@ -108,6 +110,7 @@ const Tasks: React.FC = () => {
                 return !isCompleted;
             });
         }
+        // When status is 'all', show all tasks (no filtering needed)
 
         if (taskSearchQuery.trim() && !isUpcomingView) {
             const queryLower = taskSearchQuery.toLowerCase();

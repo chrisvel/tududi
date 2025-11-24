@@ -49,14 +49,34 @@ class QueryHandlerService {
         const { filters } = query;
         const where = { user_id: userId };
 
-        // Apply filters
+        // Apply priority filter
         if (filters.priority) {
-            where.priority = filters.priority;
+            const priorityMap = { low: 0, medium: 1, high: 2 };
+            const priorityValue = priorityMap[filters.priority];
+            if (priorityValue !== undefined) {
+                where.priority = priorityValue;
+                console.log(
+                    `Filtering for priority: ${filters.priority} = ${priorityValue}`
+                );
+            }
         }
 
-        // Always exclude completed tasks unless specifically requested
-        where.status = { [Op.ne]: 'completed' };
+        // Always exclude completed and archived tasks (handle both numeric and string statuses)
+        where.status = {
+            [Op.notIn]: [
+                2,
+                3,
+                Task.STATUS.DONE,
+                Task.STATUS.ARCHIVED,
+                'done',
+                'archived',
+                'completed',
+            ],
+        };
+        // Extra guard: avoid anything with a completion timestamp even if status is stale
+        where.completed_at = null;
 
+        // Apply time filter
         if (filters.timePeriod) {
             const timeFilter = this.buildTimeFilter(filters.timePeriod);
             if (timeFilter) {
@@ -64,15 +84,36 @@ class QueryHandlerService {
             }
         }
 
+        // Exclude subtasks and recurring instances
+        where.parent_task_id = null;
+        where.recurring_parent_id = null;
+
+        console.log('Task query WHERE:', JSON.stringify(where, null, 2));
+
         const tasks = await Task.findAll({
             where,
             order: [
                 ['due_date', 'ASC'],
                 ['priority', 'DESC'],
             ],
-            limit: 20,
-            attributes: ['uid', 'name', 'status', 'priority', 'due_date'],
+            limit: 8,
+            attributes: ['uid', 'name', 'status', 'priority', 'due_date', 'note'],
+            include: [
+                {
+                    model: Project,
+                    attributes: ['name', 'uid'],
+                },
+            ],
         });
+
+        console.log(
+            `Found ${tasks.length} tasks. Sample:`,
+            tasks.slice(0, 2).map((t) => ({
+                name: t.name,
+                status: t.status,
+                priority: t.priority,
+            }))
+        );
 
         return this.formatTaskListResponse(tasks, filters);
     }
@@ -139,20 +180,22 @@ class QueryHandlerService {
         const now = new Date();
         const today = new Date(now.setHours(0, 0, 0, 0));
 
-        // Get tasks completed today
+        // Get tasks completed today (status = 2 is DONE)
         const completedToday = await Task.count({
             where: {
                 user_id: userId,
-                status: 'completed',
+                status: 2, // DONE
                 completed_at: { [Op.gte]: today },
             },
         });
 
-        // Get active tasks
+        // Get active tasks (not DONE=2 and not ARCHIVED=3)
         const activeTasks = await Task.count({
             where: {
                 user_id: userId,
-                status: { [Op.ne]: 'completed' },
+                status: { [Op.notIn]: [2, 3] },
+                parent_task_id: null,
+                recurring_parent_id: null,
             },
         });
 
@@ -160,8 +203,10 @@ class QueryHandlerService {
         const overdueTasks = await Task.count({
             where: {
                 user_id: userId,
-                status: { [Op.ne]: 'completed' },
+                status: { [Op.notIn]: [2, 3] },
                 due_date: { [Op.lt]: now },
+                parent_task_id: null,
+                recurring_parent_id: null,
             },
         });
 
@@ -172,8 +217,10 @@ class QueryHandlerService {
         const dueToday = await Task.count({
             where: {
                 user_id: userId,
-                status: { [Op.ne]: 'completed' },
+                status: { [Op.notIn]: [2, 3] },
                 due_date: { [Op.between]: [today, tomorrow] },
+                parent_task_id: null,
+                recurring_parent_id: null,
             },
         });
 
@@ -204,7 +251,65 @@ class QueryHandlerService {
             period
         );
 
+        // If asking about overdue specifically, include the actual overdue tasks
+        const { filters } = query;
+        if (filters?.timePeriod === 'overdue') {
+            const overdueTasks = await Task.findAll({
+                where: {
+                    user_id: userId,
+                    status: { [Op.notIn]: [2, 3] },
+                    due_date: { [Op.lt]: new Date() },
+                    completed_at: null,
+                    parent_task_id: null,
+                    recurring_parent_id: null,
+                },
+                order: [['due_date', 'ASC']],
+                limit: 15,
+                attributes: ['uid', 'name', 'status', 'priority', 'due_date'],
+                include: [{ model: Project, attributes: ['name', 'uid'] }],
+            });
+
+            return this.formatStatsWithTasksResponse(metrics, overdueTasks, 'overdue');
+        }
+
         return this.formatStatsResponse(metrics);
+    }
+
+    /**
+     * Format stats response with tasks included
+     */
+    formatStatsWithTasksResponse(metrics, tasks, filterType) {
+        const formatted =
+            productivityMetricsService.formatMetricsForDisplay(metrics);
+
+        let response = `**Statistics**\n${formatted.overview}\n\n`;
+
+        // Add task list if we have tasks
+        if (tasks.length > 0) {
+            const titleMap = {
+                overdue: 'Overdue Tasks',
+                today: 'Tasks Due Today',
+                this_week: 'Tasks Due This Week',
+            };
+            const title = titleMap[filterType] || 'Tasks';
+
+            response += `\n**${title}** (${tasks.length})\n\n`;
+            response += tasks
+                .map((t) => `[TASK:${t.uid}] ${t.name}`)
+                .join('\n\n');
+        }
+
+        return {
+            response,
+            metrics,
+            tasks: tasks.map((t) => ({
+                id: t.uid,
+                name: t.name,
+                status: t.status,
+                priority: t.priority,
+                due_date: t.due_date,
+            })),
+        };
     }
 
     /**
@@ -293,7 +398,13 @@ class QueryHandlerService {
             title = `Your ${filters.priority} priority tasks`;
         }
         if (filters.timePeriod) {
-            title = `Tasks ${filters.timePeriod.replace('_', ' ')}`;
+            const periodMap = {
+                today: 'due today',
+                tomorrow: 'due tomorrow',
+                this_week: 'due this week',
+                overdue: 'overdue',
+            };
+            title = `Tasks ${periodMap[filters.timePeriod] || filters.timePeriod.replace('_', ' ')}`;
         }
 
         if (tasks.length === 0) {
@@ -308,12 +419,13 @@ class QueryHandlerService {
             .join('\n\n');
 
         return {
-            response: `**${title}**\n\n${taskList}`,
+            response: `**${title}** (${tasks.length})\n\n${taskList}`,
             tasks: tasks.map((t) => ({
                 id: t.uid,
                 name: t.name,
                 status: t.status,
                 priority: t.priority,
+                due_date: t.due_date,
             })),
         };
     }

@@ -10,6 +10,8 @@ import ChatItemRenderer from './ChatItemRenderer';
 interface Message {
     role: 'user' | 'assistant';
     content: string;
+    plan?: any;
+    data?: any;
     cost?: {
         total_cost: number;
         input_tokens: number;
@@ -81,7 +83,7 @@ const ChatPage: React.FC = () => {
                 setIsEnabled(data.enabled);
                 if (!data.enabled) {
                     setError(
-                        'AI chat is not configured. Please set up your API key in environment variables.'
+                        'AI chat is not configured. Please set up your AI provider in Profile Settings > Integrations.'
                     );
                 }
             } catch (err) {
@@ -111,13 +113,13 @@ const ChatPage: React.FC = () => {
         setError(null);
 
         try {
-            const response = await fetch('/api/chat/message', {
+            const response = await fetch('/api/chat/plan', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
                 body: JSON.stringify({
                     message: input,
-                    history: messages.slice(-10), // Last 10 messages for context
+                    history: messages.slice(-10),
                     conversationId: conversationIdRef.current,
                 }),
             });
@@ -128,9 +130,12 @@ const ChatPage: React.FC = () => {
             }
 
             const data = await response.json();
+            const answer = data.answer || data.message;
             const assistantMessage: Message = {
                 role: 'assistant',
-                content: data.message,
+                content: answer,
+                plan: data.plan,
+                data: data.data,
                 cost: data.cost || null,
             };
 
@@ -155,11 +160,45 @@ const ChatPage: React.FC = () => {
         }
     };
 
-    const suggestedQueries = [
-        'Show me my tasks due this week',
-        "What's my progress on active projects?",
-        'List all high priority tasks',
-        'Summarize my overdue tasks',
+    const suggestionCategories = [
+        {
+            title: 'Tasks',
+            icon: '📋',
+            queries: [
+                'Show me my tasks due today',
+                'What are my high priority tasks?',
+                'List my overdue tasks',
+                'Show tasks due this week',
+            ],
+        },
+        {
+            title: 'Projects',
+            icon: '📁',
+            queries: [
+                'What projects am I working on?',
+                'Show my active projects',
+                'Which project needs the most attention?',
+            ],
+        },
+        {
+            title: 'Productivity',
+            icon: '📊',
+            queries: [
+                'How productive am I this week?',
+                'What is my task completion rate?',
+                'Give me a summary of my work',
+                'How can I improve my productivity?',
+            ],
+        },
+        {
+            title: 'Planning',
+            icon: '🎯',
+            queries: [
+                'What should I focus on today?',
+                'Help me prioritize my tasks',
+                'What tasks are coming up next week?',
+            ],
+        },
     ];
 
     const handleSuggestionClick = (query: string) => {
@@ -168,7 +207,7 @@ const ChatPage: React.FC = () => {
     };
 
     return (
-        <div className="fixed inset-0 top-16 lg:left-72 flex flex-col bg-gray-50 dark:bg-gray-900 z-10">
+        <div className="fixed inset-0 top-16 lg:left-72 flex flex-col bg-gray-100 dark:bg-gray-800 z-10">
             {/* Header */}
             <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
                 <div className="flex items-center justify-between">
@@ -205,77 +244,161 @@ const ChatPage: React.FC = () => {
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto px-4 py-6">
-                <div className="max-w-4xl mx-auto space-y-6">
+                <div className="max-w-5xl mx-auto space-y-6">
                     {messages.length === 0 && isEnabled && (
-                        <div className="text-center mt-20">
-                            <SparklesIcon className="h-16 w-16 text-blue-600 dark:text-blue-400 mx-auto mb-4" />
-                            <p className="text-xl text-gray-700 dark:text-gray-300 mb-2">
-                                Hello! How can I help you today?
-                            </p>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">
-                                Ask me anything about your tasks, projects, or
-                                productivity
-                            </p>
+                        <div className="mt-8">
+                            <div className="text-center mb-10">
+                                <SparklesIcon className="h-16 w-16 text-blue-600 dark:text-blue-400 mx-auto mb-4" />
+                                <p className="text-xl text-gray-700 dark:text-gray-300 mb-2">
+                                    Hello! How can I help you today?
+                                </p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                    Ask me anything about your tasks, projects,
+                                    or productivity
+                                </p>
+                            </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-2xl mx-auto">
-                                {suggestedQueries.map((query, index) => (
-                                    <button
-                                        key={index}
-                                        onClick={() =>
-                                            handleSuggestionClick(query)
-                                        }
-                                        className="p-4 text-left bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-md transition-all"
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto">
+                                {suggestionCategories.map((category) => (
+                                    <div
+                                        key={category.title}
+                                        className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4"
                                     >
-                                        <p className="text-sm text-gray-700 dark:text-gray-300">
-                                            {query}
-                                        </p>
-                                    </button>
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <span className="text-lg">
+                                                {category.icon}
+                                            </span>
+                                            <h3 className="font-medium text-gray-900 dark:text-white">
+                                                {category.title}
+                                            </h3>
+                                        </div>
+                                        <div className="space-y-2">
+                                            {category.queries.map(
+                                                (query, index) => (
+                                                    <button
+                                                        key={index}
+                                                        onClick={() =>
+                                                            handleSuggestionClick(
+                                                                query
+                                                            )
+                                                        }
+                                                        className="w-full text-left px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors"
+                                                    >
+                                                        {query}
+                                                    </button>
+                                                )
+                                            )}
+                                        </div>
+                                    </div>
                                 ))}
                             </div>
                         </div>
                     )}
 
-                    {messages.map((message, index) => (
-                        <div
-                            key={index}
-                            className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                        >
+                    {messages.map((message, index) => {
+                        const isAssistant = message.role === 'assistant';
+                        const isStructuredResponse =
+                            message.content.includes('[TASK:') ||
+                            message.content.includes('[PROJECT:');
+                        const widthClass = isAssistant
+                            ? 'w-full max-w-5xl'
+                            : isStructuredResponse
+                              ? 'max-w-full'
+                              : 'max-w-3xl';
+                        const baseStyleClass = isAssistant
+                            ? 'text-gray-900 dark:text-gray-100 px-1 py-1'
+                            : 'rounded-2xl px-4 py-3 bg-blue-600 text-white';
+
+                        return (
                             <div
-                                className={`max-w-3xl rounded-2xl px-4 py-3 ${
-                                    message.role === 'user'
-                                        ? 'bg-blue-600 text-white'
-                                        : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700'
-                                }`}
+                                key={index}
+                                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                             >
-                                {message.role === 'assistant' ? (
-                                    <>
-                                        <div className="prose dark:prose-invert prose-sm max-w-none prose-headings:mt-3 prose-headings:mb-2 prose-p:my-2 prose-ul:my-2 prose-ol:my-2 prose-li:my-1">
+                                <div
+                                    className={`${widthClass} ${baseStyleClass} ${
+                                        isAssistant
+                                            ? ''
+                                            : 'shadow-sm'
+                                    }`}
+                                >
+                                    {isAssistant ? (
+                                        <>
+                                            {(message.cost ||
+                                                message.content.includes(
+                                                    '[METADATA]'
+                                                )) && (
+                                                <>
+                                                    <div className="text-[11px] text-gray-400 dark:text-gray-500 mb-2 font-mono opacity-60">
+                                                        {message.cost && (
+                                                            <>
+                                                                {
+                                                                    message.cost
+                                                                        .total_tokens
+                                                                }{' '}
+                                                                tokens · $
+                                                                {message.cost.total_cost.toFixed(
+                                                                    4
+                                                                )}
+                                                                {message.content.includes(
+                                                                    '[METADATA]'
+                                                                ) && ' · '}
+                                                            </>
+                                                        )}
+                                                        {message.content.includes(
+                                                            '[METADATA]'
+                                                        ) && (
+                                                            <>
+                                                                {message.content
+                                                                    .match(
+                                                                        /\[METADATA\](.*?)\[DETAILS\]/
+                                                                    )?.[1]
+                                                                    ?.trim() ||
+                                                                    ''}
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                    {message.content.includes(
+                                                        '[DETAILS]'
+                                                    ) && (
+                                                        <details className="text-[10px] text-gray-400 dark:text-gray-500 mb-2 font-mono opacity-50">
+                                                            <summary className="cursor-pointer hover:opacity-80">
+                                                                Show query
+                                                                details
+                                                            </summary>
+                                                            <pre className="mt-1 p-2 bg-gray-50 dark:bg-gray-900 rounded text-[9px] overflow-x-auto">
+                                                                {JSON.stringify(
+                                                                    JSON.parse(
+                                                                        message.content.match(
+                                                                            /\[DETAILS\](.*?)\[\/DETAILS\]/
+                                                                        )?.[1] ||
+                                                                            '{}'
+                                                                    ),
+                                                                    null,
+                                                                    2
+                                                                )}
+                                                            </pre>
+                                                        </details>
+                                                    )}
+                                                    <hr className="border-gray-200 dark:border-gray-700 opacity-30 mb-3" />
+                                                </>
+                                            )}
+                                            <div className="prose dark:prose-invert prose-sm max-w-none prose-headings:mt-3 prose-headings:mb-2 prose-p:my-2 prose-ul:my-2 prose-ol:my-2 prose-li:my-1">
                                             <ChatItemRenderer
                                                 content={message.content}
+                                                plan={message.plan}
+                                                dataPayload={message.data}
                                             />
-                                        </div>
-                                        {message.cost && (
-                                            <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">
-                                                <span className="font-mono">
-                                                    $
-                                                    {message.cost.total_cost.toFixed(
-                                                        6
-                                                    )}{' '}
-                                                    •{' '}
-                                                    {message.cost.total_tokens}{' '}
-                                                    tokens
-                                                </span>
                                             </div>
-                                        )}
-                                    </>
-                                ) : (
-                                    <p className="whitespace-pre-wrap">
-                                        {message.content}
-                                    </p>
-                                )}
+                                        </>
+                                    ) : (
+                                        <p className="whitespace-pre-wrap">
+                                            {message.content}
+                                        </p>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
 
                     {isLoading && (
                         <div className="flex justify-start">
@@ -301,7 +424,7 @@ const ChatPage: React.FC = () => {
 
             {/* Input */}
             <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-4 py-4">
-                <div className="max-w-4xl mx-auto">
+                <div className="max-w-5xl mx-auto">
                     <div className="flex gap-3 items-start">
                         <div className="flex-1 relative">
                             <textarea
