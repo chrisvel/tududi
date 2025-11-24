@@ -26,7 +26,10 @@ const ChatItemRenderer: React.FC<ChatItemRendererProps> = ({
         if (metadataMatch) {
             return {
                 metadata: metadataMatch[1],
-                cleanContent: text.replace(/\[METADATA\].*?\[\/METADATA\]\n*/s, ''),
+                cleanContent: text.replace(
+                    /\[METADATA\].*?\[\/METADATA\]\n*/s,
+                    ''
+                ),
             };
         }
         return { metadata: null, cleanContent: text };
@@ -234,14 +237,21 @@ const ChatItemRenderer: React.FC<ChatItemRendererProps> = ({
                     typeof itemData.id === 'string'
                         ? Number(itemData.id) || itemData.id
                         : itemData.id,
-                uid: itemData.uid || (itemData.id ? String(itemData.id) : undefined),
+                uid:
+                    itemData.uid ||
+                    (itemData.id ? String(itemData.id) : undefined),
                 project_id:
-                    itemData.project_id ?? itemData.projectId ?? itemData.project?.id,
+                    itemData.project_id ??
+                    itemData.projectId ??
+                    itemData.project?.id,
                 Project:
                     itemData.Project ||
                     itemData.project ||
                     (itemData.project_name
-                        ? { id: itemData.project_id, name: itemData.project_name }
+                        ? {
+                              id: itemData.project_id,
+                              name: itemData.project_name,
+                          }
                         : undefined),
                 tags: itemData.tags || itemData.Tags || [],
             };
@@ -286,9 +296,7 @@ const ChatItemRenderer: React.FC<ChatItemRendererProps> = ({
         // Handle loading state for projects/notes
         if (isLoading || !itemData) {
             return (
-                <span className="text-gray-500 dark:text-gray-400">
-                    {name}
-                </span>
+                <span className="text-gray-500 dark:text-gray-400">{name}</span>
             );
         }
 
@@ -409,13 +417,14 @@ const ChatItemRenderer: React.FC<ChatItemRendererProps> = ({
         );
     };
 
-
     // Only show debug details in development or when explicitly requested
     const showDebug = process.env.NODE_ENV === 'development';
     const detailsBlock =
         showDebug && (plan || dataPayload) ? (
             <details className="text-[10px] text-gray-400 dark:text-gray-500 mb-3 opacity-50 hover:opacity-100 transition-opacity">
-                <summary className="cursor-pointer select-none">Debug info</summary>
+                <summary className="cursor-pointer select-none">
+                    Debug info
+                </summary>
                 <pre className="mt-1 p-2 bg-gray-100 dark:bg-gray-900/50 rounded text-[9px] overflow-x-auto max-h-48 overflow-y-auto">
                     {JSON.stringify({ plan, data: dataPayload }, null, 2)}
                 </pre>

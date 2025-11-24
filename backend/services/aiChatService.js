@@ -38,7 +38,12 @@ class AIChatService {
      */
     async getUserSettings(userId) {
         const user = await User.findByPk(userId, {
-            attributes: ['ai_provider', 'openai_api_key', 'ollama_base_url', 'ollama_model'],
+            attributes: [
+                'ai_provider',
+                'openai_api_key',
+                'ollama_base_url',
+                'ollama_model',
+            ],
         });
 
         if (!user) {
@@ -112,7 +117,8 @@ class AIChatService {
             enabled: !!client,
             provider,
             model,
-            hasApiKey: settings.provider === 'openai' ? !!settings.openaiApiKey : true,
+            hasApiKey:
+                settings.provider === 'openai' ? !!settings.openaiApiKey : true,
         };
     }
 
@@ -181,7 +187,10 @@ If the question is about productivity or completion rate, use intent "productivi
             filters: payload.filters || {},
             metrics: Array.isArray(payload.metrics) ? payload.metrics : [],
             period: payload.period || '30d',
-            confidence: typeof payload.confidence === 'number' ? payload.confidence : 0.5,
+            confidence:
+                typeof payload.confidence === 'number'
+                    ? payload.confidence
+                    : 0.5,
         };
     }
 
@@ -292,16 +301,20 @@ If the question is about productivity or completion rate, use intent "productivi
         const settings = await this.getUserSettings(userId);
         const { client, model, provider } = this.createClient(settings);
 
-        const planResult = await this.inferStructuredQuery(message, client, model, provider);
-        const plan =
-            planResult?.payload || {
-                intent: 'conversational',
-                target: 'task',
-                filters: {},
-                metrics: [],
-                period: '30d',
-                confidence: 0.5,
-            };
+        const planResult = await this.inferStructuredQuery(
+            message,
+            client,
+            model,
+            provider
+        );
+        const plan = planResult?.payload || {
+            intent: 'conversational',
+            target: 'task',
+            filters: {},
+            metrics: [],
+            period: '30d',
+            confidence: 0.5,
+        };
 
         let data = {};
         if (plan.intent && plan.intent !== 'conversational') {
@@ -319,18 +332,21 @@ If the question is about productivity or completion rate, use intent "productivi
                 query: plan,
                 needsAI: false,
             };
-            data =
-                (await queryHandler.handleQuery(userId, parseResult)) || {
-                    response: 'No data found.',
-                };
+            data = (await queryHandler.handleQuery(userId, parseResult)) || {
+                response: 'No data found.',
+            };
         }
 
         // If we have structured data with a response that includes task/project/note references,
         // use it directly instead of asking AI to reformulate (which may lose UIDs)
-        const hasStructuredItems = data.tasks?.length > 0 || data.projects?.length > 0 || data.notes?.length > 0;
-        const hasFormattedResponse = data.response && data.response.includes('[TASK:') ||
-                                      data.response && data.response.includes('[PROJECT:') ||
-                                      data.response && data.response.includes('[NOTE:');
+        const hasStructuredItems =
+            data.tasks?.length > 0 ||
+            data.projects?.length > 0 ||
+            data.notes?.length > 0;
+        const hasFormattedResponse =
+            (data.response && data.response.includes('[TASK:')) ||
+            (data.response && data.response.includes('[PROJECT:')) ||
+            (data.response && data.response.includes('[NOTE:'));
 
         if (hasStructuredItems || hasFormattedResponse) {
             // Use the structured response directly - it has proper UIDs
@@ -338,7 +354,9 @@ If the question is about productivity or completion rate, use intent "productivi
                 answer: data.response || 'Here are the results.',
                 plan,
                 data,
-                cost: planResult?.usage ? this.calculateCost(model, planResult.usage) : null,
+                cost: planResult?.usage
+                    ? this.calculateCost(model, planResult.usage)
+                    : null,
             };
         }
 
@@ -541,7 +559,9 @@ If the question is about productivity or completion rate, use intent "productivi
             });
 
             // Get stats
-            const totalActiveTasks = await Task.count({ where: baseActiveWhere });
+            const totalActiveTasks = await Task.count({
+                where: baseActiveWhere,
+            });
 
             const overdueCount = await Task.count({
                 where: {
@@ -752,13 +772,23 @@ Each line MUST start with the bracket format. Do not add bullets, numbers, or ma
 
             // Step 2.5: If still needs AI, ask the model to produce a structured query using schema
             if (parseResult.needsAI && client) {
-                const llmStructured = await this.inferStructuredQuery(message, client, model, provider);
+                const llmStructured = await this.inferStructuredQuery(
+                    message,
+                    client,
+                    model,
+                    provider
+                );
                 const llmPayload = llmStructured?.payload;
 
-                if (llmPayload && llmPayload.intent && llmPayload.intent !== 'conversational') {
+                if (
+                    llmPayload &&
+                    llmPayload.intent &&
+                    llmPayload.intent !== 'conversational'
+                ) {
                     const llmParseResult = {
                         intent: llmPayload.intent,
-                        confidence: llmPayload.confidence || parseResult.confidence,
+                        confidence:
+                            llmPayload.confidence || parseResult.confidence,
                         entities: {
                             itemType: llmPayload.target,
                             priority: llmPayload.filters?.priority,
@@ -785,7 +815,10 @@ Each line MUST start with the bracket format. Do not add bullets, numbers, or ma
                             intent: llmParseResult.intent,
                             confidence: llmParseResult.confidence,
                             usedAI: false,
-                            cost: this.calculateCost(model, llmStructured?.usage),
+                            cost: this.calculateCost(
+                                model,
+                                llmStructured?.usage
+                            ),
                         };
                     }
                 }
@@ -795,7 +828,9 @@ Each line MUST start with the bracket format. Do not add bullets, numbers, or ma
             console.log('Falling back to AI');
 
             if (!client) {
-                throw new Error('AI client not initialized. Check API key in Profile Settings.');
+                throw new Error(
+                    'AI client not initialized. Check API key in Profile Settings.'
+                );
             }
 
             // Check cache first
@@ -902,7 +937,9 @@ Each line MUST start with the bracket format. Do not add bullets, numbers, or ma
         const { client, model, provider } = this.createClient(settings);
 
         if (!client) {
-            throw new Error('AI client not initialized. Check API key in Profile Settings.');
+            throw new Error(
+                'AI client not initialized. Check API key in Profile Settings.'
+            );
         }
 
         try {
