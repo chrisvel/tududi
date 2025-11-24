@@ -408,7 +408,10 @@ const TaskDetails: React.FC = () => {
             console.error('Error updating defer until:', error);
             showErrorToast(
                 error?.message ||
-                    t('task.deferUntilUpdateError', 'Failed to update defer until')
+                    t(
+                        'task.deferUntilUpdateError',
+                        'Failed to update defer until'
+                    )
             );
             setEditedDeferUntil(task?.defer_until || '');
             setIsEditingDeferUntil(false);
