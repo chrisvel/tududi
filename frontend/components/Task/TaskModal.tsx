@@ -286,6 +286,29 @@ const TaskModal: React.FC<TaskModalProps> = ({
         >
     ) => {
         const { name, value } = e.target;
+
+        // Validate defer_until vs due_date
+        if (name === 'defer_until' || name === 'due_date') {
+            const newFormData = { ...formData, [name]: value };
+
+            if (newFormData.defer_until && newFormData.due_date) {
+                const deferDate = new Date(newFormData.defer_until);
+                const dueDate = new Date(newFormData.due_date);
+
+                if (!isNaN(deferDate.getTime()) && !isNaN(dueDate.getTime())) {
+                    if (deferDate > dueDate) {
+                        showErrorToast(
+                            t(
+                                'task.deferAfterDueError',
+                                'Defer until date cannot be after the due date'
+                            )
+                        );
+                        return;
+                    }
+                }
+            }
+        }
+
         setFormData((prev) => ({ ...prev, [name]: value }));
 
         // Analyze task name in real-time (only if intelligence is enabled)
