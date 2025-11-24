@@ -55,7 +55,28 @@ async function validateParentTaskAccess(parentTaskId, userId) {
     return parentTaskId;
 }
 
+function validateDeferUntilAndDueDate(deferUntil, dueDate) {
+    // Both must be present to validate
+    if (!deferUntil || !dueDate) {
+        return;
+    }
+
+    const deferDate = new Date(deferUntil);
+    const dueDateObj = new Date(dueDate);
+
+    // Check if dates are valid
+    if (isNaN(deferDate.getTime()) || isNaN(dueDateObj.getTime())) {
+        return;
+    }
+
+    // Defer until must be before or equal to due date
+    if (deferDate > dueDateObj) {
+        throw new Error('Defer until date cannot be after the due date.');
+    }
+}
+
 module.exports = {
     validateProjectAccess,
     validateParentTaskAccess,
+    validateDeferUntilAndDueDate,
 };

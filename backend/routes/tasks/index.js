@@ -27,6 +27,7 @@ const {
 const {
     validateProjectAccess,
     validateParentTaskAccess,
+    validateDeferUntilAndDueDate,
 } = require('./utils/validation');
 const {
     buildTaskAttributes,
@@ -222,6 +223,16 @@ router.post('/task', async (req, res) => {
             timezone
         );
 
+        // Validate defer_until vs due_date
+        try {
+            validateDeferUntilAndDueDate(
+                taskAttributes.defer_until,
+                taskAttributes.due_date
+            );
+        } catch (error) {
+            return res.status(400).json({ error: error.message });
+        }
+
         try {
             const validProjectId = await validateProjectAccess(
                 project_id,
@@ -398,6 +409,23 @@ router.patch('/task/:id', requireTaskWriteAccess, async (req, res) => {
 
         const timezone = getSafeTimezone(req.currentUser.timezone);
         const taskAttributes = buildUpdateAttributes(req.body, task, timezone);
+
+        // Validate defer_until vs due_date
+        // Use the new values if provided, otherwise use existing task values
+        try {
+            const finalDeferUntil =
+                taskAttributes.defer_until !== undefined
+                    ? taskAttributes.defer_until
+                    : task.defer_until;
+            const finalDueDate =
+                taskAttributes.due_date !== undefined
+                    ? taskAttributes.due_date
+                    : task.due_date;
+
+            validateDeferUntilAndDueDate(finalDeferUntil, finalDueDate);
+        } catch (error) {
+            return res.status(400).json({ error: error.message });
+        }
 
         if (
             today !== undefined &&

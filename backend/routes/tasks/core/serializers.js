@@ -1,6 +1,7 @@
 const {
     getSafeTimezone,
     processDueDateForResponse,
+    processDeferUntilForResponse,
 } = require('../../../utils/timezone-utils');
 const {
     getTaskTodayMoveCount,
@@ -73,6 +74,10 @@ async function serializeTask(
         uid: task.uid,
         recurring_parent_uid: recurringParentUid,
         due_date: processDueDateForResponse(taskJson.due_date, safeTimezone),
+        defer_until: processDeferUntilForResponse(
+            taskJson.defer_until,
+            safeTimezone
+        ),
         tags: taskJson.Tags || [],
         Project: taskJson.Project
             ? {
@@ -87,6 +92,10 @@ async function serializeTask(
                   tags: subtask.Tags || [],
                   due_date: processDueDateForResponse(
                       subtask.due_date,
+                      safeTimezone
+                  ),
+                  defer_until: processDeferUntilForResponse(
+                      subtask.defer_until,
                       safeTimezone
                   ),
                   completed_at: subtask.completed_at

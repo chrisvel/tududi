@@ -8,3 +8,4 @@ export { default as TaskRecurringInstanceInfo } from './TaskRecurringInstanceInf
 export { default as TaskSubtasksCard } from './TaskSubtasksCard';
 export { default as TaskRecurrenceCard } from './TaskRecurrenceCard';
 export { default as TaskDueDateCard } from './TaskDueDateCard';
+export { default as TaskDeferUntilCard } from './TaskDeferUntilCard';

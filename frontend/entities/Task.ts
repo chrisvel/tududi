@@ -9,6 +9,7 @@ export interface Task {
     status: StatusType | number;
     priority?: PriorityType | number;
     due_date?: string;
+    defer_until?: string;
     note?: string;
     today?: boolean;
     today_move_count?: number;
