@@ -144,6 +144,28 @@ module.exports = (sequelize) => {
                 allowNull: false,
                 defaultValue: true,
             },
+            ai_provider: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                defaultValue: 'openai',
+                validate: {
+                    isIn: [['openai', 'ollama']],
+                },
+            },
+            openai_api_key: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
+            ollama_base_url: {
+                type: DataTypes.STRING,
+                allowNull: true,
+                defaultValue: 'http://localhost:11434',
+            },
+            ollama_model: {
+                type: DataTypes.STRING,
+                allowNull: true,
+                defaultValue: 'llama3',
+            },
             today_settings: {
                 type: DataTypes.JSON,
                 allowNull: true,
