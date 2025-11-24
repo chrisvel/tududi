@@ -21,7 +21,8 @@ interface Message {
     } | null;
 }
 
-const generateMessageId = () => `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+const generateMessageId = () =>
+    `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
 const STORAGE_KEY = 'tududi_chat_history';
 const CONVERSATION_ID_KEY = 'tududi_chat_conversation_id';
@@ -117,7 +118,11 @@ const ChatPage: React.FC = () => {
     const sendMessage = async () => {
         if (!input.trim() || isLoading || !isEnabled) return;
 
-        const userMessage: Message = { id: generateMessageId(), role: 'user', content: input };
+        const userMessage: Message = {
+            id: generateMessageId(),
+            role: 'user',
+            content: input,
+        };
         setMessages((prev) => [...prev, userMessage]);
         setInput('');
         setIsLoading(true);
@@ -329,9 +334,7 @@ const ChatPage: React.FC = () => {
                             >
                                 <div
                                     className={`${widthClass} ${baseStyleClass} ${
-                                        isAssistant
-                                            ? ''
-                                            : 'shadow-sm'
+                                        isAssistant ? '' : 'shadow-sm'
                                     }`}
                                 >
                                     {isAssistant ? (
@@ -396,11 +399,11 @@ const ChatPage: React.FC = () => {
                                                 </>
                                             )}
                                             <div className="prose dark:prose-invert prose-sm max-w-none prose-headings:mt-3 prose-headings:mb-2 prose-p:my-2 prose-ul:my-2 prose-ol:my-2 prose-li:my-1">
-                                            <ChatItemRenderer
-                                                content={message.content}
-                                                plan={message.plan}
-                                                dataPayload={message.data}
-                                            />
+                                                <ChatItemRenderer
+                                                    content={message.content}
+                                                    plan={message.plan}
+                                                    dataPayload={message.data}
+                                                />
                                             </div>
                                         </>
                                     ) : (

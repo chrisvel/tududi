@@ -97,7 +97,14 @@ class QueryHandlerService {
                 ['priority', 'DESC'],
             ],
             limit: 8,
-            attributes: ['uid', 'name', 'status', 'priority', 'due_date', 'note'],
+            attributes: [
+                'uid',
+                'name',
+                'status',
+                'priority',
+                'due_date',
+                'note',
+            ],
             include: [
                 {
                     model: Project,
@@ -269,7 +276,11 @@ class QueryHandlerService {
                 include: [{ model: Project, attributes: ['name', 'uid'] }],
             });
 
-            return this.formatStatsWithTasksResponse(metrics, overdueTasks, 'overdue');
+            return this.formatStatsWithTasksResponse(
+                metrics,
+                overdueTasks,
+                'overdue'
+            );
         }
 
         return this.formatStatsResponse(metrics);
