@@ -34,6 +34,10 @@ module.exports = (sequelize) => {
                 type: DataTypes.DATE,
                 allowNull: true,
             },
+            defer_until: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
             today: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,

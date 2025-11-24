@@ -1,12 +1,16 @@
 const { Task } = require('../../../models');
 const { parsePriority, parseStatus } = require('./parsers');
-const { processDueDateForStorage } = require('../../../utils/timezone-utils');
+const {
+    processDueDateForStorage,
+    processDeferUntilForStorage,
+} = require('../../../utils/timezone-utils');
 
 function buildTaskAttributes(body, userId, timezone, isUpdate = false) {
     const attrs = {
         name: body.name?.trim(),
         priority: parsePriority(body.priority),
         due_date: processDueDateForStorage(body.due_date, timezone),
+        defer_until: processDeferUntilForStorage(body.defer_until, timezone),
         status: parseStatus(body.status),
         note: body.note,
         today: body.today !== undefined ? body.today : false,
@@ -52,6 +56,7 @@ function buildUpdateAttributes(body, task, timezone) {
                 : Task.STATUS.NOT_STARTED,
         note: body.note,
         due_date: processDueDateForStorage(body.due_date, timezone),
+        defer_until: processDeferUntilForStorage(body.defer_until, timezone),
         today: body.today !== undefined ? body.today : task.today,
         recurrence_type:
             body.recurrence_type !== undefined

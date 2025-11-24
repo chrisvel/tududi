@@ -22,6 +22,7 @@ import TaskRecurrenceSection from './TaskForm/TaskRecurrenceSection';
 import TaskSubtasksSection from './TaskForm/TaskSubtasksSection';
 import TaskPrioritySection from './TaskForm/TaskPrioritySection';
 import TaskDueDateSection from './TaskForm/TaskDueDateSection';
+import TaskDeferUntilSection from './TaskForm/TaskDeferUntilSection';
 import TaskSectionToggle from './TaskForm/TaskSectionToggle';
 import TaskModalActions from './TaskForm/TaskModalActions';
 
@@ -83,6 +84,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
         project: false,
         priority: false,
         dueDate: false,
+        deferUntil: false,
         recurrence: false,
         subtasks: false,
     });
@@ -748,6 +750,44 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                             placeholder={t(
                                                                 'forms.task.dueDatePlaceholder',
                                                                 'Select due date'
+                                                            )}
+                                                        />
+                                                    </div>
+                                                )}
+
+                                                {expandedSections.deferUntil && (
+                                                    <div
+                                                        data-testid="deferuntil-section"
+                                                        data-state="expanded"
+                                                        className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4 overflow-visible"
+                                                    >
+                                                        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                                                            {t(
+                                                                'forms.task.labels.deferUntil',
+                                                                'Defer Until'
+                                                            )}
+                                                        </h3>
+                                                        <TaskDeferUntilSection
+                                                            value={
+                                                                formData.defer_until ||
+                                                                ''
+                                                            }
+                                                            onChange={(
+                                                                value
+                                                            ) => {
+                                                                const event = {
+                                                                    target: {
+                                                                        name: 'defer_until',
+                                                                        value,
+                                                                    },
+                                                                } as React.ChangeEvent<HTMLInputElement>;
+                                                                handleChange(
+                                                                    event
+                                                                );
+                                                            }}
+                                                            placeholder={t(
+                                                                'forms.task.deferUntilPlaceholder',
+                                                                'Select defer until date and time'
                                                             )}
                                                         />
                                                     </div>

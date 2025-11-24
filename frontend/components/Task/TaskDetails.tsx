@@ -29,6 +29,7 @@ import {
     TaskSubtasksCard,
     TaskRecurrenceCard,
     TaskDueDateCard,
+    TaskDeferUntilCard,
 } from './TaskDetails/';
 
 const TaskDetails: React.FC = () => {
@@ -86,6 +87,10 @@ const TaskDetails: React.FC = () => {
     const [isEditingDueDate, setIsEditingDueDate] = useState(false);
     const [editedDueDate, setEditedDueDate] = useState<string>(
         task?.due_date || ''
+    );
+    const [isEditingDeferUntil, setIsEditingDeferUntil] = useState(false);
+    const [editedDeferUntil, setEditedDeferUntil] = useState<string>(
+        task?.defer_until || ''
     );
     const [isEditingRecurrence, setIsEditingRecurrence] = useState(false);
     const [recurrenceForm, setRecurrenceForm] = useState({
@@ -322,6 +327,57 @@ const TaskDetails: React.FC = () => {
     const handleCancelDueDateEdit = () => {
         setIsEditingDueDate(false);
         setEditedDueDate(task?.due_date || '');
+    };
+
+    const handleStartDeferUntilEdit = () => {
+        setEditedDeferUntil(task?.defer_until || '');
+        setIsEditingDeferUntil(true);
+    };
+
+    const handleSaveDeferUntil = async () => {
+        if (!task?.id) {
+            setIsEditingDeferUntil(false);
+            setEditedDeferUntil(task?.defer_until || '');
+            return;
+        }
+
+        if ((editedDeferUntil || '') === (task.defer_until || '')) {
+            setIsEditingDeferUntil(false);
+            return;
+        }
+
+        try {
+            await updateTask(task.id, {
+                ...task,
+                defer_until: editedDeferUntil || null,
+            });
+            tasksStore.updateTask({
+                ...task,
+                defer_until: editedDeferUntil || undefined,
+            });
+            setIsEditingDeferUntil(false);
+            setTimelineRefreshKey((prev) => prev + 1);
+            showSuccessToast(
+                t(
+                    'task.deferUntilUpdated',
+                    'Defer until successfully updated'
+                )
+            );
+        } catch (error: any) {
+            showErrorToast(
+                error?.message ||
+                    t(
+                        'task.deferUntilUpdateError',
+                        'Failed to update defer until'
+                    )
+            );
+            setEditedDeferUntil(task?.defer_until || '');
+        }
+    };
+
+    const handleCancelDeferUntilEdit = () => {
+        setIsEditingDeferUntil(false);
+        setEditedDeferUntil(task?.defer_until || '');
     };
 
     const getStatusLabel = () => {
@@ -1149,6 +1205,16 @@ const TaskDetails: React.FC = () => {
                                 onStartEdit={handleStartDueDateEdit}
                                 onSave={handleSaveDueDate}
                                 onCancel={handleCancelDueDateEdit}
+                            />
+
+                            <TaskDeferUntilCard
+                                task={task}
+                                isEditing={isEditingDeferUntil}
+                                editedDeferUntil={editedDeferUntil}
+                                onChangeDateTime={setEditedDeferUntil}
+                                onStartEdit={handleStartDeferUntilEdit}
+                                onSave={handleSaveDeferUntil}
+                                onCancel={handleCancelDeferUntilEdit}
                             />
 
                             {/* Recent Activity Section */}

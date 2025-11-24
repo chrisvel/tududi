@@ -145,6 +145,36 @@ function processDueDateForResponse(utcDueDate, userTimezone) {
 }
 
 /**
+ * Convert defer_until datetime from request body to UTC Date for database storage
+ * @param {string} deferUntilString - Defer until datetime from frontend (ISO 8601 format)
+ * @param {string} userTimezone - User's timezone
+ * @returns {Date|null} UTC Date object or null
+ */
+function processDeferUntilForStorage(deferUntilString, userTimezone) {
+    if (!deferUntilString || deferUntilString.trim() === '') {
+        return null;
+    }
+
+    // Parse the datetime string in the user's timezone
+    const momentInUserTz = moment.tz(deferUntilString, userTimezone);
+
+    // Convert to UTC Date object
+    return momentInUserTz.utc().toDate();
+}
+
+/**
+ * Convert UTC defer_until from database to user timezone ISO string for frontend
+ * @param {Date} utcDeferUntil - Defer until from database (UTC)
+ * @param {string} userTimezone - User's timezone
+ * @returns {string|null} ISO datetime string or null
+ */
+function processDeferUntilForResponse(utcDeferUntil, userTimezone) {
+    if (!utcDeferUntil) return null;
+
+    return moment.utc(utcDeferUntil).tz(userTimezone).toISOString();
+}
+
+/**
  * Validate timezone string
  * @param {string} timezone - Timezone to validate
  * @returns {boolean} True if timezone is valid
@@ -182,6 +212,8 @@ module.exports = {
     isOverdue,
     processDueDateForStorage,
     processDueDateForResponse,
+    processDeferUntilForStorage,
+    processDeferUntilForResponse,
     isValidTimezone,
     getSafeTimezone,
 };
