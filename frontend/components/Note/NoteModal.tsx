@@ -326,9 +326,8 @@ const NoteModal: React.FC<NoteModalProps> = ({
         []
     );
 
-    const handleProjectSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        setNewProjectName(value);
+    const handleProjectSearch = (query: string) => {
+        setNewProjectName(query);
         setDropdownOpen(true);
 
         if (!projects || projects.length === 0) {
@@ -336,14 +335,14 @@ const NoteModal: React.FC<NoteModalProps> = ({
             return;
         }
 
-        const query = value.toLowerCase();
+        const searchQuery = query.toLowerCase();
         const filtered = projects.filter((project) =>
-            project.name.toLowerCase().includes(query)
+            project.name.toLowerCase().includes(searchQuery)
         );
         setFilteredProjects(filtered);
 
         // If the user clears the project name, also clear the project_id in form data
-        if (value.trim() === '') {
+        if (query.trim() === '') {
             setFormData((prev) => ({ ...prev, project_id: null }));
         }
     };
@@ -358,11 +357,11 @@ const NoteModal: React.FC<NoteModalProps> = ({
         setDropdownOpen(false);
     };
 
-    const handleCreateProject = async () => {
-        if (newProjectName.trim() !== '' && onCreateProject) {
+    const handleCreateProject = async (name: string) => {
+        if (name.trim() !== '' && onCreateProject) {
             setIsCreatingProject(true);
             try {
-                const newProject = await onCreateProject(newProjectName.trim());
+                const newProject = await onCreateProject(name.trim());
                 setFormData((prev) => ({
                     ...prev,
                     project: {

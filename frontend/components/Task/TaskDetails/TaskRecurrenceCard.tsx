@@ -4,7 +4,7 @@ import { ClockIcon } from '@heroicons/react/24/outline';
 import RecurrenceDisplay from '../RecurrenceDisplay';
 import TaskRecurrenceSection from '../TaskForm/TaskRecurrenceSection';
 import TaskRecurringInstanceInfo from './TaskRecurringInstanceInfo';
-import { Task } from '../../../entities/Task';
+import { Task, RecurrenceType } from '../../../entities/Task';
 import { TaskIteration } from '../../../utils/tasksService';
 
 interface TaskRecurrenceCardProps {
@@ -13,7 +13,7 @@ interface TaskRecurrenceCardProps {
     loadingParent: boolean;
     isEditing: boolean;
     recurrenceForm: {
-        recurrence_type: string;
+        recurrence_type: RecurrenceType;
         recurrence_interval: number;
         recurrence_end_date: string | null;
         recurrence_weekday: number | null;
