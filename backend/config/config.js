@@ -27,6 +27,31 @@ const credentials = {
 
 const defaultHost = environment === 'test' ? '127.0.0.1' : '0.0.0.0';
 
+const emailConfig = {
+    enabled: process.env.ENABLE_EMAIL === 'true',
+    smtp: {
+        host: process.env.EMAIL_SMTP_HOST,
+        port: process.env.EMAIL_SMTP_PORT
+            ? parseInt(process.env.EMAIL_SMTP_PORT, 10)
+            : 587,
+        secure: process.env.EMAIL_SMTP_SECURE === 'true',
+        auth: {
+            user: process.env.EMAIL_SMTP_USERNAME,
+            pass: process.env.EMAIL_SMTP_PASSWORD,
+        },
+    },
+    from: {
+        address: process.env.EMAIL_FROM_ADDRESS,
+        name: process.env.EMAIL_FROM_NAME || 'Tududi',
+    },
+};
+
+const registrationConfig = {
+    tokenExpiryHours: process.env.REGISTRATION_TOKEN_EXPIRY_HOURS
+        ? parseInt(process.env.REGISTRATION_TOKEN_EXPIRY_HOURS, 10)
+        : 24,
+};
+
 const config = {
     allowedOrigins: process.env.TUDUDI_ALLOWED_ORIGINS
         ? process.env.TUDUDI_ALLOWED_ORIGINS.split(',').map((origin) =>
@@ -53,6 +78,8 @@ const config = {
 
     frontendUrl: process.env.FRONTEND_URL || 'http://localhost:8080',
 
+    backendUrl: process.env.BACKEND_URL || 'http://localhost:3002',
+
     // Some CI/sandbox environments disallow binding to 0.0.0.0, so force
     // loopback for tests unless HOST is explicitly provided.
     host: process.env.HOST || defaultHost,
@@ -68,6 +95,10 @@ const config = {
         require('crypto').randomBytes(64).toString('hex'),
 
     credentials,
+
+    emailConfig,
+
+    registrationConfig,
 
     uploadPath:
         process.env.TUDUDI_UPLOAD_PATH || path.join(projectRootPath, 'uploads'),

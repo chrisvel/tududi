@@ -2,8 +2,9 @@ import React, { useEffect, useState, Suspense, lazy } from 'react';
 import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Login from './components/Login';
+import Register from './components/Register';
 import NotFound from './components/Shared/NotFound';
-import ProjectDetails from './components/Project/ProjectDetails.tsx';
+import ProjectDetails from './components/Project/ProjectDetails';
 import Projects from './components/Projects';
 import AreaDetails from './components/Area/AreaDetails';
 import Areas from './components/Areas';
@@ -290,6 +291,7 @@ const App: React.FC = () => {
                 ) : (
                     <>
                         <Route path="/login" element={<Login />} />
+                        <Route path="/register" element={<Register />} />
                         <Route
                             path="/"
                             element={<Navigate to="/login" replace />}

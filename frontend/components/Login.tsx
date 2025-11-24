@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import i18n from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { getApiPath, getAssetPath } from '../config/paths';
@@ -8,8 +8,11 @@ const Login: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [registrationEnabled, setRegistrationEnabled] = useState(false);
     const navigate = useNavigate();
     const { t } = useTranslation();
+    const [searchParams] = useSearchParams();
     const [isDarkMode] = useState<boolean>(() => {
         const storedPreference = localStorage.getItem('isDarkMode');
         return storedPreference !== null
@@ -20,6 +23,65 @@ const Login: React.FC = () => {
     useEffect(() => {
         document.documentElement.classList.toggle('dark', isDarkMode);
     }, [isDarkMode]);
+
+    // Check for verification status in URL params
+    useEffect(() => {
+        const verified = searchParams.get('verified');
+        const verifyError = searchParams.get('error');
+
+        if (verified === 'true') {
+            setSuccessMessage(
+                t(
+                    'auth.email_verified',
+                    'Your email has been verified! You can now log in.'
+                )
+            );
+        } else if (verified === 'false') {
+            if (verifyError === 'expired') {
+                setError(
+                    t(
+                        'auth.verification_expired',
+                        'Verification link has expired. Please register again.'
+                    )
+                );
+            } else if (verifyError === 'already_verified') {
+                setSuccessMessage(
+                    t(
+                        'auth.already_verified',
+                        'Your email is already verified. You can log in.'
+                    )
+                );
+            } else {
+                setError(
+                    t(
+                        'auth.verification_failed',
+                        'Email verification failed. Please try again.'
+                    )
+                );
+            }
+        }
+    }, [searchParams, t]);
+
+    // Check if registration is enabled
+    useEffect(() => {
+        const checkRegistration = async () => {
+            try {
+                const response = await fetch(
+                    getApiPath('registration-status'),
+                    {
+                        credentials: 'include',
+                    }
+                );
+                if (response.ok) {
+                    const data = await response.json();
+                    setRegistrationEnabled(data.enabled);
+                }
+            } catch (err) {
+                console.error('Error checking registration status:', err);
+            }
+        };
+        checkRegistration();
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -47,7 +109,20 @@ const Login: React.FC = () => {
 
                 navigate('/today');
             } else {
-                setError(data.errors[0] || 'Login failed. Please try again.');
+                if (data.email_not_verified) {
+                    setError(
+                        t(
+                            'auth.email_not_verified',
+                            'Please verify your email address before logging in.'
+                        )
+                    );
+                } else {
+                    setError(
+                        data.error ||
+                            data.errors?.[0] ||
+                            'Login failed. Please try again.'
+                    );
+                }
             }
         } catch (err) {
             setError('An error occurred. Please try again.');
@@ -81,6 +156,11 @@ const Login: React.FC = () => {
                             <h2 className="text-center text-2xl font-semibold text-gray-700 dark:text-gray-200 mb-12">
                                 {t('auth.login', 'Login')}
                             </h2>
+                            {successMessage && (
+                                <div className="mb-4 text-center text-green-600 dark:text-green-400">
+                                    {successMessage}
+                                </div>
+                            )}
                             {error && (
                                 <div className="mb-4 text-center text-red-500">
                                     {error}
@@ -132,6 +212,20 @@ const Login: React.FC = () => {
                                     {t('auth.login', 'Login')}
                                 </button>
                             </form>
+                            {registrationEnabled && (
+                                <div className="mt-6 text-center text-gray-600 dark:text-gray-400">
+                                    {t(
+                                        'auth.no_account',
+                                        "Don't have an account?"
+                                    )}{' '}
+                                    <Link
+                                        to="/register"
+                                        className="text-blue-500 hover:text-blue-600"
+                                    >
+                                        {t('auth.sign_up', 'Sign Up')}
+                                    </Link>
+                                </div>
+                            )}
                         </div>
                     </div>
 

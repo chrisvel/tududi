@@ -34,6 +34,7 @@ const Action = require('./action')(sequelize);
 const Permission = require('./permission')(sequelize);
 const View = require('./view')(sequelize);
 const ApiToken = require('./api_token')(sequelize);
+const Setting = require('./setting')(sequelize);
 
 // Define associations
 User.hasMany(Area, { foreignKey: 'user_id' });
@@ -158,4 +159,5 @@ module.exports = {
     Permission,
     View,
     ApiToken,
+    Setting,
 };
