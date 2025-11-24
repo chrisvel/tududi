@@ -412,7 +412,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 subtasks: subtasks,
             };
 
-            await onSave(finalFormData as any);
+            onSave(finalFormData as any);
 
             if (showToast) {
                 const taskLink = (
