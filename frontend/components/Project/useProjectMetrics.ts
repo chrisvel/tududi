@@ -417,8 +417,9 @@ export const useProjectMetrics = (
     }, [tasks]);
 
     const getDueDescriptor = useCallback(
-        (task: Task) => {
-            if (!task.due_date) return t('tasks.noDue', 'No due date');
+        (task: Task): string => {
+            if (!task.due_date)
+                return t('tasks.noDue', 'No due date') as string;
 
             const now = new Date();
             const startOfToday = new Date(
@@ -428,7 +429,7 @@ export const useProjectMetrics = (
             );
             const due = new Date(task.due_date);
             if (Number.isNaN(due.getTime()))
-                return t('tasks.noDue', 'No due date');
+                return t('tasks.noDue', 'No due date') as string;
 
             const diffDays = Math.floor(
                 (due.getTime() - startOfToday.getTime()) / (1000 * 60 * 60 * 24)
@@ -438,20 +439,22 @@ export const useProjectMetrics = (
                 return t('tasks.overdueBy', {
                     defaultValue: 'Overdue by {{days}}d',
                     days: Math.abs(diffDays),
-                } as any);
+                }) as string;
             }
-            if (diffDays === 0) return t('dateIndicators.today', 'Today');
-            if (diffDays === 1) return t('dateIndicators.tomorrow', 'Tomorrow');
+            if (diffDays === 0)
+                return t('dateIndicators.today', 'Today') as string;
+            if (diffDays === 1)
+                return t('dateIndicators.tomorrow', 'Tomorrow') as string;
             if (diffDays <= 7)
                 return t('tasks.dueInDays', {
                     defaultValue: 'Due in {{days}}d',
                     days: diffDays,
-                } as any);
+                }) as string;
 
             return t('tasks.dueInDays', {
                 defaultValue: 'Due in {{days}}d',
                 days: diffDays,
-            } as any);
+            }) as string;
         },
         [t]
     );

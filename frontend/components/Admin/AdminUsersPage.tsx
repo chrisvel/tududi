@@ -437,7 +437,61 @@ const AdminUsersPage: React.FC = () => {
     const [userToDelete, setUserToDelete] = useState<AdminUserItem | null>(
         null
     );
+    const [registrationEnabled, setRegistrationEnabled] = useState(false);
+    const [registrationLoading, setRegistrationLoading] = useState(true);
     const navigate = useNavigate();
+
+    // Fetch registration status
+    useEffect(() => {
+        const fetchRegistrationStatus = async () => {
+            try {
+                const res = await fetch(getApiPath('registration-status'), {
+                    credentials: 'include',
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    setRegistrationEnabled(data.enabled);
+                }
+            } catch (err) {
+                console.error('Error fetching registration status:', err);
+            } finally {
+                setRegistrationLoading(false);
+            }
+        };
+        fetchRegistrationStatus();
+    }, []);
+
+    // Toggle registration
+    const toggleRegistration = async () => {
+        try {
+            const res = await fetch(getApiPath('admin/toggle-registration'), {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ enabled: !registrationEnabled }),
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setRegistrationEnabled(data.enabled);
+            } else {
+                setError(
+                    t(
+                        'admin.failedToToggleRegistration',
+                        'Failed to toggle registration'
+                    )
+                );
+            }
+        } catch {
+            setError(
+                t(
+                    'admin.failedToToggleRegistration',
+                    'Failed to toggle registration'
+                )
+            );
+        }
+    };
 
     const load = async () => {
         setLoading(true);
@@ -495,6 +549,43 @@ const AdminUsersPage: React.FC = () => {
                     >
                         {t('admin.addUser', 'Add user')}
                     </button>
+                </div>
+
+                {/* Registration Toggle */}
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                {t(
+                                    'admin.userRegistration',
+                                    'User Registration'
+                                )}
+                            </h3>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                                {t(
+                                    'admin.registrationDescription',
+                                    'Allow new users to register via email verification'
+                                )}
+                            </p>
+                        </div>
+                        <button
+                            onClick={toggleRegistration}
+                            disabled={registrationLoading}
+                            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                                registrationEnabled
+                                    ? 'bg-blue-600'
+                                    : 'bg-gray-200 dark:bg-gray-600'
+                            } ${registrationLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                            <span
+                                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                                    registrationEnabled
+                                        ? 'translate-x-5'
+                                        : 'translate-x-0'
+                                }`}
+                            />
+                        </button>
+                    </div>
                 </div>
 
                 {error && (

@@ -305,8 +305,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
         }));
     }, []);
 
-    const handleProjectSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const query = e.target.value;
+    const handleProjectSearch = (query: string) => {
         setNewProjectName(query);
         setDropdownOpen(true);
         setFilteredProjects(
@@ -344,11 +343,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
         ? projects.find((p) => p.id === formData.project_id) || null
         : null;
 
-    const handleCreateProject = async () => {
-        if (newProjectName.trim() !== '') {
+    const handleCreateProject = async (name: string) => {
+        if (name.trim() !== '') {
             setIsCreatingProject(true);
             try {
-                const newProject = await onCreateProject(newProjectName);
+                const newProject = await onCreateProject(name);
                 setFormData({ ...formData, project_id: newProject.id });
                 setFilteredProjects([...filteredProjects, newProject]);
                 setNewProjectName(''); // Clear input after creation (badge will show the project)

@@ -4,11 +4,11 @@ import ProjectDropdown from '../../Shared/ProjectDropdown';
 
 interface TaskProjectSectionProps {
     newProjectName: string;
-    onProjectSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onProjectSearch: (query: string) => void;
     dropdownOpen: boolean;
     filteredProjects: Project[];
     onProjectSelection: (project: Project) => void;
-    onCreateProject: () => void;
+    onCreateProject: (name: string) => void | Promise<void>;
     isCreatingProject: boolean;
     onShowAllProjects: () => void;
     allProjects: Project[];

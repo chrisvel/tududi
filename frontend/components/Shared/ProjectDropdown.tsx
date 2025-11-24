@@ -5,11 +5,11 @@ import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 
 interface ProjectDropdownProps {
     projectName: string;
-    onProjectSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onProjectSearch: (query: string) => void;
     dropdownOpen: boolean;
     filteredProjects: Project[];
     onProjectSelection: (project: Project) => void;
-    onCreateProject: () => void;
+    onCreateProject: (name: string) => void | Promise<void>;
     isCreatingProject: boolean;
     onShowAllProjects: () => void;
     allProjects: Project[];
@@ -167,7 +167,7 @@ const ProjectDropdown: React.FC<ProjectDropdownProps> = ({
                 onProjectSelection(projectsToShow[highlightedIndex]);
             } else if (projectName.trim() && projectsToShow.length === 0) {
                 // No matches - create new project
-                onCreateProject();
+                onCreateProject(projectName.trim());
             }
             // Note: Enter does nothing if no exact match and user hasn't navigated with arrows
         } else if (event.key === 'Escape') {
@@ -207,7 +207,7 @@ const ProjectDropdown: React.FC<ProjectDropdownProps> = ({
                                 )
                             }
                             value={projectName}
-                            onChange={onProjectSearch}
+                            onChange={(e) => onProjectSearch(e.target.value)}
                             onKeyDown={handleKeyDown}
                             disabled={disabled}
                             className="w-full bg-transparent border-none outline-none text-sm text-gray-900 dark:text-gray-100 disabled:cursor-not-allowed pr-8"
@@ -273,7 +273,7 @@ const ProjectDropdown: React.FC<ProjectDropdownProps> = ({
                     {projectName && (
                         <button
                             type="button"
-                            onClick={onCreateProject}
+                            onClick={() => onCreateProject(projectName.trim())}
                             disabled={isCreatingProject}
                             className="block w-full text-left px-4 py-2 bg-blue-500 text-white hover:bg-blue-600 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed"
                         >
