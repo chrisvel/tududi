@@ -164,6 +164,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 project: false,
                 priority: false,
                 dueDate: false,
+                deferUntil: false,
                 recurrence: task.recurring_parent_uid ? true : false,
                 subtasks: false,
             });
