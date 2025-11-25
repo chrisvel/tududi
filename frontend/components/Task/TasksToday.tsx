@@ -120,6 +120,14 @@ const TasksToday: React.FC = () => {
         tasks_completed_today: [],
     });
 
+    // Pagination state
+    const [pagination, setPagination] = useState({
+        total: 0,
+        limit: 20,
+        offset: 0,
+        hasMore: false,
+    });
+
     // Helper function to get completion trend vs average
     const getCompletionTrend = () => {
         const todayCount = metrics.tasks_completed_today.length;
@@ -216,7 +224,7 @@ const TasksToday: React.FC = () => {
 
             setIsLoading(true);
             try {
-                const result = await fetchTasks('?type=today');
+                const result = await fetchTasks(`?type=today&limit=20&offset=0`);
                 if (isMounted.current) {
                     setMetrics({
                         ...result.metrics,
@@ -228,6 +236,12 @@ const TasksToday: React.FC = () => {
                         tasks_completed_today:
                             result.tasks_completed_today || [],
                     } as any);
+
+                    // Update pagination state if pagination metadata is present
+                    if (result.pagination) {
+                        setPagination(result.pagination);
+                    }
+
                     useStore.getState().tasksStore.setTasks(result.tasks);
                     setIsError(false);
                 }
@@ -744,6 +758,63 @@ const TasksToday: React.FC = () => {
         [handleTaskUpdate]
     );
 
+    // Load more tasks (pagination)
+    const handleLoadMore = useCallback(async () => {
+        if (!isMounted.current || isLoading || !pagination.hasMore) return;
+
+        setIsLoading(true);
+        try {
+            const nextOffset = pagination.offset + pagination.limit;
+            const result = await fetchTasks(
+                `?type=today&limit=${pagination.limit}&offset=${nextOffset}`
+            );
+
+            if (isMounted.current) {
+                // Append new tasks to existing ones
+                setMetrics((prevMetrics) => ({
+                    ...result.metrics,
+                    tasks_in_progress: [
+                        ...(prevMetrics.tasks_in_progress || []),
+                        ...(result.tasks_in_progress || []),
+                    ],
+                    tasks_due_today: [
+                        ...(prevMetrics.tasks_due_today || []),
+                        ...(result.tasks_due_today || []),
+                    ],
+                    today_plan_tasks: [
+                        ...(prevMetrics.today_plan_tasks || []),
+                        ...(result.tasks || []),
+                    ],
+                    suggested_tasks: [
+                        ...(prevMetrics.suggested_tasks || []),
+                        ...(result.suggested_tasks || []),
+                    ],
+                    tasks_completed_today: [
+                        ...(prevMetrics.tasks_completed_today || []),
+                        ...(result.tasks_completed_today || []),
+                    ],
+                }));
+
+                // Update pagination state
+                if (result.pagination) {
+                    setPagination(result.pagination);
+                }
+
+                // Append tasks to store
+                const currentTasks = useStore.getState().tasksStore.tasks;
+                useStore
+                    .getState()
+                    .tasksStore.setTasks([...currentTasks, ...result.tasks]);
+            }
+        } catch (error) {
+            console.error('Error loading more tasks:', error);
+        } finally {
+            if (isMounted.current) {
+                setIsLoading(false);
+            }
+        }
+    }, [pagination, isLoading]);
+
     // Calculate today's progress for the progress bar
     const getTodayProgress = () => {
         const todayTasks = metrics.today_plan_tasks || [];
@@ -1090,6 +1161,48 @@ const TasksToday: React.FC = () => {
                     onToggleToday={handleToggleToday}
                     onTaskCompletionToggle={handleTaskCompletionToggle}
                 />
+
+                {/* Load More Button for Today Plan Tasks */}
+                {pagination.hasMore && (
+                    <div className="flex justify-center pt-4 pb-6">
+                        <button
+                            onClick={handleLoadMore}
+                            disabled={isLoading}
+                            className="inline-flex items-center px-6 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                            {isLoading ? (
+                                <>
+                                    <svg
+                                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-500"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <circle
+                                            className="opacity-25"
+                                            cx="12"
+                                            cy="12"
+                                            r="10"
+                                            stroke="currentColor"
+                                            strokeWidth="4"
+                                        ></circle>
+                                        <path
+                                            className="opacity-75"
+                                            fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                        ></path>
+                                    </svg>
+                                    {t('common.loading', 'Loading...')}
+                                </>
+                            ) : (
+                                <>
+                                    <ClipboardDocumentListIcon className="h-4 w-4 mr-2" />
+                                    {t('tasks.loadMore', 'Load more tasks')}
+                                </>
+                            )}
+                        </button>
+                    </div>
+                )}
 
                 {/* Suggested Tasks - Separate setting */}
                 {!isSettingsLoaded ? (
