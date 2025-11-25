@@ -128,7 +128,9 @@ describe('Notification Soft Delete', () => {
             });
 
             // Check unread count (should be 2)
-            let countResponse = await agent.get('/api/notifications/unread-count');
+            let countResponse = await agent.get(
+                '/api/notifications/unread-count'
+            );
             expect(countResponse.body.count).toBe(2);
 
             // Dismiss one notification

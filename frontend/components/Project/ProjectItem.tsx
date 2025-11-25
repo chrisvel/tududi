@@ -200,7 +200,9 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                         : 'items-center flex-1'
                 }`}
             >
-                <div className={`flex ${viewMode === 'cards' ? 'flex-col' : 'items-center'}`}>
+                <div
+                    className={`flex ${viewMode === 'cards' ? 'flex-col' : 'items-center'}`}
+                >
                     <Link
                         to={
                             project.uid
