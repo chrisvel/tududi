@@ -20,7 +20,7 @@ interface CalendarEvent {
     title: string;
     start: Date;
     end: Date;
-    type: 'task' | 'event' | 'google';
+    type: 'task' | 'event';
     color?: string;
 }
 
@@ -105,7 +105,7 @@ const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
     };
 
     return (
-        <div className="bg-white dark:bg-gray-900 rounded-lg shadow overflow-hidden">
+        <div className="h-full bg-white dark:bg-gray-900 rounded-lg shadow overflow-hidden flex flex-col">
             {/* Week days header */}
             <div className="grid grid-cols-7 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
                 {weekDays.map((day) => (
@@ -119,7 +119,7 @@ const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
             </div>
 
             {/* Calendar grid */}
-            <div className="grid grid-cols-7">
+            <div className="grid grid-cols-7 flex-1 min-h-0 auto-rows-fr">
                 {days.map((day) => {
                     const dayEvents = events.filter(
                         (event) =>
@@ -134,7 +134,7 @@ const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
                         <div
                             key={day.toString()}
                             onClick={() => handleDateClick(day)}
-                            className={`min-h-32 p-2 border-r border-b border-gray-100 dark:border-gray-800 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 ${
+                            className={`p-2 border-r border-b border-gray-100 dark:border-gray-800 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 flex flex-col ${
                                 !isCurrentMonth
                                     ? 'bg-gray-50 dark:bg-gray-800'
                                     : 'bg-white dark:bg-gray-900'

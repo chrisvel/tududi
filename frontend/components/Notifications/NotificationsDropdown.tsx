@@ -9,6 +9,7 @@ import {
     CheckCircleIcon,
 } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { getApiPath } from '../../config/paths';
 
 interface Notification {
@@ -19,6 +20,11 @@ interface Notification {
     source: string;
     is_read: boolean;
     created_at: string;
+    data?: {
+        taskUid?: string;
+        projectUid?: string;
+        [key: string]: any;
+    };
 }
 
 interface NotificationsDropdownProps {
@@ -29,6 +35,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
     isDarkMode,
 }) => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
     const [unreadCount, setUnreadCount] = useState(0);
     const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -190,6 +197,16 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
         return date.toLocaleDateString();
     };
 
+    const handleNotificationClick = (notification: Notification) => {
+        if (notification.data?.taskUid) {
+            setIsOpen(false);
+            navigate(`/task/${notification.data.taskUid}`);
+        } else if (notification.data?.projectUid) {
+            setIsOpen(false);
+            navigate(`/project/${notification.data.projectUid}`);
+        }
+    };
+
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (
@@ -218,7 +235,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
             >
                 <BellIcon className="h-6 w-6 text-gray-700 dark:text-gray-300" />
                 {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center font-medium">
                         {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                 )}
@@ -292,7 +309,21 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
                                         {getLevelIcon(notification.level)}
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-start justify-between">
-                                                <div className="flex-1">
+                                                <div
+                                                    className={`flex-1 ${
+                                                        notification.data
+                                                            ?.taskUid ||
+                                                        notification.data
+                                                            ?.projectUid
+                                                            ? 'cursor-pointer'
+                                                            : ''
+                                                    }`}
+                                                    onClick={() =>
+                                                        handleNotificationClick(
+                                                            notification
+                                                        )
+                                                    }
+                                                >
                                                     <p className="text-sm font-medium">
                                                         {notification.title}
                                                     </p>
@@ -308,11 +339,12 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
                                                 <div className="flex items-center space-x-1 ml-2">
                                                     {!notification.is_read && (
                                                         <button
-                                                            onClick={() =>
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
                                                                 handleMarkAsRead(
                                                                     notification.id
-                                                                )
-                                                            }
+                                                                );
+                                                            }}
                                                             className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
                                                             title={t(
                                                                 'notifications.markAsRead',
@@ -323,11 +355,12 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
                                                         </button>
                                                     )}
                                                     <button
-                                                        onClick={() =>
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
                                                             handleDelete(
                                                                 notification.id
-                                                            )
-                                                        }
+                                                            );
+                                                        }}
                                                         className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
                                                         title={t(
                                                             'notifications.delete',

@@ -17,7 +17,7 @@ interface CalendarEvent {
     title: string;
     start: Date;
     end: Date;
-    type: 'task' | 'event' | 'google';
+    type: 'task' | 'event';
     color?: string;
 }
 
@@ -87,7 +87,7 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
     };
 
     return (
-        <div className="bg-white dark:bg-gray-900 rounded-lg shadow overflow-hidden">
+        <div className="h-full bg-white dark:bg-gray-900 rounded-lg shadow overflow-hidden flex flex-col">
             {/* Header with days */}
             <div className="grid grid-cols-8 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
                 <div className="p-3 text-center text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -129,7 +129,7 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
             </div>
 
             {/* Time slots */}
-            <div className="max-h-96 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto">
                 {hours.map((hour) => (
                     <div
                         key={hour}
