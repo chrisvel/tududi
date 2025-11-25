@@ -221,6 +221,10 @@ router.get('/projects', async (req, res) => {
                     model: Task,
                     required: false,
                     attributes: ['id', 'status'],
+                    where: {
+                        parent_task_id: null,
+                        recurring_parent_id: null,
+                    },
                 },
                 {
                     model: Area,
