@@ -232,7 +232,9 @@ const TasksToday: React.FC = () => {
 
             setIsLoading(true);
             try {
-                const result = await fetchTasks(`?type=today&limit=20&offset=0`);
+                const result = await fetchTasks(
+                    `?type=today&limit=20&offset=0`
+                );
                 if (isMounted.current) {
                     setMetrics({
                         ...result.metrics,
@@ -1420,7 +1422,9 @@ const TasksToday: React.FC = () => {
                                                 onTaskUpdate={handleTaskUpdate}
                                                 onTaskDelete={handleTaskDelete}
                                                 projects={localProjects}
-                                                onToggleToday={handleToggleToday}
+                                                onToggleToday={
+                                                    handleToggleToday
+                                                }
                                                 showCompletedTasks={true}
                                             />
 

@@ -318,19 +318,27 @@ async function seedDatabase() {
         const todayMarkedTasks = Array.from({ length: 30 }, (_, i) => ({
             name: `${faker.lorem.sentence({ min: 3, max: 6 })} #${i + 1}`,
             description: faker.lorem.paragraph(),
-            note: Math.random() < 0.3 ? `${faker.lorem.sentence()}\n\n- ${faker.lorem.sentence()}\n- ${faker.lorem.sentence()}` : null,
+            note:
+                Math.random() < 0.3
+                    ? `${faker.lorem.sentence()}\n\n- ${faker.lorem.sentence()}\n- ${faker.lorem.sentence()}`
+                    : null,
             priority: Math.floor(Math.random() * 3),
             status: Math.floor(Math.random() * 3), // 0, 1, or 2
             user_id: testUser.id,
             today: true, // Mark for today
-            project_id: Math.random() < 0.3 ? projects[Math.floor(Math.random() * projects.length)].id : null,
+            project_id:
+                Math.random() < 0.3
+                    ? projects[Math.floor(Math.random() * projects.length)].id
+                    : null,
         }));
 
         for (const taskData of todayMarkedTasks) {
             const task = await Task.create(taskData);
             tasks.push(task);
         }
-        console.log(`   ✅ Created ${todayMarkedTasks.length} tasks marked for today\n`);
+        console.log(
+            `   ✅ Created ${todayMarkedTasks.length} tasks marked for today\n`
+        );
 
         // Create tasks due today for realistic "Due Today" section
         console.log('📅 Creating tasks due today...');

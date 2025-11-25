@@ -301,8 +301,12 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
             const deferOption = deferOptions.find(
                 (opt) => opt.value === selectedDefer
             );
-            const deferLabel = deferOption ? t(deferOption.labelKey) : selectedDefer;
-            parts.push(<span key="defer-label">{t('search.deferUntil') + ' '}</span>);
+            const deferLabel = deferOption
+                ? t(deferOption.labelKey)
+                : selectedDefer;
+            parts.push(
+                <span key="defer-label">{t('search.deferUntil') + ' '}</span>
+            );
             parts.push(
                 <span
                     key="defer"
