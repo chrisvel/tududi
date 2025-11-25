@@ -41,24 +41,14 @@ interface CalendarEvent {
     title: string;
     start: Date;
     end: Date;
-    type: 'task' | 'event' | 'google';
+    type: 'task' | 'event';
     color?: string;
-}
-
-interface GoogleCalendarStatus {
-    connected: boolean;
-    email?: string;
 }
 
 const Calendar: React.FC = () => {
     const { t, i18n } = useTranslation();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [view, setView] = useState<'month' | 'week' | 'day'>('month');
-    const [googleStatus, setGoogleStatus] = useState<GoogleCalendarStatus>({
-        connected: false,
-    });
-    const [isConnecting, setIsConnecting] = useState(false);
-    const [isDemoMode, setIsDemoMode] = useState(false);
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [isLoadingTasks, setIsLoadingTasks] = useState(false);
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -71,43 +61,11 @@ const Calendar: React.FC = () => {
 
     const locale = getLocale(i18n.language);
 
-    // Load Google Calendar status and tasks on component mount
+    // Load tasks and projects on component mount
     useEffect(() => {
-        checkGoogleCalendarStatus();
         loadTasks();
         loadProjects();
-
-        // Check URL parameters for demo mode
-        const urlParams = new URLSearchParams(window.location.search);
-        if (
-            urlParams.get('demo') === 'true' &&
-            urlParams.get('connected') === 'true'
-        ) {
-            setGoogleStatus({ connected: true, email: 'demo@example.com' });
-            setIsDemoMode(true);
-            // Clean up URL
-            window.history.replaceState(
-                {},
-                document.title,
-                window.location.pathname
-            );
-        }
     }, []);
-
-    const checkGoogleCalendarStatus = async () => {
-        try {
-            const response = await fetch(getApiPath('calendar/status'), {
-                credentials: 'include',
-            });
-            if (response.ok) {
-                const status = await response.json();
-                setGoogleStatus(status);
-                setIsDemoMode(status.demo || false);
-            }
-        } catch (error) {
-            console.error('Error checking Google Calendar status:', error);
-        }
-    };
 
     const loadTasks = async () => {
         setIsLoadingTasks(true);
@@ -155,6 +113,20 @@ const Calendar: React.FC = () => {
         }
 
         tasks.forEach((task) => {
+            // Add deferred tasks with defer_until dates
+            if (task.defer_until) {
+                const deferDate = new Date(task.defer_until);
+                const taskEvent = {
+                    id: `task-defer-${task.id}`,
+                    title: `⏰ ${task.name || task.title || `Task ${task.id}`}`,
+                    start: deferDate,
+                    end: new Date(deferDate.getTime() + 60 * 60 * 1000), // 1 hour duration
+                    type: 'task' as const,
+                    color: task.completed_at ? '#22c55e' : '#f59e0b', // Green if completed, amber if deferred
+                };
+                taskEvents.push(taskEvent);
+            }
+
             // Add tasks with due dates
             if (task.due_date) {
                 const dueDate = new Date(task.due_date);
@@ -169,8 +141,8 @@ const Calendar: React.FC = () => {
                 taskEvents.push(taskEvent);
             }
 
-            // Add tasks scheduled for today (if they don't have due_date)
-            if (!task.due_date && task.created_at) {
+            // Add tasks scheduled for today (if they don't have defer_until or due_date)
+            if (!task.defer_until && !task.due_date && task.created_at) {
                 const createdDate = new Date(task.created_at);
                 const today = new Date();
 
@@ -188,8 +160,8 @@ const Calendar: React.FC = () => {
                 }
             }
 
-            // Always add tasks to calendar for easier debugging
-            if (!task.due_date && !task.created_at) {
+            // Always add tasks to calendar for easier debugging (only if no defer_until, due_date, or created_at)
+            if (!task.defer_until && !task.due_date && !task.created_at) {
                 const taskEvent = {
                     id: `task-fallback-${task.id}`,
                     title: `📌 ${task.name || task.title || `Task ${task.id}`}`,
@@ -216,63 +188,6 @@ const Calendar: React.FC = () => {
             }
         } catch (error) {
             console.error('Error loading projects:', error);
-        }
-    };
-
-    const connectGoogleCalendar = async () => {
-        if (isConnecting) return;
-
-        setIsConnecting(true);
-        try {
-            const response = await fetch(getApiPath('calendar/auth'), {
-                credentials: 'include',
-            });
-            if (response.ok) {
-                const result = await response.json();
-                if (result.demo) {
-                    // Demo mode - simulate connection
-                    setGoogleStatus({
-                        connected: true,
-                        email: 'demo@example.com',
-                    });
-                    setIsDemoMode(true);
-                } else {
-                    // Real Google OAuth - redirect to auth URL
-                    window.location.href = result.authUrl;
-                }
-            } else {
-                throw new Error('Failed to get authorization URL');
-            }
-        } catch (error) {
-            console.error('Error connecting to Google Calendar:', error);
-            alert(t('calendar.connectionError'));
-        } finally {
-            setIsConnecting(false);
-        }
-    };
-
-    const disconnectGoogleCalendar = async () => {
-        try {
-            if (isDemoMode) {
-                // Demo mode - just update local state
-                setGoogleStatus({ connected: false });
-                setIsDemoMode(false);
-                return;
-            }
-
-            // Real disconnect API call
-            const response = await fetch(getApiPath('calendar/disconnect'), {
-                method: 'POST',
-                credentials: 'include',
-            });
-            if (response.ok) {
-                setGoogleStatus({ connected: false });
-            } else {
-                throw new Error('Failed to disconnect');
-            }
-        } catch (error) {
-            console.error('Error disconnecting Google Calendar:', error);
-            alert(t('calendar.disconnectionError'));
         }
     };
 
@@ -310,8 +225,11 @@ const Calendar: React.FC = () => {
     const handleEventClick = (event: CalendarEvent) => {
         // Handle task events
         if (event.type === 'task') {
-            // Extract task ID from event ID
-            const taskId = event.id.replace(/^task(-created|-fallback)?-/, '');
+            // Extract task ID from event ID (handles task-, task-defer-, task-created-, task-fallback-)
+            const taskId = event.id.replace(
+                /^task(-defer|-created|-fallback)?-/,
+                ''
+            );
             const task = allTasks.find((t) => t.id.toString() === taskId);
 
             if (task) {
@@ -395,10 +313,10 @@ const Calendar: React.FC = () => {
     };
 
     return (
-        <div className="flex justify-center px-4 lg:px-2">
-            <div className="w-full max-w-6xl">
+        <div className="h-full flex flex-col px-4 py-4">
+            <div className="w-full flex-1 flex flex-col min-h-0">
                 {/* Header */}
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center space-x-4">
                         <h2 className="text-2xl font-light flex items-center">
                             <CalendarIcon className="h-6 w-6 mr-2" />
@@ -463,80 +381,34 @@ const Calendar: React.FC = () => {
                 )}
 
                 {/* Calendar view */}
-                {view === 'month' && (
-                    <CalendarMonthView
-                        currentDate={currentDate}
-                        events={events}
-                        onDateClick={handleDateClick}
-                        onEventClick={handleEventClick}
-                    />
-                )}
+                <div className="flex-1 overflow-hidden min-h-0">
+                    {view === 'month' && (
+                        <CalendarMonthView
+                            currentDate={currentDate}
+                            events={events}
+                            onDateClick={handleDateClick}
+                            onEventClick={handleEventClick}
+                        />
+                    )}
 
-                {view === 'week' && (
-                    <CalendarWeekView
-                        currentDate={currentDate}
-                        events={events}
-                        onDateClick={handleDateClick}
-                        onEventClick={handleEventClick}
-                        onTimeSlotClick={handleTimeSlotClick}
-                    />
-                )}
+                    {view === 'week' && (
+                        <CalendarWeekView
+                            currentDate={currentDate}
+                            events={events}
+                            onDateClick={handleDateClick}
+                            onEventClick={handleEventClick}
+                            onTimeSlotClick={handleTimeSlotClick}
+                        />
+                    )}
 
-                {view === 'day' && (
-                    <CalendarDayView
-                        currentDate={currentDate}
-                        events={events}
-                        onEventClick={handleEventClick}
-                        onTimeSlotClick={handleTimeSlotClick}
-                    />
-                )}
-
-                {/* Google Calendar Integration Panel */}
-                <div className="mt-6 bg-white dark:bg-gray-900 rounded-lg shadow p-6">
-                    <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-gray-100">
-                        {t('calendar.googleIntegration')}
-                    </h3>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                                {isDemoMode
-                                    ? 'Demo mode: Google Calendar integration simulated for testing purposes.'
-                                    : t('calendar.googleDescription')}
-                            </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-500">
-                                {t('calendar.googleStatus')}:
-                                {googleStatus.connected ? (
-                                    <span className="text-green-500 ml-1">
-                                        {t('calendar.connected')}
-                                        {googleStatus.email &&
-                                            ` (${googleStatus.email})`}
-                                    </span>
-                                ) : (
-                                    <span className="text-red-500 ml-1">
-                                        {t('calendar.notConnected')}
-                                    </span>
-                                )}
-                            </p>
-                        </div>
-                        {googleStatus.connected ? (
-                            <button
-                                onClick={disconnectGoogleCalendar}
-                                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-                            >
-                                {t('calendar.disconnectGoogle')}
-                            </button>
-                        ) : (
-                            <button
-                                onClick={connectGoogleCalendar}
-                                disabled={isConnecting}
-                                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
-                            >
-                                {isConnecting
-                                    ? t('calendar.connecting')
-                                    : t('calendar.connectGoogle')}
-                            </button>
-                        )}
-                    </div>
+                    {view === 'day' && (
+                        <CalendarDayView
+                            currentDate={currentDate}
+                            events={events}
+                            onEventClick={handleEventClick}
+                            onTimeSlotClick={handleTimeSlotClick}
+                        />
+                    )}
                 </div>
 
                 {/* Event Details Modal */}

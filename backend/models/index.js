@@ -35,6 +35,7 @@ const Permission = require('./permission')(sequelize);
 const View = require('./view')(sequelize);
 const ApiToken = require('./api_token')(sequelize);
 const Setting = require('./setting')(sequelize);
+const Notification = require('./notification')(sequelize);
 
 // Define associations
 User.hasMany(Area, { foreignKey: 'user_id' });
@@ -144,6 +145,10 @@ View.belongsTo(User, { foreignKey: 'user_id' });
 User.hasMany(ApiToken, { foreignKey: 'user_id', as: 'apiTokens' });
 ApiToken.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 
+// Notification associations
+User.hasMany(Notification, { foreignKey: 'user_id', as: 'Notifications' });
+Notification.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+
 module.exports = {
     sequelize,
     User,
@@ -160,4 +165,5 @@ module.exports = {
     View,
     ApiToken,
     Setting,
+    Notification,
 };

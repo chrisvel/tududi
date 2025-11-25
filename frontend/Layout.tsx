@@ -458,15 +458,17 @@ const Layout: React.FC<LayoutProps> = ({
                 />
 
                 <div
-                    className={`transition-all duration-300 ease-in-out ${mainContentMarginLeft}`}
+                    className={`transition-all duration-300 ease-in-out ${mainContentMarginLeft} h-screen flex flex-col`}
                 >
-                    <div className="flex flex-col bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 min-h-screen overflow-y-auto">
+                    <div className="flex flex-col bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 flex-1 overflow-hidden">
                         <div
-                            className={`flex-grow py-0 px-0 transition-all duration-300 ${
+                            className={`flex-1 flex flex-col py-0 px-0 transition-all duration-300 ${
                                 isMobileSearchOpen ? 'pt-32' : 'pt-20'
-                            } md:pt-20 ${isUpcomingView ? '' : 'md:px-4'}`}
+                            } md:pt-20 ${isUpcomingView ? '' : 'md:px-4'} overflow-hidden`}
                         >
-                            <div className="w-full">{children}</div>
+                            <div className="w-full h-full overflow-auto">
+                                {children}
+                            </div>
                         </div>
                     </div>
                 </div>

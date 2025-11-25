@@ -200,7 +200,9 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                         : 'items-center flex-1'
                 }`}
             >
-                <div className="flex items-center">
+                <div
+                    className={`flex ${viewMode === 'cards' ? 'flex-col' : 'items-center'}`}
+                >
                     <Link
                         to={
                             project.uid
@@ -218,6 +220,11 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                     >
                         {project.name}
                     </Link>
+                    {viewMode === 'cards' && project.description && (
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
+                            {project.description}
+                        </p>
+                    )}
                 </div>
                 <div className="relative dropdown-container">
                     {viewMode === 'cards' ? (
@@ -379,18 +386,27 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                 <div className="absolute bottom-4 left-0 right-0 px-4">
                     <div className="flex items-center space-x-2">
                         <div
-                            className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2"
-                            title={t('projectItem.completionPercentage', {
-                                percentage: getCompletionPercentage(),
-                            })}
+                            className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 cursor-help"
+                            title={
+                                (project as any).task_status
+                                    ? `${(project as any).task_status.done} of ${(project as any).task_status.total} tasks completed (${getCompletionPercentage()}%)`
+                                    : t('projectItem.completionPercentage', {
+                                          percentage: getCompletionPercentage(),
+                                      })
+                            }
                         >
                             <div
-                                className="bg-blue-500 h-2 rounded-full"
+                                className="bg-blue-500 h-2 rounded-full transition-all duration-300"
                                 style={{
                                     width: `${getCompletionPercentage()}%`,
                                 }}
                             ></div>
                         </div>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">
+                            {(project as any).task_status
+                                ? `${(project as any).task_status.done}/${(project as any).task_status.total}`
+                                : '0/0'}
+                        </span>
                     </div>
                 </div>
             )}

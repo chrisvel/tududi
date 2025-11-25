@@ -176,6 +176,17 @@ module.exports = (sequelize) => {
                     },
                 },
             },
+            notification_preferences: {
+                type: DataTypes.JSON,
+                allowNull: true,
+                defaultValue: {
+                    dueTasks: { inApp: true, email: false, push: false },
+                    overdueTasks: { inApp: true, email: false, push: false },
+                    dueProjects: { inApp: true, email: false, push: false },
+                    overdueProjects: { inApp: true, email: false, push: false },
+                    deferUntil: { inApp: true, email: false, push: false },
+                },
+            },
             email_verified: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,

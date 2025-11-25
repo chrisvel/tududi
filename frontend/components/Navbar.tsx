@@ -10,6 +10,7 @@ import { EnvelopeIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 import PomodoroTimer from './Shared/PomodoroTimer';
 import UniversalSearch from './UniversalSearch/UniversalSearch';
+import NotificationsDropdown from './Notifications/NotificationsDropdown';
 import { getApiPath } from '../config/paths';
 
 interface NavbarProps {
@@ -209,6 +210,8 @@ const Navbar: React.FC<NavbarProps> = ({
                         <InboxIcon className="hidden md:inline-block ml-1.5 h-4 w-4 text-blue-200" />
                     </button>
                     {pomodoroEnabled && <PomodoroTimer />}
+
+                    <NotificationsDropdown isDarkMode={isDarkMode} />
 
                     <div className="relative" ref={dropdownRef}>
                         <button

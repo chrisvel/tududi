@@ -44,6 +44,7 @@
     "db:reset": "cd backend && node scripts/db-reset.js",
     "db:status": "cd backend && node scripts/db-status.js",
     "db:seed": "cd backend && node scripts/seed-dev-data.js",
+    "db:reset-and-seed": "cd backend && NODE_ENV=development node scripts/reset-and-seed.js",
     "user:create": "cd backend && node scripts/user-create.js",
     "migration:create": "cd backend && node scripts/migration-create.js",
     "migration:run": "cd backend && npx sequelize-cli db:migrate",
@@ -65,6 +66,7 @@
     "@babel/preset-env": "^7.25.7",
     "@babel/preset-react": "^7.25.7",
     "@babel/preset-typescript": "^7.25.7",
+    "@faker-js/faker": "^10.1.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.15",
     "@swc/core": "^1.13.3",
     "@testing-library/jest-dom": "^6.0.0",
@@ -158,6 +160,7 @@
     "tagify": "^0.1.1",
     "typescript-eslint": "^8.36.0",
     "uuid": "~11.1.0",
+    "web-push": "^3.6.7",
     "zustand": "^5.0.3"
   }
 }

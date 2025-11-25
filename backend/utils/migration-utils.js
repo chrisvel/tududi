@@ -2,6 +2,17 @@
 
 async function safeAddColumns(queryInterface, tableName, columns) {
     try {
+        // First check if table exists
+        const tables = await queryInterface.showAllTables();
+        const tableExists = tables.includes(tableName);
+
+        if (!tableExists) {
+            console.log(
+                `Table ${tableName} does not exist, skipping column additions`
+            );
+            return;
+        }
+
         const tableInfo = await queryInterface.describeTable(tableName);
 
         for (const column of columns) {
@@ -38,6 +49,17 @@ async function safeCreateTable(queryInterface, tableName, tableDefinition) {
 
 async function safeAddIndex(queryInterface, tableName, fields, options = {}) {
     try {
+        // First check if table exists
+        const tables = await queryInterface.showAllTables();
+        const tableExists = tables.includes(tableName);
+
+        if (!tableExists) {
+            console.log(
+                `Table ${tableName} does not exist, skipping index addition`
+            );
+            return;
+        }
+
         const indexes = await queryInterface.showIndex(tableName);
         const indexExists = indexes.some((index) =>
             index.fields.some((field) => fields.includes(field.attribute))

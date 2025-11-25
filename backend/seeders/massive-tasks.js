@@ -1,3 +1,5 @@
+const { faker } = require('@faker-js/faker');
+
 // Helper function to create massive task data with AI feature triggers
 function createMassiveTaskData(projects, getRandomDate, getPastDate) {
     // Helper to get random items from array
@@ -13,6 +15,26 @@ function createMassiveTaskData(projects, getRandomDate, getPastDate) {
     const getRandomStatus = () => {
         const statuses = [0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 3, 4]; // More weighted towards active tasks
         return statuses[Math.floor(Math.random() * statuses.length)];
+    };
+
+    // Helper to generate task description (70% of tasks get a description)
+    const maybeDescription = () => {
+        if (Math.random() < 0.7) {
+            return faker.lorem.paragraph({ min: 1, max: 3 });
+        }
+        return null;
+    };
+
+    // Helper to generate task notes (40% of tasks get notes)
+    const maybeNote = () => {
+        if (Math.random() < 0.4) {
+            const bulletPoints = Array.from(
+                { length: faker.number.int({ min: 2, max: 5 }) },
+                () => `- ${faker.lorem.sentence()}`
+            ).join('\n');
+            return `${faker.lorem.sentence()}\n\n${bulletPoints}`;
+        }
+        return null;
     };
 
     // Productivity and work tasks
@@ -341,24 +363,34 @@ function createMassiveTaskData(projects, getRandomDate, getPastDate) {
         },
         {
             name: 'Create wireframes for homepage',
+            description:
+                'Design low-fidelity wireframes for the new homepage layout. Focus on user flow, CTA placement, and mobile-first approach.',
             project_id: projects[0].id,
             priority: 2,
             status: 1,
+            note: 'Need to review with stakeholders\n\n- Include hero section\n- Add testimonials section\n- Feature products prominently\n- Ensure accessibility standards',
         },
         {
             name: 'Design new color palette',
+            description:
+                'Research and create a modern color palette that aligns with brand identity. Should work well for both light and dark modes.',
             project_id: projects[0].id,
             priority: 1,
             status: 0,
         },
         {
             name: 'Write content for About page',
+            description:
+                'Draft engaging copy for the About page that tells our story and highlights company values.',
             project_id: projects[0].id,
             priority: 1,
             status: 0,
+            note: 'Content guidelines:\n\n- Keep it under 500 words\n- Include team photos\n- Highlight mission and values\n- Add company timeline',
         },
         {
             name: 'Set up staging environment',
+            description:
+                'Configure staging server with proper environment variables, SSL certificates, and deployment pipeline.',
             project_id: projects[0].id,
             priority: 2,
             status: 0,
@@ -1282,12 +1314,10 @@ function createMassiveTaskData(projects, getRandomDate, getPastDate) {
 
         const task = {
             name: taskName,
+            description: maybeDescription(),
             priority: getRandomPriority(),
             status: isCompleted ? 2 : getRandomStatus(),
-            note:
-                Math.random() < 0.1
-                    ? 'Added some notes during planning phase'
-                    : null,
+            note: maybeNote(),
         };
 
         if (hasProject) {

@@ -14,6 +14,7 @@ import {
     LightBulbIcon,
     KeyIcon,
     CheckIcon,
+    BellIcon,
 } from '@heroicons/react/24/outline';
 import TelegramIcon from '../Icons/TelegramIcon';
 import { useToast } from '../Shared/ToastContext';
@@ -38,6 +39,7 @@ import ApiKeysTab from './tabs/ApiKeysTab';
 import ProductivityTab from './tabs/ProductivityTab';
 import TelegramTab from './tabs/TelegramTab';
 import AiTab from './tabs/AiTab';
+import NotificationsTab from './tabs/NotificationsTab';
 import type {
     ProfileSettingsProps,
     Profile,
@@ -93,6 +95,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         productivity_assistant_enabled: true,
         next_task_suggestion_enabled: true,
         pomodoro_enabled: true,
+        notification_preferences: null,
         currentPassword: '',
         newPassword: '',
         confirmPassword: '',
@@ -443,6 +446,8 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                         data.pomodoro_enabled !== undefined
                             ? data.pomodoro_enabled
                             : true,
+                    notification_preferences:
+                        data.notification_preferences || null,
                 });
 
                 if (data.telegram_bot_token) {
@@ -1014,6 +1019,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             icon: <ClockIcon className="w-5 h-5" />,
         },
         {
+            id: 'notifications',
+            name: t('profile.tabs.notifications', 'Notifications'),
+            icon: <BellIcon className="w-5 h-5" />,
+        },
+        {
             id: 'telegram',
             name: t('profile.tabs.telegram', 'Telegram'),
             icon: <TelegramIcon className="w-5 h-5" />,
@@ -1120,6 +1130,19 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                             setFormData((prev) => ({
                                 ...prev,
                                 pomodoro_enabled: !prev.pomodoro_enabled,
+                            }))
+                        }
+                    />
+
+                    <NotificationsTab
+                        isActive={activeTab === 'notifications'}
+                        notificationPreferences={
+                            formData.notification_preferences
+                        }
+                        onChange={(preferences) =>
+                            setFormData((prev) => ({
+                                ...prev,
+                                notification_preferences: preferences,
                             }))
                         }
                     />

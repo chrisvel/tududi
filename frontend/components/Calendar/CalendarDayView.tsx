@@ -6,7 +6,7 @@ interface CalendarEvent {
     title: string;
     start: Date;
     end: Date;
-    type: 'task' | 'event' | 'google';
+    type: 'task' | 'event';
     color?: string;
 }
 
@@ -60,7 +60,7 @@ const CalendarDayView: React.FC<CalendarDayViewProps> = ({
     };
 
     return (
-        <div className="bg-white dark:bg-gray-900 rounded-lg shadow overflow-hidden">
+        <div className="h-full bg-white dark:bg-gray-900 rounded-lg shadow overflow-hidden flex flex-col">
             {/* Header */}
             <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
                 <div className="text-center">
@@ -131,7 +131,7 @@ const CalendarDayView: React.FC<CalendarDayViewProps> = ({
             </div>
 
             {/* Time slots */}
-            <div className="max-h-96 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto">
                 {hours.map((hour) => {
                     const timeSlotEvents = getEventsForTimeSlot(hour);
 

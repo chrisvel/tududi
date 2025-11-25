@@ -36,6 +36,9 @@ const getCronExpression = (frequency) => {
         '12h': '0 */12 * * *',
         recurring_tasks: '0 6 * * *', // Daily at 6 AM for recurring task generation
         cleanup_tokens: '0 2 * * *', // Daily at 2 AM for cleaning up expired tokens
+        deferred_tasks: '*/5 * * * *', // Every 5 minutes to check deferred tasks
+        due_tasks: '*/15 * * * *', // Every 15 minutes to check due/overdue tasks
+        due_projects: '*/15 * * * *', // Every 15 minutes to check due/overdue projects
     };
     return expressions[frequency];
 };
@@ -46,6 +49,12 @@ const createJobHandler = (frequency) => async () => {
         await processRecurringTasks();
     } else if (frequency === 'cleanup_tokens') {
         await cleanupExpiredTokens();
+    } else if (frequency === 'deferred_tasks') {
+        await processDeferredTasks();
+    } else if (frequency === 'due_tasks') {
+        await processDueTasks();
+    } else if (frequency === 'due_projects') {
+        await processDueProjects();
     } else {
         await processSummariesForFrequency(frequency);
     }
@@ -64,6 +73,9 @@ const createJobEntries = () => {
         '12h',
         'recurring_tasks',
         'cleanup_tokens',
+        'deferred_tasks',
+        'due_tasks',
+        'due_projects',
     ];
 
     return frequencies.map((frequency) => {
@@ -151,6 +163,39 @@ const cleanupExpiredTokens = async () => {
     }
 };
 
+// Function to process deferred tasks (contains side effects)
+const processDeferredTasks = async () => {
+    try {
+        const { checkDeferredTasks } = require('./deferredTaskService');
+        const result = await checkDeferredTasks();
+        return result;
+    } catch (error) {
+        throw error;
+    }
+};
+
+// Function to process due tasks (contains side effects)
+const processDueTasks = async () => {
+    try {
+        const { checkDueTasks } = require('./dueTaskService');
+        const result = await checkDueTasks();
+        return result;
+    } catch (error) {
+        throw error;
+    }
+};
+
+// Function to process due projects (contains side effects)
+const processDueProjects = async () => {
+    try {
+        const { checkDueProjects } = require('./dueProjectService');
+        const result = await checkDueProjects();
+        return result;
+    } catch (error) {
+        throw error;
+    }
+};
+
 // Function to initialize scheduler (contains side effects)
 const initialize = async () => {
     if (schedulerState.isInitialized) {
@@ -214,6 +259,9 @@ module.exports = {
     processSummariesForFrequency,
     processRecurringTasks,
     cleanupExpiredTokens,
+    processDeferredTasks,
+    processDueTasks,
+    processDueProjects,
     // For testing
     _createSchedulerState: createSchedulerState,
     _shouldDisableScheduler: shouldDisableScheduler,
