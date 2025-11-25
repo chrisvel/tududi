@@ -21,6 +21,12 @@ export const fetchTasks = async (
     tasks_due_today?: Task[];
     suggested_tasks?: Task[];
     tasks_completed_today?: Task[];
+    pagination?: {
+        total: number;
+        limit: number;
+        offset: number;
+        hasMore: boolean;
+    };
 }> => {
     // For today view, include dashboard task lists
     const includeLists = query.includes('type=today');
@@ -60,6 +66,8 @@ export const fetchTasks = async (
         tasks_due_today: tasksResult.tasks_due_today,
         suggested_tasks: tasksResult.suggested_tasks,
         tasks_completed_today: tasksResult.tasks_completed_today,
+        // Pagination metadata
+        pagination: tasksResult.pagination,
     };
 };
 
