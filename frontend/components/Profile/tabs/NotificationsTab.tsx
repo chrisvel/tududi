@@ -143,7 +143,10 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                     <thead>
                         <tr className="border-b-2 border-gray-300 dark:border-gray-600">
                             <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                {t('notifications.table.type', 'Notification Type')}
+                                {t(
+                                    'notifications.table.type',
+                                    'Notification Type'
+                                )}
                             </th>
                             <th className="py-3 px-4 text-center text-sm font-semibold text-gray-700 dark:text-gray-300">
                                 {t('notifications.channels.inApp', 'In-app')}
@@ -152,7 +155,8 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 <div className="flex items-center justify-center gap-1">
                                     {t('notifications.channels.email', 'Email')}
                                     <span className="text-[10px] text-gray-500 dark:text-gray-500 font-normal">
-                                        ({t('common.comingSoon', 'Coming Soon')})
+                                        ({t('common.comingSoon', 'Coming Soon')}
+                                        )
                                     </span>
                                 </div>
                             </th>
@@ -160,7 +164,8 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 <div className="flex items-center justify-center gap-1">
                                     {t('notifications.channels.push', 'Push')}
                                     <span className="text-[10px] text-gray-500 dark:text-gray-500 font-normal">
-                                        ({t('common.comingSoon', 'Coming Soon')})
+                                        ({t('common.comingSoon', 'Coming Soon')}
+                                        )
                                     </span>
                                 </div>
                             </th>
@@ -169,7 +174,10 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                     <tbody>
                         <NotificationTypeRow
                             icon={BellAlertIcon}
-                            label={t('notifications.types.dueTasks', 'Due Tasks')}
+                            label={t(
+                                'notifications.types.dueTasks',
+                                'Due Tasks'
+                            )}
                             description={t(
                                 'notifications.descriptions.dueTasks',
                                 'Tasks that are due within 24 hours'

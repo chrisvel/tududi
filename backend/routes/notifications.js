@@ -124,34 +124,35 @@ router.post('/mark-all-read', async (req, res) => {
     }
 });
 
-// DELETE /notifications/:id - Delete a notification
+// DELETE /notifications/:id - Soft delete (dismiss) a notification
 router.delete('/:id', async (req, res) => {
     try {
         console.log(
-            `Attempting to delete notification ${req.params.id} for user ${req.authUserId}`
+            `Attempting to dismiss notification ${req.params.id} for user ${req.authUserId}`
         );
 
         const notification = await Notification.findOne({
             where: {
                 id: req.params.id,
                 user_id: req.authUserId,
+                dismissed_at: null, // Only allow dismissing non-dismissed notifications
             },
         });
 
         if (!notification) {
             console.log(
-                `Notification ${req.params.id} not found for user ${req.authUserId}`
+                `Notification ${req.params.id} not found or already dismissed for user ${req.authUserId}`
             );
             return res.status(404).json({ error: 'Notification not found' });
         }
 
-        await notification.destroy();
-        console.log(`Successfully deleted notification ${req.params.id}`);
+        await notification.dismiss();
+        console.log(`Successfully dismissed notification ${req.params.id}`);
 
-        res.json({ message: 'Notification deleted successfully' });
+        res.json({ message: 'Notification dismissed successfully' });
     } catch (error) {
-        logError('Error deleting notification:', error);
-        res.status(500).json({ error: 'Failed to delete notification' });
+        logError('Error dismissing notification:', error);
+        res.status(500).json({ error: 'Failed to dismiss notification' });
     }
 });
 

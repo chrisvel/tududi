@@ -446,7 +446,8 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                         data.pomodoro_enabled !== undefined
                             ? data.pomodoro_enabled
                             : true,
-                    notification_preferences: data.notification_preferences || null,
+                    notification_preferences:
+                        data.notification_preferences || null,
                 });
 
                 if (data.telegram_bot_token) {
@@ -1135,7 +1136,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
                     <NotificationsTab
                         isActive={activeTab === 'notifications'}
-                        notificationPreferences={formData.notification_preferences}
+                        notificationPreferences={
+                            formData.notification_preferences
+                        }
                         onChange={(preferences) =>
                             setFormData((prev) => ({
                                 ...prev,

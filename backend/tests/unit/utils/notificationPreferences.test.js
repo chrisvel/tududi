@@ -37,12 +37,12 @@ describe('notificationPreferences utils', () => {
             expect(shouldSendInAppNotification(user, 'task_overdue')).toBe(
                 true
             );
-            expect(
-                shouldSendInAppNotification(user, 'project_due_soon')
-            ).toBe(true);
-            expect(
-                shouldSendInAppNotification(user, 'project_overdue')
-            ).toBe(true);
+            expect(shouldSendInAppNotification(user, 'project_due_soon')).toBe(
+                true
+            );
+            expect(shouldSendInAppNotification(user, 'project_overdue')).toBe(
+                true
+            );
         });
 
         it('should return true when user object is null', () => {
@@ -104,14 +104,14 @@ describe('notificationPreferences utils', () => {
             );
 
             // project_due_soon maps to dueProjects (disabled)
-            expect(
-                shouldSendInAppNotification(user, 'project_due_soon')
-            ).toBe(false);
+            expect(shouldSendInAppNotification(user, 'project_due_soon')).toBe(
+                false
+            );
 
             // project_overdue maps to overdueProjects (enabled)
-            expect(
-                shouldSendInAppNotification(user, 'project_overdue')
-            ).toBe(true);
+            expect(shouldSendInAppNotification(user, 'project_overdue')).toBe(
+                true
+            );
         });
 
         it('should handle deferUntil type directly', () => {

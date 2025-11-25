@@ -32,7 +32,12 @@ async function checkDeferredTasks() {
             include: [
                 {
                     model: User,
-                    attributes: ['id', 'email', 'name', 'notification_preferences'],
+                    attributes: [
+                        'id',
+                        'email',
+                        'name',
+                        'notification_preferences',
+                    ],
                 },
             ],
         });
@@ -55,6 +60,8 @@ async function checkDeferredTasks() {
                     continue;
                 }
 
+                // Check for existing notifications (including dismissed ones)
+                // If a notification was dismissed, don't create it again
                 const recentNotifications = await Notification.findAll({
                     where: {
                         user_id: task.user_id,
@@ -72,6 +79,8 @@ async function checkDeferredTasks() {
                 );
 
                 if (existingNotification) {
+                    // Skip if notification exists, even if it was dismissed
+                    // This prevents re-notifying users about tasks they've already dismissed
                     continue;
                 }
 

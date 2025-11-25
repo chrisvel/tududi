@@ -93,6 +93,10 @@ module.exports = (sequelize) => {
                 type: DataTypes.DATE,
                 allowNull: true,
             },
+            dismissed_at: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
         },
         {
             tableName: 'notifications',
@@ -111,6 +115,12 @@ module.exports = (sequelize) => {
                 },
                 {
                     fields: ['user_id', 'read_at'],
+                },
+                {
+                    fields: ['dismissed_at'],
+                },
+                {
+                    fields: ['user_id', 'dismissed_at'],
                 },
             ],
         }
@@ -220,6 +230,24 @@ module.exports = (sequelize) => {
     };
 
     /**
+     * Dismiss (soft delete) a notification
+     */
+    Notification.prototype.dismiss = async function () {
+        if (!this.dismissed_at) {
+            this.dismissed_at = new Date();
+            await this.save();
+        }
+        return this;
+    };
+
+    /**
+     * Check if notification is dismissed
+     */
+    Notification.prototype.isDismissed = function () {
+        return this.dismissed_at !== null;
+    };
+
+    /**
      * Get notifications for a user with pagination
      */
     Notification.getUserNotifications = async function (userId, options = {}) {
@@ -230,7 +258,10 @@ module.exports = (sequelize) => {
             type = null,
         } = options;
 
-        const where = { user_id: userId };
+        const where = {
+            user_id: userId,
+            dismissed_at: null, // Exclude dismissed notifications
+        };
         if (!includeRead) {
             where.read_at = null;
         }
@@ -259,6 +290,7 @@ module.exports = (sequelize) => {
             where: {
                 user_id: userId,
                 read_at: null,
+                dismissed_at: null, // Exclude dismissed notifications
             },
         });
     };
@@ -273,6 +305,7 @@ module.exports = (sequelize) => {
                 where: {
                     user_id: userId,
                     read_at: null,
+                    dismissed_at: null, // Only mark non-dismissed notifications as read
                 },
             }
         );
