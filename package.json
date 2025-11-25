@@ -158,6 +158,7 @@
     "tagify": "^0.1.1",
     "typescript-eslint": "^8.36.0",
     "uuid": "~11.1.0",
+    "web-push": "^3.6.7",
     "zustand": "^5.0.3"
   }
 }

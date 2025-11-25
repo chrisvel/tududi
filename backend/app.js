@@ -184,6 +184,7 @@ const registerApiRoutes = (basePath) => {
     app.use(basePath, require('./routes/task-events'));
     app.use(`${basePath}/search`, require('./routes/search'));
     app.use(`${basePath}/views`, require('./routes/views'));
+    app.use(`${basePath}/notifications`, require('./routes/notifications'));
 };
 
 // Register routes at both /api and /api/v1 (if versioned) to maintain backwards compatibility
