@@ -106,9 +106,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
             );
             if (response.ok) {
                 setNotifications((prev) =>
-                    prev.map((n) =>
-                        n.id === id ? { ...n, is_read: true } : n
-                    )
+                    prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
                 );
                 fetchUnreadCount();
             }

@@ -124,9 +124,7 @@ async function checkDueTasks() {
  */
 function generateNotificationContent(taskName, dueDate, now, isOverdue) {
     if (isOverdue) {
-        const daysOverdue = Math.floor(
-            (now - dueDate) / (1000 * 60 * 60 * 24)
-        );
+        const daysOverdue = Math.floor((now - dueDate) / (1000 * 60 * 60 * 24));
         const title = 'Task is overdue';
         let message;
 
@@ -140,9 +138,7 @@ function generateNotificationContent(taskName, dueDate, now, isOverdue) {
 
         return { title, message };
     } else {
-        const hoursUntilDue = Math.floor(
-            (dueDate - now) / (1000 * 60 * 60)
-        );
+        const hoursUntilDue = Math.floor((dueDate - now) / (1000 * 60 * 60));
         const title = 'Task due soon';
         let message;
 

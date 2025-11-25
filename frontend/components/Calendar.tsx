@@ -226,7 +226,10 @@ const Calendar: React.FC = () => {
         // Handle task events
         if (event.type === 'task') {
             // Extract task ID from event ID (handles task-, task-defer-, task-created-, task-fallback-)
-            const taskId = event.id.replace(/^task(-defer|-created|-fallback)?-/, '');
+            const taskId = event.id.replace(
+                /^task(-defer|-created|-fallback)?-/,
+                ''
+            );
             const task = allTasks.find((t) => t.id.toString() === taskId);
 
             if (task) {

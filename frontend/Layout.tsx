@@ -466,7 +466,9 @@ const Layout: React.FC<LayoutProps> = ({
                                 isMobileSearchOpen ? 'pt-32' : 'pt-20'
                             } md:pt-20 ${isUpcomingView ? '' : 'md:px-4'} overflow-hidden`}
                         >
-                            <div className="w-full h-full overflow-auto">{children}</div>
+                            <div className="w-full h-full overflow-auto">
+                                {children}
+                            </div>
                         </div>
                     </div>
                 </div>
