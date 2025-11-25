@@ -1,6 +1,9 @@
 const { Task, Notification, User } = require('../models');
 const { Op } = require('sequelize');
 const { logError } = require('./logService');
+const {
+    shouldSendInAppNotification,
+} = require('../utils/notificationPreferences');
 
 /**
  * Service to check for deferred tasks that are now active
@@ -29,7 +32,7 @@ async function checkDeferredTasks() {
             include: [
                 {
                     model: User,
-                    attributes: ['id', 'email', 'name'],
+                    attributes: ['id', 'email', 'name', 'notification_preferences'],
                 },
             ],
         });
@@ -47,6 +50,11 @@ async function checkDeferredTasks() {
 
         for (const task of deferredTasks) {
             try {
+                // Check if user wants defer until notifications
+                if (!shouldSendInAppNotification(task.User, 'deferUntil')) {
+                    continue;
+                }
+
                 const recentNotifications = await Notification.findAll({
                     where: {
                         user_id: task.user_id,

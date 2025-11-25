@@ -129,6 +129,7 @@ router.get('/profile', async (req, res) => {
                 'sidebar_settings',
                 'productivity_assistant_enabled',
                 'next_task_suggestion_enabled',
+                'notification_preferences',
             ],
         });
 
@@ -186,6 +187,7 @@ router.patch('/profile', async (req, res) => {
             next_task_suggestion_enabled,
             pomodoro_enabled,
             ui_settings,
+            notification_preferences,
             currentPassword,
             newPassword,
         } = req.body;
@@ -223,6 +225,8 @@ router.patch('/profile', async (req, res) => {
         if (pomodoro_enabled !== undefined)
             allowedUpdates.pomodoro_enabled = pomodoro_enabled;
         if (ui_settings !== undefined) allowedUpdates.ui_settings = ui_settings;
+        if (notification_preferences !== undefined)
+            allowedUpdates.notification_preferences = notification_preferences;
 
         // Validate first_day_of_week if provided
         if (first_day_of_week !== undefined) {
@@ -287,6 +291,7 @@ router.patch('/profile', async (req, res) => {
                 'productivity_assistant_enabled',
                 'next_task_suggestion_enabled',
                 'pomodoro_enabled',
+                'notification_preferences',
             ],
         });
 

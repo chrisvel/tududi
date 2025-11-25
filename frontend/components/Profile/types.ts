@@ -4,6 +4,14 @@ export interface ProfileSettingsProps {
     toggleDarkMode?: () => void;
 }
 
+export interface NotificationPreferences {
+    dueTasks: { inApp: boolean; email: boolean; push: boolean };
+    overdueTasks: { inApp: boolean; email: boolean; push: boolean };
+    dueProjects: { inApp: boolean; email: boolean; push: boolean };
+    overdueProjects: { inApp: boolean; email: boolean; push: boolean };
+    deferUntil: { inApp: boolean; email: boolean; push: boolean };
+}
+
 export interface Profile {
     uid: string;
     email: string;
@@ -24,6 +32,7 @@ export interface Profile {
     productivity_assistant_enabled: boolean;
     next_task_suggestion_enabled: boolean;
     pomodoro_enabled: boolean;
+    notification_preferences?: NotificationPreferences | null;
 }
 
 export interface TelegramBotInfo {

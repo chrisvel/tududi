@@ -1,6 +1,9 @@
 const { Project, Notification, User } = require('../models');
 const { Op } = require('sequelize');
 const { logError } = require('./logService');
+const {
+    shouldSendInAppNotification,
+} = require('../utils/notificationPreferences');
 
 /**
  * Service to check for due and overdue projects
@@ -30,7 +33,7 @@ async function checkDueProjects() {
             include: [
                 {
                     model: User,
-                    attributes: ['id', 'email', 'name'],
+                    attributes: ['id', 'email', 'name', 'notification_preferences'],
                 },
             ],
         });
@@ -53,6 +56,11 @@ async function checkDueProjects() {
                     ? 'project_overdue'
                     : 'project_due_soon';
                 const level = isOverdue ? 'error' : 'warning';
+
+                // Check if user wants this notification
+                if (!shouldSendInAppNotification(project.User, notificationType)) {
+                    continue;
+                }
 
                 const recentNotifications = await Notification.findAll({
                     where: {

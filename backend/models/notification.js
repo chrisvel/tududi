@@ -38,6 +38,8 @@ module.exports = (sequelize) => {
                             'mention',
                             'reminder',
                             'system',
+                            'project_due_soon',
+                            'project_overdue',
                         ],
                     ],
                 },
