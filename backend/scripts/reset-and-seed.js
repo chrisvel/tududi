@@ -17,7 +17,9 @@ console.log(`📁 Database: ${config.dbFile}`);
 console.log(`🌍 Environment: ${config.environment}\n`);
 
 if (config.environment === 'production') {
-    console.error('❌ ERROR: Cannot run this script in production environment!');
+    console.error(
+        '❌ ERROR: Cannot run this script in production environment!'
+    );
     process.exit(1);
 }
 
@@ -45,7 +47,9 @@ async function main() {
 
         // Step 4: Seed notification test data
         console.log('4️⃣  Seeding notification test data...');
-        const { seedNotificationTestData } = require('./seed-notification-test-data');
+        const {
+            seedNotificationTestData,
+        } = require('./seed-notification-test-data');
 
         // Override process.exit to prevent the seeder from exiting
         const originalExit = process.exit;
@@ -62,7 +66,9 @@ async function main() {
         console.log('5️⃣  Generating notifications...');
 
         const { checkDueTasks } = require('../services/dueTaskService');
-        const { checkDeferredTasks } = require('../services/deferredTaskService');
+        const {
+            checkDeferredTasks,
+        } = require('../services/deferredTaskService');
         const { checkDueProjects } = require('../services/dueProjectService');
 
         const dueTasksResult = await checkDueTasks();
