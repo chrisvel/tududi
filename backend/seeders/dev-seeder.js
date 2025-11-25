@@ -348,6 +348,50 @@ async function seedDatabase() {
             tasks.push(todayTask);
         }
 
+        // Create subtasks for some tasks
+        console.log('📋 Creating subtasks for parent tasks...');
+        const { faker } = require('@faker-js/faker');
+
+        // Select 15-20 random tasks to have subtasks
+        const parentTaskIndices = [];
+        while (parentTaskIndices.length < 15) {
+            const randomIndex = Math.floor(Math.random() * tasks.length);
+            if (
+                !parentTaskIndices.includes(randomIndex) &&
+                tasks[randomIndex].status !== 2
+            ) {
+                // Don't add subtasks to completed tasks
+                parentTaskIndices.push(randomIndex);
+            }
+        }
+
+        for (const parentIndex of parentTaskIndices) {
+            const parentTask = tasks[parentIndex];
+            const numSubtasks = Math.floor(Math.random() * 4) + 2; // 2-5 subtasks
+
+            for (let i = 0; i < numSubtasks; i++) {
+                const subtask = await Task.create({
+                    name: faker.lorem.sentence({ min: 3, max: 6 }),
+                    description:
+                        Math.random() < 0.5 ? faker.lorem.paragraph() : null,
+                    priority: Math.floor(Math.random() * 3),
+                    status: Math.floor(Math.random() * 3), // 0, 1, or 2
+                    user_id: testUser.id,
+                    parent_task_id: parentTask.id,
+                    order: i,
+                    note:
+                        Math.random() < 0.3
+                            ? `${faker.lorem.sentence()}\n\n- ${faker.lorem.sentence()}\n- ${faker.lorem.sentence()}`
+                            : null,
+                });
+                tasks.push(subtask);
+            }
+        }
+
+        console.log(
+            `   ✅ Created subtasks for ${parentTaskIndices.length} parent tasks`
+        );
+
         // Create intelligent task-tag associations
         console.log('🔗 Creating intelligent task-tag associations...');
 
