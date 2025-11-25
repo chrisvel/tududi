@@ -1153,7 +1153,9 @@
       "recurring": "gjentakende maler",
       "nonRecurring": "ikke-gjentakende",
       "instances": "gjentakende instanser"
-    }
+    },
+    "deferUntilFilter": "Utsett til",
+    "deferUntil": ", utsett til"
   },
   "subtasks": {
     "placeholder": "Legg til en underoppgave..."

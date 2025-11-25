@@ -1153,7 +1153,9 @@
       "recurring": "powtarzające się szablony",
       "nonRecurring": "niepowtarzające się",
       "instances": "powtarzające się instancje"
-    }
+    },
+    "deferUntilFilter": "Odłóż do",
+    "deferUntil": ", odłóż do"
   },
   "subtasks": {
     "placeholder": "Dodaj podzadanie..."

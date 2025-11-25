@@ -1153,7 +1153,9 @@
       "recurring": "modelli ricorrenti",
       "nonRecurring": "non ricorrente",
       "instances": "istanze ricorrenti"
-    }
+    },
+    "deferUntilFilter": "Rimanda fino a",
+    "deferUntil": ", rimanda fino a"
   },
   "subtasks": {
     "placeholder": "Aggiungi un sottocompito..."

@@ -1153,7 +1153,9 @@
       "recurring": "ponavljajoče se predloge",
       "nonRecurring": "neponavljajoče se",
       "instances": "ponavljajoče se instance"
-    }
+    },
+    "deferUntilFilter": "Odloži do",
+    "deferUntil": ", odloži do"
   },
   "subtasks": {
     "placeholder": "Dodaj podnalogo..."

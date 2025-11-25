@@ -1153,7 +1153,9 @@
       "recurring": "tekrarlayan şablonlar",
       "nonRecurring": "tekrarlamayan",
       "instances": "tekrarlayan örnekler"
-    }
+    },
+    "deferUntilFilter": "Ertele",
+    "deferUntil": ", ertele"
   },
   "subtasks": {
     "placeholder": "Bir alt görev ekle..."

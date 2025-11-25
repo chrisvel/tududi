@@ -15,6 +15,7 @@ interface SearchResultsProps {
     selectedFilters: string[];
     selectedPriority: string | null;
     selectedDue: string | null;
+    selectedDefer: string | null;
     selectedTags: string[];
     selectedRecurring: string | null;
     onClose: () => void;
@@ -36,6 +37,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
     selectedFilters,
     selectedPriority,
     selectedDue,
+    selectedDefer,
     selectedTags,
     selectedRecurring,
     onClose,
@@ -52,6 +54,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                 selectedFilters.length === 0 &&
                 !selectedPriority &&
                 !selectedDue &&
+                !selectedDefer &&
                 selectedTags.length === 0 &&
                 !selectedRecurring
             ) {
@@ -66,6 +69,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                     filters: selectedFilters,
                     priority: selectedPriority || undefined,
                     due: selectedDue || undefined,
+                    defer: selectedDefer || undefined,
                     tags: selectedTags.length > 0 ? selectedTags : undefined,
                     recurring: selectedRecurring || undefined,
                 });
@@ -85,6 +89,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         selectedFilters,
         selectedPriority,
         selectedDue,
+        selectedDefer,
         selectedTags,
         selectedRecurring,
     ]);

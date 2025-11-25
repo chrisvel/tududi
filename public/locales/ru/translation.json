@@ -1153,7 +1153,9 @@
       "recurring": "повторяющиеся шаблоны",
       "nonRecurring": "неповторяющийся",
       "instances": "повторяющиеся экземпляры"
-    }
+    },
+    "deferUntilFilter": "Отложить до",
+    "deferUntil": ", отложить до"
   },
   "subtasks": {
     "placeholder": "Добавить подзадачу..."

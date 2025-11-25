@@ -1134,6 +1134,8 @@
     "extras": "Extras",
     "priorityFilter": "Priority",
     "dueFilter": "Due",
+    "deferUntilFilter": "Defer Until",
+    "deferUntil": ", defer until",
     "tagsFilter": "Tags",
     "recurringFilter": {
       "label": "Recurring",

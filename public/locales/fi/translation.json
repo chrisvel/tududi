@@ -1153,7 +1153,9 @@
       "recurring": "toistuvat mallit",
       "nonRecurring": "ei-toistuva",
       "instances": "toistuvat instanssit"
-    }
+    },
+    "deferUntilFilter": "Viivästytä kunnes",
+    "deferUntil": ", viivästytä kunnes"
   },
   "subtasks": {
     "placeholder": "Lisää alitehtävä..."

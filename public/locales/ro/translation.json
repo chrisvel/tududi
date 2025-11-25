@@ -1153,7 +1153,9 @@
       "recurring": "șabloane recurente",
       "nonRecurring": "non-recurent",
       "instances": "instanțe recurente"
-    }
+    },
+    "deferUntilFilter": "Amână până la",
+    "deferUntil": ", amână până la"
   },
   "subtasks": {
     "placeholder": "Adaugă o subtask..."

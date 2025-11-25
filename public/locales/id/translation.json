@@ -1153,7 +1153,9 @@
       "recurring": "template berulang",
       "nonRecurring": "tidak berulang",
       "instances": "instansi berulang"
-    }
+    },
+    "deferUntilFilter": "Tunda Hingga",
+    "deferUntil": ", tunda hingga"
   },
   "subtasks": {
     "placeholder": "Tambahkan subtugas..."

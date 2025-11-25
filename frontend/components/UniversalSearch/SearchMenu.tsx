@@ -55,6 +55,13 @@ const dueOptions = [
     { value: 'next_month', labelKey: 'dateIndicators.nextMonth' },
 ];
 
+const deferOptions = [
+    { value: 'today', labelKey: 'dateIndicators.today' },
+    { value: 'tomorrow', labelKey: 'dateIndicators.tomorrow' },
+    { value: 'next_week', labelKey: 'dateIndicators.nextWeek' },
+    { value: 'next_month', labelKey: 'dateIndicators.nextMonth' },
+];
+
 const recurringOptions = [
     { value: 'recurring', labelKey: 'search.recurringFilter.recurring' },
     { value: 'non_recurring', labelKey: 'search.recurringFilter.nonRecurring' },
@@ -73,6 +80,7 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
         null
     );
     const [selectedDue, setSelectedDue] = useState<string | null>(null);
+    const [selectedDefer, setSelectedDefer] = useState<string | null>(null);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [selectedRecurring, setSelectedRecurring] = useState<string | null>(
         null
@@ -112,6 +120,10 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
         setSelectedDue(selectedDue === due ? null : due);
     };
 
+    const handleDeferToggle = (defer: string) => {
+        setSelectedDefer(selectedDefer === defer ? null : defer);
+    };
+
     const handleTagToggle = (tagName: string) => {
         setSelectedTags((prev) =>
             prev.includes(tagName)
@@ -148,6 +160,7 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                     filters: selectedFilters,
                     priority: selectedPriority || null,
                     due: selectedDue || null,
+                    defer: selectedDefer || null,
                     tags: selectedTags.length > 0 ? selectedTags : null,
                     recurring: selectedRecurring || null,
                 }),
@@ -283,6 +296,23 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
             );
         }
 
+        // Add defer until filter
+        if (selectedDefer) {
+            const deferOption = deferOptions.find(
+                (opt) => opt.value === selectedDefer
+            );
+            const deferLabel = deferOption ? t(deferOption.labelKey) : selectedDefer;
+            parts.push(<span key="defer-label">{t('search.deferUntil') + ' '}</span>);
+            parts.push(
+                <span
+                    key="defer"
+                    style={{ fontWeight: 800, fontStyle: 'normal' }}
+                >
+                    {deferLabel}
+                </span>
+            );
+        }
+
         // Add tags filter
         if (selectedTags.length > 0) {
             parts.push(
@@ -353,6 +383,7 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
         searchQuery.trim() ||
         selectedPriority ||
         selectedDue ||
+        selectedDefer ||
         selectedTags.length > 0 ||
         selectedRecurring;
 
@@ -471,6 +502,27 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                                             }
                                             onToggle={() =>
                                                 handleDueToggle(option.value)
+                                            }
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Defer Until Filters */}
+                            <div>
+                                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1.5">
+                                    {t('search.deferUntilFilter')}
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                    {deferOptions.map((option) => (
+                                        <FilterBadge
+                                            key={option.value}
+                                            name={t(option.labelKey)}
+                                            isSelected={
+                                                selectedDefer === option.value
+                                            }
+                                            onToggle={() =>
+                                                handleDeferToggle(option.value)
                                             }
                                         />
                                     ))}
@@ -625,6 +677,7 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                 selectedFilters={selectedFilters}
                 selectedPriority={selectedPriority}
                 selectedDue={selectedDue}
+                selectedDefer={selectedDefer}
                 selectedTags={selectedTags}
                 selectedRecurring={selectedRecurring}
                 onClose={onClose}
