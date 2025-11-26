@@ -17,13 +17,11 @@ import {
     TagIcon,
     Squares2X2Icon,
     TrashIcon,
-    CameraIcon,
     CalendarIcon,
     ExclamationTriangleIcon,
     PlayIcon,
 } from '@heroicons/react/24/outline';
 import { getApiPath } from '../../config/paths';
-import { getPresetBanners, PresetBanner } from '../../utils/bannersService';
 
 interface ProjectModalProps {
     isOpen: boolean;
@@ -52,20 +50,13 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             tags: [],
             priority: null,
             due_date_at: null,
-            image_url: '',
         }
     );
 
     const [tags, setTags] = useState<string[]>(
         project?.tags?.map((tag) => tag.name) || []
     );
-    const [imageFile, setImageFile] = useState<File | null>(null);
-    const [imagePreview, setImagePreview] = useState<string>(
-        project?.image_url || ''
-    );
-    const [isUploading, setIsUploading] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
-    const [presetBanners] = useState<PresetBanner[]>(getPresetBanners());
 
     const { tagsStore } = useStore();
     // Avoid calling getTags() during component initialization to prevent remounting
@@ -73,7 +64,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     const { addNewTags } = tagsStore;
 
     const modalRef = useRef<HTMLDivElement>(null);
-    const fileInputRef = useRef<HTMLInputElement>(null);
     const nameInputRef = useRef<HTMLInputElement>(null);
     const [isClosing, setIsClosing] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -85,7 +75,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         state: false,
         tags: false,
         area: false,
-        image: false,
         priority: false,
         dueDate: false,
     });
@@ -133,10 +122,8 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 ...project,
                 tags: project.tags || [],
                 due_date_at: dueDateValue || null,
-                image_url: project.image_url || '',
             });
             setTags(project.tags?.map((tag) => tag.name) || []);
-            setImagePreview(project.image_url || '');
         } else {
             setFormData({
                 name: '',
@@ -146,12 +133,9 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 tags: [],
                 priority: null,
                 due_date_at: null,
-                image_url: '',
             });
             setTags([]);
-            setImagePreview('');
         }
-        setImageFile(null);
         setError(null);
     }, [project]);
 
@@ -276,100 +260,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         }));
     };
 
-    const handlePresetBannerSelect = (banner: PresetBanner) => {
-        setImageFile(null);
-        setImagePreview(banner.url);
-        setFormData((prev) => ({
-            ...prev,
-            image_url: banner.url,
-        }));
-    };
-
-    const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        // Simple client-side guard (10MB max)
-        const maxSizeBytes = 10 * 1024 * 1024;
-        if (file.size > maxSizeBytes) {
-            setError(
-                t(
-                    'errors.projectImageTooLarge',
-                    'Image is too large. Please choose a file under 10MB.'
-                )
-            );
-            if (fileInputRef.current) {
-                fileInputRef.current.value = '';
-            }
-            return;
-        }
-
-        setImageFile(file);
-
-        // Create preview
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            setImagePreview(ev.target?.result as string);
-        };
-        reader.readAsDataURL(file);
-    };
-
-    const handleImageUpload = async (): Promise<string | null> => {
-        if (!imageFile) return null;
-
-        setIsUploading(true);
-        try {
-            const formData = new FormData();
-            formData.append('image', imageFile);
-
-            const response = await fetch(getApiPath('upload/project-image'), {
-                method: 'POST',
-                credentials: 'include',
-                body: formData,
-            });
-
-            if (!response.ok) {
-                let serverMessage = 'Failed to upload image';
-                try {
-                    const errData = await response.json();
-                    if (errData?.error) serverMessage = errData.error;
-                } catch {
-                    // ignore parse errors
-                }
-                throw new Error(serverMessage);
-            }
-
-            const result = await response.json();
-            if (result?.imageUrl) {
-                return result.imageUrl;
-            }
-
-            throw new Error('Image URL missing from upload response');
-        } catch (error) {
-            console.error('Error uploading image:', error);
-            setError(
-                t(
-                    'errors.projectImageUpload',
-                    'Failed to upload image. Please try a smaller file or a different format.'
-                )
-            );
-            return null;
-        } finally {
-            setIsUploading(false);
-        }
-    };
-
-    const handleRemoveImage = () => {
-        setImageFile(null);
-        setImagePreview('');
-        setFormData((prev) => ({
-            ...prev,
-            image_url: '',
-        }));
-        if (fileInputRef.current) {
-            fileInputRef.current.value = '';
-        }
-    };
 
     const handleSubmit = async () => {
         // Validate required fields
@@ -391,22 +281,8 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 addNewTags(newTagNames);
             }
 
-            let imageUrl = formData.image_url;
-
-            // Upload image if a new one was selected
-            if (imageFile) {
-                const uploadedImageUrl = await handleImageUpload();
-                if (uploadedImageUrl) {
-                    imageUrl = uploadedImageUrl;
-                } else {
-                    setIsSaving(false);
-                    return;
-                }
-            }
-
             const projectData = {
                 ...formData,
-                image_url: imageUrl,
                 tags: tags.map((name) => ({ name })),
             };
 
@@ -457,9 +333,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 formData.state !== 'idea' ||
                 tags.length > 0 ||
                 formData.priority !== null ||
-                formData.due_date_at !== null ||
-                imageFile !== null ||
-                imagePreview !== ''
+                formData.due_date_at !== null
             );
         }
 
@@ -470,8 +344,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             formData.area_id !== project.area_id ||
             formData.state !== project.state ||
             formData.priority !== project.priority ||
-            formData.due_date_at !== project.due_date_at ||
-            imageFile !== null;
+            formData.due_date_at !== project.due_date_at;
 
         // Compare tags
         const originalTags = project.tags?.map((tag) => tag.name) || [];
@@ -718,135 +591,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                 </div>
                                             )}
 
-                                            {expandedSections.image && (
-                                                <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4">
-                                                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                                                        {t(
-                                                            'project.projectImage',
-                                                            'Project Image'
-                                                        )}
-                                                    </h3>
-
-                                                    {imagePreview ? (
-                                                        <div className="mb-3">
-                                                            <div className="relative inline-block">
-                                                                <img
-                                                                    src={
-                                                                        imagePreview
-                                                                    }
-                                                                    alt="Project preview"
-                                                                    className="w-32 h-20 object-cover rounded-md border border-gray-300 dark:border-gray-600"
-                                                                />
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={
-                                                                        handleRemoveImage
-                                                                    }
-                                                                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
-                                                                >
-                                                                    ×
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    ) : null}
-
-                                                    <div className="mb-4">
-                                                        <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
-                                                            {t(
-                                                                'project.choosePreset',
-                                                                'Choose a preset banner:'
-                                                            )}
-                                                        </p>
-                                                        <div className="grid grid-cols-2 gap-2">
-                                                            {presetBanners.map(
-                                                                (banner) => (
-                                                                    <button
-                                                                        key={
-                                                                            banner.filename
-                                                                        }
-                                                                        type="button"
-                                                                        onClick={() =>
-                                                                            handlePresetBannerSelect(
-                                                                                banner
-                                                                            )
-                                                                        }
-                                                                        className={`relative rounded-md overflow-hidden border-2 transition-all ${
-                                                                            imagePreview ===
-                                                                            banner.url
-                                                                                ? 'border-blue-500 ring-2 ring-blue-300 dark:ring-blue-700'
-                                                                                : 'border-gray-300 dark:border-gray-600 hover:border-blue-400'
-                                                                        }`}
-                                                                    >
-                                                                        <img
-                                                                            src={
-                                                                                banner.url
-                                                                            }
-                                                                            alt={`Banner by ${banner.creator}`}
-                                                                            className="w-full h-20 object-cover"
-                                                                        />
-                                                                        <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white text-xs px-1 py-0.5 text-center">
-                                                                            {
-                                                                                banner.creator
-                                                                            }
-                                                                        </div>
-                                                                    </button>
-                                                                )
-                                                            )}
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
-                                                        <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
-                                                            {t(
-                                                                'project.orUploadOwn',
-                                                                'Or upload your own:'
-                                                            )}
-                                                        </p>
-                                                        <input
-                                                            ref={fileInputRef}
-                                                            type="file"
-                                                            accept="image/*"
-                                                            onChange={
-                                                                handleImageSelect
-                                                            }
-                                                            className="hidden"
-                                                        />
-                                                        <button
-                                                            type="button"
-                                                            onClick={() =>
-                                                                fileInputRef.current?.click()
-                                                            }
-                                                            className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-                                                        >
-                                                            <svg
-                                                                className="w-4 h-4 mr-2"
-                                                                fill="none"
-                                                                stroke="currentColor"
-                                                                viewBox="0 0 24 24"
-                                                            >
-                                                                <path
-                                                                    strokeLinecap="round"
-                                                                    strokeLinejoin="round"
-                                                                    strokeWidth={
-                                                                        2
-                                                                    }
-                                                                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                                                                />
-                                                            </svg>
-                                                            {t(
-                                                                'project.browseImage',
-                                                                'Browse Image'
-                                                            )}
-                                                        </button>
-                                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                                            {t(
-                                                                'project.uploadImageHint',
-                                                                'Upload an image for your project (max 10MB)'
-                                                            )}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            )}
 
                                             {expandedSections.priority && (
                                                 <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4">
@@ -967,28 +711,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                             )}
                                         </button>
 
-                                        {/* Project Image Toggle */}
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                toggleSection('image')
-                                            }
-                                            className={`relative p-2 rounded-full transition-colors ${
-                                                expandedSections.image
-                                                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
-                                                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                            }`}
-                                            title={t(
-                                                'project.projectImage',
-                                                'Project Image'
-                                            )}
-                                        >
-                                            <CameraIcon className="h-5 w-5" />
-                                            {formData.image_url && (
-                                                <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
-                                            )}
-                                        </button>
-
                                         {/* Priority Toggle */}
                                         <button
                                             type="button"
@@ -1063,25 +785,18 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                 <button
                                     type="button"
                                     onClick={handleSubmit}
-                                    disabled={isUploading}
-                                    className={`px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none transition duration-150 ease-in-out text-sm ${
-                                        isUploading
-                                            ? 'opacity-50 cursor-not-allowed'
-                                            : ''
-                                    }`}
+                                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none transition duration-150 ease-in-out text-sm"
                                     data-testid="project-save-button"
                                 >
-                                    {isUploading
-                                        ? 'Uploading...'
-                                        : project
-                                          ? t(
-                                                'modals.updateProject',
-                                                'Update Project'
-                                            )
-                                          : t(
-                                                'modals.createProject',
-                                                'Create Project'
-                                            )}
+                                    {project
+                                        ? t(
+                                              'modals.updateProject',
+                                              'Update Project'
+                                          )
+                                        : t(
+                                              'modals.createProject',
+                                              'Create Project'
+                                          )}
                                 </button>
                             </div>
                         </div>

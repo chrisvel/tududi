@@ -7,6 +7,7 @@ export type ProjectState =
     | 'idea'
     | 'planned'
     | 'in_progress'
+    | 'active'
     | 'blocked'
     | 'completed';
 

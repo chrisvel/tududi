@@ -765,6 +765,7 @@ const ProjectDetails: React.FC = () => {
                     <ClipboardDocumentListIcon className="h-3 w-3 text-blue-500 flex-shrink-0 mt-0.5" />
                 );
             case 'in_progress':
+            case 'active':
                 return (
                     <PlayIcon className="h-3 w-3 text-green-500 flex-shrink-0 mt-0.5" />
                 );
