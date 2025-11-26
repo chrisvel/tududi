@@ -21,7 +21,6 @@ import {
     ExclamationTriangleIcon,
     PlayIcon,
 } from '@heroicons/react/24/outline';
-import { getApiPath } from '../../config/paths';
 
 interface ProjectModalProps {
     isOpen: boolean;
