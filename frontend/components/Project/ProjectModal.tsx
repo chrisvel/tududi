@@ -259,7 +259,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         }));
     };
 
-
     const handleSubmit = async () => {
         // Validate required fields
         if (!formData.name.trim()) {
@@ -589,7 +588,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                     </div>
                                                 </div>
                                             )}
-
 
                                             {expandedSections.priority && (
                                                 <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4">
