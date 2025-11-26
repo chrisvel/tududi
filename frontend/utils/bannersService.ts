@@ -44,7 +44,7 @@ export function getPresetBanners(): PresetBanner[] {
         'wil-stewart--m9PKhID7Nk-unsplash.jpg',
     ];
 
-    return banners.map(filename => ({
+    return banners.map((filename) => ({
         filename,
         url: `/banners/${filename}`,
         creator: extractCreatorFromFilename(filename),

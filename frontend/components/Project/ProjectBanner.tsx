@@ -12,7 +12,10 @@ import { Project } from '../../entities/Project';
 import { Area } from '../../entities/Area';
 import { useNavigate } from 'react-router-dom';
 import { TFunction } from 'i18next';
-import { getCreatorFromBannerUrl, isPresetBanner } from '../../utils/bannersService';
+import {
+    getCreatorFromBannerUrl,
+    isPresetBanner,
+} from '../../utils/bannersService';
 
 interface ProjectBannerProps {
     project: Project;
