@@ -1153,7 +1153,9 @@
       "recurring": "återkommande mallar",
       "nonRecurring": "icke-återkommande",
       "instances": "återkommande instanser"
-    }
+    },
+    "deferUntilFilter": "Skjut upp tills",
+    "deferUntil": ", skjuta upp tills"
   },
   "subtasks": {
     "placeholder": "Lägg till en deluppgift..."

@@ -1153,7 +1153,9 @@
       "recurring": "herhalende sjablonen",
       "nonRecurring": "niet-herhalend",
       "instances": "herhalende instanties"
-    }
+    },
+    "deferUntilFilter": "Uitstellen tot",
+    "deferUntil": ", uitstellen tot"
   },
   "subtasks": {
     "placeholder": "Voeg een subtaak toe..."

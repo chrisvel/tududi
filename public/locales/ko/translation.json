@@ -1153,7 +1153,9 @@
       "recurring": "반복 템플릿",
       "nonRecurring": "비반복",
       "instances": "반복 인스턴스"
-    }
+    },
+    "deferUntilFilter": "지연할 때까지",
+    "deferUntil": ", 지연할 때까지"
   },
   "subtasks": {
     "placeholder": "하위 작업 추가..."

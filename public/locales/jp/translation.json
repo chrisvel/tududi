@@ -1153,7 +1153,9 @@
       "recurring": "定期的なテンプレート",
       "nonRecurring": "非定期的",
       "instances": "定期的なインスタンス"
-    }
+    },
+    "deferUntilFilter": "フィルターまで遅延",
+    "deferUntil": "、遅延するまで"
   },
   "subtasks": {
     "placeholder": "サブタスクを追加..."

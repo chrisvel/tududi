@@ -1153,7 +1153,9 @@
       "recurring": "gentagende skabeloner",
       "nonRecurring": "ikke-gentagende",
       "instances": "gentagende instanser"
-    }
+    },
+    "deferUntilFilter": "Udskyd indtil",
+    "deferUntil": ", udskyd indtil"
   },
   "subtasks": {
     "placeholder": "Tilføj en underopgave..."

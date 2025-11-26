@@ -1153,7 +1153,9 @@
       "recurring": "قوالب متكررة",
       "nonRecurring": "غير متكرر",
       "instances": "حالات متكررة"
-    }
+    },
+    "deferUntilFilter": "تأجيل حتى",
+    "deferUntil": "، تأجيل حتى"
   },
   "subtasks": {
     "placeholder": "أضف مهمة فرعية..."

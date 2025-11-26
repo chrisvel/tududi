@@ -1153,7 +1153,9 @@
       "recurring": "modèles récurrents",
       "nonRecurring": "non récurrent",
       "instances": "instances récurrentes"
-    }
+    },
+    "deferUntilFilter": "Différer jusqu'à",
+    "deferUntil": ", différer jusqu'à"
   },
   "subtasks": {
     "placeholder": "Ajouter une sous-tâche..."

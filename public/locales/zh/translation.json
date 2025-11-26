@@ -1153,7 +1153,9 @@
       "recurring": "循环模板",
       "nonRecurring": "非循环",
       "instances": "循环实例"
-    }
+    },
+    "deferUntilFilter": "延迟到",
+    "deferUntil": "，延迟到"
   },
   "subtasks": {
     "placeholder": "添加子任务..."

@@ -5,12 +5,17 @@ import {
     PencilSquareIcon,
     TrashIcon,
     ShareIcon,
+    CameraIcon,
 } from '@heroicons/react/24/outline';
 import BannerBadge from '../Shared/BannerBadge';
 import { Project } from '../../entities/Project';
 import { Area } from '../../entities/Area';
 import { useNavigate } from 'react-router-dom';
 import { TFunction } from 'i18next';
+import {
+    getCreatorFromBannerUrl,
+    isPresetBanner,
+} from '../../utils/bannersService';
 
 interface ProjectBannerProps {
     project: Project;
@@ -19,6 +24,7 @@ interface ProjectBannerProps {
     getStateIcon: (state: string) => React.ReactNode;
     onDeleteClick: () => void;
     editButtonRef: RefObject<HTMLButtonElement>;
+    onEditBannerClick?: () => void;
 }
 
 const ProjectBanner: React.FC<ProjectBannerProps> = ({
@@ -28,8 +34,13 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
     getStateIcon,
     onDeleteClick,
     editButtonRef,
+    onEditBannerClick,
 }) => {
     const navigate = useNavigate();
+    const creatorName =
+        project.image_url && isPresetBanner(project.image_url)
+            ? getCreatorFromBannerUrl(project.image_url)
+            : null;
 
     return (
         <div className="w-full">
@@ -38,10 +49,16 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                     <img
                         src={project.image_url}
                         alt={project.name}
-                        className="w-full h-64 object-cover"
+                        className="w-full h-[282px] object-cover"
                     />
                 ) : (
-                    <div className="w-full h-64 bg-gradient-to-br from-blue-500 to-purple-600 dark:from-blue-600 dark:to-purple-700"></div>
+                    <div className="w-full h-[282px] bg-gradient-to-br from-blue-500 to-purple-600 dark:from-blue-600 dark:to-purple-700"></div>
+                )}
+
+                {creatorName && (
+                    <div className="absolute top-2 right-2 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">
+                        Photo by {creatorName}
+                    </div>
                 )}
 
                 <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
@@ -148,6 +165,20 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                 </div>
 
                 <div className="absolute bottom-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {onEditBannerClick && (
+                        <button
+                            type="button"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                onEditBannerClick();
+                            }}
+                            className="p-2 bg-black bg-opacity-50 text-purple-400 hover:text-purple-300 hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
+                            title={t('project.editBanner', 'Edit Banner')}
+                        >
+                            <CameraIcon className="h-5 w-5" />
+                        </button>
+                    )}
                     <button
                         ref={editButtonRef}
                         type="button"

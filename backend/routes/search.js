@@ -43,6 +43,7 @@ router.get('/', async (req, res) => {
             filters,
             priority,
             due,
+            defer,
             tags: tagsParam,
             recurring,
             limit: limitParam,
@@ -121,6 +122,43 @@ router.get('/', async (req, res) => {
             }
         }
 
+        // Calculate defer until date range based on filter
+        let deferDateCondition = null;
+        if (defer) {
+            const now = moment().startOf('day');
+            let startDate, endDate;
+
+            switch (defer) {
+                case 'today':
+                    startDate = now.clone();
+                    endDate = now.clone().endOf('day');
+                    break;
+                case 'tomorrow':
+                    startDate = now.clone().add(1, 'day');
+                    endDate = now.clone().add(1, 'day').endOf('day');
+                    break;
+                case 'next_week':
+                    startDate = now.clone();
+                    endDate = now.clone().add(7, 'days').endOf('day');
+                    break;
+                case 'next_month':
+                    startDate = now.clone();
+                    endDate = now.clone().add(1, 'month').endOf('day');
+                    break;
+            }
+
+            if (startDate && endDate) {
+                deferDateCondition = {
+                    defer_until: {
+                        [Op.between]: [
+                            startDate.toISOString(),
+                            endDate.toISOString(),
+                        ],
+                    },
+                };
+            }
+        }
+
         // Search Tasks
         if (filterTypes.includes('Task')) {
             const taskConditions = {
@@ -159,6 +197,11 @@ router.get('/', async (req, res) => {
             // Add due date filter if specified
             if (dueDateCondition) {
                 Object.assign(taskConditions, dueDateCondition);
+            }
+
+            // Add defer until filter if specified
+            if (deferDateCondition) {
+                Object.assign(taskConditions, deferDateCondition);
             }
 
             // Add recurring filter if specified

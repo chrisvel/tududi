@@ -67,6 +67,7 @@ const getStateLabel = (state: ProjectState | undefined, t: any): string => {
         case 'planned':
             return t('projects.states.planned', 'Planned');
         case 'in_progress':
+        case 'active':
             return t('projects.states.in_progress', 'In Progress');
         case 'blocked':
             return t('projects.states.blocked', 'Blocked');

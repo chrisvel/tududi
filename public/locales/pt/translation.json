@@ -1153,7 +1153,9 @@
       "recurring": "modelos recorrentes",
       "nonRecurring": "não recorrente",
       "instances": "instâncias recorrentes"
-    }
+    },
+    "deferUntilFilter": "Aguardar Até",
+    "deferUntil": ", aguardar até"
   },
   "subtasks": {
     "placeholder": "Adicionar uma subtarefa..."

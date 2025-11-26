@@ -1154,7 +1154,9 @@
       "recurring": "plantillas recurrentes",
       "nonRecurring": "no recurrente",
       "instances": "instancias recurrentes"
-    }
+    },
+    "deferUntilFilter": "Aplazar hasta",
+    "deferUntil": ", aplazar hasta"
   },
   "subtasks": {
     "placeholder": "Agregar una subtarea..."

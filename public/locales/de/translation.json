@@ -1162,7 +1162,9 @@
       "recurring": "wiederkehrende Vorlagen",
       "nonRecurring": "nicht-wiederkehrend",
       "instances": "wiederkehrende Instanzen"
-    }
+    },
+    "deferUntilFilter": "Bis zu",
+    "deferUntil": ", bis zu"
   },
   "subtasks": {
     "placeholder": "Fügen Sie eine Unteraufgabe hinzu..."

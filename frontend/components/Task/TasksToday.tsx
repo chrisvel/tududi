@@ -15,6 +15,7 @@ import {
     ChevronRightIcon,
     Cog6ToothIcon,
     CalendarDaysIcon,
+    QueueListIcon,
 } from '@heroicons/react/24/outline';
 import {
     fetchTasks,
@@ -120,6 +121,21 @@ const TasksToday: React.FC = () => {
         tasks_completed_today: [],
     });
 
+    // Pagination state for Today Plan tasks
+    const [pagination, setPagination] = useState({
+        total: 0,
+        limit: 20,
+        offset: 0,
+        hasMore: false,
+    });
+
+    // Client-side pagination for Due Today tasks (since backend returns all)
+    const [dueTodayDisplayLimit, setDueTodayDisplayLimit] = useState(20);
+
+    // Client-side pagination for Completed Today tasks (since backend returns all)
+    const [completedTodayDisplayLimit, setCompletedTodayDisplayLimit] =
+        useState(20);
+
     // Helper function to get completion trend vs average
     const getCompletionTrend = () => {
         const todayCount = metrics.tasks_completed_today.length;
@@ -216,7 +232,9 @@ const TasksToday: React.FC = () => {
 
             setIsLoading(true);
             try {
-                const result = await fetchTasks('?type=today');
+                const result = await fetchTasks(
+                    `?type=today&limit=20&offset=0`
+                );
                 if (isMounted.current) {
                     setMetrics({
                         ...result.metrics,
@@ -228,6 +246,12 @@ const TasksToday: React.FC = () => {
                         tasks_completed_today:
                             result.tasks_completed_today || [],
                     } as any);
+
+                    // Update pagination state if pagination metadata is present
+                    if (result.pagination) {
+                        setPagination(result.pagination);
+                    }
+
                     useStore.getState().tasksStore.setTasks(result.tasks);
                     setIsError(false);
                 }
@@ -744,6 +768,101 @@ const TasksToday: React.FC = () => {
         [handleTaskUpdate]
     );
 
+    // Load more tasks (pagination)
+    const handleLoadMore = useCallback(
+        async (all: boolean = false) => {
+            if (!isMounted.current || isLoading) return;
+            if (!all && !pagination.hasMore) return;
+
+            setIsLoading(true);
+            try {
+                let limit: number, offset: number;
+                if (all) {
+                    // Load all remaining tasks
+                    limit = pagination.total > 0 ? pagination.total : 10000;
+                    offset = 0;
+                } else {
+                    // Load next page
+                    limit = pagination.limit;
+                    offset = pagination.offset + pagination.limit;
+                }
+
+                const result = await fetchTasks(
+                    `?type=today&limit=${limit}&offset=${offset}`
+                );
+
+                if (isMounted.current) {
+                    if (all) {
+                        // Replace all tasks when loading all
+                        setMetrics({
+                            ...result.metrics,
+                            tasks_in_progress: result.tasks_in_progress || [],
+                            tasks_due_today: result.tasks_due_today || [],
+                            today_plan_tasks: result.tasks || [],
+                            suggested_tasks: result.suggested_tasks || [],
+                            tasks_completed_today:
+                                result.tasks_completed_today || [],
+                        } as any);
+
+                        useStore.getState().tasksStore.setTasks(result.tasks);
+                    } else {
+                        // Append new tasks to existing ones
+                        setMetrics((prevMetrics) => ({
+                            ...result.metrics,
+                            tasks_in_progress: [
+                                ...(prevMetrics.tasks_in_progress || []),
+                                ...(result.tasks_in_progress || []),
+                            ],
+                            tasks_due_today: [
+                                ...(prevMetrics.tasks_due_today || []),
+                                ...(result.tasks_due_today || []),
+                            ],
+                            today_plan_tasks: [
+                                ...(prevMetrics.today_plan_tasks || []),
+                                ...(result.tasks || []),
+                            ],
+                            suggested_tasks: [
+                                ...(prevMetrics.suggested_tasks || []),
+                                ...(result.suggested_tasks || []),
+                            ],
+                            tasks_completed_today: [
+                                ...(prevMetrics.tasks_completed_today || []),
+                                ...(result.tasks_completed_today || []),
+                            ],
+                        }));
+
+                        // Append tasks to store
+                        const currentTasks =
+                            useStore.getState().tasksStore.tasks;
+                        useStore
+                            .getState()
+                            .tasksStore.setTasks([
+                                ...currentTasks,
+                                ...result.tasks,
+                            ]);
+                    }
+
+                    // Update pagination state
+                    if (result.pagination) {
+                        setPagination(result.pagination);
+                    }
+
+                    // If loading all, mark hasMore as false
+                    if (all) {
+                        setPagination((prev) => ({ ...prev, hasMore: false }));
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading more tasks:', error);
+            } finally {
+                if (isMounted.current) {
+                    setIsLoading(false);
+                }
+            }
+        },
+        [pagination, isLoading]
+    );
+
     // Calculate today's progress for the progress bar
     const getTodayProgress = () => {
         const todayTasks = metrics.today_plan_tasks || [];
@@ -1091,6 +1210,70 @@ const TasksToday: React.FC = () => {
                     onTaskCompletionToggle={handleTaskCompletionToggle}
                 />
 
+                {/* Load More Buttons for Today Plan Tasks */}
+                {pagination.hasMore && (
+                    <div className="flex justify-center pt-4 pb-2 gap-3">
+                        <button
+                            onClick={() => handleLoadMore(false)}
+                            disabled={isLoading}
+                            className="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                            {isLoading ? (
+                                <>
+                                    <svg
+                                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-500"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <circle
+                                            className="opacity-25"
+                                            cx="12"
+                                            cy="12"
+                                            r="10"
+                                            stroke="currentColor"
+                                            strokeWidth="4"
+                                        ></circle>
+                                        <path
+                                            className="opacity-75"
+                                            fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                        ></path>
+                                    </svg>
+                                    {t('common.loading', 'Loading...')}
+                                </>
+                            ) : (
+                                <>
+                                    <QueueListIcon className="h-4 w-4 mr-2" />
+                                    {t('common.loadMore', 'Load More')}
+                                </>
+                            )}
+                        </button>
+                        <button
+                            onClick={() => handleLoadMore(true)}
+                            disabled={isLoading}
+                            className="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                            {t('common.showAll', 'Show All')}
+                        </button>
+                    </div>
+                )}
+
+                {/* Pagination info for Today Plan tasks */}
+                {(metrics.today_plan_tasks || []).length > 0 && (
+                    <div className="text-center text-sm text-gray-500 dark:text-gray-400 pt-2 pb-4">
+                        {t(
+                            'tasks.showingItems',
+                            'Showing {{current}} of {{total}} items',
+                            {
+                                current: (metrics.today_plan_tasks || [])
+                                    .length,
+                                total: pagination.total,
+                            }
+                        )}
+                    </div>
+                )}
+
                 {/* Suggested Tasks - Separate setting */}
                 {!isSettingsLoaded ? (
                     // Invisible placeholder for suggestions
@@ -1145,7 +1328,10 @@ const TasksToday: React.FC = () => {
                                 {t('tasks.dueToday')}
                             </h3>
                             <TaskList
-                                tasks={metrics.tasks_due_today}
+                                tasks={metrics.tasks_due_today.slice(
+                                    0,
+                                    dueTodayDisplayLimit
+                                )}
                                 onTaskUpdate={handleTaskUpdate}
                                 onTaskDelete={handleTaskDelete}
                                 projects={localProjects}
@@ -1154,6 +1340,49 @@ const TasksToday: React.FC = () => {
                                     handleTaskCompletionToggle
                                 }
                             />
+
+                            {/* Load More Buttons for Due Today Tasks */}
+                            {dueTodayDisplayLimit <
+                                metrics.tasks_due_today.length && (
+                                <div className="flex justify-center pt-4 pb-2 gap-3">
+                                    <button
+                                        onClick={() =>
+                                            setDueTodayDisplayLimit(
+                                                (prev) => prev + 20
+                                            )
+                                        }
+                                        className="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                    >
+                                        <QueueListIcon className="h-4 w-4 mr-2" />
+                                        {t('common.loadMore', 'Load More')}
+                                    </button>
+                                    <button
+                                        onClick={() =>
+                                            setDueTodayDisplayLimit(
+                                                metrics.tasks_due_today.length
+                                            )
+                                        }
+                                        className="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                    >
+                                        {t('common.showAll', 'Show All')}
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Pagination info for Due Today tasks */}
+                            <div className="text-center text-sm text-gray-500 dark:text-gray-400 pt-2 pb-4">
+                                {t(
+                                    'tasks.showingItems',
+                                    'Showing {{current}} of {{total}} items',
+                                    {
+                                        current: Math.min(
+                                            dueTodayDisplayLimit,
+                                            metrics.tasks_due_today.length
+                                        ),
+                                        total: metrics.tasks_due_today.length,
+                                    }
+                                )}
+                            </div>
                         </div>
                     )}
 
@@ -1184,14 +1413,71 @@ const TasksToday: React.FC = () => {
                                 </div>
                                 {!isCompletedCollapsed &&
                                     (completedToday.length > 0 ? (
-                                        <TaskList
-                                            tasks={completedToday}
-                                            onTaskUpdate={handleTaskUpdate}
-                                            onTaskDelete={handleTaskDelete}
-                                            projects={localProjects}
-                                            onToggleToday={handleToggleToday}
-                                            showCompletedTasks={true}
-                                        />
+                                        <>
+                                            <TaskList
+                                                tasks={completedToday.slice(
+                                                    0,
+                                                    completedTodayDisplayLimit
+                                                )}
+                                                onTaskUpdate={handleTaskUpdate}
+                                                onTaskDelete={handleTaskDelete}
+                                                projects={localProjects}
+                                                onToggleToday={
+                                                    handleToggleToday
+                                                }
+                                                showCompletedTasks={true}
+                                            />
+
+                                            {/* Load More Buttons for Completed Today Tasks */}
+                                            {completedTodayDisplayLimit <
+                                                completedToday.length && (
+                                                <div className="flex justify-center pt-4 pb-2 gap-3">
+                                                    <button
+                                                        onClick={() =>
+                                                            setCompletedTodayDisplayLimit(
+                                                                (prev) =>
+                                                                    prev + 20
+                                                            )
+                                                        }
+                                                        className="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                                    >
+                                                        <QueueListIcon className="h-4 w-4 mr-2" />
+                                                        {t(
+                                                            'common.loadMore',
+                                                            'Load More'
+                                                        )}
+                                                    </button>
+                                                    <button
+                                                        onClick={() =>
+                                                            setCompletedTodayDisplayLimit(
+                                                                completedToday.length
+                                                            )
+                                                        }
+                                                        className="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                                    >
+                                                        {t(
+                                                            'common.showAll',
+                                                            'Show All'
+                                                        )}
+                                                    </button>
+                                                </div>
+                                            )}
+
+                                            {/* Pagination info for Completed Today tasks */}
+                                            <div className="text-center text-sm text-gray-500 dark:text-gray-400 pt-2 pb-4">
+                                                {t(
+                                                    'tasks.showingItems',
+                                                    'Showing {{current}} of {{total}} items',
+                                                    {
+                                                        current: Math.min(
+                                                            completedTodayDisplayLimit,
+                                                            completedToday.length
+                                                        ),
+                                                        total: completedToday.length,
+                                                    }
+                                                )}
+                                            </div>
+                                        </>
                                     ) : (
                                         <p className="text-gray-500 dark:text-gray-400 text-center mt-4">
                                             {t(

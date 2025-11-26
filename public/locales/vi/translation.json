@@ -1153,7 +1153,9 @@
       "recurring": "mẫu lặp lại",
       "nonRecurring": "không lặp lại",
       "instances": "các phiên bản lặp lại"
-    }
+    },
+    "deferUntilFilter": "Hoãn lại cho đến",
+    "deferUntil": ", hoãn lại cho đến"
   },
   "subtasks": {
     "placeholder": "Thêm một công việc phụ..."

@@ -42,6 +42,7 @@ import { usePersistedModal } from '../../hooks/usePersistedModal';
 import { getApiPath } from '../../config/paths';
 import ProjectInsightsPanel from './ProjectInsightsPanel';
 import ProjectBanner from './ProjectBanner';
+import BannerEditModal from './BannerEditModal';
 import ProjectTasksSection from './ProjectTasksSection';
 import ProjectNotesSection from './ProjectNotesSection';
 import { useProjectMetrics } from './useProjectMetrics';
@@ -65,6 +66,7 @@ const ProjectDetails: React.FC = () => {
     const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
+    const [isBannerEditModalOpen, setIsBannerEditModalOpen] = useState(false);
     const [activeTab, setActiveTab] = useState<'tasks' | 'notes'>('tasks');
     const [taskStatusFilter, setTaskStatusFilter] = useState<
         'all' | 'active' | 'completed'
@@ -454,6 +456,29 @@ const ProjectDetails: React.FC = () => {
         closeModal();
     };
 
+    const handleEditBannerClick = () => {
+        setIsBannerEditModalOpen(true);
+    };
+
+    const handleSaveBanner = async (imageUrl: string) => {
+        if (!project || !project.uid) return;
+
+        const updatedProject = await updateProject(project.uid, {
+            ...project,
+            image_url: imageUrl,
+        });
+
+        setProject((prev) => ({
+            ...updatedProject,
+            area: updatedProject.area || prev?.area,
+            Area: (updatedProject as any).Area || (prev as any)?.Area,
+        }));
+
+        showSuccessToast(
+            t('success.bannerUpdated', 'Banner updated successfully!')
+        );
+    };
+
     const handleCreateNextAction = async (
         projectId: number,
         actionDescription: string
@@ -740,6 +765,7 @@ const ProjectDetails: React.FC = () => {
                     <ClipboardDocumentListIcon className="h-3 w-3 text-blue-500 flex-shrink-0 mt-0.5" />
                 );
             case 'in_progress':
+            case 'active':
                 return (
                     <PlayIcon className="h-3 w-3 text-green-500 flex-shrink-0 mt-0.5" />
                 );
@@ -868,6 +894,7 @@ const ProjectDetails: React.FC = () => {
                     setIsConfirmDialogOpen(true);
                 }}
                 editButtonRef={editButtonRef}
+                onEditBannerClick={handleEditBannerClick}
             />
 
             <div className="w-full px-4 sm:px-6 lg:px-10">
@@ -1130,6 +1157,13 @@ const ProjectDetails: React.FC = () => {
                         onSave={handleSaveProject}
                         project={project}
                         areas={areas}
+                    />
+
+                    <BannerEditModal
+                        isOpen={isBannerEditModalOpen}
+                        onClose={() => setIsBannerEditModalOpen(false)}
+                        onSave={handleSaveBanner}
+                        currentImageUrl={project.image_url}
                     />
 
                     <NoteModal

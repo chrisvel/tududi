@@ -5,6 +5,7 @@ interface SearchParams {
     filters?: string[];
     priority?: string;
     due?: string;
+    defer?: string;
     tags?: string[];
     recurring?: string;
     limit?: number;
@@ -55,6 +56,10 @@ export const searchUniversal = async (
 
         if (params.due) {
             queryParams.append('due', params.due);
+        }
+
+        if (params.defer) {
+            queryParams.append('defer', params.defer);
         }
 
         if (params.tags && params.tags.length > 0) {
