@@ -23,6 +23,7 @@ import {
     PlayIcon,
 } from '@heroicons/react/24/outline';
 import { getApiPath } from '../../config/paths';
+import { getPresetBanners, PresetBanner } from '../../utils/bannersService';
 
 interface ProjectModalProps {
     isOpen: boolean;
@@ -64,6 +65,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     );
     const [isUploading, setIsUploading] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [presetBanners] = useState<PresetBanner[]>(getPresetBanners());
 
     const { tagsStore } = useStore();
     // Avoid calling getTags() during component initialization to prevent remounting
@@ -271,6 +273,15 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         setFormData((prev) => ({
             ...prev,
             due_date_at: value || null,
+        }));
+    };
+
+    const handlePresetBannerSelect = (banner: PresetBanner) => {
+        setImageFile(null);
+        setImagePreview(banner.url);
+        setFormData((prev) => ({
+            ...prev,
+            image_url: banner.url,
         }));
     };
 
@@ -739,46 +750,99 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                         </div>
                                                     ) : null}
 
-                                                    <input
-                                                        ref={fileInputRef}
-                                                        type="file"
-                                                        accept="image/*"
-                                                        onChange={
-                                                            handleImageSelect
-                                                        }
-                                                        className="hidden"
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            fileInputRef.current?.click()
-                                                        }
-                                                        className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-                                                    >
-                                                        <svg
-                                                            className="w-4 h-4 mr-2"
-                                                            fill="none"
-                                                            stroke="currentColor"
-                                                            viewBox="0 0 24 24"
+                                                    <div className="mb-4">
+                                                        <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                                                            {t(
+                                                                'project.choosePreset',
+                                                                'Choose a preset banner:'
+                                                            )}
+                                                        </p>
+                                                        <div className="grid grid-cols-2 gap-2">
+                                                            {presetBanners.map(
+                                                                (banner) => (
+                                                                    <button
+                                                                        key={
+                                                                            banner.filename
+                                                                        }
+                                                                        type="button"
+                                                                        onClick={() =>
+                                                                            handlePresetBannerSelect(
+                                                                                banner
+                                                                            )
+                                                                        }
+                                                                        className={`relative rounded-md overflow-hidden border-2 transition-all ${
+                                                                            imagePreview ===
+                                                                            banner.url
+                                                                                ? 'border-blue-500 ring-2 ring-blue-300 dark:ring-blue-700'
+                                                                                : 'border-gray-300 dark:border-gray-600 hover:border-blue-400'
+                                                                        }`}
+                                                                    >
+                                                                        <img
+                                                                            src={
+                                                                                banner.url
+                                                                            }
+                                                                            alt={`Banner by ${banner.creator}`}
+                                                                            className="w-full h-20 object-cover"
+                                                                        />
+                                                                        <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white text-xs px-1 py-0.5 text-center">
+                                                                            {
+                                                                                banner.creator
+                                                                            }
+                                                                        </div>
+                                                                    </button>
+                                                                )
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
+                                                        <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                                                            {t(
+                                                                'project.orUploadOwn',
+                                                                'Or upload your own:'
+                                                            )}
+                                                        </p>
+                                                        <input
+                                                            ref={fileInputRef}
+                                                            type="file"
+                                                            accept="image/*"
+                                                            onChange={
+                                                                handleImageSelect
+                                                            }
+                                                            className="hidden"
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                fileInputRef.current?.click()
+                                                            }
+                                                            className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                                                         >
-                                                            <path
-                                                                strokeLinecap="round"
-                                                                strokeLinejoin="round"
-                                                                strokeWidth={2}
-                                                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                                                            />
-                                                        </svg>
-                                                        {t(
-                                                            'project.browseImage',
-                                                            'Browse Image'
-                                                        )}
-                                                    </button>
-                                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                                        {t(
-                                                            'project.uploadImageHint',
-                                                            'Upload an image for your project (max 10MB)'
-                                                        )}
-                                                    </p>
+                                                            <svg
+                                                                className="w-4 h-4 mr-2"
+                                                                fill="none"
+                                                                stroke="currentColor"
+                                                                viewBox="0 0 24 24"
+                                                            >
+                                                                <path
+                                                                    strokeLinecap="round"
+                                                                    strokeLinejoin="round"
+                                                                    strokeWidth={2}
+                                                                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                                                                />
+                                                            </svg>
+                                                            {t(
+                                                                'project.browseImage',
+                                                                'Browse Image'
+                                                            )}
+                                                        </button>
+                                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                            {t(
+                                                                'project.uploadImageHint',
+                                                                'Upload an image for your project (max 10MB)'
+                                                            )}
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             )}
 
