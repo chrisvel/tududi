@@ -219,16 +219,22 @@ const Notes: React.FC = () => {
                     note.uid === editingNote.uid ? savedNote : note
                 );
                 setNotes(updatedNotes);
-                handleSelectNote(savedNote);
+                setIsEditing(false);
+                setEditingNote(null);
+                setShowProjectDropdown(false);
+                setShowTagsInput(false);
+                setPreviewNote(savedNote);
+                navigate(`/notes/${savedNote.uid}`, { replace: true });
             } else {
                 const newNote = await createNote(editingNote);
                 setNotes([newNote, ...notes]);
-                handleSelectNote(newNote);
+                setIsEditing(false);
+                setEditingNote(null);
+                setShowProjectDropdown(false);
+                setShowTagsInput(false);
+                setPreviewNote(newNote);
+                navigate(`/notes/${newNote.uid}`, { replace: true });
             }
-            setIsEditing(false);
-            setEditingNote(null);
-            setShowProjectDropdown(false);
-            setShowTagsInput(false);
         } catch (err) {
             console.error('Error saving note:', err);
         }
