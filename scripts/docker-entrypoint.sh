@@ -76,4 +76,4 @@ set_db_file_permissions
 
 # Drop privileges and execute the original start script
 echo "Starting application as user $TARGET_USER"
-exec gosu "$TARGET_USER" dumb-init -- /app/backend/cmd/start.sh
+exec su-exec "$TARGET_USER" dumb-init -- /app/backend/cmd/start.sh
