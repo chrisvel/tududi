@@ -28,6 +28,7 @@
 **/db/*.db
 backend/db/
 backend/uploads/
+uploads/
 backend/tests/
 backend/dist/
 

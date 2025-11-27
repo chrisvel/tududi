@@ -21,6 +21,10 @@ backend/coverage/
 
 # User uploaded files
 backend/uploads/
+uploads/
+
+# Docker volumes
+tududi_db/
 
 # Log files
 *.log
