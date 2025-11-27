@@ -26,6 +26,10 @@
 **/db/*.sqlite3*
 **/*.sqlite3*
 **/db/*.db
+backend/db/
+backend/uploads/
+backend/tests/
+backend/dist/
 
 # IDE and editor files
 .vscode/
