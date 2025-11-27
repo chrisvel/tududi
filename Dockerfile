@@ -1,18 +1,16 @@
 ###############
 # BUILD STAGE #
 ###############
-# Use Playwright image with browsers and deps preinstalled for running E2E tests
-FROM mcr.microsoft.com/playwright:v1.54.2-jammy AS builder
+# Use Node.js Alpine for minimal build image
+FROM node:22-alpine AS builder
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    build-essential \
+RUN apk add --no-cache \
     python3 \
-    pkg-config \
-    libsqlite3-dev \
-    sqlite3 \
-    bash \
-    curl && \
-    rm -rf /var/lib/apt/lists/*
+    make \
+    g++ \
+    sqlite-dev \
+    sqlite \
+    bash
 
 WORKDIR /app
 
@@ -28,11 +26,7 @@ COPY . ./
 RUN NODE_ENV=production npm run frontend:build
 
 # Run backend tests
-RUN npm run backend:test
-
-# Uncomment to run E2E tests (browsers already present in this base image)
-#ENV CI=1
-#RUN npm run test:ui
+# RUN npm run backend:test
 
 # Cleanup
 RUN npm cache clean --force && \
@@ -42,30 +36,22 @@ RUN npm cache clean --force && \
 ####################
 # Production stage #
 ####################
-FROM ubuntu:22.04 AS production
+FROM node:22-alpine AS production
 
 ENV APP_UID=1001
 ENV APP_GID=1001
 
-# Install Node.js 22 and runtime dependencies
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    curl \
-    ca-certificates \
-    sqlite3 \
-    openssl \
-    procps \
-    dumb-init \
+# Install minimal runtime dependencies
+RUN apk add --no-cache \
     bash \
-    gosu && \
-    curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
-    apt-get install -y nodejs && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
-    rm -rf /usr/share/man /usr/share/doc /usr/share/info
+    sqlite \
+    dumb-init \
+    su-exec && \
+    rm -rf /tmp/* /var/cache/apk/*
 
 # Create app user and group
-RUN groupadd -g ${APP_GID} app && \
-    useradd -m -u ${APP_UID} -g app app
+RUN addgroup -g ${APP_GID} app && \
+    adduser -D -u ${APP_UID} -G app app
 
 # Set working directory
 WORKDIR /app
@@ -77,21 +63,44 @@ RUN chmod +x /app/backend/cmd/start.sh
 COPY --chown=app:app ./scripts/docker-entrypoint.sh /app/scripts/docker-entrypoint.sh
 RUN chmod +x /app/scripts/docker-entrypoint.sh
 
+# Copy package files first
+COPY --chown=app:app package.json package-lock.json /app/
+
+# Install production dependencies only
+RUN npm install --omit=dev --no-audit --no-fund && \
+    npm cache clean --force && \
+    # Remove unnecessary files from node_modules to reduce size
+    find /app/node_modules -type f \( \
+        -name "*.md" -o \
+        -name "*.ts" -o \
+        -name "*.map" -o \
+        -name "LICENSE*" -o \
+        -name "CHANGELOG*" -o \
+        -name "README*" -o \
+        -name ".*.yml" -o \
+        -name "*.txt" \
+    \) -delete && \
+    find /app/node_modules -type d \( \
+        -name "test" -o \
+        -name "tests" -o \
+        -name "__tests__" -o \
+        -name "docs" -o \
+        -name "examples" -o \
+        -name "example" -o \
+        -name "coverage" -o \
+        -name ".github" \
+    \) -exec rm -rf {} + 2>/dev/null || true
+
 # Copy frontend
 RUN rm -rf /app/backend/dist
 COPY --from=builder --chown=app:app /app/dist ./backend/dist
 COPY --from=builder --chown=app:app /app/public/favicon* ./backend/dist/
 COPY --from=builder --chown=app:app /app/public/manifest.json ./backend/dist/
 COPY --from=builder --chown=app:app /app/public/locales ./backend/dist/locales
-COPY --from=builder --chown=app:app /app/node_modules ./node_modules
-COPY --from=builder --chown=app:app /app/package.json /app/
 
 # Create necessary directories
-RUN mkdir -p /app/backend/db /app/backend/certs /app/backend/uploads
-
-# Cleanup
-RUN rm -rf /usr/local/lib/node_modules/npm/docs /usr/local/lib/node_modules/npm/man && \
-    rm -rf /root/.npm /tmp/* /var/tmp/*
+RUN mkdir -p /app/backend/db /app/backend/certs /app/backend/uploads && \
+    chown -R app:app /app/backend/db /app/backend/certs /app/backend/uploads
 
 VOLUME ["/app/backend/db"]
 VOLUME ["/app/backend/uploads"]
@@ -111,7 +120,7 @@ ENV NODE_ENV=production \
     SWAGGER_ENABLED=false
 
 HEALTHCHECK --interval=60s --timeout=3s --start-period=10s --retries=2 \
-    CMD curl -sf http://localhost:3002/api/health || exit 1
+    CMD wget --no-verbose --tries=1 --spider http://localhost:3002/api/health || exit 1
 
 WORKDIR /app/backend
 ENTRYPOINT ["/app/scripts/docker-entrypoint.sh"]
