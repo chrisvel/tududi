@@ -789,10 +789,25 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         reader.readAsDataURL(file);
     };
 
-    const handleAvatarRemove = () => {
-        setAvatarFile(null);
-        setAvatarPreview(null);
-        setRemoveAvatar(true);
+    const handleAvatarRemove = async () => {
+        try {
+            await deleteAvatar();
+
+            setAvatarFile(null);
+            setAvatarPreview(null);
+            setRemoveAvatar(false);
+            setFormData((prev) => ({ ...prev, avatar_image: '' }));
+
+            if (profile) {
+                setProfile({ ...profile, avatar_image: null });
+            }
+
+            showSuccessToast('Avatar removed successfully');
+        } catch (error) {
+            showErrorToast(
+                (error as Error).message || 'Failed to remove avatar'
+            );
+        }
     };
 
     const uploadAvatar = async (file: File): Promise<string> => {
@@ -872,11 +887,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 updatedProfile.avatar_image = avatarUrl;
                 setAvatarFile(null);
                 setAvatarPreview(null);
-            } else if (removeAvatar && formData.avatar_image) {
-                await deleteAvatar();
-                updatedProfile.avatar_image = null;
-                setRemoveAvatar(false);
             }
+            // Avatar removal is now handled immediately by handleAvatarRemove
+            // No need to handle it here anymore
 
             setProfile(updatedProfile);
 
