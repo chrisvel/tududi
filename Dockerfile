@@ -12,6 +12,9 @@ RUN apk add --no-cache \
     sqlite \
     bash
 
+# Update npm to latest version
+RUN npm install -g npm@11.6.4
+
 WORKDIR /app
 
 COPY package.json package-lock.json ./
@@ -48,6 +51,9 @@ RUN apk add --no-cache \
     dumb-init \
     su-exec && \
     rm -rf /tmp/* /var/cache/apk/*
+
+# Update npm to latest version
+RUN npm install -g npm@11.6.4
 
 # Create app user and group
 RUN addgroup -g ${APP_GID} app && \
