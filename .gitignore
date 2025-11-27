@@ -21,6 +21,7 @@ backend/coverage/
 
 # User uploaded files
 backend/uploads/
+uploads/
 
 # Log files
 *.log

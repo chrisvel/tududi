@@ -13,7 +13,7 @@ services:
       - PGID=1001
     volumes:
       - ./tududi_db:/app/backend/db
-      #- ./uploads:/app/backend/uploads
+      - ./uploads:/app/backend/uploads
     ports:
       - "3002:3002"
     restart: unless-stopped
