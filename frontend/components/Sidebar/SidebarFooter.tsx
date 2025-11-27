@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { Note } from '../../entities/Note';
 import { Area } from '../../entities/Area';
 import { useTelegramStatus } from '../../contexts/TelegramStatusContext';
+import { getApiPath } from '../../config/paths';
 
 interface SidebarFooterProps {
     currentUser: { email: string };
@@ -45,6 +46,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const { status: telegramStatus } = useTelegramStatus();
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const [version, setVersion] = useState<string>('v0.86');
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
@@ -69,6 +71,20 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [isDropdownOpen]);
+
+    // Fetch version from API
+    useEffect(() => {
+        fetch(getApiPath('version'))
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.version) {
+                    setVersion(data.version);
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching version:', error);
+            });
+    }, []);
 
     // Handle keyboard shortcuts
     useEffect(() => {
@@ -179,6 +195,14 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
     ];
     return (
         <div className="mt-auto p-3">
+            {/* Version Display */}
+            {isSidebarOpen && (
+                <div className="flex justify-end pb-2">
+                    <span className="text-xs text-gray-400 dark:text-gray-600 font-light italic opacity-60">
+                        {version}
+                    </span>
+                </div>
+            )}
             <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
                 {isSidebarOpen && (
                     <div
