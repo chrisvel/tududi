@@ -99,13 +99,19 @@ const Register: React.FC = () => {
                                     <div className="mb-4 text-green-600 dark:text-green-400 text-5xl">
                                         ✓
                                     </div>
-                                    <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200" data-testid="register-success-heading">
+                                    <h2
+                                        className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200"
+                                        data-testid="register-success-heading"
+                                    >
                                         {t(
                                             'auth.registration_successful',
                                             'Check Your Email'
                                         )}
                                     </h2>
-                                    <p className="text-gray-600 dark:text-gray-400 mb-6" data-testid="register-success-message">
+                                    <p
+                                        className="text-gray-600 dark:text-gray-400 mb-6"
+                                        data-testid="register-success-message"
+                                    >
                                         {t(
                                             'auth.registration_email_sent',
                                             'We have sent a verification link to your email address. Please check your inbox and click the link to verify your account.'
@@ -162,11 +168,17 @@ const Register: React.FC = () => {
                     {/* Left side - Register Form */}
                     <div className="w-full lg:w-auto flex flex-col items-center">
                         <div className="p-10 rounded-lg w-full max-w-2xl">
-                            <h2 className="text-center text-2xl font-semibold text-gray-700 dark:text-gray-200 mb-12" data-testid="register-heading">
+                            <h2
+                                className="text-center text-2xl font-semibold text-gray-700 dark:text-gray-200 mb-12"
+                                data-testid="register-heading"
+                            >
                                 {t('auth.sign_up', 'Sign Up')}
                             </h2>
                             {error && (
-                                <div className="mb-4 text-center text-red-500" data-testid="register-error">
+                                <div
+                                    className="mb-4 text-center text-red-500"
+                                    data-testid="register-error"
+                                >
                                     {error}
                                 </div>
                             )}
