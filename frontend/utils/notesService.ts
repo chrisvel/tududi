@@ -9,7 +9,11 @@ import { getApiPath } from '../config/paths';
 export const fetchNotes = async (): Promise<Note[]> => {
     const response = await fetch(getApiPath('notes'), {
         credentials: 'include',
-        headers: getDefaultHeaders(),
+        headers: {
+            ...getDefaultHeaders(),
+            'Cache-Control': 'no-cache',
+        },
+        cache: 'no-store',
     });
     await handleAuthResponse(response, 'Failed to fetch notes.');
 
@@ -73,7 +77,11 @@ export const deleteNote = async (noteUid: string): Promise<void> => {
 export const fetchNoteBySlug = async (uidSlug: string): Promise<Note> => {
     const response = await fetch(getApiPath(`note/${uidSlug}`), {
         credentials: 'include',
-        headers: getDefaultHeaders(),
+        headers: {
+            ...getDefaultHeaders(),
+            'Cache-Control': 'no-cache',
+        },
+        cache: 'no-store',
     });
 
     await handleAuthResponse(response, 'Failed to fetch note.');

@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDebouncedCallback } from 'use-debounce';
 import { MagnifyingGlassIcon, PlusIcon } from '@heroicons/react/24/solid';
 import {
     PencilIcon,
@@ -26,7 +27,6 @@ import { useStore } from '../store/useStore';
 import { createProject } from '../utils/projectsService';
 import { ENABLE_NOTE_COLOR } from '../config/featureFlags';
 
-// Define colors for note backgrounds
 const NOTE_COLORS = [
     { name: 'None', value: '' },
     { name: 'Red', value: '#B71C1C' },
@@ -41,20 +41,16 @@ const NOTE_COLORS = [
     { name: 'Grey', value: '#424242' },
 ];
 
-// Helper function to determine if we should use light text on a dark background
 const shouldUseLightText = (hexColor: string | undefined): boolean => {
     if (!hexColor) return false;
 
-    // Convert hex to RGB
     const hex = hexColor.replace('#', '');
-    const r = parseInt(hex.substr(0, 2), 16);
-    const g = parseInt(hex.substr(2, 2), 16);
-    const b = parseInt(hex.substr(4, 2), 16);
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
 
-    // Calculate relative luminance
     const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
 
-    // Use light text if luminance is below 0.4
     return luminance < 0.4;
 };
 
@@ -77,6 +73,7 @@ const Notes: React.FC = () => {
     const [showDiscardDialog, setShowDiscardDialog] = useState(false);
     const [showNoteOptionsDropdown, setShowNoteOptionsDropdown] =
         useState(false);
+    const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'unsaved'>('saved');
     const hasAutoSelected = useRef(false);
 
     const editingNoteColor =
@@ -87,7 +84,6 @@ const Notes: React.FC = () => {
         (isEditing && editingNoteColor) || previewNoteColor || undefined;
     const noteOptionsDropdownRef = useRef<HTMLDivElement>(null);
 
-    // Get notes and projects from global store
     const { notes, isLoading, isError, hasLoaded, loadNotes, setNotes } =
         useStore((state) => state.notesStore);
     const projects = useStore((state) => state.projectsStore.projects);
@@ -98,28 +94,70 @@ const Notes: React.FC = () => {
         }
     }, [hasLoaded, isLoading, isError, loadNotes]);
 
-    // Projects are now loaded by Layout component into global store
+    const debouncedSave = useDebouncedCallback(
+        async (noteToSave: Note) => {
+            if (!noteToSave.title) return;
 
-    // Sort options for notes
+            try {
+                setSaveStatus('saving');
+
+                if (noteToSave.tags && noteToSave.tags.length > 0) {
+                    const { tagsStore } = useStore.getState();
+                    tagsStore.addNewTags(noteToSave.tags.map((t) => t.name));
+                }
+
+                if (noteToSave.uid) {
+                    const savedNote = await updateNote(noteToSave.uid, noteToSave);
+                    const updatedNotes = notes.map((n) =>
+                        n.uid === noteToSave.uid ? savedNote : n
+                    );
+                    setNotes(updatedNotes);
+                    setEditingNote(savedNote);
+                } else {
+                    const newNote = await createNote(noteToSave);
+                    setNotes([newNote, ...notes]);
+                    setEditingNote(newNote);
+                    navigate(`/notes/${newNote.uid}`, { replace: true });
+                }
+
+                setSaveStatus('saved');
+            } catch (err) {
+                console.error('Error autosaving note:', err);
+                setSaveStatus('unsaved');
+            }
+        },
+        1000
+    );
+
+    const handleNoteChange = useCallback(
+        (updates: Partial<Note>) => {
+            if (!editingNote) return;
+
+            const updatedNote = { ...editingNote, ...updates };
+            setEditingNote(updatedNote);
+
+            if (updatedNote.title) {
+                setSaveStatus('unsaved');
+                debouncedSave(updatedNote);
+            }
+        },
+        [editingNote, debouncedSave]
+    );
+
     const sortOptions: SortOption[] = [
         { value: 'created_at:desc', label: t('sort.created_at', 'Created At') },
         { value: 'title:asc', label: t('sort.name', 'Title') },
         { value: 'updated_at:desc', label: t('common.updated', 'Updated') },
     ];
 
-    // Handle sort change
     const handleSortChange = (newOrderBy: string) => {
         setOrderBy(newOrderBy);
     };
 
-    // Function to set preview note and update URL
     const handleSelectNote = async (note: Note | null) => {
-        // If we're editing a note, save it first
         if (isEditing && editingNote) {
-            // If the note has a title, save it
             if (editingNote.title) {
                 try {
-                    // Add new tags to store if they don't exist
                     if (editingNote.tags && editingNote.tags.length > 0) {
                         const { tagsStore } = useStore.getState();
                         tagsStore.addNewTags(
@@ -145,7 +183,6 @@ const Notes: React.FC = () => {
                 }
             }
 
-            // Exit edit mode
             setIsEditing(false);
             setEditingNote(null);
             setShowProjectDropdown(false);
@@ -166,17 +203,26 @@ const Notes: React.FC = () => {
             await deleteNoteWithStoreUpdate(noteToDelete, showSuccessToast, t);
             setIsConfirmDialogOpen(false);
             setNoteToDelete(null);
-            // If we deleted the currently viewed note, clear the URL
+
             if (previewNote?.uid === noteToDelete.uid) {
-                navigate('/notes', { replace: true });
+                setPreviewNote(null);
             }
+
+            if (editingNote?.uid === noteToDelete.uid) {
+                setIsEditing(false);
+                setEditingNote(null);
+                setShowProjectDropdown(false);
+                setShowTagsInput(false);
+                setSaveStatus('saved');
+            }
+
+            navigate('/notes', { replace: true });
         } catch (err) {
             console.error('Error deleting note:', err);
         }
     };
 
     const handleEditNote = (note: Note) => {
-        // Handle both lowercase and uppercase versions from Sequelize
         const project = note.project || note.Project;
         const tags = note.tags || note.Tags || [];
 
@@ -187,6 +233,7 @@ const Notes: React.FC = () => {
             tags: tags,
         });
         setIsEditing(true);
+        setSaveStatus('saved');
         handleSelectNote(null);
     };
 
@@ -197,6 +244,7 @@ const Notes: React.FC = () => {
             tags: [],
         });
         setIsEditing(true);
+        setSaveStatus('saved');
         handleSelectNote(null);
     };
 
@@ -204,7 +252,6 @@ const Notes: React.FC = () => {
         if (!editingNote || !editingNote.title) return;
 
         try {
-            // Add new tags to store if they don't exist
             if (editingNote.tags && editingNote.tags.length > 0) {
                 const { tagsStore } = useStore.getState();
                 tagsStore.addNewTags(editingNote.tags.map((t) => t.name));
@@ -246,7 +293,6 @@ const Notes: React.FC = () => {
         setShowProjectDropdown(false);
         setShowTagsInput(false);
         if (previewNote) {
-            // If we were editing an existing note, go back to preview
             handleSelectNote(previewNote);
         }
     };
@@ -272,7 +318,6 @@ const Notes: React.FC = () => {
         try {
             const updatedNote = { ...note, color };
 
-            // Update local state immediately for instant feedback
             if (previewNote?.uid === note.uid || !note.uid) {
                 setPreviewNote(updatedNote);
             }
@@ -280,7 +325,6 @@ const Notes: React.FC = () => {
                 setEditingNote(updatedNote);
             }
 
-            // If note is saved, persist to backend
             if (note.uid) {
                 const savedNote = await updateNote(note.uid, updatedNote);
                 const updatedNotes = notes.map((n) =>
@@ -288,7 +332,6 @@ const Notes: React.FC = () => {
                 );
                 setNotes(updatedNotes);
 
-                // Update states with backend response
                 if (previewNote?.uid === note.uid) {
                     setPreviewNote(savedNote);
                 }
@@ -342,7 +385,6 @@ const Notes: React.FC = () => {
         );
     }, [notes, searchQuery]);
 
-    // Sort the filtered notes
     const sortedNotes = useMemo(() => {
         return [...filteredNotes].sort((a, b) => {
             const [field, direction] = orderBy.split(':');
@@ -381,7 +423,6 @@ const Notes: React.FC = () => {
         });
     }, [filteredNotes, orderBy]);
 
-    // Load note from URL parameter
     useEffect(() => {
         if (uid && sortedNotes.length > 0 && !hasAutoSelected.current) {
             const noteFromUrl = sortedNotes.find((note) => note.uid === uid);
@@ -389,7 +430,6 @@ const Notes: React.FC = () => {
                 setPreviewNote(noteFromUrl);
                 hasAutoSelected.current = true;
             } else if (!previewNote) {
-                // If note not found and no note selected, select first note on desktop
                 const isDesktop = window.innerWidth >= 768;
                 if (isDesktop) {
                     handleSelectNote(sortedNotes[0]);
@@ -399,7 +439,6 @@ const Notes: React.FC = () => {
         }
     }, [uid, sortedNotes]);
 
-    // Auto-select first note when notes are loaded (only on desktop)
     useEffect(() => {
         if (
             !uid &&
@@ -407,7 +446,6 @@ const Notes: React.FC = () => {
             !previewNote &&
             !hasAutoSelected.current
         ) {
-            // Check if we're on desktop (md breakpoint is 768px)
             const isDesktop = window.innerWidth >= 768;
             if (isDesktop) {
                 handleSelectNote(sortedNotes[0]);
@@ -416,7 +454,6 @@ const Notes: React.FC = () => {
         }
     }, [sortedNotes, previewNote, uid]);
 
-    // Handle clicking outside note options dropdown to close it
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (
@@ -432,7 +469,6 @@ const Notes: React.FC = () => {
             document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    // Handle Escape key to save and close editor
     useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
             if (e.key === 'Escape' && isEditing) {
@@ -468,19 +504,15 @@ const Notes: React.FC = () => {
     return (
         <div className="flex flex-col h-[calc(100vh-6rem)] overflow-hidden">
             <div className="flex-1 flex flex-col min-h-0 overflow-hidden pt-2">
-                {/* Two-Column Layout */}
                 <div className="flex flex-col md:flex-row flex-1 min-h-0 overflow-hidden">
-                    {/* Left Column - Notes List */}
                     <div
                         className={`${previewNote || isEditing ? 'hidden md:flex' : 'flex'} flex-col md:w-80 w-full h-full md:h-auto flex-shrink-0 min-h-0`}
                     >
-                        {/* Notes Column Header */}
                         <div className="flex items-center justify-between mb-2 mx-3 flex-shrink-0">
                             <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
                                 {t('notes.title')}
                             </h3>
                             <div className="flex items-center gap-2">
-                                {/* Sort Filter Dropdown */}
                                 <IconSortDropdown
                                     options={sortOptions}
                                     value={orderBy}
@@ -502,7 +534,6 @@ const Notes: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Search Bar inside notes list */}
                         <div className="mb-2 mx-4 flex-shrink-0">
                             <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md p-2">
                                 <MagnifyingGlassIcon className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-2" />
@@ -568,7 +599,6 @@ const Notes: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Right Column - Preview or Editor */}
                     <div
                         className={`${previewNote || isEditing ? 'flex' : 'hidden md:flex'} flex-1 flex-col overflow-hidden h-full rounded-md md:h-auto ${activeNoteColor ? '' : 'bg-white dark:bg-gray-900'}`}
                         style={{
@@ -577,10 +607,8 @@ const Notes: React.FC = () => {
                     >
                         {isEditing && editingNote ? (
                             <div className="flex-1 flex flex-col overflow-hidden">
-                                {/* Editor Header - matches preview structure */}
                                 <div className="flex items-start justify-between mb-3 flex-shrink-0 px-6 md:px-8 pt-5">
                                     <div className="flex-1">
-                                        {/* Back button for mobile */}
                                         <button
                                             onClick={() => {
                                                 if (editingNote.title) {
@@ -597,10 +625,7 @@ const Notes: React.FC = () => {
                                             type="text"
                                             value={editingNote.title || ''}
                                             onChange={(e) =>
-                                                setEditingNote({
-                                                    ...editingNote,
-                                                    title: e.target.value,
-                                                })
+                                                handleNoteChange({ title: e.target.value })
                                             }
                                             onClick={(e) => e.stopPropagation()}
                                             placeholder="Note title..."
@@ -622,7 +647,7 @@ const Notes: React.FC = () => {
                                             autoFocus
                                         />
                                         <div
-                                            className="flex flex-col md:flex-row md:flex-wrap md:items-center text-xs text-gray-500 dark:text-gray-400 space-y-1 md:space-y-0 md:gap-3 mb-2"
+                                            className="flex flex-col text-xs text-gray-500 dark:text-gray-400 space-y-1 mb-2"
                                             style={{
                                                 color: editingNoteColor
                                                     ? shouldUseLightText(
@@ -633,17 +658,18 @@ const Notes: React.FC = () => {
                                                     : undefined,
                                             }}
                                         >
-                                            <div className="flex items-center">
-                                                <ClockIcon className="h-3 w-3 mr-1" />
-                                                <span>
-                                                    {editingNote.updated_at
-                                                        ? new Date(
-                                                              editingNote.updated_at
-                                                          ).toLocaleDateString()
-                                                        : 'New'}
-                                                </span>
-                                            </div>
-                                            <button
+                                            <div className="flex flex-wrap items-center gap-3">
+                                                <div className="flex items-center">
+                                                    <ClockIcon className="h-3 w-3 mr-1" />
+                                                    <span>
+                                                        {editingNote.updated_at
+                                                            ? new Date(
+                                                                  editingNote.updated_at
+                                                              ).toLocaleDateString()
+                                                            : 'New'}
+                                                    </span>
+                                                </div>
+                                                <button
                                                 type="button"
                                                 onClick={
                                                     handleProjectButtonClick
@@ -690,6 +716,26 @@ const Notes: React.FC = () => {
                                                         : 'Add tags'}
                                                 </span>
                                             </button>
+                                            </div>
+                                            {editingNote.title && (
+                                                <div className="flex items-center">
+                                                    {saveStatus === 'saving' && (
+                                                        <span className="text-blue-500 dark:text-blue-400 italic">
+                                                            Saving...
+                                                        </span>
+                                                    )}
+                                                    {saveStatus === 'saved' && (
+                                                        <span className="text-green-600 dark:text-green-400">
+                                                            ✓ Saved
+                                                        </span>
+                                                    )}
+                                                    {saveStatus === 'unsaved' && (
+                                                        <span className="text-amber-600 dark:text-amber-400">
+                                                            • Unsaved changes
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                     <div
@@ -815,7 +861,6 @@ const Notes: React.FC = () => {
                                     </div>
                                 </div>
 
-                                {/* Project Dropdown */}
                                 {showProjectDropdown && (
                                     <div className="mb-3 mx-4 p-3 bg-gray-50 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 flex-shrink-0">
                                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -836,8 +881,7 @@ const Notes: React.FC = () => {
                                                                   projectUid
                                                           )
                                                         : undefined;
-                                                setEditingNote({
-                                                    ...editingNote,
+                                                handleNoteChange({
                                                     project_uid: projectUid,
                                                     project:
                                                         selectedProject as any,
@@ -859,7 +903,6 @@ const Notes: React.FC = () => {
                                     </div>
                                 )}
 
-                                {/* Tags Input */}
                                 {showTagsInput && (
                                     <div className="mb-3 mx-4 p-3 bg-gray-50 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 flex-shrink-0">
                                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -874,8 +917,7 @@ const Notes: React.FC = () => {
                                             onTagsChange={(
                                                 tagNames: string[]
                                             ) => {
-                                                setEditingNote({
-                                                    ...editingNote,
+                                                handleNoteChange({
                                                     tags: tagNames.map(
                                                         (name: string) => ({
                                                             name,
@@ -890,15 +932,11 @@ const Notes: React.FC = () => {
                                     </div>
                                 )}
 
-                                {/* Content Editor */}
                                 <div className="flex-1 overflow-y-auto px-6 md:px-8">
                                     <textarea
                                         value={editingNote.content || ''}
                                         onChange={(e) =>
-                                            setEditingNote({
-                                                ...editingNote,
-                                                content: e.target.value,
-                                            })
+                                            handleNoteChange({ content: e.target.value })
                                         }
                                         onClick={(e) => e.stopPropagation()}
                                         placeholder="Write your note content here... (Markdown supported)"
@@ -917,10 +955,8 @@ const Notes: React.FC = () => {
                             </div>
                         ) : previewNote ? (
                             <div className="flex-1 flex flex-col overflow-hidden">
-                                {/* Preview Header */}
                                 <div className="flex items-start justify-between mb-3 flex-shrink-0 px-6 md:px-8 pt-5">
                                     <div className="flex-1">
-                                        {/* Back button for mobile */}
                                         <button
                                             onClick={() =>
                                                 handleSelectNote(null)
@@ -1188,7 +1224,6 @@ const Notes: React.FC = () => {
                                     </div>
                                 </div>
 
-                                {/* Preview Content */}
                                 <div
                                     onClick={() => handleEditNote(previewNote)}
                                     className="text-sm md:text-base flex-1 overflow-y-auto cursor-pointer px-6 md:px-8 py-4 text-gray-900 dark:text-gray-100"
@@ -1207,14 +1242,12 @@ const Notes: React.FC = () => {
                                         content={previewNote.content}
                                         noteColor={previewNoteColor}
                                         onContentChange={async (newContent) => {
-                                            // Update local state immediately
                                             const updatedNote = {
                                                 ...previewNote,
                                                 content: newContent,
                                             };
                                             setPreviewNote(updatedNote);
 
-                                            // Save to backend
                                             if (previewNote.uid) {
                                                 try {
                                                     const savedNote =
@@ -1222,7 +1255,6 @@ const Notes: React.FC = () => {
                                                             previewNote.uid,
                                                             updatedNote
                                                         );
-                                                    // Update notes list
                                                     const updatedNotes =
                                                         notes.map((n) =>
                                                             n.uid ===
@@ -1254,7 +1286,6 @@ const Notes: React.FC = () => {
                     </div>
                 </div>
 
-                {/* NoteModal */}
                 {isNoteModalOpen && (
                     <NoteModal
                         isOpen={isNoteModalOpen}
@@ -1298,7 +1329,6 @@ const Notes: React.FC = () => {
                     />
                 )}
 
-                {/* ConfirmDialog */}
                 {isConfirmDialogOpen && noteToDelete && (
                     <ConfirmDialog
                         title={t('modals.deleteNote.title')}
@@ -1310,7 +1340,6 @@ const Notes: React.FC = () => {
                     />
                 )}
 
-                {/* DiscardChangesDialog */}
                 {showDiscardDialog && (
                     <DiscardChangesDialog
                         onDiscard={() => {
