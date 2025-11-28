@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import React, {
+    useState,
+    useEffect,
+    useMemo,
+    useRef,
+    useCallback,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDebouncedCallback } from 'use-debounce';
 import { MagnifyingGlassIcon, PlusIcon } from '@heroicons/react/24/solid';
@@ -73,7 +79,9 @@ const Notes: React.FC = () => {
     const [showDiscardDialog, setShowDiscardDialog] = useState(false);
     const [showNoteOptionsDropdown, setShowNoteOptionsDropdown] =
         useState(false);
-    const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'unsaved'>('saved');
+    const [saveStatus, setSaveStatus] = useState<
+        'saved' | 'saving' | 'unsaved'
+    >('saved');
     const hasAutoSelected = useRef(false);
 
     const editingNoteColor =
@@ -94,40 +102,37 @@ const Notes: React.FC = () => {
         }
     }, [hasLoaded, isLoading, isError, loadNotes]);
 
-    const debouncedSave = useDebouncedCallback(
-        async (noteToSave: Note) => {
-            if (!noteToSave.title) return;
+    const debouncedSave = useDebouncedCallback(async (noteToSave: Note) => {
+        if (!noteToSave.title) return;
 
-            try {
-                setSaveStatus('saving');
+        try {
+            setSaveStatus('saving');
 
-                if (noteToSave.tags && noteToSave.tags.length > 0) {
-                    const { tagsStore } = useStore.getState();
-                    tagsStore.addNewTags(noteToSave.tags.map((t) => t.name));
-                }
-
-                if (noteToSave.uid) {
-                    const savedNote = await updateNote(noteToSave.uid, noteToSave);
-                    const updatedNotes = notes.map((n) =>
-                        n.uid === noteToSave.uid ? savedNote : n
-                    );
-                    setNotes(updatedNotes);
-                    setEditingNote(savedNote);
-                } else {
-                    const newNote = await createNote(noteToSave);
-                    setNotes([newNote, ...notes]);
-                    setEditingNote(newNote);
-                    navigate(`/notes/${newNote.uid}`, { replace: true });
-                }
-
-                setSaveStatus('saved');
-            } catch (err) {
-                console.error('Error autosaving note:', err);
-                setSaveStatus('unsaved');
+            if (noteToSave.tags && noteToSave.tags.length > 0) {
+                const { tagsStore } = useStore.getState();
+                tagsStore.addNewTags(noteToSave.tags.map((t) => t.name));
             }
-        },
-        1000
-    );
+
+            if (noteToSave.uid) {
+                const savedNote = await updateNote(noteToSave.uid, noteToSave);
+                const updatedNotes = notes.map((n) =>
+                    n.uid === noteToSave.uid ? savedNote : n
+                );
+                setNotes(updatedNotes);
+                setEditingNote(savedNote);
+            } else {
+                const newNote = await createNote(noteToSave);
+                setNotes([newNote, ...notes]);
+                setEditingNote(newNote);
+                navigate(`/notes/${newNote.uid}`, { replace: true });
+            }
+
+            setSaveStatus('saved');
+        } catch (err) {
+            console.error('Error autosaving note:', err);
+            setSaveStatus('unsaved');
+        }
+    }, 1000);
 
     const handleNoteChange = useCallback(
         (updates: Partial<Note>) => {
@@ -625,7 +630,9 @@ const Notes: React.FC = () => {
                                             type="text"
                                             value={editingNote.title || ''}
                                             onChange={(e) =>
-                                                handleNoteChange({ title: e.target.value })
+                                                handleNoteChange({
+                                                    title: e.target.value,
+                                                })
                                             }
                                             onClick={(e) => e.stopPropagation()}
                                             placeholder="Note title..."
@@ -670,56 +677,69 @@ const Notes: React.FC = () => {
                                                     </span>
                                                 </div>
                                                 <button
-                                                type="button"
-                                                onClick={
-                                                    handleProjectButtonClick
-                                                }
-                                                className="flex items-center hover:underline text-left"
-                                                title={
-                                                    editingNote.project
-                                                        ? 'Change project'
-                                                        : 'Add project'
-                                                }
-                                            >
-                                                <FolderIcon className="h-3 w-3 mr-1" />
-                                                {editingNote.project
-                                                    ? editingNote.project.name
-                                                    : 'Add project'}
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={handleTagsButtonClick}
-                                                className="flex items-center hover:underline text-left"
-                                                title={
-                                                    editingNote.tags &&
-                                                    editingNote.tags.length > 0
-                                                        ? 'Change tags'
-                                                        : 'Add tags'
-                                                }
-                                            >
-                                                <TagIconOutline className="h-3 w-3 mr-1" />
-                                                <span>
-                                                    {editingNote.tags &&
-                                                    editingNote.tags.length > 0
-                                                        ? editingNote.tags.map(
-                                                              (tag, idx) => (
-                                                                  <React.Fragment
-                                                                      key={idx}
-                                                                  >
-                                                                      {idx >
-                                                                          0 &&
-                                                                          ', '}
-                                                                      {tag.name}
-                                                                  </React.Fragment>
+                                                    type="button"
+                                                    onClick={
+                                                        handleProjectButtonClick
+                                                    }
+                                                    className="flex items-center hover:underline text-left"
+                                                    title={
+                                                        editingNote.project
+                                                            ? 'Change project'
+                                                            : 'Add project'
+                                                    }
+                                                >
+                                                    <FolderIcon className="h-3 w-3 mr-1" />
+                                                    {editingNote.project
+                                                        ? editingNote.project
+                                                              .name
+                                                        : 'Add project'}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={
+                                                        handleTagsButtonClick
+                                                    }
+                                                    className="flex items-center hover:underline text-left"
+                                                    title={
+                                                        editingNote.tags &&
+                                                        editingNote.tags
+                                                            .length > 0
+                                                            ? 'Change tags'
+                                                            : 'Add tags'
+                                                    }
+                                                >
+                                                    <TagIconOutline className="h-3 w-3 mr-1" />
+                                                    <span>
+                                                        {editingNote.tags &&
+                                                        editingNote.tags
+                                                            .length > 0
+                                                            ? editingNote.tags.map(
+                                                                  (
+                                                                      tag,
+                                                                      idx
+                                                                  ) => (
+                                                                      <React.Fragment
+                                                                          key={
+                                                                              idx
+                                                                          }
+                                                                      >
+                                                                          {idx >
+                                                                              0 &&
+                                                                              ', '}
+                                                                          {
+                                                                              tag.name
+                                                                          }
+                                                                      </React.Fragment>
+                                                                  )
                                                               )
-                                                          )
-                                                        : 'Add tags'}
-                                                </span>
-                                            </button>
+                                                            : 'Add tags'}
+                                                    </span>
+                                                </button>
                                             </div>
                                             {editingNote.title && (
                                                 <div className="flex items-center">
-                                                    {saveStatus === 'saving' && (
+                                                    {saveStatus ===
+                                                        'saving' && (
                                                         <span className="text-blue-500 dark:text-blue-400 italic">
                                                             Saving...
                                                         </span>
@@ -729,7 +749,8 @@ const Notes: React.FC = () => {
                                                             ✓ Saved
                                                         </span>
                                                     )}
-                                                    {saveStatus === 'unsaved' && (
+                                                    {saveStatus ===
+                                                        'unsaved' && (
                                                         <span className="text-amber-600 dark:text-amber-400">
                                                             • Unsaved changes
                                                         </span>
@@ -936,7 +957,9 @@ const Notes: React.FC = () => {
                                     <textarea
                                         value={editingNote.content || ''}
                                         onChange={(e) =>
-                                            handleNoteChange({ content: e.target.value })
+                                            handleNoteChange({
+                                                content: e.target.value,
+                                            })
                                         }
                                         onClick={(e) => e.stopPropagation()}
                                         placeholder="Write your note content here... (Markdown supported)"
