@@ -1,5 +1,6 @@
 import { Tag } from './Tag';
 import { Project } from './Project';
+import { Attachment } from './Attachment';
 
 export interface Task {
     id?: number;
@@ -34,6 +35,7 @@ export interface Task {
     subtasks?: Task[];
     Subtasks?: Task[]; // Handle API response case sensitivity (temporary)
     parent_child_logic_executed?: boolean; // Flag indicating if parent-child logic was executed during toggle
+    attachments?: Attachment[];
 }
 
 export type StatusType =
