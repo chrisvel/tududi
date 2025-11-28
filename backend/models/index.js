@@ -35,6 +35,7 @@ const ApiToken = require('./api_token')(sequelize);
 const Setting = require('./setting')(sequelize);
 const Notification = require('./notification')(sequelize);
 const RecurringCompletion = require('./recurringCompletion')(sequelize);
+const TaskAttachment = require('./task_attachment')(sequelize);
 
 User.hasMany(Area, { foreignKey: 'user_id' });
 Area.belongsTo(User, { foreignKey: 'user_id' });
@@ -145,6 +146,12 @@ ApiToken.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 User.hasMany(Notification, { foreignKey: 'user_id', as: 'Notifications' });
 Notification.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 
+// TaskAttachment associations
+User.hasMany(TaskAttachment, { foreignKey: 'user_id' });
+TaskAttachment.belongsTo(User, { foreignKey: 'user_id' });
+Task.hasMany(TaskAttachment, { foreignKey: 'task_id', as: 'Attachments' });
+TaskAttachment.belongsTo(Task, { foreignKey: 'task_id' });
+
 module.exports = {
     sequelize,
     User,
@@ -163,4 +170,5 @@ module.exports = {
     Setting,
     Notification,
     RecurringCompletion,
+    TaskAttachment,
 };

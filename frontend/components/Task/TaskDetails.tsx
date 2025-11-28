@@ -30,6 +30,7 @@ import {
     TaskRecurrenceCard,
     TaskDueDateCard,
     TaskDeferUntilCard,
+    TaskAttachmentsCard,
 } from './TaskDetails/';
 
 const TaskDetails: React.FC = () => {
@@ -1242,6 +1243,8 @@ const TaskDetails: React.FC = () => {
                                 nextIterations={nextIterations}
                                 canEdit={!task.recurring_parent_id}
                             />
+
+                            <TaskAttachmentsCard taskUid={task.uid} />
                         </div>
 
                         {/* Right Column - Metadata and Recent Activity */}
