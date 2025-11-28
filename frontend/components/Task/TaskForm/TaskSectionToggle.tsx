@@ -7,6 +7,7 @@ import {
     ExclamationTriangleIcon,
     CalendarIcon,
     ClockIcon,
+    PaperClipIcon,
 } from '@heroicons/react/24/outline';
 import { Task } from '../../../entities/Task';
 import { useTranslation } from 'react-i18next';
@@ -20,12 +21,14 @@ interface TaskSectionToggleProps {
         deferUntil: boolean;
         recurrence: boolean;
         subtasks: boolean;
+        attachments: boolean;
     };
     onToggleSection: (
         section: keyof TaskSectionToggleProps['expandedSections']
     ) => void;
     formData: Task;
     subtasksCount: number;
+    attachmentsCount?: number;
 }
 
 const TaskSectionToggle: React.FC<TaskSectionToggleProps> = ({
@@ -33,6 +36,7 @@ const TaskSectionToggle: React.FC<TaskSectionToggleProps> = ({
     onToggleSection,
     formData,
     subtasksCount,
+    attachmentsCount = 0,
 }) => {
     const { t } = useTranslation();
     const toggleButtons = [
@@ -80,6 +84,12 @@ const TaskSectionToggle: React.FC<TaskSectionToggleProps> = ({
             icon: ListBulletIcon,
             title: t('forms.task.subtasks', 'Subtasks'),
             hasValue: subtasksCount > 0,
+        },
+        {
+            key: 'attachments' as const,
+            icon: PaperClipIcon,
+            title: t('forms.task.attachments', 'Attachments'),
+            hasValue: attachmentsCount > 0,
         },
     ];
 

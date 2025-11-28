@@ -29,6 +29,7 @@ import {
     TaskRecurrenceCard,
     TaskDueDateCard,
     TaskDeferUntilCard,
+    TaskAttachmentsCard,
 } from './TaskDetails/';
 import { isTaskOverdue } from '../../utils/dateUtils';
 
@@ -1330,13 +1331,8 @@ const TaskDetails: React.FC = () => {
 
                     {/* Attachments Pill */}
                     {activePill === 'attachments' && (
-                        <div className="text-center py-12">
-                            <p className="text-gray-500 dark:text-gray-400">
-                                {t(
-                                    'task.attachmentsComingSoon',
-                                    'Attachments feature coming soon'
-                                )}
-                            </p>
+                        <div className="grid grid-cols-1">
+                            <TaskAttachmentsCard taskUid={task.uid} />
                         </div>
                     )}
 
