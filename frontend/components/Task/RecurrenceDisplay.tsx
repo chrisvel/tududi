@@ -2,7 +2,6 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RecurrenceType } from '../../entities/Task';
 import { getFirstDayOfWeek } from '../../utils/profileService';
-import { ArrowPathIcon, CalendarIcon } from '@heroicons/react/24/outline';
 
 interface RecurrenceDisplayProps {
     recurrenceType: RecurrenceType;
@@ -149,7 +148,6 @@ const RecurrenceDisplay: React.FC<RecurrenceDisplayProps> = ({
         <div className={`${compact ? 'space-y-2' : 'space-y-3'}`}>
             {/* Main recurrence info */}
             <div className="flex items-center">
-                <ArrowPathIcon className="h-4 w-4 mr-2 text-blue-600 dark:text-blue-400" />
                 <span
                     className={`${compact ? 'text-sm' : 'text-base'} font-medium text-gray-900 dark:text-gray-100`}
                 >
@@ -166,7 +164,7 @@ const RecurrenceDisplay: React.FC<RecurrenceDisplayProps> = ({
             {recurrenceType === 'weekly' &&
                 recurrenceWeekdays &&
                 recurrenceWeekdays.length > 0 && (
-                    <div className="ml-7">
+                    <div>
                         <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">
                             {t('forms.task.labels.repeatOn', 'Repeat on')}:
                         </div>
@@ -198,15 +196,14 @@ const RecurrenceDisplay: React.FC<RecurrenceDisplayProps> = ({
 
             {/* Month day display for monthly recurrence */}
             {recurrenceType === 'monthly' && recurrenceMonthDay && (
-                <div className="ml-7 text-sm text-gray-600 dark:text-gray-400">
+                <div className="text-sm text-gray-600 dark:text-gray-400">
                     {t('recurrence.onDay', 'On day')} {recurrenceMonthDay}
                 </div>
             )}
 
             {/* End date display */}
             {recurrenceEndDate && (
-                <div className="ml-7 flex items-center text-sm text-gray-600 dark:text-gray-400">
-                    <CalendarIcon className="h-4 w-4 mr-1" />
+                <div className="text-sm text-gray-600 dark:text-gray-400">
                     <span>
                         {t('recurrence.until', 'Until')}{' '}
                         {formatEndDate(recurrenceEndDate)}
