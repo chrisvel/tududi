@@ -72,8 +72,8 @@ const TaskView: React.FC = () => {
 
     const handleTaskUpdate = async (updatedTask: Task) => {
         try {
-            if (task?.id) {
-                const updated = await updateTask(task.id, updatedTask);
+            if (task?.uid) {
+                const updated = await updateTask(task.uid, updatedTask);
                 setTask(updated);
             }
         } catch (error: any) {
