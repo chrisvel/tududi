@@ -99,13 +99,19 @@ const Register: React.FC = () => {
                                     <div className="mb-4 text-green-600 dark:text-green-400 text-5xl">
                                         ✓
                                     </div>
-                                    <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
+                                    <h2
+                                        className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200"
+                                        data-testid="register-success-heading"
+                                    >
                                         {t(
                                             'auth.registration_successful',
                                             'Check Your Email'
                                         )}
                                     </h2>
-                                    <p className="text-gray-600 dark:text-gray-400 mb-6">
+                                    <p
+                                        className="text-gray-600 dark:text-gray-400 mb-6"
+                                        data-testid="register-success-message"
+                                    >
                                         {t(
                                             'auth.registration_email_sent',
                                             'We have sent a verification link to your email address. Please check your inbox and click the link to verify your account.'
@@ -114,6 +120,7 @@ const Register: React.FC = () => {
                                     <Link
                                         to="/login"
                                         className="text-blue-500 hover:text-blue-600"
+                                        data-testid="register-success-back-link"
                                     >
                                         {t(
                                             'auth.back_to_login',
@@ -161,11 +168,17 @@ const Register: React.FC = () => {
                     {/* Left side - Register Form */}
                     <div className="w-full lg:w-auto flex flex-col items-center">
                         <div className="p-10 rounded-lg w-full max-w-2xl">
-                            <h2 className="text-center text-2xl font-semibold text-gray-700 dark:text-gray-200 mb-12">
+                            <h2
+                                className="text-center text-2xl font-semibold text-gray-700 dark:text-gray-200 mb-12"
+                                data-testid="register-heading"
+                            >
                                 {t('auth.sign_up', 'Sign Up')}
                             </h2>
                             {error && (
-                                <div className="mb-4 text-center text-red-500">
+                                <div
+                                    className="mb-4 text-center text-red-500"
+                                    data-testid="register-error"
+                                >
                                     {error}
                                 </div>
                             )}
@@ -186,6 +199,7 @@ const Register: React.FC = () => {
                                             setEmail(e.target.value)
                                         }
                                         className="w-full px-4 py-2 border dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        data-testid="register-email"
                                         required
                                     />
                                 </div>
@@ -205,6 +219,7 @@ const Register: React.FC = () => {
                                             setPassword(e.target.value)
                                         }
                                         className="w-full px-4 py-2 border dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        data-testid="register-password"
                                         required
                                         minLength={6}
                                     />
@@ -228,6 +243,7 @@ const Register: React.FC = () => {
                                             setConfirmPassword(e.target.value)
                                         }
                                         className="w-full px-4 py-2 border dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        data-testid="register-confirm-password"
                                         required
                                         minLength={6}
                                     />
@@ -235,6 +251,7 @@ const Register: React.FC = () => {
                                 <button
                                     type="submit"
                                     className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors"
+                                    data-testid="register-submit"
                                 >
                                     {t('auth.sign_up', 'Sign Up')}
                                 </button>
@@ -247,6 +264,7 @@ const Register: React.FC = () => {
                                 <Link
                                     to="/login"
                                     className="text-blue-500 hover:text-blue-600"
+                                    data-testid="register-login-link"
                                 >
                                     {t('auth.login', 'Login')}
                                 </Link>
