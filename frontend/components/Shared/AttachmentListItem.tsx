@@ -1,7 +1,14 @@
 import React from 'react';
-import { TrashIcon, ArrowDownTrayIcon, EyeIcon } from '@heroicons/react/24/outline';
+import {
+    TrashIcon,
+    ArrowDownTrayIcon,
+    EyeIcon,
+} from '@heroicons/react/24/outline';
 import { Attachment } from '../../entities/Attachment';
-import { formatFileSize, canPreviewInline } from '../../utils/attachmentsService';
+import {
+    formatFileSize,
+    canPreviewInline,
+} from '../../utils/attachmentsService';
 import FileIcon from './FileIcon';
 
 interface AttachmentListItemProps {

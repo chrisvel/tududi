@@ -1,6 +1,5 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ClockIcon } from '@heroicons/react/24/outline';
 import RecurrenceDisplay from '../RecurrenceDisplay';
 import TaskRecurrenceSection from '../TaskForm/TaskRecurrenceSection';
 import TaskRecurringInstanceInfo from './TaskRecurringInstanceInfo';
@@ -92,30 +91,23 @@ const TaskRecurrenceCard: React.FC<TaskRecurrenceCardProps> = ({
         }
 
         return (
-            <div className="space-y-2">
+            <ul className="space-y-1 list-none">
                 {nextIterations.map((iteration, index) => {
                     const dateInfo = formatDateWithDayName(iteration.date);
                     return (
-                        <div
+                        <li
                             key={index}
-                            className={`flex items-center py-2 px-3 rounded transition-colors ${
+                            className={`text-sm ${
                                 dateInfo.isToday
-                                    ? 'bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800'
-                                    : 'bg-gray-50 dark:bg-gray-800 border border-transparent'
+                                    ? 'font-semibold text-blue-600 dark:text-blue-400'
+                                    : 'text-gray-700 dark:text-gray-300'
                             }`}
                         >
-                            <div className="flex-1">
-                                <div className="text-sm font-medium text-gray-800 dark:text-gray-100">
-                                    {dateInfo.formattedDate}
-                                </div>
-                                <div className="text-xs text-gray-500 dark:text-gray-400">
-                                    {dateInfo.dayName}
-                                </div>
-                            </div>
-                        </div>
+                            - {dateInfo.fullText}
+                        </li>
                     );
                 })}
-            </div>
+            </ul>
         );
     };
 
@@ -258,8 +250,7 @@ const TaskRecurrenceCard: React.FC<TaskRecurrenceCardProps> = ({
                                 parentTask?.recurrence_type &&
                                 parentTask.recurrence_type !== 'none')) && (
                             <div>
-                                <div className="flex items-center mb-3">
-                                    <ClockIcon className="h-4 w-4 mr-2 text-gray-500 dark:text-gray-400" />
+                                <div className="mb-3">
                                     <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                                         {task.recurring_parent_id
                                             ? t(

@@ -999,26 +999,31 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                     </div>
                                                 )}
 
-                                                {expandedSections.attachments && task.uid && (
-                                                    <div
-                                                        className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4"
-                                                        data-section="attachments"
-                                                    >
-                                                        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                                                            {t(
-                                                                'forms.task.attachments',
-                                                                'Attachments'
-                                                            )}
-                                                        </h3>
-                                                        <TaskAttachmentsSection
-                                                            taskUid={task.uid}
-                                                            attachments={attachments}
-                                                            onAttachmentsChange={
-                                                                setAttachments
-                                                            }
-                                                        />
-                                                    </div>
-                                                )}
+                                                {expandedSections.attachments &&
+                                                    task.uid && (
+                                                        <div
+                                                            className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4"
+                                                            data-section="attachments"
+                                                        >
+                                                            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                                                                {t(
+                                                                    'forms.task.attachments',
+                                                                    'Attachments'
+                                                                )}
+                                                            </h3>
+                                                            <TaskAttachmentsSection
+                                                                taskUid={
+                                                                    task.uid
+                                                                }
+                                                                attachments={
+                                                                    attachments
+                                                                }
+                                                                onAttachmentsChange={
+                                                                    setAttachments
+                                                                }
+                                                            />
+                                                        </div>
+                                                    )}
                                             </fieldset>
                                         </form>
                                     </div>
