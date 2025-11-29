@@ -1,9 +1,6 @@
 'use strict';
 
-const {
-    safeCreateTable,
-    safeAddIndex,
-} = require('../utils/migration-utils');
+const { safeCreateTable, safeAddIndex } = require('../utils/migration-utils');
 
 module.exports = {
     async up(queryInterface, Sequelize) {

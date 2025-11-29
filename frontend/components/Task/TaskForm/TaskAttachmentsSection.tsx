@@ -32,9 +32,7 @@ const TaskAttachmentsSection: React.FC<TaskAttachmentsSectionProps> = ({
         useState<Attachment | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handleFileSelect = async (
-        e: React.ChangeEvent<HTMLInputElement>
-    ) => {
+    const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 

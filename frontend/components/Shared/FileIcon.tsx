@@ -14,7 +14,10 @@ interface FileIconProps {
     className?: string;
 }
 
-const FileIcon: React.FC<FileIconProps> = ({ mimeType, className = 'h-5 w-5' }) => {
+const FileIcon: React.FC<FileIconProps> = ({
+    mimeType,
+    className = 'h-5 w-5',
+}) => {
     const type = getAttachmentType(mimeType);
 
     switch (type) {

@@ -7,8 +7,9 @@ const ALLOWED_TYPES = {
     // Documents
     'application/pdf': ['.pdf'],
     'application/msword': ['.doc'],
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-        ['.docx'],
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': [
+        '.docx',
+    ],
     'text/plain': ['.txt'],
     'text/markdown': ['.md'],
     // Images
@@ -53,7 +54,7 @@ function formatFileSize(bytes) {
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
 }
 
 /**

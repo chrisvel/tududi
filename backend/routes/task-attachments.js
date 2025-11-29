@@ -189,49 +189,52 @@ router.get('/tasks/:taskUid/attachments', async (req, res) => {
 });
 
 // Delete an attachment
-router.delete('/tasks/:taskUid/attachments/:attachmentUid', async (req, res) => {
-    try {
-        const { taskUid, attachmentUid } = req.params;
-        const userId = req.authUserId;
+router.delete(
+    '/tasks/:taskUid/attachments/:attachmentUid',
+    async (req, res) => {
+        try {
+            const { taskUid, attachmentUid } = req.params;
+            const userId = req.authUserId;
 
-        // Find task
-        const task = await Task.findOne({ where: { uid: taskUid } });
-        if (!task) {
-            return res.status(404).json({ error: 'Task not found' });
+            // Find task
+            const task = await Task.findOne({ where: { uid: taskUid } });
+            if (!task) {
+                return res.status(404).json({ error: 'Task not found' });
+            }
+
+            // Check if user owns the task
+            if (task.user_id !== userId) {
+                return res
+                    .status(403)
+                    .json({ error: 'Not authorized to modify this task' });
+            }
+
+            // Find attachment
+            const attachment = await TaskAttachment.findOne({
+                where: { uid: attachmentUid, task_id: task.id },
+            });
+
+            if (!attachment) {
+                return res.status(404).json({ error: 'Attachment not found' });
+            }
+
+            // Delete file from disk
+            const filePath = path.join(config.uploadPath, attachment.file_path);
+            await deleteFileFromDisk(filePath);
+
+            // Delete database record
+            await attachment.destroy();
+
+            res.json({ message: 'Attachment deleted successfully' });
+        } catch (error) {
+            logError('Error deleting attachment:', error);
+            res.status(500).json({
+                error: 'Failed to delete attachment',
+                details: error.message,
+            });
         }
-
-        // Check if user owns the task
-        if (task.user_id !== userId) {
-            return res
-                .status(403)
-                .json({ error: 'Not authorized to modify this task' });
-        }
-
-        // Find attachment
-        const attachment = await TaskAttachment.findOne({
-            where: { uid: attachmentUid, task_id: task.id },
-        });
-
-        if (!attachment) {
-            return res.status(404).json({ error: 'Attachment not found' });
-        }
-
-        // Delete file from disk
-        const filePath = path.join(config.uploadPath, attachment.file_path);
-        await deleteFileFromDisk(filePath);
-
-        // Delete database record
-        await attachment.destroy();
-
-        res.json({ message: 'Attachment deleted successfully' });
-    } catch (error) {
-        logError('Error deleting attachment:', error);
-        res.status(500).json({
-            error: 'Failed to delete attachment',
-            details: error.message,
-        });
     }
-});
+);
 
 // Download an attachment
 router.get('/attachments/:attachmentUid/download', async (req, res) => {

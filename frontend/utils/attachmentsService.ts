@@ -29,9 +29,7 @@ export async function uploadAttachment(
 /**
  * Fetch all attachments for a task
  */
-export async function fetchAttachments(
-    taskUid: string
-): Promise<Attachment[]> {
+export async function fetchAttachments(taskUid: string): Promise<Attachment[]> {
     const response = await fetch(getApiPath(`tasks/${taskUid}/attachments`), {
         method: 'GET',
         credentials: 'include',
@@ -141,9 +139,7 @@ export function formatFileSize(bytes: number): string {
 /**
  * Validate file before upload
  */
-export function validateFile(
-    file: File
-): { valid: boolean; error?: string } {
+export function validateFile(file: File): { valid: boolean; error?: string } {
     // Check file size (10MB max)
     const maxSize = 10 * 1024 * 1024;
     if (file.size > maxSize) {
