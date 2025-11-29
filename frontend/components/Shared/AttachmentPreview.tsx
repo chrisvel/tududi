@@ -28,7 +28,7 @@ const AttachmentPreview: React.FC<AttachmentPreviewProps> = ({
                     setTextContent(text);
                     setLoading(false);
                 })
-                .catch((_err) => {
+                .catch(() => {
                     setError('Failed to load file content');
                     setLoading(false);
                 });
