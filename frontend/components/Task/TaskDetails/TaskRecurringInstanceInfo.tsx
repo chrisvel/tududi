@@ -29,19 +29,17 @@ const TaskRecurringInstanceInfo: React.FC<TaskRecurringInstanceInfoProps> = ({
                         'This is an instance of a recurring task'
                     )}
                 </p>
-                    {loadingParent && (
-                        <div className="flex items-center">
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-500 mr-2"></div>
-                            <span className="text-sm text-gray-600 dark:text-gray-400">
-                                {t('common.loading', 'Loading parent task...')}
-                            </span>
-                        </div>
-                    )}
+                {loadingParent && (
+                    <div className="flex items-center">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-500 mr-2"></div>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                            {t('common.loading', 'Loading parent task...')}
+                        </span>
+                    </div>
+                )}
                 {parentTask && (
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                        <strong>
-                            {t('task.parentTask', 'Parent Task')}:
-                        </strong>{' '}
+                        <strong>{t('task.parentTask', 'Parent Task')}:</strong>{' '}
                         <Link
                             to={`/task/${parentTask.uid}`}
                             className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline font-medium"
