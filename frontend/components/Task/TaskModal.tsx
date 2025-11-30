@@ -31,7 +31,7 @@ interface TaskModalProps {
     onClose: () => void;
     task: Task;
     onSave: (task: Task) => void;
-    onDelete: (taskId: number) => Promise<void>;
+    onDelete: (taskUid: string) => Promise<void>;
     projects: Project[];
     onCreateProject: (name: string) => Promise<Project>;
     onEditParentTask?: (parentTask: Task) => void;
@@ -443,9 +443,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
     };
 
     const handleDeleteConfirm = async () => {
-        if (formData.id) {
+        if (formData.uid) {
             try {
-                await onDelete(formData.id);
+                await onDelete(formData.uid);
                 const taskLink = (
                     <span>
                         {t('task.deleted', 'Task')}{' '}

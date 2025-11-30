@@ -15,7 +15,7 @@ interface ProjectTasksSectionProps {
     onTaskCreate: (taskName: string) => Promise<void>;
     onTaskUpdate: (task: Task) => Promise<void>;
     onTaskCompletionToggle: (task: Task) => void;
-    onTaskDelete: (taskId: number) => void;
+    onTaskDelete: (taskUid: string) => void;
     onToggleToday: (taskId: number, task?: Task) => Promise<void>;
     allProjects: Project[];
     showCompleted: boolean;
