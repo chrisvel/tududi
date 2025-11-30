@@ -82,9 +82,9 @@ const TaskView: React.FC = () => {
         }
     };
 
-    const handleTaskDelete = async (taskId: number) => {
+    const handleTaskDelete = async (taskUid: string) => {
         try {
-            await deleteTask(taskId);
+            await deleteTask(taskUid);
             navigate('/today'); // Navigate back to today view after deletion
         } catch (error: any) {
             console.error('Error deleting task:', error);

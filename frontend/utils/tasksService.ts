@@ -167,7 +167,7 @@ export const toggleTaskToday = async (
         currentTask = await fetchTaskById(taskId);
     }
 
-    return await updateTask(taskId, {
+    return await updateTask(currentTask.uid!, {
         ...currentTask,
         today: !currentTask.today,
     });

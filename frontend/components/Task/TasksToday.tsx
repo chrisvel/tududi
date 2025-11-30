@@ -622,7 +622,7 @@ const TasksToday: React.FC = () => {
             try {
                 // Make API call to persist the change and get the updated task from server
                 const updatedTaskFromServer = await updateTask(
-                    updatedTask.id,
+                    updatedTask.uid!,
                     updatedTask
                 );
 
@@ -698,11 +698,11 @@ const TasksToday: React.FC = () => {
     );
 
     const handleTaskDelete = useCallback(
-        async (taskId: number): Promise<void> => {
+        async (taskUid: string): Promise<void> => {
             if (!isMounted.current) return;
 
             try {
-                await deleteTask(taskId);
+                await deleteTask(taskUid);
 
                 // Reload tasks to reflect the change
                 const result = await fetchTasks('?type=today');

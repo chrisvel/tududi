@@ -275,11 +275,11 @@ const Calendar: React.FC = () => {
         setSelectedTask(null);
     };
 
-    const handleTaskDelete = async (taskId: number) => {
+    const handleTaskDelete = async (taskUid: string) => {
         try {
-            await deleteTask(taskId);
+            await deleteTask(taskUid);
             // Remove task from allTasks
-            setAllTasks((prev) => prev.filter((t) => t.id !== taskId));
+            setAllTasks((prev) => prev.filter((t) => t.uid !== taskUid));
             // Refresh calendar
             loadTasks();
             // Close modal
