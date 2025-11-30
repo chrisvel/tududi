@@ -237,7 +237,9 @@ describe('Tasks Routes', () => {
         }, 10000); // 10 second timeout for DELETE operations
 
         it('should return 403 for non-existent task', async () => {
-            const response = await agent.delete('/api/task/nonexistent-uid-12345');
+            const response = await agent.delete(
+                '/api/task/nonexistent-uid-12345'
+            );
 
             expect(response.status).toBe(403);
             expect(response.body.error).toBe('Forbidden');
