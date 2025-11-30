@@ -16,7 +16,7 @@ describe('Subtasks Completion Logic Integration', () => {
                     : Task.STATUS.NOT_STARTED
                 : Task.STATUS.DONE;
 
-        return agent.patch(`/api/task/${taskId}`).send({ status: newStatus });
+        return agent.patch(`/api/task/${task.uid}`).send({ status: newStatus });
     };
 
     beforeEach(async () => {
@@ -439,7 +439,7 @@ describe('Subtasks Completion Logic Integration', () => {
 
             // Delete parent task (in test environment, FK constraints are disabled)
             await agent
-                .delete(`/api/task/${parentTask.id}`)
+                .delete(`/api/task/${parentTask.uid}`)
 
                 .expect(200);
 

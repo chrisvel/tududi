@@ -637,6 +637,7 @@ router.patch(
 
 router.delete(
     '/project/:uid',
+    requireAuth,
     hasAccess(
         'rw',
         'project',

@@ -91,7 +91,7 @@ describe('Smart Recurring Task Deletion', () => {
         expect(initialChildTasks).toHaveLength(4);
 
         // Delete the parent task
-        const response = await agent.delete(`/api/task/${parentTask.id}`);
+        const response = await agent.delete(`/api/task/${parentTask.uid}`);
 
         expect(response.status).toBe(200);
         expect(response.body.message).toBe('Task successfully deleted');
@@ -140,7 +140,7 @@ describe('Smart Recurring Task Deletion', () => {
         });
 
         // Delete parent
-        const response = await agent.delete(`/api/task/${parentTask.id}`);
+        const response = await agent.delete(`/api/task/${parentTask.uid}`);
 
         expect(response.status).toBe(200);
 
@@ -180,7 +180,7 @@ describe('Smart Recurring Task Deletion', () => {
         });
 
         // Delete parent
-        const response = await agent.delete(`/api/task/${parentTask.id}`);
+        const response = await agent.delete(`/api/task/${parentTask.uid}`);
 
         expect(response.status).toBe(200);
 
@@ -204,7 +204,7 @@ describe('Smart Recurring Task Deletion', () => {
             status: Task.STATUS.NOT_STARTED,
         });
 
-        const response = await agent.delete(`/api/task/${standaloneTask.id}`);
+        const response = await agent.delete(`/api/task/${standaloneTask.uid}`);
 
         expect(response.status).toBe(200);
         expect(response.body.message).toBe('Task successfully deleted');

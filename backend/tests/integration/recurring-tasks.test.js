@@ -15,7 +15,7 @@ describe('Recurring Tasks API', () => {
                     : Task.STATUS.NOT_STARTED
                 : Task.STATUS.DONE;
 
-        return agent.patch(`/api/task/${taskId}`).send({ status: newStatus });
+        return agent.patch(`/api/task/${task.uid}`).send({ status: newStatus });
     };
 
     beforeEach(async () => {
@@ -189,7 +189,7 @@ describe('Recurring Tasks API', () => {
             };
 
             const response = await agent
-                .patch(`/api/task/${task.id}`)
+                .patch(`/api/task/${task.uid}`)
                 .send(updateData);
 
             expect(response.status).toBe(200);
@@ -204,7 +204,7 @@ describe('Recurring Tasks API', () => {
             };
 
             const response = await agent
-                .patch(`/api/task/${task.id}`)
+                .patch(`/api/task/${task.uid}`)
                 .send(updateData);
 
             expect(response.status).toBe(200);
@@ -220,7 +220,7 @@ describe('Recurring Tasks API', () => {
             };
 
             const response = await agent
-                .patch(`/api/task/${task.id}`)
+                .patch(`/api/task/${task.uid}`)
                 .send(updateData);
 
             expect(response.status).toBe(200);
@@ -235,7 +235,7 @@ describe('Recurring Tasks API', () => {
             };
 
             const response = await agent
-                .patch(`/api/task/${task.id}`)
+                .patch(`/api/task/${task.uid}`)
                 .send(updateData);
 
             expect(response.status).toBe(200);
@@ -274,7 +274,7 @@ describe('Recurring Tasks API', () => {
             };
 
             const response = await agent
-                .patch(`/api/task/${childTask.id}`)
+                .patch(`/api/task/${childTask.uid}`)
                 .send(updateData);
 
             expect(response.status).toBe(200);
@@ -295,7 +295,7 @@ describe('Recurring Tasks API', () => {
             };
 
             const response = await agent
-                .patch(`/api/task/${childTask.id}`)
+                .patch(`/api/task/${childTask.uid}`)
                 .send(updateData);
 
             expect(response.status).toBe(200);
@@ -319,7 +319,7 @@ describe('Recurring Tasks API', () => {
             };
 
             const response = await agent
-                .patch(`/api/task/${standaloneTask.id}`)
+                .patch(`/api/task/${standaloneTask.uid}`)
                 .send(updateData);
 
             expect(response.status).toBe(200);
@@ -578,7 +578,7 @@ describe('Recurring Tasks API', () => {
         });
 
         it('should smart delete recurring parent task - remove future instances, orphan past ones', async () => {
-            const response = await agent.delete(`/api/task/${parentTask.id}`);
+            const response = await agent.delete(`/api/task/${parentTask.uid}`);
 
             expect(response.status).toBe(200);
             expect(response.body.message).toBe('Task successfully deleted');
@@ -593,7 +593,7 @@ describe('Recurring Tasks API', () => {
         });
 
         it('should delete recurring child task', async () => {
-            const response = await agent.delete(`/api/task/${childTask.id}`);
+            const response = await agent.delete(`/api/task/${childTask.uid}`);
 
             expect(response.status).toBe(200);
             expect(response.body.message).toBe('Task successfully deleted');

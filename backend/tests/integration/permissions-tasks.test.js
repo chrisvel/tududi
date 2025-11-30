@@ -50,7 +50,7 @@ describe('Tasks Permissions', () => {
         });
 
         const res = await agent
-            .patch(`/api/task/${otherTask.id}`)
+            .patch(`/api/task/${otherTask.uid}`)
             .send({ status: 2 });
         expect(res.status).toBe(403);
         expect(res.body.error).toBe('Forbidden');
@@ -64,7 +64,7 @@ describe('Tasks Permissions', () => {
         });
 
         const res = await agent
-            .patch(`/api/task/${otherTask.id}`)
+            .patch(`/api/task/${otherTask.uid}`)
             .send({ today: true });
         expect(res.status).toBe(403);
         expect(res.body.error).toBe('Forbidden');
@@ -91,7 +91,7 @@ describe('Tasks Permissions', () => {
         });
 
         const res = await agent
-            .patch(`/api/task/${myTask.id}`)
+            .patch(`/api/task/${myTask.uid}`)
             .send({ project_id: otherProject.id });
         expect(res.status).toBe(403);
         expect(res.body.error).toBe('Forbidden');
