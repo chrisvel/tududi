@@ -326,8 +326,8 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
 
     const handleTaskSave = async (updatedTask: Task) => {
         try {
-            if (updatedTask.id) {
-                await updateTask(updatedTask.id, updatedTask);
+            if (updatedTask.uid) {
+                await updateTask(updatedTask.uid, updatedTask);
                 setIsTaskModalOpen(false);
                 setSelectedTask(null);
                 // Optionally refresh the parent component data
@@ -340,8 +340,8 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
 
     const handleTaskDelete = async () => {
         try {
-            if (selectedTask?.id) {
-                await deleteTask(selectedTask.id);
+            if (selectedTask?.uid) {
+                await deleteTask(selectedTask.uid);
                 setIsTaskModalOpen(false);
                 setSelectedTask(null);
                 showSuccessToast(
