@@ -16,6 +16,7 @@ import {
     getCreatorFromBannerUrl,
     isPresetBanner,
 } from '../../utils/bannersService';
+import { getAssetPath } from '../../config/paths';
 
 interface ProjectBannerProps {
     project: Project;
@@ -47,7 +48,7 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
             <div className="mb-6 overflow-hidden relative group">
                 {project.image_url ? (
                     <img
-                        src={project.image_url}
+                        src={getAssetPath(project.image_url)}
                         alt={project.name}
                         className="w-full h-[282px] object-cover"
                     />

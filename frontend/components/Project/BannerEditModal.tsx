@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { getPresetBanners, PresetBanner } from '../../utils/bannersService';
-import { getApiPath } from '../../config/paths';
+import { getApiPath, getAssetPath } from '../../config/paths';
 
 interface BannerEditModalProps {
     isOpen: boolean;
@@ -225,7 +225,15 @@ const BannerEditModal: React.FC<BannerEditModalProps> = ({
                                             </h3>
                                             <div className="relative inline-block w-full">
                                                 <img
-                                                    src={imagePreview}
+                                                    src={
+                                                        imagePreview.startsWith(
+                                                            'data:'
+                                                        )
+                                                            ? imagePreview
+                                                            : getAssetPath(
+                                                                  imagePreview
+                                                              )
+                                                    }
                                                     alt="Banner preview"
                                                     className="w-full h-48 object-cover rounded-md border border-gray-300 dark:border-gray-600"
                                                 />
@@ -265,7 +273,9 @@ const BannerEditModal: React.FC<BannerEditModalProps> = ({
                                                     }`}
                                                 >
                                                     <img
-                                                        src={banner.url}
+                                                        src={getAssetPath(
+                                                            banner.url
+                                                        )}
                                                         alt={`Banner by ${banner.creator}`}
                                                         className="w-full h-24 object-cover"
                                                     />
