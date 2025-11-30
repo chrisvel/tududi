@@ -141,10 +141,11 @@ describe('Timezone Fixes Integration Tests', () => {
                 .send({ name: 'Update Test Task', due_date: '2024-01-15' });
 
             const taskId = createRes.body.id;
+            const taskUid = createRes.body.uid;
 
             // Update due date
             const updateRes = await agent
-                .patch(`/api/task/${taskId}`)
+                .patch(`/api/task/${taskUid}`)
                 .send({ due_date: '2024-01-20' });
 
             expect(updateRes.statusCode).toBe(200);
@@ -168,10 +169,11 @@ describe('Timezone Fixes Integration Tests', () => {
                 .send({ name: 'Clear Date Task', due_date: '2024-01-15' });
 
             const taskId = createRes.body.id;
+            const taskUid = createRes.body.uid;
 
             // Clear due date by sending empty string
             const updateRes = await agent
-                .patch(`/api/task/${taskId}`)
+                .patch(`/api/task/${taskUid}`)
                 .send({ due_date: '' });
 
             expect(updateRes.statusCode).toBe(200);

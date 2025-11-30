@@ -57,7 +57,7 @@ describe('Project Notes and Tasks Deletion', () => {
 
             // Clear project from task by setting project_id to null
             const updateResponse = await agent
-                .patch(`/api/task/${task.id}`)
+                .patch(`/api/task/${task.uid}`)
                 .send({ project_id: null });
 
             expect(updateResponse.status).toBe(200);
@@ -109,7 +109,7 @@ describe('Project Notes and Tasks Deletion', () => {
         it('should remove task from project when project_id is set to empty string', async () => {
             // Clear project from task by setting project_id to empty string
             const updateResponse = await agent
-                .patch(`/api/task/${task.id}`)
+                .patch(`/api/task/${task.uid}`)
                 .send({ project_id: '' });
 
             expect(updateResponse.status).toBe(200);

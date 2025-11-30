@@ -174,7 +174,7 @@ describe('Subtask Ordering', () => {
             };
 
             await agent
-                .patch(`/api/task/${createResponse.body.id}`)
+                .patch(`/api/task/${createResponse.body.uid}`)
                 .send(updateData)
                 .expect(200);
 
@@ -222,7 +222,7 @@ describe('Subtask Ordering', () => {
             };
 
             await agent
-                .patch(`/api/task/${createResponse.body.id}`)
+                .patch(`/api/task/${createResponse.body.uid}`)
                 .send(updateData)
                 .expect(200);
 
@@ -272,7 +272,7 @@ describe('Subtask Ordering', () => {
             };
 
             await agent
-                .patch(`/api/task/${createResponse.body.id}`)
+                .patch(`/api/task/${createResponse.body.uid}`)
                 .send(updateData)
                 .expect(200);
 
@@ -325,7 +325,7 @@ describe('Subtask Ordering', () => {
 
             // Add subtasks in multiple concurrent requests
             const promises = [
-                agent.patch(`/api/task/${createResponse.body.id}`).send({
+                agent.patch(`/api/task/${createResponse.body.uid}`).send({
                     name: 'Parent Task',
                     subtasks: [
                         { name: 'Batch 1 - Task 1', isNew: true },

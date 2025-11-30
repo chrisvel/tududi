@@ -36,6 +36,7 @@ describe('Recurring Task Project Change', () => {
 
         expect(taskResponse.status).toBe(201);
         const taskId = taskResponse.body.id;
+        const taskUid = taskResponse.body.uid;
 
         // Generate instances
         await agent.post('/api/tasks/generate-recurring');
@@ -62,7 +63,7 @@ describe('Recurring Task Project Change', () => {
         });
 
         // Update the template to add project_id
-        const updateResponse = await agent.patch(`/api/task/${taskId}`).send({
+        const updateResponse = await agent.patch(`/api/task/${taskUid}`).send({
             project_id: project.id,
         });
 

@@ -315,15 +315,18 @@ const ViewDetail: React.FC = () => {
         }
     };
 
-    const handleTaskDelete = async (taskId: number) => {
+    const handleTaskDelete = async (taskUid: string) => {
         try {
-            const response = await fetch(getApiPath(`task/${taskId}`), {
-                method: 'DELETE',
-            });
+            const response = await fetch(
+                getApiPath(`task/${encodeURIComponent(taskUid)}`),
+                {
+                    method: 'DELETE',
+                }
+            );
 
             if (response.ok) {
                 setTasks((prevTasks) =>
-                    prevTasks.filter((task) => task.id !== taskId)
+                    prevTasks.filter((task) => task.uid !== taskUid)
                 );
             }
         } catch (error) {

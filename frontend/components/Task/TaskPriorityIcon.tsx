@@ -93,7 +93,7 @@ const TaskPriorityIcon: React.FC<TaskPriorityIconProps> = ({
     ) {
         return (
             <CheckCircleIcon
-                className={`${colorClass} cursor-pointer flex-shrink-0 transition-all duration-300 ease-in-out animate-scale-in w-6 h-6 md:w-5 md:h-5`}
+                className={`${colorClass} cursor-pointer flex-shrink-0 self-center transition-all duration-300 ease-in-out animate-scale-in w-7 h-7 md:w-6 md:h-6`}
                 style={{
                     marginLeft: '-2px',
                     marginRight: '-2px',
@@ -108,7 +108,7 @@ const TaskPriorityIcon: React.FC<TaskPriorityIconProps> = ({
     } else {
         return (
             <div
-                className={`${colorClass} cursor-pointer border-2 border-current rounded-full flex-shrink-0 transition-all duration-300 ease-in-out hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 w-5 h-5 md:w-4 md:h-4`}
+                className={`${colorClass} cursor-pointer border-2 border-current rounded-full flex-shrink-0 self-center transition-all duration-300 ease-in-out hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 w-6 h-6 md:w-5 md:h-5`}
                 onClick={handleClick}
                 {...(priorityText && { title: priorityText })}
                 role="checkbox"

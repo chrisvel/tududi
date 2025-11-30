@@ -84,38 +84,44 @@ export const createTask = async (taskData: Task): Promise<Task> => {
 };
 
 export const updateTask = async (
-    taskId: number,
+    taskUid: string,
     taskData: Partial<Task>
 ): Promise<Task> => {
-    const response = await fetch(getApiPath(`task/${taskId}`), {
-        method: 'PATCH',
-        credentials: 'include',
-        headers: getPostHeaders(),
-        body: JSON.stringify(taskData),
-    });
+    const response = await fetch(
+        getApiPath(`task/${encodeURIComponent(taskUid)}`),
+        {
+            method: 'PATCH',
+            credentials: 'include',
+            headers: getPostHeaders(),
+            body: JSON.stringify(taskData),
+        }
+    );
 
     await handleAuthResponse(response, 'Failed to update task.');
     return await response.json();
 };
 
 export const toggleTaskCompletion = async (
-    taskId: number,
+    taskUid: string,
     currentTask?: Task
 ): Promise<Task> => {
-    const task = currentTask ?? (await fetchTaskById(taskId));
+    const task = currentTask ?? (await fetchTaskByUid(taskUid));
 
     const newStatus =
         task.status === 2 || task.status === 'done' ? (task.note ? 1 : 0) : 2;
 
-    return await updateTask(taskId, { status: newStatus });
+    return await updateTask(taskUid, { status: newStatus });
 };
 
-export const deleteTask = async (taskId: number): Promise<void> => {
-    const response = await fetch(getApiPath(`task/${taskId}`), {
-        method: 'DELETE',
-        credentials: 'include',
-        headers: getDefaultHeaders(),
-    });
+export const deleteTask = async (taskUid: string): Promise<void> => {
+    const response = await fetch(
+        getApiPath(`task/${encodeURIComponent(taskUid)}`),
+        {
+            method: 'DELETE',
+            credentials: 'include',
+            headers: getDefaultHeaders(),
+        }
+    );
 
     await handleAuthResponse(response, 'Failed to delete task.');
 };
@@ -161,7 +167,7 @@ export const toggleTaskToday = async (
         currentTask = await fetchTaskById(taskId);
     }
 
-    return await updateTask(taskId, {
+    return await updateTask(currentTask.uid!, {
         ...currentTask,
         today: !currentTask.today,
     });

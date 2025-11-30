@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('User Registration', () => {
+test.describe.serial('User Registration', () => {
+test.describe.serial('User Registration - Enabled', () => {
     test.beforeAll(async ({ request, baseURL }) => {
         const appUrl = baseURL ?? process.env.APP_URL ?? 'http://localhost:8080';
 
@@ -12,7 +13,8 @@ test.describe('User Registration', () => {
         });
 
         if (!loginResponse.ok()) {
-            throw new Error('Failed to login as admin for test setup');
+            const errorText = await loginResponse.text();
+            throw new Error(`Failed to login as admin for test setup. Status: ${loginResponse.status()}, Response: ${errorText}`);
         }
 
         const registrationResponse = await request.post(`${appUrl}/api/admin/toggle-registration`, {
@@ -20,7 +22,13 @@ test.describe('User Registration', () => {
         });
 
         if (!registrationResponse.ok()) {
-            throw new Error('Failed to enable registration for tests');
+            const errorText = await registrationResponse.text();
+            throw new Error(`Failed to enable registration for tests: ${errorText}`);
+        }
+
+        const responseData = await registrationResponse.json();
+        if (!responseData.enabled) {
+            throw new Error('Registration toggle did not enable registration');
         }
     });
 
@@ -117,4 +125,57 @@ test.describe('User Registration', () => {
 
         await expect(page.getByTestId('register-error')).toBeVisible();
     });
+});
+
+test.describe.serial('User Registration - Disabled', () => {
+    test.beforeAll(async ({ request, baseURL }) => {
+        const appUrl = baseURL ?? process.env.APP_URL ?? 'http://localhost:8080';
+
+        const loginResponse = await request.post(`${appUrl}/api/login`, {
+            data: {
+                email: process.env.E2E_EMAIL || 'test@tududi.com',
+                password: process.env.E2E_PASSWORD || 'password123',
+            },
+        });
+
+        if (!loginResponse.ok()) {
+            const errorText = await loginResponse.text();
+            throw new Error(`Failed to login as admin for test setup. Status: ${loginResponse.status()}, Response: ${errorText}`);
+        }
+
+        const registrationResponse = await request.post(`${appUrl}/api/admin/toggle-registration`, {
+            data: { enabled: false },
+        });
+
+        if (!registrationResponse.ok()) {
+            const errorText = await registrationResponse.text();
+            throw new Error(`Failed to disable registration for tests: ${errorText}`);
+        }
+
+        const responseData = await registrationResponse.json();
+        if (responseData.enabled !== false) {
+            throw new Error('Registration toggle did not disable registration');
+        }
+    });
+
+    test.beforeEach(async ({ page, baseURL }) => {
+        const appUrl = baseURL ?? process.env.APP_URL ?? 'http://localhost:8080';
+        await page.goto(appUrl + '/register');
+    });
+
+    test('should show registration disabled error', async ({ page }) => {
+        const timestamp = Date.now();
+        const email = `test${timestamp}@example.com`;
+        const password = 'password123';
+
+        await page.getByTestId('register-email').fill(email);
+        await page.getByTestId('register-password').fill(password);
+        await page.getByTestId('register-confirm-password').fill(password);
+
+        await page.getByTestId('register-submit').click();
+
+        await expect(page.getByTestId('register-error')).toBeVisible();
+        await expect(page.getByTestId('register-error')).toContainText(/registration is not enabled/i);
+    });
+});
 });

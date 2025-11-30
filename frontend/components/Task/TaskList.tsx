@@ -8,7 +8,7 @@ interface TaskListProps {
     onTaskUpdate: (task: Task) => Promise<void>;
     onTaskCompletionToggle?: (task: Task) => void;
     onTaskCreate?: (task: Task) => void;
-    onTaskDelete: (taskId: number) => void;
+    onTaskDelete: (taskUid: string) => void;
     projects: Project[];
     hideProjectName?: boolean;
     onToggleToday?: (taskId: number, task?: Task) => Promise<void>;

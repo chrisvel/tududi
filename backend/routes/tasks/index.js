@@ -334,7 +334,7 @@ router.get('/task/:uid', requireTaskReadAccess, async (req, res) => {
     }
 });
 
-router.patch('/task/:id', requireTaskWriteAccess, async (req, res) => {
+router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
     try {
         const {
             status,
@@ -356,7 +356,7 @@ router.patch('/task/:id', requireTaskWriteAccess, async (req, res) => {
 
         const tagsData = tags || Tags;
 
-        const task = await taskRepository.findById(req.params.id, {
+        const task = await taskRepository.findByUid(req.params.uid, {
             include: TASK_INCLUDES_WITH_SUBTASKS,
         });
 
@@ -578,17 +578,17 @@ router.patch('/task/:id', requireTaskWriteAccess, async (req, res) => {
     }
 });
 
-router.delete('/task/:id', requireTaskWriteAccess, async (req, res) => {
+router.delete('/task/:uid', requireTaskWriteAccess, async (req, res) => {
     try {
-        const task = await taskRepository.findById(req.params.id);
+        const task = await taskRepository.findByUid(req.params.uid);
 
         if (!task) {
             return res.status(404).json({ error: 'Task not found.' });
         }
 
-        const childTasks = await taskRepository.findRecurringChildren(
-            req.params.id
-        );
+        const taskId = task.id;
+
+        const childTasks = await taskRepository.findRecurringChildren(taskId);
 
         if (childTasks.length > 0) {
             const now = new Date();
@@ -626,15 +626,15 @@ router.delete('/task/:id', requireTaskWriteAccess, async (req, res) => {
 
         try {
             await TaskEvent.destroy({
-                where: { task_id: req.params.id },
+                where: { task_id: taskId },
                 force: true,
             });
 
             await sequelize.query('DELETE FROM tasks_tags WHERE task_id = ?', {
-                replacements: [req.params.id],
+                replacements: [taskId],
             });
 
-            await taskRepository.clearRecurringParent(req.params.id);
+            await taskRepository.clearRecurringParent(taskId);
 
             await task.destroy({ force: true });
         } finally {

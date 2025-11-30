@@ -376,10 +376,10 @@ const ProjectDetails: React.FC = () => {
         }
     };
 
-    const handleTaskDelete = async (taskId: number | undefined) => {
-        if (!taskId) return;
-        await deleteTask(taskId);
-        setTasks(tasks.filter((task) => task.id !== taskId));
+    const handleTaskDelete = async (taskUid: string | undefined) => {
+        if (!taskUid) return;
+        await deleteTask(taskUid);
+        setTasks(tasks.filter((task) => task.uid !== taskUid));
     };
 
     const handleTaskCompletionToggle = (updatedTask: Task) => {

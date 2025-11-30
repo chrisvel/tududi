@@ -201,7 +201,7 @@ const TaskDetails: React.FC = () => {
     };
 
     const handleSaveRecurrence = async () => {
-        if (!task?.id) {
+        if (!task?.uid) {
             setIsEditingRecurrence(false);
             return;
         }
@@ -231,7 +231,7 @@ const TaskDetails: React.FC = () => {
                 completion_based: recurrenceForm.completion_based,
             };
 
-            await updateTask(task.id, { ...task, ...recurrencePayload });
+            await updateTask(task.uid, { ...task, ...recurrencePayload });
 
             if (uid) {
                 const updatedTask = await fetchTaskByUid(uid);
@@ -279,7 +279,7 @@ const TaskDetails: React.FC = () => {
     };
 
     const handleSaveDueDate = async () => {
-        if (!task?.id) {
+        if (!task?.uid) {
             setIsEditingDueDate(false);
             setEditedDueDate(task?.due_date || '');
             return;
@@ -309,7 +309,7 @@ const TaskDetails: React.FC = () => {
         }
 
         try {
-            await updateTask(task.id, {
+            await updateTask(task.uid, {
                 ...task,
                 due_date: editedDueDate || null,
             });
@@ -353,7 +353,7 @@ const TaskDetails: React.FC = () => {
     };
 
     const handleSaveDeferUntil = async () => {
-        if (!task?.id) {
+        if (!task?.uid) {
             setIsEditingDeferUntil(false);
             setEditedDeferUntil(task?.defer_until || '');
             return;
@@ -383,7 +383,7 @@ const TaskDetails: React.FC = () => {
         }
 
         try {
-            await updateTask(task.id, {
+            await updateTask(task.uid, {
                 defer_until: editedDeferUntil || null,
             });
 
@@ -665,7 +665,7 @@ const TaskDetails: React.FC = () => {
     };
 
     const handleSaveSubtasks = async () => {
-        if (!task?.id) {
+        if (!task?.uid) {
             setIsEditingSubtasks(false);
             setEditedSubtasks([]);
             return;
@@ -673,7 +673,7 @@ const TaskDetails: React.FC = () => {
 
         try {
             // Update task with new subtasks
-            await updateTask(task.id, { ...task, subtasks: editedSubtasks });
+            await updateTask(task.uid, { ...task, subtasks: editedSubtasks });
 
             // Refresh the task from server to get updated subtasks
             if (uid) {
@@ -711,9 +711,9 @@ const TaskDetails: React.FC = () => {
     };
 
     const handleToggleSubtaskCompletion = async (subtask: Task) => {
-        if (!subtask.id) return;
+        if (!subtask.uid) return;
         try {
-            await toggleTaskCompletion(subtask.id, subtask);
+            await toggleTaskCompletion(subtask.uid, subtask);
             if (uid) {
                 const updatedTask = await fetchTaskByUid(uid);
                 const existingIndex = tasksStore.tasks.findIndex(
@@ -732,10 +732,10 @@ const TaskDetails: React.FC = () => {
     };
 
     const handleProjectSelection = async (project: Project) => {
-        if (!task?.id) return;
+        if (!task?.uid) return;
 
         try {
-            await updateTask(task.id, { ...task, project_id: project.id });
+            await updateTask(task.uid, { ...task, project_id: project.id });
 
             // Refresh the task from server
             if (uid) {
@@ -765,10 +765,10 @@ const TaskDetails: React.FC = () => {
     };
 
     const handleClearProject = async () => {
-        if (!task?.id) return;
+        if (!task?.uid) return;
 
         try {
-            await updateTask(task.id, { ...task, project_id: null });
+            await updateTask(task.uid, { ...task, project_id: null });
 
             // Refresh the task from server
             if (uid) {
@@ -820,10 +820,10 @@ const TaskDetails: React.FC = () => {
     };
 
     const handleToggleCompletion = async () => {
-        if (!task?.id) return;
+        if (!task?.uid) return;
 
         try {
-            const updatedTask = await toggleTaskCompletion(task.id);
+            const updatedTask = await toggleTaskCompletion(task.uid, task);
             // Update the task in the global store
             if (uid) {
                 const updatedTask = await fetchTaskByUid(uid);
@@ -856,8 +856,8 @@ const TaskDetails: React.FC = () => {
 
     const handleTaskUpdate = async (updatedTask: Task) => {
         try {
-            if (task?.id) {
-                await updateTask(task.id, updatedTask);
+            if (task?.uid) {
+                await updateTask(task.uid, updatedTask);
                 // Update the task in the global store
                 if (uid) {
                     const updatedTaskFromServer = await fetchTaskByUid(uid);
@@ -891,9 +891,9 @@ const TaskDetails: React.FC = () => {
     };
 
     const handleDeleteConfirm = async () => {
-        if (taskToDelete?.id) {
+        if (taskToDelete?.uid) {
             try {
-                await deleteTask(taskToDelete.id);
+                await deleteTask(taskToDelete.uid);
                 showSuccessToast(
                     t('task.deleteSuccess', 'Task deleted successfully')
                 );
@@ -929,7 +929,7 @@ const TaskDetails: React.FC = () => {
 
     // Wrapper handlers for new components
     const handleTitleUpdate = async (newTitle: string) => {
-        if (!task?.id || !newTitle.trim()) {
+        if (!task?.uid || !newTitle.trim()) {
             return;
         }
 
@@ -938,7 +938,7 @@ const TaskDetails: React.FC = () => {
         }
 
         try {
-            await updateTask(task.id, { ...task, name: newTitle.trim() });
+            await updateTask(task.uid, { ...task, name: newTitle.trim() });
 
             // Update the task in the global store
             if (uid) {
@@ -969,7 +969,7 @@ const TaskDetails: React.FC = () => {
     };
 
     const handleContentUpdate = async (newContent: string) => {
-        if (!task?.id) {
+        if (!task?.uid) {
             return;
         }
 
@@ -980,7 +980,7 @@ const TaskDetails: React.FC = () => {
         }
 
         try {
-            await updateTask(task.id, { ...task, note: trimmedContent });
+            await updateTask(task.uid, { ...task, note: trimmedContent });
 
             // Update the task in the global store
             if (uid) {
@@ -1011,7 +1011,7 @@ const TaskDetails: React.FC = () => {
     };
 
     const handleProjectCreateInlineWrapper = async (name: string) => {
-        if (!task?.id || !name.trim()) return;
+        if (!task?.uid || !name.trim()) return;
 
         try {
             const newProject = await createProject({ name });
@@ -1020,7 +1020,7 @@ const TaskDetails: React.FC = () => {
             projectsStore.setProjects([...projectsStore.projects, newProject]);
 
             // Update task with new project
-            await updateTask(task.id, { ...task, project_id: newProject.id });
+            await updateTask(task.uid, { ...task, project_id: newProject.id });
 
             // Refresh the task from server
             if (uid) {
@@ -1051,7 +1051,7 @@ const TaskDetails: React.FC = () => {
     };
 
     const handleTagsUpdate = async (tags: string[]) => {
-        if (!task?.id) {
+        if (!task?.uid) {
             return;
         }
 
@@ -1064,7 +1064,7 @@ const TaskDetails: React.FC = () => {
         }
 
         try {
-            await updateTask(task.id, {
+            await updateTask(task.uid, {
                 ...task,
                 tags: tags.map((name) => ({ name })),
             });
@@ -1094,10 +1094,10 @@ const TaskDetails: React.FC = () => {
     };
 
     const handlePriorityUpdate = async (priority: any) => {
-        if (!task?.id) return;
+        if (!task?.uid) return;
 
         try {
-            await updateTask(task.id, {
+            await updateTask(task.uid, {
                 ...task,
                 priority: priority,
             });
@@ -1295,9 +1295,11 @@ const TaskDetails: React.FC = () => {
                             );
                         }}
                         onSave={handleTaskUpdate}
-                        onDelete={async (taskId: number) => {
-                            await deleteTask(taskId);
-                            navigate('/today');
+                        onDelete={async () => {
+                            if (task.uid) {
+                                await deleteTask(task.uid);
+                                navigate('/today');
+                            }
                         }}
                         projects={projects}
                         onCreateProject={handleCreateProject}

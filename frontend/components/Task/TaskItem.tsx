@@ -62,11 +62,11 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
                                                 subtask.status || 'not_started'
                                             }
                                             onToggleCompletion={async () => {
-                                                if (subtask.id) {
+                                                if (subtask.uid) {
                                                     try {
                                                         const updatedSubtask =
                                                             await toggleTaskCompletion(
-                                                                subtask.id,
+                                                                subtask.uid,
                                                                 subtask
                                                             );
 
@@ -138,7 +138,7 @@ interface TaskItemProps {
     task: Task;
     onTaskUpdate: (task: Task) => Promise<void>;
     onTaskCompletionToggle?: (task: Task) => void;
-    onTaskDelete: (taskId: number) => void;
+    onTaskDelete: (taskUid: string) => void;
     projects: Project[];
     hideProjectName?: boolean;
     onToggleToday?: (taskId: number, task?: Task) => Promise<void>;
@@ -267,8 +267,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
     };
 
     const handleSubtaskDelete = async () => {
-        if (selectedSubtask && selectedSubtask.id) {
-            await onTaskDelete(selectedSubtask.id);
+        if (selectedSubtask && selectedSubtask.uid) {
+            await onTaskDelete(selectedSubtask.uid);
             setSubtaskModalOpen(false);
             setSelectedSubtask(null);
         }
@@ -281,8 +281,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
     };
 
     const handleParentTaskDelete = async () => {
-        if (parentTask && parentTask.id) {
-            await onTaskDelete(parentTask.id);
+        if (parentTask && parentTask.uid) {
+            await onTaskDelete(parentTask.uid);
             setParentTaskModalOpen(false);
             setParentTask(null);
         }
@@ -316,9 +316,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
     };
 
     const handleDelete = async () => {
-        if (task.id) {
+        if (task.uid) {
             try {
-                await onTaskDelete(task.id);
+                await onTaskDelete(task.uid);
             } catch (error: any) {
                 console.error('Task delete failed:', error);
                 showErrorToast(
@@ -345,7 +345,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     await new Promise((resolve) => setTimeout(resolve, 300));
                 }
 
-                const response = await toggleTaskCompletion(task.id, task);
+                const response = await toggleTaskCompletion(task.uid!, task);
 
                 // Handle the updated task
                 if (onTaskCompletionToggle) {

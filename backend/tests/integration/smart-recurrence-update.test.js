@@ -91,7 +91,7 @@ describe('Smart Recurrence Update', () => {
         expect(initialChildTasks).toHaveLength(4);
 
         // Update recurrence type from daily to weekly
-        const response = await agent.patch(`/api/task/${parentTask.id}`).send({
+        const response = await agent.patch(`/api/task/${parentTask.uid}`).send({
             recurrence_type: 'weekly',
             recurrence_interval: 1,
             recurrence_weekday: 1, // Monday
@@ -179,7 +179,7 @@ describe('Smart Recurrence Update', () => {
         });
 
         // Change from daily to every 3 days
-        const response = await agent.patch(`/api/task/${parentTask.id}`).send({
+        const response = await agent.patch(`/api/task/${parentTask.uid}`).send({
             recurrence_interval: 3,
         });
 
@@ -210,7 +210,7 @@ describe('Smart Recurrence Update', () => {
         });
 
         // Change to non-recurring
-        const response = await agent.patch(`/api/task/${parentTask.id}`).send({
+        const response = await agent.patch(`/api/task/${parentTask.uid}`).send({
             recurrence_type: 'none',
         });
 
@@ -260,7 +260,7 @@ describe('Smart Recurrence Update', () => {
         });
 
         // Update recurrence
-        const response = await agent.patch(`/api/task/${parentTask.id}`).send({
+        const response = await agent.patch(`/api/task/${parentTask.uid}`).send({
             recurrence_type: 'weekly',
             recurrence_weekday: 2,
         });
@@ -286,7 +286,7 @@ describe('Smart Recurrence Update', () => {
 
     it('should handle edge case with no existing child instances', async () => {
         // Update recurrence when no child instances exist
-        const response = await agent.patch(`/api/task/${parentTask.id}`).send({
+        const response = await agent.patch(`/api/task/${parentTask.uid}`).send({
             recurrence_type: 'weekly',
             recurrence_interval: 2,
         });
@@ -322,7 +322,7 @@ describe('Smart Recurrence Update', () => {
         });
 
         // Update multiple recurrence fields at once
-        const response = await agent.patch(`/api/task/${parentTask.id}`).send({
+        const response = await agent.patch(`/api/task/${parentTask.uid}`).send({
             recurrence_type: 'weekly',
             recurrence_interval: 2,
             recurrence_weekday: 5,
