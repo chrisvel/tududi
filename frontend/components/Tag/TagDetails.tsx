@@ -255,9 +255,12 @@ const TagDetails: React.FC = () => {
 
     const handleTaskDelete = async (taskUid: string) => {
         try {
-            const response = await fetch(getApiPath(`task/${encodeURIComponent(taskUid)}`), {
-                method: 'DELETE',
-            });
+            const response = await fetch(
+                getApiPath(`task/${encodeURIComponent(taskUid)}`),
+                {
+                    method: 'DELETE',
+                }
+            );
 
             if (response.ok) {
                 setTasks((prevTasks) =>
