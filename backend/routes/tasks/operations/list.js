@@ -67,7 +67,8 @@ async function addDashboardLists(
     const serializedLists = {};
 
     for (const key of listKeys) {
-        const metricsKey = key === 'tasks_today_plan' ? 'today_plan_tasks' : key;
+        const metricsKey =
+            key === 'tasks_today_plan' ? 'today_plan_tasks' : key;
         serializedLists[key] = await serializeTasks(
             metricsData[metricsKey],
             timezone,
