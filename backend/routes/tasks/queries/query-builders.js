@@ -124,7 +124,6 @@ async function filterTasksByParams(
                             ],
                         },
                         { recurring_parent_id: null },
-                        { today: true },
                     ],
                 },
                 {
@@ -132,7 +131,6 @@ async function filterTasksByParams(
                         { recurrence_type: { [Op.ne]: 'none' } },
                         { recurrence_type: { [Op.ne]: null } },
                         { recurring_parent_id: null },
-                        { today: true },
                     ],
                 },
                 {

@@ -64,15 +64,19 @@ async function addDashboardLists(
         'tasks_completed_today',
     ];
 
-    response.dashboard_lists = {};
+    const serializedLists = {};
 
     for (const key of listKeys) {
-        response.dashboard_lists[key] = await serializeTasks(
-            metricsData[key === 'tasks_today_plan' ? 'today_plan_tasks' : key],
+        const metricsKey = key === 'tasks_today_plan' ? 'today_plan_tasks' : key;
+        serializedLists[key] = await serializeTasks(
+            metricsData[metricsKey],
             timezone,
             serializationOptions
         );
     }
+
+    Object.assign(response, serializedLists);
+    response.dashboard_lists = serializedLists;
 }
 
 function addPerformanceHeaders(res, startTime, queryStats) {

@@ -187,8 +187,7 @@ async function getTaskMetrics(userId, timezone) {
 
     const response = await buildMetricsResponse(metrics);
 
-    // Add serialized task lists under dashboard_lists
-    response.dashboard_lists = {
+    const serializedLists = {
         tasks_in_progress: await serializeTasks(
             metrics.tasks_in_progress,
             timezone
@@ -211,6 +210,9 @@ async function getTaskMetrics(userId, timezone) {
             timezone
         ),
     };
+
+    Object.assign(response, serializedLists);
+    response.dashboard_lists = serializedLists;
 
     return response;
 }
