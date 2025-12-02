@@ -140,7 +140,9 @@
     "noProject": "プロジェクトなし",
     "unknownProject": "不明なプロジェクト",
     "tasks": "タスク",
-    "showingItems": "{{total}}件中{{current}}件を表示"
+    "showingItems": "{{total}}件中{{current}}件を表示",
+    "overdue": "期限切れ",
+    "planned": "計画中"
   },
   "timeline": {
     "activityTimeline": "アクティビティタイムライン",
@@ -580,7 +582,9 @@
       "planned_desc": "スコープが決まり、開始準備が整った",
       "in_progress_desc": "アクティブな作業が行われている",
       "blocked_desc": "一時的に停止または行き詰まっている",
-      "completed_desc": "完了し、終了した"
+      "completed_desc": "完了し、終了した",
+      "active": "進行中",
+      "active_desc": "アクティブな作業が行われています"
     },
     "showMetrics": "メトリクスを表示",
     "hideMetrics": "メトリクスを非表示"

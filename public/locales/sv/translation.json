@@ -140,7 +140,9 @@
     "noProject": "Inget projekt",
     "unknownProject": "Okänt projekt",
     "tasks": "uppgifter",
-    "showingItems": "Visar {{current}} av {{total}} objekt"
+    "showingItems": "Visar {{current}} av {{total}} objekt",
+    "overdue": "Förfallen",
+    "planned": "Planerad"
   },
   "timeline": {
     "activityTimeline": "Aktivitetslinje",
@@ -782,7 +784,9 @@
       "planned_desc": "Avgränsad och redo att starta",
       "in_progress_desc": "Aktivt arbete pågår",
       "blocked_desc": "Tillfälligt pausad eller fast",
-      "completed_desc": "Avslutad och klar"
+      "completed_desc": "Avslutad och klar",
+      "active": "Pågående",
+      "active_desc": "Aktivt arbete pågår"
     },
     "showMetrics": "Visa mätvärden",
     "hideMetrics": "Dölj mätvärden"

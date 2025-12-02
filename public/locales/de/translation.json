@@ -99,8 +99,10 @@
     "title": "Aufgaben",
     "backlog": "Backlog",
     "inProgress": "In Bearbeitung",
+    "overdue": "Überfällig",
+    "planned": "Geplant",
     "dueToday": "Heute fällig",
-    "completedToday": "Heute abgeschlossen",
+    "completedToday": "Abgeschlossen",
     "myPlanToday": "Mein Plan für Heute",
     "noPlanToday": "Noch keine Aufgaben für heute geplant",
     "addToPlanHint": "Verwende die Kalendersymbole neben den Aufgaben, um sie zu deinem heutigen Plan hinzuzufügen",
@@ -872,7 +874,9 @@
       "planned_desc": "Definiert und bereit zum Start",
       "in_progress_desc": "Aktive Arbeit im Gange",
       "blocked_desc": "Vorübergehend pausiert oder festgefahren",
-      "completed_desc": "Fertiggestellt und abgeschlossen"
+      "completed_desc": "Fertiggestellt und abgeschlossen",
+      "active": "In Bearbeitung",
+      "active_desc": "Aktive Arbeit im Gange"
     },
     "showMetrics": "Metriken anzeigen",
     "hideMetrics": "Metriken ausblenden"

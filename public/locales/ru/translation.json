@@ -140,7 +140,9 @@
     "noProject": "Без проекта",
     "unknownProject": "Неизвестный проект",
     "tasks": "задачи",
-    "showingItems": "Показано {{current}} из {{total}} элементов"
+    "showingItems": "Показано {{current}} из {{total}} элементов",
+    "overdue": "Просрочено",
+    "planned": "Запланировано"
   },
   "timeline": {
     "activityTimeline": "Хронология активности",
@@ -782,7 +784,9 @@
       "planned_desc": "Определено и готово к началу",
       "in_progress_desc": "Активная работа идет",
       "blocked_desc": "Временно приостановлено или застряло",
-      "completed_desc": "Завершено и выполнено"
+      "completed_desc": "Завершено и выполнено",
+      "active": "В процессе",
+      "active_desc": "Активная работа ведется"
     },
     "showMetrics": "Показать метрики",
     "hideMetrics": "Скрыть метрики"

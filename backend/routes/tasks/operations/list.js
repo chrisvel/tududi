@@ -57,18 +57,27 @@ async function addDashboardLists(
 
     const listKeys = [
         'tasks_in_progress',
+        'tasks_today_plan',
         'tasks_due_today',
+        'tasks_overdue',
         'suggested_tasks',
         'tasks_completed_today',
     ];
 
+    const serializedLists = {};
+
     for (const key of listKeys) {
-        response[key] = await serializeTasks(
-            metricsData[key],
+        const metricsKey =
+            key === 'tasks_today_plan' ? 'today_plan_tasks' : key;
+        serializedLists[key] = await serializeTasks(
+            metricsData[metricsKey],
             timezone,
             serializationOptions
         );
     }
+
+    Object.assign(response, serializedLists);
+    response.dashboard_lists = serializedLists;
 }
 
 function addPerformanceHeaders(res, startTime, queryStats) {

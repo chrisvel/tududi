@@ -350,7 +350,9 @@
     "noProject": "Χωρίς έργο",
     "unknownProject": "Άγνωστο έργο",
     "tasks": "εργασίες",
-    "showingItems": "Εμφάνιση {{current}} από {{total}} στοιχεία"
+    "showingItems": "Εμφάνιση {{current}} από {{total}} στοιχεία",
+    "overdue": "Υπερβολικό",
+    "planned": "Προγραμματισμένο"
   },
   "timeline": {
     "activityTimeline": "Χρονοδιάγραμμα Δραστηριότητας",
@@ -420,7 +422,9 @@
       "planned_desc": "Καθορισμένο και έτοιμο να ξεκινήσει",
       "in_progress_desc": "Ενεργή εργασία σε εξέλιξη",
       "blocked_desc": "Προσωρινά παγωμένο ή κολλημένο",
-      "completed_desc": "Ολοκληρώθηκε και τελείωσε"
+      "completed_desc": "Ολοκληρώθηκε και τελείωσε",
+      "active": "Σε Εξέλιξη",
+      "active_desc": "Ενεργή εργασία που πραγματοποιείται"
     },
     "showMetrics": "Εμφάνιση μετρήσεων",
     "hideMetrics": "Απόκρυψη μετρήσεων"

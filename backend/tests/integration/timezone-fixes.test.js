@@ -225,16 +225,22 @@ describe('Timezone Fixes Integration Tests', () => {
 
             expect(tasksRes.statusCode).toBe(200);
 
-            // Both tasks should appear in tasks_due_today since they're overdue
             expect(tasksRes.body.tasks_due_today.length).toBeGreaterThanOrEqual(
-                2
+                1
             );
 
-            const taskNames = tasksRes.body.tasks_due_today.map(
+            const dueTodayNames = tasksRes.body.tasks_due_today.map(
                 (task) => task.name
             );
-            expect(taskNames).toContain('Today Task');
-            expect(taskNames).toContain('Yesterday Task');
+            expect(dueTodayNames).toContain('Today Task');
+            expect(tasksRes.body.tasks_overdue.length).toBeGreaterThanOrEqual(
+                1
+            );
+
+            const overdueNames = tasksRes.body.tasks_overdue.map(
+                (task) => task.name
+            );
+            expect(overdueNames).toContain('Yesterday Task');
         });
     });
 

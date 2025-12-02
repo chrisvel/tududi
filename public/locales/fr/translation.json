@@ -100,10 +100,12 @@
     "today": "Aujourd'hui",
     "backlog": "Retard",
     "inProgress": "En Cours",
+    "overdue": "En Retard",
+    "planned": "Planifié",
     "dueToday": "Échéance Aujourd'hui",
     "stale": "Obsolète",
     "suggested": "Suggéré",
-    "completedToday": "Terminé Aujourd'hui",
+    "completedToday": "Terminé",
     "weeklyCompletions": "Progrès Hebdomadaire",
     "taskCompleted": "tâche terminée",
     "tasksCompleted": "tâches terminées",
@@ -782,7 +784,9 @@
       "planned_desc": "Défini et prêt à commencer",
       "in_progress_desc": "Travail actif en cours",
       "blocked_desc": "Temporairement mis en pause ou bloqué",
-      "completed_desc": "Fini et terminé"
+      "completed_desc": "Fini et terminé",
+      "active": "En cours",
+      "active_desc": "Travail actif en cours"
     },
     "showMetrics": "Afficher les métriques",
     "hideMetrics": "Masquer les métriques"

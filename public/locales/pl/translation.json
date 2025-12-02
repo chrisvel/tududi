@@ -140,7 +140,9 @@
     "noProject": "Brak projektu",
     "unknownProject": "Nieznany projekt",
     "tasks": "zadania",
-    "showingItems": "Wyświetlanie {{current}} z {{total}} elementów"
+    "showingItems": "Wyświetlanie {{current}} z {{total}} elementów",
+    "overdue": "Przeterminowane",
+    "planned": "Zaplanowane"
   },
   "timeline": {
     "activityTimeline": "Oś czasu aktywności",
@@ -782,7 +784,9 @@
       "planned_desc": "Określone i gotowe do rozpoczęcia",
       "in_progress_desc": "Aktywna praca w toku",
       "blocked_desc": "Tymczasowo wstrzymane lub utknęło",
-      "completed_desc": "Zakończone i gotowe"
+      "completed_desc": "Zakończone i gotowe",
+      "active": "W trakcie",
+      "active_desc": "Aktywna praca w toku"
     },
     "showMetrics": "Pokaż metryki",
     "hideMetrics": "Ukryj metryki"

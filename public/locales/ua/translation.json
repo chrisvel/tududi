@@ -140,7 +140,9 @@
     "noProject": "Без проекту",
     "unknownProject": "Невідомий проект",
     "tasks": "завдання",
-    "showingItems": "Показано {{current}} з {{total}} елементів"
+    "showingItems": "Показано {{current}} з {{total}} елементів",
+    "overdue": "Прострочено",
+    "planned": "Заплановано"
   },
   "timeline": {
     "activityTimeline": "Хронологія Активності",
@@ -210,7 +212,9 @@
       "planned_desc": "Визначено та готово до початку",
       "in_progress_desc": "Активна робота триває",
       "blocked_desc": "Тимчасово призупинено або застрягло",
-      "completed_desc": "Завершено та виконано"
+      "completed_desc": "Завершено та виконано",
+      "active": "В процесі",
+      "active_desc": "Активна робота триває"
     },
     "showMetrics": "Показати метрики",
     "hideMetrics": "Сховати метрики"

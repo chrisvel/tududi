@@ -140,7 +140,9 @@
     "noProject": "无项目",
     "unknownProject": "未知项目",
     "tasks": "任务",
-    "showingItems": "显示 {{current}} / {{total}} 项"
+    "showingItems": "显示 {{current}} / {{total}} 项",
+    "overdue": "逾期",
+    "planned": "计划中"
   },
   "timeline": {
     "activityTimeline": "活动时间线",
@@ -782,7 +784,9 @@
       "planned_desc": "已确定范围并准备开始",
       "in_progress_desc": "正在进行的工作",
       "blocked_desc": "暂时暂停或卡住",
-      "completed_desc": "已完成并结束"
+      "completed_desc": "已完成并结束",
+      "active": "进行中",
+      "active_desc": "正在进行的工作"
     },
     "showMetrics": "显示指标",
     "hideMetrics": "隐藏指标"

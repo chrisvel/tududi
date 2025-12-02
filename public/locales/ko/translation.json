@@ -140,7 +140,9 @@
     "noProject": "프로젝트 없음",
     "unknownProject": "알 수 없는 프로젝트",
     "tasks": "작업",
-    "showingItems": "{{total}}개 중 {{current}}개 표시"
+    "showingItems": "{{total}}개 중 {{current}}개 표시",
+    "overdue": "연체",
+    "planned": "계획됨"
   },
   "timeline": {
     "activityTimeline": "활동 타임라인",
@@ -782,7 +784,9 @@
       "planned_desc": "범위가 정의되고 시작할 준비가 됨",
       "in_progress_desc": "활동적인 작업 진행 중",
       "blocked_desc": "일시적으로 중단되거나 막힘",
-      "completed_desc": "완료되고 끝남"
+      "completed_desc": "완료되고 끝남",
+      "active": "진행 중",
+      "active_desc": "활동 중인 작업"
     },
     "showMetrics": "메트릭 표시",
     "hideMetrics": "메트릭 숨기기"
