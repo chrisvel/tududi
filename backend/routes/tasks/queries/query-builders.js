@@ -124,6 +124,7 @@ async function filterTasksByParams(
                             ],
                         },
                         { recurring_parent_id: null },
+                        { today: true },
                     ],
                 },
                 {

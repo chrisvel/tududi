@@ -140,7 +140,9 @@
     "noProject": "Sem projeto",
     "unknownProject": "Projeto desconhecido",
     "tasks": "tarefas",
-    "showingItems": "Mostrando {{current}} de {{total}} itens"
+    "showingItems": "Mostrando {{current}} de {{total}} itens",
+    "overdue": "Atrasado",
+    "planned": "Planejado"
   },
   "timeline": {
     "activityTimeline": "Linha do Tempo de Atividades",
@@ -782,7 +784,9 @@
       "planned_desc": "Escopado e pronto para começar",
       "in_progress_desc": "Trabalho ativo em andamento",
       "blocked_desc": "Pausado temporariamente ou preso",
-      "completed_desc": "Finalizado e concluído"
+      "completed_desc": "Finalizado e concluído",
+      "active": "Em Andamento",
+      "active_desc": "Trabalho ativo em andamento"
     },
     "showMetrics": "Mostrar métricas",
     "hideMetrics": "Ocultar métricas"

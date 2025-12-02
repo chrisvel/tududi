@@ -140,7 +140,9 @@
     "noProject": "Proje yok",
     "unknownProject": "Bilinmeyen proje",
     "tasks": "görevler",
-    "showingItems": "{{total}} öğeden {{current}} tanesi gösteriliyor"
+    "showingItems": "{{total}} öğeden {{current}} tanesi gösteriliyor",
+    "overdue": "Gecikmiş",
+    "planned": "Planlanmış"
   },
   "timeline": {
     "activityTimeline": "Etkinlik Zaman Çizelgesi",
@@ -782,7 +784,9 @@
       "planned_desc": "Kapsam belirlendi ve başlamaya hazır",
       "in_progress_desc": "Aktif çalışma devam ediyor",
       "blocked_desc": "Geçici olarak duraklatıldı veya takıldı",
-      "completed_desc": "Tamamlandı ve sona erdi"
+      "completed_desc": "Tamamlandı ve sona erdi",
+      "active": "Devam Ediyor",
+      "active_desc": "Aktif çalışma sürüyor"
     },
     "showMetrics": "Metrikleri göster",
     "hideMetrics": "Metrikleri gizle"

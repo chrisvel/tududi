@@ -140,7 +140,9 @@
     "noProject": "Không có dự án",
     "unknownProject": "Dự án không xác định",
     "tasks": "nhiệm vụ",
-    "showingItems": "Hiển thị {{current}} trong số {{total}} mục"
+    "showingItems": "Hiển thị {{current}} trong số {{total}} mục",
+    "overdue": "Quá hạn",
+    "planned": "Đã lên kế hoạch"
   },
   "timeline": {
     "activityTimeline": "Dòng Thời Gian Hoạt Động",
@@ -782,7 +784,9 @@
       "planned_desc": "Đã xác định và sẵn sàng bắt đầu",
       "in_progress_desc": "Công việc đang diễn ra",
       "blocked_desc": "Tạm dừng hoặc bị mắc kẹt",
-      "completed_desc": "Đã hoàn tất và xong"
+      "completed_desc": "Đã hoàn tất và xong",
+      "active": "Đang tiến hành",
+      "active_desc": "Công việc đang diễn ra"
     },
     "showMetrics": "Hiển thị số liệu",
     "hideMetrics": "Ẩn số liệu"

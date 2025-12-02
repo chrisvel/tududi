@@ -140,7 +140,9 @@
     "noProject": "Tanpa proyek",
     "unknownProject": "Proyek tidak dikenal",
     "tasks": "tugas",
-    "showingItems": "Menampilkan {{current}} dari {{total}} item"
+    "showingItems": "Menampilkan {{current}} dari {{total}} item",
+    "overdue": "Terlambat",
+    "planned": "Direncanakan"
   },
   "timeline": {
     "activityTimeline": "Garis Waktu Aktivitas",
@@ -782,7 +784,9 @@
       "planned_desc": "Sudah ditentukan dan siap untuk dimulai",
       "in_progress_desc": "Pekerjaan aktif sedang berlangsung",
       "blocked_desc": "Sementara terhenti atau terjebak",
-      "completed_desc": "Selesai dan selesai"
+      "completed_desc": "Selesai dan selesai",
+      "active": "Sedang Berlangsung",
+      "active_desc": "Pekerjaan aktif sedang berlangsung"
     },
     "showMetrics": "Tampilkan metrik",
     "hideMetrics": "Sembunyikan metrik"

@@ -19,6 +19,7 @@ export const fetchTasks = async (
     groupedTasks?: GroupedTasks;
     tasks_in_progress?: Task[];
     tasks_due_today?: Task[];
+    tasks_overdue?: Task[];
     suggested_tasks?: Task[];
     tasks_completed_today?: Task[];
     pagination?: {
@@ -64,6 +65,7 @@ export const fetchTasks = async (
         // Dashboard task lists (only present when include_lists=true)
         tasks_in_progress: tasksResult.tasks_in_progress,
         tasks_due_today: tasksResult.tasks_due_today,
+        tasks_overdue: tasksResult.tasks_overdue,
         suggested_tasks: tasksResult.suggested_tasks,
         tasks_completed_today: tasksResult.tasks_completed_today,
         // Pagination metadata

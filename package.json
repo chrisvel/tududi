@@ -14,6 +14,7 @@
     "test": "npm run backend:test",
     "test:backend": "npm run backend:test",
     "test:ui": "bash e2e/bin/run-e2e.sh && echo \"Success!\"",
+    "test:ui:mode": "cross-env E2E_MODE=ui bash e2e/bin/run-e2e.sh",
     "test:ui:headed": "cross-env E2E_MODE=headed E2E_SLOWMO=500 bash e2e/bin/run-e2e.sh",
     "test:watch": "npm run frontend:test:watch",
     "test:coverage": "npm run frontend:test:coverage && npm run backend:test:coverage",
@@ -56,7 +57,8 @@
     "lint:fix": "npm run frontend:lint:fix && npm run backend:lint:fix",
     "format": "npm run frontend:format && npm run backend:format",
     "format:fix": "npm run frontend:format:fix && npm run backend:format:fix",
-    "docker:test-build": "bash scripts/test-docker-build.sh"
+    "docker:test-build": "bash scripts/test-docker-build.sh",
+    "kill:all": "lsof -ti:8080,3002 | xargs kill -9 2>/dev/null || true"
   },
   "keywords": [],
   "author": "",
@@ -132,6 +134,7 @@
     "zustand": "^5.0.3"
   },
   "dependencies": {
+    "@playwright/test": "^1.57.0",
     "bcrypt": "~6.0.0",
     "compression": "~1.8.0",
     "compromise": "^14.14.4",

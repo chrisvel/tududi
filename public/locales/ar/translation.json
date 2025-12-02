@@ -103,7 +103,7 @@
     "dueToday": "مستحقة اليوم",
     "stale": "قديمة",
     "suggested": "مقترحة",
-    "completedToday": "مكتمل اليوم",
+    "completedToday": "مكتمل",
     "weeklyCompletions": "التقدم الأسبوعي",
     "taskCompleted": "تم إكمال المهمة",
     "tasksCompleted": "تم إكمال المهام",
@@ -140,7 +140,9 @@
     "noProject": "بدون مشروع",
     "unknownProject": "مشروع غير معروف",
     "tasks": "مهام",
-    "showingItems": "عرض {{current}} من {{total}} عنصر"
+    "showingItems": "عرض {{current}} من {{total}} عنصر",
+    "overdue": "متأخر",
+    "planned": "مخطط"
   },
   "timeline": {
     "activityTimeline": "جدول الأنشطة",
@@ -782,7 +784,9 @@
       "planned_desc": "تم تحديد نطاقها وجاهزة للبدء",
       "in_progress_desc": "يتم العمل النشط",
       "blocked_desc": "مؤقتًا متوقف أو عالق",
-      "completed_desc": "تم الانتهاء منها"
+      "completed_desc": "تم الانتهاء منها",
+      "active": "قيد التنفيذ",
+      "active_desc": "عمل نشط جارٍ"
     },
     "showMetrics": "عرض المقاييس",
     "hideMetrics": "إخفاء المقاييس"

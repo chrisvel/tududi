@@ -57,14 +57,18 @@ async function addDashboardLists(
 
     const listKeys = [
         'tasks_in_progress',
+        'tasks_today_plan',
         'tasks_due_today',
+        'tasks_overdue',
         'suggested_tasks',
         'tasks_completed_today',
     ];
 
+    response.dashboard_lists = {};
+
     for (const key of listKeys) {
-        response[key] = await serializeTasks(
-            metricsData[key],
+        response.dashboard_lists[key] = await serializeTasks(
+            metricsData[key === 'tasks_today_plan' ? 'today_plan_tasks' : key],
             timezone,
             serializationOptions
         );

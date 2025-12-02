@@ -140,7 +140,9 @@
     "noProject": "Brez projekta",
     "unknownProject": "Neznan projekt",
     "tasks": "naloge",
-    "showingItems": "Prikazovanje {{current}} od {{total}} elementov"
+    "showingItems": "Prikazovanje {{current}} od {{total}} elementov",
+    "overdue": "Zapadlo",
+    "planned": "Načrtovano"
   },
   "timeline": {
     "activityTimeline": "Časovnica aktivnosti",
@@ -782,7 +784,9 @@
       "planned_desc": "Določeno in pripravljeno za začetek",
       "in_progress_desc": "Aktivno delo poteka",
       "blocked_desc": "Začasno ustavljeno ali zastojev",
-      "completed_desc": "Dokončano in opravljeno"
+      "completed_desc": "Dokončano in opravljeno",
+      "active": "V teku",
+      "active_desc": "Aktivno delo poteka"
     },
     "showMetrics": "Prikaži metrike",
     "hideMetrics": "Skrij metrike"

@@ -140,7 +140,9 @@
     "noProject": "Fără proiect",
     "unknownProject": "Proiect necunoscut",
     "tasks": "sarcini",
-    "showingItems": "Se afișează {{current}} din {{total}} elemente"
+    "showingItems": "Se afișează {{current}} din {{total}} elemente",
+    "overdue": "Întârziat",
+    "planned": "Planificat"
   },
   "timeline": {
     "activityTimeline": "Cronologia activităților",
@@ -782,7 +784,9 @@
       "planned_desc": "Definit și gata de început",
       "in_progress_desc": "Lucru activ în desfășurare",
       "blocked_desc": "Pauză temporară sau blocat",
-      "completed_desc": "Finalizat și terminat"
+      "completed_desc": "Finalizat și terminat",
+      "active": "În desfășurare",
+      "active_desc": "Lucrări active în desfășurare"
     },
     "showMetrics": "Arată metrici",
     "hideMetrics": "Ascunde metrici"

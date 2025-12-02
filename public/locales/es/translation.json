@@ -310,10 +310,12 @@
     "today": "Hoy",
     "backlog": "Pendientes",
     "inProgress": "En Progreso",
+    "overdue": "Vencidas",
+    "planned": "Planificadas",
     "dueToday": "Vence Hoy",
     "stale": "Atrasados",
     "suggested": "Sugeridos",
-    "completedToday": "Completadas Hoy",
+    "completedToday": "Completadas",
     "noTasksAvailable": "No hay tareas disponibles para hoy.",
     "searchPlaceholder": "Buscar tareas...",
     "addNewTask": "Añadir Nueva Tarea",
@@ -420,7 +422,9 @@
       "planned_desc": "Definido y listo para comenzar",
       "in_progress_desc": "Trabajo activo en curso",
       "blocked_desc": "Pausado temporalmente o atascado",
-      "completed_desc": "Terminado y completado"
+      "completed_desc": "Terminado y completado",
+      "active": "En Progreso",
+      "active_desc": "Trabajo activo en curso"
     },
     "showMetrics": "Mostrar métricas",
     "hideMetrics": "Ocultar métricas"

@@ -140,7 +140,9 @@
     "noProject": "Ingen prosjekt",
     "unknownProject": "Ukjent prosjekt",
     "tasks": "oppgaver",
-    "showingItems": "Viser {{current}} av {{total}} elementer"
+    "showingItems": "Viser {{current}} av {{total}} elementer",
+    "overdue": "Forsinket",
+    "planned": "Planlagt"
   },
   "timeline": {
     "activityTimeline": "Aktivitetslinje",
@@ -782,7 +784,9 @@
       "planned_desc": "Avgrenset og klar til å starte",
       "in_progress_desc": "Aktivt arbeid pågår",
       "blocked_desc": "Midlertidig pauset eller fastlåst",
-      "completed_desc": "Ferdig og gjort"
+      "completed_desc": "Ferdig og gjort",
+      "active": "Pågår",
+      "active_desc": "Aktivt arbeid pågår"
     },
     "showMetrics": "Vis målinger",
     "hideMetrics": "Skjul målinger"

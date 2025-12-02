@@ -140,7 +140,9 @@
     "noProject": "Geen project",
     "unknownProject": "Onbekend project",
     "tasks": "taken",
-    "showingItems": "{{current}} van {{total}} items weergegeven"
+    "showingItems": "{{current}} van {{total}} items weergegeven",
+    "overdue": "Te laat",
+    "planned": "Gepland"
   },
   "timeline": {
     "activityTimeline": "Activiteit Tijdlijn",
@@ -782,7 +784,9 @@
       "planned_desc": "Afgebakend en klaar om te starten",
       "in_progress_desc": "Actief werk aan de gang",
       "blocked_desc": "Tijdelijk gepauzeerd of vastgelopen",
-      "completed_desc": "Afgerond en gedaan"
+      "completed_desc": "Afgerond en gedaan",
+      "active": "In uitvoering",
+      "active_desc": "Actief werk aan de gang"
     },
     "showMetrics": "Toon statistieken",
     "hideMetrics": "Verberg statistieken"

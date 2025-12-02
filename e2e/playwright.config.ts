@@ -11,6 +11,7 @@ export default defineConfig({
   timeout: 60_000,
   expect: { timeout: 10_000 },
   fullyParallel: true,
+  workers: process.env.CI ? 1 : undefined, // Use default workers locally, 1 in CI
   reporter: [['list']],
   use: {
     baseURL,

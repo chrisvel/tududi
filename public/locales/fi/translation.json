@@ -140,7 +140,9 @@
     "noProject": "Ei projektia",
     "unknownProject": "Tuntematon projekti",
     "tasks": "tehtävät",
-    "showingItems": "Näytetään {{current}} / {{total}} kohdetta"
+    "showingItems": "Näytetään {{current}} / {{total}} kohdetta",
+    "overdue": "Erääntynyt",
+    "planned": "Suunniteltu"
   },
   "timeline": {
     "activityTimeline": "Toiminta-aikajana",
@@ -782,7 +784,9 @@
       "planned_desc": "Määritelty ja valmis aloittamaan",
       "in_progress_desc": "Aktiivista työtä käynnissä",
       "blocked_desc": "Tilapäisesti keskeytetty tai jumissa",
-      "completed_desc": "Valmistunut ja tehty"
+      "completed_desc": "Valmistunut ja tehty",
+      "active": "Käynnissä",
+      "active_desc": "Aktiivista työtä tapahtuu"
     },
     "showMetrics": "Näytä mittarit",
     "hideMetrics": "Piilota mittarit"

@@ -93,6 +93,18 @@ const TasksToday: React.FC = () => {
         const stored = localStorage.getItem('completedTasksCollapsed');
         return stored === 'true';
     });
+    const [isOverdueCollapsed, setIsOverdueCollapsed] = useState(() => {
+        const stored = localStorage.getItem('overdueTasksCollapsed');
+        return stored === 'true';
+    });
+    const [isTodayPlanCollapsed, setIsTodayPlanCollapsed] = useState(() => {
+        const stored = localStorage.getItem('todayPlanTasksCollapsed');
+        return stored === 'true';
+    });
+    const [isDueTodayCollapsed, setIsDueTodayCollapsed] = useState(() => {
+        const stored = localStorage.getItem('dueTodayTasksCollapsed');
+        return stored === 'true';
+    });
     const [isSettingsLoaded, setIsSettingsLoaded] = useState(false);
 
     // Metrics from the API (counts) + task arrays stored locally
@@ -100,6 +112,7 @@ const TasksToday: React.FC = () => {
         Metrics & {
             tasks_in_progress?: Task[];
             tasks_due_today?: Task[];
+            tasks_overdue?: Task[];
             today_plan_tasks?: Task[];
             suggested_tasks?: Task[];
             tasks_completed_today?: Task[];
@@ -116,6 +129,7 @@ const TasksToday: React.FC = () => {
         // Task arrays (fetched separately via include_lists parameter)
         tasks_in_progress: [],
         tasks_due_today: [],
+        tasks_overdue: [],
         today_plan_tasks: [],
         suggested_tasks: [],
         tasks_completed_today: [],
@@ -131,6 +145,9 @@ const TasksToday: React.FC = () => {
 
     // Client-side pagination for Due Today tasks (since backend returns all)
     const [dueTodayDisplayLimit, setDueTodayDisplayLimit] = useState(20);
+
+    // Client-side pagination for Overdue tasks (since backend returns all)
+    const [overdueDisplayLimit, setOverdueDisplayLimit] = useState(20);
 
     // Client-side pagination for Completed Today tasks (since backend returns all)
     const [completedTodayDisplayLimit, setCompletedTodayDisplayLimit] =
@@ -220,6 +237,24 @@ const TasksToday: React.FC = () => {
         localStorage.setItem('completedTasksCollapsed', newState.toString());
     };
 
+    const toggleOverdueCollapsed = () => {
+        const newState = !isOverdueCollapsed;
+        setIsOverdueCollapsed(newState);
+        localStorage.setItem('overdueTasksCollapsed', newState.toString());
+    };
+
+    const toggleTodayPlanCollapsed = () => {
+        const newState = !isTodayPlanCollapsed;
+        setIsTodayPlanCollapsed(newState);
+        localStorage.setItem('todayPlanTasksCollapsed', newState.toString());
+    };
+
+    const toggleDueTodayCollapsed = () => {
+        const newState = !isDueTodayCollapsed;
+        setIsDueTodayCollapsed(newState);
+        localStorage.setItem('dueTodayTasksCollapsed', newState.toString());
+    };
+
     // Load data once on component mount
     useEffect(() => {
         isMounted.current = true;
@@ -241,6 +276,7 @@ const TasksToday: React.FC = () => {
                         // Store task arrays locally (fetched via include_lists=true)
                         tasks_in_progress: result.tasks_in_progress || [],
                         tasks_due_today: result.tasks_due_today || [],
+                        tasks_overdue: result.tasks_overdue || [],
                         today_plan_tasks: result.tasks || [], // Main tasks array is today plan
                         suggested_tasks: result.suggested_tasks || [],
                         tasks_completed_today:
@@ -511,6 +547,9 @@ const TasksToday: React.FC = () => {
                 newMetrics.tasks_due_today = removeTask(
                     newMetrics.tasks_due_today || []
                 );
+                newMetrics.tasks_overdue = removeTask(
+                    newMetrics.tasks_overdue || []
+                );
                 newMetrics.tasks_in_progress = removeTask(
                     newMetrics.tasks_in_progress || []
                 );
@@ -553,13 +592,9 @@ const TasksToday: React.FC = () => {
                             updatedTask
                         );
                     }
-                    // Check if due today (and not already in today_plan_tasks or in_progress)
-                    const isDueToday =
-                        updatedTask.due_date &&
-                        format(new Date(updatedTask.due_date), 'yyyy-MM-dd') ===
-                            format(new Date(), 'yyyy-MM-dd');
+                    // Check if task has a due date (and not already in today_plan_tasks or in_progress)
                     if (
-                        isDueToday &&
+                        updatedTask.due_date &&
                         updatedTask.status !== 'archived' &&
                         !newMetrics.today_plan_tasks.some(
                             (t) => t.id === updatedTask.id
@@ -568,10 +603,23 @@ const TasksToday: React.FC = () => {
                             (t) => t.id === updatedTask.id
                         )
                     ) {
-                        newMetrics.tasks_due_today = updateOrAddTask(
-                            newMetrics.tasks_due_today,
-                            updatedTask
-                        );
+                        const today = new Date();
+                        const todayStr = format(today, 'yyyy-MM-dd');
+                        const dueDateStr = format(new Date(updatedTask.due_date), 'yyyy-MM-dd');
+
+                        if (dueDateStr === todayStr) {
+                            // Due today
+                            newMetrics.tasks_due_today = updateOrAddTask(
+                                newMetrics.tasks_due_today,
+                                updatedTask
+                            );
+                        } else if (dueDateStr < todayStr) {
+                            // Overdue
+                            newMetrics.tasks_overdue = updateOrAddTask(
+                                newMetrics.tasks_overdue,
+                                updatedTask
+                            );
+                        }
                     }
                     // Check for suggested tasks (and not already in other active lists)
                     const isSuggested =
@@ -611,6 +659,7 @@ const TasksToday: React.FC = () => {
                     newMetrics.today_plan_tasks.length +
                     newMetrics.suggested_tasks.length +
                     newMetrics.tasks_due_today.length +
+                    newMetrics.tasks_overdue.length +
                     newMetrics.tasks_in_progress.length;
 
                 return newMetrics;
@@ -670,6 +719,11 @@ const TasksToday: React.FC = () => {
                             newMetrics.tasks_due_today
                         );
                     }
+                    if (newMetrics.tasks_overdue) {
+                        newMetrics.tasks_overdue = updateTaskInList(
+                            newMetrics.tasks_overdue
+                        );
+                    }
                     if (newMetrics.tasks_in_progress) {
                         newMetrics.tasks_in_progress = updateTaskInList(
                             newMetrics.tasks_in_progress
@@ -712,6 +766,7 @@ const TasksToday: React.FC = () => {
                         ...result.metrics,
                         tasks_in_progress: result.tasks_in_progress || [],
                         tasks_due_today: result.tasks_due_today || [],
+                        tasks_overdue: result.tasks_overdue || [],
                         today_plan_tasks: result.tasks || [],
                         suggested_tasks: result.suggested_tasks || [],
                         tasks_completed_today:
@@ -740,6 +795,7 @@ const TasksToday: React.FC = () => {
                         ...result.metrics,
                         tasks_in_progress: result.tasks_in_progress || [],
                         tasks_due_today: result.tasks_due_today || [],
+                        tasks_overdue: result.tasks_overdue || [],
                         today_plan_tasks: result.tasks || [],
                         suggested_tasks: result.suggested_tasks || [],
                         tasks_completed_today:
@@ -798,6 +854,7 @@ const TasksToday: React.FC = () => {
                             ...result.metrics,
                             tasks_in_progress: result.tasks_in_progress || [],
                             tasks_due_today: result.tasks_due_today || [],
+                            tasks_overdue: result.tasks_overdue || [],
                             today_plan_tasks: result.tasks || [],
                             suggested_tasks: result.suggested_tasks || [],
                             tasks_completed_today:
@@ -816,6 +873,10 @@ const TasksToday: React.FC = () => {
                             tasks_due_today: [
                                 ...(prevMetrics.tasks_due_today || []),
                                 ...(result.tasks_due_today || []),
+                            ],
+                            tasks_overdue: [
+                                ...(prevMetrics.tasks_overdue || []),
+                                ...(result.tasks_overdue || []),
                             ],
                             today_plan_tasks: [
                                 ...(prevMetrics.today_plan_tasks || []),
@@ -1200,18 +1261,128 @@ const TasksToday: React.FC = () => {
                     </div>
                 ) : null}
 
-                {/* Today Plan */}
-                <TodayPlan
-                    todayPlanTasks={metrics.today_plan_tasks || []}
-                    projects={localProjects}
-                    onTaskUpdate={handleTaskUpdate}
-                    onTaskDelete={handleTaskDelete}
-                    onToggleToday={handleToggleToday}
-                    onTaskCompletionToggle={handleTaskCompletionToggle}
-                />
+                {/* Overdue Tasks - Displayed first */}
+                {isSettingsLoaded &&
+                    todaySettings.showDueToday &&
+                    metrics.tasks_overdue.length > 0 && (
+                        <div className="mb-6" data-testid="overdue-section">
+                            <div
+                                className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
+                                onClick={toggleOverdueCollapsed}
+                                data-testid="overdue-section-header"
+                            >
+                                <h3 className="text-xl font-medium text-red-600 dark:text-red-400">
+                                    {t('tasks.overdue', 'Overdue')}
+                                </h3>
+                                <div className="flex items-center">
+                                    <span className="text-sm text-gray-500 mr-2">
+                                        {metrics.tasks_overdue.length}
+                                    </span>
+                                    {isOverdueCollapsed ? (
+                                        <ChevronRightIcon className="h-5 w-5 text-gray-500" />
+                                    ) : (
+                                        <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+                                    )}
+                                </div>
+                            </div>
+                            {!isOverdueCollapsed && (
+                                <>
+                                    <TaskList
+                                        tasks={metrics.tasks_overdue.slice(
+                                            0,
+                                            overdueDisplayLimit
+                                        )}
+                                        onTaskUpdate={handleTaskUpdate}
+                                        onTaskDelete={handleTaskDelete}
+                                        projects={localProjects}
+                                        onToggleToday={handleToggleToday}
+                                        onTaskCompletionToggle={
+                                            handleTaskCompletionToggle
+                                        }
+                                    />
 
-                {/* Load More Buttons for Today Plan Tasks */}
-                {pagination.hasMore && (
+                                    {/* Load More Buttons for Overdue Tasks */}
+                                    {overdueDisplayLimit <
+                                        metrics.tasks_overdue.length && (
+                                        <div className="flex justify-center pt-4 pb-2 gap-3">
+                                            <button
+                                                onClick={() =>
+                                                    setOverdueDisplayLimit(
+                                                        (prev) => prev + 20
+                                                    )
+                                                }
+                                                className="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                            >
+                                                <QueueListIcon className="h-4 w-4 mr-2" />
+                                                {t('common.loadMore', 'Load More')}
+                                            </button>
+                                            <button
+                                                onClick={() =>
+                                                    setOverdueDisplayLimit(
+                                                        metrics.tasks_overdue.length
+                                                    )
+                                                }
+                                                className="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                            >
+                                                {t('common.showAll', 'Show All')}
+                                            </button>
+                                        </div>
+                                    )}
+
+                                    {/* Pagination info for Overdue tasks */}
+                                    <div className="text-center text-sm text-gray-500 dark:text-gray-400 pt-2 pb-4">
+                                        {t(
+                                            'tasks.showingItems',
+                                            'Showing {{current}} of {{total}} items',
+                                            {
+                                                current: Math.min(
+                                                    overdueDisplayLimit,
+                                                    metrics.tasks_overdue.length
+                                                ),
+                                                total: metrics.tasks_overdue.length,
+                                            }
+                                        )}
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    )}
+
+                {/* Today Plan */}
+                {(metrics.today_plan_tasks || []).length > 0 && (
+                    <div className="mb-6" data-testid="planned-section">
+                        <div
+                            className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
+                            onClick={toggleTodayPlanCollapsed}
+                            data-testid="planned-section-header"
+                        >
+                            <h3 className="text-xl font-medium">
+                                {t('tasks.planned', 'Planned')}
+                            </h3>
+                            <div className="flex items-center">
+                                <span className="text-sm text-gray-500 mr-2">
+                                    {(metrics.today_plan_tasks || []).length}
+                                </span>
+                                {isTodayPlanCollapsed ? (
+                                    <ChevronRightIcon className="h-5 w-5 text-gray-500" />
+                                ) : (
+                                    <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+                                )}
+                            </div>
+                        </div>
+                        {!isTodayPlanCollapsed && (
+                            <>
+                                <TodayPlan
+                                    todayPlanTasks={metrics.today_plan_tasks || []}
+                                    projects={localProjects}
+                                    onTaskUpdate={handleTaskUpdate}
+                                    onTaskDelete={handleTaskDelete}
+                                    onToggleToday={handleToggleToday}
+                                    onTaskCompletionToggle={handleTaskCompletionToggle}
+                                />
+
+                                {/* Load More Buttons for Today Plan Tasks */}
+                                {pagination.hasMore && (
                     <div className="flex justify-center pt-4 pb-2 gap-3">
                         <button
                             onClick={() => handleLoadMore(false)}
@@ -1257,22 +1428,111 @@ const TasksToday: React.FC = () => {
                             {t('common.showAll', 'Show All')}
                         </button>
                     </div>
-                )}
+                                )}
 
-                {/* Pagination info for Today Plan tasks */}
-                {(metrics.today_plan_tasks || []).length > 0 && (
-                    <div className="text-center text-sm text-gray-500 dark:text-gray-400 pt-2 pb-4">
-                        {t(
-                            'tasks.showingItems',
-                            'Showing {{current}} of {{total}} items',
-                            {
-                                current: (metrics.today_plan_tasks || [])
-                                    .length,
-                                total: pagination.total,
-                            }
+                                {/* Pagination info for Today Plan tasks */}
+                                <div className="text-center text-sm text-gray-500 dark:text-gray-400 pt-2 pb-4">
+                                    {t(
+                                        'tasks.showingItems',
+                                        'Showing {{current}} of {{total}} items',
+                                        {
+                                            current: (metrics.today_plan_tasks || [])
+                                                .length,
+                                            total: pagination.total,
+                                        }
+                                    )}
+                                </div>
+                            </>
                         )}
                     </div>
                 )}
+
+                {/* Due Today Tasks */}
+                {isSettingsLoaded &&
+                    todaySettings.showDueToday &&
+                    metrics.tasks_due_today.length > 0 && (
+                        <div className="mb-6" data-testid="due-today-section">
+                            <div
+                                className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
+                                onClick={toggleDueTodayCollapsed}
+                                data-testid="due-today-section-header"
+                            >
+                                <h3 className="text-xl font-medium">
+                                    {t('tasks.dueToday')}
+                                </h3>
+                                <div className="flex items-center">
+                                    <span className="text-sm text-gray-500 mr-2">
+                                        {metrics.tasks_due_today.length}
+                                    </span>
+                                    {isDueTodayCollapsed ? (
+                                        <ChevronRightIcon className="h-5 w-5 text-gray-500" />
+                                    ) : (
+                                        <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+                                    )}
+                                </div>
+                            </div>
+                            {!isDueTodayCollapsed && (
+                                <>
+                                    <TaskList
+                                        tasks={metrics.tasks_due_today.slice(
+                                            0,
+                                            dueTodayDisplayLimit
+                                        )}
+                                        onTaskUpdate={handleTaskUpdate}
+                                        onTaskDelete={handleTaskDelete}
+                                        projects={localProjects}
+                                        onToggleToday={handleToggleToday}
+                                        onTaskCompletionToggle={
+                                            handleTaskCompletionToggle
+                                        }
+                                    />
+
+                                    {/* Load More Buttons for Due Today Tasks */}
+                                    {dueTodayDisplayLimit <
+                                        metrics.tasks_due_today.length && (
+                                        <div className="flex justify-center pt-4 pb-2 gap-3">
+                                            <button
+                                                onClick={() =>
+                                                    setDueTodayDisplayLimit(
+                                                        (prev) => prev + 20
+                                                    )
+                                                }
+                                                className="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                            >
+                                                <QueueListIcon className="h-4 w-4 mr-2" />
+                                                {t('common.loadMore', 'Load More')}
+                                            </button>
+                                            <button
+                                                onClick={() =>
+                                                    setDueTodayDisplayLimit(
+                                                        metrics.tasks_due_today.length
+                                                    )
+                                                }
+                                                className="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                            >
+                                                {t('common.showAll', 'Show All')}
+                                            </button>
+                                        </div>
+                                    )}
+
+                                    {/* Pagination info for Due Today tasks */}
+                                    <div className="text-center text-sm text-gray-500 dark:text-gray-400 pt-2 pb-4">
+                                        {t(
+                                            'tasks.showingItems',
+                                            'Showing {{current}} of {{total}} items',
+                                            {
+                                                current: Math.min(
+                                                    dueTodayDisplayLimit,
+                                                    metrics.tasks_due_today.length
+                                                ),
+                                                total: metrics.tasks_due_today.length,
+                                            }
+                                        )}
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    )}
 
                 {/* Suggested Tasks - Separate setting */}
                 {!isSettingsLoaded ? (
@@ -1319,83 +1579,17 @@ const TasksToday: React.FC = () => {
                     </div>
                 ) : null}
 
-                {/* Due Today Tasks - Conditionally Rendered */}
-                {isSettingsLoaded &&
-                    todaySettings.showDueToday &&
-                    metrics.tasks_due_today.length > 0 && (
-                        <div className="mb-6">
-                            <h3 className="text-xl font-medium mt-6 mb-2">
-                                {t('tasks.dueToday')}
-                            </h3>
-                            <TaskList
-                                tasks={metrics.tasks_due_today.slice(
-                                    0,
-                                    dueTodayDisplayLimit
-                                )}
-                                onTaskUpdate={handleTaskUpdate}
-                                onTaskDelete={handleTaskDelete}
-                                projects={localProjects}
-                                onToggleToday={handleToggleToday}
-                                onTaskCompletionToggle={
-                                    handleTaskCompletionToggle
-                                }
-                            />
-
-                            {/* Load More Buttons for Due Today Tasks */}
-                            {dueTodayDisplayLimit <
-                                metrics.tasks_due_today.length && (
-                                <div className="flex justify-center pt-4 pb-2 gap-3">
-                                    <button
-                                        onClick={() =>
-                                            setDueTodayDisplayLimit(
-                                                (prev) => prev + 20
-                                            )
-                                        }
-                                        className="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                                    >
-                                        <QueueListIcon className="h-4 w-4 mr-2" />
-                                        {t('common.loadMore', 'Load More')}
-                                    </button>
-                                    <button
-                                        onClick={() =>
-                                            setDueTodayDisplayLimit(
-                                                metrics.tasks_due_today.length
-                                            )
-                                        }
-                                        className="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                                    >
-                                        {t('common.showAll', 'Show All')}
-                                    </button>
-                                </div>
-                            )}
-
-                            {/* Pagination info for Due Today tasks */}
-                            <div className="text-center text-sm text-gray-500 dark:text-gray-400 pt-2 pb-4">
-                                {t(
-                                    'tasks.showingItems',
-                                    'Showing {{current}} of {{total}} items',
-                                    {
-                                        current: Math.min(
-                                            dueTodayDisplayLimit,
-                                            metrics.tasks_due_today.length
-                                        ),
-                                        total: metrics.tasks_due_today.length,
-                                    }
-                                )}
-                            </div>
-                        </div>
-                    )}
-
                 {/* Completed Tasks - Conditionally Rendered */}
                 {isSettingsLoaded &&
                     todaySettings.showCompleted &&
                     (() => {
                         const completedToday = metrics.tasks_completed_today; // Use the already filtered list from backend
                         return (
-                            <div className="mb-6">
+                            <div className="mb-6" data-testid="completed-section">
                                 <div
                                     className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
                                     onClick={toggleCompletedCollapsed}
+                                    data-testid="completed-section-header"
                                 >
                                     <h3 className="text-xl font-medium">
                                         {t('tasks.completedToday')}
