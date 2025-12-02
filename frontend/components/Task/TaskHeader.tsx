@@ -313,7 +313,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         )}
                         {/* Project, tags, due date, and recurrence in same row, with spacing when they exist */}
                         {!isUpcomingView && (
-                            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                            <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                                 {project && !hideProjectName && (
                                     <div className="flex items-center">
                                         <FolderIcon className="h-3 w-3 mr-1" />
@@ -348,12 +348,6 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                         </Link>
                                     </div>
                                 )}
-                                {project &&
-                                    !hideProjectName &&
-                                    task.tags &&
-                                    task.tags.length > 0 && (
-                                        <span className="mx-2">•</span>
-                                    )}
                                 {task.tags && task.tags.length > 0 && (
                                     <div className="flex items-center">
                                         <TagIcon className="h-3 w-3 mr-1" />
@@ -399,11 +393,6 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                         </span>
                                     </div>
                                 )}
-                                {((project && !hideProjectName) ||
-                                    (task.tags && task.tags.length > 0)) &&
-                                    task.due_date && (
-                                        <span className="mx-2">•</span>
-                                    )}
                                 {task.due_date && (
                                     <div className="flex items-center">
                                         <CalendarIcon className="h-3 w-3 mr-1" />
@@ -412,13 +401,6 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                         </span>
                                     </div>
                                 )}
-                                {((project && !hideProjectName) ||
-                                    (task.tags && task.tags.length > 0) ||
-                                    task.due_date) &&
-                                    task.recurrence_type &&
-                                    task.recurrence_type !== 'none' && (
-                                        <span className="mx-2">•</span>
-                                    )}
                                 {task.recurrence_type &&
                                     task.recurrence_type !== 'none' && (
                                         <div className="flex items-center">
@@ -429,14 +411,6 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                 )}
                                             </span>
                                         </div>
-                                    )}
-                                {((project && !hideProjectName) ||
-                                    (task.tags && task.tags.length > 0) ||
-                                    task.due_date ||
-                                    (task.recurrence_type &&
-                                        task.recurrence_type !== 'none')) &&
-                                    task.recurring_parent_id && (
-                                        <span className="mx-2">•</span>
                                     )}
                                 {task.recurring_parent_id && (
                                     <div className="flex items-center">
