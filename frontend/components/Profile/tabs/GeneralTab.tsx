@@ -200,7 +200,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({
                         {t('profile.firstDayOfWeek', 'First day of week')}
                     </label>
                     <FirstDayOfWeekDropdown
-                        value={formData.first_day_of_week || 1}
+                        value={formData.first_day_of_week ?? 1}
                         onChange={onFirstDayChange}
                     />
                 </div>
