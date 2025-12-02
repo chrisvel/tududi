@@ -180,18 +180,36 @@ async function computeTaskMetrics(
 
 async function getTaskMetrics(userId, timezone) {
     const metrics = await computeTaskMetrics(userId, timezone);
-    const { buildMetricsResponse, serializeTasks } = require('../core/serializers');
+    const {
+        buildMetricsResponse,
+        serializeTasks,
+    } = require('../core/serializers');
 
     const response = await buildMetricsResponse(metrics);
 
     // Add serialized task lists under dashboard_lists
     response.dashboard_lists = {
-        tasks_in_progress: await serializeTasks(metrics.tasks_in_progress, timezone),
-        tasks_today_plan: await serializeTasks(metrics.today_plan_tasks, timezone),
-        tasks_due_today: await serializeTasks(metrics.tasks_due_today, timezone),
+        tasks_in_progress: await serializeTasks(
+            metrics.tasks_in_progress,
+            timezone
+        ),
+        tasks_today_plan: await serializeTasks(
+            metrics.today_plan_tasks,
+            timezone
+        ),
+        tasks_due_today: await serializeTasks(
+            metrics.tasks_due_today,
+            timezone
+        ),
         tasks_overdue: await serializeTasks(metrics.tasks_overdue, timezone),
-        suggested_tasks: await serializeTasks(metrics.suggested_tasks, timezone),
-        tasks_completed_today: await serializeTasks(metrics.tasks_completed_today, timezone),
+        suggested_tasks: await serializeTasks(
+            metrics.suggested_tasks,
+            timezone
+        ),
+        tasks_completed_today: await serializeTasks(
+            metrics.tasks_completed_today,
+            timezone
+        ),
     };
 
     return response;

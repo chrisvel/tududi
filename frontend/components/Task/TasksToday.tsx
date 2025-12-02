@@ -605,7 +605,10 @@ const TasksToday: React.FC = () => {
                     ) {
                         const today = new Date();
                         const todayStr = format(today, 'yyyy-MM-dd');
-                        const dueDateStr = format(new Date(updatedTask.due_date), 'yyyy-MM-dd');
+                        const dueDateStr = format(
+                            new Date(updatedTask.due_date),
+                            'yyyy-MM-dd'
+                        );
 
                         if (dueDateStr === todayStr) {
                             // Due today
@@ -1314,17 +1317,24 @@ const TasksToday: React.FC = () => {
                                                 className="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                             >
                                                 <QueueListIcon className="h-4 w-4 mr-2" />
-                                                {t('common.loadMore', 'Load More')}
+                                                {t(
+                                                    'common.loadMore',
+                                                    'Load More'
+                                                )}
                                             </button>
                                             <button
                                                 onClick={() =>
                                                     setOverdueDisplayLimit(
-                                                        metrics.tasks_overdue.length
+                                                        metrics.tasks_overdue
+                                                            .length
                                                     )
                                                 }
                                                 className="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                             >
-                                                {t('common.showAll', 'Show All')}
+                                                {t(
+                                                    'common.showAll',
+                                                    'Show All'
+                                                )}
                                             </button>
                                         </div>
                                     )}
@@ -1339,7 +1349,8 @@ const TasksToday: React.FC = () => {
                                                     overdueDisplayLimit,
                                                     metrics.tasks_overdue.length
                                                 ),
-                                                total: metrics.tasks_overdue.length,
+                                                total: metrics.tasks_overdue
+                                                    .length,
                                             }
                                         )}
                                     </div>
@@ -1373,61 +1384,73 @@ const TasksToday: React.FC = () => {
                         {!isTodayPlanCollapsed && (
                             <>
                                 <TodayPlan
-                                    todayPlanTasks={metrics.today_plan_tasks || []}
+                                    todayPlanTasks={
+                                        metrics.today_plan_tasks || []
+                                    }
                                     projects={localProjects}
                                     onTaskUpdate={handleTaskUpdate}
                                     onTaskDelete={handleTaskDelete}
                                     onToggleToday={handleToggleToday}
-                                    onTaskCompletionToggle={handleTaskCompletionToggle}
+                                    onTaskCompletionToggle={
+                                        handleTaskCompletionToggle
+                                    }
                                 />
 
                                 {/* Load More Buttons for Today Plan Tasks */}
                                 {pagination.hasMore && (
-                    <div className="flex justify-center pt-4 pb-2 gap-3">
-                        <button
-                            onClick={() => handleLoadMore(false)}
-                            disabled={isLoading}
-                            className="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                        >
-                            {isLoading ? (
-                                <>
-                                    <svg
-                                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-500"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <circle
-                                            className="opacity-25"
-                                            cx="12"
-                                            cy="12"
-                                            r="10"
-                                            stroke="currentColor"
-                                            strokeWidth="4"
-                                        ></circle>
-                                        <path
-                                            className="opacity-75"
-                                            fill="currentColor"
-                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                        ></path>
-                                    </svg>
-                                    {t('common.loading', 'Loading...')}
-                                </>
-                            ) : (
-                                <>
-                                    <QueueListIcon className="h-4 w-4 mr-2" />
-                                    {t('common.loadMore', 'Load More')}
-                                </>
-                            )}
-                        </button>
-                        <button
-                            onClick={() => handleLoadMore(true)}
-                            disabled={isLoading}
-                            className="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                        >
-                            {t('common.showAll', 'Show All')}
-                        </button>
-                    </div>
+                                    <div className="flex justify-center pt-4 pb-2 gap-3">
+                                        <button
+                                            onClick={() =>
+                                                handleLoadMore(false)
+                                            }
+                                            disabled={isLoading}
+                                            className="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                        >
+                                            {isLoading ? (
+                                                <>
+                                                    <svg
+                                                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-500"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <circle
+                                                            className="opacity-25"
+                                                            cx="12"
+                                                            cy="12"
+                                                            r="10"
+                                                            stroke="currentColor"
+                                                            strokeWidth="4"
+                                                        ></circle>
+                                                        <path
+                                                            className="opacity-75"
+                                                            fill="currentColor"
+                                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                        ></path>
+                                                    </svg>
+                                                    {t(
+                                                        'common.loading',
+                                                        'Loading...'
+                                                    )}
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <QueueListIcon className="h-4 w-4 mr-2" />
+                                                    {t(
+                                                        'common.loadMore',
+                                                        'Load More'
+                                                    )}
+                                                </>
+                                            )}
+                                        </button>
+                                        <button
+                                            onClick={() => handleLoadMore(true)}
+                                            disabled={isLoading}
+                                            className="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                        >
+                                            {t('common.showAll', 'Show All')}
+                                        </button>
+                                    </div>
                                 )}
 
                                 {/* Pagination info for Today Plan tasks */}
@@ -1436,8 +1459,9 @@ const TasksToday: React.FC = () => {
                                         'tasks.showingItems',
                                         'Showing {{current}} of {{total}} items',
                                         {
-                                            current: (metrics.today_plan_tasks || [])
-                                                .length,
+                                            current: (
+                                                metrics.today_plan_tasks || []
+                                            ).length,
                                             total: pagination.total,
                                         }
                                     )}
@@ -1500,17 +1524,24 @@ const TasksToday: React.FC = () => {
                                                 className="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                             >
                                                 <QueueListIcon className="h-4 w-4 mr-2" />
-                                                {t('common.loadMore', 'Load More')}
+                                                {t(
+                                                    'common.loadMore',
+                                                    'Load More'
+                                                )}
                                             </button>
                                             <button
                                                 onClick={() =>
                                                     setDueTodayDisplayLimit(
-                                                        metrics.tasks_due_today.length
+                                                        metrics.tasks_due_today
+                                                            .length
                                                     )
                                                 }
                                                 className="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                             >
-                                                {t('common.showAll', 'Show All')}
+                                                {t(
+                                                    'common.showAll',
+                                                    'Show All'
+                                                )}
                                             </button>
                                         </div>
                                     )}
@@ -1523,9 +1554,11 @@ const TasksToday: React.FC = () => {
                                             {
                                                 current: Math.min(
                                                     dueTodayDisplayLimit,
-                                                    metrics.tasks_due_today.length
+                                                    metrics.tasks_due_today
+                                                        .length
                                                 ),
-                                                total: metrics.tasks_due_today.length,
+                                                total: metrics.tasks_due_today
+                                                    .length,
                                             }
                                         )}
                                     </div>
@@ -1585,7 +1618,10 @@ const TasksToday: React.FC = () => {
                     (() => {
                         const completedToday = metrics.tasks_completed_today; // Use the already filtered list from backend
                         return (
-                            <div className="mb-6" data-testid="completed-section">
+                            <div
+                                className="mb-6"
+                                data-testid="completed-section"
+                            >
                                 <div
                                     className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
                                     onClick={toggleCompletedCollapsed}

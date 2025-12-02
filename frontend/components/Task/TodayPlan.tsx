@@ -39,15 +39,23 @@ const TodayPlan: React.FC<TodayPlanProps> = ({
             if (aInProgress && bInProgress) {
                 // 1. Priority (High → Medium → Low → None)
                 const priorityOrder = { high: 3, medium: 2, low: 1 };
-                const aPriority = priorityOrder[a.priority as keyof typeof priorityOrder] || 0;
-                const bPriority = priorityOrder[b.priority as keyof typeof priorityOrder] || 0;
+                const aPriority =
+                    priorityOrder[a.priority as keyof typeof priorityOrder] ||
+                    0;
+                const bPriority =
+                    priorityOrder[b.priority as keyof typeof priorityOrder] ||
+                    0;
                 if (aPriority !== bPriority) {
                     return bPriority - aPriority; // Higher priority first
                 }
 
                 // 2. Due date (earlier first, null/undefined last)
-                const aDueDate = a.due_date ? new Date(a.due_date).getTime() : Infinity;
-                const bDueDate = b.due_date ? new Date(b.due_date).getTime() : Infinity;
+                const aDueDate = a.due_date
+                    ? new Date(a.due_date).getTime()
+                    : Infinity;
+                const bDueDate = b.due_date
+                    ? new Date(b.due_date).getTime()
+                    : Infinity;
                 if (aDueDate !== bDueDate) {
                     return aDueDate - bDueDate;
                 }
@@ -62,15 +70,23 @@ const TodayPlan: React.FC<TodayPlanProps> = ({
             if (!aInProgress && !bInProgress) {
                 // 1. Priority (High → Medium → Low → None)
                 const priorityOrder = { high: 3, medium: 2, low: 1 };
-                const aPriority = priorityOrder[a.priority as keyof typeof priorityOrder] || 0;
-                const bPriority = priorityOrder[b.priority as keyof typeof priorityOrder] || 0;
+                const aPriority =
+                    priorityOrder[a.priority as keyof typeof priorityOrder] ||
+                    0;
+                const bPriority =
+                    priorityOrder[b.priority as keyof typeof priorityOrder] ||
+                    0;
                 if (aPriority !== bPriority) {
                     return bPriority - aPriority; // Higher priority first
                 }
 
                 // 2. Due date (earlier first, null/undefined last)
-                const aDueDate = a.due_date ? new Date(a.due_date).getTime() : Infinity;
-                const bDueDate = b.due_date ? new Date(b.due_date).getTime() : Infinity;
+                const aDueDate = a.due_date
+                    ? new Date(a.due_date).getTime()
+                    : Infinity;
+                const bDueDate = b.due_date
+                    ? new Date(b.due_date).getTime()
+                    : Infinity;
                 if (aDueDate !== bDueDate) {
                     return aDueDate - bDueDate;
                 }
