@@ -1044,7 +1044,7 @@ const ProjectDetails: React.FC = () => {
 
                             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start transition-all duration-300">
                                 <div
-                                    className={`flex justify-center transition-all duration-300 ${
+                                    className={`flex justify-center transition-all duration-300 relative z-10 ${
                                         showMetrics
                                             ? 'xl:col-span-2 translate-x-0'
                                             : 'xl:col-span-3 translate-x-0'
