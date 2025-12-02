@@ -52,6 +52,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
             path: '/tasks?status=active',
             title: t('sidebar.allTasks', 'All Tasks'),
             icon: <ListBulletIcon className="h-5 w-5" />,
+            query: 'status=active',
         },
     ];
 
