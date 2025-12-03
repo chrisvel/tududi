@@ -105,13 +105,14 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                                 <span className="ml-2">{link.title}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                {link.path === '/inbox' && inboxItemsCount > 0 && (
-                                    <span className="text-sm font-bold text-blue-500 dark:text-blue-400">
-                                        {inboxItemsCount > 99
-                                            ? '99+'
-                                            : inboxItemsCount}
-                                    </span>
-                                )}
+                                {link.path === '/inbox' &&
+                                    inboxItemsCount > 0 && (
+                                        <span className="text-sm font-bold text-blue-500 dark:text-blue-400">
+                                            {inboxItemsCount > 99
+                                                ? '99+'
+                                                : inboxItemsCount}
+                                        </span>
+                                    )}
                                 {link.path === '/tasks?status=active' && (
                                     <button
                                         onClick={(e) => {
