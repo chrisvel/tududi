@@ -102,8 +102,37 @@ async function calculateNextIterations(task, startFromDate, userTimezone) {
             includesToday = task.recurrence_weekday === todayWeekday;
         }
     } else if (task.recurrence_type === 'daily') {
-        // For daily recurrence, today is always included
         includesToday = true;
+    } else if (task.recurrence_type === 'monthly') {
+        const targetDay =
+            task.recurrence_month_day !== null &&
+            task.recurrence_month_day !== undefined
+                ? task.recurrence_month_day
+                : startDate.getUTCDate();
+        const todayDay = startDate.getUTCDate();
+
+        if (targetDay > todayDay) {
+            const currentMonth = startDate.getUTCMonth();
+            const currentYear = startDate.getUTCFullYear();
+            const maxDayInMonth = new Date(
+                Date.UTC(currentYear, currentMonth + 1, 0)
+            ).getUTCDate();
+
+            if (targetDay <= maxDayInMonth) {
+                includesToday = true;
+                nextDate = new Date(
+                    Date.UTC(
+                        currentYear,
+                        currentMonth,
+                        targetDay,
+                        startDate.getUTCHours(),
+                        startDate.getUTCMinutes(),
+                        startDate.getUTCSeconds(),
+                        startDate.getUTCMilliseconds()
+                    )
+                );
+            }
+        }
     }
 
     console.log('calculateNextIterations:', {
