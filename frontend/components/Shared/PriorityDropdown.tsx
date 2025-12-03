@@ -40,14 +40,14 @@ const PriorityDropdown: React.FC<PriorityDropdownProps> = ({
             value: 'medium',
             label: t('priority.medium', 'Medium'),
             icon: (
-                <ArrowUpIcon className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                <ArrowUpIcon className="w-5 h-5 text-orange-500 dark:text-orange-400" />
             ),
         },
         {
             value: 'high',
             label: t('priority.high', 'High'),
             icon: (
-                <FireIcon className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                <FireIcon className="w-5 h-5 text-red-500 dark:text-red-400" />
             ),
         },
     ];
