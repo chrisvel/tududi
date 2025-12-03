@@ -30,7 +30,7 @@ interface TaskModalProps {
     isOpen: boolean;
     onClose: () => void;
     task: Task;
-    onSave: (task: Task) => void;
+    onSave: (task: Task) => void | Promise<void>;
     onDelete: (taskUid: string) => Promise<void>;
     projects: Project[];
     onCreateProject: (name: string) => Promise<Project>;
@@ -56,7 +56,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     const { tagsStore } = useStore();
     // Avoid calling getTags() during component initialization to prevent remounting
     const availableTags = tagsStore.tags;
-    const { addNewTags } = tagsStore;
+    const { addNewTags, refreshTags } = tagsStore;
     const [formData, setFormData] = useState<Task>(task);
     const [tags, setTags] = useState<string[]>(
         task.tags?.map((tag) => tag.name) || []
@@ -412,7 +412,12 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 subtasks: subtasks,
             };
 
-            onSave(finalFormData as any);
+            await onSave(finalFormData as any);
+
+            // Refresh tags from server to sync any newly created tags with their proper UIDs
+            if (newTagNames.length > 0) {
+                await refreshTags();
+            }
 
             if (showToast) {
                 const taskLink = (
