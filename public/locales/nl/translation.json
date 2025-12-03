@@ -143,7 +143,9 @@
     "tasks": "taken",
     "showingItems": "{{current}} van {{total}} items weergegeven",
     "overdue": "Te laat",
-    "planned": "Gepland"
+    "planned": "Gepland",
+    "open": "Open",
+    "completed": "Voltooid"
   },
   "timeline": {
     "activityTimeline": "Activiteit Tijdlijn",

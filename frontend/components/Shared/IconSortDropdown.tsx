@@ -56,11 +56,11 @@ const IconSortDropdown: React.FC<IconSortDropdownProps> = ({
             <button
                 type="button"
                 onClick={() => setIsOpen((prev) => !prev)}
-                className={`p-1 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none transition-colors ${buttonClassName}`}
+                className={`p-1.5 sm:p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none transition-colors ${buttonClassName}`}
                 aria-label={ariaLabel}
                 title={title}
             >
-                <ListBulletIcon className="h-5 w-5" />
+                <ListBulletIcon className="h-4 w-4 sm:h-5 sm:w-5" />
             </button>
             {isOpen && (
                 <div

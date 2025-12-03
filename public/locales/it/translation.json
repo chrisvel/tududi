@@ -143,7 +143,9 @@
     "tasks": "attività",
     "showingItems": "Visualizzazione di {{current}} su {{total}} elementi",
     "overdue": "Scaduto",
-    "planned": "Pianificato"
+    "planned": "Pianificato",
+    "open": "Apri",
+    "completed": "Completato"
   },
   "timeline": {
     "activityTimeline": "Timeline delle Attività",

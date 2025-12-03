@@ -143,7 +143,9 @@
     "tasks": "завдання",
     "showingItems": "Показано {{current}} з {{total}} елементів",
     "overdue": "Прострочено",
-    "planned": "Заплановано"
+    "planned": "Заплановано",
+    "open": "Відкрити",
+    "completed": "Завершено"
   },
   "timeline": {
     "activityTimeline": "Хронологія Активності",

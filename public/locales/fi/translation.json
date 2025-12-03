@@ -143,7 +143,9 @@
     "tasks": "tehtävät",
     "showingItems": "Näytetään {{current}} / {{total}} kohdetta",
     "overdue": "Erääntynyt",
-    "planned": "Suunniteltu"
+    "planned": "Suunniteltu",
+    "open": "Avaa",
+    "completed": "Valmis"
   },
   "timeline": {
     "activityTimeline": "Toiminta-aikajana",

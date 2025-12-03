@@ -143,7 +143,9 @@
     "noProject": "Aucun projet",
     "unknownProject": "Projet inconnu",
     "tasks": "tâches",
-    "showingItems": "Affichage de {{current}} sur {{total}} éléments"
+    "showingItems": "Affichage de {{current}} sur {{total}} éléments",
+    "open": "Ouvrir",
+    "completed": "Terminé"
   },
   "timeline": {
     "activityTimeline": "Chronologie d'Activité",

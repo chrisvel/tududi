@@ -143,7 +143,9 @@
     "tasks": "tugas",
     "showingItems": "Menampilkan {{current}} dari {{total}} item",
     "overdue": "Terlambat",
-    "planned": "Direncanakan"
+    "planned": "Direncanakan",
+    "open": "Buka",
+    "completed": "Selesai"
   },
   "timeline": {
     "activityTimeline": "Garis Waktu Aktivitas",
