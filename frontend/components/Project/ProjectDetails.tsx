@@ -334,7 +334,7 @@ const ProjectDetails: React.FC = () => {
             );
             return;
         }
-        const response = await fetch(getApiPath(`task/${updatedTask.id}`), {
+        const response = await fetch(getApiPath(`task/${updatedTask.uid || updatedTask.id}`), {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -752,10 +752,9 @@ const ProjectDetails: React.FC = () => {
         upcomingDueTrend,
         createdTrend,
         upcomingInsights,
-        eisenhower,
         weeklyPace,
         monthlyCompleted,
-    } = useProjectMetrics(tasks, handleTaskUpdate, t);
+    } = useProjectMetrics(tasks, handleTaskUpdate, t, showSuccessToast);
 
     const getStateIcon = (state: string) => {
         switch (state) {
@@ -1116,7 +1115,6 @@ const ProjectDetails: React.FC = () => {
                                             upcomingDueTrend={upcomingDueTrend}
                                             createdTrend={createdTrend}
                                             upcomingInsights={upcomingInsights}
-                                            eisenhower={eisenhower}
                                             weeklyPace={weeklyPace}
                                             monthlyCompleted={monthlyCompleted}
                                         />
