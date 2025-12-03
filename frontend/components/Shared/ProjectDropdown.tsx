@@ -236,7 +236,7 @@ const ProjectDropdown: React.FC<ProjectDropdownProps> = ({
             {dropdownOpen && !selectedProject && (
                 <div
                     ref={dropdownRef}
-                    className="absolute mt-1 bg-white dark:bg-gray-800 shadow-lg rounded-md w-full z-50 border border-gray-200 dark:border-gray-700"
+                    className="absolute mt-1 bg-white dark:bg-gray-800 shadow-lg rounded-md w-full z-50 border border-gray-200 dark:border-gray-700 max-h-80 overflow-y-auto"
                 >
                     {(() => {
                         // Show filtered projects if user is typing, otherwise show all projects
@@ -250,13 +250,24 @@ const ProjectDropdown: React.FC<ProjectDropdownProps> = ({
                                     key={project.id}
                                     type="button"
                                     onClick={() => onProjectSelection(project)}
-                                    className={`block w-full text-gray-700 dark:text-gray-300 text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                                    className={`flex items-center gap-3 w-full text-gray-700 dark:text-gray-300 text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
                                         index === highlightedIndex
                                             ? 'bg-blue-50 dark:bg-blue-900/30'
                                             : ''
                                     }`}
                                 >
-                                    {project.name}
+                                    <div className="w-10 h-10 rounded overflow-hidden flex-shrink-0">
+                                        {project.image_url ? (
+                                            <img
+                                                src={project.image_url}
+                                                alt={project.name}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 dark:from-blue-600 dark:to-purple-700"></div>
+                                        )}
+                                    </div>
+                                    <span className="flex-1 truncate">{project.name}</span>
                                 </button>
                             ))
                         ) : (
