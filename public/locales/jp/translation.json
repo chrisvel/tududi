@@ -424,7 +424,8 @@
         "priority": "優先度",
         "dueDate": "期限日",
         "note": "ノート",
-        "repeatOn": "繰り返し"
+        "repeatOn": "繰り返し",
+        "deferUntil": "延期するまで"
       },
       "recurrenceSettings": "繰り返し設定",
       "completionBasedHelp": "チェックすると、次のタスクは期限日ではなく完了日に基づいて作成されます",
@@ -447,7 +448,8 @@
         "noVerb": "具体的な行動は何ですか？ 動詞で始めてみてください。",
         "vague": "\"電話する\"、\"書く\"、\"予定する\"、\"調査する\"などの動詞で始めてみてください"
       },
-      "selectAtLeastOneDay": "少なくとも1日を選択してください"
+      "selectAtLeastOneDay": "少なくとも1日を選択してください",
+      "deferUntilPlaceholder": "延期する日付と時間を選択"
     },
     "areaName": "エリア名",
     "areaDescription": "エリアの説明",
@@ -835,7 +837,11 @@
     "parentTask": "親タスク",
     "includingToday": "今日を含む",
     "has": "持っている",
-    "fromProject": "プロジェクトから"
+    "fromProject": "プロジェクトから",
+    "deferUntil": "延期するまで",
+    "noDeferUntil": "延期なし",
+    "deferUntilUpdated": "正常に延期が更新されました",
+    "deferUntilUpdateError": "延期の更新に失敗しました"
   },
   "calendar": {
     "month": "月",

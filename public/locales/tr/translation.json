@@ -438,7 +438,8 @@
         "weekOfMonth": "Ayın Haftası",
         "recurrenceEndDate": "Bitiş tarihi (isteğe bağlı)",
         "completionBased": "Tamamlandıktan sonra tekrar et",
-        "repeatOn": "Şu tarihlerde tekrar et"
+        "repeatOn": "Şu tarihlerde tekrar et",
+        "deferUntil": "Erteleme Tarihi"
       },
       "projectSearchPlaceholder": "Proje ara veya oluştur...",
       "noMatchingProjects": "Eşleşen proje yok",
@@ -460,7 +461,8 @@
         "noVerb": "Hangi spesifik eylemi gerçekleştirmeniz gerekiyor? Bir fiille başlamayı deneyin.",
         "vague": "\"Ara\", \"Yaz\", \"Planla\" veya \"Araştır\" gibi bir eylem fiili ile başlamayı deneyin"
       },
-      "selectAtLeastOneDay": "Lütfen en az bir gün seçin"
+      "selectAtLeastOneDay": "Lütfen en az bir gün seçin",
+      "deferUntilPlaceholder": "Erteleme tarihi ve saatini seçin"
     },
     "noteTitle": "Not Başlığı",
     "noteContent": "Not İçeriği",
@@ -765,7 +767,11 @@
     "parentTask": "Üst Görev",
     "includingToday": "bugün dahil",
     "has": "var",
-    "fromProject": "projeden"
+    "fromProject": "projeden",
+    "deferUntil": "Erteleme Tarihi",
+    "noDeferUntil": "Erteleme yok",
+    "deferUntilUpdated": "Başarıyla erteleme tarihi güncellendi",
+    "deferUntilUpdateError": "Erteleme tarihini güncelleme başarısız oldu"
   },
   "projects": {
     "loading": "Projeler yükleniyor...",

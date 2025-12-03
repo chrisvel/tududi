@@ -438,7 +438,8 @@
         "weekOfMonth": "Tydzień miesiąca",
         "recurrenceEndDate": "Data zakończenia (opcjonalnie)",
         "completionBased": "Powtórz po zakończeniu",
-        "repeatOn": "Powtarzaj w"
+        "repeatOn": "Powtarzaj w",
+        "deferUntil": "Odłóż do"
       },
       "projectSearchPlaceholder": "Szukaj lub utwórz projekt...",
       "noMatchingProjects": "Brak pasujących projektów",
@@ -460,7 +461,8 @@
         "noVerb": "Jaką konkretną czynność musisz wykonać? Spróbuj zacząć od czasownika.",
         "vague": "Spróbuj zacząć od czasownika akcji, takiego jak \"Zadzwoń\", \"Napisz\", \"Zaplanuj\" lub \"Zbadaj\""
       },
-      "selectAtLeastOneDay": "Proszę wybrać przynajmniej jeden dzień"
+      "selectAtLeastOneDay": "Proszę wybrać przynajmniej jeden dzień",
+      "deferUntilPlaceholder": "Wybierz datę i godzinę odłożenia"
     },
     "noteTitle": "Tytuł notatki",
     "noteContent": "Treść notatki",
@@ -765,7 +767,11 @@
     "parentTask": "Zadanie nadrzędne",
     "includingToday": "w tym dzisiaj",
     "has": "ma",
-    "fromProject": "z projektu"
+    "fromProject": "z projektu",
+    "deferUntil": "Odłóż do",
+    "noDeferUntil": "Brak odłożenia do",
+    "deferUntilUpdated": "Odłożono do zaktualizowania pomyślnie",
+    "deferUntilUpdateError": "Nie udało się zaktualizować odłożenia do"
   },
   "projects": {
     "loading": "Ładowanie projektów...",

@@ -438,7 +438,8 @@
         "weekOfMonth": "Week van de maand",
         "recurrenceEndDate": "Einddatum (optioneel)",
         "completionBased": "Herhaal na voltooiing",
-        "repeatOn": "Herhaal op"
+        "repeatOn": "Herhaal op",
+        "deferUntil": "Uitstellen Tot"
       },
       "projectSearchPlaceholder": "Zoek of maak een project...",
       "noMatchingProjects": "Geen overeenkomende projecten",
@@ -460,7 +461,8 @@
         "noVerb": "Welke specifieke actie moet je ondernemen? Probeer te beginnen met een werkwoord.",
         "vague": "Probeer te beginnen met een actie werkwoord zoals \"Bel\", \"Schrijf\", \"Plan\" of \"Onderzoek\""
       },
-      "selectAtLeastOneDay": "Selecteer alstublieft minimaal één dag"
+      "selectAtLeastOneDay": "Selecteer alstublieft minimaal één dag",
+      "deferUntilPlaceholder": "Selecteer uitstel tot datum en tijd"
     },
     "noteTitle": "Notitietitel",
     "noteContent": "Notitie-inhoud",
@@ -765,7 +767,11 @@
     "parentTask": "Bovenliggende Taak",
     "includingToday": "inclusief vandaag",
     "has": "heeft",
-    "fromProject": "van het project"
+    "fromProject": "van het project",
+    "deferUntil": "Uitstellen Tot",
+    "noDeferUntil": "Geen uitstel tot",
+    "deferUntilUpdated": "Uitstel tot succesvol bijgewerkt",
+    "deferUntilUpdateError": "Bijwerken van uitstel tot is mislukt"
   },
   "projects": {
     "loading": "Projecten laden...",

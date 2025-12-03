@@ -438,7 +438,8 @@
         "weekOfMonth": "Semaine du mois",
         "recurrenceEndDate": "Date de fin (optionnel)",
         "completionBased": "Répéter après achèvement",
-        "repeatOn": "Répéter le"
+        "repeatOn": "Répéter le",
+        "deferUntil": "Reporter jusqu'à"
       },
       "projectSearchPlaceholder": "Rechercher ou créer un projet...",
       "noMatchingProjects": "Aucun projet correspondant",
@@ -460,7 +461,8 @@
         "noVerb": "Quelle action spécifique devez-vous entreprendre ? Essayez de commencer par un verbe.",
         "vague": "Essayez de commencer par un verbe d'action comme \"Appeler\", \"Écrire\", \"Planifier\" ou \"Rechercher\""
       },
-      "selectAtLeastOneDay": "Veuillez sélectionner au moins un jour"
+      "selectAtLeastOneDay": "Veuillez sélectionner au moins un jour",
+      "deferUntilPlaceholder": "Sélectionnez la date et l'heure de report"
     },
     "noteTitle": "Titre de la note",
     "noteContent": "Contenu de la note",
@@ -765,7 +767,11 @@
     "parentTask": "Tâche parente",
     "includingToday": "y compris aujourd'hui",
     "has": "a",
-    "fromProject": "du projet"
+    "fromProject": "du projet",
+    "deferUntil": "Différer jusqu'à",
+    "noDeferUntil": "Pas de différé jusqu'à",
+    "deferUntilUpdated": "Différer jusqu'à mise à jour réussie",
+    "deferUntilUpdateError": "Échec de la mise à jour du différé jusqu'à"
   },
   "projects": {
     "loading": "Chargement des projets...",

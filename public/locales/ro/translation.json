@@ -438,7 +438,8 @@
         "weekOfMonth": "Săptămâna lunii",
         "recurrenceEndDate": "Data de sfârșit (opțional)",
         "completionBased": "Repetare după finalizare",
-        "repeatOn": "Repetă pe"
+        "repeatOn": "Repetă pe",
+        "deferUntil": "Amână până la"
       },
       "projectSearchPlaceholder": "Caută sau creează un proiect...",
       "noMatchingProjects": "Niciun proiect corespunzător",
@@ -460,7 +461,8 @@
         "noVerb": "Ce acțiune specifică trebuie să întreprinzi? Încercați să începeți cu un verb.",
         "vague": "Încercați să începeți cu un verb de acțiune, cum ar fi \"Sună\", \"Scrie\", \"Programează\" sau \"Cercetează\""
       },
-      "selectAtLeastOneDay": "Te rugăm să selectezi cel puțin o zi"
+      "selectAtLeastOneDay": "Te rugăm să selectezi cel puțin o zi",
+      "deferUntilPlaceholder": "Selectați data și ora până la care să amânați"
     },
     "noteTitle": "Titlul notei",
     "noteContent": "Conținutul notei",
@@ -765,7 +767,11 @@
     "parentTask": "Sarcina Părinte",
     "includingToday": "inclusiv astăzi",
     "has": "are",
-    "fromProject": "din proiect"
+    "fromProject": "din proiect",
+    "deferUntil": "Amână până la",
+    "noDeferUntil": "Nicio amânare până la",
+    "deferUntilUpdated": "Amânare până la actualizare cu succes",
+    "deferUntilUpdateError": "Actualizarea amânării până la a eșuat"
   },
   "projects": {
     "loading": "Se încarcă proiectele...",

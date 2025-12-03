@@ -438,7 +438,8 @@
         "weekOfMonth": "Minggu dalam bulan",
         "recurrenceEndDate": "Tanggal akhir (opsional)",
         "completionBased": "Ulangi setelah penyelesaian",
-        "repeatOn": "Ulangi pada"
+        "repeatOn": "Ulangi pada",
+        "deferUntil": "Tunda Hingga"
       },
       "projectSearchPlaceholder": "Cari atau buat proyek...",
       "noMatchingProjects": "Tidak ada proyek yang cocok",
@@ -460,7 +461,8 @@
         "noVerb": "Tindakan spesifik apa yang perlu Anda ambil? Cobalah mulai dengan kata kerja.",
         "vague": "Cobalah mulai dengan kata kerja aksi seperti \"Hubungi\", \"Tulis\", \"Jadwalkan\", atau \"Teliti\""
       },
-      "selectAtLeastOneDay": "Silakan pilih setidaknya satu hari"
+      "selectAtLeastOneDay": "Silakan pilih setidaknya satu hari",
+      "deferUntilPlaceholder": "Pilih tanggal dan waktu tunda hingga"
     },
     "noteTitle": "Judul Catatan",
     "noteContent": "Konten Catatan",
@@ -765,7 +767,11 @@
     "parentTask": "Tugas Induk",
     "includingToday": "termasuk hari ini",
     "has": "memiliki",
-    "fromProject": "dari proyek"
+    "fromProject": "dari proyek",
+    "deferUntil": "Tunda Hingga",
+    "noDeferUntil": "Tidak ada tunda hingga",
+    "deferUntilUpdated": "Tunda hingga diperbarui dengan sukses",
+    "deferUntilUpdateError": "Gagal memperbarui tunda hingga"
   },
   "projects": {
     "loading": "Memuat proyek...",

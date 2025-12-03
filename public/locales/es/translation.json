@@ -542,7 +542,8 @@
         "weekOfMonth": "Semana del mes",
         "recurrenceEndDate": "Fecha de fin (opcional)",
         "completionBased": "Repetir después de completar",
-        "repeatOn": "Repetir en"
+        "repeatOn": "Repetir en",
+        "deferUntil": "Aplazar hasta"
       },
       "projectSearchPlaceholder": "Buscar o crear un proyecto...",
       "noMatchingProjects": "No hay proyectos coincidentes",
@@ -564,7 +565,8 @@
         "noVerb": "¿Qué acción específica necesitas tomar? Intenta comenzar con un verbo.",
         "vague": "Intenta comenzar con un verbo de acción como \"Llamar\", \"Escribir\", \"Programar\", o \"Investigar\""
       },
-      "selectAtLeastOneDay": "Por favor, selecciona al menos un día"
+      "selectAtLeastOneDay": "Por favor, selecciona al menos un día",
+      "deferUntilPlaceholder": "Seleccione la fecha y hora hasta la cual aplazar"
     },
     "projectDescriptionPlaceholder": "Ingrese la descripción del proyecto"
   },
@@ -730,7 +732,11 @@
     "parentTask": "Tarea principal",
     "includingToday": "incluyendo hoy",
     "has": "tiene",
-    "fromProject": "del proyecto"
+    "fromProject": "del proyecto",
+    "deferUntil": "Aplazar hasta",
+    "noDeferUntil": "No aplazar hasta",
+    "deferUntilUpdated": "Aplazar hasta que se actualice correctamente",
+    "deferUntilUpdateError": "Error al actualizar el aplazamiento"
   },
   "dateIndicators": {
     "today": "HOY",

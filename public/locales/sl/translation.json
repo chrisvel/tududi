@@ -438,7 +438,8 @@
         "weekOfMonth": "Teden v mesecu",
         "recurrenceEndDate": "Datum konca (neobvezno)",
         "completionBased": "Ponovi po zaključku",
-        "repeatOn": "Ponovi na"
+        "repeatOn": "Ponovi na",
+        "deferUntil": "Odmik do"
       },
       "projectSearchPlaceholder": "Išči ali ustvari projekt...",
       "noMatchingProjects": "Brez ustreznih projektov",
@@ -460,7 +461,8 @@
         "noVerb": "Katero specifično dejanje morate izvesti? Poskusite začeti z glagolom.",
         "vague": "Poskusite začeti z glagolom akcije, kot so \"Pokliči\", \"Napiši\", \"Načrtuj\" ali \"Raziskuj\""
       },
-      "selectAtLeastOneDay": "Prosimo, izberite vsaj en dan"
+      "selectAtLeastOneDay": "Prosimo, izberite vsaj en dan",
+      "deferUntilPlaceholder": "Izberite datum in čas odloga"
     },
     "noteTitle": "Naslov opombe",
     "noteContent": "Vsebina opombe",
@@ -765,7 +767,11 @@
     "parentTask": "Nadrejena naloga",
     "includingToday": "vključno s danes",
     "has": "ima",
-    "fromProject": "iz projekta"
+    "fromProject": "iz projekta",
+    "deferUntil": "Odmik do",
+    "noDeferUntil": "Brez odloga do",
+    "deferUntilUpdated": "Odmik do uspešno posodobljen",
+    "deferUntilUpdateError": "Posodobitev odloga do ni uspela"
   },
   "projects": {
     "loading": "Nalagam projekte...",

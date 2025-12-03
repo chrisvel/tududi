@@ -438,7 +438,8 @@
         "weekOfMonth": "월의 주",
         "recurrenceEndDate": "종료일 (선택 사항)",
         "completionBased": "완료 후 반복",
-        "repeatOn": "반복"
+        "repeatOn": "반복",
+        "deferUntil": "연기할 때까지"
       },
       "projectSearchPlaceholder": "프로젝트 검색 또는 생성...",
       "noMatchingProjects": "일치하는 프로젝트가 없습니다",
@@ -460,7 +461,8 @@
         "noVerb": "어떤 특정 행동을 취해야 하나요? 동사로 시작해보세요.",
         "vague": "\"전화하기\", \"작성하기\", \"일정 잡기\", 또는 \"조사하기\"와 같은 행동 동사로 시작해보세요"
       },
-      "selectAtLeastOneDay": "하루 이상 선택해 주세요"
+      "selectAtLeastOneDay": "하루 이상 선택해 주세요",
+      "deferUntilPlaceholder": "연기할 날짜와 시간을 선택하세요"
     },
     "noteTitle": "노트 제목",
     "noteContent": "노트 내용",
@@ -765,7 +767,11 @@
     "parentTask": "상위 작업",
     "includingToday": "오늘 포함",
     "has": "있음",
-    "fromProject": "프로젝트에서"
+    "fromProject": "프로젝트에서",
+    "deferUntil": "연기할 때까지",
+    "noDeferUntil": "연기할 때까지 없음",
+    "deferUntilUpdated": "연기할 때까지 성공적으로 업데이트됨",
+    "deferUntilUpdateError": "연기할 때까지 업데이트 실패"
   },
   "projects": {
     "loading": "프로젝트 로딩 중...",

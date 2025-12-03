@@ -438,7 +438,8 @@
         "weekOfMonth": "أسبوع من الشهر",
         "recurrenceEndDate": "تاريخ الانتهاء (اختياري)",
         "completionBased": "كرر بعد الانتهاء",
-        "repeatOn": "التكرار في"
+        "repeatOn": "التكرار في",
+        "deferUntil": "تأجيل حتى"
       },
       "projectSearchPlaceholder": "ابحث أو أنشئ مشروعًا...",
       "noMatchingProjects": "لا توجد مشاريع مطابقة",
@@ -460,7 +461,8 @@
         "noVerb": "ما الإجراء المحدد الذي تحتاج إلى اتخاذه؟ حاول البدء بفعل.",
         "vague": "حاول البدء بفعل عمل مثل \"اتصل\"، \"اكتب\"، \"حدد موعدًا\"، أو \"ابحث\""
       },
-      "selectAtLeastOneDay": "يرجى اختيار يوم واحد على الأقل"
+      "selectAtLeastOneDay": "يرجى اختيار يوم واحد على الأقل",
+      "deferUntilPlaceholder": "اختر تاريخ ووقت التأجيل"
     },
     "noteTitle": "عنوان الملاحظة",
     "noteContent": "محتوى الملاحظة",
@@ -765,7 +767,11 @@
     "parentTask": "المهمة الرئيسية",
     "includingToday": "بما في ذلك اليوم",
     "has": "يمتلك",
-    "fromProject": "من المشروع"
+    "fromProject": "من المشروع",
+    "deferUntil": "تأجيل حتى",
+    "noDeferUntil": "لا تأجيل حتى",
+    "deferUntilUpdated": "تأجيل حتى يتم التحديث بنجاح",
+    "deferUntilUpdateError": "فشل في تحديث التأجيل حتى"
   },
   "projects": {
     "loading": "جارٍ تحميل المشاريع...",
