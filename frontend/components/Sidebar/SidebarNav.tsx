@@ -7,6 +7,7 @@ import {
     ListBulletIcon,
     ClockIcon,
 } from '@heroicons/react/24/solid';
+import { PlusCircleIcon } from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
 import { loadInboxItemsToStore } from '../../utils/inboxService';
 
@@ -14,11 +15,13 @@ interface SidebarNavProps {
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
     location: Location;
     isDarkMode: boolean;
+    openTaskModal: (type?: 'simplified' | 'full') => void;
 }
 
 const SidebarNav: React.FC<SidebarNavProps> = ({
     handleNavClick,
     location,
+    openTaskModal,
 }) => {
     const { t } = useTranslation();
     const store = useStore();
@@ -101,13 +104,34 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                                 {link.icon}
                                 <span className="ml-2">{link.title}</span>
                             </div>
-                            {link.path === '/inbox' && inboxItemsCount > 0 && (
-                                <span className="text-sm font-bold text-blue-500 dark:text-blue-400">
-                                    {inboxItemsCount > 99
-                                        ? '99+'
-                                        : inboxItemsCount}
-                                </span>
-                            )}
+                            <div className="flex items-center gap-2">
+                                {link.path === '/inbox' && inboxItemsCount > 0 && (
+                                    <span className="text-sm font-bold text-blue-500 dark:text-blue-400">
+                                        {inboxItemsCount > 99
+                                            ? '99+'
+                                            : inboxItemsCount}
+                                    </span>
+                                )}
+                                {link.path === '/tasks?status=active' && (
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            openTaskModal('full');
+                                        }}
+                                        className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none"
+                                        aria-label={t(
+                                            'sidebar.addTaskAriaLabel',
+                                            'Add Task'
+                                        )}
+                                        title={t(
+                                            'sidebar.addTaskTitle',
+                                            'Add Task'
+                                        )}
+                                    >
+                                        <PlusCircleIcon className="h-5 w-5" />
+                                    </button>
+                                )}
+                            </div>
                         </button>
                     </li>
                 </React.Fragment>
