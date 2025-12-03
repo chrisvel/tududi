@@ -267,7 +267,9 @@ const ProjectDropdown: React.FC<ProjectDropdownProps> = ({
                                             <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 dark:from-blue-600 dark:to-purple-700"></div>
                                         )}
                                     </div>
-                                    <span className="flex-1 truncate">{project.name}</span>
+                                    <span className="flex-1 truncate">
+                                        {project.name}
+                                    </span>
                                 </button>
                             ))
                         ) : (
