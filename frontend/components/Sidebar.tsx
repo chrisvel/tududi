@@ -74,6 +74,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                             handleNavClick={handleNavClick}
                             location={location}
                             isDarkMode={isDarkMode}
+                            openTaskModal={openTaskModal}
                         />
                         <SidebarProjects
                             handleNavClick={handleNavClick}
