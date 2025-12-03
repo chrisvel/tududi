@@ -22,7 +22,8 @@
     "discardChanges": "Abandonner les modifications ?",
     "discardChangesMessage": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir les abandonner ?",
     "no": "Non, continuer à éditer",
-    "yesDiscard": "Oui, abandonner"
+    "yesDiscard": "Oui, abandonner",
+    "uploading": "Téléchargement..."
   },
   "sidebar": {
     "dashboard": "Tableau de bord",
@@ -535,7 +536,12 @@
     "createSuccess": "Projet créé avec succès !",
     "createdAndAssigned": "Projet créé et attribué",
     "createError": "Échec de la création du projet",
-    "viewProject": "Aller au projet"
+    "viewProject": "Aller au projet",
+    "editProject": "Modifier le projet",
+    "editBanner": "Modifier la bannière du projet",
+    "currentBanner": "Bannière actuelle",
+    "choosePreset": "Choisissez une bannière prédéfinie :",
+    "orUploadOwn": "Ou téléchargez la vôtre :"
   },
   "errors": {
     "required": "Ce champ est requis",
@@ -560,7 +566,10 @@
     "tagNameRequired": "Le nom de l'étiquette est requis.",
     "failedToSaveTag": "Échec de l'enregistrement de l'étiquette.",
     "projectNameRequired": "Le nom du projet est requis.",
-    "projectSaveFailed": "Échec de l'enregistrement du projet."
+    "projectSaveFailed": "Échec de l'enregistrement du projet.",
+    "projectImageTooLarge": "L'image est trop grande. Veuillez choisir un fichier de moins de 10 Mo.",
+    "projectImageUpload": "Échec du téléchargement de l'image. Veuillez essayer un fichier plus petit ou un format différent.",
+    "bannerSaveFailed": "Échec de l'enregistrement de la bannière"
   },
   "inbox": {
     "title": "Boîte de réception",
@@ -637,7 +646,8 @@
     "taskCreated": "Tâche créée avec succès !",
     "taskUpdated": "Tâche mise à jour avec succès !",
     "taskDeleted": "Tâche supprimée avec succès !",
-    "noteDeleted": "Note supprimée avec succès !"
+    "noteDeleted": "Note supprimée avec succès !",
+    "bannerUpdated": "Bannière mise à jour avec succès !"
   },
   "note": {
     "title": "Titre",

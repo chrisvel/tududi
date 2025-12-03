@@ -22,7 +22,8 @@
     "discardChanges": "変更を破棄しますか？",
     "discardChangesMessage": "保存されていない変更があります。破棄してもよろしいですか？",
     "no": "いいえ、編集を続ける",
-    "yesDiscard": "はい、破棄する"
+    "yesDiscard": "はい、破棄する",
+    "uploading": "アップロード中..."
   },
   "sidebar": {
     "dashboard": "ダッシュボード",
@@ -514,7 +515,10 @@
     "areaNameRequired": "エリア名が必要です。",
     "failedToSaveArea": "エリアの保存に失敗しました。",
     "tagNameRequired": "タグ名が必要です。",
-    "failedToSaveTag": "タグの保存に失敗しました。"
+    "failedToSaveTag": "タグの保存に失敗しました。",
+    "projectImageTooLarge": "画像が大きすぎます。10MB未満のファイルを選択してください。",
+    "projectImageUpload": "画像のアップロードに失敗しました。より小さいファイルまたは異なる形式を試してください。",
+    "bannerSaveFailed": "バナーの保存に失敗しました"
   },
   "success": {
     "noteUpdated": "ノートが正常に更新されました！",
@@ -529,7 +533,8 @@
     "taskCreated": "タスクが正常に作成されました！",
     "taskUpdated": "タスクが正常に更新されました！",
     "taskDeleted": "タスクが正常に削除されました！",
-    "noteDeleted": "ノートが正常に削除されました！"
+    "noteDeleted": "ノートが正常に削除されました！",
+    "bannerUpdated": "バナーが正常に更新されました！"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -716,7 +721,12 @@
     "createSuccess": "プロジェクトが正常に作成されました！",
     "createdAndAssigned": "プロジェクトが作成され、割り当てられました",
     "createError": "プロジェクトの作成に失敗しました",
-    "viewProject": "プロジェクトに移動"
+    "viewProject": "プロジェクトに移動",
+    "editProject": "プロジェクトを編集",
+    "editBanner": "プロジェクトバナーを編集",
+    "currentBanner": "現在のバナー",
+    "choosePreset": "プリセットバナーを選択:",
+    "orUploadOwn": "または自分のバナーをアップロード:"
   },
   "task": {
     "suggestions": {

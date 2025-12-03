@@ -22,7 +22,8 @@
     "discardChanges": "Buang perubahan?",
     "discardChangesMessage": "Anda memiliki perubahan yang belum disimpan. Apakah Anda yakin ingin membuangnya?",
     "no": "Tidak, lanjutkan mengedit",
-    "yesDiscard": "Ya, buang"
+    "yesDiscard": "Ya, buang",
+    "uploading": "Mengunggah..."
   },
   "sidebar": {
     "dashboard": "Dasbor",
@@ -535,7 +536,12 @@
     "createSuccess": "Proyek berhasil dibuat!",
     "createdAndAssigned": "Proyek dibuat dan ditugaskan",
     "createError": "Gagal membuat proyek",
-    "viewProject": "Pergi ke proyek"
+    "viewProject": "Pergi ke proyek",
+    "editProject": "Edit proyek",
+    "editBanner": "Edit spanduk proyek",
+    "currentBanner": "Spanduk saat ini",
+    "choosePreset": "Pilih spanduk preset:",
+    "orUploadOwn": "Atau unggah milik Anda sendiri:"
   },
   "errors": {
     "required": "Kolom ini diperlukan",
@@ -560,7 +566,10 @@
     "tagNameRequired": "Nama tag diperlukan.",
     "failedToSaveTag": "Gagal untuk menyimpan tag.",
     "projectNameRequired": "Nama proyek diperlukan.",
-    "projectSaveFailed": "Gagal untuk menyimpan proyek."
+    "projectSaveFailed": "Gagal untuk menyimpan proyek.",
+    "projectImageTooLarge": "Gambar terlalu besar. Silakan pilih file di bawah 10MB.",
+    "projectImageUpload": "Gagal mengunggah gambar. Silakan coba file yang lebih kecil atau format yang berbeda.",
+    "bannerSaveFailed": "Gagal menyimpan spanduk"
   },
   "inbox": {
     "title": "Kotak Masuk",
@@ -637,7 +646,8 @@
     "taskCreated": "Tugas berhasil dibuat!",
     "taskUpdated": "Tugas berhasil diperbarui!",
     "taskDeleted": "Tugas berhasil dihapus!",
-    "noteDeleted": "Catatan berhasil dihapus!"
+    "noteDeleted": "Catatan berhasil dihapus!",
+    "bannerUpdated": "Spanduk berhasil diperbarui!"
   },
   "note": {
     "title": "Judul",

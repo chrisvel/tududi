@@ -22,7 +22,8 @@
     "discardChanges": "¿Descartar cambios?",
     "discardChangesMessage": "Tienes cambios no guardados. ¿Estás seguro de que quieres descartarlos?",
     "no": "No, seguir editando",
-    "yesDiscard": "Sí, descartar"
+    "yesDiscard": "Sí, descartar",
+    "uploading": "Subiendo..."
   },
   "sidebar": {
     "dashboard": "Tablero",
@@ -294,7 +295,10 @@
     "areaNameRequired": "Se requiere el nombre del área.",
     "failedToSaveArea": "No se pudo guardar el área.",
     "tagNameRequired": "Se requiere el nombre de la etiqueta.",
-    "failedToSaveTag": "No se pudo guardar la etiqueta."
+    "failedToSaveTag": "No se pudo guardar la etiqueta.",
+    "projectImageTooLarge": "La imagen es demasiado grande. Por favor, elige un archivo de menos de 10MB.",
+    "projectImageUpload": "Error al subir la imagen. Por favor, intenta con un archivo más pequeño o un formato diferente.",
+    "bannerSaveFailed": "Error al guardar el banner"
   },
   "dropdown": {
     "createNew": "Crear Nuevo",
@@ -612,7 +616,12 @@
     "createSuccess": "¡Proyecto creado exitosamente!",
     "createdAndAssigned": "Proyecto creado y asignado",
     "createError": "Error al crear el proyecto",
-    "viewProject": "Ir al proyecto"
+    "viewProject": "Ir al proyecto",
+    "editProject": "Editar proyecto",
+    "editBanner": "Editar banner del proyecto",
+    "currentBanner": "Banner actual",
+    "choosePreset": "Elige un banner preestablecido:",
+    "orUploadOwn": "O sube el tuyo propio:"
   },
   "task": {
     "labels": {
@@ -828,7 +837,8 @@
     "taskUpdated": "¡Tarea actualizada con éxito!",
     "taskDeleted": "¡Tarea eliminada con éxito!",
     "nextActionAdded": "¡Próxima acción agregada con éxito!",
-    "noteDeleted": "¡Nota eliminada con éxito!"
+    "noteDeleted": "¡Nota eliminada con éxito!",
+    "bannerUpdated": "¡Banner actualizado con éxito!"
   },
   "recurrence": {
     "none": "Ninguna",

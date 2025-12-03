@@ -22,7 +22,8 @@
     "discardChanges": "Renunți la modificări?",
     "discardChangesMessage": "Ai modificări nesalvate. Ești sigur că vrei să le renunți?",
     "no": "Nu, continuă editarea",
-    "yesDiscard": "Da, renunță"
+    "yesDiscard": "Da, renunță",
+    "uploading": "Se încarcă..."
   },
   "sidebar": {
     "dashboard": "Tabloul de bord",
@@ -535,7 +536,12 @@
     "createSuccess": "Proiect creat cu succes!",
     "createdAndAssigned": "Proiect creat și atribuit",
     "createError": "Crearea proiectului a eșuat",
-    "viewProject": "Accesează proiectul"
+    "viewProject": "Accesează proiectul",
+    "editProject": "Editează proiectul",
+    "editBanner": "Editează bannerul proiectului",
+    "currentBanner": "Bannerul curent",
+    "choosePreset": "Alege un banner presetat:",
+    "orUploadOwn": "Sau încarcă propriul tău:"
   },
   "errors": {
     "required": "Acest câmp este obligatoriu",
@@ -560,7 +566,10 @@
     "tagNameRequired": "Numele etichetei este obligatoriu.",
     "failedToSaveTag": "Nu s-a putut salva eticheta.",
     "projectNameRequired": "Numele proiectului este obligatoriu.",
-    "projectSaveFailed": "Nu s-a putut salva proiectul."
+    "projectSaveFailed": "Nu s-a putut salva proiectul.",
+    "projectImageTooLarge": "Imaginea este prea mare. Te rugăm să alegi un fișier de sub 10MB.",
+    "projectImageUpload": "Încărcarea imaginii a eșuat. Te rugăm să încerci un fișier mai mic sau un format diferit.",
+    "bannerSaveFailed": "Salvarea bannerului a eșuat"
   },
   "inbox": {
     "title": "Căsuța de primire",
@@ -637,7 +646,8 @@
     "taskCreated": "Sarcină creată cu succes!",
     "taskUpdated": "Sarcină actualizată cu succes!",
     "taskDeleted": "Sarcină ștearsă cu succes!",
-    "noteDeleted": "Notă ștearsă cu succes!"
+    "noteDeleted": "Notă ștearsă cu succes!",
+    "bannerUpdated": "Bannerul a fost actualizat cu succes!"
   },
   "note": {
     "title": "Titlu",

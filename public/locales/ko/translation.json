@@ -22,7 +22,8 @@
     "discardChanges": "변경 사항을 버리시겠습니까?",
     "discardChangesMessage": "저장되지 않은 변경 사항이 있습니다. 정말로 이를 버리시겠습니까?",
     "no": "아니요, 편집 계속하기",
-    "yesDiscard": "네, 버리기"
+    "yesDiscard": "네, 버리기",
+    "uploading": "업로드 중..."
   },
   "sidebar": {
     "dashboard": "대시보드",
@@ -535,7 +536,12 @@
     "createSuccess": "프로젝트가 성공적으로 생성되었습니다!",
     "createdAndAssigned": "프로젝트가 생성되고 할당되었습니다",
     "createError": "프로젝트 생성에 실패했습니다",
-    "viewProject": "프로젝트로 이동"
+    "viewProject": "프로젝트로 이동",
+    "editProject": "프로젝트 편집",
+    "editBanner": "프로젝트 배너 편집",
+    "currentBanner": "현재 배너",
+    "choosePreset": "프리셋 배너 선택:",
+    "orUploadOwn": "또는 직접 업로드:"
   },
   "errors": {
     "required": "이 필드는 필수입니다",
@@ -560,7 +566,10 @@
     "tagNameRequired": "태그 이름은 필수입니다.",
     "failedToSaveTag": "태그를 저장하는 데 실패했습니다.",
     "projectNameRequired": "프로젝트 이름은 필수입니다.",
-    "projectSaveFailed": "프로젝트를 저장하는 데 실패했습니다."
+    "projectSaveFailed": "프로젝트를 저장하는 데 실패했습니다.",
+    "projectImageTooLarge": "이미지가 너무 큽니다. 10MB 이하의 파일을 선택하세요.",
+    "projectImageUpload": "이미지 업로드에 실패했습니다. 더 작은 파일이나 다른 형식을 시도하세요.",
+    "bannerSaveFailed": "배너 저장에 실패했습니다."
   },
   "inbox": {
     "title": "받은 편지함",
@@ -637,7 +646,8 @@
     "taskCreated": "작업이 성공적으로 생성되었습니다!",
     "taskUpdated": "작업이 성공적으로 업데이트되었습니다!",
     "taskDeleted": "작업이 성공적으로 삭제되었습니다!",
-    "noteDeleted": "메모가 성공적으로 삭제되었습니다!"
+    "noteDeleted": "메모가 성공적으로 삭제되었습니다!",
+    "bannerUpdated": "배너가 성공적으로 업데이트되었습니다!"
   },
   "note": {
     "title": "제목",

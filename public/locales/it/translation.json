@@ -22,7 +22,8 @@
     "discardChanges": "Scartare le modifiche?",
     "discardChangesMessage": "Hai modifiche non salvate. Sei sicuro di volerle scartare?",
     "no": "No, continua a modificare",
-    "yesDiscard": "Sì, scarta"
+    "yesDiscard": "Sì, scarta",
+    "uploading": "Caricamento..."
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -535,7 +536,12 @@
     "createSuccess": "Progetto creato con successo!",
     "createdAndAssigned": "Progetto creato e assegnato",
     "createError": "Impossibile creare il progetto",
-    "viewProject": "Vai al progetto"
+    "viewProject": "Vai al progetto",
+    "editProject": "Modifica progetto",
+    "editBanner": "Modifica banner del progetto",
+    "currentBanner": "Banner attuale",
+    "choosePreset": "Scegli un banner preimpostato:",
+    "orUploadOwn": "Oppure carica il tuo:"
   },
   "errors": {
     "required": "Questo campo è obbligatorio",
@@ -560,7 +566,10 @@
     "tagNameRequired": "Il nome del tag è obbligatorio.",
     "failedToSaveTag": "Impossibile salvare il tag.",
     "projectNameRequired": "Il nome del progetto è obbligatorio.",
-    "projectSaveFailed": "Impossibile salvare il progetto."
+    "projectSaveFailed": "Impossibile salvare il progetto.",
+    "projectImageTooLarge": "L'immagine è troppo grande. Si prega di scegliere un file di dimensioni inferiori a 10MB.",
+    "projectImageUpload": "Caricamento dell'immagine non riuscito. Si prega di provare un file più piccolo o un formato diverso.",
+    "bannerSaveFailed": "Salvataggio del banner non riuscito"
   },
   "inbox": {
     "title": "Inbox",
@@ -637,7 +646,8 @@
     "taskCreated": "Attività creata con successo!",
     "taskUpdated": "Attività aggiornata con successo!",
     "taskDeleted": "Attività eliminata con successo!",
-    "noteDeleted": "Nota eliminata con successo!"
+    "noteDeleted": "Nota eliminata con successo!",
+    "bannerUpdated": "Banner aggiornato con successo!"
   },
   "note": {
     "title": "Titolo",

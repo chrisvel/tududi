@@ -22,7 +22,8 @@
     "discardChanges": "Bỏ qua thay đổi?",
     "discardChangesMessage": "Bạn có thay đổi chưa lưu. Bạn có chắc chắn muốn bỏ qua chúng không?",
     "no": "Không, tiếp tục chỉnh sửa",
-    "yesDiscard": "Có, bỏ qua"
+    "yesDiscard": "Có, bỏ qua",
+    "uploading": "Đang tải lên..."
   },
   "sidebar": {
     "dashboard": "Bảng điều khiển",
@@ -535,7 +536,12 @@
     "createSuccess": "Dự án đã được tạo thành công!",
     "createdAndAssigned": "Dự án đã được tạo và gán",
     "createError": "Tạo dự án không thành công",
-    "viewProject": "Đi đến dự án"
+    "viewProject": "Đi đến dự án",
+    "editProject": "Chỉnh sửa dự án",
+    "editBanner": "Chỉnh sửa biểu ngữ dự án",
+    "currentBanner": "Biểu ngữ hiện tại",
+    "choosePreset": "Chọn một biểu ngữ đã định sẵn:",
+    "orUploadOwn": "Hoặc tải lên của riêng bạn:"
   },
   "errors": {
     "required": "Trường này là bắt buộc",
@@ -560,7 +566,10 @@
     "tagNameRequired": "Tên thẻ là bắt buộc.",
     "failedToSaveTag": "Không thể lưu thẻ.",
     "projectNameRequired": "Tên dự án là bắt buộc.",
-    "projectSaveFailed": "Không thể lưu dự án."
+    "projectSaveFailed": "Không thể lưu dự án.",
+    "projectImageTooLarge": "Hình ảnh quá lớn. Vui lòng chọn tệp dưới 10MB.",
+    "projectImageUpload": "Tải lên hình ảnh thất bại. Vui lòng thử tệp nhỏ hơn hoặc định dạng khác.",
+    "bannerSaveFailed": "Lưu biểu ngữ thất bại"
   },
   "inbox": {
     "title": "Hộp thư đến",
@@ -637,7 +646,8 @@
     "taskCreated": "Nhiệm vụ đã được tạo thành công!",
     "taskUpdated": "Nhiệm vụ đã được cập nhật thành công!",
     "taskDeleted": "Nhiệm vụ đã được xóa thành công!",
-    "noteDeleted": "Ghi chú đã được xóa thành công!"
+    "noteDeleted": "Ghi chú đã được xóa thành công!",
+    "bannerUpdated": "Biểu ngữ đã được cập nhật thành công!"
   },
   "note": {
     "title": "Tiêu đề",

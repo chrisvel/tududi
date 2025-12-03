@@ -22,7 +22,8 @@
     "discardChanges": "Wijzigingen negeren?",
     "discardChangesMessage": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je ze wilt negeren?",
     "no": "Nee, blijf bewerken",
-    "yesDiscard": "Ja, negeren"
+    "yesDiscard": "Ja, negeren",
+    "uploading": "Uploaden..."
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -535,7 +536,12 @@
     "createSuccess": "Project succesvol aangemaakt!",
     "createdAndAssigned": "Project aangemaakt en toegewezen",
     "createError": "Mislukt om project aan te maken",
-    "viewProject": "Ga naar project"
+    "viewProject": "Ga naar project",
+    "editProject": "Project bewerken",
+    "editBanner": "Bewerk projectbanner",
+    "currentBanner": "Huidige banner",
+    "choosePreset": "Kies een vooraf ingestelde banner:",
+    "orUploadOwn": "Of upload je eigen:"
   },
   "errors": {
     "required": "Dit veld is verplicht",
@@ -560,7 +566,10 @@
     "tagNameRequired": "Naam van de tag is verplicht.",
     "failedToSaveTag": "Het opslaan van de tag is mislukt.",
     "projectNameRequired": "Naam van het project is verplicht.",
-    "projectSaveFailed": "Het opslaan van het project is mislukt."
+    "projectSaveFailed": "Het opslaan van het project is mislukt.",
+    "projectImageTooLarge": "Afbeelding is te groot. Kies een bestand onder de 10MB.",
+    "projectImageUpload": "Uploaden van afbeelding mislukt. Probeer een kleiner bestand of een ander formaat.",
+    "bannerSaveFailed": "Opslaan van banner mislukt"
   },
   "inbox": {
     "title": "Inbox",
@@ -637,7 +646,8 @@
     "taskCreated": "Taak succesvol aangemaakt!",
     "taskUpdated": "Taak succesvol bijgewerkt!",
     "taskDeleted": "Taak succesvol verwijderd!",
-    "noteDeleted": "Notitie succesvol verwijderd!"
+    "noteDeleted": "Notitie succesvol verwijderd!",
+    "bannerUpdated": "Banner succesvol bijgewerkt!"
   },
   "note": {
     "title": "Titel",

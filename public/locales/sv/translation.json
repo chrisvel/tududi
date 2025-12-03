@@ -22,7 +22,8 @@
     "discardChanges": "Kasta bort ändringar?",
     "discardChangesMessage": "Du har osparade ändringar. Är du säker på att du vill kasta bort dem?",
     "no": "Nej, fortsätt redigera",
-    "yesDiscard": "Ja, kasta bort"
+    "yesDiscard": "Ja, kasta bort",
+    "uploading": "Laddar upp..."
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -535,7 +536,12 @@
     "createSuccess": "Projekt skapat!",
     "createdAndAssigned": "Projekt skapat och tilldelat",
     "createError": "Misslyckades med att skapa projekt",
-    "viewProject": "Gå till projekt"
+    "viewProject": "Gå till projekt",
+    "editProject": "Redigera projekt",
+    "editBanner": "Redigera projektbanner",
+    "currentBanner": "Aktuell banner",
+    "choosePreset": "Välj en förinställd banner:",
+    "orUploadOwn": "Eller ladda upp din egen:"
   },
   "errors": {
     "required": "Detta fält är obligatoriskt",
@@ -560,7 +566,10 @@
     "tagNameRequired": "Taggnamn krävs.",
     "failedToSaveTag": "Kunde inte spara tagg.",
     "projectNameRequired": "Projektnamn krävs.",
-    "projectSaveFailed": "Kunde inte spara projekt."
+    "projectSaveFailed": "Kunde inte spara projekt.",
+    "projectImageTooLarge": "Bilden är för stor. Vänligen välj en fil under 10MB.",
+    "projectImageUpload": "Misslyckades med att ladda upp bilden. Vänligen försök med en mindre fil eller ett annat format.",
+    "bannerSaveFailed": "Misslyckades med att spara banner"
   },
   "inbox": {
     "title": "Inkorg",
@@ -637,7 +646,8 @@
     "taskCreated": "Uppgift skapad!",
     "taskUpdated": "Uppgift uppdaterad!",
     "taskDeleted": "Uppgift borttagen!",
-    "noteDeleted": "Anteckning borttagen!"
+    "noteDeleted": "Anteckning borttagen!",
+    "bannerUpdated": "Banner uppdaterad framgångsrikt!"
   },
   "note": {
     "title": "Titel",

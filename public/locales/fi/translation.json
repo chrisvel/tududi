@@ -22,7 +22,8 @@
     "discardChanges": "Hylkää muutokset?",
     "discardChangesMessage": "Sinulla on tallentamattomia muutoksia. Oletko varma, että haluat hylätä ne?",
     "no": "Ei, jatka muokkaamista",
-    "yesDiscard": "Kyllä, hylkää"
+    "yesDiscard": "Kyllä, hylkää",
+    "uploading": "Lähetetään..."
   },
   "sidebar": {
     "dashboard": "Ohjauspaneeli",
@@ -535,7 +536,12 @@
     "createSuccess": "Projekti luotiin onnistuneesti!",
     "createdAndAssigned": "Projekti luotu ja osoitettu",
     "createError": "Projektin luominen epäonnistui",
-    "viewProject": "Siirry projektiin"
+    "viewProject": "Siirry projektiin",
+    "editProject": "Muokkaa projektia",
+    "editBanner": "Muokkaa projektin banneria",
+    "currentBanner": "Nykyinen banneri",
+    "choosePreset": "Valitse esiasetettu banneri:",
+    "orUploadOwn": "Tai lataa oma:"
   },
   "errors": {
     "required": "Tämä kenttä on pakollinen",
@@ -560,7 +566,10 @@
     "tagNameRequired": "Tunnisteen nimi on pakollinen.",
     "failedToSaveTag": "Tunnisteen tallentaminen epäonnistui.",
     "projectNameRequired": "Projektin nimi on pakollinen.",
-    "projectSaveFailed": "Projektin tallentaminen epäonnistui."
+    "projectSaveFailed": "Projektin tallentaminen epäonnistui.",
+    "projectImageTooLarge": "Kuva on liian suuri. Valitse tiedosto, joka on alle 10MB.",
+    "projectImageUpload": "Kuvan lataaminen epäonnistui. Kokeile pienempää tiedostoa tai toista formaattia.",
+    "bannerSaveFailed": "Bannerin tallentaminen epäonnistui"
   },
   "inbox": {
     "title": "Saapuneet",
@@ -637,7 +646,8 @@
     "taskCreated": "Tehtävä luotu onnistuneesti!",
     "taskUpdated": "Tehtävä päivitetty onnistuneesti!",
     "taskDeleted": "Tehtävä poistettu onnistuneesti!",
-    "noteDeleted": "Muistiinpano poistettiin onnistuneesti!"
+    "noteDeleted": "Muistiinpano poistettiin onnistuneesti!",
+    "bannerUpdated": "Banneri päivitettiin onnistuneesti!"
   },
   "note": {
     "title": "Otsikko",

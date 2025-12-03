@@ -22,7 +22,8 @@
     "discardChanges": "Forkaste endringer?",
     "discardChangesMessage": "Du har usikrede endringer. Er du sikker på at du vil forkaste dem?",
     "no": "Nei, fortsett å redigere",
-    "yesDiscard": "Ja, forkast"
+    "yesDiscard": "Ja, forkast",
+    "uploading": "Laster opp..."
   },
   "sidebar": {
     "dashboard": "Dashbord",
@@ -535,7 +536,12 @@
     "createSuccess": "Prosjekt opprettet med suksess!",
     "createdAndAssigned": "Prosjekt opprettet og tildelt",
     "createError": "Kunne ikke opprette prosjekt",
-    "viewProject": "Gå til prosjekt"
+    "viewProject": "Gå til prosjekt",
+    "editProject": "Rediger prosjekt",
+    "editBanner": "Rediger prosjektbanner",
+    "currentBanner": "Nåværende banner",
+    "choosePreset": "Velg et forhåndsinnstilt banner:",
+    "orUploadOwn": "Eller last opp ditt eget:"
   },
   "errors": {
     "required": "Dette feltet er påkrevd",
@@ -560,7 +566,10 @@
     "tagNameRequired": "Merkelappenavn er påkrevd.",
     "failedToSaveTag": "Kunne ikke lagre merkelapp.",
     "projectNameRequired": "Projektnavn er påkrevd.",
-    "projectSaveFailed": "Kunne ikke lagre prosjekt."
+    "projectSaveFailed": "Kunne ikke lagre prosjekt.",
+    "projectImageTooLarge": "Bildet er for stort. Vennligst velg en fil under 10MB.",
+    "projectImageUpload": "Kunne ikke laste opp bildet. Vennligst prøv en mindre fil eller et annet format.",
+    "bannerSaveFailed": "Kunne ikke lagre banner"
   },
   "inbox": {
     "title": "Innboks",
@@ -637,7 +646,8 @@
     "taskCreated": "Oppgave opprettet!",
     "taskUpdated": "Oppgave oppdatert!",
     "taskDeleted": "Oppgave slettet!",
-    "noteDeleted": "Notatet ble slettet med suksess!"
+    "noteDeleted": "Notatet ble slettet med suksess!",
+    "bannerUpdated": "Banner oppdatert med suksess!"
   },
   "note": {
     "title": "Tittel",
