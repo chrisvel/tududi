@@ -116,6 +116,7 @@ async function filterTasksByParams(
             };
             whereClause[Op.or] = [
                 {
+                    // Non-recurring tasks that are marked for today
                     [Op.and]: [
                         {
                             [Op.or]: [
@@ -124,16 +125,20 @@ async function filterTasksByParams(
                             ],
                         },
                         { recurring_parent_id: null },
+                        { today: true },
                     ],
                 },
                 {
+                    // Recurring parent tasks that are marked for today
                     [Op.and]: [
                         { recurrence_type: { [Op.ne]: 'none' } },
                         { recurrence_type: { [Op.ne]: null } },
                         { recurring_parent_id: null },
+                        { today: true },
                     ],
                 },
                 {
+                    // Recurring task instances that are due today (regardless of today flag)
                     [Op.and]: [
                         { recurring_parent_id: { [Op.ne]: null } },
                         {

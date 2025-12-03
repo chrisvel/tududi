@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-test.describe.serial('User Registration', () => {
-test.describe.serial('User Registration - Enabled', () => {
+test.describe.serial('Registration', () => {
+test.describe.serial('Enabled', () => {
     test.beforeAll(async ({ request, baseURL }) => {
         const appUrl = baseURL ?? process.env.APP_URL ?? 'http://localhost:8080';
 
@@ -37,7 +37,7 @@ test.describe.serial('User Registration - Enabled', () => {
         await page.goto(appUrl + '/register');
     });
 
-    test('should display registration form', async ({ page }) => {
+    test('Shows form', async ({ page }) => {
         await expect(page.getByTestId('register-heading')).toBeVisible();
         await expect(page.getByTestId('register-email')).toBeVisible();
         await expect(page.getByTestId('register-password')).toBeVisible();
@@ -45,7 +45,7 @@ test.describe.serial('User Registration - Enabled', () => {
         await expect(page.getByTestId('register-submit')).toBeVisible();
     });
 
-    test('should show error when passwords do not match', async ({ page }) => {
+    test('Password mismatch error', async ({ page }) => {
         const timestamp = Date.now();
         const email = `test${timestamp}@example.com`;
 
@@ -58,7 +58,7 @@ test.describe.serial('User Registration - Enabled', () => {
         await expect(page.getByTestId('register-error')).toContainText(/passwords do not match/i);
     });
 
-    test('should prevent submission when password is too short (HTML5 validation)', async ({ page }) => {
+    test('Password too short', async ({ page }) => {
         const timestamp = Date.now();
         const email = `test${timestamp}@example.com`;
 
@@ -75,7 +75,7 @@ test.describe.serial('User Registration - Enabled', () => {
         expect(validationMessage).toBeTruthy();
     });
 
-    test('should successfully register a new user or show email error', async ({ page }) => {
+    test('Register successfully', async ({ page }) => {
         const timestamp = Date.now();
         const email = `test${timestamp}@example.com`;
         const password = 'password123';
@@ -107,13 +107,13 @@ test.describe.serial('User Registration - Enabled', () => {
         }
     });
 
-    test('should navigate to login page from link', async ({ page }) => {
+    test('Link to login', async ({ page }) => {
         await page.getByTestId('register-login-link').click();
 
         await expect(page).toHaveURL(/\/login$/);
     });
 
-    test('should show error for duplicate email registration', async ({ page }) => {
+    test('Duplicate email error', async ({ page }) => {
         const email = process.env.E2E_EMAIL || 'test@tududi.com';
         const password = 'password123';
 
@@ -127,7 +127,7 @@ test.describe.serial('User Registration - Enabled', () => {
     });
 });
 
-test.describe.serial('User Registration - Disabled', () => {
+test.describe.serial('Disabled', () => {
     test.beforeAll(async ({ request, baseURL }) => {
         const appUrl = baseURL ?? process.env.APP_URL ?? 'http://localhost:8080';
 
@@ -163,7 +163,7 @@ test.describe.serial('User Registration - Disabled', () => {
         await page.goto(appUrl + '/register');
     });
 
-    test('should show registration disabled error', async ({ page }) => {
+    test('Shows disabled error', async ({ page }) => {
         const timestamp = Date.now();
         const email = `test${timestamp}@example.com`;
         const password = 'password123';

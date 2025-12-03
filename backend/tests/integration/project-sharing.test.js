@@ -152,19 +152,19 @@ describe('Project Sharing Integration Tests', () => {
                 });
             const taskDueToday = taskDueTodayResponse.body;
 
-            // Fetch today's tasks as shared user
-            const response = await sharedUserAgent.get('/api/tasks?type=today');
+            // Fetch today's tasks as shared user with include_lists to get tasks_due_today
+            const response = await sharedUserAgent.get(
+                '/api/tasks?type=today&include_lists=true'
+            );
 
             expect(response.status).toBe(200);
             expect(response.body.tasks).toBeDefined();
 
-            // Check if the task appears in the main tasks or metrics
-            const allTasks = [
-                ...response.body.tasks,
-                ...(response.body.metrics?.tasks_due_today || []),
-            ];
-
-            const foundTask = allTasks.find((t) => t.id === taskDueToday.id);
+            // Task should appear in tasks_due_today since it has a due date but today=false
+            expect(response.body.tasks_due_today).toBeDefined();
+            const foundTask = response.body.tasks_due_today.find(
+                (t) => t.id === taskDueToday.id
+            );
             expect(foundTask).toBeDefined();
             expect(foundTask.name).toBe('Task due today in shared project');
         });

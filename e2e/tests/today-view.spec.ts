@@ -1,27 +1,25 @@
 import { test, expect } from '@playwright/test';
 
-test.describe.serial('Today View', () => {
+test.describe('Today', () => {
     // Helper function to login via UI
     async function loginViaUI(page, baseURL) {
         const appUrl =
             baseURL ?? process.env.APP_URL ?? 'http://localhost:8080';
         await page.goto(`${appUrl}/login`);
 
-        await page.fill(
-            'input[type="email"]',
-            process.env.E2E_EMAIL || 'test@tududi.com'
-        );
-        await page.fill(
-            'input[type="password"]',
-            process.env.E2E_PASSWORD || 'password123'
-        );
-        await page.click('button[type="submit"]');
+        await page
+            .getByTestId('login-email')
+            .fill(process.env.E2E_EMAIL || 'test@tududi.com');
+        await page
+            .getByTestId('login-password')
+            .fill(process.env.E2E_PASSWORD || 'password123');
+        await page.getByTestId('login-submit').click();
 
         // Wait for redirect to dashboard or today page
         await page.waitForURL(/\/(dashboard|today)/, { timeout: 10000 });
     }
 
-    test('should only show tasks with today flag in Planned section', async ({
+    test('Planned: only today=true tasks', async ({
         page,
         context,
         baseURL,
@@ -62,11 +60,10 @@ test.describe.serial('Today View', () => {
             }
         }
 
-        // Navigate to today page and wait for metrics to load
+        // Navigate to today page
         await page.goto(`${appUrl}/today`);
-        await page.waitForLoadState('networkidle');
 
-        // Check if Planned section exists using data-testid
+        // Wait for Planned section to appear (indicates page loaded)
         const plannedSection = page.getByTestId('planned-section');
         await expect(plannedSection).toBeVisible({ timeout: 10000 });
 
@@ -88,7 +85,7 @@ test.describe.serial('Today View', () => {
         }
     });
 
-    test('should show overdue tasks in Overdue section', async ({
+    test('Overdue: shows overdue tasks', async ({
         page,
         context,
         baseURL,
@@ -122,10 +119,6 @@ test.describe.serial('Today View', () => {
 
         // Navigate to today page
         await page.goto(`${appUrl}/today`);
-        await page.waitForLoadState('networkidle');
-
-        // Wait a bit for React to render the sections
-        await page.waitForTimeout(2000);
 
         // Check if Overdue section exists using data-testid
         const overdueSection = page.getByTestId('overdue-section');
@@ -153,7 +146,7 @@ test.describe.serial('Today View', () => {
         }
     });
 
-    test('should show tasks due today in Due Today section', async ({
+    test('Due Today: shows tasks', async ({
         page,
         context,
         baseURL,
@@ -187,10 +180,6 @@ test.describe.serial('Today View', () => {
 
         // Navigate to today page
         await page.goto(`${appUrl}/today`);
-        await page.waitForLoadState('networkidle');
-
-        // Wait a bit for React to render the sections
-        await page.waitForTimeout(2000);
 
         // Check if Due Today section exists using data-testid
         const dueTodaySection = page.getByTestId('due-today-section');
@@ -217,7 +206,7 @@ test.describe.serial('Today View', () => {
         }
     });
 
-    test('should allow collapsing and expanding sections', async ({
+    test('Collapse/expand sections', async ({
         page,
         baseURL,
     }) => {
@@ -227,7 +216,6 @@ test.describe.serial('Today View', () => {
         const appUrl =
             baseURL ?? process.env.APP_URL ?? 'http://localhost:8080';
         await page.goto(`${appUrl}/today`);
-        await page.waitForLoadState('networkidle');
 
         // Test Planned section collapse/expand if it exists using data-testid
         const plannedHeader = page.getByTestId('planned-section-header');
