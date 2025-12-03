@@ -237,12 +237,14 @@ const ProjectInsightsPanel: React.FC<ProjectInsightsPanelProps> = ({
                         <div className="flex items-center gap-3 flex-shrink-0">
                             <div
                                 className={`px-2 py-1 rounded-full text-[11px] font-semibold ${
-                                    weeklyPace.delta >= 0
+                                    weeklyPace.delta > 0
                                         ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-200'
-                                        : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-200'
+                                        : weeklyPace.delta === 0
+                                          ? 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+                                          : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-200'
                                 }`}
                             >
-                                {weeklyPace.delta >= 0 ? '+' : ''}
+                                {weeklyPace.delta > 0 ? '+' : ''}
                                 {weeklyPace.delta}{' '}
                                 {t('projects.vsPrevWeek', 'vs prev week')}
                             </div>
