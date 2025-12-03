@@ -22,7 +22,8 @@
     "discardChanges": "Değişiklikleri iptal et?",
     "discardChangesMessage": "Kaydedilmemiş değişiklikleriniz var. Onları iptal etmek istediğinizden emin misiniz?",
     "no": "Hayır, düzenlemeye devam et",
-    "yesDiscard": "Evet, iptal et"
+    "yesDiscard": "Evet, iptal et",
+    "uploading": "Yükleniyor..."
   },
   "sidebar": {
     "dashboard": "Gösterge Paneli",
@@ -535,7 +536,12 @@
     "createSuccess": "Proje başarıyla oluşturuldu!",
     "createdAndAssigned": "Proje oluşturuldu ve atandı",
     "createError": "Proje oluşturulamadı",
-    "viewProject": "Projeye git"
+    "viewProject": "Projeye git",
+    "editProject": "Projeyi düzenle",
+    "editBanner": "Proje afişini düzenle",
+    "currentBanner": "Mevcut afiş",
+    "choosePreset": "Bir ön ayar afişi seçin:",
+    "orUploadOwn": "Ya da kendi afişinizi yükleyin:"
   },
   "errors": {
     "required": "Bu alan gereklidir",
@@ -560,7 +566,10 @@
     "tagNameRequired": "Etiket adı gereklidir.",
     "failedToSaveTag": "Etiketi kaydetmekte başarısız olundu.",
     "projectNameRequired": "Proje adı gereklidir.",
-    "projectSaveFailed": "Projeyi kaydetmekte başarısız olundu."
+    "projectSaveFailed": "Projeyi kaydetmekte başarısız olundu.",
+    "projectImageTooLarge": "Görüntü çok büyük. Lütfen 10MB'den küçük bir dosya seçin.",
+    "projectImageUpload": "Görüntü yüklenemedi. Lütfen daha küçük bir dosya veya farklı bir format deneyin.",
+    "bannerSaveFailed": "Afiş kaydedilemedi"
   },
   "inbox": {
     "title": "Gelen Kutusu",
@@ -637,7 +646,8 @@
     "taskCreated": "Görev başarıyla oluşturuldu!",
     "taskUpdated": "Görev başarıyla güncellendi!",
     "taskDeleted": "Görev başarıyla silindi!",
-    "noteDeleted": "Not başarıyla silindi!"
+    "noteDeleted": "Not başarıyla silindi!",
+    "bannerUpdated": "Afiş başarıyla güncellendi!"
   },
   "note": {
     "title": "Başlık",

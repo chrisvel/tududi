@@ -22,7 +22,8 @@
     "discardChanges": "هل تريد إلغاء التغييرات؟",
     "discardChangesMessage": "لديك تغييرات غير محفوظة. هل أنت متأكد أنك تريد إلغاءها؟",
     "no": "لا، استمر في التحرير",
-    "yesDiscard": "نعم، ألغِ"
+    "yesDiscard": "نعم، ألغِ",
+    "uploading": "جارٍ التحميل..."
   },
   "sidebar": {
     "dashboard": "لوحة التحكم",
@@ -535,7 +536,12 @@
     "createSuccess": "تم إنشاء المشروع بنجاح!",
     "createdAndAssigned": "تم إنشاء المشروع وتعيينه",
     "createError": "فشل في إنشاء المشروع",
-    "viewProject": "اذهب إلى المشروع"
+    "viewProject": "اذهب إلى المشروع",
+    "editProject": "تعديل المشروع",
+    "editBanner": "تعديل لافتة المشروع",
+    "currentBanner": "اللافتة الحالية",
+    "choosePreset": "اختر لافتة مسبقة:",
+    "orUploadOwn": "أو قم بتحميل لافتتك الخاصة:"
   },
   "errors": {
     "required": "هذا الحقل مطلوب",
@@ -560,7 +566,10 @@
     "tagNameRequired": "اسم العلامة مطلوب.",
     "failedToSaveTag": "فشل في حفظ العلامة.",
     "projectNameRequired": "اسم المشروع مطلوب.",
-    "projectSaveFailed": "فشل في حفظ المشروع."
+    "projectSaveFailed": "فشل في حفظ المشروع.",
+    "projectImageTooLarge": "الصورة كبيرة جدًا. يرجى اختيار ملف أقل من 10 ميجابايت.",
+    "projectImageUpload": "فشل تحميل الصورة. يرجى تجربة ملف أصغر أو تنسيق مختلف.",
+    "bannerSaveFailed": "فشل حفظ اللافتة"
   },
   "inbox": {
     "title": "صندوق الوارد",
@@ -637,7 +646,8 @@
     "taskCreated": "تم إنشاء المهمة بنجاح!",
     "taskUpdated": "تم تحديث المهمة بنجاح!",
     "taskDeleted": "تم حذف المهمة بنجاح!",
-    "noteDeleted": "تم حذف الملاحظة بنجاح!"
+    "noteDeleted": "تم حذف الملاحظة بنجاح!",
+    "bannerUpdated": "تم تحديث اللافتة بنجاح!"
   },
   "note": {
     "title": "العنوان",

@@ -22,7 +22,8 @@
     "discardChanges": "Zavrzite spremembe?",
     "discardChangesMessage": "Imate neshranjene spremembe. Ste prepričani, da jih želite zavreči?",
     "no": "Ne, nadaljuj z urejanjem",
-    "yesDiscard": "Da, zavrzi"
+    "yesDiscard": "Da, zavrzi",
+    "uploading": "Nalagam..."
   },
   "sidebar": {
     "dashboard": "Nadzorna plošča",
@@ -535,7 +536,12 @@
     "createSuccess": "Projekt uspešno ustvarjen!",
     "createdAndAssigned": "Projekt ustvarjen in dodeljen",
     "createError": "Ustvarjanje projekta ni uspelo",
-    "viewProject": "Pojdi na projekt"
+    "viewProject": "Pojdi na projekt",
+    "editProject": "Uredi projekt",
+    "editBanner": "Uredi banner projekta",
+    "currentBanner": "Trenutni banner",
+    "choosePreset": "Izberite prednastavljen banner:",
+    "orUploadOwn": "Ali naložite svojega:"
   },
   "errors": {
     "required": "To polje je obvezno",
@@ -560,7 +566,10 @@
     "tagNameRequired": "Ime oznake je obvezno.",
     "failedToSaveTag": "Shranjevanje oznake ni uspelo.",
     "projectNameRequired": "Ime projekta je obvezno.",
-    "projectSaveFailed": "Shranjevanje projekta ni uspelo."
+    "projectSaveFailed": "Shranjevanje projekta ni uspelo.",
+    "projectImageTooLarge": "Slika je prevelika. Izberite datoteko, ki je manjša od 10 MB.",
+    "projectImageUpload": "Nalaganje slike ni uspelo. Poskusite z manjšo datoteko ali drugačnim formatom.",
+    "bannerSaveFailed": "Shranjevanje bannerja ni uspelo"
   },
   "inbox": {
     "title": "Prejeto",
@@ -637,7 +646,8 @@
     "taskCreated": "Naloga uspešno ustvarjena!",
     "taskUpdated": "Naloga uspešno posodobljena!",
     "taskDeleted": "Naloga uspešno izbrisana!",
-    "noteDeleted": "Opomba je bila uspešno izbrisana!"
+    "noteDeleted": "Opomba je bila uspešno izbrisana!",
+    "bannerUpdated": "Banner je bil uspešno posodobljen!"
   },
   "note": {
     "title": "Naslov",

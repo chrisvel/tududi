@@ -22,7 +22,8 @@
     "discardChanges": "Änderungen verwerfen?",
     "discardChangesMessage": "Sie haben nicht gespeicherte Änderungen. Sind Sie sicher, dass Sie diese verwerfen möchten?",
     "no": "Nein, weiter bearbeiten",
-    "yesDiscard": "Ja, verwerfen"
+    "yesDiscard": "Ja, verwerfen",
+    "uploading": "Hochladen..."
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -312,7 +313,10 @@
     "areaNameRequired": "Bereichsname ist erforderlich.",
     "failedToSaveArea": "Speichern des Bereichs fehlgeschlagen.",
     "tagNameRequired": "Tag-Name ist erforderlich.",
-    "failedToSaveTag": "Speichern des Tags fehlgeschlagen."
+    "failedToSaveTag": "Speichern des Tags fehlgeschlagen.",
+    "projectImageTooLarge": "Bild ist zu groß. Bitte wählen Sie eine Datei unter 10MB.",
+    "projectImageUpload": "Hochladen des Bildes fehlgeschlagen. Bitte versuchen Sie eine kleinere Datei oder ein anderes Format.",
+    "bannerSaveFailed": "Speichern des Banners fehlgeschlagen"
   },
   "success": {
     "noteUpdated": "Notiz erfolgreich aktualisiert!",
@@ -327,7 +331,8 @@
     "taskCreated": "Aufgabe erfolgreich erstellt!",
     "taskUpdated": "Aufgabe erfolgreich aktualisiert!",
     "taskDeleted": "Aufgabe erfolgreich gelöscht!",
-    "noteDeleted": "Notiz erfolgreich gelöscht!"
+    "noteDeleted": "Notiz erfolgreich gelöscht!",
+    "bannerUpdated": "Banner erfolgreich aktualisiert!"
   },
   "notes": {
     "title": "Notizen",
@@ -412,7 +417,12 @@
     "createSuccess": "Projekt erfolgreich erstellt!",
     "createdAndAssigned": "Projekt erstellt und zugewiesen",
     "createError": "Projekt konnte nicht erstellt werden",
-    "viewProject": "Zum Projekt gehen"
+    "viewProject": "Zum Projekt gehen",
+    "editProject": "Projekt bearbeiten",
+    "editBanner": "Projektbanner bearbeiten",
+    "currentBanner": "Aktuelles Banner",
+    "choosePreset": "Wählen Sie ein vordefiniertes Banner:",
+    "orUploadOwn": "Oder laden Sie Ihr eigenes hoch:"
   },
   "profile": {
     "title": "Profil-Einstellungen",

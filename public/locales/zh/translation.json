@@ -22,7 +22,8 @@
     "discardChanges": "放弃更改？",
     "discardChangesMessage": "您有未保存的更改。您确定要放弃它们吗？",
     "no": "不，继续编辑",
-    "yesDiscard": "是的，放弃"
+    "yesDiscard": "是的，放弃",
+    "uploading": "上传中..."
   },
   "sidebar": {
     "dashboard": "仪表板",
@@ -535,7 +536,12 @@
     "createSuccess": "项目创建成功！",
     "createdAndAssigned": "项目已创建并分配",
     "createError": "创建项目失败",
-    "viewProject": "前往项目"
+    "viewProject": "前往项目",
+    "editProject": "编辑项目",
+    "editBanner": "编辑项目横幅",
+    "currentBanner": "当前横幅",
+    "choosePreset": "选择一个预设横幅：",
+    "orUploadOwn": "或上传您自己的："
   },
   "errors": {
     "required": "此字段为必填项",
@@ -560,7 +566,10 @@
     "tagNameRequired": "标签名称是必需的。",
     "failedToSaveTag": "保存标签失败。",
     "projectNameRequired": "项目名称是必需的。",
-    "projectSaveFailed": "保存项目失败。"
+    "projectSaveFailed": "保存项目失败。",
+    "projectImageTooLarge": "图片太大。请选取一个小于10MB的文件。",
+    "projectImageUpload": "上传图片失败。请尝试一个更小的文件或不同的格式。",
+    "bannerSaveFailed": "保存横幅失败"
   },
   "inbox": {
     "title": "收件箱",
@@ -637,7 +646,8 @@
     "taskCreated": "任务创建成功！",
     "taskUpdated": "任务更新成功！",
     "taskDeleted": "任务删除成功！",
-    "noteDeleted": "笔记删除成功！"
+    "noteDeleted": "笔记删除成功！",
+    "bannerUpdated": "横幅更新成功！"
   },
   "note": {
     "title": "标题",

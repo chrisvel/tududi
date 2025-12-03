@@ -22,7 +22,8 @@
     "discardChanges": "Forkast ændringer?",
     "discardChangesMessage": "Du har ikke gemte ændringer. Er du sikker på, at du vil forkaste dem?",
     "no": "Nej, fortsæt med at redigere",
-    "yesDiscard": "Ja, forkast"
+    "yesDiscard": "Ja, forkast",
+    "uploading": "Uploader..."
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -535,7 +536,12 @@
     "createSuccess": "Projekt oprettet med succes!",
     "createdAndAssigned": "Projekt oprettet og tildelt",
     "createError": "Fejl ved oprettelse af projekt",
-    "viewProject": "Gå til projekt"
+    "viewProject": "Gå til projekt",
+    "editProject": "Rediger projekt",
+    "editBanner": "Rediger projektbanner",
+    "currentBanner": "Nuværende banner",
+    "choosePreset": "Vælg et forudindstillet banner:",
+    "orUploadOwn": "Eller upload dit eget:"
   },
   "errors": {
     "required": "Dette felt er påkrævet",
@@ -560,7 +566,10 @@
     "tagNameRequired": "Tag navn er påkrævet.",
     "failedToSaveTag": "Kunne ikke gemme tag.",
     "projectNameRequired": "Projektnavn er påkrævet.",
-    "projectSaveFailed": "Kunne ikke gemme projekt."
+    "projectSaveFailed": "Kunne ikke gemme projekt.",
+    "projectImageTooLarge": "Billedet er for stort. Vælg venligst en fil under 10MB.",
+    "projectImageUpload": "Fejl ved upload af billede. Prøv venligst en mindre fil eller et andet format.",
+    "bannerSaveFailed": "Fejl ved gemme banner"
   },
   "inbox": {
     "title": "Indbakke",
@@ -637,7 +646,8 @@
     "taskCreated": "Opgave oprettet med succes!",
     "taskUpdated": "Opgave opdateret med succes!",
     "taskDeleted": "Opgave slettet med succes!",
-    "noteDeleted": "Noten blev slettet med succes!"
+    "noteDeleted": "Noten blev slettet med succes!",
+    "bannerUpdated": "Banner opdateret med succes!"
   },
   "note": {
     "title": "Titel",

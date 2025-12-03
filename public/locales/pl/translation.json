@@ -22,7 +22,8 @@
     "discardChanges": "Porzucić zmiany?",
     "discardChangesMessage": "Masz niezapisane zmiany. Czy na pewno chcesz je porzucić?",
     "no": "Nie, kontynuuj edytowanie",
-    "yesDiscard": "Tak, porzuć"
+    "yesDiscard": "Tak, porzuć",
+    "uploading": "Przesyłanie..."
   },
   "sidebar": {
     "dashboard": "Panel sterowania",
@@ -535,7 +536,12 @@
     "createSuccess": "Projekt został pomyślnie utworzony!",
     "createdAndAssigned": "Projekt utworzony i przypisany",
     "createError": "Nie udało się utworzyć projektu",
-    "viewProject": "Przejdź do projektu"
+    "viewProject": "Przejdź do projektu",
+    "editProject": "Edytuj projekt",
+    "editBanner": "Edytuj baner projektu",
+    "currentBanner": "Aktualny baner",
+    "choosePreset": "Wybierz predefiniowany baner:",
+    "orUploadOwn": "Lub prześlij własny:"
   },
   "errors": {
     "required": "To pole jest wymagane",
@@ -560,7 +566,10 @@
     "tagNameRequired": "Nazwa tagu jest wymagana.",
     "failedToSaveTag": "Nie udało się zapisać tagu.",
     "projectNameRequired": "Nazwa projektu jest wymagana.",
-    "projectSaveFailed": "Nie udało się zapisać projektu."
+    "projectSaveFailed": "Nie udało się zapisać projektu.",
+    "projectImageTooLarge": "Obraz jest zbyt duży. Wybierz plik o rozmiarze poniżej 10MB.",
+    "projectImageUpload": "Nie udało się przesłać obrazu. Spróbuj mniejszego pliku lub innego formatu.",
+    "bannerSaveFailed": "Nie udało się zapisać banera"
   },
   "inbox": {
     "title": "Skrzynka odbiorcza",
@@ -637,7 +646,8 @@
     "taskCreated": "Zadanie utworzone pomyślnie!",
     "taskUpdated": "Zadanie zaktualizowane pomyślnie!",
     "taskDeleted": "Zadanie usunięte pomyślnie!",
-    "noteDeleted": "Notatka została pomyślnie usunięta!"
+    "noteDeleted": "Notatka została pomyślnie usunięta!",
+    "bannerUpdated": "Baner zaktualizowany pomyślnie!"
   },
   "note": {
     "title": "Tytuł",
