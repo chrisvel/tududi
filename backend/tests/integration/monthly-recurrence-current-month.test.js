@@ -164,15 +164,16 @@ describe('Monthly Recurrence - Current Month Bug Fix', () => {
 
         const today = new Date();
         const firstIteration = new Date(iterations[0].utc_date);
+        const expectedMonth =
+            today.getUTCDate() < 20
+                ? today.getUTCMonth()
+                : new Date(
+                      today.getUTCFullYear(),
+                      today.getUTCMonth() + 1,
+                      1
+                  ).getUTCMonth();
 
-        if (today.getUTCDate() < 20) {
-            expect(firstIteration.getUTCMonth()).toBe(today.getUTCMonth());
-            expect(firstIteration.getUTCDate()).toBe(20);
-        } else {
-            const nextMonth = new Date(today);
-            nextMonth.setUTCMonth(today.getUTCMonth() + 1);
-            expect(firstIteration.getUTCMonth()).toBe(nextMonth.getUTCMonth());
-            expect(firstIteration.getUTCDate()).toBe(20);
-        }
+        expect(firstIteration.getUTCMonth()).toBe(expectedMonth);
+        expect(firstIteration.getUTCDate()).toBe(20);
     });
 });
