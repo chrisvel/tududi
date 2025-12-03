@@ -133,11 +133,17 @@ const TaskProjectCard: React.FC<TaskProjectCardProps> = ({
                                     to={getProjectLink(task.Project)}
                                     onClick={(e) => e.stopPropagation()}
                                     className="p-1.5 rounded-full text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors flex-shrink-0"
-                                    title={t('project.viewProject', 'Go to project')}
+                                    title={t(
+                                        'project.viewProject',
+                                        'Go to project'
+                                    )}
                                 >
                                     <ArrowRightIcon className="h-4 w-4" />
                                     <span className="sr-only">
-                                        {t('project.viewProject', 'Go to project')}
+                                        {t(
+                                            'project.viewProject',
+                                            'Go to project'
+                                        )}
                                     </span>
                                 </Link>
                             </div>

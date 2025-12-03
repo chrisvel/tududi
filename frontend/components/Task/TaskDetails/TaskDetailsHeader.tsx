@@ -1,6 +1,11 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CheckIcon, XMarkIcon, FolderIcon, TagIcon } from '@heroicons/react/24/outline';
+import {
+    CheckIcon,
+    XMarkIcon,
+    FolderIcon,
+    TagIcon,
+} from '@heroicons/react/24/outline';
 import { Link } from 'react-router-dom';
 import TaskPriorityIcon from '../TaskPriorityIcon';
 import { Task } from '../../../entities/Task';
@@ -88,7 +93,10 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
         <div className="mb-6">
             <div className="flex items-center justify-between">
                 <div className="flex items-start space-x-3 flex-1">
-                    <div className="flex items-center" style={{ height: '2.5rem' }}>
+                    <div
+                        className="flex items-center"
+                        style={{ height: '2.5rem' }}
+                    >
                         <TaskPriorityIcon
                             priority={task.priority}
                             status={task.status}
@@ -102,7 +110,9 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                     ref={titleInputRef}
                                     type="text"
                                     value={editedTitle}
-                                    onChange={(e) => setEditedTitle(e.target.value)}
+                                    onChange={(e) =>
+                                        setEditedTitle(e.target.value)
+                                    }
                                     onKeyDown={handleTitleKeyDown}
                                     onBlur={handleSaveTitle}
                                     className="text-2xl font-normal text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 border-2 border-blue-500 dark:border-blue-400 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 w-full"
@@ -139,13 +149,22 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                     {task.name}
                                 </h2>
                                 {/* Project and tags display below title */}
-                                {(task.Project || (task.tags && task.tags.length > 0)) && (
+                                {(task.Project ||
+                                    (task.tags && task.tags.length > 0)) && (
                                     <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-2 px-2 -mx-2 gap-2 flex-wrap">
                                         {task.Project && (
                                             <Link
-                                                to={getProjectLink ? getProjectLink(task.Project) : '#'}
+                                                to={
+                                                    getProjectLink
+                                                        ? getProjectLink(
+                                                              task.Project
+                                                          )
+                                                        : '#'
+                                                }
                                                 className="flex items-center gap-1 hover:text-gray-900 dark:hover:text-gray-200 hover:underline transition-colors"
-                                                onClick={(e) => e.stopPropagation()}
+                                                onClick={(e) =>
+                                                    e.stopPropagation()
+                                                }
                                             >
                                                 <FolderIcon className="h-4 w-4" />
                                                 <span>{task.Project.name}</span>
@@ -155,18 +174,46 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                             <div className="flex items-center gap-1 flex-wrap">
                                                 <TagIcon className="h-4 w-4" />
                                                 <div className="flex gap-1 flex-wrap">
-                                                    {task.tags.map((tag: any, index: number) => (
-                                                        <React.Fragment key={tag.uid || tag.id || tag.name}>
-                                                            <Link
-                                                                to={getTagLink ? getTagLink(tag) : '#'}
-                                                                className="hover:text-gray-900 dark:hover:text-gray-200 hover:underline transition-colors"
-                                                                onClick={(e) => e.stopPropagation()}
+                                                    {task.tags.map(
+                                                        (
+                                                            tag: any,
+                                                            index: number
+                                                        ) => (
+                                                            <React.Fragment
+                                                                key={
+                                                                    tag.uid ||
+                                                                    tag.id ||
+                                                                    tag.name
+                                                                }
                                                             >
-                                                                {tag.name}
-                                                            </Link>
-                                                            {index < task.tags!.length - 1 && <span>,</span>}
-                                                        </React.Fragment>
-                                                    ))}
+                                                                <Link
+                                                                    to={
+                                                                        getTagLink
+                                                                            ? getTagLink(
+                                                                                  tag
+                                                                              )
+                                                                            : '#'
+                                                                    }
+                                                                    className="hover:text-gray-900 dark:hover:text-gray-200 hover:underline transition-colors"
+                                                                    onClick={(
+                                                                        e
+                                                                    ) =>
+                                                                        e.stopPropagation()
+                                                                    }
+                                                                >
+                                                                    {tag.name}
+                                                                </Link>
+                                                                {index <
+                                                                    task.tags!
+                                                                        .length -
+                                                                        1 && (
+                                                                    <span>
+                                                                        ,
+                                                                    </span>
+                                                                )}
+                                                            </React.Fragment>
+                                                        )
+                                                    )}
                                                 </div>
                                             </div>
                                         )}
