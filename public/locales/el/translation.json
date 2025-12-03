@@ -355,7 +355,7 @@
     "unknownProject": "Άγνωστο έργο",
     "tasks": "εργασίες",
     "showingItems": "Εμφάνιση {{current}} από {{total}} στοιχεία",
-    "overdue": "Υπερβολικό",
+    "overdue": "Εκπρόθεσμο",
     "planned": "Προγραμματισμένο",
     "open": "Άνοιγμα",
     "completed": "Ολοκληρώθηκε"

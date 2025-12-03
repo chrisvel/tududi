@@ -183,6 +183,7 @@ const Login: React.FC = () => {
                                             setEmail(e.target.value)
                                         }
                                         className="w-full px-4 py-2 border dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        data-testid="login-email"
                                         required
                                     />
                                 </div>
@@ -202,12 +203,14 @@ const Login: React.FC = () => {
                                             setPassword(e.target.value)
                                         }
                                         className="w-full px-4 py-2 border dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        data-testid="login-password"
                                         required
                                     />
                                 </div>
                                 <button
                                     type="submit"
                                     className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors"
+                                    data-testid="login-submit"
                                 >
                                     {t('auth.login', 'Login')}
                                 </button>

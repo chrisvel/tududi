@@ -99,13 +99,13 @@ describe('Tasks Routes', () => {
             expect(response.body.tasks.map((t) => t.id)).toContain(task2.id);
         });
 
-        it('should filter today tasks (returns all user tasks)', async () => {
+        it('should filter today tasks (returns only tasks with today=true)', async () => {
             const response = await agent.get('/api/tasks?type=today');
 
             expect(response.status).toBe(200);
             expect(response.body.tasks).toBeDefined();
-            expect(response.body.tasks.length).toBe(2);
-            // Both tasks should be returned as "today" doesn't filter by the today field
+            expect(response.body.tasks.length).toBe(1);
+            expect(response.body.tasks[0].id).toBe(task1.id);
         });
 
         it('should require authentication', async () => {
