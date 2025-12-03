@@ -143,7 +143,9 @@
     "tasks": "작업",
     "showingItems": "{{total}}개 중 {{current}}개 표시",
     "overdue": "연체",
-    "planned": "계획됨"
+    "planned": "계획됨",
+    "open": "열기",
+    "completed": "완료됨"
   },
   "timeline": {
     "activityTimeline": "활동 타임라인",

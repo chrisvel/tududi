@@ -143,7 +143,9 @@
     "tasks": "任务",
     "showingItems": "显示 {{current}} / {{total}} 项",
     "overdue": "逾期",
-    "planned": "计划中"
+    "planned": "计划中",
+    "open": "打开",
+    "completed": "已完成"
   },
   "timeline": {
     "activityTimeline": "活动时间线",

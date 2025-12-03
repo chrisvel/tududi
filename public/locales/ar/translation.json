@@ -143,7 +143,9 @@
     "tasks": "مهام",
     "showingItems": "عرض {{current}} من {{total}} عنصر",
     "overdue": "متأخر",
-    "planned": "مخطط"
+    "planned": "مخطط",
+    "open": "فتح",
+    "completed": "مكتمل"
   },
   "timeline": {
     "activityTimeline": "جدول الأنشطة",

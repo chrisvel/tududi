@@ -137,7 +137,9 @@
       "none": "None"
     },
     "show": "Show",
+    "open": "Open",
     "all": "All",
+    "completed": "Completed",
     "completedOnly": "Completed only",
     "notCompleted": "Not completed",
     "noProject": "No project",

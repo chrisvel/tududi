@@ -91,11 +91,14 @@ const ProjectDetails: React.FC = () => {
         () => [
             {
                 value: 'status:inProgressFirst',
-                label: t('tasks.status', 'Status'),
+                label: t('sort.status', 'Status'),
             },
-            { value: 'created_at:desc', label: 'Created at' },
-            { value: 'due_date:asc', label: 'Due date' },
-            { value: 'priority:desc', label: 'Priority' },
+            {
+                value: 'created_at:desc',
+                label: t('sort.created_at', 'Created At'),
+            },
+            { value: 'due_date:asc', label: t('sort.due_date', 'Due Date') },
+            { value: 'priority:desc', label: t('sort.priority', 'Priority') },
         ],
         [t]
     );
@@ -900,11 +903,11 @@ const ProjectDetails: React.FC = () => {
             <div className="w-full px-4 sm:px-6 lg:px-10">
                 <div className="w-full">
                     <div className="mb-4">
-                        <div className="hidden sm:flex items-center justify-between min-h-[2.5rem]">
-                            <div className="flex items-center space-x-6">
+                        <div className="flex items-center justify-between min-h-[2.5rem]">
+                            <div className="flex items-center space-x-3 sm:space-x-6">
                                 <button
                                     onClick={() => setActiveTab('tasks')}
-                                    className={`flex items-center space-x-2 text-sm font-medium transition-colors ${
+                                    className={`flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm font-medium transition-colors ${
                                         activeTab === 'tasks'
                                             ? 'text-gray-900 dark:text-gray-100'
                                             : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
@@ -912,14 +915,14 @@ const ProjectDetails: React.FC = () => {
                                 >
                                     <span>{t('sidebar.tasks', 'Tasks')}</span>
                                     {displayTasks.length > 0 && (
-                                        <span className="ml-2 px-2 py-0.5 text-xs bg-gray-200 dark:bg-gray-600 rounded-full">
+                                        <span className="ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 text-xs bg-gray-200 dark:bg-gray-600 rounded-full">
                                             {displayTasks.length}
                                         </span>
                                     )}
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('notes')}
-                                    className={`flex items-center space-x-2 text-sm font-medium transition-colors ${
+                                    className={`flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm font-medium transition-colors ${
                                         activeTab === 'notes'
                                             ? 'text-gray-900 dark:text-gray-100'
                                             : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
@@ -927,7 +930,7 @@ const ProjectDetails: React.FC = () => {
                                 >
                                     <span>{t('sidebar.notes', 'Notes')}</span>
                                     {notes.length > 0 && (
-                                        <span className="ml-2 px-2 py-0.5 text-xs bg-gray-200 dark:bg-gray-600 rounded-full">
+                                        <span className="ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 text-xs bg-gray-200 dark:bg-gray-600 rounded-full">
                                             {notes.length}
                                         </span>
                                     )}
@@ -935,10 +938,10 @@ const ProjectDetails: React.FC = () => {
                             </div>
 
                             {activeTab === 'tasks' && (
-                                <div className="flex items-center gap-4">
+                                <div className="flex items-center justify-end gap-2 sm:gap-4">
                                     <button
                                         onClick={toggleMetrics}
-                                        className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-0 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset rounded-lg p-2 ${
+                                        className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-0 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset rounded-lg p-1.5 sm:p-2 ${
                                             showMetrics
                                                 ? 'bg-blue-100 dark:bg-blue-900/30 shadow-sm'
                                                 : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
@@ -968,7 +971,7 @@ const ProjectDetails: React.FC = () => {
                                         }
                                     >
                                         <ChartBarIcon
-                                            className={`h-5 w-5 ${
+                                            className={`h-4 w-4 sm:h-5 sm:w-5 ${
                                                 showMetrics
                                                     ? 'text-blue-600 dark:text-blue-200'
                                                     : 'text-gray-600 dark:text-gray-200'
@@ -979,7 +982,7 @@ const ProjectDetails: React.FC = () => {
                                         onClick={() =>
                                             setIsSearchExpanded((v) => !v)
                                         }
-                                        className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-0 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset rounded-lg p-2 ${
+                                        className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-0 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset rounded-lg p-1.5 sm:p-2 ${
                                             isSearchExpanded
                                                 ? 'bg-blue-50/70 dark:bg-blue-900/20'
                                                 : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
@@ -991,7 +994,7 @@ const ProjectDetails: React.FC = () => {
                                                 : 'Show search input'
                                         }
                                     >
-                                        <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-200" />
+                                        <MagnifyingGlassIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600 dark:text-gray-200" />
                                     </button>
                                     <IconSortDropdown
                                         options={sortOptions}

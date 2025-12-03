@@ -143,7 +143,9 @@
     "tasks": "görevler",
     "showingItems": "{{total}} öğeden {{current}} tanesi gösteriliyor",
     "overdue": "Gecikmiş",
-    "planned": "Planlanmış"
+    "planned": "Planlanmış",
+    "open": "Aç",
+    "completed": "Tamamlandı"
   },
   "timeline": {
     "activityTimeline": "Etkinlik Zaman Çizelgesi",

@@ -143,7 +143,9 @@
     "tasks": "zadania",
     "showingItems": "Wyświetlanie {{current}} z {{total}} elementów",
     "overdue": "Przeterminowane",
-    "planned": "Zaplanowane"
+    "planned": "Zaplanowane",
+    "open": "Otwórz",
+    "completed": "Zakończone"
   },
   "timeline": {
     "activityTimeline": "Oś czasu aktywności",

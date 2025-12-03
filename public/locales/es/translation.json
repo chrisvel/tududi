@@ -356,7 +356,9 @@
     "noProject": "Sin proyecto",
     "unknownProject": "Proyecto desconocido",
     "tasks": "tareas",
-    "showingItems": "Mostrando {{current}} de {{total}} elementos"
+    "showingItems": "Mostrando {{current}} de {{total}} elementos",
+    "open": "Abrir",
+    "completed": "Completado"
   },
   "timeline": {
     "activityTimeline": "Línea de Tiempo de Actividad",

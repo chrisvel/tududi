@@ -143,7 +143,9 @@
     "tasks": "sarcini",
     "showingItems": "Se afișează {{current}} din {{total}} elemente",
     "overdue": "Întârziat",
-    "planned": "Planificat"
+    "planned": "Planificat",
+    "open": "Deschide",
+    "completed": "Finalizat"
   },
   "timeline": {
     "activityTimeline": "Cronologia activităților",

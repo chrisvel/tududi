@@ -579,7 +579,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                     </div>
 
                     {/* Task content - full width */}
-                    <div className="ml-2 flex-1 min-w-0">
+                    <div className="ml-3 flex-1 min-w-0">
                         {/* Task Title */}
                         <div className="font-light text-md text-gray-900 dark:text-gray-300 dark:font-extralight">
                             <span className="break-words">

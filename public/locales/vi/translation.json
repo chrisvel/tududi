@@ -143,7 +143,9 @@
     "tasks": "nhiệm vụ",
     "showingItems": "Hiển thị {{current}} trong số {{total}} mục",
     "overdue": "Quá hạn",
-    "planned": "Đã lên kế hoạch"
+    "planned": "Đã lên kế hoạch",
+    "open": "Mở",
+    "completed": "Đã hoàn thành"
   },
   "timeline": {
     "activityTimeline": "Dòng Thời Gian Hoạt Động",

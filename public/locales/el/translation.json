@@ -356,7 +356,9 @@
     "tasks": "εργασίες",
     "showingItems": "Εμφάνιση {{current}} από {{total}} στοιχεία",
     "overdue": "Υπερβολικό",
-    "planned": "Προγραμματισμένο"
+    "planned": "Προγραμματισμένο",
+    "open": "Άνοιγμα",
+    "completed": "Ολοκληρώθηκε"
   },
   "timeline": {
     "activityTimeline": "Χρονοδιάγραμμα Δραστηριότητας",

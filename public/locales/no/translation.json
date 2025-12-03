@@ -143,7 +143,9 @@
     "tasks": "oppgaver",
     "showingItems": "Viser {{current}} av {{total}} elementer",
     "overdue": "Forsinket",
-    "planned": "Planlagt"
+    "planned": "Planlagt",
+    "open": "Åpne",
+    "completed": "Fullført"
   },
   "timeline": {
     "activityTimeline": "Aktivitetslinje",

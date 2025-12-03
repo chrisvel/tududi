@@ -143,7 +143,9 @@
     "tasks": "naloge",
     "showingItems": "Prikazovanje {{current}} od {{total}} elementov",
     "overdue": "Zapadlo",
-    "planned": "Načrtovano"
+    "planned": "Načrtovano",
+    "open": "Odpri",
+    "completed": "Dokončano"
   },
   "timeline": {
     "activityTimeline": "Časovnica aktivnosti",

@@ -143,7 +143,9 @@
     "tasks": "uppgifter",
     "showingItems": "Visar {{current}} av {{total}} objekt",
     "overdue": "Förfallen",
-    "planned": "Planerad"
+    "planned": "Planerad",
+    "open": "Öppna",
+    "completed": "Avslutad"
   },
   "timeline": {
     "activityTimeline": "Aktivitetslinje",
