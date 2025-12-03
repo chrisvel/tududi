@@ -1627,7 +1627,9 @@ const TasksToday: React.FC = () => {
                                     onClick={toggleCompletedCollapsed}
                                     data-testid="completed-section-header"
                                 >
-                                    <h3 className={`text-xl font-medium ${completedToday.length > 0 ? 'text-green-600 dark:text-green-400' : ''}`}>
+                                    <h3
+                                        className={`text-xl font-medium ${completedToday.length > 0 ? 'text-green-600 dark:text-green-400' : ''}`}
+                                    >
                                         {t('tasks.completedToday')}
                                     </h3>
                                     <div className="flex items-center">
