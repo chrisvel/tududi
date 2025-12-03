@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { ArrowRightIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import ProjectDropdown from '../../Shared/ProjectDropdown';
 import { Project } from '../../../entities/Project';
 import { Task } from '../../../entities/Task';
@@ -101,69 +101,47 @@ const TaskProjectCard: React.FC<TaskProjectCardProps> = ({
                         isCreatingProject={isCreatingProject}
                         onShowAllProjects={handleShowAllProjects}
                         allProjects={projects}
-                        selectedProject={null}
+                        selectedProject={task.Project || null}
                         onClearProject={handleClearProject}
                     />
                 ) : task.Project ? (
                     <div className="bg-gray-50 dark:bg-gray-900 rounded-lg shadow-sm relative overflow-hidden">
-                        <button
-                            type="button"
+                        <div
+                            className="flex items-center justify-center overflow-hidden relative hover:opacity-90 transition-opacity cursor-pointer"
+                            style={{ height: '100px' }}
                             onClick={() => setProjectDropdownOpen(true)}
-                            className="group w-full text-left hover:opacity-90 transition-opacity"
                         >
-                            <div
-                                className="flex items-center justify-center overflow-hidden relative"
-                                style={{ height: '100px' }}
-                            >
-                                {task.Project.image_url ? (
-                                    <img
-                                        src={task.Project.image_url}
-                                        alt={task.Project.name}
-                                        className="w-full h-full object-cover"
-                                    />
-                                ) : (
-                                    <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 dark:from-blue-600 dark:to-purple-700"></div>
-                                )}
-                            </div>
-                            <div className="p-3">
-                                <div className="flex items-center text-md font-semibold text-gray-900 dark:text-gray-100">
-                                    <span className="truncate">
-                                        {task.Project.name}
-                                    </span>
-                                    <button
-                                        type="button"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleClearProject();
-                                        }}
-                                        className="ml-auto inline-flex items-center justify-center w-6 h-6 rounded-full text-gray-500 dark:text-gray-400 bg-transparent hover:bg-gray-200 dark:hover:bg-gray-700 opacity-0 group-hover:opacity-100 transition-opacity"
-                                        title={t(
-                                            'task.clearProject',
-                                            'Remove project'
-                                        )}
-                                    >
-                                        <XMarkIcon className="h-4 w-4" />
-                                    </button>
-                                    <Link
-                                        to={getProjectLink(task.Project)}
-                                        onClick={(e) => e.stopPropagation()}
-                                        className="p-1.5 rounded-full text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex-shrink-0 ml-2"
-                                        title={t(
-                                            'project.viewProject',
-                                            'Go to project'
-                                        )}
-                                    >
-                                        <ArrowRightIcon className="h-4 w-4" />
-                                        <span className="sr-only">
-                                            {t(
-                                                'project.viewProject',
-                                                'Go to project'
-                                            )}
-                                        </span>
-                                    </Link>
+                            {task.Project.image_url ? (
+                                <img
+                                    src={task.Project.image_url}
+                                    alt={task.Project.name}
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 dark:from-blue-600 dark:to-purple-700"></div>
+                            )}
+                        </div>
+                        <div className="p-3">
+                            <div className="flex items-center justify-between gap-2">
+                                <div
+                                    className="text-md font-semibold text-gray-900 dark:text-gray-100 truncate cursor-pointer flex-1"
+                                    onClick={() => setProjectDropdownOpen(true)}
+                                >
+                                    {task.Project.name}
                                 </div>
+                                <Link
+                                    to={getProjectLink(task.Project)}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="p-1.5 rounded-full text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors flex-shrink-0"
+                                    title={t('project.viewProject', 'Go to project')}
+                                >
+                                    <ArrowRightIcon className="h-4 w-4" />
+                                    <span className="sr-only">
+                                        {t('project.viewProject', 'Go to project')}
+                                    </span>
+                                </Link>
                             </div>
-                        </button>
+                        </div>
                     </div>
                 ) : (
                     <div

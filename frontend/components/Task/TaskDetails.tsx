@@ -927,6 +927,17 @@ const TaskDetails: React.FC = () => {
         return `/project/${project.id}`;
     };
 
+    const getTagLink = (tag: any) => {
+        if (tag.uid) {
+            const slug = tag.name
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-|-$/g, '');
+            return `/tag/${tag.uid}-${slug}`;
+        }
+        return `/tag/${encodeURIComponent(tag.name)}`;
+    };
+
     // Wrapper handlers for new components
     const handleTitleUpdate = async (newTitle: string) => {
         if (!task?.uid || !newTitle.trim()) {
@@ -1157,6 +1168,8 @@ const TaskDetails: React.FC = () => {
                     onTitleUpdate={handleTitleUpdate}
                     onEdit={handleEdit}
                     onDelete={handleDeleteClick}
+                    getProjectLink={getProjectLink}
+                    getTagLink={getTagLink}
                 />
 
                 {/* Summary and Overdue Alerts */}
@@ -1232,6 +1245,7 @@ const TaskDetails: React.FC = () => {
                                 isLoadingTags={tagsStore.isLoading}
                                 onUpdate={handleTagsUpdate}
                                 onLoadTags={() => tagsStore.loadTags()}
+                                getTagLink={getTagLink}
                             />
 
                             {/* Priority Section */}

@@ -438,7 +438,8 @@
         "weekOfMonth": "Uke i måneden",
         "recurrenceEndDate": "Sluttdato (valgfritt)",
         "completionBased": "Gjenta etter fullføring",
-        "repeatOn": "Gjenta på"
+        "repeatOn": "Gjenta på",
+        "deferUntil": "Utsett til"
       },
       "projectSearchPlaceholder": "Søk eller opprett et prosjekt...",
       "noMatchingProjects": "Ingen matchende prosjekter",
@@ -460,7 +461,8 @@
         "noVerb": "Hvilken spesifikk handling må du ta? Prøv å starte med et verb.",
         "vague": "Prøv å starte med et handlingsverb som \"Ring\", \"Skriv\", \"Planlegg\" eller \"Undersøk\""
       },
-      "selectAtLeastOneDay": "Vennligst velg minst én dag"
+      "selectAtLeastOneDay": "Vennligst velg minst én dag",
+      "deferUntilPlaceholder": "Velg dato og klokkeslett for utsettelse"
     },
     "noteTitle": "Notattittel",
     "noteContent": "Notatinnhold",
@@ -765,7 +767,11 @@
     "parentTask": "Foreldrepågave",
     "includingToday": "inkludert i dag",
     "has": "har",
-    "fromProject": "fra prosjektet"
+    "fromProject": "fra prosjektet",
+    "deferUntil": "Utsett til",
+    "noDeferUntil": "Ingen utsettelse til",
+    "deferUntilUpdated": "Utsettelse oppdatert vellykket",
+    "deferUntilUpdateError": "Kunne ikke oppdatere utsettelse"
   },
   "projects": {
     "loading": "Laster prosjekter...",

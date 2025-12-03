@@ -438,7 +438,8 @@
         "weekOfMonth": "Semana do mês",
         "recurrenceEndDate": "Data de término (opcional)",
         "completionBased": "Repetir após conclusão",
-        "repeatOn": "Repetir em"
+        "repeatOn": "Repetir em",
+        "deferUntil": "Adiar até"
       },
       "projectSearchPlaceholder": "Pesquisar ou criar um projeto...",
       "noMatchingProjects": "Nenhum projeto correspondente",
@@ -460,7 +461,8 @@
         "noVerb": "Qual ação específica você precisa realizar? Tente começar com um verbo.",
         "vague": "Tente começar com um verbo de ação como \"Ligar\", \"Escrever\", \"Agendar\" ou \"Pesquisar\""
       },
-      "selectAtLeastOneDay": "Por favor, selecione pelo menos um dia"
+      "selectAtLeastOneDay": "Por favor, selecione pelo menos um dia",
+      "deferUntilPlaceholder": "Selecione a data e hora para adiar até"
     },
     "noteTitle": "Título da Nota",
     "noteContent": "Conteúdo da Nota",
@@ -765,7 +767,11 @@
     "parentTask": "Tarefa Pai",
     "includingToday": "incluindo hoje",
     "has": "tem",
-    "fromProject": "do projeto"
+    "fromProject": "do projeto",
+    "deferUntil": "Adiar até",
+    "noDeferUntil": "Sem adiamento até",
+    "deferUntilUpdated": "Adiado até atualizado com sucesso",
+    "deferUntilUpdateError": "Falha ao atualizar o adiamento até"
   },
   "projects": {
     "loading": "Carregando projetos...",

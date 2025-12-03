@@ -438,7 +438,8 @@
         "weekOfMonth": "每月的周",
         "recurrenceEndDate": "结束日期（可选）",
         "completionBased": "完成后重复",
-        "repeatOn": "重复于"
+        "repeatOn": "重复于",
+        "deferUntil": "延迟至"
       },
       "projectSearchPlaceholder": "搜索或创建项目...",
       "noMatchingProjects": "没有匹配的项目",
@@ -460,7 +461,8 @@
         "noVerb": "你需要采取什么具体行动？尝试以动词开头。",
         "vague": "尝试以动作动词开头，例如 \"打电话\"、\"写\"、\"安排\" 或 \"研究\""
       },
-      "selectAtLeastOneDay": "请至少选择一天"
+      "selectAtLeastOneDay": "请至少选择一天",
+      "deferUntilPlaceholder": "选择延迟至的日期和时间"
     },
     "noteTitle": "笔记标题",
     "noteContent": "笔记内容",
@@ -765,7 +767,11 @@
     "parentTask": "父任务",
     "includingToday": "包括今天",
     "has": "有",
-    "fromProject": "来自项目"
+    "fromProject": "来自项目",
+    "deferUntil": "延迟至",
+    "noDeferUntil": "无延迟至",
+    "deferUntilUpdated": "成功更新延迟至",
+    "deferUntilUpdateError": "更新延迟至失败"
   },
   "projects": {
     "loading": "加载项目中...",

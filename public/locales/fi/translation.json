@@ -438,7 +438,8 @@
         "weekOfMonth": "Kuukauden viikko",
         "recurrenceEndDate": "Loppupäivämäärä (valinnainen)",
         "completionBased": "Toista valmistumisen jälkeen",
-        "repeatOn": "Toista"
+        "repeatOn": "Toista",
+        "deferUntil": "Viivytä kunnes"
       },
       "projectSearchPlaceholder": "Etsi tai luo projekti...",
       "noMatchingProjects": "Ei vastaavia projekteja",
@@ -460,7 +461,8 @@
         "noVerb": "Mitä erityistä toimintoa sinun tarvitsee tehdä? Yritä aloittaa verbillä.",
         "vague": "Yritä aloittaa toimintaverbillä kuten \"Soita\", \"Kirjoita\", \"Aikatauluta\" tai \"Tutki\""
       },
-      "selectAtLeastOneDay": "Valitse vähintään yksi päivä"
+      "selectAtLeastOneDay": "Valitse vähintään yksi päivä",
+      "deferUntilPlaceholder": "Valitse viivytyspäivämäärä ja -aika"
     },
     "noteTitle": "Muistion Otsikko",
     "noteContent": "Muistion Sisältö",
@@ -765,7 +767,11 @@
     "parentTask": "Ylätason tehtävä",
     "includingToday": "mukana tänään",
     "has": "on",
-    "fromProject": "projektista"
+    "fromProject": "projektista",
+    "deferUntil": "Viivytä kunnes",
+    "noDeferUntil": "Ei viivytystä ennen",
+    "deferUntilUpdated": "Viivytä kunnes päivitys onnistuu",
+    "deferUntilUpdateError": "Viivytyksen päivittäminen epäonnistui"
   },
   "projects": {
     "loading": "Ladataan projekteja...",

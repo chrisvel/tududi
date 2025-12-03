@@ -438,7 +438,8 @@
         "weekOfMonth": "Tuần trong tháng",
         "recurrenceEndDate": "Ngày kết thúc (tùy chọn)",
         "completionBased": "Lặp lại sau khi hoàn thành",
-        "repeatOn": "Lặp lại vào"
+        "repeatOn": "Lặp lại vào",
+        "deferUntil": "Hoãn đến"
       },
       "projectSearchPlaceholder": "Tìm kiếm hoặc tạo một dự án...",
       "noMatchingProjects": "Không có dự án nào phù hợp",
@@ -460,7 +461,8 @@
         "noVerb": "Bạn cần thực hiện hành động cụ thể nào? Hãy thử bắt đầu bằng một động từ.",
         "vague": "Hãy thử bắt đầu bằng một động từ hành động như \"Gọi\", \"Viết\", \"Lên lịch\", hoặc \"Nghiên cứu\""
       },
-      "selectAtLeastOneDay": "Vui lòng chọn ít nhất một ngày"
+      "selectAtLeastOneDay": "Vui lòng chọn ít nhất một ngày",
+      "deferUntilPlaceholder": "Chọn ngày và giờ hoãn đến"
     },
     "noteTitle": "Tiêu đề ghi chú",
     "noteContent": "Nội dung ghi chú",
@@ -765,7 +767,11 @@
     "parentTask": "Nhiệm vụ Cha",
     "includingToday": "bao gồm hôm nay",
     "has": "có",
-    "fromProject": "từ dự án"
+    "fromProject": "từ dự án",
+    "deferUntil": "Hoãn đến",
+    "noDeferUntil": "Không có hoãn đến",
+    "deferUntilUpdated": "Hoãn đến đã được cập nhật thành công",
+    "deferUntilUpdateError": "Cập nhật hoãn đến không thành công"
   },
   "projects": {
     "loading": "Đang tải dự án...",

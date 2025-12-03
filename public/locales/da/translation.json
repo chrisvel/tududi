@@ -438,7 +438,8 @@
         "weekOfMonth": "Uge i måneden",
         "recurrenceEndDate": "Slutdato (valgfri)",
         "completionBased": "Gentag efter fuldførelse",
-        "repeatOn": "Gentag på"
+        "repeatOn": "Gentag på",
+        "deferUntil": "Udsæt indtil"
       },
       "projectSearchPlaceholder": "Søg eller opret et projekt...",
       "noMatchingProjects": "Ingen matchende projekter",
@@ -460,7 +461,8 @@
         "noVerb": "Hvilken specifik handling skal du tage? Prøv at starte med et verbum.",
         "vague": "Prøv at starte med et handlingsverb som \"Ring\", \"Skriv\", \"Planlæg\" eller \"Undersøg\""
       },
-      "selectAtLeastOneDay": "Vælg venligst mindst én dag"
+      "selectAtLeastOneDay": "Vælg venligst mindst én dag",
+      "deferUntilPlaceholder": "Vælg udsætte indtil dato og tid"
     },
     "noteTitle": "Notetitel",
     "noteContent": "Noteindhold",
@@ -765,7 +767,11 @@
     "parentTask": "Overordnet opgave",
     "includingToday": "inklusive i dag",
     "has": "har",
-    "fromProject": "fra projektet"
+    "fromProject": "fra projektet",
+    "deferUntil": "Udsæt indtil",
+    "noDeferUntil": "Ingen udsættelse indtil",
+    "deferUntilUpdated": "Udsæt indtil opdateret med succes",
+    "deferUntilUpdateError": "Fejl ved opdatering af udsættelse indtil"
   },
   "projects": {
     "loading": "Indlæser projekter...",

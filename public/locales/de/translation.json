@@ -209,7 +209,8 @@
         "priority": "Priorität",
         "dueDate": "Fälligkeitsdatum",
         "note": "Notiz",
-        "repeatOn": "Wiederholen am"
+        "repeatOn": "Wiederholen am",
+        "deferUntil": "Aufschieben bis"
       },
       "recurrenceSettings": "Wiederholungseinstellungen",
       "completionBasedHelp": "Falls aktiviert, wird die nächste Aufgabe basierend auf dem Abschlussdatum statt dem Fälligkeitsdatum erstellt",
@@ -232,7 +233,8 @@
         "noVerb": "Welche spezifische Aktion müssen Sie durchführen? Versuchen Sie, mit einem Verb zu beginnen.",
         "vague": "Versuchen Sie, mit einem Aktionsverb wie \"Anrufen\", \"Schreiben\", \"Planen\" oder \"Forschen\" zu beginnen"
       },
-      "selectAtLeastOneDay": "Bitte wählen Sie mindestens einen Tag aus"
+      "selectAtLeastOneDay": "Bitte wählen Sie mindestens einen Tag aus",
+      "deferUntilPlaceholder": "Wählen Sie das Datum und die Uhrzeit für das Aufschieben aus"
     },
     "noteTitle": "Notiz-Titel",
     "noteContent": "Notiz-Inhalt",
@@ -699,7 +701,11 @@
     "parentTask": "Übergeordnete Aufgabe",
     "includingToday": "einschließlich heute",
     "has": "hat",
-    "fromProject": "vom Projekt"
+    "fromProject": "vom Projekt",
+    "deferUntil": "Bis später verschieben",
+    "noDeferUntil": "Keine Verschiebung bis",
+    "deferUntilUpdated": "Bis zur erfolgreichen Aktualisierung verschieben",
+    "deferUntilUpdateError": "Aktualisierung der Verschiebung bis fehlgeschlagen"
   },
   "calendar": {
     "month": "Monat",

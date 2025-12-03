@@ -438,7 +438,8 @@
         "weekOfMonth": "Vecka i månaden",
         "recurrenceEndDate": "Slutdatum (valfritt)",
         "completionBased": "Upprepa efter slutförd",
-        "repeatOn": "Upprepa på"
+        "repeatOn": "Upprepa på",
+        "deferUntil": "Skjut upp till"
       },
       "projectSearchPlaceholder": "Sök eller skapa ett projekt...",
       "noMatchingProjects": "Inga matchande projekt",
@@ -460,7 +461,8 @@
         "noVerb": "Vilken specifik åtgärd behöver du vidta? Försök att börja med ett verb.",
         "vague": "Försök att börja med ett handlingsverb som \"Ring\", \"Skriv\", \"Boka\" eller \"Forska\""
       },
-      "selectAtLeastOneDay": "Vänligen välj minst en dag"
+      "selectAtLeastOneDay": "Vänligen välj minst en dag",
+      "deferUntilPlaceholder": "Välj datum och tid för uppskjutning"
     },
     "noteTitle": "Anteckningsitel",
     "noteContent": "Anteckningsinnehåll",
@@ -765,7 +767,11 @@
     "parentTask": "Överordnad uppgift",
     "includingToday": "inklusive idag",
     "has": "har",
-    "fromProject": "från projektet"
+    "fromProject": "från projektet",
+    "deferUntil": "Skjut upp till",
+    "noDeferUntil": "Ingen uppskjutning",
+    "deferUntilUpdated": "Uppskjutning uppdaterad framgångsrikt",
+    "deferUntilUpdateError": "Misslyckades med att uppdatera uppskjutning"
   },
   "projects": {
     "loading": "Laddar projekt...",

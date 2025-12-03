@@ -430,6 +430,7 @@
         "status": "Status",
         "priority": "Priority",
         "dueDate": "Due Date",
+        "deferUntil": "Defer Until",
         "note": "Note",
         "recurrenceType": "Repeat",
         "recurrenceInterval": "Every",
@@ -448,6 +449,7 @@
       "recurrenceSettings": "Recurrence Settings",
       "completionBasedHelp": "If checked, the next task will be created based on completion date instead of due date",
       "dueDatePlaceholder": "Select due date",
+      "deferUntilPlaceholder": "Select defer until date and time",
       "endDatePlaceholder": "Select end date",
       "nameHelper": {
         "title": "Make it more descriptive!",
@@ -759,6 +761,10 @@
     "projectClearError": "Failed to clear project",
     "priorityUpdated": "Priority updated successfully",
     "priorityUpdateError": "Failed to update priority",
+    "deferUntil": "Defer Until",
+    "noDeferUntil": "No defer until",
+    "deferUntilUpdated": "Defer until updated successfully",
+    "deferUntilUpdateError": "Failed to update defer until",
     "status": {
       "notStarted": "not started",
       "inProgress": "in progress",
