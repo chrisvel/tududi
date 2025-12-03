@@ -102,10 +102,8 @@ async function calculateNextIterations(task, startFromDate, userTimezone) {
             includesToday = task.recurrence_weekday === todayWeekday;
         }
     } else if (task.recurrence_type === 'daily') {
-        // For daily recurrence, today is always included
         includesToday = true;
     } else if (task.recurrence_type === 'monthly') {
-        // For monthly recurrence, check if the target day is still in the future this month
         const targetDay =
             task.recurrence_month_day !== null &&
             task.recurrence_month_day !== undefined
@@ -113,9 +111,7 @@ async function calculateNextIterations(task, startFromDate, userTimezone) {
                 : startDate.getUTCDate();
         const todayDay = startDate.getUTCDate();
 
-        // Check if target day is in the future within the current month
         if (targetDay > todayDay) {
-            // Check if the target day exists in the current month
             const currentMonth = startDate.getUTCMonth();
             const currentYear = startDate.getUTCFullYear();
             const maxDayInMonth = new Date(
@@ -123,7 +119,6 @@ async function calculateNextIterations(task, startFromDate, userTimezone) {
             ).getUTCDate();
 
             if (targetDay <= maxDayInMonth) {
-                // The target day exists and is in the future in this month
                 includesToday = true;
                 nextDate = new Date(
                     Date.UTC(
