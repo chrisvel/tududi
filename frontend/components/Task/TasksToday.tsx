@@ -1274,7 +1274,7 @@ const TasksToday: React.FC = () => {
                                 onClick={toggleOverdueCollapsed}
                                 data-testid="overdue-section-header"
                             >
-                                <h3 className="text-xl font-medium text-red-600 dark:text-red-400">
+                                <h3 className="text-sm font-medium uppercase text-red-600 dark:text-red-400">
                                     {t('tasks.overdue', 'Overdue')}
                                 </h3>
                                 <div className="flex items-center">
@@ -1367,7 +1367,7 @@ const TasksToday: React.FC = () => {
                             onClick={toggleTodayPlanCollapsed}
                             data-testid="planned-section-header"
                         >
-                            <h3 className="text-xl font-medium">
+                            <h3 className="text-sm font-medium uppercase">
                                 {t('tasks.planned', 'Planned')}
                             </h3>
                             <div className="flex items-center">
@@ -1481,7 +1481,7 @@ const TasksToday: React.FC = () => {
                                 onClick={toggleDueTodayCollapsed}
                                 data-testid="due-today-section-header"
                             >
-                                <h3 className="text-xl font-medium">
+                                <h3 className="text-sm font-medium uppercase">
                                     {t('tasks.dueToday')}
                                 </h3>
                                 <div className="flex items-center">
@@ -1583,7 +1583,7 @@ const TasksToday: React.FC = () => {
                             className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
                             onClick={toggleSuggestedCollapsed}
                         >
-                            <h3 className="text-xl font-medium">
+                            <h3 className="text-sm font-medium uppercase">
                                 {t('tasks.suggested')}
                             </h3>
                             <div className="flex items-center">
@@ -1628,7 +1628,7 @@ const TasksToday: React.FC = () => {
                                     data-testid="completed-section-header"
                                 >
                                     <h3
-                                        className={`text-xl font-medium ${completedToday.length > 0 ? 'text-green-600 dark:text-green-400' : ''}`}
+                                        className={`text-sm font-medium uppercase ${completedToday.length > 0 ? 'text-green-600 dark:text-green-400' : ''}`}
                                     >
                                         {t('tasks.completedToday')}
                                     </h3>
