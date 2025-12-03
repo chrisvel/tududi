@@ -40,12 +40,6 @@ interface ProjectInsightsPanelProps {
         nextThreeDays: number;
         nextWeek: number;
     };
-    eisenhower: {
-        urgentImportant: number;
-        urgentNotImportant: number;
-        notUrgentImportant: number;
-        notUrgentNotImportant: number;
-    };
 }
 
 const ProjectInsightsPanel: React.FC<ProjectInsightsPanelProps> = ({
@@ -59,7 +53,6 @@ const ProjectInsightsPanel: React.FC<ProjectInsightsPanelProps> = ({
     weeklyPace,
     monthlyCompleted,
     upcomingInsights,
-    eisenhower,
 }) => {
     const maxUpcoming = Math.max(...upcomingDueTrend.map((d) => d.count), 1);
 
@@ -299,66 +292,6 @@ const ProjectInsightsPanel: React.FC<ProjectInsightsPanelProps> = ({
                             ></div>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm p-5">
-                <div className="flex items-center justify-between">
-                    <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
-                        {t('projects.eisenhower', 'Eisenhower matrix')}
-                    </h3>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {t('projects.priorityVsUrgency', 'Priority vs urgency')}
-                    </span>
-                </div>
-                <div className="mt-4 grid grid-cols-2 gap-3 text-xs text-gray-600 dark:text-gray-300">
-                    {[
-                        {
-                            label: t('projects.urgentImportant', 'Do now'),
-                            value: eisenhower.urgentImportant,
-                            accent: 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-200',
-                        },
-                        {
-                            label: t('projects.urgentNotImportant', 'Delegate'),
-                            value: eisenhower.urgentNotImportant,
-                            accent: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-200',
-                        },
-                        {
-                            label: t('projects.notUrgentImportant', 'Schedule'),
-                            value: eisenhower.notUrgentImportant,
-                            accent: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-200',
-                        },
-                        {
-                            label: t(
-                                'projects.notUrgentNotImportant',
-                                'Drop/avoid'
-                            ),
-                            value: eisenhower.notUrgentNotImportant,
-                            accent: 'bg-gray-100 text-gray-700 dark:bg-gray-800/60 dark:text-gray-200',
-                        },
-                    ].map((item, idx) => (
-                        <div
-                            key={idx}
-                            className={`rounded-lg p-3 border border-gray-200 dark:border-gray-800 ${item.accent}`}
-                        >
-                            <div className="flex items-center justify-between">
-                                <span className="font-semibold">
-                                    {item.value}
-                                </span>
-                                <span className="text-[11px] uppercase tracking-wide">
-                                    {item.label}
-                                </span>
-                            </div>
-                            <div className="mt-2 h-1.5 rounded-full bg-white/30 dark:bg-gray-700 overflow-hidden">
-                                <div
-                                    className="h-full bg-white/80 dark:bg-white"
-                                    style={{
-                                        width: `${Math.min(item.value * 15, 100)}%`,
-                                    }}
-                                ></div>
-                            </div>
-                        </div>
-                    ))}
                 </div>
             </div>
 

@@ -334,12 +334,15 @@ const ProjectDetails: React.FC = () => {
             );
             return;
         }
-        const response = await fetch(getApiPath(`task/${updatedTask.id}`), {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify(updatedTask),
-        });
+        const response = await fetch(
+            getApiPath(`task/${updatedTask.uid || updatedTask.id}`),
+            {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify(updatedTask),
+            }
+        );
         if (!response.ok) {
             await response.json();
             throw new Error('Failed to update task');
@@ -752,10 +755,9 @@ const ProjectDetails: React.FC = () => {
         upcomingDueTrend,
         createdTrend,
         upcomingInsights,
-        eisenhower,
         weeklyPace,
         monthlyCompleted,
-    } = useProjectMetrics(tasks, handleTaskUpdate, t);
+    } = useProjectMetrics(tasks, handleTaskUpdate, t, showSuccessToast);
 
     const getStateIcon = (state: string) => {
         switch (state) {
@@ -1116,7 +1118,6 @@ const ProjectDetails: React.FC = () => {
                                             upcomingDueTrend={upcomingDueTrend}
                                             createdTrend={createdTrend}
                                             upcomingInsights={upcomingInsights}
-                                            eisenhower={eisenhower}
                                             weeklyPace={weeklyPace}
                                             monthlyCompleted={monthlyCompleted}
                                         />

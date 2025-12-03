@@ -1,11 +1,13 @@
 import { useMemo, useCallback } from 'react';
+import React from 'react';
 import { Task } from '../../entities/Task';
 import { TFunction } from 'i18next';
 
 export const useProjectMetrics = (
     tasks: Task[],
     handleTaskUpdate: (task: Task) => Promise<void>,
-    t: TFunction
+    t: TFunction,
+    showSuccessToast?: (message: string | React.ReactNode) => void
 ) => {
     const taskStats = useMemo(() => {
         const stats = {
@@ -282,54 +284,6 @@ export const useProjectMetrics = (
         };
     }, [upcomingDueTrend]);
 
-    const eisenhower = useMemo(() => {
-        const buckets = {
-            urgentImportant: 0,
-            urgentNotImportant: 0,
-            notUrgentImportant: 0,
-            notUrgentNotImportant: 0,
-        };
-
-        const today = new Date();
-        const startOfToday = new Date(
-            today.getFullYear(),
-            today.getMonth(),
-            today.getDate()
-        );
-        const threeDays = new Date(startOfToday);
-        threeDays.setDate(startOfToday.getDate() + 3);
-
-        const isCompleted = (status: Task['status']) =>
-            status === 'done' ||
-            status === 'archived' ||
-            status === 2 ||
-            status === 3;
-
-        tasks.forEach((task) => {
-            if (isCompleted(task.status)) return;
-
-            const isUrgent = (() => {
-                if (!task.due_date) return false;
-                const due = new Date(task.due_date);
-                if (Number.isNaN(due.getTime())) return false;
-                return due <= threeDays;
-            })();
-
-            const isImportant =
-                task.priority === 'high' ||
-                task.priority === 2 ||
-                task.priority === 'medium' ||
-                task.priority === 1;
-
-            if (isUrgent && isImportant) buckets.urgentImportant += 1;
-            else if (isUrgent && !isImportant) buckets.urgentNotImportant += 1;
-            else if (!isUrgent && isImportant) buckets.notUrgentImportant += 1;
-            else buckets.notUrgentNotImportant += 1;
-        });
-
-        return buckets;
-    }, [tasks]);
-
     const dueHighlights = useMemo(() => {
         const combined = [
             ...dueBuckets.overdue,
@@ -477,10 +431,16 @@ export const useProjectMetrics = (
                 status: 'in_progress',
                 today: true,
             });
+
+            if (showSuccessToast) {
+                showSuccessToast(
+                    t('tasks.startedSuccessfully', 'Task started successfully!')
+                );
+            }
         } catch {
             // Silent fail
         }
-    }, [handleTaskUpdate, nextBestAction]);
+    }, [handleTaskUpdate, nextBestAction, showSuccessToast, t]);
 
     const weeklyPace = useMemo(() => {
         const lastWeek = completionTrend
@@ -523,7 +483,6 @@ export const useProjectMetrics = (
         upcomingDueTrend,
         createdTrend,
         upcomingInsights,
-        eisenhower,
         weeklyPace,
         monthlyCompleted,
     };
