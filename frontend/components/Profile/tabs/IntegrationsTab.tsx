@@ -52,7 +52,8 @@ const IntegrationsTab: React.FC<IntegrationsTabProps> = ({
         setModelsError(null);
 
         try {
-            const baseUrl = settings.ollama_base_url || 'http://localhost:11434';
+            const baseUrl =
+                settings.ollama_base_url || 'http://localhost:11434';
             const response = await fetch(`${baseUrl}/api/tags`);
 
             if (!response.ok) {
@@ -62,9 +63,8 @@ const IntegrationsTab: React.FC<IntegrationsTabProps> = ({
             }
 
             const data = await response.json();
-            const modelNames = data.models?.map(
-                (model: any) => model.name
-            ) || [];
+            const modelNames =
+                data.models?.map((model: any) => model.name) || [];
             setOllamaModels(modelNames);
 
             // If current model is not in the list and there are models, set the first one
