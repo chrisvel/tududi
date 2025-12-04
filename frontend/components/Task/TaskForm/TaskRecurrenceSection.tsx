@@ -190,22 +190,17 @@ const TaskRecurrenceSection: React.FC<TaskRecurrenceSectionProps> = ({
             <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
                 {t('forms.task.labels.monthDay', 'Day of month')}
             </label>
-            <input
-                type="number"
-                min="1"
-                max="31"
-                value={recurrenceMonthDay || ''}
-                onChange={(e) =>
-                    (customOnChange || onChange)(
-                        'recurrence_month_day',
-                        e.target.value ? parseInt(e.target.value) : null
-                    )
+            <NumberSelectDropdown
+                value={recurrenceMonthDay || 1}
+                onChange={(value) =>
+                    (customOnChange || onChange)('recurrence_month_day', value)
                 }
+                min={1}
+                max={31}
                 placeholder={t(
                     'recurrence.monthDayPlaceholder',
-                    'Leave empty for current day'
+                    'Select day of month'
                 )}
-                className="block w-full border border-gray-300 dark:border-gray-900 rounded-md focus:outline-none shadow-sm px-2 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 disabled={isDisabled}
             />
         </div>
@@ -419,7 +414,7 @@ const TaskRecurrenceSection: React.FC<TaskRecurrenceSectionProps> = ({
             </h3>
 
             {/* Main recurrence settings in one row */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div className={`grid grid-cols-1 gap-4 mb-4 ${recurrenceType === 'monthly' ? 'md:grid-cols-4' : 'md:grid-cols-3'}`}>
                 <div>
                     <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
                         {t('forms.task.labels.recurrenceType', 'Repeat')}
@@ -441,43 +436,77 @@ const TaskRecurrenceSection: React.FC<TaskRecurrenceSectionProps> = ({
                     recurrenceType === 'monthly_last_day') && (
                     <div>
                         <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            {t('forms.task.labels.recurrenceInterval', 'Every')}
+                            {recurrenceType === 'monthly'
+                                ? t('forms.task.labels.recurrenceInterval', 'Every') +
+                                  ' (' +
+                                  t('recurrence.months', 'months') +
+                                  ')'
+                                : t('forms.task.labels.recurrenceInterval', 'Every')}
                         </label>
-                        <div className="flex items-center space-x-2">
-                            <div className="w-20">
-                                <NumberSelectDropdown
-                                    value={recurrenceInterval || 1}
-                                    onChange={(value) =>
-                                        onChange('recurrence_interval', value)
-                                    }
-                                    min={1}
-                                    max={
-                                        recurrenceType === 'daily'
-                                            ? 30
-                                            : recurrenceType === 'weekly'
-                                              ? 52
-                                              : recurrenceType === 'monthly' ||
-                                                  recurrenceType ===
-                                                      'monthly_weekday' ||
-                                                  recurrenceType ===
-                                                      'monthly_last_day'
-                                                ? 24
-                                                : 99
-                                    }
-                                    disabled={disabled}
-                                />
+                        {recurrenceType === 'monthly' ? (
+                            <NumberSelectDropdown
+                                value={recurrenceInterval || 1}
+                                onChange={(value) =>
+                                    onChange('recurrence_interval', value)
+                                }
+                                min={1}
+                                max={24}
+                                disabled={disabled}
+                            />
+                        ) : (
+                            <div className="flex items-center space-x-2">
+                                <div className="w-20">
+                                    <NumberSelectDropdown
+                                        value={recurrenceInterval || 1}
+                                        onChange={(value) =>
+                                            onChange('recurrence_interval', value)
+                                        }
+                                        min={1}
+                                        max={
+                                            recurrenceType === 'daily'
+                                                ? 30
+                                                : recurrenceType === 'weekly'
+                                                  ? 52
+                                                  : recurrenceType === 'monthly_weekday' ||
+                                                      recurrenceType === 'monthly_last_day'
+                                                    ? 24
+                                                    : 99
+                                        }
+                                        disabled={disabled}
+                                    />
+                                </div>
+                                <span className="text-sm text-gray-600 dark:text-gray-400">
+                                    {recurrenceType === 'daily' &&
+                                        t('recurrence.days', 'days')}
+                                    {recurrenceType === 'weekly' &&
+                                        t('recurrence.weeks', 'weeks')}
+                                    {(recurrenceType === 'monthly_weekday' ||
+                                        recurrenceType === 'monthly_last_day') &&
+                                        t('recurrence.months', 'months')}
+                                </span>
                             </div>
-                            <span className="text-sm text-gray-600 dark:text-gray-400">
-                                {recurrenceType === 'daily' &&
-                                    t('recurrence.days', 'days')}
-                                {recurrenceType === 'weekly' &&
-                                    t('recurrence.weeks', 'weeks')}
-                                {(recurrenceType === 'monthly' ||
-                                    recurrenceType === 'monthly_weekday' ||
-                                    recurrenceType === 'monthly_last_day') &&
-                                    t('recurrence.months', 'months')}
-                            </span>
-                        </div>
+                        )}
+                    </div>
+                )}
+
+                {recurrenceType === 'monthly' && (
+                    <div>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            {t('forms.task.labels.monthDay', 'Day of month')}
+                        </label>
+                        <NumberSelectDropdown
+                            value={recurrenceMonthDay || 1}
+                            onChange={(value) =>
+                                onChange('recurrence_month_day', value)
+                            }
+                            min={1}
+                            max={31}
+                            placeholder={t(
+                                'recurrence.monthDayPlaceholder',
+                                'Select day of month'
+                            )}
+                            disabled={disabled}
+                        />
                     </div>
                 )}
 
@@ -504,8 +533,6 @@ const TaskRecurrenceSection: React.FC<TaskRecurrenceSectionProps> = ({
 
             {/* Additional settings for specific recurrence types */}
             {recurrenceType === 'weekly' && renderWeekdaySelect()}
-
-            {recurrenceType === 'monthly' && renderMonthDayInput()}
 
             {recurrenceType === 'monthly_weekday' &&
                 renderMonthlyWeekdayInputs()}
