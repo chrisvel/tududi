@@ -305,9 +305,12 @@
     "tabs": {
       "general": "Général",
       "security": "Sécurité",
+      "apiKeys": "Clés API",
       "productivity": "Productivité",
+      "notifications": "Notifications",
       "telegram": "Telegram",
-      "ai": "Fonctionnalités IA"
+      "ai": "Fonctionnalités IA",
+      "integrations": "Intégrations"
     },
     "security": "Paramètres de sécurité",
     "changePassword": "Changer le mot de passe",

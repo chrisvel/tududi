@@ -894,6 +894,40 @@ router.post('/profile/ai-settings/test', async (req, res) => {
             const model = ollama_model || user.ollama_model || 'llama3';
 
             try {
+                // First, try to check if Ollama is running by hitting the /api/tags endpoint
+                let modelsResponse;
+                try {
+                    modelsResponse = await fetch(`${baseUrl}/api/tags`);
+                    if (!modelsResponse.ok) {
+                        return res.status(400).json({
+                            error: `Ollama server at ${baseUrl} returned error: ${modelsResponse.status} ${modelsResponse.statusText}`,
+                        });
+                    }
+                } catch (tagsError) {
+                    return res.status(400).json({
+                        error: `Cannot connect to Ollama at ${baseUrl}. Make sure Ollama is running and accessible. Error: ${tagsError.message}`,
+                    });
+                }
+
+                // Check if the specified model exists
+                const modelsData = await modelsResponse.json();
+                const availableModels = modelsData.models?.map(
+                    (m) => m.name
+                ) || [];
+
+                if (availableModels.length === 0) {
+                    return res.status(400).json({
+                        error: `Ollama is running but no models are installed. Run 'ollama pull ${model}' to install a model.`,
+                    });
+                }
+
+                if (!availableModels.includes(model)) {
+                    return res.status(400).json({
+                        error: `Model '${model}' not found. Available models: ${availableModels.join(', ')}. Run 'ollama pull ${model}' to install it.`,
+                    });
+                }
+
+                // Now test with a simple generation
                 const response = await fetch(`${baseUrl}/api/generate`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -912,12 +946,12 @@ router.post('/profile/ai-settings/test', async (req, res) => {
                 } else {
                     const errorText = await response.text();
                     return res.status(400).json({
-                        error: `Ollama error: ${errorText}`,
+                        error: `Ollama generation failed: ${errorText}`,
                     });
                 }
             } catch (ollamaError) {
                 return res.status(400).json({
-                    error: `Cannot connect to Ollama at ${baseUrl}. Is Ollama running?`,
+                    error: `Unexpected error testing Ollama: ${ollamaError.message}`,
                 });
             }
         }

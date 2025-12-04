@@ -316,9 +316,12 @@
     "tabs": {
       "general": "General",
       "security": "Security",
+      "apiKeys": "API Keys",
       "productivity": "Productivity",
+      "notifications": "Notifications",
       "telegram": "Telegram",
-      "ai": "AI Features"
+      "ai": "AI Features",
+      "integrations": "Integrations"
     },
     "security": "Security Settings",
     "changePassword": "Change Password",

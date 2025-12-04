@@ -97,6 +97,8 @@ const ChatPage: React.FC = () => {
                     setError(
                         'AI chat is not configured. Please set up your AI provider in Profile Settings > Integrations.'
                     );
+                } else {
+                    setError(null);
                 }
             } catch (err) {
                 console.error('Error checking AI status:', err);
@@ -105,6 +107,16 @@ const ChatPage: React.FC = () => {
             }
         };
         checkEnabled();
+
+        // Re-check when window gains focus (user returns from settings)
+        const handleFocus = () => {
+            checkEnabled();
+        };
+        window.addEventListener('focus', handleFocus);
+
+        return () => {
+            window.removeEventListener('focus', handleFocus);
+        };
     }, []);
 
     // Auto-resize textarea
