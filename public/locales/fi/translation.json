@@ -39,6 +39,7 @@
     "addTagAriaLabel": "Lisää tunniste",
     "addTagTitle": "Lisää tunniste",
     "today": "Tänään",
+    "total": "Total",
     "upcoming": "Tulevat",
     "nextActions": "Seuraavat toimet",
     "inbox": "Saapuneet",
@@ -99,6 +100,7 @@
   "tasks": {
     "title": "Tehtävät",
     "today": "Tänään",
+    "total": "Total",
     "backlog": "Työjonossa",
     "inProgress": "Käynnissä",
     "dueToday": "Erääntyy tänään",
@@ -619,6 +621,7 @@
   },
   "dateIndicators": {
     "today": "TÄNÄÄN",
+    "total": "Total",
     "tomorrow": "HUOMENNA",
     "yesterday": "EILEN",
     "nextWeek": "ensi viikolla",
@@ -630,6 +633,7 @@
       "noName": "Näet tehtäviä tietylle projektille. Käytä tätä tilaa hallitaksesi ja seurataksesi tähän projektiin liittyviä tehtäviä."
     },
     "today": "Nämä ovat tehtävät, joiden eräpäivä on tänään tai tehtävät, jotka olet aikatauluttanut välittömään käsittelyyn. Käytä tätä näkymää keskittyäksesi siihen, mitä on saatava valmiiksi tänään. Merkitse tehtävät valmiiksi, päivitä niiden tila tai säädä eräpäiviä tarvittaessa.",
+    "total": "Total",
     "inbox": "Saapuneet-kansio on paikka, jossa kaikki luokittelemattomat tehtävät sijaitsevat. Tehtävät, joita ei ole liitetty projektiin tai joilla ei ole määräaikaa, näkyvät täällä. Tämä on \"aivopurkaus\"-alueesi, johon voit nopeasti kirjata tehtäviä ja järjestää niitä myöhemmin.",
     "next": "Tämä näkymä näyttää kaikki tehtävät, jotka ovat toteutettavissa lähitulevaisuudessa. Nämä tehtävät ovat valmiita käsiteltäväksi seuraavaksi, eikä niillä ole pitkän aikavälin määräaikoja. Tämä on hyvä paikka keskittyä, kun haluat edistyä nopeasti tehtävissä.",
     "upcoming": "Tämä näkymä korostaa tehtäviä, jotka on aikataulutettu tulevalle viikolle. Se auttaa sinua valmistautumaan ja pysymään aikarajojen edellä antamalla yleiskatsauksen työstä, jonka sinun on käsiteltävä lähitulevaisuudessa. Tehtävät, joilla on määräajat seuraavien 7 päivän aikana, näkyvät täällä.",
@@ -907,6 +911,7 @@
     "week": "Viikko",
     "day": "Päivä",
     "today": "Tänään",
+    "total": "Total",
     "addEvent": "Lisää Tapahtuma",
     "weekView": "Viikkonäkymä",
     "dayView": "Päivänäkymä",

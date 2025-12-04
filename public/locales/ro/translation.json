@@ -39,6 +39,7 @@
     "addTagAriaLabel": "Adaugă Etichetă",
     "addTagTitle": "Adaugă Etichetă",
     "today": "Astăzi",
+    "total": "Total",
     "upcoming": "Următoarele",
     "nextActions": "Acțiuni Următoare",
     "inbox": "Inbox",
@@ -99,6 +100,7 @@
   "tasks": {
     "title": "Sarcini",
     "today": "Astăzi",
+    "total": "Total",
     "backlog": "Întârziere",
     "inProgress": "În desfășurare",
     "dueToday": "Terminat Astăzi",
@@ -619,6 +621,7 @@
   },
   "dateIndicators": {
     "today": "ASTĂZI",
+    "total": "Total",
     "tomorrow": "MÂINE",
     "yesterday": "IERI",
     "nextWeek": "săptămâna viitoare",
@@ -630,6 +633,7 @@
       "noName": "Vizualizați sarcinile pentru un proiect specific. Folosiți acest spațiu pentru a gestiona și urmări sarcinile asociate cu acest proiect."
     },
     "today": "Acestea sunt sarcinile care sunt programate pentru astăzi sau sarcinile pe care le-ați planificat pentru atenție imediată. Folosiți această vizualizare pentru a vă concentra asupra a ceea ce trebuie finalizat astăzi. Marcați sarcinile ca fiind finalizate, actualizați-le starea sau ajustați datele limită dacă este necesar.",
+    "total": "Total",
     "inbox": "Inbox-ul este locul unde se află toate sarcinile neclasificate. Sarcinile care nu au fost atribuite unui proiect sau nu au o dată limită vor apărea aici. Acesta este spațiul dumneavoastră de „brain dump” unde puteți nota rapid sarcinile și să le organizați mai târziu.",
     "next": "Această vizualizare arată toate sarcinile care sunt acționabile în viitorul apropiat. Aceste sarcini sunt gata să fie lucrate următoarele și nu au termene limită pe termen lung. Este un loc bun pentru a vă concentra atunci când doriți să faceți progrese rapide în sarcini.",
     "upcoming": "Această vizualizare evidențiază sarcinile care sunt programate pentru săptămâna următoare. Vă ajută să vă pregătiți și să rămâneți cu un pas înaintea termenelor limită, oferindu-vă o imagine de ansamblu asupra muncii pe care trebuie să o abordați în viitorul apropiat. Sarcinile cu date limită în următoarele 7 zile vor apărea aici.",
@@ -907,6 +911,7 @@
     "week": "Săptămână",
     "day": "Zi",
     "today": "Astăzi",
+    "total": "Total",
     "addEvent": "Adaugă Eveniment",
     "weekView": "Vizualizare Săptămână",
     "dayView": "Vizualizare Zi",

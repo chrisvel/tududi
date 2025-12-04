@@ -39,6 +39,7 @@
     "addTagAriaLabel": "Ajouter une étiquette",
     "addTagTitle": "Ajouter une étiquette",
     "today": "Aujourd'hui",
+    "total": "Total",
     "upcoming": "À venir",
     "nextActions": "Prochaines actions",
     "inbox": "Boîte de réception",
@@ -99,6 +100,7 @@
   "tasks": {
     "title": "Tâches",
     "today": "Aujourd'hui",
+    "total": "Total",
     "backlog": "Retard",
     "inProgress": "En Cours",
     "overdue": "En Retard",
@@ -619,6 +621,7 @@
   },
   "dateIndicators": {
     "today": "AUJOURD'HUI",
+    "total": "Total",
     "tomorrow": "DEMAIN",
     "yesterday": "HIER",
     "nextWeek": "la semaine prochaine",
@@ -630,6 +633,7 @@
       "noName": "Vous visualisez des tâches pour un projet spécifique. Utilisez cet espace pour gérer et suivre les tâches associées à ce projet."
     },
     "today": "Voici les tâches qui sont dues aujourd'hui ou les tâches que vous avez programmées pour une attention immédiate. Utilisez cette vue pour vous concentrer sur ce qui doit être complété aujourd'hui. Marquez les tâches comme complètes, mettez à jour leur statut ou ajustez leurs dates d'échéance si nécessaire.",
+    "total": "Total",
     "inbox": "La boîte de réception est l'endroit où toutes les tâches non catégorisées se trouvent. Les tâches qui n'ont pas été assignées à un projet ou qui n'ont pas de date d'échéance apparaîtront ici. C'est votre zone de \"déversement d'idées\" où vous pouvez rapidement noter des tâches et les organiser plus tard.",
     "next": "Cette vue montre toutes les tâches qui sont actionnables dans un avenir proche. Ces tâches sont prêtes à être traitées ensuite et n'ont pas de délais à long terme. C'est un bon endroit pour se concentrer lorsque vous souhaitez progresser rapidement sur des tâches.",
     "upcoming": "Cette vue met en évidence les tâches prévues pour la semaine à venir. Elle vous aide à vous préparer et à rester en avance sur les délais en vous donnant un aperçu du travail que vous devez aborder dans un avenir proche. Les tâches avec des dates d'échéance dans les 7 jours suivants apparaîtront ici.",
@@ -907,6 +911,7 @@
     "week": "Semaine",
     "day": "Jour",
     "today": "Aujourd'hui",
+    "total": "Total",
     "addEvent": "Ajouter un événement",
     "weekView": "Vue semaine",
     "dayView": "Vue jour",

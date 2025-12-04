@@ -46,6 +46,7 @@
     "addNoteTitle": "Lägg till anteckning",
     "createNew": "Skapa ny",
     "today": "Idag",
+    "total": "Total",
     "upcoming": "Kommande",
     "nextActions": "Nästa åtgärder",
     "inbox": "Inkorg",
@@ -99,6 +100,7 @@
   "tasks": {
     "title": "Uppgifter",
     "today": "Idag",
+    "total": "Total",
     "backlog": "Backlog",
     "inProgress": "Pågående",
     "dueToday": "Förfaller idag",
@@ -619,6 +621,7 @@
   },
   "dateIndicators": {
     "today": "IDAG",
+    "total": "Total",
     "tomorrow": "IMORGON",
     "yesterday": "IGÅR",
     "nextWeek": "nästa vecka",
@@ -630,6 +633,7 @@
       "noName": "Du tittar på uppgifter för ett specifikt projekt. Använd detta utrymme för att hantera och följa uppgifter kopplade till detta projekt."
     },
     "today": "Detta är de uppgifter som ska vara klara idag eller uppgifter som du har schemalagt för omedelbar uppmärksamhet. Använd denna vy för att fokusera på vad som behöver slutföras idag. Markera uppgifter som slutförda, uppdatera deras status eller justera deras förfallodatum om det behövs.",
+    "total": "Total",
     "inbox": "Inkorgen är där alla okategoriserade uppgifter finns. De som ännu inte har tilldelats ett projekt eller fått ett förfallodatum kommer att visas här. Detta är din \"brain dump\" där du snabbt kan skriva ner uppgifter för att organisera dem senare.",
     "next": "Denna vy visar alla uppgifter som är handlingsbara inom en snar framtid. Dessa uppgifter är redo att arbetas med härnäst och har inga långsiktiga deadlines. Det är en bra plats att fokusera på när du vill göra snabba framsteg med uppgifter.",
     "upcoming": "Denna vy visar uppgifter som är schemalagda för den kommande veckan. Den hjälper dig att förbereda och ligga steget före deadlines genom att ge dig en översikt över det arbete du behöver ta itu med inom kort. Uppgifter med förfallodatum inom de kommande sju dagarna visas här.",
@@ -907,6 +911,7 @@
     "week": "Vecka",
     "day": "Dag",
     "today": "Idag",
+    "total": "Total",
     "addEvent": "Lägg till evenemang",
     "weekView": "Veckovy",
     "dayView": "Dagsvy",

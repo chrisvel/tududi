@@ -39,6 +39,7 @@
     "addTagAriaLabel": "Thêm Thẻ",
     "addTagTitle": "Thêm Thẻ",
     "today": "Hôm nay",
+    "total": "Total",
     "upcoming": "Sắp tới",
     "nextActions": "Các Hành động Tiếp theo",
     "inbox": "Hộp thư đến",
@@ -99,6 +100,7 @@
   "tasks": {
     "title": "Nhiệm vụ",
     "today": "Hôm nay",
+    "total": "Total",
     "backlog": "Danh sách chờ",
     "inProgress": "Đang tiến hành",
     "dueToday": "Hạn chót hôm nay",
@@ -619,6 +621,7 @@
   },
   "dateIndicators": {
     "today": "HÔM NAY",
+    "total": "Total",
     "tomorrow": "NGÀY MAI",
     "yesterday": "HÔM QUÁ",
     "nextWeek": "tuần tới",
@@ -630,6 +633,7 @@
       "noName": "Bạn đang xem các nhiệm vụ cho một dự án cụ thể. Sử dụng không gian này để quản lý và theo dõi các nhiệm vụ liên quan đến dự án này."
     },
     "today": "Đây là các nhiệm vụ đến hạn hôm nay hoặc các nhiệm vụ bạn đã lên lịch để chú ý ngay lập tức. Sử dụng chế độ xem này để tập trung vào những gì cần hoàn thành hôm nay. Đánh dấu các nhiệm vụ là đã hoàn thành, cập nhật trạng thái của chúng, hoặc điều chỉnh ngày đến hạn nếu cần.",
+    "total": "Total",
     "inbox": "Hộp thư đến là nơi chứa tất cả các nhiệm vụ chưa được phân loại. Các nhiệm vụ chưa được gán cho một dự án hoặc chưa có ngày đến hạn sẽ xuất hiện ở đây. Đây là khu vực \"đổ não\" của bạn, nơi bạn có thể nhanh chóng ghi lại các nhiệm vụ và tổ chức chúng sau.",
     "next": "Chế độ xem này hiển thị tất cả các nhiệm vụ có thể thực hiện trong tương lai gần. Những nhiệm vụ này sẵn sàng để làm tiếp theo và không có thời hạn dài hạn. Đây là nơi tốt để tập trung khi bạn muốn tiến bộ nhanh chóng trong các nhiệm vụ.",
     "upcoming": "Chế độ xem này nổi bật các nhiệm vụ đã được lên lịch cho tuần tới. Nó giúp bạn chuẩn bị và đi trước thời hạn bằng cách cung cấp cái nhìn tổng quan về công việc bạn cần giải quyết trong tương lai gần. Các nhiệm vụ có ngày đến hạn trong vòng 7 ngày tới sẽ xuất hiện ở đây.",
@@ -907,6 +911,7 @@
     "week": "Tuần",
     "day": "Ngày",
     "today": "Hôm nay",
+    "total": "Total",
     "addEvent": "Thêm Sự Kiện",
     "weekView": "Chế độ xem Tuần",
     "dayView": "Chế độ xem Ngày",

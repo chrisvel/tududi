@@ -39,6 +39,7 @@
     "addTagAriaLabel": "Adicionar Tag",
     "addTagTitle": "Adicionar Tag",
     "today": "Hoje",
+    "total": "Total",
     "upcoming": "Próximos",
     "nextActions": "Próximas Ações",
     "inbox": "Caixa de Entrada",
@@ -99,6 +100,7 @@
   "tasks": {
     "title": "Tarefas",
     "today": "Hoje",
+    "total": "Total",
     "backlog": "Backlog",
     "inProgress": "Em Progresso",
     "dueToday": "Vencendo Hoje",
@@ -619,6 +621,7 @@
   },
   "dateIndicators": {
     "today": "HOJE",
+    "total": "Total",
     "tomorrow": "AMANHÃ",
     "yesterday": "ONTEM",
     "nextWeek": "próxima semana",
@@ -630,6 +633,7 @@
       "noName": "Você está visualizando tarefas para um projeto específico. Use este espaço para gerenciar e acompanhar as tarefas associadas a este projeto."
     },
     "today": "Estas são as tarefas que estão vencendo hoje ou tarefas que você agendou para atenção imediata. Use esta visão para se concentrar no que precisa ser concluído hoje. Marque as tarefas como concluídas, atualize seu status ou ajuste suas datas de vencimento, se necessário.",
+    "total": "Total",
     "inbox": "A caixa de entrada é onde todas as tarefas não categorizadas ficam. Tarefas que não foram atribuídas a um projeto ou que não têm uma data de vencimento aparecerão aqui. Esta é a sua área de \"anotações rápidas\" onde você pode anotar tarefas rapidamente e organizá-las depois.",
     "next": "Esta visão mostra todas as tarefas que são acionáveis no futuro próximo. Essas tarefas estão prontas para serem trabalhadas a seguir e não têm prazos de longo prazo. É um bom lugar para se concentrar quando você está buscando fazer progresso rápido nas tarefas.",
     "upcoming": "Esta visão destaca tarefas que estão agendadas para a próxima semana. Ela ajuda você a se preparar e a ficar à frente dos prazos, dando uma visão geral do trabalho que você precisa enfrentar no futuro próximo. Tarefas com datas de vencimento dentro dos próximos 7 dias aparecerão aqui.",
@@ -907,6 +911,7 @@
     "week": "Semana",
     "day": "Dia",
     "today": "Hoje",
+    "total": "Total",
     "addEvent": "Adicionar Evento",
     "weekView": "Visão Semanal",
     "dayView": "Visão Diária",
