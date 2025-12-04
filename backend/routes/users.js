@@ -911,9 +911,8 @@ router.post('/profile/ai-settings/test', async (req, res) => {
 
                 // Check if the specified model exists
                 const modelsData = await modelsResponse.json();
-                const availableModels = modelsData.models?.map(
-                    (m) => m.name
-                ) || [];
+                const availableModels =
+                    modelsData.models?.map((m) => m.name) || [];
 
                 if (availableModels.length === 0) {
                     return res.status(400).json({
