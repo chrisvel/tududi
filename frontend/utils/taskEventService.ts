@@ -168,6 +168,7 @@ export const getEventTypeLabel = (eventType: string): string => {
         status_changed: 'Status Changed',
         priority_changed: 'Priority Changed',
         due_date_changed: 'Due Date Changed',
+        defer_until_changed: 'Defer Date Changed',
         project_changed: 'Project Changed',
         name_changed: 'Name Changed',
         description_changed: 'Description Changed',

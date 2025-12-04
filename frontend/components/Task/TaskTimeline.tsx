@@ -107,6 +107,14 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskUid, refreshKey }) => {
                 }
                 return t('timeline.events.dueDateChanged');
             }
+            case 'defer_until_changed': {
+                const oldDeferDate = old_value?.defer_until;
+                const newDeferDate = new_value?.defer_until;
+                if (oldDeferDate || newDeferDate) {
+                    return `${t('timeline.events.deferUntil')}: ${formatDate(oldDeferDate)} → ${formatDate(newDeferDate)}`;
+                }
+                return t('timeline.events.deferUntilChanged');
+            }
             case 'recurrence_end_date_changed': {
                 const oldDate = old_value?.recurrence_end_date;
                 const newDate = new_value?.recurrence_end_date;
