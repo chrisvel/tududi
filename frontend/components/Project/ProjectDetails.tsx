@@ -456,6 +456,13 @@ const ProjectDetails: React.FC = () => {
             area: savedProject.area || prev?.area,
             Area: (savedProject as any).Area || (prev as any)?.Area,
         }));
+
+        const currentProjects = projectsStore.projects;
+        const updatedProjects = currentProjects.map((p) =>
+            p.id === savedProject.id ? savedProject : p
+        );
+        projectsStore.setProjects(updatedProjects);
+
         closeModal();
     };
 
@@ -476,6 +483,13 @@ const ProjectDetails: React.FC = () => {
             area: updatedProject.area || prev?.area,
             Area: (updatedProject as any).Area || (prev as any)?.Area,
         }));
+
+        // Update the global projects store
+        const currentProjects = projectsStore.projects;
+        const updatedProjects = currentProjects.map((p) =>
+            p.id === updatedProject.id ? { ...p, image_url: imageUrl } : p
+        );
+        projectsStore.setProjects(updatedProjects);
 
         showSuccessToast(
             t('success.bannerUpdated', 'Banner updated successfully!')
