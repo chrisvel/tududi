@@ -28,7 +28,6 @@ import { getApiPath } from '../config/paths';
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
-// Helper function to get search placeholder by language
 const getSearchPlaceholder = (language: string): string => {
     const placeholders: Record<string, string> = {
         en: 'Search tasks...',
@@ -54,13 +53,12 @@ const Tasks: React.FC = () => {
     const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
     const [orderBy, setOrderBy] = useState<string>('created_at:desc');
     const [taskSearchQuery, setTaskSearchQuery] = useState<string>('');
-    const [isInfoExpanded, setIsInfoExpanded] = useState(false); // Collapsed by default
-    const [isSearchExpanded, setIsSearchExpanded] = useState(false); // Collapsed by default
-    const [showCompleted, setShowCompleted] = useState(false); // Show completed tasks toggle
+    const [isInfoExpanded, setIsInfoExpanded] = useState(false);
+    const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+    const [showCompleted, setShowCompleted] = useState(false);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     const [groupBy, setGroupBy] = useState<'none' | 'project'>('none');
 
-    // Pagination state
     const [offset, setOffset] = useState(0);
     const [hasMore, setHasMore] = useState(false);
     const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -78,27 +76,20 @@ const Tasks: React.FC = () => {
     const status = query.get('status');
     const tag = query.get('tag');
 
-    // Sync showCompleted state with status URL parameter (skip for upcoming view)
     useEffect(() => {
-        if (isUpcomingView) return; // Don't apply status filtering in upcoming view
-
         if (status === 'completed') {
             setShowCompleted(true);
         } else if (status === 'active') {
             setShowCompleted(false);
         } else if (status === null) {
-            // When status is null, we show "All" (both completed and active)
             setShowCompleted(true);
         }
     }, [status, isUpcomingView]);
 
-    // Filter tasks based on completion status and search query
     const displayTasks = useMemo(() => {
         let filteredTasks: Task[] = tasks;
 
-        // Status-based filtering
         if (status === 'completed') {
-            // Show only completed tasks
             filteredTasks = filteredTasks.filter((task: Task) => {
                 const isCompleted =
                     task.status === 'done' ||
@@ -108,7 +99,6 @@ const Tasks: React.FC = () => {
                 return isCompleted;
             });
         } else if (status === 'active') {
-            // Show only active (not completed) tasks
             filteredTasks = filteredTasks.filter((task: Task) => {
                 const isCompleted =
                     task.status === 'done' ||
@@ -118,9 +108,7 @@ const Tasks: React.FC = () => {
                 return !isCompleted;
             });
         }
-        // When status is null, show all tasks (no filtering)
 
-        // Then filter by search query if provided (skip for upcoming view)
         if (taskSearchQuery.trim() && !isUpcomingView) {
             const queryLower = taskSearchQuery.toLowerCase();
             filteredTasks = filteredTasks.filter(
@@ -134,7 +122,6 @@ const Tasks: React.FC = () => {
         return filteredTasks;
     }, [tasks, showCompleted, status, taskSearchQuery, isUpcomingView]);
 
-    // Handle the /upcoming route by setting type=upcoming in query params
     if (location.pathname === '/upcoming' && !query.get('type')) {
         query.set('type', 'upcoming');
     }
@@ -167,7 +154,6 @@ const Tasks: React.FC = () => {
         }
     }, [location.pathname]);
 
-    // Clear search query when switching to upcoming view
     useEffect(() => {
         if (isUpcomingView) {
             setTaskSearchQuery('');
@@ -207,22 +193,17 @@ const Tasks: React.FC = () => {
             const tagId = query.get('tag');
             const type = query.get('type');
 
-            // Fetch all tasks (both completed and non-completed) for client-side filtering
             const allTasksUrl = new URLSearchParams(query.toString());
-            // Add special parameter to get ALL tasks (completed and non-completed)
             allTasksUrl.set('client_side_filtering', 'true');
 
-            // Add groupBy=day for upcoming tasks
             if (type === 'upcoming') {
                 allTasksUrl.set('type', 'upcoming');
                 allTasksUrl.set('groupBy', 'day');
-                // Always show 7 days (whole week including tomorrow)
                 allTasksUrl.set('maxDays', '7');
                 allTasksUrl.set('sidebarOpen', isSidebarOpen.toString());
                 allTasksUrl.set('isMobile', isMobile.toString());
             }
 
-            // Add pagination parameters (skip when explicitly disabled or for upcoming view)
             if (!options?.disablePagination && type !== 'upcoming') {
                 const currentOffset =
                     options?.forceOffset !== undefined
@@ -255,7 +236,6 @@ const Tasks: React.FC = () => {
                     }
                 } else {
                     setTasks((prev) => [...prev, ...(tasksData.tasks || [])]);
-                    // For grouped tasks, merge them
                     if (tasksData.groupedTasks) {
                         setGroupedTasks((prev) => {
                             if (!prev) return tasksData.groupedTasks;
@@ -286,8 +266,6 @@ const Tasks: React.FC = () => {
             } else {
                 throw new Error('Failed to fetch tasks.');
             }
-
-            // Projects are now loaded by Layout component into global store
         } catch (error) {
             setError((error as Error).message);
         } finally {
@@ -321,7 +299,6 @@ const Tasks: React.FC = () => {
     };
 
     useEffect(() => {
-        // Disable pagination for: upcoming view OR when grouping by project
         const shouldDisablePagination = isUpcomingView || groupBy === 'project';
         fetchData(
             true,
@@ -336,7 +313,6 @@ const Tasks: React.FC = () => {
         );
     }, [location, isSidebarOpen, isMobile, groupBy, isUpcomingView]);
 
-    // Handle window resize for mobile detection
     useEffect(() => {
         const handleResize = () => {
             const newIsMobile = window.innerWidth < 768;
@@ -349,7 +325,6 @@ const Tasks: React.FC = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, [isMobile]);
 
-    // Listen for task creation from other components (e.g., Layout modal)
     useEffect(() => {
         const handleTaskCreated = (event: CustomEvent) => {
             const newTask = event.detail;
@@ -382,10 +357,8 @@ const Tasks: React.FC = () => {
     const handleTaskCreate = async (taskData: Partial<Task>) => {
         try {
             const newTask = await createTask(taskData as Task);
-            // Add the new task optimistically to avoid race conditions
             setTasks((prevTasks) => [newTask, ...prevTasks]);
 
-            // Show success toast with task link
             const taskLink = (
                 <span>
                     {t('task.created', 'Task')}{' '}
@@ -402,7 +375,7 @@ const Tasks: React.FC = () => {
         } catch (error) {
             console.error('Error creating task:', error);
             setError('Error creating task.');
-            throw error; // Re-throw to allow proper error handling
+            throw error;
         }
     };
 
@@ -422,7 +395,6 @@ const Tasks: React.FC = () => {
                             ? {
                                   ...task,
                                   ...updatedTaskFromServer,
-                                  // Explicitly preserve subtasks data
                                   subtasks:
                                       updatedTaskFromServer.subtasks ||
                                       updatedTaskFromServer.Subtasks ||
@@ -450,7 +422,6 @@ const Tasks: React.FC = () => {
         }
     };
 
-    // Handler specifically for task completion toggles (no API call needed, just state update)
     const handleTaskCompletionToggle = (updatedTask: Task) => {
         setTasks((prevTasks) =>
             prevTasks.map((task) =>
@@ -458,7 +429,6 @@ const Tasks: React.FC = () => {
             )
         );
 
-        // Also update groupedTasks if they exist
         if (groupedTasks) {
             setGroupedTasks((prevGroupedTasks) => {
                 if (!prevGroupedTasks) return null;
@@ -506,7 +476,6 @@ const Tasks: React.FC = () => {
     ): Promise<void> => {
         try {
             await toggleTaskToday(taskId, task);
-            // Refetch data to ensure consistency with all task relationships
             const params = new URLSearchParams(location.search);
             const type = params.get('type') || 'all';
             const tag = params.get('tag');
@@ -547,7 +516,6 @@ const Tasks: React.FC = () => {
         setDropdownOpen(false);
     };
 
-    // Sort options for tasks
     const sortOptions: SortOption[] = [
         { value: 'due_date:asc', label: t('sort.due_date', 'Due Date') },
         { value: 'name:asc', label: t('sort.name', 'Name') },
@@ -658,8 +626,8 @@ const Tasks: React.FC = () => {
                             dropdownLabel={t('tasks.sortBy', 'Sort by')}
                             align="right"
                             footerContent={
-                                !isUpcomingView && (
-                                    <div className="space-y-3">
+                                <div className="space-y-3">
+                                    {!isUpcomingView && (
                                         <div>
                                             <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
                                                 {t('tasks.groupBy', 'Group by')}
@@ -707,193 +675,183 @@ const Tasks: React.FC = () => {
                                                 )}
                                             </div>
                                         </div>
-                                        <div>
-                                            <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-t border-b border-gray-200 dark:border-gray-700">
-                                                {t('tasks.show', 'Show')}
-                                            </div>
-                                            <div className="py-1 space-y-1">
-                                                {[
-                                                    {
-                                                        key: 'active',
-                                                        label: t(
-                                                            'tasks.open',
-                                                            'Open'
-                                                        ),
-                                                    },
-                                                    {
-                                                        key: 'all',
-                                                        label: t(
-                                                            'tasks.all',
-                                                            'All'
-                                                        ),
-                                                    },
-                                                    {
-                                                        key: 'completed',
-                                                        label: t(
-                                                            'tasks.completed',
-                                                            'Completed'
-                                                        ),
-                                                    },
-                                                ].map((opt) => {
-                                                    const isActive =
-                                                        (opt.key === 'all' &&
-                                                            status === null) ||
-                                                        (opt.key ===
-                                                            'completed' &&
-                                                            status ===
-                                                                'completed') ||
-                                                        (opt.key === 'active' &&
-                                                            status ===
-                                                                'active');
-                                                    return (
-                                                        <button
-                                                            key={opt.key}
-                                                            type="button"
-                                                            onClick={() => {
-                                                                if (
-                                                                    opt.key ===
-                                                                    'completed'
-                                                                ) {
-                                                                    const params =
-                                                                        new URLSearchParams(
-                                                                            location.search
-                                                                        );
-                                                                    params.set(
-                                                                        'status',
-                                                                        'completed'
-                                                                    );
-                                                                    navigate(
-                                                                        {
-                                                                            pathname:
-                                                                                location.pathname,
-                                                                            search: `?${params.toString()}`,
-                                                                        },
-                                                                        {
-                                                                            replace: true,
-                                                                        }
-                                                                    );
-                                                                } else if (
-                                                                    opt.key ===
-                                                                    'all'
-                                                                ) {
-                                                                    const params =
-                                                                        new URLSearchParams(
-                                                                            location.search
-                                                                        );
-                                                                    params.delete(
-                                                                        'status'
-                                                                    );
-                                                                    navigate(
-                                                                        {
-                                                                            pathname:
-                                                                                location.pathname,
-                                                                            search: `?${params.toString()}`,
-                                                                        },
-                                                                        {
-                                                                            replace: true,
-                                                                        }
-                                                                    );
-                                                                } else {
-                                                                    // active (not completed)
-                                                                    const params =
-                                                                        new URLSearchParams(
-                                                                            location.search
-                                                                        );
-                                                                    params.set(
-                                                                        'status',
-                                                                        'active'
-                                                                    );
-                                                                    navigate(
-                                                                        {
-                                                                            pathname:
-                                                                                location.pathname,
-                                                                            search: `?${params.toString()}`,
-                                                                        },
-                                                                        {
-                                                                            replace: true,
-                                                                        }
-                                                                    );
-                                                                }
-                                                            }}
-                                                            className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
-                                                                isActive
-                                                                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                                                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                                            }`}
-                                                        >
-                                                            <span>
-                                                                {opt.label}
-                                                            </span>
-                                                            {isActive && (
-                                                                <CheckIcon className="h-4 w-4" />
-                                                            )}
-                                                        </button>
-                                                    );
-                                                })}
-                                            </div>
+                                    )}
+                                    <div>
+                                        <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-t border-b border-gray-200 dark:border-gray-700">
+                                            {t('tasks.show', 'Show')}
                                         </div>
-                                        <div>
-                                            <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-t border-b border-gray-200 dark:border-gray-700">
-                                                {t(
-                                                    'tasks.direction',
-                                                    'Direction'
-                                                )}
-                                            </div>
-                                            <div className="py-1">
-                                                {[
-                                                    {
-                                                        key: 'asc',
-                                                        label: t(
-                                                            'tasks.ascending',
-                                                            'Ascending'
-                                                        ),
-                                                    },
-                                                    {
-                                                        key: 'desc',
-                                                        label: t(
-                                                            'tasks.descending',
-                                                            'Descending'
-                                                        ),
-                                                    },
-                                                ].map((dir) => {
-                                                    const currentDirection =
-                                                        orderBy.split(':')[1] ||
-                                                        'asc';
-                                                    const isActive =
-                                                        currentDirection ===
-                                                        dir.key;
-                                                    return (
-                                                        <button
-                                                            key={dir.key}
-                                                            onClick={() => {
-                                                                const [field] =
-                                                                    orderBy.split(
-                                                                        ':'
+                                        <div className="py-1 space-y-1">
+                                            {[
+                                                {
+                                                    key: 'active',
+                                                    label: t(
+                                                        'tasks.open',
+                                                        'Open'
+                                                    ),
+                                                },
+                                                {
+                                                    key: 'all',
+                                                    label: t(
+                                                        'tasks.all',
+                                                        'All'
+                                                    ),
+                                                },
+                                                {
+                                                    key: 'completed',
+                                                    label: t(
+                                                        'tasks.completed',
+                                                        'Completed'
+                                                    ),
+                                                },
+                                            ].map((opt) => {
+                                                const isActive =
+                                                    (opt.key === 'all' &&
+                                                        status === null) ||
+                                                    (opt.key === 'completed' &&
+                                                        status ===
+                                                            'completed') ||
+                                                    (opt.key === 'active' &&
+                                                        status === 'active');
+                                                return (
+                                                    <button
+                                                        key={opt.key}
+                                                        type="button"
+                                                        onClick={() => {
+                                                            if (
+                                                                opt.key ===
+                                                                'completed'
+                                                            ) {
+                                                                const params =
+                                                                    new URLSearchParams(
+                                                                        location.search
                                                                     );
-                                                                const newOrderBy = `${field}:${dir.key}`;
-                                                                handleSortChange(
-                                                                    newOrderBy
+                                                                params.set(
+                                                                    'status',
+                                                                    'completed'
                                                                 );
-                                                            }}
-                                                            className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
-                                                                isActive
-                                                                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                                                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                                            }`}
-                                                        >
-                                                            <span>
-                                                                {dir.label}
-                                                            </span>
-                                                            {isActive && (
-                                                                <CheckIcon className="h-4 w-4" />
-                                                            )}
-                                                        </button>
-                                                    );
-                                                })}
-                                            </div>
+                                                                navigate(
+                                                                    {
+                                                                        pathname:
+                                                                            location.pathname,
+                                                                        search: `?${params.toString()}`,
+                                                                    },
+                                                                    {
+                                                                        replace: true,
+                                                                    }
+                                                                );
+                                                            } else if (
+                                                                opt.key ===
+                                                                'all'
+                                                            ) {
+                                                                const params =
+                                                                    new URLSearchParams(
+                                                                        location.search
+                                                                    );
+                                                                params.delete(
+                                                                    'status'
+                                                                );
+                                                                navigate(
+                                                                    {
+                                                                        pathname:
+                                                                            location.pathname,
+                                                                        search: `?${params.toString()}`,
+                                                                    },
+                                                                    {
+                                                                        replace: true,
+                                                                    }
+                                                                );
+                                                            } else {
+                                                                const params =
+                                                                    new URLSearchParams(
+                                                                        location.search
+                                                                    );
+                                                                params.set(
+                                                                    'status',
+                                                                    'active'
+                                                                );
+                                                                navigate(
+                                                                    {
+                                                                        pathname:
+                                                                            location.pathname,
+                                                                        search: `?${params.toString()}`,
+                                                                    },
+                                                                    {
+                                                                        replace: true,
+                                                                    }
+                                                                );
+                                                            }
+                                                        }}
+                                                        className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                                                            isActive
+                                                                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                                                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                        }`}
+                                                    >
+                                                        <span>{opt.label}</span>
+                                                        {isActive && (
+                                                            <CheckIcon className="h-4 w-4" />
+                                                        )}
+                                                    </button>
+                                                );
+                                            })}
                                         </div>
                                     </div>
-                                )
+                                    <div>
+                                        <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-t border-b border-gray-200 dark:border-gray-700">
+                                            {t('tasks.direction', 'Direction')}
+                                        </div>
+                                        <div className="py-1">
+                                            {[
+                                                {
+                                                    key: 'asc',
+                                                    label: t(
+                                                        'tasks.ascending',
+                                                        'Ascending'
+                                                    ),
+                                                },
+                                                {
+                                                    key: 'desc',
+                                                    label: t(
+                                                        'tasks.descending',
+                                                        'Descending'
+                                                    ),
+                                                },
+                                            ].map((dir) => {
+                                                const currentDirection =
+                                                    orderBy.split(':')[1] ||
+                                                    'asc';
+                                                const isActive =
+                                                    currentDirection ===
+                                                    dir.key;
+                                                return (
+                                                    <button
+                                                        key={dir.key}
+                                                        onClick={() => {
+                                                            const [field] =
+                                                                orderBy.split(
+                                                                    ':'
+                                                                );
+                                                            const newOrderBy = `${field}:${dir.key}`;
+                                                            handleSortChange(
+                                                                newOrderBy
+                                                            );
+                                                        }}
+                                                        className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                                                            isActive
+                                                                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                                                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                        }`}
+                                                    >
+                                                        <span>{dir.label}</span>
+                                                        {isActive && (
+                                                            <CheckIcon className="h-4 w-4" />
+                                                        )}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                </div>
                             }
                         />
                     </div>
@@ -982,7 +940,7 @@ const Tasks: React.FC = () => {
                                         onTaskDelete={handleTaskDelete}
                                         projects={projects}
                                         hideProjectName={false}
-                                        onToggleToday={undefined} // Don't show "Add to Today" in upcoming view
+                                        onToggleToday={undefined}
                                         showCompletedTasks={showCompleted}
                                         searchQuery={taskSearchQuery}
                                     />

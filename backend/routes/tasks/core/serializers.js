@@ -18,11 +18,13 @@ async function serializeTask(
     if (!task) {
         throw new Error('Task is null or undefined');
     }
-    const taskJson = task.toJSON();
+    const taskJson = task.toJSON ? task.toJSON() : task;
 
-    const todayMoveCount = moveCountMap
-        ? moveCountMap[task.id] || 0
-        : await getTaskTodayMoveCount(task.id);
+    const todayMoveCount = taskJson.is_virtual_occurrence
+        ? 0
+        : moveCountMap
+          ? moveCountMap[task.id] || 0
+          : await getTaskTodayMoveCount(task.id);
 
     const safeTimezone = getSafeTimezone(userTimezone);
 

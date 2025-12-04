@@ -2,7 +2,6 @@
 
 async function safeAddColumns(queryInterface, tableName, columns) {
     try {
-        // First check if table exists
         const tables = await queryInterface.showAllTables();
         const tableExists = tables.includes(tableName);
 
@@ -49,7 +48,6 @@ async function safeCreateTable(queryInterface, tableName, tableDefinition) {
 
 async function safeAddIndex(queryInterface, tableName, fields, options = {}) {
     try {
-        // First check if table exists
         const tables = await queryInterface.showAllTables();
         const tableExists = tables.includes(tableName);
 
@@ -89,19 +87,16 @@ async function safeRemoveColumn(queryInterface, tableName, columnName) {
 
         const dialect = queryInterface.sequelize.getDialect();
 
-        // SQLite doesn't support DROP COLUMN, so we need to recreate the table
         if (dialect === 'sqlite') {
             try {
-                // Get all columns except the one to remove
                 const columns = Object.keys(tableInfo).filter(
                     (col) => col !== columnName
                 );
 
-                // Build column definitions for new table
                 const columnDefs = columns
                     .map((col) => {
                         const info = tableInfo[col];
-                        let def = `${col} ${info.type}`;
+                        let def = `\`${col}\` ${info.type}`;
 
                         if (info.primaryKey) {
                             def += ' PRIMARY KEY';
@@ -119,7 +114,6 @@ async function safeRemoveColumn(queryInterface, tableName, columnName) {
                             info.defaultValue !== undefined &&
                             info.defaultValue !== null
                         ) {
-                            // Properly quote string defaults
                             const defaultVal =
                                 typeof info.defaultValue === 'string'
                                     ? `'${info.defaultValue.replace(/'/g, "''")}'`
@@ -131,9 +125,10 @@ async function safeRemoveColumn(queryInterface, tableName, columnName) {
                     })
                     .join(', ');
 
-                const columnList = columns.join(', ');
+                const columnList = columns
+                    .map((col) => `\`${col}\``)
+                    .join(', ');
 
-                // Execute operations separately as SQLite doesn't support multiple statements
                 await queryInterface.sequelize.query(
                     'PRAGMA foreign_keys = OFF;'
                 );
@@ -162,14 +157,11 @@ async function safeRemoveColumn(queryInterface, tableName, columnName) {
                     `Successfully removed column ${columnName} from ${tableName}`
                 );
             } catch (error) {
-                // Ensure foreign keys are re-enabled even on error
                 try {
                     await queryInterface.sequelize.query(
                         'PRAGMA foreign_keys = ON;'
                     );
-                } catch (pragmaError) {
-                    // Ignore pragma errors during cleanup
-                }
+                } catch (pragmaError) {}
                 console.log(
                     `Migration error removing column ${columnName} from ${tableName}:`,
                     error.message
@@ -177,7 +169,6 @@ async function safeRemoveColumn(queryInterface, tableName, columnName) {
                 throw error;
             }
         } else {
-            // For other databases, use standard removeColumn
             await queryInterface.removeColumn(tableName, columnName);
         }
     } catch (error) {

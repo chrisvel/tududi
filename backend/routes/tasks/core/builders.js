@@ -6,15 +6,30 @@ const {
 } = require('../../../utils/timezone-utils');
 
 function buildTaskAttributes(body, userId, timezone, isUpdate = false) {
+    const recurrenceType = body.recurrence_type || 'none';
+    const isRecurring = recurrenceType && recurrenceType !== 'none';
+
+    let dueDate = body.due_date;
+    if (
+        isRecurring &&
+        (dueDate === undefined || dueDate === null || dueDate === '')
+    ) {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        dueDate = `${year}-${month}-${day}`;
+    }
+
     const attrs = {
         name: body.name?.trim(),
         priority: parsePriority(body.priority),
-        due_date: processDueDateForStorage(body.due_date, timezone),
+        due_date: processDueDateForStorage(dueDate, timezone),
         defer_until: processDeferUntilForStorage(body.defer_until, timezone),
         status: parseStatus(body.status),
         note: body.note,
         today: body.today !== undefined ? body.today : false,
-        recurrence_type: body.recurrence_type || 'none',
+        recurrence_type: recurrenceType,
         recurrence_interval: body.recurrence_interval || null,
         recurrence_end_date: body.recurrence_end_date || null,
         recurrence_weekday:
@@ -44,6 +59,17 @@ function buildTaskAttributes(body, userId, timezone, isUpdate = false) {
 }
 
 function buildUpdateAttributes(body, task, timezone) {
+    const recurrenceType =
+        body.recurrence_type !== undefined
+            ? body.recurrence_type
+            : task.recurrence_type;
+    const isRecurring = recurrenceType && recurrenceType !== 'none';
+
+    const isAddingRecurrence =
+        body.recurrence_type !== undefined &&
+        body.recurrence_type !== 'none' &&
+        (task.recurrence_type === 'none' || !task.recurrence_type);
+
     const attrs = {
         name: body.name,
         priority:
@@ -56,10 +82,7 @@ function buildUpdateAttributes(body, task, timezone) {
                 : Task.STATUS.NOT_STARTED,
         note: body.note,
         today: body.today !== undefined ? body.today : task.today,
-        recurrence_type:
-            body.recurrence_type !== undefined
-                ? body.recurrence_type
-                : task.recurrence_type,
+        recurrence_type: recurrenceType,
         recurrence_interval:
             body.recurrence_interval !== undefined
                 ? body.recurrence_interval
@@ -90,10 +113,28 @@ function buildUpdateAttributes(body, task, timezone) {
                 : task.completion_based,
     };
 
-    // Only process dates if they are present in the body
     if (body.due_date !== undefined) {
-        attrs.due_date = processDueDateForStorage(body.due_date, timezone);
+        if (isRecurring && (body.due_date === null || body.due_date === '')) {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            attrs.due_date = processDueDateForStorage(
+                `${year}-${month}-${day}`,
+                timezone
+            );
+        } else {
+            attrs.due_date = processDueDateForStorage(body.due_date, timezone);
+        }
+    } else if (isAddingRecurrence && (!task.due_date || task.due_date === '')) {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const dueDate = `${year}-${month}-${day}`;
+        attrs.due_date = processDueDateForStorage(dueDate, timezone);
     }
+
     if (body.defer_until !== undefined) {
         attrs.defer_until = processDeferUntilForStorage(
             body.defer_until,

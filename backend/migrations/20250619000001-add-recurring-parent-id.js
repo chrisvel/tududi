@@ -1,12 +1,17 @@
 'use strict';
 
+const {
+    safeAddColumns,
+    safeAddIndex,
+    safeRemoveColumn,
+} = require('../utils/migration-utils');
+
 module.exports = {
     up: async (queryInterface, Sequelize) => {
-        try {
-            const tableInfo = await queryInterface.describeTable('tasks');
-
-            if (!('recurring_parent_id' in tableInfo)) {
-                await queryInterface.addColumn('tasks', 'recurring_parent_id', {
+        await safeAddColumns(queryInterface, 'tasks', [
+            {
+                name: 'recurring_parent_id',
+                definition: {
                     type: Sequelize.INTEGER,
                     allowNull: true,
                     references: {
@@ -15,36 +20,22 @@ module.exports = {
                     },
                     onUpdate: 'CASCADE',
                     onDelete: 'SET NULL',
-                });
-            }
+                },
+            },
+        ]);
 
-            try {
-                const indexes = await queryInterface.showIndex('tasks');
-                const indexExists = indexes.some((index) =>
-                    index.fields.some(
-                        (field) => field.attribute === 'recurring_parent_id'
-                    )
-                );
-
-                if (!indexExists) {
-                    await queryInterface.addIndex('tasks', [
-                        'recurring_parent_id',
-                    ]);
-                }
-            } catch (indexError) {
-                console.log(
-                    'Could not check or add index for recurring_parent_id:',
-                    indexError.message
-                );
-            }
-        } catch (error) {
-            console.log('Migration error:', error.message);
-            throw error;
-        }
+        await safeAddIndex(queryInterface, 'tasks', ['recurring_parent_id']);
     },
 
     down: async (queryInterface) => {
-        await queryInterface.removeIndex('tasks', ['recurring_parent_id']);
-        await queryInterface.removeColumn('tasks', 'recurring_parent_id');
+        try {
+            await queryInterface.removeIndex('tasks', ['recurring_parent_id']);
+        } catch (error) {
+            console.log(
+                'Could not remove index recurring_parent_id:',
+                error.message
+            );
+        }
+        await safeRemoveColumn(queryInterface, 'tasks', 'recurring_parent_id');
     },
 };

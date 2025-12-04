@@ -26,10 +26,8 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
     const { t } = useTranslation();
     const store = useStore();
 
-    // Get inbox items count for badge - use pagination.total for accurate count
     const inboxItemsCount = store.inboxStore.pagination.total;
 
-    // Load inbox items when component mounts to ensure badge shows correct count
     useEffect(() => {
         loadInboxItemsToStore(false).catch(console.error);
     }, []);
@@ -60,7 +58,6 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
     ];
 
     const isActive = (path: string, query?: string) => {
-        // Handle special case for paths without query parameters
         if (path === '/inbox' || path === '/today') {
             const isPathMatch = location.pathname === path;
             return isPathMatch
@@ -68,7 +65,6 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                 : 'text-gray-700 dark:text-gray-300';
         }
 
-        // Handle upcoming with query parameters
         if (path.startsWith('/upcoming')) {
             const isPathMatch = location.pathname === '/upcoming';
             return isPathMatch
@@ -76,7 +72,6 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                 : 'text-gray-700 dark:text-gray-300';
         }
 
-        // Regular case for /tasks with query params
         const isPathMatch = location.pathname === '/tasks';
         const isQueryMatch = query
             ? location.search.includes(query)
@@ -114,12 +109,24 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                                         </span>
                                     )}
                                 {link.path === '/tasks?status=active' && (
-                                    <button
+                                    <div
+                                        role="button"
+                                        tabIndex={0}
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             openTaskModal('full');
                                         }}
-                                        className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none"
+                                        onKeyDown={(e) => {
+                                            if (
+                                                e.key === 'Enter' ||
+                                                e.key === ' '
+                                            ) {
+                                                e.stopPropagation();
+                                                e.preventDefault();
+                                                openTaskModal('full');
+                                            }
+                                        }}
+                                        className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none cursor-pointer"
                                         aria-label={t(
                                             'sidebar.addTaskAriaLabel',
                                             'Add Task'
@@ -130,7 +137,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                                         )}
                                     >
                                         <PlusCircleIcon className="h-5 w-5" />
-                                    </button>
+                                    </div>
                                 )}
                             </div>
                         </button>

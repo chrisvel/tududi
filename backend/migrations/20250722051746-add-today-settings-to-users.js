@@ -1,13 +1,16 @@
 'use strict';
 
+const {
+    safeAddColumns,
+    safeRemoveColumn,
+} = require('../utils/migration-utils');
+
 module.exports = {
     async up(queryInterface, Sequelize) {
-        try {
-            const tableInfo = await queryInterface.describeTable('users');
-
-            // Check if today_settings column already exists
-            if (!('today_settings' in tableInfo)) {
-                await queryInterface.addColumn('users', 'today_settings', {
+        await safeAddColumns(queryInterface, 'users', [
+            {
+                name: 'today_settings',
+                definition: {
                     type: Sequelize.JSON,
                     allowNull: true,
                     defaultValue: {
@@ -20,15 +23,12 @@ module.exports = {
                         showProgressBar: true,
                         showDailyQuote: true,
                     },
-                });
-            }
-        } catch (error) {
-            console.log('Migration error:', error.message);
-            throw error;
-        }
+                },
+            },
+        ]);
     },
 
-    async down(queryInterface, Sequelize) {
-        await queryInterface.removeColumn('users', 'today_settings');
+    async down(queryInterface) {
+        await safeRemoveColumn(queryInterface, 'users', 'today_settings');
     },
 };

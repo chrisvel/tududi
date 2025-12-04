@@ -1,22 +1,11 @@
 const request = require('supertest');
 const app = require('../../app');
-const { Task, User } = require('../../models');
+const { Task, RecurringCompletion, sequelize } = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
+const { calculateNextDueDate } = require('../../services/recurringTaskService');
 
-describe('Recurring Tasks API', () => {
+describe('Recurring Tasks', () => {
     let user, agent;
-
-    const toggleTaskCompletion = async (taskId) => {
-        const task = await Task.findByPk(taskId);
-        const newStatus =
-            task.status === Task.STATUS.DONE
-                ? task.note
-                    ? Task.STATUS.IN_PROGRESS
-                    : Task.STATUS.NOT_STARTED
-                : Task.STATUS.DONE;
-
-        return agent.patch(`/api/task/${task.uid}`).send({ status: newStatus });
-    };
 
     beforeEach(async () => {
         user = await createTestUser({
@@ -31,832 +20,1115 @@ describe('Recurring Tasks API', () => {
         });
     });
 
-    describe('POST /api/task - Creating recurring tasks', () => {
-        it('should create a daily recurring task', async () => {
-            const taskData = {
-                name: 'Daily Exercise',
-                recurrence_type: 'daily',
-                recurrence_interval: 1,
-                priority: 1,
-                completion_based: false,
-            };
+    describe('Initial Due Date Calculation', () => {
+        describe('Daily Recurrence', () => {
+            it('should set correct due date for daily recurring task', async () => {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const tomorrow = new Date(today);
+                tomorrow.setDate(tomorrow.getDate() + 1);
 
-            const response = await agent.post('/api/task').send(taskData);
+                const taskData = {
+                    name: 'Daily Exercise',
+                    recurrence_type: 'daily',
+                    recurrence_interval: 1,
+                    due_date: today.toISOString().split('T')[0],
+                };
 
-            expect(response.status).toBe(201);
-            expect(response.body.name).toBe('Daily Exercise');
-            expect(response.body.recurrence_type).toBe('daily');
-            expect(response.body.recurrence_interval).toBe(1);
-            expect(response.body.completion_based).toBe(false);
+                const response = await agent.post('/api/task').send(taskData);
+
+                expect(response.status).toBe(201);
+                expect(response.body.recurrence_type).toBe('daily');
+                expect(response.body.recurrence_interval).toBe(1);
+
+                // Verify the task was created with the correct due date
+                const createdTask = await Task.findByPk(response.body.id);
+                expect(createdTask.due_date).toBeDefined();
+                expect(
+                    new Date(createdTask.due_date).toISOString().split('T')[0]
+                ).toBe(today.toISOString().split('T')[0]);
+            });
+
+            it('should handle daily recurrence with interval of 2', async () => {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                const taskData = {
+                    name: 'Every Other Day Task',
+                    recurrence_type: 'daily',
+                    recurrence_interval: 2,
+                    due_date: today.toISOString().split('T')[0],
+                };
+
+                const response = await agent.post('/api/task').send(taskData);
+
+                expect(response.status).toBe(201);
+                expect(response.body.recurrence_type).toBe('daily');
+                expect(response.body.recurrence_interval).toBe(2);
+
+                // Calculate next occurrence
+                const task = await Task.findByPk(response.body.id);
+                const nextDate = calculateNextDueDate(
+                    task,
+                    new Date(task.due_date)
+                );
+                const expectedDate = new Date(today);
+                expectedDate.setDate(expectedDate.getDate() + 2);
+
+                expect(nextDate.toISOString().split('T')[0]).toBe(
+                    expectedDate.toISOString().split('T')[0]
+                );
+            });
+
+            it('should handle daily recurrence with interval of 7', async () => {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                const taskData = {
+                    name: 'Weekly via Daily',
+                    recurrence_type: 'daily',
+                    recurrence_interval: 7,
+                    due_date: today.toISOString().split('T')[0],
+                };
+
+                const response = await agent.post('/api/task').send(taskData);
+
+                expect(response.status).toBe(201);
+
+                const task = await Task.findByPk(response.body.id);
+                const nextDate = calculateNextDueDate(
+                    task,
+                    new Date(task.due_date)
+                );
+                const expectedDate = new Date(today);
+                expectedDate.setDate(expectedDate.getDate() + 7);
+
+                expect(nextDate.toISOString().split('T')[0]).toBe(
+                    expectedDate.toISOString().split('T')[0]
+                );
+            });
         });
 
-        it('should create a weekly recurring task with specific weekday', async () => {
-            const taskData = {
-                name: 'Weekly Team Meeting',
-                recurrence_type: 'weekly',
-                recurrence_interval: 1,
-                recurrence_weekday: 1, // Monday
-                priority: 2,
-            };
+        describe('Weekly Recurrence', () => {
+            it('should set correct due date for weekly recurring task', async () => {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const todayWeekday = today.getDay();
 
-            const response = await agent.post('/api/task').send(taskData);
+                const taskData = {
+                    name: 'Weekly Meeting',
+                    recurrence_type: 'weekly',
+                    recurrence_interval: 1,
+                    recurrence_weekday: todayWeekday,
+                    due_date: today.toISOString().split('T')[0],
+                };
 
-            expect(response.status).toBe(201);
-            expect(response.body.name).toBe('Weekly Team Meeting');
-            expect(response.body.recurrence_type).toBe('weekly');
-            expect(response.body.recurrence_weekday).toBe(1);
+                const response = await agent.post('/api/task').send(taskData);
+
+                expect(response.status).toBe(201);
+                expect(response.body.recurrence_type).toBe('weekly');
+                expect(response.body.recurrence_weekday).toBe(todayWeekday);
+
+                const createdTask = await Task.findByPk(response.body.id);
+                expect(createdTask.due_date).toBeDefined();
+            });
+
+            it('should calculate next week for weekly recurrence', async () => {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const todayWeekday = today.getDay();
+
+                const taskData = {
+                    name: 'Weekly Review',
+                    recurrence_type: 'weekly',
+                    recurrence_interval: 1,
+                    recurrence_weekday: todayWeekday,
+                    due_date: today.toISOString().split('T')[0],
+                };
+
+                const response = await agent.post('/api/task').send(taskData);
+                const task = await Task.findByPk(response.body.id);
+
+                const nextDate = calculateNextDueDate(
+                    task,
+                    new Date(task.due_date)
+                );
+                const expectedDate = new Date(today);
+                expectedDate.setDate(expectedDate.getDate() + 7);
+
+                expect(nextDate.toISOString().split('T')[0]).toBe(
+                    expectedDate.toISOString().split('T')[0]
+                );
+            });
+
+            it('should handle bi-weekly recurrence', async () => {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const todayWeekday = today.getDay();
+
+                const taskData = {
+                    name: 'Bi-weekly Task',
+                    recurrence_type: 'weekly',
+                    recurrence_interval: 2,
+                    recurrence_weekday: todayWeekday,
+                    due_date: today.toISOString().split('T')[0],
+                };
+
+                const response = await agent.post('/api/task').send(taskData);
+                const task = await Task.findByPk(response.body.id);
+
+                const nextDate = calculateNextDueDate(
+                    task,
+                    new Date(task.due_date)
+                );
+                const expectedDate = new Date(today);
+                expectedDate.setDate(expectedDate.getDate() + 14);
+
+                expect(nextDate.toISOString().split('T')[0]).toBe(
+                    expectedDate.toISOString().split('T')[0]
+                );
+            });
+
+            it('should handle weekly recurrence on a different weekday', async () => {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const todayWeekday = today.getDay();
+                // Target a different weekday (e.g., if today is Monday (1), target Friday (5))
+                const targetWeekday = (todayWeekday + 4) % 7;
+
+                const taskData = {
+                    name: 'Weekly on Different Day',
+                    recurrence_type: 'weekly',
+                    recurrence_interval: 1,
+                    recurrence_weekday: targetWeekday,
+                    due_date: today.toISOString().split('T')[0],
+                };
+
+                const response = await agent.post('/api/task').send(taskData);
+                const task = await Task.findByPk(response.body.id);
+
+                const nextDate = calculateNextDueDate(
+                    task,
+                    new Date(task.due_date)
+                );
+                expect(nextDate.getDay()).toBe(targetWeekday);
+            });
         });
 
-        it('should create a monthly recurring task', async () => {
-            const taskData = {
-                name: 'Pay Rent',
-                recurrence_type: 'monthly',
-                recurrence_interval: 1,
-                recurrence_month_day: 1,
-                priority: 2,
-            };
+        describe('Monthly Recurrence', () => {
+            it('should set correct due date for monthly recurring task', async () => {
+                const today = new Date();
+                today.setUTCHours(0, 0, 0, 0);
+                const dayOfMonth = today.getUTCDate();
 
-            const response = await agent.post('/api/task').send(taskData);
+                const taskData = {
+                    name: 'Monthly Report',
+                    recurrence_type: 'monthly',
+                    recurrence_interval: 1,
+                    recurrence_month_day: dayOfMonth,
+                    due_date: today.toISOString().split('T')[0],
+                };
 
-            expect(response.status).toBe(201);
-            expect(response.body.name).toBe('Pay Rent');
-            expect(response.body.recurrence_type).toBe('monthly');
-            expect(response.body.recurrence_month_day).toBe(1);
+                const response = await agent.post('/api/task').send(taskData);
+
+                expect(response.status).toBe(201);
+                expect(response.body.recurrence_type).toBe('monthly');
+                expect(response.body.recurrence_month_day).toBe(dayOfMonth);
+
+                const createdTask = await Task.findByPk(response.body.id);
+                expect(createdTask.due_date).toBeDefined();
+            });
+
+            it('should calculate next month for monthly recurrence', async () => {
+                const today = new Date();
+                today.setUTCHours(0, 0, 0, 0);
+                const dayOfMonth = 15; // Use a safe day that exists in all months
+
+                const taskData = {
+                    name: 'Monthly Bill',
+                    recurrence_type: 'monthly',
+                    recurrence_interval: 1,
+                    recurrence_month_day: dayOfMonth,
+                    due_date: new Date(
+                        Date.UTC(
+                            today.getUTCFullYear(),
+                            today.getUTCMonth(),
+                            dayOfMonth
+                        )
+                    )
+                        .toISOString()
+                        .split('T')[0],
+                };
+
+                const response = await agent.post('/api/task').send(taskData);
+                const task = await Task.findByPk(response.body.id);
+
+                const nextDate = calculateNextDueDate(
+                    task,
+                    new Date(task.due_date)
+                );
+                const expectedMonth = (today.getUTCMonth() + 1) % 12;
+
+                expect(nextDate.getUTCDate()).toBe(dayOfMonth);
+                expect(nextDate.getUTCMonth()).toBe(expectedMonth);
+            });
+
+            it('should handle monthly recurrence on last day of month', async () => {
+                const today = new Date();
+                today.setUTCHours(0, 0, 0, 0);
+
+                const taskData = {
+                    name: 'End of Month Task',
+                    recurrence_type: 'monthly_last_day',
+                    recurrence_interval: 1,
+                    due_date: today.toISOString().split('T')[0],
+                };
+
+                const response = await agent.post('/api/task').send(taskData);
+                const task = await Task.findByPk(response.body.id);
+
+                const nextDate = calculateNextDueDate(
+                    task,
+                    new Date(task.due_date)
+                );
+
+                // Should be last day of next month
+                const expectedDate = new Date(
+                    Date.UTC(
+                        nextDate.getUTCFullYear(),
+                        nextDate.getUTCMonth() + 1,
+                        0
+                    )
+                );
+                expect(nextDate.getUTCDate()).toBe(expectedDate.getUTCDate());
+            });
+
+            it('should handle monthly recurrence when day does not exist in target month', async () => {
+                // Create a task for Jan 31
+                const jan31 = new Date(Date.UTC(2024, 0, 31, 0, 0, 0, 0));
+
+                const taskData = {
+                    name: 'Monthly on 31st',
+                    recurrence_type: 'monthly',
+                    recurrence_interval: 1,
+                    recurrence_month_day: 31,
+                    due_date: jan31.toISOString().split('T')[0],
+                };
+
+                const response = await agent.post('/api/task').send(taskData);
+                const task = await Task.findByPk(response.body.id);
+
+                // Next occurrence should be Feb 29 (if leap year) or Feb 28
+                const nextDate = calculateNextDueDate(task, jan31);
+
+                // February should cap at the last day of the month
+                expect(nextDate.getUTCMonth()).toBe(1); // February
+                expect(nextDate.getUTCDate()).toBeLessThanOrEqual(29);
+            });
         });
 
-        it('should create a monthly weekday recurring task', async () => {
-            const taskData = {
-                name: 'First Monday Meeting',
-                recurrence_type: 'monthly_weekday',
-                recurrence_interval: 1,
-                recurrence_weekday: 1, // Monday
-                recurrence_week_of_month: 1, // First week
-                priority: 1,
-            };
+        describe('Monthly Weekday Recurrence', () => {
+            it('should handle first Monday of the month', async () => {
+                const today = new Date();
+                today.setUTCHours(0, 0, 0, 0);
 
-            const response = await agent.post('/api/task').send(taskData);
+                const taskData = {
+                    name: 'First Monday Meeting',
+                    recurrence_type: 'monthly_weekday',
+                    recurrence_interval: 1,
+                    recurrence_weekday: 1, // Monday
+                    recurrence_week_of_month: 1, // First week
+                    due_date: today.toISOString().split('T')[0],
+                };
 
-            expect(response.status).toBe(201);
-            expect(response.body.name).toBe('First Monday Meeting');
-            expect(response.body.recurrence_type).toBe('monthly_weekday');
-            expect(response.body.recurrence_weekday).toBe(1);
-            expect(response.body.recurrence_week_of_month).toBe(1);
-        });
+                const response = await agent.post('/api/task').send(taskData);
+                expect(response.status).toBe(201);
 
-        it('should create a monthly last day recurring task', async () => {
-            const taskData = {
-                name: 'Month-end Report',
-                recurrence_type: 'monthly_last_day',
-                recurrence_interval: 1,
-                priority: 2,
-            };
+                const task = await Task.findByPk(response.body.id);
+                const nextDate = calculateNextDueDate(
+                    task,
+                    new Date(task.due_date)
+                );
 
-            const response = await agent.post('/api/task').send(taskData);
+                // Should be a Monday
+                expect(nextDate.getUTCDay()).toBe(1);
+            });
 
-            expect(response.status).toBe(201);
-            expect(response.body.name).toBe('Month-end Report');
-            expect(response.body.recurrence_type).toBe('monthly_last_day');
-        });
+            it('should handle third Friday of the month', async () => {
+                const today = new Date();
+                today.setUTCHours(0, 0, 0, 0);
 
-        it('should create a completion-based recurring task', async () => {
-            const taskData = {
-                name: 'Car Maintenance',
-                recurrence_type: 'monthly',
-                recurrence_interval: 3,
-                completion_based: true,
-                priority: 1,
-            };
+                const taskData = {
+                    name: 'Third Friday Task',
+                    recurrence_type: 'monthly_weekday',
+                    recurrence_interval: 1,
+                    recurrence_weekday: 5, // Friday
+                    recurrence_week_of_month: 3, // Third week
+                    due_date: today.toISOString().split('T')[0],
+                };
 
-            const response = await agent.post('/api/task').send(taskData);
+                const response = await agent.post('/api/task').send(taskData);
+                const task = await Task.findByPk(response.body.id);
+                const nextDate = calculateNextDueDate(
+                    task,
+                    new Date(task.due_date)
+                );
 
-            expect(response.status).toBe(201);
-            expect(response.body.name).toBe('Car Maintenance');
-            expect(response.body.completion_based).toBe(true);
-        });
-
-        it('should create recurring task with end date', async () => {
-            const endDate = new Date();
-            endDate.setMonth(endDate.getMonth() + 6);
-
-            const taskData = {
-                name: 'Temporary Recurring Task',
-                recurrence_type: 'weekly',
-                recurrence_interval: 2,
-                recurrence_end_date: endDate.toISOString().split('T')[0],
-                priority: 1,
-            };
-
-            const response = await agent.post('/api/task').send(taskData);
-
-            expect(response.status).toBe(201);
-            expect(response.body.name).toBe('Temporary Recurring Task');
-            expect(response.body.recurrence_end_date).toContain(
-                endDate.toISOString().split('T')[0]
-            );
-        });
-
-        it('should default to none recurrence type if not specified', async () => {
-            const taskData = {
-                name: 'Regular Task',
-                priority: 1,
-            };
-
-            const response = await agent.post('/api/task').send(taskData);
-
-            expect(response.status).toBe(201);
-            expect(response.body.recurrence_type).toBe('none');
+                // Should be a Friday
+                expect(nextDate.getUTCDay()).toBe(5);
+            });
         });
     });
 
-    describe('PATCH /api/task/:id - Updating recurring tasks', () => {
-        let task;
+    describe('Due Date Refresh on Completion', () => {
+        it('should advance due date when daily recurring task is completed', async () => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
 
-        beforeEach(async () => {
-            task = await Task.create({
-                name: 'Test Recurring Task',
-                recurrence_type: 'daily',
-                recurrence_interval: 1,
-                user_id: user.id,
-                priority: 1,
-            });
-        });
-
-        it('should update recurrence settings', async () => {
-            const updateData = {
-                recurrence_type: 'weekly',
-                recurrence_interval: 2,
-                recurrence_weekday: 5, // Friday
-            };
-
-            const response = await agent
-                .patch(`/api/task/${task.uid}`)
-                .send(updateData);
-
-            expect(response.status).toBe(200);
-            expect(response.body.recurrence_type).toBe('weekly');
-            expect(response.body.recurrence_interval).toBe(2);
-            expect(response.body.recurrence_weekday).toBe(5);
-        });
-
-        it('should update completion_based setting', async () => {
-            const updateData = {
-                completion_based: true,
-            };
-
-            const response = await agent
-                .patch(`/api/task/${task.uid}`)
-                .send(updateData);
-
-            expect(response.status).toBe(200);
-            expect(response.body.completion_based).toBe(true);
-        });
-
-        it('should update recurrence end date', async () => {
-            const endDate = new Date();
-            endDate.setFullYear(endDate.getFullYear() + 1);
-
-            const updateData = {
-                recurrence_end_date: endDate.toISOString().split('T')[0],
-            };
-
-            const response = await agent
-                .patch(`/api/task/${task.uid}`)
-                .send(updateData);
-
-            expect(response.status).toBe(200);
-            expect(response.body.recurrence_end_date).toContain(
-                endDate.toISOString().split('T')[0]
-            );
-        });
-
-        it('should disable recurrence by setting type to none', async () => {
-            const updateData = {
-                recurrence_type: 'none',
-            };
-
-            const response = await agent
-                .patch(`/api/task/${task.uid}`)
-                .send(updateData);
-
-            expect(response.status).toBe(200);
-            expect(response.body.recurrence_type).toBe('none');
-        });
-    });
-
-    describe('PATCH /api/task/:id - Updating parent recurrence from child task', () => {
-        let parentTask, childTask;
-
-        beforeEach(async () => {
-            parentTask = await Task.create({
-                name: 'Parent Recurring Task',
-                recurrence_type: 'daily',
-                recurrence_interval: 1,
-                user_id: user.id,
-                priority: 1,
-            });
-
-            childTask = await Task.create({
-                name: 'Parent Recurring Task',
-                recurrence_type: 'none',
-                recurring_parent_id: parentTask.id,
-                user_id: user.id,
-                priority: 1,
-                due_date: new Date(),
-            });
-        });
-
-        it('should update parent recurrence settings when update_parent_recurrence is true', async () => {
-            const updateData = {
-                recurrence_type: 'weekly',
-                recurrence_interval: 2,
-                recurrence_weekday: 3,
-                update_parent_recurrence: true,
-            };
-
-            const response = await agent
-                .patch(`/api/task/${childTask.uid}`)
-                .send(updateData);
-
-            expect(response.status).toBe(200);
-
-            // Check that parent task was updated
-            const updatedParent = await Task.findByPk(parentTask.id);
-            expect(updatedParent.recurrence_type).toBe('weekly');
-            expect(updatedParent.recurrence_interval).toBe(2);
-            expect(updatedParent.recurrence_weekday).toBe(3);
-        });
-
-        it('should not update parent when update_parent_recurrence is false', async () => {
-            const originalParentType = parentTask.recurrence_type;
-
-            const updateData = {
-                recurrence_type: 'weekly',
-                update_parent_recurrence: false,
-            };
-
-            const response = await agent
-                .patch(`/api/task/${childTask.uid}`)
-                .send(updateData);
-
-            expect(response.status).toBe(200);
-
-            // Check that parent task was not updated
-            const updatedParent = await Task.findByPk(parentTask.id);
-            expect(updatedParent.recurrence_type).toBe(originalParentType);
-        });
-
-        it('should not update parent when task has no recurring_parent_id', async () => {
-            const standaloneTask = await Task.create({
-                name: 'Standalone Task',
-                recurrence_type: 'none',
-                user_id: user.id,
-                priority: 1,
-            });
-
-            const updateData = {
-                recurrence_type: 'weekly',
-                update_parent_recurrence: true,
-            };
-
-            const response = await agent
-                .patch(`/api/task/${standaloneTask.uid}`)
-                .send(updateData);
-
-            expect(response.status).toBe(200);
-            expect(response.body.recurrence_type).toBe('weekly');
-        });
-    });
-
-    describe('PATCH /api/task/:id - Recurring task completion', () => {
-        it('should create next instance when completing a completion-based recurring task', async () => {
-            const recurringTask = await Task.create({
-                name: 'Completion Based Task',
-                recurrence_type: 'daily',
-                recurrence_interval: 1,
-                completion_based: true,
-                user_id: user.id,
-                status: 0, // NOT_STARTED
-            });
-
-            const response = await toggleTaskCompletion(recurringTask.id);
-
-            expect(response.status).toBe(200);
-            expect(response.body.status).toBe(2); // DONE
-            expect(response.body.next_task).toBeDefined();
-            expect(response.body.next_task.name).toBe('Completion Based Task');
-            expect(response.body.next_task.recurring_parent_id).toBe(
-                recurringTask.id
-            );
-        });
-
-        it('should not create next instance for non-completion-based recurring tasks', async () => {
-            const recurringTask = await Task.create({
-                name: 'Schedule Based Task',
-                recurrence_type: 'daily',
-                recurrence_interval: 1,
-                completion_based: false,
-                user_id: user.id,
-                status: 0, // NOT_STARTED
-            });
-
-            const response = await toggleTaskCompletion(recurringTask.id);
-
-            expect(response.status).toBe(200);
-            expect(response.body.status).toBe(2); // DONE
-            expect(response.body.next_task).toBeUndefined();
-        });
-
-        it('should not create next instance for non-recurring tasks', async () => {
-            const regularTask = await Task.create({
-                name: 'Regular Task',
-                recurrence_type: 'none',
-                user_id: user.id,
-                status: 0, // NOT_STARTED
-            });
-
-            const response = await toggleTaskCompletion(regularTask.id);
-
-            expect(response.status).toBe(200);
-            expect(response.body.status).toBe(2); // DONE
-            expect(response.body.next_task).toBeUndefined();
-        });
-
-        it('should toggle completion back to not done', async () => {
+            // Create a daily recurring task
             const task = await Task.create({
-                name: 'Test Task',
-                user_id: user.id,
-                status: 2, // DONE
-            });
-
-            const response = await toggleTaskCompletion(task.id);
-
-            expect(response.status).toBe(200);
-            expect(response.body.status).toBe(0); // NOT_STARTED
-        });
-
-        it('should toggle to in_progress if task has a note', async () => {
-            const task = await Task.create({
-                name: 'Test Task',
-                note: 'Some notes',
-                user_id: user.id,
-                status: 2, // DONE
-            });
-
-            const response = await toggleTaskCompletion(task.id);
-
-            expect(response.status).toBe(200);
-            expect(response.body.status).toBe(1); // IN_PROGRESS
-        });
-    });
-
-    describe('POST /api/tasks/generate-recurring', () => {
-        beforeEach(async () => {
-            const baseDate = new Date();
-            baseDate.setDate(baseDate.getDate() - 30); // 30 days ago to ensure generation
-
-            // Find next Monday for weekly task
-            const mondayDate = new Date(baseDate);
-            while (mondayDate.getDay() !== 1) {
-                mondayDate.setDate(mondayDate.getDate() + 1);
-            }
-
-            // Create some recurring tasks for testing
-            await Task.create({
                 name: 'Daily Task',
                 recurrence_type: 'daily',
                 recurrence_interval: 1,
+                due_date: today,
                 user_id: user.id,
-                due_date: baseDate,
-                last_generated_date: baseDate,
+                status: Task.STATUS.NOT_STARTED,
             });
 
-            await Task.create({
+            const originalDueDate = new Date(task.due_date);
+
+            // Mark the task as completed
+            const response = await agent
+                .patch(`/api/task/${task.uid}`)
+                .send({ status: Task.STATUS.DONE });
+
+            expect(response.status).toBe(200);
+
+            // Reload the task
+            await task.reload();
+
+            // Task should be reset to NOT_STARTED
+            expect(task.status).toBe(Task.STATUS.NOT_STARTED);
+            expect(task.completed_at).toBeNull();
+
+            // Due date should be advanced by 1 day
+            const newDueDate = new Date(task.due_date);
+            const expectedDate = new Date(originalDueDate);
+            expectedDate.setDate(expectedDate.getDate() + 1);
+
+            expect(newDueDate.toISOString().split('T')[0]).toBe(
+                expectedDate.toISOString().split('T')[0]
+            );
+
+            // Verify RecurringCompletion was created
+            const completions = await RecurringCompletion.findAll({
+                where: { task_id: task.id },
+            });
+            expect(completions.length).toBe(1);
+            expect(completions[0].original_due_date).toBeDefined();
+        });
+
+        it('should advance due date when weekly recurring task is completed', async () => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const todayWeekday = today.getDay();
+
+            const task = await Task.create({
                 name: 'Weekly Task',
                 recurrence_type: 'weekly',
                 recurrence_interval: 1,
-                recurrence_weekday: 1,
+                recurrence_weekday: todayWeekday,
+                due_date: today,
                 user_id: user.id,
-                due_date: mondayDate, // Monday
-                last_generated_date: mondayDate,
+                status: Task.STATUS.NOT_STARTED,
             });
-        });
 
-        it('should generate recurring task instances', async () => {
-            const response = await agent.post('/api/tasks/generate-recurring');
+            const originalDueDate = new Date(task.due_date);
 
-            expect(response.status).toBe(200);
-            expect(response.body.message).toMatch(
-                /Generated \d+ recurring tasks/
+            // Complete the task
+            await agent
+                .patch(`/api/task/${task.uid}`)
+                .send({ status: Task.STATUS.DONE });
+
+            await task.reload();
+
+            // Due date should be advanced by 1 week
+            const newDueDate = new Date(task.due_date);
+            const expectedDate = new Date(originalDueDate);
+            expectedDate.setDate(expectedDate.getDate() + 7);
+
+            expect(newDueDate.toISOString().split('T')[0]).toBe(
+                expectedDate.toISOString().split('T')[0]
             );
-            expect(response.body.tasks).toBeDefined();
-            expect(Array.isArray(response.body.tasks)).toBe(true);
+            expect(task.status).toBe(Task.STATUS.NOT_STARTED);
         });
 
-        it('should require authentication', async () => {
-            const response = await request(app).post(
-                '/api/tasks/generate-recurring'
+        it('should advance due date when monthly recurring task is completed', async () => {
+            const today = new Date();
+            today.setUTCHours(0, 0, 0, 0);
+            const dayOfMonth = 15; // Use a safe day
+
+            const startDate = new Date(
+                Date.UTC(
+                    today.getUTCFullYear(),
+                    today.getUTCMonth(),
+                    dayOfMonth
+                )
             );
 
-            expect(response.status).toBe(401);
-            expect(response.body.error).toBe('Authentication required');
-        });
-
-        it('should handle errors gracefully', async () => {
-            // Mock console.error to suppress expected error log in test output
-            const originalConsoleError = console.error;
-            console.error = jest.fn();
-
-            // Create invalid recurring task to trigger error
-            await Task.create({
-                name: 'Invalid Task',
-                recurrence_type: 'invalid_type',
+            const task = await Task.create({
+                name: 'Monthly Task',
+                recurrence_type: 'monthly',
+                recurrence_interval: 1,
+                recurrence_month_day: dayOfMonth,
+                due_date: startDate,
                 user_id: user.id,
+                status: Task.STATUS.NOT_STARTED,
             });
 
-            const response = await agent.post('/api/tasks/generate-recurring');
+            const originalMonth = new Date(task.due_date).getUTCMonth();
 
-            // Should still return success even if some tasks fail
-            expect(response.status).toBe(200);
+            // Complete the task
+            await agent
+                .patch(`/api/task/${task.uid}`)
+                .send({ status: Task.STATUS.DONE });
 
-            // Restore original console.error
-            console.error = originalConsoleError;
+            await task.reload();
+
+            // Due date should be in the next month
+            const newDueDate = new Date(task.due_date);
+            const expectedMonth = (originalMonth + 1) % 12;
+
+            expect(newDueDate.getUTCMonth()).toBe(expectedMonth);
+            expect(newDueDate.getUTCDate()).toBe(dayOfMonth);
+            expect(task.status).toBe(Task.STATUS.NOT_STARTED);
         });
-    });
 
-    describe('GET /api/tasks - Filtering recurring tasks', () => {
-        beforeEach(async () => {
-            // Create a mix of regular and recurring tasks
-            await Task.create({
-                name: 'Regular Task',
-                recurrence_type: 'none',
-                user_id: user.id,
-                status: 0,
-            });
+        it('should track multiple completions in RecurringCompletion table', async () => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
 
-            const parentTask = await Task.create({
-                name: 'Recurring Parent',
+            const task = await Task.create({
+                name: 'Daily Task',
                 recurrence_type: 'daily',
                 recurrence_interval: 1,
+                due_date: today,
                 user_id: user.id,
-                status: 0,
+                status: Task.STATUS.NOT_STARTED,
             });
 
-            await Task.create({
-                name: 'Recurring Child',
-                recurrence_type: 'none',
-                recurring_parent_id: parentTask.id,
-                user_id: user.id,
-                status: 0,
+            // Complete the task three times
+            for (let i = 0; i < 3; i++) {
+                await agent
+                    .patch(`/api/task/${task.uid}`)
+                    .send({ status: Task.STATUS.DONE });
+                await task.reload();
+            }
+
+            // Verify three completions were recorded
+            const completions = await RecurringCompletion.findAll({
+                where: { task_id: task.id },
+                order: [['completed_at', 'ASC']],
             });
-        });
 
-        it('should return tasks excluding recurring instances', async () => {
-            const response = await agent.get('/api/tasks');
+            expect(completions.length).toBe(3);
 
-            expect(response.status).toBe(200);
-            expect(response.body.tasks).toBeDefined();
-            expect(response.body.tasks.length).toBe(2);
-
-            const taskNames = response.body.tasks.map((t) => t.name);
-            expect(taskNames).toContain('Regular Task');
-            expect(taskNames).toContain('Daily'); // Recurring parent shows as "Daily"
-            expect(taskNames).not.toContain('Recurring Child'); // Instance should be filtered out
-        });
-
-        it('should return task metrics excluding recurring instances', async () => {
-            const response = await agent.get('/api/tasks/metrics');
-
-            expect(response.status).toBe(200);
-            expect(response.body.total_open_tasks).toBeDefined();
-            expect(response.body.total_open_tasks).toBe(2);
+            // Verify each completion has the correct original_due_date
+            for (let i = 0; i < 3; i++) {
+                expect(completions[i].original_due_date).toBeDefined();
+                expect(completions[i].skipped).toBe(false);
+            }
         });
     });
 
-    describe('GET /api/task/:id - Retrieving individual recurring tasks', () => {
-        let recurringTask;
+    describe('Completion-Based Recurrence', () => {
+        it('should use completion date when completion_based is true', async () => {
+            const threeDaysAgo = new Date();
+            threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+            threeDaysAgo.setHours(0, 0, 0, 0);
 
-        beforeEach(async () => {
-            recurringTask = await Task.create({
-                name: 'Test Recurring Task',
-                recurrence_type: 'weekly',
-                recurrence_interval: 2,
-                recurrence_weekday: 1,
+            // Create a task due 3 days ago with completion-based recurrence
+            const task = await Task.create({
+                name: 'Completion Based Task',
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+                due_date: threeDaysAgo,
                 completion_based: true,
                 user_id: user.id,
+                status: Task.STATUS.NOT_STARTED,
             });
+
+            // Complete it today
+            const completionTime = new Date();
+            await agent
+                .patch(`/api/task/${task.uid}`)
+                .send({ status: Task.STATUS.DONE });
+
+            await task.reload();
+
+            // Next due date should be tomorrow (completion date + interval)
+            // not 2 days ago (original due date + interval)
+            const newDueDate = new Date(task.due_date);
+            const tomorrow = new Date(completionTime);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0, 0, 0, 0);
+
+            const dayDiff = Math.round(
+                (newDueDate - completionTime) / (1000 * 60 * 60 * 24)
+            );
+
+            // Should be approximately 1 day from completion
+            expect(dayDiff).toBeGreaterThanOrEqual(0);
+            expect(dayDiff).toBeLessThanOrEqual(1);
         });
 
-        it('should return recurring task with all recurrence fields', async () => {
-            const response = await agent.get(`/api/task/${recurringTask.uid}`);
+        it('should use original due date when completion_based is false', async () => {
+            const threeDaysAgo = new Date();
+            threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+            threeDaysAgo.setHours(0, 0, 0, 0);
 
-            expect(response.status).toBe(200);
-            expect(response.body.name).toBe('Test Recurring Task');
-            expect(response.body.recurrence_type).toBe('weekly');
-            expect(response.body.recurrence_interval).toBe(2);
-            expect(response.body.recurrence_weekday).toBe(1);
-            expect(response.body.completion_based).toBe(true);
-        });
-    });
-
-    describe('DELETE /api/task/:id - Deleting recurring tasks', () => {
-        let parentTask, childTask;
-
-        beforeEach(async () => {
-            parentTask = await Task.create({
-                name: 'Parent Recurring Task',
+            const task = await Task.create({
+                name: 'Date Based Task',
                 recurrence_type: 'daily',
                 recurrence_interval: 1,
+                due_date: threeDaysAgo,
+                completion_based: false,
                 user_id: user.id,
+                status: Task.STATUS.NOT_STARTED,
             });
 
-            childTask = await Task.create({
-                name: 'Child Task Instance',
-                recurrence_type: 'none',
-                recurring_parent_id: parentTask.id,
+            const originalDueDate = new Date(task.due_date);
+
+            // Complete it today
+            await agent
+                .patch(`/api/task/${task.uid}`)
+                .send({ status: Task.STATUS.DONE });
+
+            await task.reload();
+
+            // Next due date should be 2 days ago (original due date + 1 day)
+            const newDueDate = new Date(task.due_date);
+            const expectedDate = new Date(originalDueDate);
+            expectedDate.setDate(expectedDate.getDate() + 1);
+
+            expect(newDueDate.toISOString().split('T')[0]).toBe(
+                expectedDate.toISOString().split('T')[0]
+            );
+        });
+
+        it('should use completion date for early completion when completion_based is true', async () => {
+            const twoDaysFromNow = new Date();
+            twoDaysFromNow.setDate(twoDaysFromNow.getDate() + 2);
+            twoDaysFromNow.setHours(0, 0, 0, 0);
+
+            const task = await Task.create({
+                name: 'Early Completion Task',
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+                due_date: twoDaysFromNow,
+                completion_based: true,
                 user_id: user.id,
+                status: Task.STATUS.NOT_STARTED,
             });
+
+            // Complete it today (2 days early)
+            const completionTime = new Date();
+            await agent
+                .patch(`/api/task/${task.uid}`)
+                .send({ status: Task.STATUS.DONE });
+
+            await task.reload();
+
+            // Next due date should be tomorrow (today + 1 day)
+            // not 3 days from now (original due date + 1 day)
+            const newDueDate = new Date(task.due_date);
+            const dayDiff = Math.round(
+                (newDueDate - completionTime) / (1000 * 60 * 60 * 24)
+            );
+
+            // Should be approximately 1 day from completion (today)
+            expect(dayDiff).toBeGreaterThanOrEqual(0);
+            expect(dayDiff).toBeLessThanOrEqual(1);
+
+            // Verify it's NOT 3 days from now
+            const threeDaysFromNow = new Date();
+            threeDaysFromNow.setDate(threeDaysFromNow.getDate() + 3);
+            expect(newDueDate.toISOString().split('T')[0]).not.toBe(
+                threeDaysFromNow.toISOString().split('T')[0]
+            );
         });
 
-        it('should smart delete recurring parent task - remove future instances, orphan past ones', async () => {
-            const response = await agent.delete(`/api/task/${parentTask.uid}`);
+        it('should work with weekly completion_based recurrence', async () => {
+            const lastWeek = new Date();
+            lastWeek.setDate(lastWeek.getDate() - 7);
+            lastWeek.setHours(0, 0, 0, 0);
+            const lastWeekWeekday = lastWeek.getDay();
 
-            expect(response.status).toBe(200);
-            expect(response.body.message).toBe('Task successfully deleted');
+            const task = await Task.create({
+                name: 'Weekly Completion Based',
+                recurrence_type: 'weekly',
+                recurrence_interval: 1,
+                recurrence_weekday: lastWeekWeekday,
+                due_date: lastWeek,
+                completion_based: true,
+                user_id: user.id,
+                status: Task.STATUS.NOT_STARTED,
+            });
 
-            // Verify parent task is deleted
-            const deletedParent = await Task.findByPk(parentTask.id);
-            expect(deletedParent).toBeNull();
+            // Complete it today
+            await agent
+                .patch(`/api/task/${task.uid}`)
+                .send({ status: Task.STATUS.DONE });
 
-            // Since childTask is NOT_STARTED with no due date, it should be considered future and deleted
-            const deletedChild = await Task.findByPk(childTask.id);
-            expect(deletedChild).toBeNull();
+            await task.reload();
+
+            // Next due date should be approximately 7 days from today
+            // not 7 days from last week (which would be today)
+            const newDueDate = new Date(task.due_date);
+            const today = new Date();
+            const dayDiff = Math.round(
+                (newDueDate - today) / (1000 * 60 * 60 * 24)
+            );
+
+            // Should be around 6-7 days from now
+            expect(dayDiff).toBeGreaterThanOrEqual(6);
+            expect(dayDiff).toBeLessThanOrEqual(8);
         });
 
-        it('should delete recurring child task', async () => {
-            const response = await agent.delete(`/api/task/${childTask.uid}`);
+        it('should work with monthly completion_based recurrence', async () => {
+            const lastMonth = new Date();
+            lastMonth.setMonth(lastMonth.getMonth() - 1);
+            lastMonth.setUTCHours(0, 0, 0, 0);
+            const dayOfMonth = 15;
 
-            expect(response.status).toBe(200);
-            expect(response.body.message).toBe('Task successfully deleted');
+            const task = await Task.create({
+                name: 'Monthly Completion Based',
+                recurrence_type: 'monthly',
+                recurrence_interval: 1,
+                recurrence_month_day: dayOfMonth,
+                due_date: new Date(
+                    Date.UTC(
+                        lastMonth.getUTCFullYear(),
+                        lastMonth.getUTCMonth(),
+                        dayOfMonth
+                    )
+                ),
+                completion_based: true,
+                user_id: user.id,
+                status: Task.STATUS.NOT_STARTED,
+            });
 
-            // Verify task is deleted
-            const deletedTask = await Task.findByPk(childTask.id);
-            expect(deletedTask).toBeNull();
+            // Complete it today
+            const completionMonth = new Date().getUTCMonth();
+            await agent
+                .patch(`/api/task/${task.uid}`)
+                .send({ status: Task.STATUS.DONE });
 
-            // Verify parent still exists
-            const parentStillExists = await Task.findByPk(parentTask.id);
-            expect(parentStillExists).not.toBeNull();
+            await task.reload();
+
+            // Next due date should be approximately 1 month from today
+            // not 1 month from last month (which would be this month)
+            const newDueDate = new Date(task.due_date);
+            const expectedMonth = (completionMonth + 1) % 12;
+
+            // Should be next month
+            expect(newDueDate.getUTCMonth()).toBe(expectedMonth);
+        });
+
+        it('should handle interval > 1 with completion_based', async () => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const task = await Task.create({
+                name: 'Every 3 Days Completion Based',
+                recurrence_type: 'daily',
+                recurrence_interval: 3,
+                due_date: today,
+                completion_based: true,
+                user_id: user.id,
+                status: Task.STATUS.NOT_STARTED,
+            });
+
+            const completionTime = new Date();
+            await agent
+                .patch(`/api/task/${task.uid}`)
+                .send({ status: Task.STATUS.DONE });
+
+            await task.reload();
+
+            // Next due date should be 3 days from completion
+            const newDueDate = new Date(task.due_date);
+            const dayDiff = Math.round(
+                (newDueDate - completionTime) / (1000 * 60 * 60 * 24)
+            );
+
+            // Should be approximately 3 days from completion
+            expect(dayDiff).toBeGreaterThanOrEqual(2);
+            expect(dayDiff).toBeLessThanOrEqual(3);
+        });
+
+        it('should respect updated completion_based flag', async () => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            // Create task with completion_based = false
+            const task = await Task.create({
+                name: 'Toggle Task',
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+                due_date: today,
+                completion_based: false,
+                user_id: user.id,
+                status: Task.STATUS.NOT_STARTED,
+            });
+
+            // Update to completion_based = true
+            await agent.patch(`/api/task/${task.uid}`).send({
+                completion_based: true,
+            });
+
+            await task.reload();
+            expect(task.completion_based).toBe(true);
+
+            // Now complete it - should use completion-based logic
+            const completionTime = new Date();
+            await agent
+                .patch(`/api/task/${task.uid}`)
+                .send({ status: Task.STATUS.DONE });
+
+            await task.reload();
+
+            // Should advance from completion time, not original due date
+            const newDueDate = new Date(task.due_date);
+            const dayDiff = Math.round(
+                (newDueDate - completionTime) / (1000 * 60 * 60 * 24)
+            );
+
+            expect(dayDiff).toBeGreaterThanOrEqual(0);
+            expect(dayDiff).toBeLessThanOrEqual(1);
+        });
+
+        it('should handle multiple rapid completions with completion_based', async () => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const task = await Task.create({
+                name: 'Rapid Completions',
+                recurrence_type: 'daily',
+                recurrence_interval: 2,
+                due_date: today,
+                completion_based: true,
+                user_id: user.id,
+                status: Task.STATUS.NOT_STARTED,
+            });
+
+            // First completion
+            const firstCompletionTime = new Date();
+            await agent
+                .patch(`/api/task/${task.uid}`)
+                .send({ status: Task.STATUS.DONE });
+            await task.reload();
+
+            const firstNewDueDate = new Date(task.due_date);
+
+            // Should be approximately 2 days from completion
+            const firstDayDiff = Math.round(
+                (firstNewDueDate - firstCompletionTime) / (1000 * 60 * 60 * 24)
+            );
+            expect(firstDayDiff).toBeGreaterThanOrEqual(1);
+            expect(firstDayDiff).toBeLessThanOrEqual(2);
+
+            // Second completion immediately after first
+            const secondCompletionTime = new Date();
+            await agent
+                .patch(`/api/task/${task.uid}`)
+                .send({ status: Task.STATUS.DONE });
+            await task.reload();
+
+            const secondNewDueDate = new Date(task.due_date);
+
+            // Should be approximately 2 days from second completion
+            // which means it should be later than the first new due date
+            expect(secondNewDueDate.getTime()).toBeGreaterThan(
+                firstNewDueDate.getTime()
+            );
+
+            const secondDayDiff = Math.round(
+                (secondNewDueDate - secondCompletionTime) /
+                    (1000 * 60 * 60 * 24)
+            );
+            expect(secondDayDiff).toBeGreaterThanOrEqual(1);
+            expect(secondDayDiff).toBeLessThanOrEqual(2);
+
+            // Verify both completions were recorded
+            const completions = await RecurringCompletion.findAll({
+                where: { task_id: task.id },
+            });
+            expect(completions.length).toBe(2);
         });
     });
 
-    describe('GET /api/tasks?type=today - Today view filtering and naming', () => {
-        let parentTask, childTask, regularTask;
+    describe('Recurrence End Date', () => {
+        it('should stop recurring when end date is reached', async () => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const dayAfterTomorrow = new Date(today);
+            dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2);
+            const threeDaysFromNow = new Date(today);
+            threeDaysFromNow.setDate(threeDaysFromNow.getDate() + 3);
 
-        beforeEach(async () => {
-            // Create a regular non-recurring task
-            regularTask = await Task.create({
+            // Create a daily task due today with end date 3 days from now
+            // Note: end date is exclusive (uses <, not <=)
+            // So this task can recur on: today (day 0), tomorrow (day 1), day 2
+            // But NOT on day 3 (the end date itself)
+            const task = await Task.create({
+                name: 'Limited Recurring Task',
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+                due_date: today,
+                recurrence_end_date: threeDaysFromNow,
+                user_id: user.id,
+                status: Task.STATUS.NOT_STARTED,
+            });
+
+            // Complete the task (first completion) - should advance to tomorrow (day 1)
+            await agent
+                .patch(`/api/task/${task.uid}`)
+                .send({ status: Task.STATUS.DONE });
+
+            await task.reload();
+
+            expect(task.status).toBe(Task.STATUS.NOT_STARTED);
+            let newDueDate = new Date(task.due_date);
+            expect(newDueDate.toISOString().split('T')[0]).toBe(
+                tomorrow.toISOString().split('T')[0]
+            );
+
+            // Complete again - should advance to day after tomorrow (day 2, last valid occurrence)
+            await agent
+                .patch(`/api/task/${task.uid}`)
+                .send({ status: Task.STATUS.DONE });
+            await task.reload();
+
+            expect(task.status).toBe(Task.STATUS.NOT_STARTED);
+            newDueDate = new Date(task.due_date);
+            expect(newDueDate.toISOString().split('T')[0]).toBe(
+                dayAfterTomorrow.toISOString().split('T')[0]
+            );
+
+            // Complete one more time - this time it should stop recurring
+            // because the next occurrence would be day 3 (threeDaysFromNow) which is >= end date
+            await agent
+                .patch(`/api/task/${task.uid}`)
+                .send({ status: Task.STATUS.DONE });
+
+            await task.reload();
+
+            // Task should remain completed since next occurrence would be on or past end date
+            expect(task.status).toBe(Task.STATUS.DONE);
+            expect(task.completed_at).not.toBeNull();
+        });
+
+        it('should allow recurring tasks without end date to continue indefinitely', async () => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const task = await Task.create({
+                name: 'Infinite Task',
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+                due_date: today,
+                recurrence_end_date: null,
+                user_id: user.id,
+                status: Task.STATUS.NOT_STARTED,
+            });
+
+            // Complete multiple times
+            for (let i = 0; i < 5; i++) {
+                await agent
+                    .patch(`/api/task/${task.uid}`)
+                    .send({ status: Task.STATUS.DONE });
+                await task.reload();
+                expect(task.status).toBe(Task.STATUS.NOT_STARTED);
+            }
+
+            // Verify all completions were recorded
+            const completions = await RecurringCompletion.findAll({
+                where: { task_id: task.id },
+            });
+            expect(completions.length).toBe(5);
+        });
+    });
+
+    describe('Edge Cases', () => {
+        it('should handle completing a task multiple times in quick succession', async () => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const task = await Task.create({
+                name: 'Quick Complete Task',
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+                due_date: today,
+                user_id: user.id,
+                status: Task.STATUS.NOT_STARTED,
+            });
+
+            // Try to complete it twice rapidly
+            await agent
+                .patch(`/api/task/${task.uid}`)
+                .send({ status: Task.STATUS.DONE });
+            await task.reload();
+
+            const dueDateAfterFirst = new Date(task.due_date);
+
+            await agent
+                .patch(`/api/task/${task.uid}`)
+                .send({ status: Task.STATUS.DONE });
+            await task.reload();
+
+            const dueDateAfterSecond = new Date(task.due_date);
+
+            // Both completions should have been recorded
+            const completions = await RecurringCompletion.findAll({
+                where: { task_id: task.id },
+            });
+            expect(completions.length).toBe(2);
+
+            // Second due date should be one day after first
+            const expectedDate = new Date(dueDateAfterFirst);
+            expectedDate.setDate(expectedDate.getDate() + 1);
+            expect(dueDateAfterSecond.toISOString().split('T')[0]).toBe(
+                expectedDate.toISOString().split('T')[0]
+            );
+        });
+
+        it('should handle uncompleting a recurring task', async () => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const task = await Task.create({
+                name: 'Uncomplete Task',
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+                due_date: today,
+                user_id: user.id,
+                status: Task.STATUS.NOT_STARTED,
+            });
+
+            const originalDueDate = new Date(task.due_date);
+
+            // Complete the task
+            await agent
+                .patch(`/api/task/${task.uid}`)
+                .send({ status: Task.STATUS.DONE });
+            await task.reload();
+
+            expect(task.status).toBe(Task.STATUS.NOT_STARTED);
+            const advancedDueDate = new Date(task.due_date);
+
+            // Due date should have advanced
+            expect(advancedDueDate.getTime()).toBeGreaterThan(
+                originalDueDate.getTime()
+            );
+
+            // Change status to in_progress (not completed)
+            await agent
+                .patch(`/api/task/${task.uid}`)
+                .send({ status: Task.STATUS.IN_PROGRESS });
+            await task.reload();
+
+            // Due date should remain the same
+            expect(new Date(task.due_date).getTime()).toBe(
+                advancedDueDate.getTime()
+            );
+            expect(task.status).toBe(Task.STATUS.IN_PROGRESS);
+        });
+
+        it('should not create recurring completion for non-recurring tasks', async () => {
+            const task = await Task.create({
                 name: 'Regular Task',
                 recurrence_type: 'none',
                 user_id: user.id,
-                status: 0,
-                today: true,
+                status: Task.STATUS.NOT_STARTED,
             });
 
-            // Create a recurring parent task (template)
-            parentTask = await Task.create({
-                name: 'Take vitamins',
+            // Complete the task
+            await agent
+                .patch(`/api/task/${task.uid}`)
+                .send({ status: Task.STATUS.DONE });
+            await task.reload();
+
+            // Should stay completed
+            expect(task.status).toBe(Task.STATUS.DONE);
+            expect(task.completed_at).not.toBeNull();
+
+            // No recurring completion should be created
+            const completions = await RecurringCompletion.findAll({
+                where: { task_id: task.id },
+            });
+            expect(completions.length).toBe(0);
+        });
+
+        it('should handle tasks without a due date', async () => {
+            const task = await Task.create({
+                name: 'No Due Date Recurring',
                 recurrence_type: 'daily',
                 recurrence_interval: 1,
+                due_date: null,
                 user_id: user.id,
-                status: 0,
-                today: true,
+                status: Task.STATUS.NOT_STARTED,
             });
 
-            // Create a recurring child task (instance)
-            childTask = await Task.create({
-                name: 'Take vitamins',
-                recurrence_type: 'none',
-                recurring_parent_id: parentTask.id,
-                user_id: user.id,
-                status: 0,
-                today: true,
-                due_date: new Date(),
-            });
-        });
+            // Complete the task
+            await agent
+                .patch(`/api/task/${task.uid}`)
+                .send({ status: Task.STATUS.DONE });
+            await task.reload();
 
-        it('should include recurring task instances in type=today API response', async () => {
-            const response = await agent.get('/api/tasks?type=today');
+            // Should calculate next due date from completion time
+            expect(task.status).toBe(Task.STATUS.NOT_STARTED);
+            expect(task.due_date).not.toBeNull();
 
-            expect(response.status).toBe(200);
-            expect(response.body.tasks).toBeDefined();
-
-            // Should return at least the regular task + recurring instance
-            // Parent tasks should NOT appear in today view
-            expect(response.body.tasks.length).toBeGreaterThanOrEqual(2);
-
-            const taskIds = response.body.tasks.map((t) => t.id);
-            expect(taskIds).toContain(regularTask.id);
-            expect(taskIds).not.toContain(parentTask.id); // Parent should NOT be included
-            expect(taskIds).toContain(childTask.id); // Instance should be included
-        });
-
-        it('should preserve original names for recurring task instances in type=today API response', async () => {
-            const response = await agent.get('/api/tasks?type=today');
-
-            expect(response.status).toBe(200);
-            expect(response.body.tasks).toBeDefined();
-
-            // Find the recurring task instance in the response
-            const recurringInstance = response.body.tasks.find(
-                (t) => t.id === childTask.id
-            );
-            expect(recurringInstance).toBeDefined();
-
-            // Instances should show original name, not "Daily"
-            expect(recurringInstance.name).toBe('Take vitamins');
-            expect(recurringInstance.original_name).toBe('Take vitamins');
-            expect(recurringInstance.name).not.toBe('Daily');
-        });
-
-        it('should show generic names for non-today API calls (backward compatibility)', async () => {
-            const response = await agent.get('/api/tasks'); // No type=today
-
-            expect(response.status).toBe(200);
-            expect(response.body.tasks).toBeDefined();
-
-            // Find the recurring task in the response
-            const recurringTask = response.body.tasks.find(
-                (t) => t.id === parentTask.id
-            );
-            expect(recurringTask).toBeDefined();
-
-            // Should show generic recurrence name for backward compatibility
-            expect(recurringTask.name).toBe('Daily');
-            expect(recurringTask.original_name).toBe('Take vitamins');
-        });
-    });
-
-    describe('Recurring tasks with subtasks', () => {
-        it('should copy subtasks when generating recurring task instances', async () => {
-            const recurringTaskService = require('../../services/recurringTaskService');
-
-            // Create a recurring task with subtasks
-            const taskData = {
-                name: 'Weekly grocery shopping',
-                recurrence_type: 'daily',
-                recurrence_interval: 1,
-                priority: 1,
-                completion_based: false,
-                subtasks: [
-                    { name: 'Buy milk', priority: 0 },
-                    { name: 'Buy bread', priority: 1 },
-                    { name: 'Buy eggs', priority: 0 },
-                ],
-            };
-
-            const createResponse = await agent.post('/api/task').send(taskData);
-            expect(createResponse.status).toBe(201);
-
-            const recurringTaskId = createResponse.body.id;
-
-            // Verify subtasks were created
-            const subtasksResponse = await agent.get(
-                `/api/task/${recurringTaskId}/subtasks`
-            );
-            expect(subtasksResponse.status).toBe(200);
-            expect(subtasksResponse.body.length).toBe(3);
-
-            // Generate recurring task instances
-            const tomorrow = new Date();
+            const dueDate = new Date(task.due_date);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const tomorrow = new Date(today);
             tomorrow.setDate(tomorrow.getDate() + 1);
 
-            await recurringTaskService.generateRecurringTasks(user.id, 2);
-
-            // Find the generated instance
-            const instances = await Task.findAll({
-                where: {
-                    user_id: user.id,
-                    recurring_parent_id: recurringTaskId,
-                },
-            });
-
-            expect(instances.length).toBeGreaterThan(0);
-
-            const firstInstance = instances[0];
-
-            // Check if subtasks were copied to the instance
-            const instanceSubtasksResponse = await agent.get(
-                `/api/task/${firstInstance.id}/subtasks`
+            // Due date should be approximately today or tomorrow
+            expect(dueDate.getTime()).toBeGreaterThanOrEqual(today.getTime());
+            expect(dueDate.getTime()).toBeLessThan(
+                tomorrow.getTime() + 24 * 60 * 60 * 1000
             );
-            expect(instanceSubtasksResponse.status).toBe(200);
-            expect(instanceSubtasksResponse.body.length).toBe(3);
-
-            // Verify subtask names match
-            const subtaskNames = instanceSubtasksResponse.body.map(
-                (s) => s.name
-            );
-            expect(subtaskNames).toContain('Buy milk');
-            expect(subtaskNames).toContain('Buy bread');
-            expect(subtaskNames).toContain('Buy eggs');
-
-            // Verify all subtasks are in NOT_STARTED status
-            instanceSubtasksResponse.body.forEach((subtask) => {
-                expect(subtask.status).toBe(Task.STATUS.NOT_STARTED);
-            });
         });
     });
 
-    describe('Recurring tasks in Today view', () => {
-        it('should show recurring task instances in type=today API response', async () => {
-            const recurringTaskService = require('../../services/recurringTaskService');
-
-            // Create a recurring daily task with due date today
-            const today = new Date();
-            today.setHours(12, 0, 0, 0);
-
-            const taskData = {
-                name: 'Daily standup meeting',
-                recurrence_type: 'daily',
-                recurrence_interval: 1,
-                due_date: today.toISOString(),
-                priority: 1,
-                completion_based: false,
-            };
-
-            const createResponse = await agent.post('/api/task').send(taskData);
-            expect(createResponse.status).toBe(201);
-
-            const recurringTaskId = createResponse.body.id;
-
-            // Generate recurring task instances
-            await recurringTaskService.generateRecurringTasks(user.id, 2);
-
-            // Verify instances were created
-            const instances = await Task.findAll({
-                where: {
-                    user_id: user.id,
-                    recurring_parent_id: recurringTaskId,
-                },
-            });
-
-            expect(instances.length).toBeGreaterThan(0);
-
-            // Fetch tasks with type=today
-            const todayResponse = await agent.get('/api/tasks?type=today');
-            expect(todayResponse.status).toBe(200);
-
-            // Find the recurring task instance in the today response
-            const todayTasks = todayResponse.body.tasks;
-
-            // Check if we have the recurring instance (but not the parent)
-            const recurringTasksInToday = todayTasks.filter(
-                (task) => task.recurring_parent_id === recurringTaskId
-            );
-
-            // Should find at least one instance (the one due today)
-            expect(recurringTasksInToday.length).toBeGreaterThan(0);
-
-            // Verify at least one task with this name appears
-            const taskWithName = todayTasks.find(
-                (task) => task.name === 'Daily standup meeting'
-            );
-            expect(taskWithName).toBeDefined();
-            expect(taskWithName.recurring_parent_id).toBe(recurringTaskId);
+    describe('Service Function Tests', () => {
+        it('calculateNextDueDate should return null for invalid inputs', () => {
+            expect(calculateNextDueDate(null, new Date())).toBeNull();
+            expect(
+                calculateNextDueDate({ recurrence_type: null }, new Date())
+            ).toBeNull();
+            expect(
+                calculateNextDueDate({ recurrence_type: 'daily' }, null)
+            ).toBeNull();
+            expect(
+                calculateNextDueDate(
+                    { recurrence_type: 'daily' },
+                    new Date('invalid')
+                )
+            ).toBeNull();
         });
 
-        it('should include recurring_parent_uid in serialized task instances', async () => {
-            const today = new Date();
-            const taskResponse = await agent.post('/api/task').send({
-                name: 'Recurring parent test',
-                recurrence_type: 'daily',
-                recurrence_interval: 1,
-                due_date: today.toISOString().split('T')[0],
-            });
-
-            expect(taskResponse.status).toBe(201);
-            const recurringTask = taskResponse.body;
-
-            await agent.post('/api/tasks/generate-recurring');
-
-            // Find the generated instance
-            const generatedInstance = await Task.findOne({
-                where: {
-                    user_id: user.id,
-                    recurring_parent_id: recurringTask.id,
-                },
-            });
-
-            expect(generatedInstance).toBeDefined();
-
-            const response = await agent.get('/api/tasks?type=today');
-            expect(response.status).toBe(200);
-
-            const instance = response.body.tasks.find(
-                (task) => task.recurring_parent_id === recurringTask.id
+        it('calculateNextDueDate should handle unknown recurrence types', () => {
+            const result = calculateNextDueDate(
+                { recurrence_type: 'unknown_type' },
+                new Date()
             );
-
-            expect(instance).toBeDefined();
-            expect(instance.recurring_parent_uid).toBeDefined();
-            expect(instance.recurring_parent_uid).toBe(recurringTask.uid);
+            expect(result).toBeNull();
         });
     });
 });
