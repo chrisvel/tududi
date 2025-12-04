@@ -1,6 +1,22 @@
 const express = require('express');
 const router = express.Router();
-const { Role, User } = require('../models');
+const {
+    Role,
+    User,
+    Area,
+    Project,
+    Task,
+    Tag,
+    Note,
+    InboxItem,
+    TaskEvent,
+    Action,
+    Permission,
+    View,
+    ApiToken,
+    Notification,
+    RecurringCompletion,
+} = require('../models');
 const { isAdmin } = require('../services/rolesService');
 const { logError } = require('../services/logService');
 
@@ -234,33 +250,85 @@ router.put('/admin/users/:id', requireAdmin, async (req, res) => {
 
 // DELETE /api/admin/users/:id - delete a user, prevent self-delete
 router.delete('/admin/users/:id', requireAdmin, async (req, res) => {
+    const { sequelize } = require('../models');
+    const transaction = await sequelize.transaction();
+
     try {
         const id = parseInt(req.params.id, 10);
         const requesterId = req.currentUser?.id || req.session?.userId;
-        if (!Number.isFinite(id))
+        if (!Number.isFinite(id)) {
+            await transaction.rollback();
             return res.status(400).json({ error: 'Invalid user id' });
-        if (id === requesterId)
+        }
+        if (id === requesterId) {
+            await transaction.rollback();
             return res
                 .status(400)
                 .json({ error: 'Cannot delete your own account' });
+        }
 
-        const user = await User.findByPk(id);
-        if (!user) return res.status(404).json({ error: 'User not found' });
+        const user = await User.findByPk(id, { transaction });
+        if (!user) {
+            await transaction.rollback();
+            return res.status(404).json({ error: 'User not found' });
+        }
 
         // Prevent deleting the last remaining admin
-        const targetRole = await Role.findOne({ where: { user_id: id } });
+        const targetRole = await Role.findOne({
+            where: { user_id: id },
+            transaction,
+        });
         if (targetRole?.is_admin) {
-            const adminCount = await Role.count({ where: { is_admin: true } });
+            const adminCount = await Role.count({
+                where: { is_admin: true },
+                transaction,
+            });
             if (adminCount <= 1) {
+                await transaction.rollback();
                 return res
                     .status(400)
                     .json({ error: 'Cannot delete the last remaining admin' });
             }
         }
 
-        await user.destroy();
+        await TaskEvent.destroy({ where: { user_id: id }, transaction });
+
+        const userTasks = await Task.findAll({
+            where: { user_id: id },
+            attributes: ['id'],
+            transaction,
+        });
+        const taskIds = userTasks.map((t) => t.id);
+        if (taskIds.length > 0) {
+            await RecurringCompletion.destroy({
+                where: { task_id: taskIds },
+                transaction,
+            });
+        }
+
+        await Task.destroy({ where: { user_id: id }, transaction });
+        await Note.destroy({ where: { user_id: id }, transaction });
+        await Project.destroy({ where: { user_id: id }, transaction });
+        await Area.destroy({ where: { user_id: id }, transaction });
+        await Tag.destroy({ where: { user_id: id }, transaction });
+        await InboxItem.destroy({ where: { user_id: id }, transaction });
+        await View.destroy({ where: { user_id: id }, transaction });
+        await Notification.destroy({ where: { user_id: id }, transaction });
+        await ApiToken.destroy({ where: { user_id: id }, transaction });
+        await Permission.destroy({ where: { user_id: id }, transaction });
+        await Permission.destroy({
+            where: { granted_by_user_id: id },
+            transaction,
+        });
+        await Action.destroy({ where: { actor_user_id: id }, transaction });
+        await Action.destroy({ where: { target_user_id: id }, transaction });
+        await Role.destroy({ where: { user_id: id }, transaction });
+        await user.destroy({ transaction });
+
+        await transaction.commit();
         res.status(204).send();
     } catch (err) {
+        await transaction.rollback();
         logError('Error deleting user:', err);
         res.status(400).json({
             error: 'There was a problem deleting the user.',
