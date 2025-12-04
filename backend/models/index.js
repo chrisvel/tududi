@@ -36,6 +36,7 @@ const View = require('./view')(sequelize);
 const ApiToken = require('./api_token')(sequelize);
 const Setting = require('./setting')(sequelize);
 const Notification = require('./notification')(sequelize);
+const RecurringCompletion = require('./recurringCompletion')(sequelize);
 
 // Define associations
 User.hasMany(Area, { foreignKey: 'user_id' });
@@ -86,6 +87,15 @@ Task.belongsTo(Task, {
 Task.hasMany(Task, {
     as: 'RecurringChildren',
     foreignKey: 'recurring_parent_id',
+});
+
+Task.hasMany(RecurringCompletion, {
+    as: 'Completions',
+    foreignKey: 'task_id',
+});
+RecurringCompletion.belongsTo(Task, {
+    foreignKey: 'task_id',
+    as: 'Task',
 });
 
 // Many-to-many associations
@@ -166,4 +176,5 @@ module.exports = {
     ApiToken,
     Setting,
     Notification,
+    RecurringCompletion,
 };

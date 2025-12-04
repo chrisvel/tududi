@@ -1,7 +1,12 @@
 const express = require('express');
 const router = express.Router();
 
-const { Task, TaskEvent, sequelize } = require('../../models');
+const {
+    Task,
+    TaskEvent,
+    RecurringCompletion,
+    sequelize,
+} = require('../../models');
 const taskRepository = require('../../repositories/TaskRepository');
 const {
     resetQueryCounter,
@@ -10,8 +15,9 @@ const {
 } = require('../../middleware/queryLogger');
 
 const {
-    generateRecurringTasks,
-    handleTaskCompletion,
+    calculateNextDueDate,
+    calculateVirtualOccurrences,
+    shouldGenerateNextTask,
 } = require('../../services/recurringTaskService');
 const { logError } = require('../../services/logService');
 const { logEvent } = require('../../services/taskEventService');
@@ -70,6 +76,103 @@ if (process.env.NODE_ENV === 'development') {
     enableQueryLogging();
 }
 
+// Helper function to expand recurring tasks into virtual occurrences
+function expandRecurringTasks(tasks, maxDays = 7, statusFilter = null) {
+    const expandedTasks = [];
+    const now = new Date();
+    now.setHours(0, 0, 0, 0); // Start of today
+
+    tasks.forEach((task) => {
+        // Check if this is a recurring task (template)
+        const isRecurring =
+            task.recurrence_type &&
+            task.recurrence_type !== 'none' &&
+            !task.recurring_parent_id;
+
+        if (!isRecurring) {
+            // Non-recurring task, add as-is
+            expandedTasks.push(task);
+            return;
+        }
+
+        console.log('[DEBUG] Processing recurring task:', {
+            id: task.id,
+            name: task.name,
+            recurrence_type: task.recurrence_type,
+            due_date: task.due_date,
+            status: task.status,
+            completed_at: task.completed_at,
+            has_due_date: !!task.due_date,
+            statusFilter: statusFilter,
+        });
+
+        // If filtering by completed and this task is completed, show the actual completed task
+        if (
+            (statusFilter === 'completed' || statusFilter === 'done') &&
+            (task.status === 2 || task.status === 'done')
+        ) {
+            console.log(
+                '[DEBUG] Task is completed and filter is completed, showing actual task'
+            );
+            expandedTasks.push(task);
+            return;
+        }
+
+        // For recurring tasks, calculate virtual occurrences
+        let startFrom = task.due_date ? new Date(task.due_date) : now;
+
+        // If the task is completed, start from the NEXT occurrence after completion
+        if (task.status === 2 || task.status === 'done') {
+            const baseDate =
+                task.completion_based && task.completed_at
+                    ? new Date(task.completed_at)
+                    : new Date(task.due_date || now);
+            const nextDate = calculateNextDueDate(task, baseDate);
+            startFrom = nextDate || now;
+            console.log(
+                '[DEBUG] Task is completed, starting from next occurrence:',
+                startFrom
+            );
+        }
+        // If the task is overdue but not completed, find the next future occurrence
+        else if (startFrom < now) {
+            // Calculate next occurrence from the due date
+            let nextDate = startFrom;
+            let iterations = 0;
+            const MAX_ITERATIONS = 100;
+
+            while (nextDate && nextDate < now && iterations < MAX_ITERATIONS) {
+                nextDate = calculateNextDueDate(task, nextDate);
+                iterations++;
+            }
+
+            startFrom = nextDate || now;
+        }
+
+        console.log('[DEBUG] Starting from date:', startFrom);
+        const occurrences = calculateVirtualOccurrences(
+            task,
+            maxDays,
+            startFrom
+        );
+        console.log('[DEBUG] Generated occurrences:', occurrences.length);
+
+        // Create virtual task objects for each occurrence
+        occurrences.forEach((occurrence, index) => {
+            const virtualTask = {
+                ...(task.toJSON ? task.toJSON() : task),
+                due_date: occurrence.due_date,
+                is_virtual_occurrence: true,
+                occurrence_index: index,
+                virtual_id: `${task.id}_occurrence_${index}`,
+            };
+            expandedTasks.push(virtualTask);
+        });
+    });
+
+    return expandedTasks;
+}
+
 router.get('/tasks', async (req, res) => {
     const startTime = Date.now();
     resetQueryCounter();
@@ -89,6 +192,29 @@ router.get('/tasks', async (req, res) => {
         await handleRecurringTasks(userId, type);
 
         let tasks = await filterTasksByParams(req.query, userId, timezone);
+
+        // For type=upcoming, expand recurring tasks into virtual occurrences
+        if (type === 'upcoming' && groupBy === 'day') {
+            console.log('[DEBUG] Expanding recurring tasks for /upcoming');
+            console.log('[DEBUG] Total tasks before expansion:', tasks.length);
+            console.log(
+                '[DEBUG] Recurring tasks:',
+                tasks
+                    .filter(
+                        (t) => t.recurrence_type && t.recurrence_type !== 'none'
+                    )
+                    .map((t) => ({
+                        id: t.id,
+                        name: t.name,
+                        recurrence_type: t.recurrence_type,
+                        due_date: t.due_date,
+                        recurring_parent_id: t.recurring_parent_id,
+                    }))
+            );
+            const days = maxDays ? parseInt(maxDays, 10) : 7;
+            tasks = expandRecurringTasks(tasks, days, req.query.status);
+            console.log('[DEBUG] Total tasks after expansion:', tasks.length);
+        }
 
         // For type=today, exclude templates that have instances with due_date in today's range
         if (type === 'today') {
@@ -485,9 +611,86 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
             req.body
         );
 
+        const resolveFinalValue = (field) =>
+            taskAttributes[field] !== undefined
+                ? taskAttributes[field]
+                : task[field];
+
+        const finalRecurrenceType = resolveFinalValue('recurrence_type');
+        const finalCompletionBased = resolveFinalValue('completion_based');
+        const finalDueDateBeforeAdvance =
+            taskAttributes.due_date !== undefined
+                ? taskAttributes.due_date
+                : task.due_date;
+
+        let recurringCompletionPayload = null;
+        let recurrenceAdvanceInfo = null;
+
+        if (
+            status !== undefined &&
+            (taskAttributes.status === Task.STATUS.DONE ||
+                taskAttributes.status === 'done') &&
+            finalRecurrenceType &&
+            finalRecurrenceType !== 'none' &&
+            !task.recurring_parent_id
+        ) {
+            const completedAt = new Date();
+            const hasOriginalDueDate =
+                finalDueDateBeforeAdvance !== undefined &&
+                finalDueDateBeforeAdvance !== null &&
+                finalDueDateBeforeAdvance !== '';
+            const originalDueDate = hasOriginalDueDate
+                ? new Date(finalDueDateBeforeAdvance)
+                : new Date(completedAt);
+            const recurrenceContext = {
+                ...(typeof task.get === 'function'
+                    ? task.get({ plain: true })
+                    : task),
+                recurrence_type: finalRecurrenceType,
+                recurrence_interval: resolveFinalValue('recurrence_interval'),
+                recurrence_end_date: resolveFinalValue('recurrence_end_date'),
+                recurrence_weekday: resolveFinalValue('recurrence_weekday'),
+                recurrence_weekdays: resolveFinalValue('recurrence_weekdays'),
+                recurrence_month_day: resolveFinalValue('recurrence_month_day'),
+                recurrence_week_of_month: resolveFinalValue(
+                    'recurrence_week_of_month'
+                ),
+                completion_based: finalCompletionBased,
+                due_date: originalDueDate,
+            };
+
+            const baseDate = finalCompletionBased
+                ? completedAt
+                : new Date(originalDueDate);
+            const nextDueDate = calculateNextDueDate(
+                recurrenceContext,
+                baseDate
+            );
+
+            recurringCompletionPayload = {
+                task_id: task.id,
+                completed_at: completedAt,
+                original_due_date: new Date(originalDueDate),
+                skipped: false,
+            };
+            recurrenceAdvanceInfo = {
+                originalDueDate: new Date(originalDueDate),
+                completedAt,
+                nextDueDate,
+            };
+
+            if (
+                nextDueDate &&
+                shouldGenerateNextTask(recurrenceContext, nextDueDate)
+            ) {
+                taskAttributes.status = Task.STATUS.NOT_STARTED;
+                taskAttributes.completed_at = null;
+                taskAttributes.due_date = nextDueDate;
+            }
+        }
+
         await task.update(taskAttributes);
 
-        let nextTask = null;
         if (status !== undefined) {
             await handleParentChildOnStatusChange(
                 task,
@@ -495,29 +698,38 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
                 taskAttributes.status,
                 req.currentUser.id
             );
-
-            if (
-                taskAttributes.status === Task.STATUS.DONE ||
-                taskAttributes.status === 'done'
-            ) {
-                nextTask = await handleTaskCompletion(task);
-            }
         }
 
-        if (recurrenceChanged && task.recurrence_type !== 'none') {
-            const newRecurrenceType =
-                recurrence_type !== undefined
-                    ? recurrence_type
-                    : task.recurrence_type;
-            if (newRecurrenceType !== 'none') {
-                try {
-                    await generateRecurringTasks(req.currentUser.id, 7);
-                } catch (error) {
-                    logError(
-                        'Error generating new recurring tasks after update:',
-                        error
-                    );
-                }
+        if (recurringCompletionPayload) {
+            await RecurringCompletion.create(recurringCompletionPayload);
+            try {
+                await logEvent({
+                    taskId: task.id,
+                    userId: req.currentUser.id,
+                    eventType: 'recurring_occurrence_completed',
+                    fieldName: 'recurrence',
+                    oldValue: recurrenceAdvanceInfo
+                        ? recurrenceAdvanceInfo.originalDueDate
+                        : null,
+                    newValue: recurrenceAdvanceInfo
+                        ? recurrenceAdvanceInfo.nextDueDate
+                        : null,
+                    metadata: {
+                        action: 'recurring_occurrence_completed',
+                        original_due_date:
+                            recurrenceAdvanceInfo?.originalDueDate?.toISOString?.() ??
+                            recurrenceAdvanceInfo?.originalDueDate,
+                        next_due_date:
+                            recurrenceAdvanceInfo?.nextDueDate?.toISOString?.() ??
+                            null,
+                        completion_based: finalCompletionBased,
+                    },
+                });
+            } catch (eventError) {
+                logError(
+                    'Error logging recurring occurrence completion event:',
+                    eventError
+                );
             }
         }
 
@@ -556,15 +768,6 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
             req.currentUser.timezone,
             { skipDisplayNameTransform: true }
         );
-
-        if (nextTask) {
-            serializedTask.next_task = {
-                ...nextTask.toJSON(),
-                due_date: nextTask.due_date
-                    ? nextTask.due_date.toISOString().split('T')[0]
-                    : null,
-            };
-        }
 
         res.json(serializedTask);
     } catch (error) {
@@ -613,7 +816,6 @@ router.delete('/task/:uid', requireTaskWriteAccess, async (req, res) => {
                     recurrence_type: 'none',
                     recurrence_interval: null,
                     recurrence_end_date: null,
-                    last_generated_date: null,
                     recurrence_weekday: null,
                     recurrence_month_day: null,
                     recurrence_week_of_month: null,
@@ -669,25 +871,6 @@ router.get('/task/:id/subtasks', async (req, res) => {
     } catch (error) {
         logError('Error fetching subtasks:', error);
         res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-router.post('/tasks/generate-recurring', async (req, res) => {
-    try {
-        const newTasks = await generateRecurringTasks(req.currentUser.id);
-
-        res.json({
-            message: `Generated ${newTasks.length} recurring tasks`,
-            tasks: newTasks.map((task) => ({
-                ...task.toJSON(),
-                due_date: task.due_date
-                    ? task.due_date.toISOString().split('T')[0]
-                    : null,
-            })),
-        });
-    } catch (error) {
-        logError('Error generating recurring tasks:', error);
-        res.status(500).json({ error: 'Failed to generate recurring tasks' });
     }
 });
 

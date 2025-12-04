@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
@@ -582,7 +582,13 @@ const TaskDetails: React.FC = () => {
             ) {
                 try {
                     setLoadingIterations(true);
-                    const iterations = await fetchTaskNextIterations(task.id);
+                    const startFromDate = task.due_date
+                        ? task.due_date.split('T')[0]
+                        : undefined;
+                    const iterations = await fetchTaskNextIterations(
+                        task.id,
+                        startFromDate
+                    );
                     setNextIterations(iterations);
                 } catch (error) {
                     console.error('Error loading next iterations:', error);
@@ -819,23 +825,81 @@ const TaskDetails: React.FC = () => {
         setIsTaskModalOpen(true);
     };
 
+    const refreshRecurringSetup = useCallback(
+        async (latestTask?: Task | null) => {
+            if (!latestTask) {
+                setNextIterations([]);
+                return;
+            }
+
+            const isTemplateTask =
+                latestTask.recurrence_type &&
+                latestTask.recurrence_type !== 'none' &&
+                !latestTask.recurring_parent_id;
+            const canUseParentIterations =
+                !!latestTask.recurring_parent_id &&
+                !!parentTask?.id &&
+                parentTask?.recurrence_type &&
+                parentTask.recurrence_type !== 'none';
+
+            if (!isTemplateTask && !canUseParentIterations) {
+                setNextIterations([]);
+                return;
+            }
+
+            try {
+                setLoadingIterations(true);
+                if (isTemplateTask) {
+                    const startFromDate = latestTask.due_date
+                        ? latestTask.due_date.split('T')[0]
+                        : undefined;
+                    const iterations = await fetchTaskNextIterations(
+                        latestTask.id,
+                        startFromDate
+                    );
+                    setNextIterations(iterations);
+                } else if (canUseParentIterations && parentTask?.id) {
+                    const startFromDate = latestTask.due_date
+                        ? latestTask.due_date.split('T')[0]
+                        : undefined;
+                    const iterations = await fetchTaskNextIterations(
+                        parentTask.id,
+                        startFromDate
+                    );
+                    setNextIterations(iterations);
+                }
+            } catch (error) {
+                console.error('Error refreshing recurring setup:', error);
+                setNextIterations([]);
+            } finally {
+                setLoadingIterations(false);
+            }
+        },
+        [parentTask?.id, parentTask?.recurrence_type]
+    );
+
     const handleToggleCompletion = async () => {
         if (!task?.uid) return;
 
         try {
             const updatedTask = await toggleTaskCompletion(task.uid, task);
+            let latestTaskData: Task | null = updatedTask;
+
             // Update the task in the global store
             if (uid) {
-                const updatedTask = await fetchTaskByUid(uid);
+                const refreshedTask = await fetchTaskByUid(uid);
+                latestTaskData = refreshedTask;
                 const existingIndex = tasksStore.tasks.findIndex(
                     (t: Task) => t.uid === uid
                 );
                 if (existingIndex >= 0) {
                     const updatedTasks = [...tasksStore.tasks];
-                    updatedTasks[existingIndex] = updatedTask;
+                    updatedTasks[existingIndex] = refreshedTask;
                     tasksStore.setTasks(updatedTasks);
                 }
             }
+
+            await refreshRecurringSetup(latestTaskData);
 
             const statusMessage =
                 updatedTask.status === 'done' || updatedTask.status === 2

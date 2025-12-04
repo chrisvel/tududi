@@ -146,7 +146,6 @@ describe('Task Model', () => {
                 note: null,
                 recurrence_interval: null,
                 recurrence_end_date: null,
-                last_generated_date: null,
                 project_id: null,
             });
 
@@ -155,7 +154,6 @@ describe('Task Model', () => {
             expect(task.note).toBeNull();
             expect(task.recurrence_interval).toBeNull();
             expect(task.recurrence_end_date).toBeNull();
-            expect(task.last_generated_date).toBeNull();
             expect(task.project_id).toBeNull();
         });
 

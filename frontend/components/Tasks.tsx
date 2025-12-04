@@ -78,10 +78,8 @@ const Tasks: React.FC = () => {
     const status = query.get('status');
     const tag = query.get('tag');
 
-    // Sync showCompleted state with status URL parameter (skip for upcoming view)
+    // Sync showCompleted state with status URL parameter
     useEffect(() => {
-        if (isUpcomingView) return; // Don't apply status filtering in upcoming view
-
         if (status === 'completed') {
             setShowCompleted(true);
         } else if (status === 'active') {
@@ -658,8 +656,8 @@ const Tasks: React.FC = () => {
                             dropdownLabel={t('tasks.sortBy', 'Sort by')}
                             align="right"
                             footerContent={
-                                !isUpcomingView && (
-                                    <div className="space-y-3">
+                                <div className="space-y-3">
+                                    {!isUpcomingView && (
                                         <div>
                                             <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
                                                 {t('tasks.groupBy', 'Group by')}
@@ -707,193 +705,184 @@ const Tasks: React.FC = () => {
                                                 )}
                                             </div>
                                         </div>
-                                        <div>
-                                            <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-t border-b border-gray-200 dark:border-gray-700">
-                                                {t('tasks.show', 'Show')}
-                                            </div>
-                                            <div className="py-1 space-y-1">
-                                                {[
-                                                    {
-                                                        key: 'active',
-                                                        label: t(
-                                                            'tasks.open',
-                                                            'Open'
-                                                        ),
-                                                    },
-                                                    {
-                                                        key: 'all',
-                                                        label: t(
-                                                            'tasks.all',
-                                                            'All'
-                                                        ),
-                                                    },
-                                                    {
-                                                        key: 'completed',
-                                                        label: t(
-                                                            'tasks.completed',
-                                                            'Completed'
-                                                        ),
-                                                    },
-                                                ].map((opt) => {
-                                                    const isActive =
-                                                        (opt.key === 'all' &&
-                                                            status === null) ||
-                                                        (opt.key ===
-                                                            'completed' &&
-                                                            status ===
-                                                                'completed') ||
-                                                        (opt.key === 'active' &&
-                                                            status ===
-                                                                'active');
-                                                    return (
-                                                        <button
-                                                            key={opt.key}
-                                                            type="button"
-                                                            onClick={() => {
-                                                                if (
-                                                                    opt.key ===
-                                                                    'completed'
-                                                                ) {
-                                                                    const params =
-                                                                        new URLSearchParams(
-                                                                            location.search
-                                                                        );
-                                                                    params.set(
-                                                                        'status',
-                                                                        'completed'
-                                                                    );
-                                                                    navigate(
-                                                                        {
-                                                                            pathname:
-                                                                                location.pathname,
-                                                                            search: `?${params.toString()}`,
-                                                                        },
-                                                                        {
-                                                                            replace: true,
-                                                                        }
-                                                                    );
-                                                                } else if (
-                                                                    opt.key ===
-                                                                    'all'
-                                                                ) {
-                                                                    const params =
-                                                                        new URLSearchParams(
-                                                                            location.search
-                                                                        );
-                                                                    params.delete(
-                                                                        'status'
-                                                                    );
-                                                                    navigate(
-                                                                        {
-                                                                            pathname:
-                                                                                location.pathname,
-                                                                            search: `?${params.toString()}`,
-                                                                        },
-                                                                        {
-                                                                            replace: true,
-                                                                        }
-                                                                    );
-                                                                } else {
-                                                                    // active (not completed)
-                                                                    const params =
-                                                                        new URLSearchParams(
-                                                                            location.search
-                                                                        );
-                                                                    params.set(
-                                                                        'status',
-                                                                        'active'
-                                                                    );
-                                                                    navigate(
-                                                                        {
-                                                                            pathname:
-                                                                                location.pathname,
-                                                                            search: `?${params.toString()}`,
-                                                                        },
-                                                                        {
-                                                                            replace: true,
-                                                                        }
-                                                                    );
-                                                                }
-                                                            }}
-                                                            className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
-                                                                isActive
-                                                                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                                                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                                            }`}
-                                                        >
-                                                            <span>
-                                                                {opt.label}
-                                                            </span>
-                                                            {isActive && (
-                                                                <CheckIcon className="h-4 w-4" />
-                                                            )}
-                                                        </button>
-                                                    );
-                                                })}
-                                            </div>
+                                    )}
+                                    <div>
+                                        <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-t border-b border-gray-200 dark:border-gray-700">
+                                            {t('tasks.show', 'Show')}
                                         </div>
-                                        <div>
-                                            <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-t border-b border-gray-200 dark:border-gray-700">
-                                                {t(
-                                                    'tasks.direction',
-                                                    'Direction'
-                                                )}
-                                            </div>
-                                            <div className="py-1">
-                                                {[
-                                                    {
-                                                        key: 'asc',
-                                                        label: t(
-                                                            'tasks.ascending',
-                                                            'Ascending'
-                                                        ),
-                                                    },
-                                                    {
-                                                        key: 'desc',
-                                                        label: t(
-                                                            'tasks.descending',
-                                                            'Descending'
-                                                        ),
-                                                    },
-                                                ].map((dir) => {
-                                                    const currentDirection =
-                                                        orderBy.split(':')[1] ||
-                                                        'asc';
-                                                    const isActive =
-                                                        currentDirection ===
-                                                        dir.key;
-                                                    return (
-                                                        <button
-                                                            key={dir.key}
-                                                            onClick={() => {
-                                                                const [field] =
-                                                                    orderBy.split(
-                                                                        ':'
+                                        <div className="py-1 space-y-1">
+                                            {[
+                                                {
+                                                    key: 'active',
+                                                    label: t(
+                                                        'tasks.open',
+                                                        'Open'
+                                                    ),
+                                                },
+                                                {
+                                                    key: 'all',
+                                                    label: t(
+                                                        'tasks.all',
+                                                        'All'
+                                                    ),
+                                                },
+                                                {
+                                                    key: 'completed',
+                                                    label: t(
+                                                        'tasks.completed',
+                                                        'Completed'
+                                                    ),
+                                                },
+                                            ].map((opt) => {
+                                                const isActive =
+                                                    (opt.key === 'all' &&
+                                                        status === null) ||
+                                                    (opt.key === 'completed' &&
+                                                        status ===
+                                                            'completed') ||
+                                                    (opt.key === 'active' &&
+                                                        status === 'active');
+                                                return (
+                                                    <button
+                                                        key={opt.key}
+                                                        type="button"
+                                                        onClick={() => {
+                                                            if (
+                                                                opt.key ===
+                                                                'completed'
+                                                            ) {
+                                                                const params =
+                                                                    new URLSearchParams(
+                                                                        location.search
                                                                     );
-                                                                const newOrderBy = `${field}:${dir.key}`;
-                                                                handleSortChange(
-                                                                    newOrderBy
+                                                                params.set(
+                                                                    'status',
+                                                                    'completed'
                                                                 );
-                                                            }}
-                                                            className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
-                                                                isActive
-                                                                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                                                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                                            }`}
-                                                        >
-                                                            <span>
-                                                                {dir.label}
-                                                            </span>
-                                                            {isActive && (
-                                                                <CheckIcon className="h-4 w-4" />
-                                                            )}
-                                                        </button>
-                                                    );
-                                                })}
-                                            </div>
+                                                                navigate(
+                                                                    {
+                                                                        pathname:
+                                                                            location.pathname,
+                                                                        search: `?${params.toString()}`,
+                                                                    },
+                                                                    {
+                                                                        replace: true,
+                                                                    }
+                                                                );
+                                                            } else if (
+                                                                opt.key ===
+                                                                'all'
+                                                            ) {
+                                                                const params =
+                                                                    new URLSearchParams(
+                                                                        location.search
+                                                                    );
+                                                                params.delete(
+                                                                    'status'
+                                                                );
+                                                                navigate(
+                                                                    {
+                                                                        pathname:
+                                                                            location.pathname,
+                                                                        search: `?${params.toString()}`,
+                                                                    },
+                                                                    {
+                                                                        replace: true,
+                                                                    }
+                                                                );
+                                                            } else {
+                                                                // active (not completed)
+                                                                const params =
+                                                                    new URLSearchParams(
+                                                                        location.search
+                                                                    );
+                                                                params.set(
+                                                                    'status',
+                                                                    'active'
+                                                                );
+                                                                navigate(
+                                                                    {
+                                                                        pathname:
+                                                                            location.pathname,
+                                                                        search: `?${params.toString()}`,
+                                                                    },
+                                                                    {
+                                                                        replace: true,
+                                                                    }
+                                                                );
+                                                            }
+                                                        }}
+                                                        className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                                                            isActive
+                                                                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                                                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                        }`}
+                                                    >
+                                                        <span>{opt.label}</span>
+                                                        {isActive && (
+                                                            <CheckIcon className="h-4 w-4" />
+                                                        )}
+                                                    </button>
+                                                );
+                                            })}
                                         </div>
                                     </div>
-                                )
+                                    <div>
+                                        <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-t border-b border-gray-200 dark:border-gray-700">
+                                            {t('tasks.direction', 'Direction')}
+                                        </div>
+                                        <div className="py-1">
+                                            {[
+                                                {
+                                                    key: 'asc',
+                                                    label: t(
+                                                        'tasks.ascending',
+                                                        'Ascending'
+                                                    ),
+                                                },
+                                                {
+                                                    key: 'desc',
+                                                    label: t(
+                                                        'tasks.descending',
+                                                        'Descending'
+                                                    ),
+                                                },
+                                            ].map((dir) => {
+                                                const currentDirection =
+                                                    orderBy.split(':')[1] ||
+                                                    'asc';
+                                                const isActive =
+                                                    currentDirection ===
+                                                    dir.key;
+                                                return (
+                                                    <button
+                                                        key={dir.key}
+                                                        onClick={() => {
+                                                            const [field] =
+                                                                orderBy.split(
+                                                                    ':'
+                                                                );
+                                                            const newOrderBy = `${field}:${dir.key}`;
+                                                            handleSortChange(
+                                                                newOrderBy
+                                                            );
+                                                        }}
+                                                        className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                                                            isActive
+                                                                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                                                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                        }`}
+                                                    >
+                                                        <span>{dir.label}</span>
+                                                        {isActive && (
+                                                            <CheckIcon className="h-4 w-4" />
+                                                        )}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                </div>
                             }
                         />
                     </div>

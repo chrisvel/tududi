@@ -18,11 +18,15 @@ async function serializeTask(
     if (!task) {
         throw new Error('Task is null or undefined');
     }
-    const taskJson = task.toJSON();
+    // Handle both Sequelize instances and plain objects (like virtual occurrences)
+    const taskJson = task.toJSON ? task.toJSON() : task;
 
-    const todayMoveCount = moveCountMap
-        ? moveCountMap[task.id] || 0
-        : await getTaskTodayMoveCount(task.id);
+    // Virtual occurrences don't have move counts (they're not real tasks in the DB)
+    const todayMoveCount = taskJson.is_virtual_occurrence
+        ? 0
+        : moveCountMap
+          ? moveCountMap[task.id] || 0
+          : await getTaskTodayMoveCount(task.id);
 
     const safeTimezone = getSafeTimezone(userTimezone);
 

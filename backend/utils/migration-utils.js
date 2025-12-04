@@ -101,7 +101,7 @@ async function safeRemoveColumn(queryInterface, tableName, columnName) {
                 const columnDefs = columns
                     .map((col) => {
                         const info = tableInfo[col];
-                        let def = `${col} ${info.type}`;
+                        let def = `\`${col}\` ${info.type}`;
 
                         if (info.primaryKey) {
                             def += ' PRIMARY KEY';
@@ -131,7 +131,9 @@ async function safeRemoveColumn(queryInterface, tableName, columnName) {
                     })
                     .join(', ');
 
-                const columnList = columns.join(', ');
+                const columnList = columns
+                    .map((col) => `\`${col}\``)
+                    .join(', ');
 
                 // Execute operations separately as SQLite doesn't support multiple statements
                 await queryInterface.sequelize.query(

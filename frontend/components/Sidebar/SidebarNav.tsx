@@ -114,12 +114,24 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                                         </span>
                                     )}
                                 {link.path === '/tasks?status=active' && (
-                                    <button
+                                    <div
+                                        role="button"
+                                        tabIndex={0}
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             openTaskModal('full');
                                         }}
-                                        className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none"
+                                        onKeyDown={(e) => {
+                                            if (
+                                                e.key === 'Enter' ||
+                                                e.key === ' '
+                                            ) {
+                                                e.stopPropagation();
+                                                e.preventDefault();
+                                                openTaskModal('full');
+                                            }
+                                        }}
+                                        className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none cursor-pointer"
                                         aria-label={t(
                                             'sidebar.addTaskAriaLabel',
                                             'Add Task'
@@ -130,7 +142,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                                         )}
                                     >
                                         <PlusCircleIcon className="h-5 w-5" />
-                                    </button>
+                                    </div>
                                 )}
                             </div>
                         </button>

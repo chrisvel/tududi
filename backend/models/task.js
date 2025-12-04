@@ -78,10 +78,6 @@ module.exports = (sequelize) => {
                 type: DataTypes.DATE,
                 allowNull: true,
             },
-            last_generated_date: {
-                type: DataTypes.DATE,
-                allowNull: true,
-            },
             recurrence_weekday: {
                 type: DataTypes.INTEGER,
                 allowNull: true,
@@ -178,9 +174,6 @@ module.exports = (sequelize) => {
                 },
                 {
                     fields: ['recurrence_type'],
-                },
-                {
-                    fields: ['last_generated_date'],
                 },
                 {
                     fields: ['parent_task_id'],

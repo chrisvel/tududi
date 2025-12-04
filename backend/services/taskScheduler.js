@@ -34,8 +34,7 @@ const getCronExpression = (frequency) => {
         '4h': '0 */4 * * *',
         '8h': '0 */8 * * *',
         '12h': '0 */12 * * *',
-        recurring_tasks: '0 6 * * *', // Daily at 6 AM for recurring task generation
-        cleanup_tokens: '0 2 * * *', // Daily at 2 AM for cleaning up expired tokens
+        cleanup_tokens: '0 2 * * *',
         deferred_tasks: '*/5 * * * *', // Every 5 minutes to check deferred tasks
         due_tasks: '*/15 * * * *', // Every 15 minutes to check due/overdue tasks
         due_projects: '*/15 * * * *', // Every 15 minutes to check due/overdue projects
@@ -45,9 +44,7 @@ const getCronExpression = (frequency) => {
 
 // Create job handler
 const createJobHandler = (frequency) => async () => {
-    if (frequency === 'recurring_tasks') {
-        await processRecurringTasks();
-    } else if (frequency === 'cleanup_tokens') {
+    if (frequency === 'cleanup_tokens') {
         await cleanupExpiredTokens();
     } else if (frequency === 'deferred_tasks') {
         await processDeferredTasks();
@@ -71,7 +68,6 @@ const createJobEntries = () => {
         '4h',
         '8h',
         '12h',
-        'recurring_tasks',
         'cleanup_tokens',
         'deferred_tasks',
         'due_tasks',
@@ -134,17 +130,6 @@ const processSummariesForFrequency = async (frequency) => {
         );
 
         return results;
-    } catch (error) {
-        throw error;
-    }
-};
-
-// Function to process recurring tasks (contains side effects)
-const processRecurringTasks = async () => {
-    try {
-        const { generateRecurringTasks } = require('./recurringTaskService');
-        const newTasks = await generateRecurringTasks();
-        return newTasks;
     } catch (error) {
         throw error;
     }
@@ -257,7 +242,6 @@ module.exports = {
     restart,
     getStatus,
     processSummariesForFrequency,
-    processRecurringTasks,
     cleanupExpiredTokens,
     processDeferredTasks,
     processDueTasks,
