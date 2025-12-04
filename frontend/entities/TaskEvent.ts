@@ -7,6 +7,7 @@ export interface TaskEvent {
         | 'status_changed'
         | 'priority_changed'
         | 'due_date_changed'
+        | 'defer_until_changed'
         | 'recurrence_end_date_changed'
         | 'recurrence_type_changed'
         | 'completion_based_changed'

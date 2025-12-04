@@ -10,6 +10,7 @@ function captureOldValues(task) {
         status: task.status,
         priority: task.priority,
         due_date: task.due_date,
+        defer_until: task.defer_until,
         project_id: task.project_id,
         note: task.note,
         today: task.today,
@@ -66,6 +67,20 @@ async function logTaskChanges(task, oldValues, reqBody, tagsData, userId) {
                 changes.due_date = {
                     oldValue: oldValues.due_date,
                     newValue: reqBody.due_date,
+                };
+            }
+        }
+
+        if (reqBody.defer_until !== undefined) {
+            const oldDeferStr = oldValues.defer_until
+                ? oldValues.defer_until.toISOString()
+                : null;
+            const newDeferStr = reqBody.defer_until || null;
+
+            if (oldDeferStr !== newDeferStr) {
+                changes.defer_until = {
+                    oldValue: oldValues.defer_until,
+                    newValue: reqBody.defer_until,
                 };
             }
         }
