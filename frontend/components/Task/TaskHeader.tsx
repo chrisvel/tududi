@@ -219,7 +219,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                             <div className="w-full">
                                 {/* Full width title that wraps */}
                                 <div className="w-full mb-0.5">
-                                    <span className="text-sm font-normal text-gray-900 dark:text-gray-300 dark:font-light break-words tracking-tight">
+                                    <span className="text-sm font-medium text-gray-900 dark:text-gray-300 break-words tracking-tight">
                                         {task.original_name || task.name}
                                     </span>
                                 </div>
@@ -306,7 +306,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                             </div>
                         ) : (
                             <div className="flex items-center">
-                                <span className="text-md font-normal text-gray-900 dark:text-gray-300 dark:font-light">
+                                <span className="text-md font-medium text-gray-900 dark:text-gray-300">
                                     {task.original_name || task.name}
                                 </span>
                             </div>
@@ -581,7 +581,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                     {/* Task content - full width */}
                     <div className="ml-3 flex-1 min-w-0">
                         {/* Task Title */}
-                        <div className="font-light text-md text-gray-900 dark:text-gray-300 dark:font-extralight">
+                        <div className="font-medium text-md text-gray-900 dark:text-gray-300">
                             <span className="break-words">
                                 {task.original_name || task.name}
                             </span>

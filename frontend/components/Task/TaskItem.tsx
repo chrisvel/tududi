@@ -99,7 +99,7 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
                                         />
                                     </div>
                                     <span
-                                        className={`text-base flex-1 truncate ${
+                                        className={`text-base font-medium flex-1 truncate ${
                                             subtask.status === 'done' ||
                                             subtask.status === 2 ||
                                             subtask.status === 'archived' ||
