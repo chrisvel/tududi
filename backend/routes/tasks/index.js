@@ -76,21 +76,18 @@ if (process.env.NODE_ENV === 'development') {
     enableQueryLogging();
 }
 
-// Helper function to expand recurring tasks into virtual occurrences
 function expandRecurringTasks(tasks, maxDays = 7, statusFilter = null) {
     const expandedTasks = [];
     const now = new Date();
-    now.setHours(0, 0, 0, 0); // Start of today
+    now.setHours(0, 0, 0, 0);
 
     tasks.forEach((task) => {
-        // Check if this is a recurring task (template)
         const isRecurring =
             task.recurrence_type &&
             task.recurrence_type !== 'none' &&
             !task.recurring_parent_id;
 
         if (!isRecurring) {
-            // Non-recurring task, add as-is
             expandedTasks.push(task);
             return;
         }
@@ -106,7 +103,6 @@ function expandRecurringTasks(tasks, maxDays = 7, statusFilter = null) {
             statusFilter: statusFilter,
         });
 
-        // If filtering by completed and this task is completed, show the actual completed task
         if (
             (statusFilter === 'completed' || statusFilter === 'done') &&
             (task.status === 2 || task.status === 'done')
@@ -118,10 +114,8 @@ function expandRecurringTasks(tasks, maxDays = 7, statusFilter = null) {
             return;
         }
 
-        // For recurring tasks, calculate virtual occurrences
         let startFrom = task.due_date ? new Date(task.due_date) : now;
 
-        // If the task is completed, start from the NEXT occurrence after completion
         if (task.status === 2 || task.status === 'done') {
             const baseDate =
                 task.completion_based && task.completed_at
@@ -133,10 +127,7 @@ function expandRecurringTasks(tasks, maxDays = 7, statusFilter = null) {
                 '[DEBUG] Task is completed, starting from next occurrence:',
                 startFrom
             );
-        }
-        // If the task is overdue but not completed, find the next future occurrence
-        else if (startFrom < now) {
-            // Calculate next occurrence from the due date
+        } else if (startFrom < now) {
             let nextDate = startFrom;
             let iterations = 0;
             const MAX_ITERATIONS = 100;
@@ -157,7 +148,6 @@ function expandRecurringTasks(tasks, maxDays = 7, statusFilter = null) {
         );
         console.log('[DEBUG] Generated occurrences:', occurrences.length);
 
-        // Create virtual task objects for each occurrence
         occurrences.forEach((occurrence, index) => {
             const virtualTask = {
                 ...(task.toJSON ? task.toJSON() : task),
@@ -193,7 +183,6 @@ router.get('/tasks', async (req, res) => {
 
         let tasks = await filterTasksByParams(req.query, userId, timezone);
 
-        // For type=upcoming, expand recurring tasks into virtual occurrences
         if (type === 'upcoming' && groupBy === 'day') {
             console.log('[DEBUG] Expanding recurring tasks for /upcoming');
             console.log('[DEBUG] Total tasks before expansion:', tasks.length);
@@ -216,12 +205,10 @@ router.get('/tasks', async (req, res) => {
             console.log('[DEBUG] Total tasks after expansion:', tasks.length);
         }
 
-        // For type=today, exclude templates that have instances with due_date in today's range
         if (type === 'today') {
             const safeTimezone = getSafeTimezone(timezone);
             const todayBounds = getTodayBoundsInUTC(safeTimezone);
 
-            // Find all instances with due_date in today's range
             const instancesForToday = tasks.filter(
                 (t) =>
                     t.recurring_parent_id &&
@@ -230,12 +217,10 @@ router.get('/tasks', async (req, res) => {
                     new Date(t.due_date) <= todayBounds.end
             );
 
-            // Get parent IDs of those instances
             const parentIdsWithTodayInstances = new Set(
                 instancesForToday.map((t) => t.recurring_parent_id)
             );
 
-            // Filter out templates that have instances for today
             tasks = tasks.filter(
                 (t) =>
                     !t.recurrence_type ||
@@ -245,7 +230,6 @@ router.get('/tasks', async (req, res) => {
             );
         }
 
-        // Pagination support
         const hasPagination =
             limitParam !== undefined || offsetParam !== undefined;
         const totalCount = tasks.length;
@@ -294,7 +278,6 @@ router.get('/tasks', async (req, res) => {
             serializationOptions
         );
 
-        // Add pagination metadata if pagination was requested
         if (hasPagination) {
             const limit = parseInt(limitParam, 10) || 20;
             const offset = parseInt(offsetParam, 10) || 0;
@@ -349,7 +332,6 @@ router.post('/task', async (req, res) => {
             timezone
         );
 
-        // Validate defer_until vs due_date
         try {
             validateDeferUntilAndDueDate(
                 taskAttributes.defer_until,
@@ -536,8 +518,6 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
         const timezone = getSafeTimezone(req.currentUser.timezone);
         const taskAttributes = buildUpdateAttributes(req.body, task, timezone);
 
-        // Validate defer_until vs due_date
-        // Use the new values if provided, otherwise use existing task values
         try {
             const finalDeferUntil =
                 taskAttributes.defer_until !== undefined

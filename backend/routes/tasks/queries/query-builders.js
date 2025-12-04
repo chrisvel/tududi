@@ -116,7 +116,6 @@ async function filterTasksByParams(
             };
             whereClause[Op.or] = [
                 {
-                    // Non-recurring tasks that are marked for today
                     [Op.and]: [
                         {
                             [Op.or]: [
@@ -129,7 +128,6 @@ async function filterTasksByParams(
                     ],
                 },
                 {
-                    // Recurring parent tasks that are marked for today
                     [Op.and]: [
                         { recurrence_type: { [Op.ne]: 'none' } },
                         { recurrence_type: { [Op.ne]: null } },
@@ -138,7 +136,6 @@ async function filterTasksByParams(
                     ],
                 },
                 {
-                    // Recurring task instances that are due today (regardless of today flag)
                     [Op.and]: [
                         { recurring_parent_id: { [Op.ne]: null } },
                         {
@@ -161,7 +158,6 @@ async function filterTasksByParams(
             whereClause = {
                 parent_task_id: null,
                 [Op.or]: [
-                    // Non-recurring tasks with due_date in range
                     {
                         [Op.and]: [
                             { recurring_parent_id: null },
@@ -181,7 +177,6 @@ async function filterTasksByParams(
                             },
                         ],
                     },
-                    // Recurring templates (will be expanded into virtual occurrences)
                     {
                         [Op.and]: [
                             { recurring_parent_id: null },
@@ -339,7 +334,6 @@ async function filterTasksByParams(
 
         tagFilteredTaskIds = taggedTaskIds.map((row) => row.task_id);
 
-        // No tasks found with this tag - return early to avoid unnecessary query
         if (tagFilteredTaskIds.length === 0) {
             return [];
         }

@@ -18,10 +18,8 @@ async function serializeTask(
     if (!task) {
         throw new Error('Task is null or undefined');
     }
-    // Handle both Sequelize instances and plain objects (like virtual occurrences)
     const taskJson = task.toJSON ? task.toJSON() : task;
 
-    // Virtual occurrences don't have move counts (they're not real tasks in the DB)
     const todayMoveCount = taskJson.is_virtual_occurrence
         ? 0
         : moveCountMap

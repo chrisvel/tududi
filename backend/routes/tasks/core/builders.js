@@ -9,14 +9,11 @@ function buildTaskAttributes(body, userId, timezone, isUpdate = false) {
     const recurrenceType = body.recurrence_type || 'none';
     const isRecurring = recurrenceType && recurrenceType !== 'none';
 
-    // If setting recurrence but no due_date provided, default to today
     let dueDate = body.due_date;
-    // Check for undefined, null, or empty string
     if (
         isRecurring &&
         (dueDate === undefined || dueDate === null || dueDate === '')
     ) {
-        // Set to today in the user's timezone
         const now = new Date();
         const year = now.getFullYear();
         const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -68,7 +65,6 @@ function buildUpdateAttributes(body, task, timezone) {
             : task.recurrence_type;
     const isRecurring = recurrenceType && recurrenceType !== 'none';
 
-    // Check if we're ADDING recurrence (changing from none to something else)
     const isAddingRecurrence =
         body.recurrence_type !== undefined &&
         body.recurrence_type !== 'none' &&
@@ -117,10 +113,7 @@ function buildUpdateAttributes(body, task, timezone) {
                 : task.completion_based,
     };
 
-    // Only process dates if they are present in the body
     if (body.due_date !== undefined) {
-        // If due_date is provided (even if null or empty), process it
-        // But if it's null/empty and we're setting recurrence, use today instead
         if (isRecurring && (body.due_date === null || body.due_date === '')) {
             const now = new Date();
             const year = now.getFullYear();
@@ -134,7 +127,6 @@ function buildUpdateAttributes(body, task, timezone) {
             attrs.due_date = processDueDateForStorage(body.due_date, timezone);
         }
     } else if (isAddingRecurrence && (!task.due_date || task.due_date === '')) {
-        // If ADDING recurrence and task has no due_date (or empty due_date), default to today
         const now = new Date();
         const year = now.getFullYear();
         const month = String(now.getMonth() + 1).padStart(2, '0');

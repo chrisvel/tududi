@@ -26,10 +26,8 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
     const { t } = useTranslation();
     const store = useStore();
 
-    // Get inbox items count for badge - use pagination.total for accurate count
     const inboxItemsCount = store.inboxStore.pagination.total;
 
-    // Load inbox items when component mounts to ensure badge shows correct count
     useEffect(() => {
         loadInboxItemsToStore(false).catch(console.error);
     }, []);
@@ -60,7 +58,6 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
     ];
 
     const isActive = (path: string, query?: string) => {
-        // Handle special case for paths without query parameters
         if (path === '/inbox' || path === '/today') {
             const isPathMatch = location.pathname === path;
             return isPathMatch
@@ -68,7 +65,6 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                 : 'text-gray-700 dark:text-gray-300';
         }
 
-        // Handle upcoming with query parameters
         if (path.startsWith('/upcoming')) {
             const isPathMatch = location.pathname === '/upcoming';
             return isPathMatch
@@ -76,7 +72,6 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                 : 'text-gray-700 dark:text-gray-300';
         }
 
-        // Regular case for /tasks with query params
         const isPathMatch = location.pathname === '/tasks';
         const isQueryMatch = query
             ? location.search.includes(query)

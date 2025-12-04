@@ -36,9 +36,7 @@ module.exports = (sequelize) => {
         }
     );
 
-    // Define associations
     RecurringCompletion.associate = function (models) {
-        // RecurringCompletion belongs to Task
         RecurringCompletion.belongsTo(models.Task, {
             foreignKey: 'task_id',
             as: 'Task',
