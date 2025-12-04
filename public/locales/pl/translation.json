@@ -178,7 +178,10 @@
       "completionBasedChanged": "Zmiana opartej na ukończeniu powtarzalności",
       "projectIdChanged": "Przypisano do projektu",
       "recurrenceType": "Typ powtarzalności",
-      "recurrenceTypeChanged": "Zmiana typu powtarzalności"
+      "recurrenceTypeChanged": "Zmiana typu powtarzalności",
+      "recurrence_weekday_changed": "Zmieniono dzień tygodnia powtarzania",
+      "recurrence_month_day_changed": "Zmieniono dzień miesiąca powtarzania",
+      "recurrence_week_of_month_changed": "Zmieniono tydzień miesiąca powtarzania"
     },
     "justNow": "Właśnie teraz",
     "minutesAgo": "{{minutes}}m temu",

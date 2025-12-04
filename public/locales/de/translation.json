@@ -178,7 +178,10 @@
       "completionBasedChanged": "Änderung der auf Abschluss basierenden Wiederholung",
       "projectIdChanged": "Einem Projekt zugewiesen",
       "recurrenceType": "Wiederholungstyp",
-      "recurrenceTypeChanged": "Wiederholungstyp geändert"
+      "recurrenceTypeChanged": "Wiederholungstyp geändert",
+      "recurrence_weekday_changed": "Wochentag der Wiederholung geändert",
+      "recurrence_month_day_changed": "Tag des Monats der Wiederholung geändert",
+      "recurrence_week_of_month_changed": "Woche des Monats der Wiederholung geändert"
     },
     "justNow": "Gerade eben",
     "minutesAgo": "{{minutes}}m her",

@@ -178,7 +178,10 @@
       "completionBasedChanged": "Ændret baseret på fuldførelse",
       "projectIdChanged": "Tildelt et projekt",
       "recurrenceType": "Gentagelsestype",
-      "recurrenceTypeChanged": "Gentagelsestype ændret"
+      "recurrenceTypeChanged": "Gentagelsestype ændret",
+      "recurrence_weekday_changed": "Ugentlig tilbagevendende ændret",
+      "recurrence_month_day_changed": "Månedlig tilbagevendende dag ændret",
+      "recurrence_week_of_month_changed": "Uge i måneden tilbagevendende ændret"
     },
     "justNow": "Lige nu",
     "minutesAgo": "{{minutes}}m siden",

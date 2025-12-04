@@ -185,7 +185,10 @@
       "completionBasedChanged": "Sprememba ponavljanja na podlagi dokončanja",
       "projectIdChanged": "Dodeljeno projektu",
       "recurrenceType": "Vrsta ponavljanja",
-      "recurrenceTypeChanged": "Vrsta ponavljanja spremenjena"
+      "recurrenceTypeChanged": "Vrsta ponavljanja spremenjena",
+      "recurrence_weekday_changed": "Spremenjen dan ponavljanja",
+      "recurrence_month_day_changed": "Spremenjen dan v mesecu ponavljanja",
+      "recurrence_week_of_month_changed": "Spremenjena teden v mesecu ponavljanja"
     }
   },
   "profile": {

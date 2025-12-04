@@ -178,7 +178,10 @@
       "completionBasedChanged": "Recurrence bazată pe finalizare modificată",
       "projectIdChanged": "Atribuit unui proiect",
       "recurrenceType": "Tip de recurență",
-      "recurrenceTypeChanged": "Tip de recurență modificat"
+      "recurrenceTypeChanged": "Tip de recurență modificat",
+      "recurrence_weekday_changed": "Ziua săptămânii pentru recurență a fost schimbată",
+      "recurrence_month_day_changed": "Ziua lunii pentru recurență a fost schimbată",
+      "recurrence_week_of_month_changed": "Săptămâna lunii pentru recurență a fost schimbată"
     },
     "justNow": "Chiar acum",
     "minutesAgo": "{{minutes}}m în urmă",

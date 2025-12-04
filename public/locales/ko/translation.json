@@ -178,7 +178,10 @@
       "completionBasedChanged": "완료 기반 반복 변경됨",
       "projectIdChanged": "프로젝트에 할당됨",
       "recurrenceType": "반복 유형",
-      "recurrenceTypeChanged": "반복 유형 변경됨"
+      "recurrenceTypeChanged": "반복 유형 변경됨",
+      "recurrence_weekday_changed": "주기 요일이 변경되었습니다",
+      "recurrence_month_day_changed": "주기 월일이 변경되었습니다",
+      "recurrence_week_of_month_changed": "주기 월의 주가 변경되었습니다"
     },
     "justNow": "방금",
     "minutesAgo": "{{minutes}}분 전",

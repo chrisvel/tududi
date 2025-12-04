@@ -178,7 +178,10 @@
       "completionBasedChanged": "Зміни в повторенні на основі завершення",
       "projectIdChanged": "Призначено проекту",
       "recurrenceType": "Тип повторення",
-      "recurrenceTypeChanged": "Тип повторення змінено"
+      "recurrenceTypeChanged": "Тип повторення змінено",
+      "recurrence_weekday_changed": "Змінено день тижня повторення",
+      "recurrence_month_day_changed": "Змінено день місяця повторення",
+      "recurrence_week_of_month_changed": "Змінено тиждень місяця повторення"
     },
     "justNow": "Щойно",
     "minutesAgo": "{{minutes}}м тому",

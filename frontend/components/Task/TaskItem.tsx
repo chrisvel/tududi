@@ -379,7 +379,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                         try {
                             // Refetch the current task with updated subtasks
                             const updatedTaskResponse = await fetch(
-                                getApiPath(`task/${task.id}`)
+                                getApiPath(`task/${task.uid}`)
                             );
                             if (updatedTaskResponse.ok) {
                                 const updatedTaskData =

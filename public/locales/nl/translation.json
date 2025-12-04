@@ -178,7 +178,10 @@
       "completionBasedChanged": "Voltooiingsgebaseerde herhaling gewijzigd",
       "projectIdChanged": "Toegewezen aan een project",
       "recurrenceType": "Herhalings type",
-      "recurrenceTypeChanged": "Herhalings type gewijzigd"
+      "recurrenceTypeChanged": "Herhalings type gewijzigd",
+      "recurrence_weekday_changed": "Herhalingsweekdag gewijzigd",
+      "recurrence_month_day_changed": "Herhalingsmaanddag gewijzigd",
+      "recurrence_week_of_month_changed": "Herhalingsweek van de maand gewijzigd"
     },
     "justNow": "Net nu",
     "minutesAgo": "{{minutes}}m geleden",

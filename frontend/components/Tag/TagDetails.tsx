@@ -235,11 +235,14 @@ const TagDetails: React.FC = () => {
     // Task handlers
     const handleTaskUpdate = async (updatedTask: Task) => {
         try {
-            const response = await fetch(getApiPath(`task/${updatedTask.id}`), {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updatedTask),
-            });
+            const response = await fetch(
+                getApiPath(`task/${updatedTask.uid}`),
+                {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatedTask),
+                }
+            );
 
             if (response.ok) {
                 setTasks((prevTasks) =>

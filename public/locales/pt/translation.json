@@ -178,7 +178,10 @@
       "completionBasedChanged": "Recorrência baseada em conclusão alterada",
       "projectIdChanged": "Atribuído a um projeto",
       "recurrenceType": "Tipo de recorrência",
-      "recurrenceTypeChanged": "Tipo de recorrência alterado"
+      "recurrenceTypeChanged": "Tipo de recorrência alterado",
+      "recurrence_weekday_changed": "Dia da semana da recorrência alterado",
+      "recurrence_month_day_changed": "Dia do mês da recorrência alterado",
+      "recurrence_week_of_month_changed": "Semana do mês da recorrência alterada"
     },
     "justNow": "Agora mesmo",
     "minutesAgo": "{{minutes}}m atrás",

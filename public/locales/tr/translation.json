@@ -178,7 +178,10 @@
       "completionBasedChanged": "Tamamlamaya dayalı tekrar değiştirildi",
       "projectIdChanged": "Bir projeye atandı",
       "recurrenceType": "Tekrar türü",
-      "recurrenceTypeChanged": "Tekrar türü değiştirildi"
+      "recurrenceTypeChanged": "Tekrar türü değiştirildi",
+      "recurrence_weekday_changed": "Tekrar gün değişti",
+      "recurrence_month_day_changed": "Tekrar ay günü değişti",
+      "recurrence_week_of_month_changed": "Tekrar ayın haftası değişti"
     },
     "justNow": "Şu anda",
     "minutesAgo": "{{minutes}}d önce",

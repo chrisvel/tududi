@@ -178,7 +178,10 @@
       "completionBasedChanged": "Suoritusperusteinen toistuvuus muuttunut",
       "projectIdChanged": "Määrätty projektiin",
       "recurrenceType": "Toistuvuustyyppi",
-      "recurrenceTypeChanged": "Toistuvuustyyppi muuttunut"
+      "recurrenceTypeChanged": "Toistuvuustyyppi muuttunut",
+      "recurrence_weekday_changed": "Toistopäivä muuttunut",
+      "recurrence_month_day_changed": "Toistokuukauden päivä muuttunut",
+      "recurrence_week_of_month_changed": "Toistokuukauden viikko muuttunut"
     },
     "justNow": "Juuri nyt",
     "minutesAgo": "{{minutes}}m sitten",
