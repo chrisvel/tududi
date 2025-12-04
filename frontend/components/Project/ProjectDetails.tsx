@@ -335,7 +335,7 @@ const ProjectDetails: React.FC = () => {
             return;
         }
         const response = await fetch(
-            getApiPath(`task/${updatedTask.uid || updatedTask.id}`),
+            getApiPath(`task/${updatedTask.uid}`),
             {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },

@@ -297,7 +297,7 @@ const ViewDetail: React.FC = () => {
     // Task handlers
     const handleTaskUpdate = async (updatedTask: Task) => {
         try {
-            const response = await fetch(getApiPath(`task/${updatedTask.id}`), {
+            const response = await fetch(getApiPath(`task/${updatedTask.uid}`), {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(updatedTask),
