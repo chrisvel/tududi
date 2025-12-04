@@ -414,7 +414,9 @@ const TaskRecurrenceSection: React.FC<TaskRecurrenceSectionProps> = ({
             </h3>
 
             {/* Main recurrence settings in one row */}
-            <div className={`grid grid-cols-1 gap-4 mb-4 ${recurrenceType === 'monthly' ? 'md:grid-cols-4' : 'md:grid-cols-3'}`}>
+            <div
+                className={`grid grid-cols-1 gap-4 mb-4 ${recurrenceType === 'monthly' ? 'md:grid-cols-4' : 'md:grid-cols-3'}`}
+            >
                 <div>
                     <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
                         {t('forms.task.labels.recurrenceType', 'Repeat')}
@@ -437,11 +439,17 @@ const TaskRecurrenceSection: React.FC<TaskRecurrenceSectionProps> = ({
                     <div>
                         <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
                             {recurrenceType === 'monthly'
-                                ? t('forms.task.labels.recurrenceInterval', 'Every') +
+                                ? t(
+                                      'forms.task.labels.recurrenceInterval',
+                                      'Every'
+                                  ) +
                                   ' (' +
                                   t('recurrence.months', 'months') +
                                   ')'
-                                : t('forms.task.labels.recurrenceInterval', 'Every')}
+                                : t(
+                                      'forms.task.labels.recurrenceInterval',
+                                      'Every'
+                                  )}
                         </label>
                         {recurrenceType === 'monthly' ? (
                             <NumberSelectDropdown
@@ -459,7 +467,10 @@ const TaskRecurrenceSection: React.FC<TaskRecurrenceSectionProps> = ({
                                     <NumberSelectDropdown
                                         value={recurrenceInterval || 1}
                                         onChange={(value) =>
-                                            onChange('recurrence_interval', value)
+                                            onChange(
+                                                'recurrence_interval',
+                                                value
+                                            )
                                         }
                                         min={1}
                                         max={
@@ -467,8 +478,10 @@ const TaskRecurrenceSection: React.FC<TaskRecurrenceSectionProps> = ({
                                                 ? 30
                                                 : recurrenceType === 'weekly'
                                                   ? 52
-                                                  : recurrenceType === 'monthly_weekday' ||
-                                                      recurrenceType === 'monthly_last_day'
+                                                  : recurrenceType ===
+                                                          'monthly_weekday' ||
+                                                      recurrenceType ===
+                                                          'monthly_last_day'
                                                     ? 24
                                                     : 99
                                         }
@@ -481,7 +494,8 @@ const TaskRecurrenceSection: React.FC<TaskRecurrenceSectionProps> = ({
                                     {recurrenceType === 'weekly' &&
                                         t('recurrence.weeks', 'weeks')}
                                     {(recurrenceType === 'monthly_weekday' ||
-                                        recurrenceType === 'monthly_last_day') &&
+                                        recurrenceType ===
+                                            'monthly_last_day') &&
                                         t('recurrence.months', 'months')}
                                 </span>
                             </div>
