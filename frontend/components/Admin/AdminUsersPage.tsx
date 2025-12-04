@@ -526,10 +526,7 @@ const AdminUsersPage: React.FC = () => {
                 prev ? prev.filter((u) => u.id !== userToDelete.id) : null
             );
             showSuccessToast(
-                t(
-                    'admin.userDeletedSuccessfully',
-                    'User deleted successfully'
-                )
+                t('admin.userDeletedSuccessfully', 'User deleted successfully')
             );
             setUserToDelete(null);
         } catch (err: any) {
