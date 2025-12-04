@@ -178,7 +178,10 @@
       "completionBasedChanged": "完了ベースの繰り返しが変更されました",
       "projectIdChanged": "プロジェクトに割り当てられました",
       "recurrenceType": "繰り返しの種類",
-      "recurrenceTypeChanged": "繰り返しの種類が変更されました"
+      "recurrenceTypeChanged": "繰り返しの種類が変更されました",
+      "recurrence_weekday_changed": "繰り返し曜日が変更されました",
+      "recurrence_month_day_changed": "繰り返し月日が変更されました",
+      "recurrence_week_of_month_changed": "繰り返し月の週が変更されました"
     },
     "justNow": "たった今",
     "minutesAgo": "{{minutes}}分前",

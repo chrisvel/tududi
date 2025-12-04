@@ -178,7 +178,10 @@
       "completionBasedChanged": "تغيير التكرار القائم على الإنجاز",
       "projectIdChanged": "مُعين لمشروع",
       "recurrenceType": "نوع التكرار",
-      "recurrenceTypeChanged": "تغيير نوع التكرار"
+      "recurrenceTypeChanged": "تغيير نوع التكرار",
+      "recurrence_weekday_changed": "تم تغيير يوم تكرار الأسبوع",
+      "recurrence_month_day_changed": "تم تغيير يوم تكرار الشهر",
+      "recurrence_week_of_month_changed": "تم تغيير أسبوع التكرار من الشهر"
     },
     "justNow": "الآن",
     "minutesAgo": "{{minutes}} دقيقة مضت",

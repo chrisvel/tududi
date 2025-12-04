@@ -178,7 +178,10 @@
       "completionBasedChanged": "Perulangan berbasis penyelesaian diubah",
       "projectIdChanged": "Ditugaskan ke proyek",
       "recurrenceType": "Jenis perulangan",
-      "recurrenceTypeChanged": "Jenis perulangan diubah"
+      "recurrenceTypeChanged": "Jenis perulangan diubah",
+      "recurrence_weekday_changed": "Hari ulang tahun berubah",
+      "recurrence_month_day_changed": "Hari bulan ulang tahun berubah",
+      "recurrence_week_of_month_changed": "Minggu bulan ulang tahun berubah"
     },
     "justNow": "Baru saja",
     "minutesAgo": "{{minutes}}m yang lalu",

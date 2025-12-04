@@ -178,7 +178,10 @@
       "completionBasedChanged": "Récurrence basée sur l'achèvement modifiée",
       "projectIdChanged": "Assigné à un projet",
       "recurrenceType": "Type de récurrence",
-      "recurrenceTypeChanged": "Type de récurrence modifié"
+      "recurrenceTypeChanged": "Type de récurrence modifié",
+      "recurrence_weekday_changed": "Le jour de la semaine de récurrence a changé",
+      "recurrence_month_day_changed": "Le jour du mois de récurrence a changé",
+      "recurrence_week_of_month_changed": "La semaine du mois de récurrence a changé"
     },
     "justNow": "À l'instant",
     "minutesAgo": "{{minutes}}m auparavant",

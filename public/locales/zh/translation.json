@@ -178,7 +178,10 @@
       "completionBasedChanged": "基于完成的重复已更改",
       "projectIdChanged": "已分配到项目",
       "recurrenceType": "重复类型",
-      "recurrenceTypeChanged": "重复类型已更改"
+      "recurrenceTypeChanged": "重复类型已更改",
+      "recurrence_weekday_changed": "重复的星期几已更改",
+      "recurrence_month_day_changed": "重复的月份天数已更改",
+      "recurrence_week_of_month_changed": "重复的月份周数已更改"
     },
     "justNow": "刚刚",
     "minutesAgo": "{{minutes}}分钟前",

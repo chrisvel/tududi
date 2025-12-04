@@ -178,7 +178,10 @@
       "completionBasedChanged": "Ricorrenza basata sul completamento modificata",
       "projectIdChanged": "Assegnato a un progetto",
       "recurrenceType": "Tipo di ricorrenza",
-      "recurrenceTypeChanged": "Tipo di ricorrenza modificato"
+      "recurrenceTypeChanged": "Tipo di ricorrenza modificato",
+      "recurrence_weekday_changed": "Giorno della settimana di ricorrenza cambiato",
+      "recurrence_month_day_changed": "Giorno del mese di ricorrenza cambiato",
+      "recurrence_week_of_month_changed": "Settimana del mese di ricorrenza cambiata"
     },
     "justNow": "Proprio adesso",
     "minutesAgo": "{{minutes}}m fa",

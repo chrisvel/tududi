@@ -391,7 +391,10 @@
       "completionBasedChanged": "Η επανάληψη με βάση την ολοκλήρωση άλλαξε",
       "projectIdChanged": "Ανατέθηκε σε έργο",
       "recurrenceType": "Τύπος επανάληψης",
-      "recurrenceTypeChanged": "Ο τύπος επανάληψης άλλαξε"
+      "recurrenceTypeChanged": "Ο τύπος επανάληψης άλλαξε",
+      "recurrence_weekday_changed": "Η ημέρα επανάληψης άλλαξε",
+      "recurrence_month_day_changed": "Η ημέρα του μήνα επανάληψης άλλαξε",
+      "recurrence_week_of_month_changed": "Η εβδομάδα του μήνα επανάληψης άλλαξε"
     },
     "justNow": "Μόλις τώρα",
     "minutesAgo": "{{minutes}} λεπτά πριν",

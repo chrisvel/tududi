@@ -185,7 +185,10 @@
       "completionBasedChanged": "Ändrad återkommande baserat på slutförande",
       "projectIdChanged": "Tilldelad ett projekt",
       "recurrenceType": "Typ av återkommande",
-      "recurrenceTypeChanged": "Typ av återkommande ändrad"
+      "recurrenceTypeChanged": "Typ av återkommande ändrad",
+      "recurrence_weekday_changed": "Återkommande veckodag ändrad",
+      "recurrence_month_day_changed": "Återkommande månad dag ändrad",
+      "recurrence_week_of_month_changed": "Återkommande vecka i månaden ändrad"
     }
   },
   "profile": {

@@ -391,7 +391,10 @@
       "completionBasedChanged": "Recurrencia basada en la finalización cambiada",
       "projectIdChanged": "Asignado a un proyecto",
       "recurrenceType": "Tipo de recurrencia",
-      "recurrenceTypeChanged": "Tipo de recurrencia cambiado"
+      "recurrenceTypeChanged": "Tipo de recurrencia cambiado",
+      "recurrence_weekday_changed": "Día de la semana de recurrencia cambiado",
+      "recurrence_month_day_changed": "Día del mes de recurrencia cambiado",
+      "recurrence_week_of_month_changed": "Semana del mes de recurrencia cambiada"
     },
     "justNow": "Justo ahora",
     "minutesAgo": "{{minutes}}m hace",

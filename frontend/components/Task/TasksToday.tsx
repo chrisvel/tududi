@@ -16,6 +16,7 @@ import {
     Cog6ToothIcon,
     CalendarDaysIcon,
     QueueListIcon,
+    ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
 import {
     fetchTasks,
@@ -1131,6 +1132,19 @@ const TasksToday: React.FC = () => {
                                     </div>
                                     <p className="text-sm font-semibold">
                                         {metrics.tasks_due_today.length}
+                                    </p>
+                                </div>
+
+                                {/* Overdue */}
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center">
+                                        <ExclamationTriangleIcon className="h-4 w-4 text-orange-500 mr-2" />
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                                            {t('tasks.overdue', 'Overdue')}
+                                        </p>
+                                    </div>
+                                    <p className="text-sm font-semibold">
+                                        {metrics.tasks_overdue.length}
                                     </p>
                                 </div>
 

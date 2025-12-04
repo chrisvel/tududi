@@ -178,7 +178,10 @@
       "completionBasedChanged": "Thay đổi tần suất dựa trên hoàn thành",
       "projectIdChanged": "Được gán cho một dự án",
       "recurrenceType": "Loại tần suất",
-      "recurrenceTypeChanged": "Thay đổi loại tần suất"
+      "recurrenceTypeChanged": "Thay đổi loại tần suất",
+      "recurrence_weekday_changed": "Ngày trong tuần lặp lại đã thay đổi",
+      "recurrence_month_day_changed": "Ngày trong tháng lặp lại đã thay đổi",
+      "recurrence_week_of_month_changed": "Tuần trong tháng lặp lại đã thay đổi"
     },
     "justNow": "Vừa xong",
     "minutesAgo": "{{minutes}} phút trước",

@@ -178,7 +178,10 @@
       "completionBasedChanged": "Fullføring-basert gjentakelse endret",
       "projectIdChanged": "Tildelt et prosjekt",
       "recurrenceType": "Gjentakelsestype",
-      "recurrenceTypeChanged": "Gjentakelsestype endret"
+      "recurrenceTypeChanged": "Gjentakelsestype endret",
+      "recurrence_weekday_changed": "Endret ukedag for gjentakelse",
+      "recurrence_month_day_changed": "Endret månedlig dag for gjentakelse",
+      "recurrence_week_of_month_changed": "Endret uke i måneden for gjentakelse"
     },
     "justNow": "Akkurat nå",
     "minutesAgo": "{{minutes}}m siden",

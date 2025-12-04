@@ -178,7 +178,10 @@
       "completionBasedChanged": "Променена е повторяемостта на базата на завършване",
       "projectIdChanged": "Присвоено на проект",
       "recurrenceType": "Тип повторяемост",
-      "recurrenceTypeChanged": "Променен е типът повторяемост"
+      "recurrenceTypeChanged": "Променен е типът повторяемост",
+      "recurrence_weekday_changed": "Променен ден от седмицата на повторението",
+      "recurrence_month_day_changed": "Променен ден от месеца на повторението",
+      "recurrence_week_of_month_changed": "Променена седмица от месеца на повторението"
     },
     "justNow": "Току-що",
     "minutesAgo": "{{minutes}}м. назад",
