@@ -1072,11 +1072,12 @@ const TasksToday: React.FC = () => {
                                 {t('dashboard.overview')}
                             </h3>
                             <div className="space-y-2">
+                                {/* Total Tasks */}
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center">
                                         <ClipboardDocumentListIcon className="h-4 w-4 text-blue-500 mr-2" />
                                         <p className="text-xs text-gray-500 dark:text-gray-400">
-                                            {t('tasks.backlog')}
+                                            {t('tasks.total')}
                                         </p>
                                     </div>
                                     <p className="text-sm font-semibold">
@@ -1084,6 +1085,7 @@ const TasksToday: React.FC = () => {
                                     </p>
                                 </div>
 
+                                {/* In Progress */}
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center">
                                         <ArrowPathIcon className="h-4 w-4 text-green-500 mr-2" />
@@ -1096,6 +1098,30 @@ const TasksToday: React.FC = () => {
                                     </p>
                                 </div>
 
+                                {/* Active Projects */}
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center">
+                                        <FolderIcon className="h-4 w-4 text-purple-500 mr-2" />
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                                            {t('projects.active')}
+                                        </p>
+                                    </div>
+                                    <p className="text-sm font-semibold">
+                                        {Array.isArray(localProjects)
+                                            ? localProjects.filter(
+                                                  (project) =>
+                                                      project.state &&
+                                                      [
+                                                          'planned',
+                                                          'in_progress',
+                                                          'blocked',
+                                                      ].includes(project.state)
+                                              ).length
+                                            : 0}
+                                    </p>
+                                </div>
+
+                                {/* Due Today */}
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center">
                                         <CalendarDaysIcon className="h-4 w-4 text-red-500 mr-2" />
@@ -1108,6 +1134,7 @@ const TasksToday: React.FC = () => {
                                     </p>
                                 </div>
 
+                                {/* Completed Today */}
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center">
                                         <CheckCircleIcon className="h-4 w-4 text-green-600 mr-2" />
@@ -1183,28 +1210,6 @@ const TasksToday: React.FC = () => {
                                             );
                                         })()}
                                     </div>
-                                </div>
-
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center">
-                                        <FolderIcon className="h-4 w-4 text-purple-500 mr-2" />
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                                            {t('projects.active')}
-                                        </p>
-                                    </div>
-                                    <p className="text-sm font-semibold">
-                                        {Array.isArray(localProjects)
-                                            ? localProjects.filter(
-                                                  (project) =>
-                                                      project.state &&
-                                                      [
-                                                          'planned',
-                                                          'in_progress',
-                                                          'blocked',
-                                                      ].includes(project.state)
-                                              ).length
-                                            : 0}
-                                    </p>
                                 </div>
                             </div>
                         </div>

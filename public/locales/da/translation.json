@@ -39,6 +39,7 @@
     "addTagAriaLabel": "Tilføj tag",
     "addTagTitle": "Tilføj tag",
     "today": "I dag",
+    "total": "Total",
     "upcoming": "Kommende",
     "nextActions": "Næste handlinger",
     "inbox": "Indbakke",
@@ -99,6 +100,7 @@
   "tasks": {
     "title": "Opgaver",
     "today": "I Dag",
+    "total": "Total",
     "backlog": "Backlog",
     "inProgress": "I Gang",
     "dueToday": "Forfaldt I Dag",
@@ -619,6 +621,7 @@
   },
   "dateIndicators": {
     "today": "I DAG",
+    "total": "Total",
     "tomorrow": "I MORGEN",
     "yesterday": "I GÅR",
     "nextWeek": "næste uge",
@@ -630,6 +633,7 @@
       "noName": "Du ser opgaver for et specifikt projekt. Brug dette rum til at administrere og følge opgaver knyttet til dette projekt."
     },
     "today": "Dette er opgaverne, der skal være færdige i dag, eller opgaver du har planlagt til øjeblikkelig opmærksomhed. Brug denne visning til at fokusere på, hvad der skal færdiggøres i dag. Marker opgaver som færdige, opdater deres status, eller juster deres forfaldsdatoer, hvis det er nødvendigt.",
+    "total": "Total",
     "inbox": "Indbakken er, hvor alle ukategoriserede opgaver befinder sig. Opgaver, der ikke er tildelt et projekt eller givet en forfaldsdato, vil vises her. Dette er dit \"hjernedump\" område, hvor du hurtigt kan notere opgaver og organisere dem senere.",
     "next": "Denne visning viser alle opgaver, der er handlingsbare i den nærmeste fremtid. Disse opgaver er klar til at blive arbejdet på næste gang og har ikke langsigtede frister. Det er et godt sted at fokusere, når du ønsker at gøre hurtige fremskridt med opgaver.",
     "upcoming": "Denne visning fremhæver opgaver, der er planlagt til den kommende uge. Det hjælper dig med at forberede dig og holde dig foran fristerne ved at give dig et overblik over det arbejde, du skal tackle i den nærmeste fremtid. Opgaver med forfaldsdatoer inden for de næste 7 dage vil vises her.",
@@ -907,6 +911,7 @@
     "week": "Uge",
     "day": "Dag",
     "today": "I dag",
+    "total": "Total",
     "addEvent": "Tilføj Begivenhed",
     "weekView": "Ugevisning",
     "dayView": "Dagsvisning",

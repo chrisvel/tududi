@@ -39,6 +39,7 @@
     "addTagAriaLabel": "Voeg Tag Toe",
     "addTagTitle": "Voeg Tag Toe",
     "today": "Vandaag",
+    "total": "Total",
     "upcoming": "Aankomende",
     "nextActions": "Volgende Acties",
     "inbox": "Inbox",
@@ -99,6 +100,7 @@
   "tasks": {
     "title": "Taken",
     "today": "Vandaag",
+    "total": "Total",
     "backlog": "Achterstand",
     "inProgress": "Bezig",
     "dueToday": "Vervalt Vandaag",
@@ -619,6 +621,7 @@
   },
   "dateIndicators": {
     "today": "VANDAAG",
+    "total": "Total",
     "tomorrow": "MORGEN",
     "yesterday": "GISTEREN",
     "nextWeek": "volgende week",
@@ -630,6 +633,7 @@
       "noName": "Je bekijkt taken voor een specifiek project. Gebruik deze ruimte om taken te beheren en bij te houden die aan dit project zijn gekoppeld."
     },
     "today": "Dit zijn de taken die vandaag vervallen of taken die je hebt ingepland voor onmiddellijke aandacht. Gebruik deze weergave om je te concentreren op wat vandaag moet worden voltooid. Markeer taken als voltooid, werk hun status bij of pas hun vervaldatums aan indien nodig.",
+    "total": "Total",
     "inbox": "De inbox is waar alle ongecategoriseerde taken zich bevinden. Taken die niet aan een project zijn toegewezen of geen vervaldatum hebben, verschijnen hier. Dit is jouw \"brain dump\"-gebied waar je snel taken kunt opschrijven en ze later kunt organiseren.",
     "next": "Deze weergave toont alle taken die op korte termijn actie vereisen. Deze taken zijn klaar om als volgende te worden opgepakt en hebben geen lange termijn deadlines. Het is een goede plek om je op te concentreren wanneer je snel vooruitgang wilt boeken met taken.",
     "upcoming": "Deze weergave benadrukt taken die zijn ingepland voor de komende week. Het helpt je om je voor te bereiden en vooruit te blijven op deadlines door je een overzicht te geven van het werk dat je in de nabije toekomst moet aanpakken. Taken met vervaldatums binnen de komende 7 dagen verschijnen hier.",
@@ -907,6 +911,7 @@
     "week": "Week",
     "day": "Dag",
     "today": "Vandaag",
+    "total": "Total",
     "addEvent": "Evenement Toevoegen",
     "weekView": "Weekweergave",
     "dayView": "Dagweergave",

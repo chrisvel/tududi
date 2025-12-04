@@ -39,6 +39,7 @@
     "addTagAriaLabel": "Legg til merkelapp",
     "addTagTitle": "Legg til merkelapp",
     "today": "I dag",
+    "total": "Total",
     "upcoming": "Kommende",
     "nextActions": "Neste handlinger",
     "inbox": "Innboks",
@@ -99,6 +100,7 @@
   "tasks": {
     "title": "Oppgaver",
     "today": "I dag",
+    "total": "Total",
     "backlog": "Backlog",
     "inProgress": "Pågår",
     "dueToday": "Forfall i dag",
@@ -619,6 +621,7 @@
   },
   "dateIndicators": {
     "today": "I DAG",
+    "total": "Total",
     "tomorrow": "I MORGEN",
     "yesterday": "I GÅR",
     "nextWeek": "neste uke",
@@ -630,6 +633,7 @@
       "noName": "Du ser på oppgaver for et spesifikt prosjekt. Bruk dette området for å administrere og følge med på oppgaver knyttet til dette prosjektet."
     },
     "today": "Dette er oppgavene som forfaller i dag eller oppgaver du har planlagt for umiddelbar oppmerksomhet. Bruk denne visningen for å fokusere på hva som må fullføres i dag. Merk oppgaver som fullført, oppdater statusen deres, eller juster forfallsdatoene hvis nødvendig.",
+    "total": "Total",
     "inbox": "Innboksen er der alle ukategoriserte oppgaver befinner seg. Oppgaver som ikke har blitt tildelt et prosjekt eller gitt en forfallsdato vil vises her. Dette er ditt \"hjernedump\"-område hvor du raskt kan notere oppgaver og organisere dem senere.",
     "next": "Denne visningen viser alle oppgavene som kan utføres i nær fremtid. Disse oppgavene er klare til å bli jobbet med neste gang og har ikke langsiktige frister. Det er et godt sted å fokusere når du ønsker å gjøre raske fremskritt med oppgavene.",
     "upcoming": "Denne visningen fremhever oppgaver som er planlagt for den kommende uken. Den hjelper deg med å forberede deg og holde deg foran fristene ved å gi deg en oversikt over arbeidet du må ta tak i i nær fremtid. Oppgaver med forfallsdato innen de neste 7 dagene vil vises her.",
@@ -907,6 +911,7 @@
     "week": "Uke",
     "day": "Dag",
     "today": "I dag",
+    "total": "Total",
     "addEvent": "Legg til hendelse",
     "weekView": "Ukevisning",
     "dayView": "Dagsvisning",

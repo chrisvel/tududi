@@ -39,6 +39,7 @@
     "addTagAriaLabel": "Tambahkan Tag",
     "addTagTitle": "Tambahkan Tag",
     "today": "Hari Ini",
+    "total": "Total",
     "upcoming": "Akan Datang",
     "nextActions": "Tindakan Selanjutnya",
     "inbox": "Kotak Masuk",
@@ -99,6 +100,7 @@
   "tasks": {
     "title": "Tugas",
     "today": "Hari Ini",
+    "total": "Total",
     "backlog": "Backlog",
     "inProgress": "Dalam Proses",
     "dueToday": "Jatuh Tempo Hari Ini",
@@ -619,6 +621,7 @@
   },
   "dateIndicators": {
     "today": "HARI INI",
+    "total": "Total",
     "tomorrow": "ESOK",
     "yesterday": "KEMARIN",
     "nextWeek": "minggu depan",
@@ -630,6 +633,7 @@
       "noName": "Anda sedang melihat tugas untuk proyek tertentu. Gunakan ruang ini untuk mengelola dan melacak tugas yang terkait dengan proyek ini."
     },
     "today": "Ini adalah tugas yang jatuh tempo hari ini atau tugas yang telah Anda jadwalkan untuk perhatian segera. Gunakan tampilan ini untuk fokus pada apa yang perlu diselesaikan hari ini. Tandai tugas sebagai selesai, perbarui statusnya, atau sesuaikan tanggal jatuh temponya jika perlu.",
+    "total": "Total",
     "inbox": "Kotak masuk adalah tempat semua tugas yang tidak terkategori berada. Tugas yang belum ditugaskan ke proyek atau diberikan tanggal jatuh tempo akan muncul di sini. Ini adalah area \"brain dump\" Anda di mana Anda dapat dengan cepat mencatat tugas dan mengorganisirnya nanti.",
     "next": "Tampilan ini menunjukkan semua tugas yang dapat dikerjakan dalam waktu dekat. Tugas-tugas ini siap untuk dikerjakan selanjutnya dan tidak memiliki tenggat waktu jangka panjang. Ini adalah tempat yang baik untuk fokus ketika Anda ingin membuat kemajuan cepat pada tugas.",
     "upcoming": "Tampilan ini menyoroti tugas yang dijadwalkan untuk minggu mendatang. Ini membantu Anda mempersiapkan dan tetap di depan tenggat waktu dengan memberikan gambaran umum tentang pekerjaan yang perlu Anda tangani dalam waktu dekat. Tugas dengan tanggal jatuh tempo dalam 7 hari ke depan akan muncul di sini.",
@@ -907,6 +911,7 @@
     "week": "Minggu",
     "day": "Hari",
     "today": "Hari Ini",
+    "total": "Total",
     "addEvent": "Tambah Acara",
     "weekView": "Tampilan Minggu",
     "dayView": "Tampilan Hari",

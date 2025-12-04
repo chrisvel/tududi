@@ -99,6 +99,7 @@
   "tasks": {
     "title": "Tasks",
     "today": "Today",
+    "total": "Total",
     "backlog": "Backlog",
     "inProgress": "In Progress",
     "overdue": "Overdue",

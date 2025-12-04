@@ -39,6 +39,7 @@
     "addTagAriaLabel": "Etiket Ekle",
     "addTagTitle": "Etiket Ekle",
     "today": "Bugün",
+    "total": "Total",
     "upcoming": "Gelecek",
     "nextActions": "Sonraki Eylemler",
     "inbox": "Gelen Kutusu",
@@ -99,6 +100,7 @@
   "tasks": {
     "title": "Görevler",
     "today": "Bugün",
+    "total": "Total",
     "backlog": "Bekleyen",
     "inProgress": "Devam Ediyor",
     "dueToday": "Bugün Vadesi Gelen",
@@ -619,6 +621,7 @@
   },
   "dateIndicators": {
     "today": "BUGÜN",
+    "total": "Total",
     "tomorrow": "YARIN",
     "yesterday": "DÜN",
     "nextWeek": "gelecek hafta",
@@ -630,6 +633,7 @@
       "noName": "Belirli bir proje için görevleri görüntülüyorsunuz. Bu alanı, bu projeyle ilişkili görevleri yönetmek ve takip etmek için kullanın."
     },
     "today": "Bugün vadesi gelen veya acil dikkat gerektiren görevler bunlardır. Bugün tamamlanması gerekenlere odaklanmak için bu görünümü kullanın. Görevleri tamamlanmış olarak işaretleyin, durumlarını güncelleyin veya gerekirse son tarihlerini ayarlayın.",
+    "total": "Total",
     "inbox": "Gelen kutusu, tüm kategorize edilmemiş görevlerin bulunduğu yerdir. Bir projeye atanmış veya son tarihi belirlenmemiş görevler burada görünecektir. Bu, görevleri hızlıca not alıp daha sonra düzenleyebileceğiniz \"beyin fırtınası\" alanınızdır.",
     "next": "Bu görünüm, yakın gelecekte yapılabilir olan tüm görevleri gösterir. Bu görevler, üzerinde çalışmaya hazırdır ve uzun vadeli son tarihleri yoktur. Hızlı ilerleme kaydetmek istediğinizde odaklanmak için iyi bir yerdir.",
     "upcoming": "Bu görünüm, önümüzdeki hafta için planlanmış görevleri vurgular. Size yakın gelecekte ele almanız gereken işlerin genel bir görünümünü sunarak hazırlık yapmanıza ve son tarihlerden önde olmanıza yardımcı olur. Önümüzdeki 7 gün içinde son tarihi olan görevler burada görünecektir.",
@@ -907,6 +911,7 @@
     "week": "Hafta",
     "day": "Gün",
     "today": "Bugün",
+    "total": "Total",
     "addEvent": "Etkinlik Ekle",
     "weekView": "Hafta Görünümü",
     "dayView": "Gün Görünümü",

@@ -39,6 +39,7 @@
     "addTagAriaLabel": "Dodaj tag",
     "addTagTitle": "Dodaj tag",
     "today": "Dziś",
+    "total": "Total",
     "upcoming": "Nadchodzące",
     "nextActions": "Następne działania",
     "inbox": "Skrzynka odbiorcza",
@@ -99,6 +100,7 @@
   "tasks": {
     "title": "Zadania",
     "today": "Dziś",
+    "total": "Total",
     "backlog": "Zaległości",
     "inProgress": "W trakcie",
     "dueToday": "Termin dzisiaj",
@@ -619,6 +621,7 @@
   },
   "dateIndicators": {
     "today": "DZIŚ",
+    "total": "Total",
     "tomorrow": "JUTRO",
     "yesterday": "Wczoraj",
     "nextWeek": "w przyszłym tygodniu",
@@ -630,6 +633,7 @@
       "noName": "Przeglądasz zadania dla konkretnego projektu. Wykorzystaj tę przestrzeń do zarządzania i śledzenia zadań związanych z tym projektem."
     },
     "today": "To są zadania, które są terminowe na dziś lub zadania, które zaplanowałeś do natychmiastowej uwagi. Wykorzystaj ten widok, aby skupić się na tym, co musi być ukończone dzisiaj. Oznacz zadania jako ukończone, zaktualizuj ich status lub dostosuj terminy, jeśli to konieczne.",
+    "total": "Total",
     "inbox": "Skrzynka odbiorcza to miejsce, w którym znajdują się wszystkie nieprzypisane zadania. Zadania, które nie zostały przypisane do projektu ani nie mają terminu, pojawią się tutaj. To jest twoja strefa \"wyrzucania myśli\", gdzie możesz szybko zapisać zadania i zorganizować je później.",
     "next": "Ten widok pokazuje wszystkie zadania, które można wykonać w najbliższej przyszłości. Te zadania są gotowe do realizacji i nie mają długoterminowych terminów. To dobre miejsce, aby skupić się, gdy chcesz szybko poczynić postępy w zadaniach.",
     "upcoming": "Ten widok wyróżnia zadania zaplanowane na nadchodzący tydzień. Pomaga ci przygotować się i wyprzedzić terminy, dając przegląd pracy, którą musisz wykonać w najbliższej przyszłości. Zadania z terminami w ciągu najbliższych 7 dni pojawią się tutaj.",
@@ -907,6 +911,7 @@
     "week": "Tydzień",
     "day": "Dzień",
     "today": "Dziś",
+    "total": "Total",
     "addEvent": "Dodaj wydarzenie",
     "weekView": "Widok tygodnia",
     "dayView": "Widok dnia",

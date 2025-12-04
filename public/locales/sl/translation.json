@@ -46,6 +46,7 @@
     "addNoteTitle": "Dodaj opombo",
     "createNew": "Ustvari novo",
     "today": "Danes",
+    "total": "Total",
     "upcoming": "Prihajajoče",
     "nextActions": "Naslednje akcije",
     "inbox": "Prejeto",
@@ -99,6 +100,7 @@
   "tasks": {
     "title": "Naloge",
     "today": "Danes",
+    "total": "Total",
     "backlog": "Zamude",
     "inProgress": "V teku",
     "dueToday": "Zapade danes",
@@ -619,6 +621,7 @@
   },
   "dateIndicators": {
     "today": "DANES",
+    "total": "Total",
     "tomorrow": "JUTRI",
     "yesterday": "VČERAJ",
     "nextWeek": "naslednji teden",
@@ -630,6 +633,7 @@
       "noName": "Ogledujete si naloge za določen projekt. Uporabite to območje za upravljanje in spremljanje nalog, povezanih s tem projektom."
     },
     "today": "To so naloge, ki so zapadle danes ali naloge, ki ste jih načrtovali za takojšnjo obravnavo. Uporabite to prikaz, da se osredotočite na to, kar je treba dokončati danes. Oznake nalog kot dokončane, posodobite njihov status ali prilagodite njihove roke, če je potrebno.",
+    "total": "Total",
     "inbox": "Prejeta pošta je prostor, kjer živijo vse nekategorizirane naloge. Naloge, ki niso dodeljene projektu ali nimajo roka, se bodo prikazale tukaj. To je vaše območje \"izpustitve misli\", kjer lahko hitro zapišete naloge in jih kasneje organizirate.",
     "next": "Ta prikaz prikazuje vse naloge, ki so izvedljive v bližnji prihodnosti. Te naloge so pripravljene za delo in nimajo dolgoročnih rokov. To je dobro mesto za osredotočanje, ko želite hitro napredovati pri nalogah.",
     "upcoming": "Ta prikaz izpostavlja naloge, ki so načrtovane za prihajajoči teden. Pomaga vam, da se pripravite in ostanete pred roki, saj vam daje pregled dela, ki ga morate obravnavati v bližnji prihodnosti. Naloge z roki v naslednjih 7 dneh se bodo prikazale tukaj.",
@@ -907,6 +911,7 @@
     "week": "Teden",
     "day": "Dan",
     "today": "Danes",
+    "total": "Total",
     "addEvent": "Dodaj dogodek",
     "weekView": "Pogled teden",
     "dayView": "Pogled dan",
