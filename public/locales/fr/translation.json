@@ -311,10 +311,12 @@
     "tabs": {
       "general": "Général",
       "security": "Sécurité",
+      "apiKeys": "Clés API",
       "productivity": "Productivité",
+      "notifications": "Notifications",
       "telegram": "Telegram",
       "ai": "Fonctionnalités IA",
-      "notifications": "Préférences de Notification"
+      "integrations": "Intégrations"
     },
     "security": "Paramètres de sécurité",
     "changePassword": "Changer le mot de passe",

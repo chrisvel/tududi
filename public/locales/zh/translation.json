@@ -311,10 +311,12 @@
     "tabs": {
       "general": "常规",
       "security": "安全",
+      "apiKeys": "API密钥",
       "productivity": "生产力",
+      "notifications": "通知",
       "telegram": "电报",
       "ai": "人工智能功能",
-      "notifications": "通知偏好设置"
+      "integrations": "集成"
     },
     "security": "安全设置",
     "changePassword": "更改密码",

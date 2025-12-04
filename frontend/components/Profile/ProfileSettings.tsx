@@ -1008,13 +1008,23 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 body: JSON.stringify(aiSettings),
             });
 
-            if (aiResponse.ok) {
-                // Clear the API key from state after saving (for security)
-                if (aiSettings.openai_api_key) {
-                    setHasExistingApiKey(true);
-                    setAiSettings((prev) => ({ ...prev, openai_api_key: '' }));
-                }
+            if (!aiResponse.ok) {
+                const aiError = await aiResponse.json();
+                throw new Error(
+                    aiError.error || 'Failed to save AI integration settings.'
+                );
             }
+
+            // Update state with saved values from server
+            const savedAiData = await aiResponse.json();
+            setAiSettings({
+                ai_provider: savedAiData.ai_provider || 'openai',
+                openai_api_key: '', // Never store the key in state for security
+                ollama_base_url:
+                    savedAiData.ollama_base_url || 'http://localhost:11434',
+                ollama_model: savedAiData.ollama_model || 'llama3',
+            });
+            setHasExistingApiKey(savedAiData.has_openai_key || false);
 
             setProfile(updatedProfile);
 

@@ -339,7 +339,14 @@
     "skipNextAction": "Skip for now",
     "nextActionHint": "Think of the smallest, most concrete step you can take right now to move this project forward.",
     "tabs": {
-      "notifications": "Notification Preferences"
+      "general": "General",
+      "security": "Security",
+      "apiKeys": "API Keys",
+      "productivity": "Productivity",
+      "notifications": "Notifications",
+      "telegram": "Telegram",
+      "ai": "AI Features",
+      "integrations": "Integrations"
     },
     "security": "Security Settings",
     "changePassword": "Change Password",

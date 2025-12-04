@@ -225,10 +225,12 @@
     "tabs": {
       "general": "一般",
       "security": "セキュリティ",
+      "apiKeys": "APIキー",
       "productivity": "生産性",
+      "notifications": "通知",
       "telegram": "Telegram",
       "ai": "AI機能",
-      "notifications": "通知設定"
+      "integrations": "統合"
     },
     "security": "セキュリティ設定",
     "changePassword": "パスワード変更",

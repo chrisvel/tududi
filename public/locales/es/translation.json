@@ -161,10 +161,12 @@
     "tabs": {
       "general": "General",
       "security": "Seguridad",
+      "apiKeys": "Claves API",
       "productivity": "Productividad",
+      "notifications": "Notificaciones",
       "telegram": "Telegram",
       "ai": "Funciones IA",
-      "notifications": "Preferencias de Notificación"
+      "integrations": "Integraciones"
     },
     "security": "Configuración de Seguridad",
     "changePassword": "Cambiar Contraseña",

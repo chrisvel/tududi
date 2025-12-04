@@ -491,10 +491,12 @@
     "tabs": {
       "general": "Allgemein",
       "security": "Sicherheit",
+      "apiKeys": "API-Schlüssel",
       "productivity": "Produktivität",
+      "notifications": "Benachrichtigungen",
       "telegram": "Telegram",
       "ai": "KI-Funktionen",
-      "notifications": "Benachrichtigungseinstellungen"
+      "integrations": "Integrationen"
     },
     "security": "Sicherheitseinstellungen",
     "changePassword": "Passwort ändern",

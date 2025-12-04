@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     CpuChipIcon,
@@ -8,6 +8,7 @@ import {
     ExclamationCircleIcon,
     EyeIcon,
     EyeSlashIcon,
+    ArrowPathIcon,
 } from '@heroicons/react/24/outline';
 import { getApiPath } from '../../../config/paths';
 
@@ -40,6 +41,60 @@ const IntegrationsTab: React.FC<IntegrationsTabProps> = ({
         message: string;
     } | null>(null);
     const [showApiKey, setShowApiKey] = useState(false);
+    const [ollamaModels, setOllamaModels] = useState<string[]>([]);
+    const [loadingModels, setLoadingModels] = useState(false);
+    const [modelsError, setModelsError] = useState<string | null>(null);
+
+    const fetchOllamaModels = async () => {
+        if (settings.ai_provider !== 'ollama') return;
+
+        setLoadingModels(true);
+        setModelsError(null);
+
+        try {
+            const baseUrl = settings.ollama_base_url || 'http://localhost:11434';
+            const response = await fetch(`${baseUrl}/api/tags`);
+
+            if (!response.ok) {
+                throw new Error(
+                    `Failed to fetch models: ${response.statusText}`
+                );
+            }
+
+            const data = await response.json();
+            const modelNames = data.models?.map(
+                (model: any) => model.name
+            ) || [];
+            setOllamaModels(modelNames);
+
+            // If current model is not in the list and there are models, set the first one
+            if (
+                modelNames.length > 0 &&
+                !modelNames.includes(settings.ollama_model)
+            ) {
+                onChange({
+                    ...settings,
+                    ollama_model: modelNames[0],
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching Ollama models:', error);
+            setModelsError(
+                error instanceof Error
+                    ? error.message
+                    : 'Failed to fetch models'
+            );
+            setOllamaModels([]);
+        } finally {
+            setLoadingModels(false);
+        }
+    };
+
+    useEffect(() => {
+        if (settings.ai_provider === 'ollama' && isActive) {
+            fetchOllamaModels();
+        }
+    }, [settings.ai_provider, isActive]);
 
     const handleTestConnection = async () => {
         try {
@@ -205,26 +260,72 @@ const IntegrationsTab: React.FC<IntegrationsTabProps> = ({
                     </div>
 
                     <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            {t('profile.integrations.model', 'Model')}
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center justify-between">
+                            <span>
+                                {t('profile.integrations.model', 'Model')}
+                            </span>
+                            <button
+                                type="button"
+                                onClick={fetchOllamaModels}
+                                disabled={loadingModels}
+                                className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 disabled:opacity-50 flex items-center"
+                            >
+                                <ArrowPathIcon
+                                    className={`w-4 h-4 mr-1 ${loadingModels ? 'animate-spin' : ''}`}
+                                />
+                                {t('common.refresh', 'Refresh')}
+                            </button>
                         </label>
-                        <input
-                            type="text"
-                            value={settings.ollama_model}
-                            onChange={(e) =>
-                                onChange({
-                                    ...settings,
-                                    ollama_model: e.target.value,
-                                })
-                            }
-                            placeholder="llama3"
-                            className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                        />
+                        {modelsError && (
+                            <div className="mb-2 p-2 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs rounded">
+                                {modelsError}
+                            </div>
+                        )}
+                        {loadingModels ? (
+                            <div className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
+                                {t('common.loading', 'Loading...')}
+                            </div>
+                        ) : ollamaModels.length > 0 ? (
+                            <select
+                                value={settings.ollama_model}
+                                onChange={(e) =>
+                                    onChange({
+                                        ...settings,
+                                        ollama_model: e.target.value,
+                                    })
+                                }
+                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                            >
+                                {ollamaModels.map((model) => (
+                                    <option key={model} value={model}>
+                                        {model}
+                                    </option>
+                                ))}
+                            </select>
+                        ) : (
+                            <input
+                                type="text"
+                                value={settings.ollama_model}
+                                onChange={(e) =>
+                                    onChange({
+                                        ...settings,
+                                        ollama_model: e.target.value,
+                                    })
+                                }
+                                placeholder="llama3"
+                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                            />
+                        )}
                         <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                            {t(
-                                'profile.integrations.modelHelp',
-                                'Model name (e.g., llama3, mistral, codellama)'
-                            )}
+                            {ollamaModels.length > 0
+                                ? t(
+                                      'profile.integrations.modelFromList',
+                                      'Select a model from your Ollama installation'
+                                  )
+                                : t(
+                                      'profile.integrations.modelHelp',
+                                      'Model name (e.g., llama3, mistral, codellama). Click Refresh to load available models.'
+                                  )}
                         </p>
                     </div>
                 </div>
