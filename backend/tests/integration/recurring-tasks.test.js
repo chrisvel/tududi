@@ -854,7 +854,8 @@ describe('Recurring Tasks', () => {
             );
 
             const secondDayDiff = Math.round(
-                (secondNewDueDate - secondCompletionTime) / (1000 * 60 * 60 * 24)
+                (secondNewDueDate - secondCompletionTime) /
+                    (1000 * 60 * 60 * 24)
             );
             expect(secondDayDiff).toBeGreaterThanOrEqual(1);
             expect(secondDayDiff).toBeLessThanOrEqual(2);
