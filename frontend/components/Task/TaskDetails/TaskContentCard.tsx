@@ -57,10 +57,7 @@ const TaskContentCard: React.FC<TaskContentCardProps> = ({
     };
 
     return (
-        <div>
-            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                {t('task.content', 'Content')}
-            </h4>
+        <div className="space-y-2">
             {isEditing ? (
                 <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-blue-500 dark:border-blue-400 p-6">
                     <div className="relative">
@@ -167,12 +164,12 @@ const TaskContentCard: React.FC<TaskContentCardProps> = ({
                     className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 p-6 cursor-pointer transition-colors"
                     title={t('task.clickToAddContent', 'Click to add content')}
                 >
-                    <div className="flex flex-col items-center justify-center py-8 text-gray-500 dark:text-gray-400">
-                        <PencilSquareIcon className="h-12 w-12 mb-3 opacity-50" />
-                        <span className="text-sm text-center">
-                            {t('task.noNotes', 'No content added yet')}
-                        </span>
-                    </div>
+                        <div className="flex flex-col items-center justify-center py-8 text-gray-500 dark:text-gray-400">
+                            <PencilSquareIcon className="h-12 w-12 mb-3 opacity-50" />
+                            <span className="text-sm text-center">
+                                {t('task.noNotes', 'Add some content')}
+                            </span>
+                        </div>
                 </div>
             )}
         </div>

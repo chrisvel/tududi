@@ -13,6 +13,7 @@ import {
     fetchTaskByUid,
     fetchTaskNextIterations,
     TaskIteration,
+    toggleTaskToday,
 } from '../../utils/tasksService';
 import { createProject } from '../../utils/projectsService';
 import { useStore } from '../../store/useStore';
@@ -21,7 +22,6 @@ import LoadingScreen from '../Shared/LoadingScreen';
 import TaskTimeline from './TaskTimeline';
 import {
     TaskDetailsHeader,
-    TaskSummaryAlerts,
     TaskContentCard,
     TaskProjectCard,
     TaskTagsCard,
@@ -31,6 +31,7 @@ import {
     TaskDueDateCard,
     TaskDeferUntilCard,
 } from './TaskDetails/';
+import { isTaskOverdue } from '../../utils/dateUtils';
 
 const TaskDetails: React.FC = () => {
     const { uid } = useParams<{ uid: string }>();
@@ -55,9 +56,7 @@ const TaskDetails: React.FC = () => {
     const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
     const [focusSubtasks, setFocusSubtasks] = useState(false);
     const [timelineRefreshKey, setTimelineRefreshKey] = useState(0);
-    const [isOverdueAlertDismissed, setIsOverdueAlertDismissed] =
-        useState(false);
-    const [isSummaryAlertDismissed, setIsSummaryAlertDismissed] =
+    const [isOverdueBubbleVisible, setIsOverdueBubbleVisible] =
         useState(false);
     const [nextIterations, setNextIterations] = useState<TaskIteration[]>([]);
     const [loadingIterations, setLoadingIterations] = useState(false);
@@ -69,19 +68,38 @@ const TaskDetails: React.FC = () => {
     const actionsMenuRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
+            const target = e.target as Node;
             if (
                 actionsMenuOpen &&
                 actionsMenuRef.current &&
-                !actionsMenuRef.current.contains(e.target as Node)
+                !actionsMenuRef.current.contains(target)
             ) {
                 setActionsMenuOpen(false);
+            }
+
+            if (isOverdueBubbleVisible) {
+                const clickedOverdueToggle =
+                    typeof e.composedPath === 'function'
+                        ? e
+                              .composedPath()
+                              .some(
+                                  (node) =>
+                                      node instanceof HTMLElement &&
+                                      node.hasAttribute('data-overdue-toggle')
+                              )
+                        : target instanceof HTMLElement &&
+                          !!target.closest('[data-overdue-toggle]');
+
+                if (!clickedOverdueToggle) {
+                    setIsOverdueBubbleVisible(false);
+                }
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [actionsMenuOpen]);
+    }, [actionsMenuOpen, isOverdueBubbleVisible]);
     const [isEditingDueDate, setIsEditingDueDate] = useState(false);
     const [editedDueDate, setEditedDueDate] = useState<string>(
         task?.due_date || ''
@@ -101,6 +119,7 @@ const TaskDetails: React.FC = () => {
         recurrence_week_of_month: task?.recurrence_week_of_month || null,
         completion_based: task?.completion_based || false,
     });
+    const [activePill, setActivePill] = useState('overview');
 
     useEffect(() => {
         setEditedDueDate(task?.due_date || '');
@@ -183,6 +202,25 @@ const TaskDetails: React.FC = () => {
             completion_based: task?.completion_based || false,
         });
         setIsEditingRecurrence(true);
+    };
+
+    const isOverdue = task ? isTaskOverdue(task) : false;
+
+    useEffect(() => {
+        if (!isOverdue) {
+            setIsOverdueBubbleVisible(false);
+        }
+    }, [isOverdue]);
+
+    const handleOverdueIconClick = () => {
+        if (!isOverdue) {
+            return;
+        }
+        setIsOverdueBubbleVisible((prev) => !prev);
+    };
+
+    const handleDismissOverdueAlert = () => {
+        setIsOverdueBubbleVisible(false);
     };
 
     const handleRecurrenceChange = (field: string, value: any) => {
@@ -296,6 +334,23 @@ const TaskDetails: React.FC = () => {
                     );
                     return;
                 }
+            }
+        }
+
+        // Check if due date is in the past
+        if (editedDueDate) {
+            const dueDate = new Date(editedDueDate);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            dueDate.setHours(0, 0, 0, 0);
+
+            if (!isNaN(dueDate.getTime()) && dueDate < today) {
+                showErrorToast(
+                    t(
+                        'task.dueDateInPastWarning',
+                        'Warning: You are setting a due date in the past'
+                    )
+                );
             }
         }
 
@@ -497,39 +552,6 @@ const TaskDetails: React.FC = () => {
                   });
 
         return { formattedDate, relativeText };
-    };
-
-    const getTaskPlainSummary = () => {
-        const statusText = getStatusLabel();
-        const priorityText = getPriorityLabel();
-        const dueInfo = task.due_date ? getDueDateDisplay(task.due_date) : null;
-
-        return (
-            <span>
-                {t('task.thisTask', 'This task')} {t('task.is', 'is')}{' '}
-                <strong>{statusText}</strong>
-                {priorityText && (
-                    <>
-                        {' '}
-                        {t('task.and', 'and')} {t('task.has', 'has')}{' '}
-                        <strong>{priorityText}</strong>
-                    </>
-                )}
-                {dueInfo && (
-                    <>
-                        {`, ${t('task.dueOn', 'due')} ${dueInfo.relativeText}`}{' '}
-                        ({dueInfo.formattedDate})
-                    </>
-                )}
-                {task.Project && (
-                    <>
-                        {`, ${t('task.fromProject', 'from project')}`}{' '}
-                        <strong>{task.Project.name}</strong>
-                    </>
-                )}
-                .
-            </span>
-        );
     };
 
     useEffect(() => {
@@ -850,6 +872,102 @@ const TaskDetails: React.FC = () => {
         [parentTask?.id, parentTask?.recurrence_type]
     );
 
+    const handleToggleTodayPlan = async () => {
+        if (!task?.id || !task?.uid) {
+            return;
+        }
+
+        try {
+            const updatedTask = await toggleTaskToday(task.id, task);
+            let latestTaskData: Task | null = updatedTask;
+
+            if (uid) {
+                const refreshedTask = await fetchTaskByUid(uid);
+                latestTaskData = refreshedTask;
+                const existingIndex = tasksStore.tasks.findIndex(
+                    (t: Task) => t.uid === uid
+                );
+                if (existingIndex >= 0) {
+                    const updatedTasks = [...tasksStore.tasks];
+                    updatedTasks[existingIndex] = refreshedTask;
+                    tasksStore.setTasks(updatedTasks);
+                }
+            }
+
+            await refreshRecurringSetup(latestTaskData);
+            setTimelineRefreshKey((prev) => prev + 1);
+            showSuccessToast(
+                updatedTask.today
+                    ? t('tasks.addToToday', 'Add to today plan')
+                    : t('tasks.removeFromToday', 'Remove from today plan')
+            );
+        } catch (error) {
+            console.error('Error toggling today plan:', error);
+            showErrorToast(
+                t('task.statusUpdateError', 'Failed to update status')
+            );
+        }
+    };
+
+    const handleQuickStatusToggle = async () => {
+        if (!task?.uid) {
+            return;
+        }
+
+        const isCurrentlyInProgress =
+            task.status === 'in_progress' || task.status === 1;
+        const isToggleable =
+            task.status === 'not_started' ||
+            task.status === 0 ||
+            isCurrentlyInProgress;
+
+        if (!isToggleable) {
+            return;
+        }
+
+        try {
+            const nextStatusPayload: Task = {
+                ...task,
+                status: isCurrentlyInProgress ? 0 : 1,
+                today: isCurrentlyInProgress ? task.today : true,
+            };
+
+            await updateTask(task.uid, nextStatusPayload);
+
+            let latestTaskData: Task | null = null;
+
+            if (uid) {
+                const updatedTaskFromServer = await fetchTaskByUid(uid);
+                latestTaskData = updatedTaskFromServer;
+                const existingIndex = tasksStore.tasks.findIndex(
+                    (t: Task) => t.uid === uid
+                );
+                if (existingIndex >= 0) {
+                    const updatedTasks = [...tasksStore.tasks];
+                    updatedTasks[existingIndex] = updatedTaskFromServer;
+                    tasksStore.setTasks(updatedTasks);
+                }
+            }
+
+            if (!latestTaskData) {
+                latestTaskData = nextStatusPayload;
+            }
+
+            await refreshRecurringSetup(latestTaskData);
+            setTimelineRefreshKey((prev) => prev + 1);
+            showSuccessToast(
+                isCurrentlyInProgress
+                    ? t('tasks.setNotStarted', 'Set to not started')
+                    : t('tasks.setInProgress', 'Set in progress')
+            );
+        } catch (error) {
+            console.error('Error toggling in-progress status:', error);
+            showErrorToast(
+                t('task.statusUpdateError', 'Failed to update status')
+            );
+        }
+    };
+
     const handleToggleCompletion = async () => {
         if (!task?.uid) return;
 
@@ -884,6 +1002,40 @@ const TaskDetails: React.FC = () => {
             console.error('Error toggling task completion:', error);
             showErrorToast(
                 t('task.toggleError', 'Failed to update task status')
+            );
+        }
+    };
+
+    const handleStatusUpdate = async (newStatus: number) => {
+        if (!task?.uid) return;
+
+        try {
+            await updateTask(task.uid, {
+                ...task,
+                status: newStatus,
+            });
+
+            if (uid) {
+                const updatedTask = await fetchTaskByUid(uid);
+                const existingIndex = tasksStore.tasks.findIndex(
+                    (t: Task) => t.uid === uid
+                );
+                if (existingIndex >= 0) {
+                    const updatedTasks = [...tasksStore.tasks];
+                    updatedTasks[existingIndex] = updatedTask;
+                    tasksStore.setTasks(updatedTasks);
+                }
+            }
+
+            showSuccessToast(
+                t('task.statusUpdated', 'Status updated successfully')
+            );
+
+            setTimelineRefreshKey((prev) => prev + 1);
+        } catch (error) {
+            console.error('Error updating status:', error);
+            showErrorToast(
+                t('task.statusUpdateError', 'Failed to update status')
             );
         }
     };
@@ -1180,96 +1332,73 @@ const TaskDetails: React.FC = () => {
     }
 
     return (
-        <div className="px-4 lg:px-8 pt-6">
+        <div className="px-4 lg:px-6 pt-4">
             <div className="w-full">
                 {/* Header Section with Title and Action Buttons */}
                 <TaskDetailsHeader
                     task={task}
                     onToggleCompletion={handleToggleCompletion}
                     onTitleUpdate={handleTitleUpdate}
+                    onStatusUpdate={handleStatusUpdate}
                     onEdit={handleEdit}
                     onDelete={handleDeleteClick}
                     getProjectLink={getProjectLink}
                     getTagLink={getTagLink}
-                />
-
-                {/* Summary and Overdue Alerts */}
-                <TaskSummaryAlerts
-                    task={task}
-                    summaryMessage={getTaskPlainSummary()}
-                    isSummaryDismissed={isSummaryAlertDismissed}
-                    isOverdueDismissed={isOverdueAlertDismissed}
-                    onDismissSummary={() => setIsSummaryAlertDismissed(true)}
-                    onDismissOverdue={() => setIsOverdueAlertDismissed(true)}
+                    activePill={activePill}
+                    onPillChange={setActivePill}
+                    showOverdueIcon={isOverdue}
+                    onOverdueIconClick={handleOverdueIconClick}
+                    isOverdueAlertVisible={
+                        isOverdue && isOverdueBubbleVisible
+                    }
+                    onDismissOverdueAlert={handleDismissOverdueAlert}
+                    onToggleTodayPlan={handleToggleTodayPlan}
+                    onQuickStatusToggle={handleQuickStatusToggle}
                 />
 
                 {/* Content - Full width layout */}
-                <div className="mb-8 mt-8">
-                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                        {/* Left Column - Main Content */}
-                        <div className="lg:col-span-3 space-y-8">
-                            {/* Notes Section - Always Visible */}
-                            <TaskContentCard
-                                content={task.note || ''}
-                                onUpdate={handleContentUpdate}
-                            />
+                <div className="mb-6 mt-6">
+                    {/* Overview Pill */}
+                    {activePill === 'overview' && (
+                        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                            {/* Left Column - Main Content */}
+                            <div className="lg:col-span-3 space-y-8">
+                                <TaskContentCard
+                                    content={task.note || ''}
+                                    onUpdate={handleContentUpdate}
+                                />
 
-                            <TaskSubtasksCard
-                                task={task}
-                                subtasks={subtasks}
-                                isEditing={isEditingSubtasks}
-                                editedSubtasks={editedSubtasks}
-                                onSubtasksChange={setEditedSubtasks}
-                                onStartEdit={handleStartSubtasksEdit}
-                                onSave={handleSaveSubtasks}
-                                onCancel={handleCancelSubtasksEdit}
-                                onToggleSubtaskCompletion={
-                                    handleToggleSubtaskCompletion
-                                }
-                            />
+                            </div>
 
-                            <TaskRecurrenceCard
-                                task={task}
-                                parentTask={parentTask}
-                                loadingParent={loadingParent}
-                                isEditing={isEditingRecurrence}
-                                recurrenceForm={recurrenceForm}
-                                onStartEdit={handleStartRecurrenceEdit}
-                                onChange={handleRecurrenceChange}
-                                onSave={handleSaveRecurrence}
-                                onCancel={handleCancelRecurrenceEdit}
-                                loadingIterations={loadingIterations}
-                                nextIterations={nextIterations}
-                                canEdit={!task.recurring_parent_id}
-                            />
+                            {/* Right Column - Project and Tags */}
+                            <div className="space-y-6">
+                                <TaskProjectCard
+                                    task={task}
+                                    projects={projectsStore.projects}
+                                    onProjectSelect={handleProjectSelection}
+                                    onProjectClear={handleClearProject}
+                                    onProjectCreate={
+                                        handleProjectCreateInlineWrapper
+                                    }
+                                    getProjectLink={getProjectLink}
+                                />
+
+                                <TaskTagsCard
+                                    task={task}
+                                    availableTags={tagsStore.tags}
+                                    hasLoadedTags={tagsStore.hasLoaded}
+                                    isLoadingTags={tagsStore.isLoading}
+                                    onUpdate={handleTagsUpdate}
+                                    onLoadTags={() => tagsStore.loadTags()}
+                                    getTagLink={getTagLink}
+                                />
+                            </div>
                         </div>
+                    )}
 
-                        {/* Right Column - Metadata and Recent Activity */}
-                        <div className="space-y-6">
-                            {/* Project Section */}
-                            <TaskProjectCard
-                                task={task}
-                                projects={projectsStore.projects}
-                                onProjectSelect={handleProjectSelection}
-                                onProjectClear={handleClearProject}
-                                onProjectCreate={
-                                    handleProjectCreateInlineWrapper
-                                }
-                                getProjectLink={getProjectLink}
-                            />
-
-                            {/* Tags Section */}
-                            <TaskTagsCard
-                                task={task}
-                                availableTags={tagsStore.tags}
-                                hasLoadedTags={tagsStore.hasLoaded}
-                                isLoadingTags={tagsStore.isLoading}
-                                onUpdate={handleTagsUpdate}
-                                onLoadTags={() => tagsStore.loadTags()}
-                                getTagLink={getTagLink}
-                            />
-
-                            {/* Priority Section */}
+                    {/* Schedule Pill */}
+                    {activePill === 'schedule' && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             <TaskPriorityCard
                                 task={task}
                                 onUpdate={handlePriorityUpdate}
@@ -1295,23 +1424,70 @@ const TaskDetails: React.FC = () => {
                                 onCancel={handleCancelDeferUntilEdit}
                             />
 
-                            {/* Recent Activity Section */}
-                            <div>
-                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                    {t(
-                                        'task.recentActivity',
-                                        'Recent Activity'
-                                    )}
-                                </h4>
-                                <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 p-6">
-                                    <TaskTimeline
-                                        taskUid={task.uid}
-                                        refreshKey={timelineRefreshKey}
-                                    />
-                                </div>
+                            <div className="md:col-span-2 lg:col-span-3">
+                                <TaskRecurrenceCard
+                                    task={task}
+                                    parentTask={parentTask}
+                                    loadingParent={loadingParent}
+                                    isEditing={isEditingRecurrence}
+                                    recurrenceForm={recurrenceForm}
+                                    onStartEdit={handleStartRecurrenceEdit}
+                                    onChange={handleRecurrenceChange}
+                                    onSave={handleSaveRecurrence}
+                                    onCancel={handleCancelRecurrenceEdit}
+                                    loadingIterations={loadingIterations}
+                                    nextIterations={nextIterations}
+                                    canEdit={!task.recurring_parent_id}
+                                />
                             </div>
                         </div>
-                    </div>
+                    )}
+
+                    {/* Subtasks Pill */}
+                    {activePill === 'subtasks' && (
+                        <div className="grid grid-cols-1">
+                            <TaskSubtasksCard
+                                task={task}
+                                subtasks={subtasks}
+                                isEditing={isEditingSubtasks}
+                                editedSubtasks={editedSubtasks}
+                                onSubtasksChange={setEditedSubtasks}
+                                onStartEdit={handleStartSubtasksEdit}
+                                onSave={handleSaveSubtasks}
+                                onCancel={handleCancelSubtasksEdit}
+                                onToggleSubtaskCompletion={
+                                    handleToggleSubtaskCompletion
+                                }
+                            />
+                        </div>
+                    )}
+
+                    {/* Attachments Pill */}
+                    {activePill === 'attachments' && (
+                        <div className="text-center py-12">
+                            <p className="text-gray-500 dark:text-gray-400">
+                                {t(
+                                    'task.attachmentsComingSoon',
+                                    'Attachments feature coming soon'
+                                )}
+                            </p>
+                        </div>
+                    )}
+
+                    {/* Activity Pill */}
+                    {activePill === 'activity' && (
+                        <div>
+                            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                {t('task.recentActivity', 'Recent Activity')}
+                            </h4>
+                            <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 p-6">
+                                <TaskTimeline
+                                    taskUid={task.uid}
+                                    refreshKey={timelineRefreshKey}
+                                />
+                            </div>
+                        </div>
+                    )}
                 </div>
                 {/* End of main content sections */}
 

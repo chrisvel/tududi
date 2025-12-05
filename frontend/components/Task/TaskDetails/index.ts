@@ -1,5 +1,4 @@
 export { default as TaskDetailsHeader } from './TaskDetailsHeader';
-export { default as TaskSummaryAlerts } from './TaskSummaryAlerts';
 export { default as TaskContentCard } from './TaskContentCard';
 export { default as TaskProjectCard } from './TaskProjectCard';
 export { default as TaskTagsCard } from './TaskTagsCard';

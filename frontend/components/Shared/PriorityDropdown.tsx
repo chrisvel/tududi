@@ -160,13 +160,11 @@ const PriorityDropdown: React.FC<PriorityDropdownProps> = ({
                                 onClick={() =>
                                     handleSelect(priority.value as PriorityType)
                                 }
-                                className="flex items-center justify-between px-4 py-2 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-600 w-full first:rounded-t-md last:rounded-b-md"
+                                className="flex items-center justify-center px-4 py-2 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-600 w-full first:rounded-t-md last:rounded-b-md"
                                 data-testid={`priority-option-${priority.value || 'none'}`}
+                                title={priority.label}
                             >
-                                <span className="flex items-center space-x-2">
-                                    {priority.icon}{' '}
-                                    <span>{priority.label}</span>
-                                </span>
+                                {priority.icon}
                             </button>
                         ))}
                     </div>,
