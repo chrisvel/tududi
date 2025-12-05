@@ -176,13 +176,18 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
 
     const handleStatusChange = async (newStatus: number | string) => {
         setStatusDropdownOpen(false);
-        const statusNum = typeof newStatus === 'string' ? parseInt(newStatus) : newStatus;
+        const statusNum =
+            typeof newStatus === 'string' ? parseInt(newStatus) : newStatus;
         await onStatusUpdate(statusNum);
     };
 
-    const getStatusIcon = (statusOverride?: number | string): React.ElementType => {
+    const getStatusIcon = (
+        statusOverride?: number | string
+    ): React.ElementType => {
         const status =
-            typeof statusOverride !== 'undefined' ? statusOverride : task.status;
+            typeof statusOverride !== 'undefined'
+                ? statusOverride
+                : task.status;
 
         if (status === 'in_progress' || status === 1) {
             return PlayCircleIcon;
@@ -194,7 +199,9 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
 
     const getStatusIconClass = (statusOverride?: number | string) => {
         const status =
-            typeof statusOverride !== 'undefined' ? statusOverride : task.status;
+            typeof statusOverride !== 'undefined'
+                ? statusOverride
+                : task.status;
 
         if (status === 'in_progress' || status === 1) {
             return 'text-blue-500 dark:text-blue-400';
@@ -205,7 +212,10 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
     };
 
     const getPriorityLabel = (priorityOverride?: PriorityType) => {
-        const priority = typeof priorityOverride !== 'undefined' ? priorityOverride : task.priority;
+        const priority =
+            typeof priorityOverride !== 'undefined'
+                ? priorityOverride
+                : task.priority;
 
         if (priority === 'low' || priority === 0) {
             return t('priority.low', 'Low');
@@ -224,7 +234,8 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
             return 'px-2.5 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-2 sm:ml-1 border border-gray-300 text-gray-600 dark:border-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/60';
         }
 
-        const baseClass = 'px-2.5 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-2 sm:ml-1 border';
+        const baseClass =
+            'px-2.5 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-2 sm:ml-1 border';
 
         if (priority === 'low' || priority === 0) {
             return `${baseClass} border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30`;
@@ -241,8 +252,13 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
         await onPriorityUpdate(newPriority);
     };
 
-    const getPriorityIcon = (priorityOverride?: PriorityType): React.ElementType => {
-        const priority = typeof priorityOverride !== 'undefined' ? priorityOverride : task.priority;
+    const getPriorityIcon = (
+        priorityOverride?: PriorityType
+    ): React.ElementType => {
+        const priority =
+            typeof priorityOverride !== 'undefined'
+                ? priorityOverride
+                : task.priority;
 
         if (priority === 'low' || priority === 0) {
             return ArrowDownIcon;
@@ -255,7 +271,10 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
     };
 
     const getPriorityIconClass = (priorityOverride?: PriorityType) => {
-        const priority = typeof priorityOverride !== 'undefined' ? priorityOverride : task.priority;
+        const priority =
+            typeof priorityOverride !== 'undefined'
+                ? priorityOverride
+                : task.priority;
 
         if (priority === 'low' || priority === 0) {
             return 'text-blue-500 dark:text-blue-400';
@@ -277,338 +296,433 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex-1 min-w-0">
                         {isEditingTitle ? (
-                                <div className="flex items-center space-x-2">
-                                    <input
-                                        ref={titleInputRef}
-                                        type="text"
-                                        value={editedTitle}
-                                        onChange={(e) =>
-                                            setEditedTitle(e.target.value)
-                                        }
-                                        onKeyDown={handleTitleKeyDown}
-                                        onBlur={handleSaveTitle}
-                                        className="text-2xl font-normal text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 border-2 border-blue-500 dark:border-blue-400 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 w-full"
-                                        placeholder={t(
-                                            'task.titlePlaceholder',
-                                            'Enter task title'
+                            <div className="flex items-center space-x-2">
+                                <input
+                                    ref={titleInputRef}
+                                    type="text"
+                                    value={editedTitle}
+                                    onChange={(e) =>
+                                        setEditedTitle(e.target.value)
+                                    }
+                                    onKeyDown={handleTitleKeyDown}
+                                    onBlur={handleSaveTitle}
+                                    className="text-2xl font-normal text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 border-2 border-blue-500 dark:border-blue-400 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 w-full"
+                                    placeholder={t(
+                                        'task.titlePlaceholder',
+                                        'Enter task title'
+                                    )}
+                                />
+                                <button
+                                    onClick={handleSaveTitle}
+                                    className="p-1.5 text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 rounded-full transition-colors duration-200"
+                                    title={t('common.save', 'Save')}
+                                >
+                                    <CheckIcon className="h-5 w-5" />
+                                </button>
+                                <button
+                                    onClick={handleCancelTitleEdit}
+                                    className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 rounded-full transition-colors duration-200"
+                                    title={t('common.cancel', 'Cancel')}
+                                >
+                                    <XMarkIcon className="h-5 w-5" />
+                                </button>
+                            </div>
+                        ) : (
+                            <>
+                                <div className="flex items-center gap-3 flex-wrap">
+                                    <h2
+                                        onClick={handleStartTitleEdit}
+                                        className="text-2xl font-normal text-gray-900 dark:text-gray-100 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded px-2 py-1 -mx-2 transition-colors"
+                                        title={t(
+                                            'task.clickToEditTitle',
+                                            'Click to edit title'
                                         )}
-                                    />
-                                    <button
-                                        onClick={handleSaveTitle}
-                                        className="p-1.5 text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 rounded-full transition-colors duration-200"
-                                        title={t('common.save', 'Save')}
                                     >
-                                        <CheckIcon className="h-5 w-5" />
-                                    </button>
-                                    <button
-                                        onClick={handleCancelTitleEdit}
-                                        className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 rounded-full transition-colors duration-200"
-                                        title={t('common.cancel', 'Cancel')}
-                                    >
-                                        <XMarkIcon className="h-5 w-5" />
-                                    </button>
-                                </div>
-                            ) : (
-                                <>
-                                    <div className="flex items-center gap-3 flex-wrap">
-                                        <h2
-                                            onClick={handleStartTitleEdit}
-                                            className="text-2xl font-normal text-gray-900 dark:text-gray-100 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded px-2 py-1 -mx-2 transition-colors"
-                                            title={t(
-                                                'task.clickToEditTitle',
-                                                'Click to edit title'
-                                            )}
+                                        {task.name}
+                                    </h2>
+
+                                    {/* Status Dropdown Button - Next to title */}
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                        <div
+                                            className="relative flex-shrink-0"
+                                            ref={statusDropdownRef}
                                         >
-                                            {task.name}
-                                        </h2>
-
-                                        {/* Status Dropdown Button - Next to title */}
-                                        <div className="flex items-center gap-2 flex-wrap">
-                                            <div className="relative flex-shrink-0" ref={statusDropdownRef}>
-                                                <button
-                                                    className={getStatusButtonClass()}
-                                                    onClick={(e) => {
-                                                        e.preventDefault();
-                                                        e.stopPropagation();
-                                                        setStatusDropdownOpen(!statusDropdownOpen);
-                                                    }}
-                                                    aria-haspopup="true"
-                                                    aria-expanded={statusDropdownOpen}
-                                                >
-                                                    {React.createElement(getStatusIcon(), {
+                                            <button
+                                                className={getStatusButtonClass()}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    setStatusDropdownOpen(
+                                                        !statusDropdownOpen
+                                                    );
+                                                }}
+                                                aria-haspopup="true"
+                                                aria-expanded={
+                                                    statusDropdownOpen
+                                                }
+                                            >
+                                                {React.createElement(
+                                                    getStatusIcon(),
+                                                    {
                                                         className: `h-4 w-4 ${getStatusIconClass()}`,
-                                                    })}
-                                                    <span className="capitalize">{getStatusLabel()}</span>
-                                                    <ChevronDownIcon className="h-4 w-4" />
-                                                </button>
-                                                {statusDropdownOpen && (
-                                                    <div className="absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 z-20">
-                                                        <button
-                                                            className={`w-full text-left px-3 py-2 text-sm rounded-t-lg flex items-center gap-2 ${
-                                                                task.status === 0 || task.status === 'not_started'
-                                                                    ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-medium'
-                                                                    : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
-                                                            }`}
-                                                            onClick={(e) => {
-                                                                e.preventDefault();
-                                                                e.stopPropagation();
-                                                                handleStatusChange(0);
-                                                            }}
-                                                        >
-                                                            <PauseCircleIcon
-                                                                className={`h-4 w-4 ${getStatusIconClass(0)}`}
-                                                            />
-                                                            <span className="capitalize flex-1">
-                                                                {t('task.status.notStarted', 'Not started')}
-                                                            </span>
-                                                            {(task.status === 0 || task.status === 'not_started') && (
-                                                                <CheckIcon className="h-4 w-4" />
-                                                            )}
-                                                        </button>
-                                                        <button
-                                                            className={`w-full text-left px-3 py-2 text-sm flex items-center gap-2 ${
-                                                                task.status === 1 || task.status === 'in_progress'
-                                                                    ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-medium'
-                                                                    : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
-                                                            }`}
-                                                            onClick={(e) => {
-                                                                e.preventDefault();
-                                                                e.stopPropagation();
-                                                                handleStatusChange(1);
-                                                            }}
-                                                        >
-                                                            <PlayCircleIcon
-                                                                className={`h-4 w-4 ${getStatusIconClass(1)}`}
-                                                            />
-                                                            <span className="capitalize flex-1">
-                                                                {t('task.status.inProgress', 'In progress')}
-                                                            </span>
-                                                            {(task.status === 1 || task.status === 'in_progress') && (
-                                                                <CheckIcon className="h-4 w-4" />
-                                                            )}
-                                                        </button>
-                                                        <button
-                                                            className={`w-full text-left px-3 py-2 text-sm rounded-b-lg flex items-center gap-2 ${
-                                                                task.status === 2 || task.status === 'done'
-                                                                    ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-medium'
-                                                                    : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
-                                                            }`}
-                                                            onClick={(e) => {
-                                                                e.preventDefault();
-                                                                e.stopPropagation();
-                                                                handleStatusChange(2);
-                                                            }}
-                                                        >
-                                                            <CheckCircleIcon
-                                                                className={`h-4 w-4 ${getStatusIconClass(2)}`}
-                                                            />
-                                                            <span className="capitalize flex-1">
-                                                                {t('task.status.setAsDone', 'Set as done')}
-                                                            </span>
-                                                            {(task.status === 2 || task.status === 'done') && (
-                                                                <CheckIcon className="h-4 w-4" />
-                                                            )}
-                                                        </button>
-                                                    </div>
+                                                    }
                                                 )}
-                                            </div>
-
-                                            {/* Priority Dropdown Button - Next to status */}
-                                            <div className="relative flex-shrink-0" ref={priorityDropdownRef}>
-                                                <button
-                                                    className={getPriorityButtonClass()}
-                                                    onClick={(e) => {
-                                                        e.preventDefault();
-                                                        e.stopPropagation();
-                                                        setPriorityDropdownOpen(!priorityDropdownOpen);
-                                                    }}
-                                                    aria-haspopup="true"
-                                                    aria-expanded={priorityDropdownOpen}
-                                                >
-                                                    {React.createElement(getPriorityIcon(), {
-                                                        className: `h-4 w-4 ${getPriorityIconClass()}`,
-                                                    })}
-                                                    <span className="capitalize">{getPriorityLabel()}</span>
-                                                    <ChevronDownIcon className="h-4 w-4" />
-                                                </button>
-                                                {priorityDropdownOpen && (
-                                                    <div className="absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 z-20">
-                                                        <button
-                                                            className={`w-full text-left px-3 py-2 text-sm rounded-t-lg flex items-center gap-2 ${
-                                                                task.priority === null || task.priority === undefined
-                                                                    ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-medium'
-                                                                    : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
-                                                            }`}
-                                                            onClick={(e) => {
-                                                                e.preventDefault();
-                                                                e.stopPropagation();
-                                                                handlePriorityChange(null);
-                                                            }}
-                                                        >
-                                                            <XMarkIcon
-                                                                className={`h-4 w-4 ${getPriorityIconClass(null)}`}
-                                                            />
-                                                            <span className="capitalize flex-1">
-                                                                {t('priority.none', 'None')}
-                                                            </span>
-                                                            {(task.priority === null || task.priority === undefined) && (
-                                                                <CheckIcon className="h-4 w-4" />
-                                                            )}
-                                                        </button>
-                                                        <button
-                                                            className={`w-full text-left px-3 py-2 text-sm flex items-center gap-2 ${
-                                                                task.priority === 'low' || task.priority === 0
-                                                                    ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-medium'
-                                                                    : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
-                                                            }`}
-                                                            onClick={(e) => {
-                                                                e.preventDefault();
-                                                                e.stopPropagation();
-                                                                handlePriorityChange('low');
-                                                            }}
-                                                        >
-                                                            <ArrowDownIcon
-                                                                className={`h-4 w-4 ${getPriorityIconClass('low')}`}
-                                                            />
-                                                            <span className="capitalize flex-1">
-                                                                {t('priority.low', 'Low')}
-                                                            </span>
-                                                            {(task.priority === 'low' || task.priority === 0) && (
-                                                                <CheckIcon className="h-4 w-4" />
-                                                            )}
-                                                        </button>
-                                                        <button
-                                                            className={`w-full text-left px-3 py-2 text-sm flex items-center gap-2 ${
-                                                                task.priority === 'medium' || task.priority === 1
-                                                                    ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-medium'
-                                                                    : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
-                                                            }`}
-                                                            onClick={(e) => {
-                                                                e.preventDefault();
-                                                                e.stopPropagation();
-                                                                handlePriorityChange('medium');
-                                                            }}
-                                                        >
-                                                            <ArrowUpIcon
-                                                                className={`h-4 w-4 ${getPriorityIconClass('medium')}`}
-                                                            />
-                                                            <span className="capitalize flex-1">
-                                                                {t('priority.medium', 'Medium')}
-                                                            </span>
-                                                            {(task.priority === 'medium' || task.priority === 1) && (
-                                                                <CheckIcon className="h-4 w-4" />
-                                                            )}
-                                                        </button>
-                                                        <button
-                                                            className={`w-full text-left px-3 py-2 text-sm rounded-b-lg flex items-center gap-2 ${
-                                                                task.priority === 'high' || task.priority === 2
-                                                                    ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-medium'
-                                                                    : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
-                                                            }`}
-                                                            onClick={(e) => {
-                                                                e.preventDefault();
-                                                                e.stopPropagation();
-                                                                handlePriorityChange('high');
-                                                            }}
-                                                        >
-                                                            <FireIcon
-                                                                className={`h-4 w-4 ${getPriorityIconClass('high')}`}
-                                                            />
-                                                            <span className="capitalize flex-1">
-                                                                {t('priority.high', 'High')}
-                                                            </span>
-                                                            {(task.priority === 'high' || task.priority === 2) && (
-                                                                <CheckIcon className="h-4 w-4" />
-                                                            )}
-                                                        </button>
-                                                    </div>
-                                                )}
-                                            </div>
-                                            {formattedUpdatedAt && (
-                                                <span className="text-xs text-gray-400 dark:text-gray-500 sm:pl-1 mt-1 sm:mt-0">
-                                                    {t('task.lastUpdatedAt', 'Last updated at')}:{' '}
-                                                    <span className="text-gray-500 dark:text-gray-400">
-                                                        {formattedUpdatedAt}
-                                                    </span>
+                                                <span className="capitalize">
+                                                    {getStatusLabel()}
                                                 </span>
-                                            )}
-                                        </div>
-                                    </div>
-                                    {/* Project and tags display below title */}
-                                    {(task.Project ||
-                                        (task.tags && task.tags.length > 0)) && (
-                                        <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-2 px-2 -mx-2 gap-2 flex-wrap">
-                                            {task.Project && (
-                                                <Link
-                                                    to={
-                                                        getProjectLink
-                                                            ? getProjectLink(
-                                                                  task.Project
-                                                              )
-                                                            : '#'
-                                                    }
-                                                    className="flex items-center gap-1 hover:text-gray-900 dark:hover:text-gray-200 hover:underline transition-colors"
-                                                    onClick={(e) =>
-                                                        e.stopPropagation()
-                                                    }
-                                                >
-                                                    <FolderIcon className="h-4 w-4" />
-                                                    <span>{task.Project.name}</span>
-                                                </Link>
-                                            )}
-                                            {task.tags && task.tags.length > 0 && (
-                                                <div className="flex items-center gap-1 flex-wrap">
-                                                    <TagIcon className="h-4 w-4" />
-                                                    <div className="flex flex-wrap">
-                                                        {task.tags.map(
-                                                            (
-                                                                tag: any,
-                                                                index: number
-                                                            ) => (
-                                                                <React.Fragment
-                                                                    key={
-                                                                        tag.uid ||
-                                                                        tag.id ||
-                                                                        tag.name
-                                                                    }
-                                                                >
-                                                                    <Link
-                                                                        to={
-                                                                            getTagLink
-                                                                                ? getTagLink(
-                                                                                      tag
-                                                                                  )
-                                                                                : '#'
-                                                                        }
-                                                                        className="hover:text-gray-900 dark:hover:text-gray-200 hover:underline transition-colors"
-                                                                        onClick={(
-                                                                            e
-                                                                        ) =>
-                                                                            e.stopPropagation()
-                                                                        }
-                                                                    >
-                                                                        {tag.name}
-                                                                    </Link>
-                                                                    {index <
-                                                                        task.tags!
-                                                                            .length -
-                                                                            1 && (
-                                                                        <span>
-                                                                            {', '}
-                                                                        </span>
-                                                                    )}
-                                                                </React.Fragment>
-                                                            )
+                                                <ChevronDownIcon className="h-4 w-4" />
+                                            </button>
+                                            {statusDropdownOpen && (
+                                                <div className="absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 z-20">
+                                                    <button
+                                                        className={`w-full text-left px-3 py-2 text-sm rounded-t-lg flex items-center gap-2 ${
+                                                            task.status === 0 ||
+                                                            task.status ===
+                                                                'not_started'
+                                                                ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-medium'
+                                                                : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                                        }`}
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
+                                                            handleStatusChange(
+                                                                0
+                                                            );
+                                                        }}
+                                                    >
+                                                        <PauseCircleIcon
+                                                            className={`h-4 w-4 ${getStatusIconClass(0)}`}
+                                                        />
+                                                        <span className="capitalize flex-1">
+                                                            {t(
+                                                                'task.status.notStarted',
+                                                                'Not started'
+                                                            )}
+                                                        </span>
+                                                        {(task.status === 0 ||
+                                                            task.status ===
+                                                                'not_started') && (
+                                                            <CheckIcon className="h-4 w-4" />
                                                         )}
-                                                    </div>
+                                                    </button>
+                                                    <button
+                                                        className={`w-full text-left px-3 py-2 text-sm flex items-center gap-2 ${
+                                                            task.status === 1 ||
+                                                            task.status ===
+                                                                'in_progress'
+                                                                ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-medium'
+                                                                : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                                        }`}
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
+                                                            handleStatusChange(
+                                                                1
+                                                            );
+                                                        }}
+                                                    >
+                                                        <PlayCircleIcon
+                                                            className={`h-4 w-4 ${getStatusIconClass(1)}`}
+                                                        />
+                                                        <span className="capitalize flex-1">
+                                                            {t(
+                                                                'task.status.inProgress',
+                                                                'In progress'
+                                                            )}
+                                                        </span>
+                                                        {(task.status === 1 ||
+                                                            task.status ===
+                                                                'in_progress') && (
+                                                            <CheckIcon className="h-4 w-4" />
+                                                        )}
+                                                    </button>
+                                                    <button
+                                                        className={`w-full text-left px-3 py-2 text-sm rounded-b-lg flex items-center gap-2 ${
+                                                            task.status === 2 ||
+                                                            task.status ===
+                                                                'done'
+                                                                ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-medium'
+                                                                : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                                        }`}
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
+                                                            handleStatusChange(
+                                                                2
+                                                            );
+                                                        }}
+                                                    >
+                                                        <CheckCircleIcon
+                                                            className={`h-4 w-4 ${getStatusIconClass(2)}`}
+                                                        />
+                                                        <span className="capitalize flex-1">
+                                                            {t(
+                                                                'task.status.setAsDone',
+                                                                'Set as done'
+                                                            )}
+                                                        </span>
+                                                        {(task.status === 2 ||
+                                                            task.status ===
+                                                                'done') && (
+                                                            <CheckIcon className="h-4 w-4" />
+                                                        )}
+                                                    </button>
                                                 </div>
                                             )}
                                         </div>
-                                    )}
-                                </>
-                            )}
-                    </div>
 
+                                        {/* Priority Dropdown Button - Next to status */}
+                                        <div
+                                            className="relative flex-shrink-0"
+                                            ref={priorityDropdownRef}
+                                        >
+                                            <button
+                                                className={getPriorityButtonClass()}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    setPriorityDropdownOpen(
+                                                        !priorityDropdownOpen
+                                                    );
+                                                }}
+                                                aria-haspopup="true"
+                                                aria-expanded={
+                                                    priorityDropdownOpen
+                                                }
+                                            >
+                                                {React.createElement(
+                                                    getPriorityIcon(),
+                                                    {
+                                                        className: `h-4 w-4 ${getPriorityIconClass()}`,
+                                                    }
+                                                )}
+                                                <span className="capitalize">
+                                                    {getPriorityLabel()}
+                                                </span>
+                                                <ChevronDownIcon className="h-4 w-4" />
+                                            </button>
+                                            {priorityDropdownOpen && (
+                                                <div className="absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 z-20">
+                                                    <button
+                                                        className={`w-full text-left px-3 py-2 text-sm rounded-t-lg flex items-center gap-2 ${
+                                                            task.priority ===
+                                                                null ||
+                                                            task.priority ===
+                                                                undefined
+                                                                ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-medium'
+                                                                : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                                        }`}
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
+                                                            handlePriorityChange(
+                                                                null
+                                                            );
+                                                        }}
+                                                    >
+                                                        <XMarkIcon
+                                                            className={`h-4 w-4 ${getPriorityIconClass(null)}`}
+                                                        />
+                                                        <span className="capitalize flex-1">
+                                                            {t(
+                                                                'priority.none',
+                                                                'None'
+                                                            )}
+                                                        </span>
+                                                        {(task.priority ===
+                                                            null ||
+                                                            task.priority ===
+                                                                undefined) && (
+                                                            <CheckIcon className="h-4 w-4" />
+                                                        )}
+                                                    </button>
+                                                    <button
+                                                        className={`w-full text-left px-3 py-2 text-sm flex items-center gap-2 ${
+                                                            task.priority ===
+                                                                'low' ||
+                                                            task.priority === 0
+                                                                ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-medium'
+                                                                : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                                        }`}
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
+                                                            handlePriorityChange(
+                                                                'low'
+                                                            );
+                                                        }}
+                                                    >
+                                                        <ArrowDownIcon
+                                                            className={`h-4 w-4 ${getPriorityIconClass('low')}`}
+                                                        />
+                                                        <span className="capitalize flex-1">
+                                                            {t(
+                                                                'priority.low',
+                                                                'Low'
+                                                            )}
+                                                        </span>
+                                                        {(task.priority ===
+                                                            'low' ||
+                                                            task.priority ===
+                                                                0) && (
+                                                            <CheckIcon className="h-4 w-4" />
+                                                        )}
+                                                    </button>
+                                                    <button
+                                                        className={`w-full text-left px-3 py-2 text-sm flex items-center gap-2 ${
+                                                            task.priority ===
+                                                                'medium' ||
+                                                            task.priority === 1
+                                                                ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-medium'
+                                                                : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                                        }`}
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
+                                                            handlePriorityChange(
+                                                                'medium'
+                                                            );
+                                                        }}
+                                                    >
+                                                        <ArrowUpIcon
+                                                            className={`h-4 w-4 ${getPriorityIconClass('medium')}`}
+                                                        />
+                                                        <span className="capitalize flex-1">
+                                                            {t(
+                                                                'priority.medium',
+                                                                'Medium'
+                                                            )}
+                                                        </span>
+                                                        {(task.priority ===
+                                                            'medium' ||
+                                                            task.priority ===
+                                                                1) && (
+                                                            <CheckIcon className="h-4 w-4" />
+                                                        )}
+                                                    </button>
+                                                    <button
+                                                        className={`w-full text-left px-3 py-2 text-sm rounded-b-lg flex items-center gap-2 ${
+                                                            task.priority ===
+                                                                'high' ||
+                                                            task.priority === 2
+                                                                ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-medium'
+                                                                : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                                        }`}
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
+                                                            handlePriorityChange(
+                                                                'high'
+                                                            );
+                                                        }}
+                                                    >
+                                                        <FireIcon
+                                                            className={`h-4 w-4 ${getPriorityIconClass('high')}`}
+                                                        />
+                                                        <span className="capitalize flex-1">
+                                                            {t(
+                                                                'priority.high',
+                                                                'High'
+                                                            )}
+                                                        </span>
+                                                        {(task.priority ===
+                                                            'high' ||
+                                                            task.priority ===
+                                                                2) && (
+                                                            <CheckIcon className="h-4 w-4" />
+                                                        )}
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                        {formattedUpdatedAt && (
+                                            <span className="text-xs text-gray-400 dark:text-gray-500 sm:pl-1 mt-1 sm:mt-0">
+                                                {t(
+                                                    'task.lastUpdatedAt',
+                                                    'Last updated at'
+                                                )}
+                                                :{' '}
+                                                <span className="text-gray-500 dark:text-gray-400">
+                                                    {formattedUpdatedAt}
+                                                </span>
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                                {/* Project and tags display below title */}
+                                {(task.Project ||
+                                    (task.tags && task.tags.length > 0)) && (
+                                    <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-2 px-2 -mx-2 gap-2 flex-wrap">
+                                        {task.Project && (
+                                            <Link
+                                                to={
+                                                    getProjectLink
+                                                        ? getProjectLink(
+                                                              task.Project
+                                                          )
+                                                        : '#'
+                                                }
+                                                className="flex items-center gap-1 hover:text-gray-900 dark:hover:text-gray-200 hover:underline transition-colors"
+                                                onClick={(e) =>
+                                                    e.stopPropagation()
+                                                }
+                                            >
+                                                <FolderIcon className="h-4 w-4" />
+                                                <span>{task.Project.name}</span>
+                                            </Link>
+                                        )}
+                                        {task.tags && task.tags.length > 0 && (
+                                            <div className="flex items-center gap-1 flex-wrap">
+                                                <TagIcon className="h-4 w-4" />
+                                                <div className="flex flex-wrap">
+                                                    {task.tags.map(
+                                                        (
+                                                            tag: any,
+                                                            index: number
+                                                        ) => (
+                                                            <React.Fragment
+                                                                key={
+                                                                    tag.uid ||
+                                                                    tag.id ||
+                                                                    tag.name
+                                                                }
+                                                            >
+                                                                <Link
+                                                                    to={
+                                                                        getTagLink
+                                                                            ? getTagLink(
+                                                                                  tag
+                                                                              )
+                                                                            : '#'
+                                                                    }
+                                                                    className="hover:text-gray-900 dark:hover:text-gray-200 hover:underline transition-colors"
+                                                                    onClick={(
+                                                                        e
+                                                                    ) =>
+                                                                        e.stopPropagation()
+                                                                    }
+                                                                >
+                                                                    {tag.name}
+                                                                </Link>
+                                                                {index <
+                                                                    task.tags!
+                                                                        .length -
+                                                                        1 && (
+                                                                    <span>
+                                                                        {', '}
+                                                                    </span>
+                                                                )}
+                                                            </React.Fragment>
+                                                        )
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </div>
                 </div>
 
                 {/* Divider - Edge to edge */}
@@ -737,11 +851,11 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                                         </p>
                                                     </div>
                                                 </div>
-                                                    </div>
-                                                </div>
-                                            )}
+                                            </div>
                                         </div>
                                     )}
+                                </div>
+                            )}
                             {onToggleTodayPlan && (
                                 <button
                                     type="button"
@@ -835,7 +949,9 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                         'More actions'
                                     )}
                                 >
-                                    <span className="text-lg leading-none">...</span>
+                                    <span className="text-lg leading-none">
+                                        ...
+                                    </span>
                                 </button>
                                 {actionsMenuOpen && (
                                     <div className="absolute right-0 top-full translate-y-2 w-40 rounded-lg shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 z-30">

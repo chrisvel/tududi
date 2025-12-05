@@ -54,8 +54,7 @@ const TaskDetails: React.FC = () => {
     const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
     const [focusSubtasks, setFocusSubtasks] = useState(false);
     const [timelineRefreshKey, setTimelineRefreshKey] = useState(0);
-    const [isOverdueBubbleVisible, setIsOverdueBubbleVisible] =
-        useState(false);
+    const [isOverdueBubbleVisible, setIsOverdueBubbleVisible] = useState(false);
     const [nextIterations, setNextIterations] = useState<TaskIteration[]>([]);
     const [loadingIterations, setLoadingIterations] = useState(false);
     const [parentTask, setParentTask] = useState<Task | null>(null);
@@ -1222,9 +1221,7 @@ const TaskDetails: React.FC = () => {
                     onPillChange={setActivePill}
                     showOverdueIcon={isOverdue}
                     onOverdueIconClick={handleOverdueIconClick}
-                    isOverdueAlertVisible={
-                        isOverdue && isOverdueBubbleVisible
-                    }
+                    isOverdueAlertVisible={isOverdue && isOverdueBubbleVisible}
                     onDismissOverdueAlert={handleDismissOverdueAlert}
                     onToggleTodayPlan={handleToggleTodayPlan}
                     onQuickStatusToggle={handleQuickStatusToggle}
@@ -1241,7 +1238,6 @@ const TaskDetails: React.FC = () => {
                                     content={task.note || ''}
                                     onUpdate={handleContentUpdate}
                                 />
-
                             </div>
 
                             {/* Right Column - Project and Tags */}
