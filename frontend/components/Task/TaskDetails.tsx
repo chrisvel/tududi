@@ -467,92 +467,6 @@ const TaskDetails: React.FC = () => {
         setEditedDeferUntil(task?.defer_until || '');
     };
 
-    const getStatusLabel = () => {
-        switch (task.status) {
-            case 'not_started':
-            case 0:
-                return t('task.status.notStarted', 'not started');
-            case 'in_progress':
-            case 1:
-                return t('task.status.inProgress', 'in progress');
-            case 'done':
-            case 2:
-                return t('task.status.done', 'completed');
-            case 'archived':
-            case 3:
-                return t('task.status.archived', 'archived');
-            default:
-                return t('task.status.unknown', 'ongoing');
-        }
-    };
-
-    const getPriorityLabel = () => {
-        if (task.priority === null || task.priority === undefined) {
-            return null;
-        }
-        switch (task.priority) {
-            case 'low':
-            case 0:
-                return t('task.lowPriority', 'low priority');
-            case 'medium':
-            case 1:
-                return t('task.mediumPriority', 'medium priority');
-            case 'high':
-            case 2:
-                return t('task.highPriority', 'high priority');
-            default:
-                return null;
-        }
-    };
-
-    const getDueDateDisplay = (dueDate: string) => {
-        const date = new Date(dueDate);
-        if (Number.isNaN(date.getTime())) return null;
-
-        const formattedDate = date.toLocaleDateString(i18n.language, {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-        });
-
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const target = new Date(date);
-        target.setHours(0, 0, 0, 0);
-
-        const diffDays = Math.round(
-            (target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-        );
-
-        if (diffDays === 0) {
-            return {
-                formattedDate,
-                relativeText: t('dateIndicators.today', 'today'),
-            };
-        }
-        if (diffDays === 1) {
-            return {
-                formattedDate,
-                relativeText: t('dateIndicators.tomorrow', 'tomorrow'),
-            };
-        }
-        if (diffDays === -1) {
-            return {
-                formattedDate,
-                relativeText: t('dateIndicators.yesterday', 'yesterday'),
-            };
-        }
-
-        const relativeText =
-            diffDays > 0
-                ? t('task.inDays', 'in {{count}} days', { count: diffDays })
-                : t('task.daysAgo', '{{count}} days ago', {
-                      count: Math.abs(diffDays),
-                  });
-
-        return { formattedDate, relativeText };
-    };
-
     useEffect(() => {
         const fetchTaskData = async () => {
             if (!uid) {
@@ -1336,7 +1250,6 @@ const TaskDetails: React.FC = () => {
                 {/* Header Section with Title and Action Buttons */}
                 <TaskDetailsHeader
                     task={task}
-                    onToggleCompletion={handleToggleCompletion}
                     onTitleUpdate={handleTitleUpdate}
                     onStatusUpdate={handleStatusUpdate}
                     onPriorityUpdate={handlePriorityUpdate}

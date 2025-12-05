@@ -23,7 +23,6 @@ import { formatDateTime } from '../../../utils/dateUtils';
 
 interface TaskDetailsHeaderProps {
     task: Task;
-    onToggleCompletion: () => void;
     onTitleUpdate: (newTitle: string) => Promise<void>;
     onStatusUpdate: (newStatus: number) => Promise<void>;
     onPriorityUpdate: (newPriority: PriorityType) => Promise<void>;
@@ -43,7 +42,6 @@ interface TaskDetailsHeaderProps {
 
 const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
     task,
-    onToggleCompletion,
     onTitleUpdate,
     onStatusUpdate,
     onPriorityUpdate,
@@ -272,53 +270,6 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
     const formattedUpdatedAt = task.updated_at
         ? formatDateTime(new Date(task.updated_at))
         : null;
-
-    const getPriorityInfo = () => {
-        let priorityValue = task.priority;
-        if (typeof priorityValue === 'number') {
-            const map = ['low', 'medium', 'high'];
-            priorityValue = map[priorityValue] || priorityValue;
-        }
-
-        if (
-            !priorityValue ||
-            priorityValue === 'none' ||
-            priorityValue === ''
-        ) {
-            return null;
-        }
-
-        if (priorityValue === 'low') {
-            return {
-                label: t('task.lowPriority', 'Low priority'),
-                badgeClass:
-                    'bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800',
-                dotClass: 'bg-green-500',
-                textClass: 'text-green-700 dark:text-green-300',
-            };
-        }
-        if (priorityValue === 'medium') {
-            return {
-                label: t('task.mediumPriority', 'Medium priority'),
-                badgeClass:
-                    'bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-800',
-                dotClass: 'bg-orange-500',
-                textClass: 'text-orange-700 dark:text-orange-300',
-            };
-        }
-        if (priorityValue === 'high') {
-            return {
-                label: t('task.highPriority', 'High priority'),
-                badgeClass:
-                    'bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800',
-                dotClass: 'bg-red-500',
-                textClass: 'text-red-700 dark:text-red-300',
-            };
-        }
-        return null;
-    };
-
-    const priorityInfo = getPriorityInfo();
 
     return (
         <div className="mb-6">
