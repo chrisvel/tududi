@@ -774,6 +774,7 @@
     "attachments": "Attachments",
     "attachmentsComingSoon": "Attachments feature coming soon",
     "activity": "Activity",
+    "lastUpdatedAt": "Last updated at",
     "status": {
       "notStarted": "Not started",
       "inProgress": "In progress",

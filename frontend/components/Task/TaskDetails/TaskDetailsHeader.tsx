@@ -196,6 +196,53 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
         ? formatDateTime(new Date(task.updated_at))
         : null;
 
+    const getPriorityInfo = () => {
+        let priorityValue = task.priority;
+        if (typeof priorityValue === 'number') {
+            const map = ['low', 'medium', 'high'];
+            priorityValue = map[priorityValue] || priorityValue;
+        }
+
+        if (
+            !priorityValue ||
+            priorityValue === 'none' ||
+            priorityValue === ''
+        ) {
+            return null;
+        }
+
+        if (priorityValue === 'low') {
+            return {
+                label: t('task.lowPriority', 'Low priority'),
+                badgeClass:
+                    'bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800',
+                dotClass: 'bg-green-500',
+                textClass: 'text-green-700 dark:text-green-300',
+            };
+        }
+        if (priorityValue === 'medium') {
+            return {
+                label: t('task.mediumPriority', 'Medium priority'),
+                badgeClass:
+                    'bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-800',
+                dotClass: 'bg-orange-500',
+                textClass: 'text-orange-700 dark:text-orange-300',
+            };
+        }
+        if (priorityValue === 'high') {
+            return {
+                label: t('task.highPriority', 'High priority'),
+                badgeClass:
+                    'bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800',
+                dotClass: 'bg-red-500',
+                textClass: 'text-red-700 dark:text-red-300',
+            };
+        }
+        return null;
+    };
+
+    const priorityInfo = getPriorityInfo();
+
     return (
         <div className="mb-6">
             <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 px-6 py-5">
@@ -322,6 +369,20 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                                     </div>
                                                 )}
                                             </div>
+                                            {priorityInfo && (
+                                                <div
+                                                    className={`flex items-center gap-2 px-3 py-1 rounded-full ${priorityInfo.badgeClass}`}
+                                                >
+                                                    <span
+                                                        className={`w-2 h-2 rounded-full ${priorityInfo.dotClass}`}
+                                                    ></span>
+                                                    <span
+                                                        className={`text-xs font-medium ${priorityInfo.textClass}`}
+                                                    >
+                                                        {priorityInfo.label}
+                                                    </span>
+                                                </div>
+                                            )}
                                             {formattedUpdatedAt && (
                                                 <span className="text-xs text-gray-400 dark:text-gray-500 pl-1">
                                                     {t('task.lastUpdatedAt', 'Last updated at')}:{' '}
@@ -535,11 +596,11 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                                         </p>
                                                     </div>
                                                 </div>
-                                            </div>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     )}
-                                </div>
-                            )}
                             {onToggleTodayPlan && (
                                 <button
                                     type="button"
