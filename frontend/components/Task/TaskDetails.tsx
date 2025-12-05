@@ -9,7 +9,6 @@ import { Project } from '../../entities/Project';
 import {
     updateTask,
     deleteTask,
-    toggleTaskCompletion,
     fetchTaskByUid,
     fetchTaskNextIterations,
     TaskIteration,
@@ -35,7 +34,7 @@ import { isTaskOverdue } from '../../utils/dateUtils';
 const TaskDetails: React.FC = () => {
     const { uid } = useParams<{ uid: string }>();
     const navigate = useNavigate();
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const { showSuccessToast, showErrorToast } = useToast();
 
     const projects = useStore((state: any) => state.projectsStore.projects);
@@ -877,44 +876,6 @@ const TaskDetails: React.FC = () => {
             console.error('Error toggling in-progress status:', error);
             showErrorToast(
                 t('task.statusUpdateError', 'Failed to update status')
-            );
-        }
-    };
-
-    const handleToggleCompletion = async () => {
-        if (!task?.uid) return;
-
-        try {
-            const updatedTask = await toggleTaskCompletion(task.uid, task);
-            let latestTaskData: Task | null = updatedTask;
-
-            if (uid) {
-                const refreshedTask = await fetchTaskByUid(uid);
-                latestTaskData = refreshedTask;
-                const existingIndex = tasksStore.tasks.findIndex(
-                    (t: Task) => t.uid === uid
-                );
-                if (existingIndex >= 0) {
-                    const updatedTasks = [...tasksStore.tasks];
-                    updatedTasks[existingIndex] = refreshedTask;
-                    tasksStore.setTasks(updatedTasks);
-                }
-            }
-
-            await refreshRecurringSetup(latestTaskData);
-
-            const statusMessage =
-                updatedTask.status === 'done' || updatedTask.status === 2
-                    ? t('task.completedSuccess', 'Task marked as completed')
-                    : t('task.reopenedSuccess', 'Task reopened');
-
-            showSuccessToast(statusMessage);
-
-            setTimelineRefreshKey((prev) => prev + 1);
-        } catch (error) {
-            console.error('Error toggling task completion:', error);
-            showErrorToast(
-                t('task.toggleError', 'Failed to update task status')
             );
         }
     };
