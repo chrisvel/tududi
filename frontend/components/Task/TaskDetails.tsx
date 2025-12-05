@@ -25,7 +25,6 @@ import {
     TaskContentCard,
     TaskProjectCard,
     TaskTagsCard,
-    TaskPriorityCard,
     TaskSubtasksCard,
     TaskRecurrenceCard,
     TaskDueDateCard,
@@ -1340,6 +1339,7 @@ const TaskDetails: React.FC = () => {
                     onToggleCompletion={handleToggleCompletion}
                     onTitleUpdate={handleTitleUpdate}
                     onStatusUpdate={handleStatusUpdate}
+                    onPriorityUpdate={handlePriorityUpdate}
                     onEdit={handleEdit}
                     onDelete={handleDeleteClick}
                     getProjectLink={getProjectLink}
@@ -1398,12 +1398,7 @@ const TaskDetails: React.FC = () => {
 
                     {/* Schedule Pill */}
                     {activePill === 'schedule' && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <TaskPriorityCard
-                                task={task}
-                                onUpdate={handlePriorityUpdate}
-                            />
-
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <TaskDueDateCard
                                 task={task}
                                 isEditing={isEditingDueDate}
@@ -1424,7 +1419,7 @@ const TaskDetails: React.FC = () => {
                                 onCancel={handleCancelDeferUntilEdit}
                             />
 
-                            <div className="md:col-span-2 lg:col-span-3">
+                            <div className="md:col-span-2">
                                 <TaskRecurrenceCard
                                     task={task}
                                     parentTask={parentTask}
