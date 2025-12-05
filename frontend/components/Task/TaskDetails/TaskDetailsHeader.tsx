@@ -158,11 +158,11 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
         const status = task.status;
 
         if (status === 'not_started' || status === 0) {
-            return 'px-2.5 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-2 ml-2 border border-gray-300 text-gray-600 dark:border-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/60';
+            return 'px-2.5 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-2 sm:ml-2 border border-gray-300 text-gray-600 dark:border-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/60';
         }
 
         const baseClass =
-            'px-2.5 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-2 ml-2 border';
+            'px-2.5 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-2 sm:ml-2 border';
 
         if (status === 'in_progress' || status === 1) {
             return `${baseClass} border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30`;
@@ -223,10 +223,10 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
         const priority = task.priority;
 
         if (priority === null || priority === undefined) {
-            return 'px-2.5 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-2 ml-1 border border-gray-300 text-gray-600 dark:border-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/60';
+            return 'px-2.5 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-2 sm:ml-1 border border-gray-300 text-gray-600 dark:border-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/60';
         }
 
-        const baseClass = 'px-2.5 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-2 ml-1 border';
+        const baseClass = 'px-2.5 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-2 sm:ml-1 border';
 
         if (priority === 'low' || priority === 0) {
             return `${baseClass} border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30`;
@@ -574,7 +574,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                                 )}
                                             </div>
                                             {formattedUpdatedAt && (
-                                                <span className="text-xs text-gray-400 dark:text-gray-500 pl-1">
+                                                <span className="text-xs text-gray-400 dark:text-gray-500 sm:pl-1 mt-1 sm:mt-0">
                                                     {t('task.lastUpdatedAt', 'Last updated at')}:{' '}
                                                     <span className="text-gray-500 dark:text-gray-400">
                                                         {formattedUpdatedAt}
