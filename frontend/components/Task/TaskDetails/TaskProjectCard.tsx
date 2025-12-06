@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { ArrowRightIcon } from '@heroicons/react/24/outline';
+import { ArrowRightIcon, FolderIcon } from '@heroicons/react/24/outline';
 import ProjectDropdown from '../../Shared/ProjectDropdown';
 import { Project } from '../../../entities/Project';
 import { Task } from '../../../entities/Task';
@@ -84,12 +84,27 @@ const TaskProjectCard: React.FC<TaskProjectCardProps> = ({
         setFilteredProjects(projects);
     };
 
+    const containerClasses = [
+        'rounded-lg',
+        'shadow-sm',
+        'bg-white',
+        'dark:bg-gray-900',
+        'transition-colors',
+    ];
+
+    if (task.Project || projectDropdownOpen) {
+        containerClasses.push(
+            'border-2',
+            'border-gray-50',
+            'dark:border-gray-800',
+            'hover:border-gray-200',
+            'dark:hover:border-gray-700'
+        );
+    }
+
     return (
-        <div ref={projectDropdownRef}>
-            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                {t('task.project', 'Project')}
-            </h4>
-            <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 transition-colors">
+        <div ref={projectDropdownRef} className="space-y-2">
+            <div className={containerClasses.join(' ')}>
                 {projectDropdownOpen ? (
                     <ProjectDropdown
                         projectName={projectName}
@@ -152,14 +167,14 @@ const TaskProjectCard: React.FC<TaskProjectCardProps> = ({
                 ) : (
                     <div
                         onClick={() => setProjectDropdownOpen(true)}
-                        className="rounded-lg shadow-sm bg-white dark:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-600 p-6 cursor-pointer transition-colors flex items-center justify-center"
+                        className="rounded-lg shadow-sm bg-white dark:bg-gray-900 p-6 cursor-pointer transition-colors"
                     >
-                        <span className="text-sm text-gray-500 dark:text-gray-400 italic">
-                            {t(
-                                'task.noProject',
-                                'No project - Click to assign'
-                            )}
-                        </span>
+                        <div className="flex flex-col items-center justify-center py-8 text-gray-500 dark:text-gray-400">
+                            <FolderIcon className="h-12 w-12 mb-3 opacity-50" />
+                            <span className="text-sm text-center">
+                                {t('task.noProject', 'Assign to a project')}
+                            </span>
+                        </div>
                     </div>
                 )}
             </div>

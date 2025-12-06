@@ -63,10 +63,7 @@ const TaskTagsCard: React.FC<TaskTagsCardProps> = ({
     };
 
     return (
-        <div>
-            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                {t('task.tags', 'Tags')}
-            </h4>
+        <div className="space-y-2">
             <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 transition-colors space-y-3">
                 {isEditing ? (
                     <div className="space-y-3 p-4">
@@ -131,11 +128,14 @@ const TaskTagsCard: React.FC<TaskTagsCardProps> = ({
                 ) : (
                     <div
                         onClick={handleStartEdit}
-                        className="p-4 cursor-pointer transition-colors"
+                        className="p-6 cursor-pointer transition-colors"
                     >
-                        <span className="text-sm text-gray-500 dark:text-gray-400 italic">
-                            {t('task.noTags', 'No tags')}
-                        </span>
+                        <div className="flex flex-col items-center justify-center py-6 text-gray-500 dark:text-gray-400">
+                            <TagIcon className="h-10 w-10 mb-3 opacity-50" />
+                            <span className="text-sm text-center">
+                                {t('task.noTags', 'Add tags')}
+                            </span>
+                        </div>
                     </div>
                 )}
             </div>

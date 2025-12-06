@@ -31,10 +31,7 @@ const TaskSubtasksCard: React.FC<TaskSubtasksCardProps> = ({
     const { t } = useTranslation();
 
     return (
-        <div>
-            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                {t('task.subtasks', 'Subtasks')}
-            </h4>
+        <div className="space-y-2">
             {isEditing ? (
                 <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-blue-500 dark:border-blue-400 p-6">
                     <TaskSubtasksSection
@@ -112,10 +109,7 @@ const TaskSubtasksCard: React.FC<TaskSubtasksCardProps> = ({
                     <div className="flex flex-col items-center justify-center py-8 text-gray-500 dark:text-gray-400">
                         <ListBulletIcon className="h-12 w-12 mb-3 opacity-50" />
                         <span className="text-sm text-center">
-                            {t(
-                                'task.noSubtasksClickToAdd',
-                                'No subtasks yet, click to add'
-                            )}
+                            {t('task.noSubtasksClickToAdd', 'Add subtasks')}
                         </span>
                     </div>
                 </div>

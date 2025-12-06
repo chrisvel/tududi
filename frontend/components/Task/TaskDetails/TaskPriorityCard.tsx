@@ -1,5 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import {
+    ArrowDownIcon,
+    ArrowUpIcon,
+    FireIcon,
+    XMarkIcon,
+} from '@heroicons/react/24/outline';
 import { Task, PriorityType } from '../../../entities/Task';
 
 interface TaskPriorityCardProps {
@@ -26,46 +32,50 @@ const TaskPriorityCard: React.FC<TaskPriorityCardProps> = ({
                 <button
                     type="button"
                     onClick={() => handlePriorityClick(null)}
-                    className={`w-full min-w-0 px-3 py-2 text-sm font-medium rounded transition-colors whitespace-nowrap ${
+                    className={`w-full min-w-0 px-3 py-2 text-sm font-medium rounded transition-colors whitespace-nowrap flex items-center justify-center ${
                         task.priority === null || task.priority === undefined
                             ? 'bg-gray-300 dark:bg-gray-600 text-gray-900 dark:text-gray-100'
                             : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
                     }`}
+                    title={t('priority.none', 'None')}
                 >
-                    {t('priority.none', 'None')}
+                    <XMarkIcon className="w-5 h-5" />
                 </button>
                 <button
                     type="button"
                     onClick={() => handlePriorityClick('low')}
-                    className={`w-full min-w-0 px-3 py-2 text-sm font-medium rounded transition-colors whitespace-nowrap ${
+                    className={`w-full min-w-0 px-3 py-2 text-sm font-medium rounded transition-colors whitespace-nowrap flex items-center justify-center ${
                         task.priority === 'low' || task.priority === 0
                             ? 'bg-blue-500 dark:bg-blue-600 text-white'
                             : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/50'
                     }`}
+                    title={t('priority.low', 'Low')}
                 >
-                    {t('priority.low', 'Low')}
+                    <ArrowDownIcon className="w-5 h-5" />
                 </button>
                 <button
                     type="button"
                     onClick={() => handlePriorityClick('medium')}
-                    className={`w-full min-w-0 px-3 py-2 text-sm font-medium rounded transition-colors whitespace-nowrap ${
+                    className={`w-full min-w-0 px-3 py-2 text-sm font-medium rounded transition-colors whitespace-nowrap flex items-center justify-center ${
                         task.priority === 'medium' || task.priority === 1
                             ? 'bg-yellow-500 dark:bg-yellow-600 text-white'
                             : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 hover:bg-yellow-200 dark:hover:bg-yellow-900/50'
                     }`}
+                    title={t('priority.medium', 'Medium')}
                 >
-                    {t('priority.medium', 'Medium')}
+                    <ArrowUpIcon className="w-5 h-5" />
                 </button>
                 <button
                     type="button"
                     onClick={() => handlePriorityClick('high')}
-                    className={`w-full min-w-0 px-3 py-2 text-sm font-medium rounded transition-colors whitespace-nowrap ${
+                    className={`w-full min-w-0 px-3 py-2 text-sm font-medium rounded transition-colors whitespace-nowrap flex items-center justify-center ${
                         task.priority === 'high' || task.priority === 2
                             ? 'bg-red-500 dark:bg-red-600 text-white'
                             : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/50'
                     }`}
+                    title={t('priority.high', 'High')}
                 >
-                    {t('priority.high', 'High')}
+                    <FireIcon className="w-5 h-5" />
                 </button>
             </div>
         </div>

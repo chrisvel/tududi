@@ -394,6 +394,23 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
         setIsSaving(true);
         try {
+            // Check if due date is in the past
+            if (formData.due_date) {
+                const dueDate = new Date(formData.due_date);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                dueDate.setHours(0, 0, 0, 0);
+
+                if (!isNaN(dueDate.getTime()) && dueDate < today) {
+                    showErrorToast(
+                        t(
+                            'task.dueDateInPastWarning',
+                            'Warning: You are setting a due date in the past'
+                        )
+                    );
+                }
+            }
+
             // Add new tags to the global store
             const existingTagNames = availableTags.map((tag: any) => tag.name);
             const newTagNames = tags.filter(
