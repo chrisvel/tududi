@@ -18,11 +18,9 @@ interface AttachmentCardProps {
 
 const AttachmentCard: React.FC<AttachmentCardProps> = ({
     attachment,
-    taskUid,
     onDelete,
     onDownload,
     onPreview,
-    isPreviewOpen,
 }) => {
     const isImage = attachment.mime_type.startsWith('image/');
     const isPdf = attachment.mime_type === 'application/pdf';
