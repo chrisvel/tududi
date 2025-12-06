@@ -10,15 +10,18 @@ import {
     validateFile,
 } from '../../../utils/attachmentsService';
 import { useToast } from '../../Shared/ToastContext';
-import AttachmentListItem from '../../Shared/AttachmentListItem';
+import ConfirmDialog from '../../Shared/ConfirmDialog';
+import AttachmentCard from '../../Shared/AttachmentCard';
 import AttachmentPreview from '../../Shared/AttachmentPreview';
 
 interface TaskAttachmentsCardProps {
     taskUid: string;
+    onAttachmentsCountChange?: (count: number) => void;
 }
 
 const TaskAttachmentsCard: React.FC<TaskAttachmentsCardProps> = ({
     taskUid,
+    onAttachmentsCountChange,
 }) => {
     const { t } = useTranslation();
     const { showSuccessToast, showErrorToast } = useToast();
@@ -26,6 +29,9 @@ const TaskAttachmentsCard: React.FC<TaskAttachmentsCardProps> = ({
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
     const [previewAttachment, setPreviewAttachment] =
+        useState<Attachment | null>(null);
+    const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+    const [attachmentToDelete, setAttachmentToDelete] =
         useState<Attachment | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -39,6 +45,7 @@ const TaskAttachmentsCard: React.FC<TaskAttachmentsCardProps> = ({
             setLoading(true);
             const data = await fetchAttachments(taskUid);
             setAttachments(data);
+            onAttachmentsCountChange?.(data.length);
         } catch (error) {
             console.error('Error loading attachments:', error);
         } finally {
@@ -78,7 +85,9 @@ const TaskAttachmentsCard: React.FC<TaskAttachmentsCardProps> = ({
         setUploading(true);
         try {
             const newAttachment = await uploadAttachment(taskUid, file);
-            setAttachments([...attachments, newAttachment]);
+            const updatedAttachments = [...attachments, newAttachment];
+            setAttachments(updatedAttachments);
+            onAttachmentsCountChange?.(updatedAttachments.length);
             showSuccessToast(
                 t(
                     'task.attachments.uploadSuccess',
@@ -98,17 +107,28 @@ const TaskAttachmentsCard: React.FC<TaskAttachmentsCardProps> = ({
         }
     };
 
-    const handleDelete = async (attachment: Attachment) => {
+    const handleDelete = (attachment: Attachment) => {
+        setAttachmentToDelete(attachment);
+        setIsConfirmDialogOpen(true);
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (!attachmentToDelete) return;
+
         try {
-            await deleteAttachment(taskUid, attachment.uid);
-            setAttachments(attachments.filter((a) => a.uid !== attachment.uid));
+            await deleteAttachment(taskUid, attachmentToDelete.uid);
+            const updatedAttachments = attachments.filter(
+                (a) => a.uid !== attachmentToDelete.uid
+            );
+            setAttachments(updatedAttachments);
+            onAttachmentsCountChange?.(updatedAttachments.length);
             showSuccessToast(
                 t(
                     'task.attachments.deleteSuccess',
                     'Attachment deleted successfully'
                 )
             );
-            if (previewAttachment?.uid === attachment.uid) {
+            if (previewAttachment?.uid === attachmentToDelete.uid) {
                 setPreviewAttachment(null);
             }
         } catch (error: any) {
@@ -119,6 +139,9 @@ const TaskAttachmentsCard: React.FC<TaskAttachmentsCardProps> = ({
                         'Failed to delete attachment'
                     )
             );
+        } finally {
+            setIsConfirmDialogOpen(false);
+            setAttachmentToDelete(null);
         }
     };
 
@@ -155,11 +178,14 @@ const TaskAttachmentsCard: React.FC<TaskAttachmentsCardProps> = ({
                 {t('task.attachments.title', 'Attachments')} (
                 {attachments.length})
             </h4>
-            <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 p-6">
-                {/* Upload Area */}
+
+            {/* Grid Layout for Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {/* Upload Card */}
                 <div
-                    className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 text-center hover:border-blue-400 dark:hover:border-blue-500 cursor-pointer transition-colors mb-4"
-                    onClick={() => fileInputRef.current?.click()}
+                    className="bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col cursor-pointer hover:shadow-lg transition-shadow"
+                    style={{ minHeight: '250px', maxHeight: '250px' }}
+                    onClick={() => !uploading && fileInputRef.current?.click()}
                 >
                     <input
                         ref={fileInputRef}
@@ -169,52 +195,96 @@ const TaskAttachmentsCard: React.FC<TaskAttachmentsCardProps> = ({
                         disabled={uploading}
                         accept=".pdf,.doc,.docx,.txt,.md,.png,.jpg,.jpeg,.gif,.svg,.webp,.xls,.xlsx,.csv,.zip"
                     />
-                    <CloudArrowUpIcon className="h-8 w-8 mx-auto mb-2 text-gray-400 dark:text-gray-500" />
-                    <p className="text-xs font-medium text-gray-700 dark:text-gray-300">
-                        {uploading
-                            ? t('task.attachments.uploading', 'Uploading...')
-                            : t(
-                                  'task.attachments.clickToUpload',
-                                  'Click to upload'
-                              )}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        {t('task.attachments.maxSize', 'Max 10MB')}
-                    </p>
+                    <div
+                        className="bg-gray-200 dark:bg-gray-700 flex flex-col items-center justify-center rounded-t-lg border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 transition-colors"
+                        style={{ height: '140px' }}
+                    >
+                        <CloudArrowUpIcon className="h-12 w-12 text-gray-400 dark:text-gray-500 mb-2" />
+                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            {uploading
+                                ? t('task.attachments.uploading', 'Uploading...')
+                                : t(
+                                      'task.attachments.clickToUpload',
+                                      'Click to upload'
+                                  )}
+                        </p>
+                    </div>
+                    <div className="p-4 flex-1 flex flex-col justify-center">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                            {t('task.attachments.maxSize', 'Max 10MB')}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-1">
+                            {t(
+                                'task.attachments.supportedFormats',
+                                'PDF, images, docs & more'
+                            )}
+                        </p>
+                    </div>
                 </div>
 
-                {/* Attachments List */}
-                {attachments.length > 0 ? (
-                    <div className="space-y-2">
-                        {attachments.map((attachment) => (
-                            <div key={attachment.uid}>
-                                <AttachmentListItem
-                                    attachment={attachment}
-                                    onDelete={handleDelete}
-                                    onDownload={handleDownload}
-                                    onPreview={handlePreview}
-                                    showPreview={true}
-                                />
-                                {previewAttachment?.uid === attachment.uid && (
-                                    <div className="mt-2">
-                                        <AttachmentPreview
-                                            attachment={attachment}
-                                            maxHeight="400px"
-                                        />
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
-                        {t(
-                            'task.attachments.noAttachments',
-                            'No attachments yet'
-                        )}
-                    </p>
-                )}
+                {/* Attachment Cards */}
+                {attachments.map((attachment) => (
+                    <AttachmentCard
+                        key={attachment.uid}
+                        attachment={attachment}
+                        taskUid={taskUid}
+                        onDelete={handleDelete}
+                        onDownload={handleDownload}
+                        onPreview={handlePreview}
+                        isPreviewOpen={previewAttachment?.uid === attachment.uid}
+                    />
+                ))}
             </div>
+
+            {/* Full Preview Modal */}
+            {previewAttachment && (
+                <div
+                    className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+                    onClick={() => setPreviewAttachment(null)}
+                >
+                    <div
+                        className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl max-h-[90vh] overflow-auto"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                {previewAttachment.original_filename}
+                            </h3>
+                            <button
+                                onClick={() => setPreviewAttachment(null)}
+                                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                            >
+                                ✕
+                            </button>
+                        </div>
+                        <div className="p-4">
+                            <AttachmentPreview
+                                attachment={previewAttachment}
+                                maxHeight="70vh"
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Confirm Delete Dialog */}
+            {isConfirmDialogOpen && attachmentToDelete && (
+                <ConfirmDialog
+                    title={t(
+                        'task.attachments.deleteConfirmTitle',
+                        'Delete Attachment'
+                    )}
+                    message={t(
+                        'task.attachments.deleteConfirmMessage',
+                        'Are you sure you want to delete this attachment? This action cannot be undone.'
+                    )}
+                    onConfirm={handleDeleteConfirm}
+                    onCancel={() => {
+                        setIsConfirmDialogOpen(false);
+                        setAttachmentToDelete(null);
+                    }}
+                />
+            )}
         </div>
     );
 };
