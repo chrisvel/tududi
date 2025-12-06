@@ -126,7 +126,7 @@ ENV NODE_ENV=production \
     SWAGGER_ENABLED=false
 
 HEALTHCHECK --interval=60s --timeout=3s --start-period=10s --retries=2 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:3002/api/health || exit 1
+    CMD wget -q --spider http://127.0.0.1:3002/api/health || exit 1
 
 WORKDIR /app/backend
 ENTRYPOINT ["/app/scripts/docker-entrypoint.sh"]
