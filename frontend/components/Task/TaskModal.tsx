@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { PriorityType, Task } from '../../entities/Task';
+import { Attachment } from '../../entities/Attachment';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import DiscardChangesDialog from '../Shared/DiscardChangesDialog';
 import { useToast } from '../Shared/ToastContext';
 import { Project } from '../../entities/Project';
 import { useStore } from '../../store/useStore';
 import { fetchTaskByUid } from '../../utils/tasksService';
+import { fetchAttachments } from '../../utils/attachmentsService';
 import {
     analyzeTaskName,
     TaskAnalysis,
@@ -23,6 +25,7 @@ import TaskSubtasksSection from './TaskForm/TaskSubtasksSection';
 import TaskPrioritySection from './TaskForm/TaskPrioritySection';
 import TaskDueDateSection from './TaskForm/TaskDueDateSection';
 import TaskDeferUntilSection from './TaskForm/TaskDeferUntilSection';
+import TaskAttachmentsSection from './TaskForm/TaskAttachmentsSection';
 import TaskSectionToggle from './TaskForm/TaskSectionToggle';
 import TaskModalActions from './TaskForm/TaskModalActions';
 
@@ -30,8 +33,8 @@ interface TaskModalProps {
     isOpen: boolean;
     onClose: () => void;
     task: Task;
-    onSave: (task: Task) => void;
-    onDelete: (taskId: number) => Promise<void>;
+    onSave: (task: Task) => void | Promise<void>;
+    onDelete: (taskUid: string) => Promise<void>;
     projects: Project[];
     onCreateProject: (name: string) => Promise<Project>;
     onEditParentTask?: (parentTask: Task) => void;
@@ -56,7 +59,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     const { tagsStore } = useStore();
     // Avoid calling getTags() during component initialization to prevent remounting
     const availableTags = tagsStore.tags;
-    const { addNewTags } = tagsStore;
+    const { addNewTags, refreshTags } = tagsStore;
     const [formData, setFormData] = useState<Task>(task);
     const [tags, setTags] = useState<string[]>(
         task.tags?.map((tag) => tag.name) || []
@@ -77,6 +80,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     const [taskIntelligenceEnabled, setTaskIntelligenceEnabled] =
         useState(false);
     const [subtasks, setSubtasks] = useState<Task[]>([]);
+    const [attachments, setAttachments] = useState<Attachment[]>([]);
 
     // Collapsible section states - subtasks is derived from autoFocusSubtasks
     const [baseSections, setBaseSections] = useState({
@@ -87,6 +91,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
         deferUntil: false,
         recurrence: false,
         subtasks: false,
+        attachments: false,
     });
 
     // Derive expanded sections with subtasks controlled by autoFocusSubtasks
@@ -167,6 +172,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 deferUntil: false,
                 recurrence: task.recurring_parent_uid ? true : false,
                 subtasks: false,
+                attachments: false,
             });
         }
     }, [isOpen, task.id, task.project_id, projects]);
@@ -412,7 +418,12 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 subtasks: subtasks,
             };
 
-            onSave(finalFormData as any);
+            await onSave(finalFormData as any);
+
+            // Refresh tags from server to sync any newly created tags with their proper UIDs
+            if (newTagNames.length > 0) {
+                await refreshTags();
+            }
 
             if (showToast) {
                 const taskLink = (
@@ -443,9 +454,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
     };
 
     const handleDeleteConfirm = async () => {
-        if (formData.id) {
+        if (formData.uid) {
             try {
-                await onDelete(formData.id);
+                await onDelete(formData.uid);
                 const taskLink = (
                     <span>
                         {t('task.deleted', 'Task')}{' '}
@@ -573,6 +584,26 @@ const TaskModal: React.FC<TaskModalProps> = ({
             setSubtasks([]);
         }
     }, [isOpen, task.id]);
+
+    // Load attachments when modal opens
+    useEffect(() => {
+        const loadTaskAttachments = async () => {
+            if (isOpen && task.uid) {
+                try {
+                    const data = await fetchAttachments(task.uid);
+                    setAttachments(data);
+                } catch (error) {
+                    console.error('Error loading attachments:', error);
+                    setAttachments([]);
+                }
+            } else if (!isOpen) {
+                // Reset attachments when modal closes
+                setAttachments([]);
+            }
+        };
+
+        loadTaskAttachments();
+    }, [isOpen, task.uid]);
 
     if (!isOpen) return null;
 
@@ -950,6 +981,32 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                         />
                                                     </div>
                                                 )}
+
+                                                {expandedSections.attachments &&
+                                                    task.uid && (
+                                                        <div
+                                                            className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4"
+                                                            data-section="attachments"
+                                                        >
+                                                            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                                                                {t(
+                                                                    'forms.task.attachments',
+                                                                    'Attachments'
+                                                                )}
+                                                            </h3>
+                                                            <TaskAttachmentsSection
+                                                                taskUid={
+                                                                    task.uid
+                                                                }
+                                                                attachments={
+                                                                    attachments
+                                                                }
+                                                                onAttachmentsChange={
+                                                                    setAttachments
+                                                                }
+                                                            />
+                                                        </div>
+                                                    )}
                                             </fieldset>
                                         </form>
                                     </div>
@@ -961,6 +1018,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                     onToggleSection={toggleSection}
                                     formData={formData}
                                     subtasksCount={subtasks.length}
+                                    attachmentsCount={attachments.length}
                                 />
 
                                 {/* Action Buttons - Below border with custom layout */}

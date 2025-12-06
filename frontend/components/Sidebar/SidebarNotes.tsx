@@ -19,7 +19,7 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
 }) => {
     const { t } = useTranslation();
     const isActiveNote = (path: string) => {
-        return location.pathname === path
+        return location.pathname.startsWith(path)
             ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
             : 'text-gray-700 dark:text-gray-300';
     };

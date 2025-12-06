@@ -124,6 +124,7 @@ async function filterTasksByParams(
                             ],
                         },
                         { recurring_parent_id: null },
+                        { today: true },
                     ],
                 },
                 {
@@ -156,9 +157,6 @@ async function filterTasksByParams(
 
             whereClause = {
                 parent_task_id: null,
-                due_date: {
-                    [Op.between]: [upcomingRange.start, upcomingRange.end],
-                },
                 [Op.or]: [
                     {
                         [Op.and]: [
@@ -169,12 +167,21 @@ async function filterTasksByParams(
                                     { recurrence_type: null },
                                 ],
                             },
+                            {
+                                due_date: {
+                                    [Op.between]: [
+                                        upcomingRange.start,
+                                        upcomingRange.end,
+                                    ],
+                                },
+                            },
                         ],
                     },
                     {
                         [Op.and]: [
-                            { recurring_parent_id: { [Op.ne]: null } },
-                            { recurrence_type: 'none' },
+                            { recurring_parent_id: null },
+                            { recurrence_type: { [Op.ne]: 'none' } },
+                            { recurrence_type: { [Op.ne]: null } },
                         ],
                     },
                 ],
@@ -327,7 +334,6 @@ async function filterTasksByParams(
 
         tagFilteredTaskIds = taggedTaskIds.map((row) => row.task_id);
 
-        // No tasks found with this tag - return early to avoid unnecessary query
         if (tagFilteredTaskIds.length === 0) {
             return [];
         }

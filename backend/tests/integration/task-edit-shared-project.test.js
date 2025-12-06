@@ -66,7 +66,7 @@ describe('Task Editing in Shared Projects', () => {
 
         // Shared user should be able to edit the task name
         const response = await sharedUserAgent
-            .patch(`/api/task/${task.id}`)
+            .patch(`/api/task/${task.uid}`)
             .send({
                 name: 'Updated Task Name',
             });
@@ -90,7 +90,7 @@ describe('Task Editing in Shared Projects', () => {
 
         // Shared user should be able to edit the task priority
         const response = await sharedUserAgent
-            .patch(`/api/task/${task.id}`)
+            .patch(`/api/task/${task.uid}`)
             .send({
                 priority: 2,
             });
@@ -111,7 +111,7 @@ describe('Task Editing in Shared Projects', () => {
 
         // Shared user should be able to update task status
         const response = await sharedUserAgent
-            .patch(`/api/task/${task.id}`)
+            .patch(`/api/task/${task.uid}`)
             .send({ status: 2 });
 
         expect(response.status).toBe(200);
@@ -130,7 +130,7 @@ describe('Task Editing in Shared Projects', () => {
 
         // Shared user should be able to edit their own task
         const response = await sharedUserAgent
-            .patch(`/api/task/${task.id}`)
+            .patch(`/api/task/${task.uid}`)
             .send({
                 name: 'Updated by Shared User',
             });

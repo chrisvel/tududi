@@ -22,7 +22,8 @@
     "discardChanges": "Descartar alterações?",
     "discardChangesMessage": "Você tem alterações não salvas. Tem certeza de que deseja descartá-las?",
     "no": "Não, continuar editando",
-    "yesDiscard": "Sim, descartar"
+    "yesDiscard": "Sim, descartar",
+    "uploading": "Carregando..."
   },
   "sidebar": {
     "dashboard": "Painel",
@@ -38,6 +39,7 @@
     "addTagAriaLabel": "Adicionar Tag",
     "addTagTitle": "Adicionar Tag",
     "today": "Hoje",
+    "total": "Total",
     "upcoming": "Próximos",
     "nextActions": "Próximas Ações",
     "inbox": "Caixa de Entrada",
@@ -98,6 +100,7 @@
   "tasks": {
     "title": "Tarefas",
     "today": "Hoje",
+    "total": "Total",
     "backlog": "Backlog",
     "inProgress": "Em Progresso",
     "dueToday": "Vencendo Hoje",
@@ -140,7 +143,11 @@
     "noProject": "Sem projeto",
     "unknownProject": "Projeto desconhecido",
     "tasks": "tarefas",
-    "showingItems": "Mostrando {{current}} de {{total}} itens"
+    "showingItems": "Mostrando {{current}} de {{total}} itens",
+    "overdue": "Atrasado",
+    "planned": "Planejado",
+    "open": "Abrir",
+    "completed": "Concluído"
   },
   "timeline": {
     "activityTimeline": "Linha do Tempo de Atividades",
@@ -153,6 +160,7 @@
       "statusChanged": "Status alterado",
       "priorityChanged": "Prioridade alterada",
       "dueDateChanged": "Data de vencimento alterada",
+      "deferUntilChanged": "Defer date changed",
       "nameUpdated": "Nome atualizado",
       "descriptionUpdated": "Descrição atualizada",
       "noteUpdated": "Nota atualizada",
@@ -163,6 +171,7 @@
       "status": "Status",
       "priority": "Prioridade",
       "dueDate": "Data de vencimento",
+      "deferUntil": "Defer until",
       "none": "Nenhum",
       "recurrenceEndDateChanged": "Data de término da recorrência alterada",
       "recurrenceEndDate": "Data de término da recorrência",
@@ -171,7 +180,10 @@
       "completionBasedChanged": "Recorrência baseada em conclusão alterada",
       "projectIdChanged": "Atribuído a um projeto",
       "recurrenceType": "Tipo de recorrência",
-      "recurrenceTypeChanged": "Tipo de recorrência alterado"
+      "recurrenceTypeChanged": "Tipo de recorrência alterado",
+      "recurrence_weekday_changed": "Dia da semana da recorrência alterado",
+      "recurrence_month_day_changed": "Dia do mês da recorrência alterado",
+      "recurrence_week_of_month_changed": "Semana do mês da recorrência alterada"
     },
     "justNow": "Agora mesmo",
     "minutesAgo": "{{minutes}}m atrás",
@@ -408,6 +420,7 @@
     "title": "Título",
     "description": "Descrição",
     "dueDate": "Data de Vencimento",
+      "deferUntil": "Defer until",
     "priority": "Prioridade",
     "status": "Status",
     "assignedTo": "Atribuído A",
@@ -425,6 +438,7 @@
         "status": "Status",
         "priority": "Prioridade",
         "dueDate": "Data de Vencimento",
+      "deferUntil": "Defer until",
         "note": "Nota",
         "recurrenceType": "Repetir",
         "recurrenceInterval": "A cada",
@@ -433,7 +447,8 @@
         "weekOfMonth": "Semana do mês",
         "recurrenceEndDate": "Data de término (opcional)",
         "completionBased": "Repetir após conclusão",
-        "repeatOn": "Repetir em"
+        "repeatOn": "Repetir em",
+        "deferUntil": "Adiar até"
       },
       "projectSearchPlaceholder": "Pesquisar ou criar um projeto...",
       "noMatchingProjects": "Nenhum projeto correspondente",
@@ -455,7 +470,8 @@
         "noVerb": "Qual ação específica você precisa realizar? Tente começar com um verbo.",
         "vague": "Tente começar com um verbo de ação como \"Ligar\", \"Escrever\", \"Agendar\" ou \"Pesquisar\""
       },
-      "selectAtLeastOneDay": "Por favor, selecione pelo menos um dia"
+      "selectAtLeastOneDay": "Por favor, selecione pelo menos um dia",
+      "deferUntilPlaceholder": "Selecione a data e hora para adiar até"
     },
     "noteTitle": "Título da Nota",
     "noteContent": "Conteúdo da Nota",
@@ -533,7 +549,12 @@
     "createSuccess": "Projeto criado com sucesso!",
     "createdAndAssigned": "Projeto criado e atribuído",
     "createError": "Falha ao criar projeto",
-    "viewProject": "Ir para o projeto"
+    "viewProject": "Ir para o projeto",
+    "editProject": "Editar projeto",
+    "editBanner": "Editar banner do projeto",
+    "currentBanner": "Banner atual",
+    "choosePreset": "Escolha um banner predefinido:",
+    "orUploadOwn": "Ou carregue o seu próprio:"
   },
   "errors": {
     "required": "Este campo é obrigatório",
@@ -558,7 +579,10 @@
     "tagNameRequired": "O nome da tag é obrigatório.",
     "failedToSaveTag": "Falha ao salvar a tag.",
     "projectNameRequired": "O nome do projeto é obrigatório.",
-    "projectSaveFailed": "Falha ao salvar o projeto."
+    "projectSaveFailed": "Falha ao salvar o projeto.",
+    "projectImageTooLarge": "A imagem é muito grande. Por favor, escolha um arquivo com menos de 10MB.",
+    "projectImageUpload": "Falha ao carregar a imagem. Por favor, tente um arquivo menor ou um formato diferente.",
+    "bannerSaveFailed": "Falha ao salvar o banner"
   },
   "inbox": {
     "title": "Caixa de Entrada",
@@ -604,6 +628,7 @@
   },
   "dateIndicators": {
     "today": "HOJE",
+    "total": "Total",
     "tomorrow": "AMANHÃ",
     "yesterday": "ONTEM",
     "nextWeek": "próxima semana",
@@ -615,6 +640,7 @@
       "noName": "Você está visualizando tarefas para um projeto específico. Use este espaço para gerenciar e acompanhar as tarefas associadas a este projeto."
     },
     "today": "Estas são as tarefas que estão vencendo hoje ou tarefas que você agendou para atenção imediata. Use esta visão para se concentrar no que precisa ser concluído hoje. Marque as tarefas como concluídas, atualize seu status ou ajuste suas datas de vencimento, se necessário.",
+    "total": "Total",
     "inbox": "A caixa de entrada é onde todas as tarefas não categorizadas ficam. Tarefas que não foram atribuídas a um projeto ou que não têm uma data de vencimento aparecerão aqui. Esta é a sua área de \"anotações rápidas\" onde você pode anotar tarefas rapidamente e organizá-las depois.",
     "next": "Esta visão mostra todas as tarefas que são acionáveis no futuro próximo. Essas tarefas estão prontas para serem trabalhadas a seguir e não têm prazos de longo prazo. É um bom lugar para se concentrar quando você está buscando fazer progresso rápido nas tarefas.",
     "upcoming": "Esta visão destaca tarefas que estão agendadas para a próxima semana. Ela ajuda você a se preparar e a ficar à frente dos prazos, dando uma visão geral do trabalho que você precisa enfrentar no futuro próximo. Tarefas com datas de vencimento dentro dos próximos 7 dias aparecerão aqui.",
@@ -635,7 +661,8 @@
     "taskCreated": "Tarefa criada com sucesso!",
     "taskUpdated": "Tarefa atualizada com sucesso!",
     "taskDeleted": "Tarefa excluída com sucesso!",
-    "noteDeleted": "Nota deletada com sucesso!"
+    "noteDeleted": "Nota deletada com sucesso!",
+    "bannerUpdated": "Banner atualizado com sucesso!"
   },
   "note": {
     "title": "Título",
@@ -653,6 +680,7 @@
       "status": "Status",
       "priority": "Prioridade",
       "dueDate": "Data de Vencimento",
+      "deferUntil": "Defer until",
       "note": "Nota"
     },
     "create": "Criar",
@@ -695,6 +723,7 @@
     "noTags": "Sem tags",
     "priority": "Prioridade",
     "dueDate": "Data de Vencimento",
+      "deferUntil": "Defer until",
     "recurringSetup": "Configuração Recorrente",
     "notRecurring": "Esta tarefa ainda não é recorrente.",
     "clickToEditTitle": "Clique para editar o título",
@@ -751,7 +780,11 @@
     "parentTask": "Tarefa Pai",
     "includingToday": "incluindo hoje",
     "has": "tem",
-    "fromProject": "do projeto"
+    "fromProject": "do projeto",
+    "deferUntil": "Adiar até",
+    "noDeferUntil": "Sem adiamento até",
+    "deferUntilUpdated": "Adiado até atualizado com sucesso",
+    "deferUntilUpdateError": "Falha ao atualizar o adiamento até"
   },
   "projects": {
     "loading": "Carregando projetos...",
@@ -782,7 +815,9 @@
       "planned_desc": "Escopado e pronto para começar",
       "in_progress_desc": "Trabalho ativo em andamento",
       "blocked_desc": "Pausado temporariamente ou preso",
-      "completed_desc": "Finalizado e concluído"
+      "completed_desc": "Finalizado e concluído",
+      "active": "Em Andamento",
+      "active_desc": "Trabalho ativo em andamento"
     },
     "showMetrics": "Mostrar métricas",
     "hideMetrics": "Ocultar métricas"
@@ -885,6 +920,7 @@
     "week": "Semana",
     "day": "Dia",
     "today": "Hoje",
+    "total": "Total",
     "addEvent": "Adicionar Evento",
     "weekView": "Visão Semanal",
     "dayView": "Visão Diária",
@@ -908,6 +944,7 @@
     "title": "Título",
     "status": "Status",
     "dueDate": "Data de Vencimento",
+      "deferUntil": "Defer until",
     "priority": "Prioridade",
     "project": "Projeto",
     "area": "Área",
@@ -1109,6 +1146,7 @@
     "searchText": "Texto de Pesquisa",
     "priority": "Prioridade",
     "dueDate": "Data de Vencimento",
+      "deferUntil": "Defer until",
     "noCriteriaSet": "Nenhum critério específico definido",
     "priorityLabel": "Prioridade:",
     "dueLabel": "Vencimento:",

@@ -22,7 +22,8 @@
     "discardChanges": "Forkast ændringer?",
     "discardChangesMessage": "Du har ikke gemte ændringer. Er du sikker på, at du vil forkaste dem?",
     "no": "Nej, fortsæt med at redigere",
-    "yesDiscard": "Ja, forkast"
+    "yesDiscard": "Ja, forkast",
+    "uploading": "Uploader..."
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -38,6 +39,7 @@
     "addTagAriaLabel": "Tilføj tag",
     "addTagTitle": "Tilføj tag",
     "today": "I dag",
+    "total": "Total",
     "upcoming": "Kommende",
     "nextActions": "Næste handlinger",
     "inbox": "Indbakke",
@@ -98,6 +100,7 @@
   "tasks": {
     "title": "Opgaver",
     "today": "I Dag",
+    "total": "Total",
     "backlog": "Backlog",
     "inProgress": "I Gang",
     "dueToday": "Forfaldt I Dag",
@@ -140,7 +143,11 @@
     "noProject": "Intet projekt",
     "unknownProject": "Ukendt projekt",
     "tasks": "opgaver",
-    "showingItems": "Viser {{current}} af {{total}} elementer"
+    "showingItems": "Viser {{current}} af {{total}} elementer",
+    "overdue": "Forsinket",
+    "planned": "Planlagt",
+    "open": "Åbn",
+    "completed": "Fuldført"
   },
   "timeline": {
     "activityTimeline": "Aktivitets Tidslinje",
@@ -153,6 +160,7 @@
       "statusChanged": "Status ændret",
       "priorityChanged": "Prioritet ændret",
       "dueDateChanged": "Forfaldsdato ændret",
+      "deferUntilChanged": "Defer date changed",
       "nameUpdated": "Navn opdateret",
       "descriptionUpdated": "Beskrivelse opdateret",
       "noteUpdated": "Note opdateret",
@@ -163,6 +171,7 @@
       "status": "Status",
       "priority": "Prioritet",
       "dueDate": "Forfaldsdato",
+      "deferUntil": "Defer until",
       "none": "Ingen",
       "recurrenceEndDateChanged": "Ændret slutdato for gentagelse",
       "recurrenceEndDate": "Slutdato for gentagelse",
@@ -171,7 +180,10 @@
       "completionBasedChanged": "Ændret baseret på fuldførelse",
       "projectIdChanged": "Tildelt et projekt",
       "recurrenceType": "Gentagelsestype",
-      "recurrenceTypeChanged": "Gentagelsestype ændret"
+      "recurrenceTypeChanged": "Gentagelsestype ændret",
+      "recurrence_weekday_changed": "Ugentlig tilbagevendende ændret",
+      "recurrence_month_day_changed": "Månedlig tilbagevendende dag ændret",
+      "recurrence_week_of_month_changed": "Uge i måneden tilbagevendende ændret"
     },
     "justNow": "Lige nu",
     "minutesAgo": "{{minutes}}m siden",
@@ -408,6 +420,7 @@
     "title": "Titel",
     "description": "Beskrivelse",
     "dueDate": "Forfaldsdato",
+      "deferUntil": "Defer until",
     "priority": "Prioritet",
     "status": "Status",
     "assignedTo": "Tildelt Til",
@@ -425,6 +438,7 @@
         "status": "Status",
         "priority": "Prioritet",
         "dueDate": "Forfaldsdato",
+      "deferUntil": "Defer until",
         "note": "Bemærkning",
         "recurrenceType": "Gentag",
         "recurrenceInterval": "Hver",
@@ -433,7 +447,8 @@
         "weekOfMonth": "Uge i måneden",
         "recurrenceEndDate": "Slutdato (valgfri)",
         "completionBased": "Gentag efter fuldførelse",
-        "repeatOn": "Gentag på"
+        "repeatOn": "Gentag på",
+        "deferUntil": "Udsæt indtil"
       },
       "projectSearchPlaceholder": "Søg eller opret et projekt...",
       "noMatchingProjects": "Ingen matchende projekter",
@@ -455,7 +470,8 @@
         "noVerb": "Hvilken specifik handling skal du tage? Prøv at starte med et verbum.",
         "vague": "Prøv at starte med et handlingsverb som \"Ring\", \"Skriv\", \"Planlæg\" eller \"Undersøg\""
       },
-      "selectAtLeastOneDay": "Vælg venligst mindst én dag"
+      "selectAtLeastOneDay": "Vælg venligst mindst én dag",
+      "deferUntilPlaceholder": "Vælg udsætte indtil dato og tid"
     },
     "noteTitle": "Notetitel",
     "noteContent": "Noteindhold",
@@ -533,7 +549,12 @@
     "createSuccess": "Projekt oprettet med succes!",
     "createdAndAssigned": "Projekt oprettet og tildelt",
     "createError": "Fejl ved oprettelse af projekt",
-    "viewProject": "Gå til projekt"
+    "viewProject": "Gå til projekt",
+    "editProject": "Rediger projekt",
+    "editBanner": "Rediger projektbanner",
+    "currentBanner": "Nuværende banner",
+    "choosePreset": "Vælg et forudindstillet banner:",
+    "orUploadOwn": "Eller upload dit eget:"
   },
   "errors": {
     "required": "Dette felt er påkrævet",
@@ -558,7 +579,10 @@
     "tagNameRequired": "Tag navn er påkrævet.",
     "failedToSaveTag": "Kunne ikke gemme tag.",
     "projectNameRequired": "Projektnavn er påkrævet.",
-    "projectSaveFailed": "Kunne ikke gemme projekt."
+    "projectSaveFailed": "Kunne ikke gemme projekt.",
+    "projectImageTooLarge": "Billedet er for stort. Vælg venligst en fil under 10MB.",
+    "projectImageUpload": "Fejl ved upload af billede. Prøv venligst en mindre fil eller et andet format.",
+    "bannerSaveFailed": "Fejl ved gemme banner"
   },
   "inbox": {
     "title": "Indbakke",
@@ -604,6 +628,7 @@
   },
   "dateIndicators": {
     "today": "I DAG",
+    "total": "Total",
     "tomorrow": "I MORGEN",
     "yesterday": "I GÅR",
     "nextWeek": "næste uge",
@@ -615,6 +640,7 @@
       "noName": "Du ser opgaver for et specifikt projekt. Brug dette rum til at administrere og følge opgaver knyttet til dette projekt."
     },
     "today": "Dette er opgaverne, der skal være færdige i dag, eller opgaver du har planlagt til øjeblikkelig opmærksomhed. Brug denne visning til at fokusere på, hvad der skal færdiggøres i dag. Marker opgaver som færdige, opdater deres status, eller juster deres forfaldsdatoer, hvis det er nødvendigt.",
+    "total": "Total",
     "inbox": "Indbakken er, hvor alle ukategoriserede opgaver befinder sig. Opgaver, der ikke er tildelt et projekt eller givet en forfaldsdato, vil vises her. Dette er dit \"hjernedump\" område, hvor du hurtigt kan notere opgaver og organisere dem senere.",
     "next": "Denne visning viser alle opgaver, der er handlingsbare i den nærmeste fremtid. Disse opgaver er klar til at blive arbejdet på næste gang og har ikke langsigtede frister. Det er et godt sted at fokusere, når du ønsker at gøre hurtige fremskridt med opgaver.",
     "upcoming": "Denne visning fremhæver opgaver, der er planlagt til den kommende uge. Det hjælper dig med at forberede dig og holde dig foran fristerne ved at give dig et overblik over det arbejde, du skal tackle i den nærmeste fremtid. Opgaver med forfaldsdatoer inden for de næste 7 dage vil vises her.",
@@ -635,7 +661,8 @@
     "taskCreated": "Opgave oprettet med succes!",
     "taskUpdated": "Opgave opdateret med succes!",
     "taskDeleted": "Opgave slettet med succes!",
-    "noteDeleted": "Noten blev slettet med succes!"
+    "noteDeleted": "Noten blev slettet med succes!",
+    "bannerUpdated": "Banner opdateret med succes!"
   },
   "note": {
     "title": "Titel",
@@ -653,6 +680,7 @@
       "status": "Status",
       "priority": "Prioritet",
       "dueDate": "Forfaldsdato",
+      "deferUntil": "Defer until",
       "note": "Note"
     },
     "create": "Opret",
@@ -731,6 +759,7 @@
     "noTags": "Ingen tags",
     "priority": "Prioritet",
     "dueDate": "Forfaldsdato",
+      "deferUntil": "Defer until",
     "recurringSetup": "Gentagen opsætning",
     "notRecurring": "Denne opgave er ikke gentagende endnu.",
     "clickToEditTitle": "Klik for at redigere titel",
@@ -751,7 +780,11 @@
     "parentTask": "Overordnet opgave",
     "includingToday": "inklusive i dag",
     "has": "har",
-    "fromProject": "fra projektet"
+    "fromProject": "fra projektet",
+    "deferUntil": "Udsæt indtil",
+    "noDeferUntil": "Ingen udsættelse indtil",
+    "deferUntilUpdated": "Udsæt indtil opdateret med succes",
+    "deferUntilUpdateError": "Fejl ved opdatering af udsættelse indtil"
   },
   "projects": {
     "loading": "Indlæser projekter...",
@@ -782,7 +815,9 @@
       "planned_desc": "Afgrænset og klar til at starte",
       "in_progress_desc": "Aktivt arbejde i gang",
       "blocked_desc": "Midlertidigt pauseret eller fastlåst",
-      "completed_desc": "Afsluttet og færdig"
+      "completed_desc": "Afsluttet og færdig",
+      "active": "I gang",
+      "active_desc": "Aktivt arbejde i gang"
     },
     "showMetrics": "Vis målinger",
     "hideMetrics": "Skjul målinger"
@@ -885,6 +920,7 @@
     "week": "Uge",
     "day": "Dag",
     "today": "I dag",
+    "total": "Total",
     "addEvent": "Tilføj Begivenhed",
     "weekView": "Ugevisning",
     "dayView": "Dagsvisning",
@@ -908,6 +944,7 @@
     "title": "Titel",
     "status": "Status",
     "dueDate": "Forfaldsdato",
+      "deferUntil": "Defer until",
     "priority": "Prioritet",
     "project": "Projekt",
     "area": "Område",
@@ -1109,6 +1146,7 @@
     "searchText": "Søgetekst",
     "priority": "Prioritet",
     "dueDate": "Forfaldsdato",
+      "deferUntil": "Defer until",
     "noCriteriaSet": "Ingen specifikke kriterier sat",
     "priorityLabel": "Prioritet:",
     "dueLabel": "Forfalder:",

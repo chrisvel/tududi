@@ -22,7 +22,8 @@
     "discardChanges": "Scartare le modifiche?",
     "discardChangesMessage": "Hai modifiche non salvate. Sei sicuro di volerle scartare?",
     "no": "No, continua a modificare",
-    "yesDiscard": "Sì, scarta"
+    "yesDiscard": "Sì, scarta",
+    "uploading": "Caricamento..."
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -38,6 +39,7 @@
     "addTagAriaLabel": "Aggiungi Tag",
     "addTagTitle": "Aggiungi Tag",
     "today": "Oggi",
+    "total": "Total",
     "upcoming": "Prossimi",
     "nextActions": "Prossime Azioni",
     "inbox": "Inbox",
@@ -98,6 +100,7 @@
   "tasks": {
     "title": "Attività",
     "today": "Oggi",
+    "total": "Total",
     "backlog": "Backlog",
     "inProgress": "In Corso",
     "dueToday": "In Scadenza Oggi",
@@ -140,7 +143,11 @@
     "noProject": "Nessun progetto",
     "unknownProject": "Progetto sconosciuto",
     "tasks": "attività",
-    "showingItems": "Visualizzazione di {{current}} su {{total}} elementi"
+    "showingItems": "Visualizzazione di {{current}} su {{total}} elementi",
+    "overdue": "Scaduto",
+    "planned": "Pianificato",
+    "open": "Apri",
+    "completed": "Completato"
   },
   "timeline": {
     "activityTimeline": "Timeline delle Attività",
@@ -153,6 +160,7 @@
       "statusChanged": "Stato cambiato",
       "priorityChanged": "Priorità cambiata",
       "dueDateChanged": "Data di scadenza cambiata",
+      "deferUntilChanged": "Defer date changed",
       "nameUpdated": "Nome aggiornato",
       "descriptionUpdated": "Descrizione aggiornata",
       "noteUpdated": "Nota aggiornata",
@@ -163,6 +171,7 @@
       "status": "Stato",
       "priority": "Priorità",
       "dueDate": "Data di scadenza",
+      "deferUntil": "Defer until",
       "none": "Nessuno",
       "recurrenceEndDateChanged": "Data di fine ricorrenza cambiata",
       "recurrenceEndDate": "Data di fine ricorrenza",
@@ -171,7 +180,10 @@
       "completionBasedChanged": "Ricorrenza basata sul completamento modificata",
       "projectIdChanged": "Assegnato a un progetto",
       "recurrenceType": "Tipo di ricorrenza",
-      "recurrenceTypeChanged": "Tipo di ricorrenza modificato"
+      "recurrenceTypeChanged": "Tipo di ricorrenza modificato",
+      "recurrence_weekday_changed": "Giorno della settimana di ricorrenza cambiato",
+      "recurrence_month_day_changed": "Giorno del mese di ricorrenza cambiato",
+      "recurrence_week_of_month_changed": "Settimana del mese di ricorrenza cambiata"
     },
     "justNow": "Proprio adesso",
     "minutesAgo": "{{minutes}}m fa",
@@ -408,6 +420,7 @@
     "title": "Titolo",
     "description": "Descrizione",
     "dueDate": "Data di Scadenza",
+      "deferUntil": "Defer until",
     "priority": "Priorità",
     "status": "Stato",
     "assignedTo": "Assegnato a",
@@ -425,6 +438,7 @@
         "status": "Stato",
         "priority": "Priorità",
         "dueDate": "Data di Scadenza",
+      "deferUntil": "Defer until",
         "note": "Nota",
         "recurrenceType": "Ripeti",
         "recurrenceInterval": "Ogni",
@@ -433,7 +447,8 @@
         "weekOfMonth": "Settimana del mese",
         "recurrenceEndDate": "Data di fine (opzionale)",
         "completionBased": "Ripeti dopo il completamento",
-        "repeatOn": "Ripeti il"
+        "repeatOn": "Ripeti il",
+        "deferUntil": "Rimanda fino a"
       },
       "projectSearchPlaceholder": "Cerca o crea un progetto...",
       "noMatchingProjects": "Nessun progetto corrispondente",
@@ -455,7 +470,8 @@
         "noVerb": "Quale azione specifica devi intraprendere? Prova a iniziare con un verbo.",
         "vague": "Prova a iniziare con un verbo d'azione come \"Chiamare\", \"Scrivere\", \"Programmare\", o \"Ricercare\""
       },
-      "selectAtLeastOneDay": "Seleziona almeno un giorno"
+      "selectAtLeastOneDay": "Seleziona almeno un giorno",
+      "deferUntilPlaceholder": "Seleziona la data e l'ora di rimando"
     },
     "noteTitle": "Titolo Nota",
     "noteContent": "Contenuto Nota",
@@ -533,7 +549,12 @@
     "createSuccess": "Progetto creato con successo!",
     "createdAndAssigned": "Progetto creato e assegnato",
     "createError": "Impossibile creare il progetto",
-    "viewProject": "Vai al progetto"
+    "viewProject": "Vai al progetto",
+    "editProject": "Modifica progetto",
+    "editBanner": "Modifica banner del progetto",
+    "currentBanner": "Banner attuale",
+    "choosePreset": "Scegli un banner preimpostato:",
+    "orUploadOwn": "Oppure carica il tuo:"
   },
   "errors": {
     "required": "Questo campo è obbligatorio",
@@ -558,7 +579,10 @@
     "tagNameRequired": "Il nome del tag è obbligatorio.",
     "failedToSaveTag": "Impossibile salvare il tag.",
     "projectNameRequired": "Il nome del progetto è obbligatorio.",
-    "projectSaveFailed": "Impossibile salvare il progetto."
+    "projectSaveFailed": "Impossibile salvare il progetto.",
+    "projectImageTooLarge": "L'immagine è troppo grande. Si prega di scegliere un file di dimensioni inferiori a 10MB.",
+    "projectImageUpload": "Caricamento dell'immagine non riuscito. Si prega di provare un file più piccolo o un formato diverso.",
+    "bannerSaveFailed": "Salvataggio del banner non riuscito"
   },
   "inbox": {
     "title": "Inbox",
@@ -604,6 +628,7 @@
   },
   "dateIndicators": {
     "today": "OGGI",
+    "total": "Total",
     "tomorrow": "DOMANI",
     "yesterday": "IERI",
     "nextWeek": "prossima settimana",
@@ -615,6 +640,7 @@
       "noName": "Stai visualizzando le attività per un progetto specifico. Usa questo spazio per gestire e tracciare le attività associate a questo progetto."
     },
     "today": "Queste sono le attività che scadono oggi o che hai programmato per l'attenzione immediata. Usa questa vista per concentrarti su ciò che deve essere completato oggi. Contrassegna le attività come completate, aggiorna il loro stato o regola le loro date di scadenza se necessario.",
+    "total": "Total",
     "inbox": "L'inbox è dove vivono tutte le attività non categorizzate. Le attività che non sono state assegnate a un progetto o non hanno una data di scadenza appariranno qui. Questa è la tua area di \"scarico mentale\" dove puoi annotare rapidamente le attività e organizzarle in seguito.",
     "next": "Questa vista mostra tutte le attività che sono attuabili nel prossimo futuro. Queste attività sono pronte per essere lavorate e non hanno scadenze a lungo termine. È un buon posto su cui concentrarsi quando stai cercando di fare progressi rapidi sulle attività.",
     "upcoming": "Questa vista evidenzia le attività che sono programmate per la prossima settimana. Ti aiuta a prepararti e stare avanti alle scadenze dandoti una panoramica del lavoro che devi affrontare nel prossimo futuro. Le attività con date di scadenza entro i prossimi 7 giorni appariranno qui.",
@@ -635,7 +661,8 @@
     "taskCreated": "Attività creata con successo!",
     "taskUpdated": "Attività aggiornata con successo!",
     "taskDeleted": "Attività eliminata con successo!",
-    "noteDeleted": "Nota eliminata con successo!"
+    "noteDeleted": "Nota eliminata con successo!",
+    "bannerUpdated": "Banner aggiornato con successo!"
   },
   "note": {
     "title": "Titolo",
@@ -653,6 +680,7 @@
       "status": "Stato",
       "priority": "Priorità",
       "dueDate": "Data di Scadenza",
+      "deferUntil": "Defer until",
       "note": "Nota"
     },
     "create": "Crea",
@@ -731,6 +759,7 @@
     "noTags": "Nessun tag",
     "priority": "Priorità",
     "dueDate": "Data di scadenza",
+      "deferUntil": "Defer until",
     "recurringSetup": "Impostazione ricorrente",
     "notRecurring": "Questo compito non è ancora ricorrente.",
     "clickToEditTitle": "Clicca per modificare il titolo",
@@ -751,7 +780,11 @@
     "parentTask": "Attività principale",
     "includingToday": "incluso oggi",
     "has": "ha",
-    "fromProject": "dal progetto"
+    "fromProject": "dal progetto",
+    "deferUntil": "Rimanda fino a",
+    "noDeferUntil": "Nessun rimando fino a",
+    "deferUntilUpdated": "Rimandato fino a aggiornato con successo",
+    "deferUntilUpdateError": "Impossibile aggiornare il rimando fino a"
   },
   "projects": {
     "loading": "Caricamento progetti...",
@@ -782,7 +815,9 @@
       "planned_desc": "Definito e pronto per iniziare",
       "in_progress_desc": "Lavoro attivo in corso",
       "blocked_desc": "Pausa temporanea o bloccato",
-      "completed_desc": "Finito e completato"
+      "completed_desc": "Finito e completato",
+      "active": "In Corso",
+      "active_desc": "Lavoro attivo in corso"
     },
     "showMetrics": "Mostra metriche",
     "hideMetrics": "Nascondi metriche"
@@ -885,6 +920,7 @@
     "week": "Settimana",
     "day": "Giorno",
     "today": "Oggi",
+    "total": "Total",
     "addEvent": "Aggiungi Evento",
     "weekView": "Vista Settimana",
     "dayView": "Vista Giorno",
@@ -908,6 +944,7 @@
     "title": "Titolo",
     "status": "Stato",
     "dueDate": "Data di Scadenza",
+      "deferUntil": "Defer until",
     "priority": "Priorità",
     "project": "Progetto",
     "area": "Area",
@@ -1109,6 +1146,7 @@
     "searchText": "Testo di Ricerca",
     "priority": "Priorità",
     "dueDate": "Data di Scadenza",
+      "deferUntil": "Defer until",
     "noCriteriaSet": "Nessun criterio specifico impostato",
     "priorityLabel": "Priorità:",
     "dueLabel": "Scadenza:",

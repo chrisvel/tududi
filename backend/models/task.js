@@ -78,10 +78,6 @@ module.exports = (sequelize) => {
                 type: DataTypes.DATE,
                 allowNull: true,
             },
-            last_generated_date: {
-                type: DataTypes.DATE,
-                allowNull: true,
-            },
             recurrence_weekday: {
                 type: DataTypes.INTEGER,
                 allowNull: true,
@@ -180,9 +176,6 @@ module.exports = (sequelize) => {
                     fields: ['recurrence_type'],
                 },
                 {
-                    fields: ['last_generated_date'],
-                },
-                {
                     fields: ['parent_task_id'],
                 },
                 {
@@ -193,9 +186,7 @@ module.exports = (sequelize) => {
         }
     );
 
-    // Define associations
     Task.associate = function (models) {
-        // Self-referencing association for recurring tasks
         Task.belongsTo(models.Task, {
             as: 'RecurringParent',
             foreignKey: 'recurring_parent_id',
@@ -206,7 +197,6 @@ module.exports = (sequelize) => {
             foreignKey: 'recurring_parent_id',
         });
 
-        // Self-referencing association for subtasks
         Task.belongsTo(models.Task, {
             as: 'ParentTask',
             foreignKey: 'parent_task_id',
@@ -218,7 +208,6 @@ module.exports = (sequelize) => {
         });
     };
 
-    // Define enum constants
     Task.PRIORITY = {
         LOW: 0,
         MEDIUM: 1,
@@ -242,7 +231,6 @@ module.exports = (sequelize) => {
         MONTHLY_LAST_DAY: 'monthly_last_day',
     };
 
-    // priority and status
     const getPriorityName = (priorityValue) => {
         const priorities = ['low', 'medium', 'high'];
         return priorities[priorityValue] || 'low';
@@ -277,7 +265,6 @@ module.exports = (sequelize) => {
         return statuses[statusName] !== undefined ? statuses[statusName] : 0;
     };
 
-    // Attach utility functions to model
     Task.getPriorityName = getPriorityName;
     Task.getStatusName = getStatusName;
     Task.getPriorityValue = getPriorityValue;

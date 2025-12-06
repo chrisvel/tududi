@@ -22,7 +22,8 @@
     "discardChanges": "Renunți la modificări?",
     "discardChangesMessage": "Ai modificări nesalvate. Ești sigur că vrei să le renunți?",
     "no": "Nu, continuă editarea",
-    "yesDiscard": "Da, renunță"
+    "yesDiscard": "Da, renunță",
+    "uploading": "Se încarcă..."
   },
   "sidebar": {
     "dashboard": "Tabloul de bord",
@@ -38,6 +39,7 @@
     "addTagAriaLabel": "Adaugă Etichetă",
     "addTagTitle": "Adaugă Etichetă",
     "today": "Astăzi",
+    "total": "Total",
     "upcoming": "Următoarele",
     "nextActions": "Acțiuni Următoare",
     "inbox": "Inbox",
@@ -98,6 +100,7 @@
   "tasks": {
     "title": "Sarcini",
     "today": "Astăzi",
+    "total": "Total",
     "backlog": "Întârziere",
     "inProgress": "În desfășurare",
     "dueToday": "Terminat Astăzi",
@@ -140,7 +143,11 @@
     "noProject": "Fără proiect",
     "unknownProject": "Proiect necunoscut",
     "tasks": "sarcini",
-    "showingItems": "Se afișează {{current}} din {{total}} elemente"
+    "showingItems": "Se afișează {{current}} din {{total}} elemente",
+    "overdue": "Întârziat",
+    "planned": "Planificat",
+    "open": "Deschide",
+    "completed": "Finalizat"
   },
   "timeline": {
     "activityTimeline": "Cronologia activităților",
@@ -153,6 +160,7 @@
       "statusChanged": "Status schimbat",
       "priorityChanged": "Prioritate schimbată",
       "dueDateChanged": "Data limită schimbată",
+      "deferUntilChanged": "Defer date changed",
       "nameUpdated": "Nume actualizat",
       "descriptionUpdated": "Descriere actualizată",
       "noteUpdated": "Notă actualizată",
@@ -163,6 +171,7 @@
       "status": "Status",
       "priority": "Prioritate",
       "dueDate": "Data limită",
+      "deferUntil": "Defer until",
       "none": "Niciunul",
       "recurrenceEndDateChanged": "Data de încheiere a recurenței a fost modificată",
       "recurrenceEndDate": "Data de încheiere a recurenței",
@@ -171,7 +180,10 @@
       "completionBasedChanged": "Recurrence bazată pe finalizare modificată",
       "projectIdChanged": "Atribuit unui proiect",
       "recurrenceType": "Tip de recurență",
-      "recurrenceTypeChanged": "Tip de recurență modificat"
+      "recurrenceTypeChanged": "Tip de recurență modificat",
+      "recurrence_weekday_changed": "Ziua săptămânii pentru recurență a fost schimbată",
+      "recurrence_month_day_changed": "Ziua lunii pentru recurență a fost schimbată",
+      "recurrence_week_of_month_changed": "Săptămâna lunii pentru recurență a fost schimbată"
     },
     "justNow": "Chiar acum",
     "minutesAgo": "{{minutes}}m în urmă",
@@ -408,6 +420,7 @@
     "title": "Titlu",
     "description": "Descriere",
     "dueDate": "Data Limită",
+      "deferUntil": "Defer until",
     "priority": "Prioritate",
     "status": "Stare",
     "assignedTo": "Atribuit Către",
@@ -425,6 +438,7 @@
         "status": "Stare",
         "priority": "Prioritate",
         "dueDate": "Data limită",
+      "deferUntil": "Defer until",
         "note": "Notă",
         "recurrenceType": "Repetare",
         "recurrenceInterval": "Fiecare",
@@ -433,7 +447,8 @@
         "weekOfMonth": "Săptămâna lunii",
         "recurrenceEndDate": "Data de sfârșit (opțional)",
         "completionBased": "Repetare după finalizare",
-        "repeatOn": "Repetă pe"
+        "repeatOn": "Repetă pe",
+        "deferUntil": "Amână până la"
       },
       "projectSearchPlaceholder": "Caută sau creează un proiect...",
       "noMatchingProjects": "Niciun proiect corespunzător",
@@ -455,7 +470,8 @@
         "noVerb": "Ce acțiune specifică trebuie să întreprinzi? Încercați să începeți cu un verb.",
         "vague": "Încercați să începeți cu un verb de acțiune, cum ar fi \"Sună\", \"Scrie\", \"Programează\" sau \"Cercetează\""
       },
-      "selectAtLeastOneDay": "Te rugăm să selectezi cel puțin o zi"
+      "selectAtLeastOneDay": "Te rugăm să selectezi cel puțin o zi",
+      "deferUntilPlaceholder": "Selectați data și ora până la care să amânați"
     },
     "noteTitle": "Titlul notei",
     "noteContent": "Conținutul notei",
@@ -533,7 +549,12 @@
     "createSuccess": "Proiect creat cu succes!",
     "createdAndAssigned": "Proiect creat și atribuit",
     "createError": "Crearea proiectului a eșuat",
-    "viewProject": "Accesează proiectul"
+    "viewProject": "Accesează proiectul",
+    "editProject": "Editează proiectul",
+    "editBanner": "Editează bannerul proiectului",
+    "currentBanner": "Bannerul curent",
+    "choosePreset": "Alege un banner presetat:",
+    "orUploadOwn": "Sau încarcă propriul tău:"
   },
   "errors": {
     "required": "Acest câmp este obligatoriu",
@@ -558,7 +579,10 @@
     "tagNameRequired": "Numele etichetei este obligatoriu.",
     "failedToSaveTag": "Nu s-a putut salva eticheta.",
     "projectNameRequired": "Numele proiectului este obligatoriu.",
-    "projectSaveFailed": "Nu s-a putut salva proiectul."
+    "projectSaveFailed": "Nu s-a putut salva proiectul.",
+    "projectImageTooLarge": "Imaginea este prea mare. Te rugăm să alegi un fișier de sub 10MB.",
+    "projectImageUpload": "Încărcarea imaginii a eșuat. Te rugăm să încerci un fișier mai mic sau un format diferit.",
+    "bannerSaveFailed": "Salvarea bannerului a eșuat"
   },
   "inbox": {
     "title": "Căsuța de primire",
@@ -604,6 +628,7 @@
   },
   "dateIndicators": {
     "today": "ASTĂZI",
+    "total": "Total",
     "tomorrow": "MÂINE",
     "yesterday": "IERI",
     "nextWeek": "săptămâna viitoare",
@@ -615,6 +640,7 @@
       "noName": "Vizualizați sarcinile pentru un proiect specific. Folosiți acest spațiu pentru a gestiona și urmări sarcinile asociate cu acest proiect."
     },
     "today": "Acestea sunt sarcinile care sunt programate pentru astăzi sau sarcinile pe care le-ați planificat pentru atenție imediată. Folosiți această vizualizare pentru a vă concentra asupra a ceea ce trebuie finalizat astăzi. Marcați sarcinile ca fiind finalizate, actualizați-le starea sau ajustați datele limită dacă este necesar.",
+    "total": "Total",
     "inbox": "Inbox-ul este locul unde se află toate sarcinile neclasificate. Sarcinile care nu au fost atribuite unui proiect sau nu au o dată limită vor apărea aici. Acesta este spațiul dumneavoastră de „brain dump” unde puteți nota rapid sarcinile și să le organizați mai târziu.",
     "next": "Această vizualizare arată toate sarcinile care sunt acționabile în viitorul apropiat. Aceste sarcini sunt gata să fie lucrate următoarele și nu au termene limită pe termen lung. Este un loc bun pentru a vă concentra atunci când doriți să faceți progrese rapide în sarcini.",
     "upcoming": "Această vizualizare evidențiază sarcinile care sunt programate pentru săptămâna următoare. Vă ajută să vă pregătiți și să rămâneți cu un pas înaintea termenelor limită, oferindu-vă o imagine de ansamblu asupra muncii pe care trebuie să o abordați în viitorul apropiat. Sarcinile cu date limită în următoarele 7 zile vor apărea aici.",
@@ -635,7 +661,8 @@
     "taskCreated": "Sarcină creată cu succes!",
     "taskUpdated": "Sarcină actualizată cu succes!",
     "taskDeleted": "Sarcină ștearsă cu succes!",
-    "noteDeleted": "Notă ștearsă cu succes!"
+    "noteDeleted": "Notă ștearsă cu succes!",
+    "bannerUpdated": "Bannerul a fost actualizat cu succes!"
   },
   "note": {
     "title": "Titlu",
@@ -653,6 +680,7 @@
       "status": "Status",
       "priority": "Prioritate",
       "dueDate": "Data limită",
+      "deferUntil": "Defer until",
       "note": "Notă"
     },
     "create": "Creează",
@@ -695,6 +723,7 @@
     "noTags": "Niciună etichetă",
     "priority": "Prioritate",
     "dueDate": "Data limită",
+      "deferUntil": "Defer until",
     "recurringSetup": "Configurare recurentă",
     "notRecurring": "Această sarcină nu este încă recurentă.",
     "clickToEditTitle": "Fă clic pentru a edita titlul",
@@ -751,7 +780,11 @@
     "parentTask": "Sarcina Părinte",
     "includingToday": "inclusiv astăzi",
     "has": "are",
-    "fromProject": "din proiect"
+    "fromProject": "din proiect",
+    "deferUntil": "Amână până la",
+    "noDeferUntil": "Nicio amânare până la",
+    "deferUntilUpdated": "Amânare până la actualizare cu succes",
+    "deferUntilUpdateError": "Actualizarea amânării până la a eșuat"
   },
   "projects": {
     "loading": "Se încarcă proiectele...",
@@ -782,7 +815,9 @@
       "planned_desc": "Definit și gata de început",
       "in_progress_desc": "Lucru activ în desfășurare",
       "blocked_desc": "Pauză temporară sau blocat",
-      "completed_desc": "Finalizat și terminat"
+      "completed_desc": "Finalizat și terminat",
+      "active": "În desfășurare",
+      "active_desc": "Lucrări active în desfășurare"
     },
     "showMetrics": "Arată metrici",
     "hideMetrics": "Ascunde metrici"
@@ -885,6 +920,7 @@
     "week": "Săptămână",
     "day": "Zi",
     "today": "Astăzi",
+    "total": "Total",
     "addEvent": "Adaugă Eveniment",
     "weekView": "Vizualizare Săptămână",
     "dayView": "Vizualizare Zi",
@@ -908,6 +944,7 @@
     "title": "Titlu",
     "status": "Stare",
     "dueDate": "Data Limită",
+      "deferUntil": "Defer until",
     "priority": "Prioritate",
     "project": "Proiect",
     "area": "Domeniu",
@@ -1109,6 +1146,7 @@
     "searchText": "Text de căutare",
     "priority": "Prioritate",
     "dueDate": "Data limită",
+      "deferUntil": "Defer until",
     "noCriteriaSet": "Niciun criteriu specific setat",
     "priorityLabel": "Prioritate:",
     "dueLabel": "Termen:",

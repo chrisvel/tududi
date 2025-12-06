@@ -22,7 +22,8 @@
     "discardChanges": "Hylkää muutokset?",
     "discardChangesMessage": "Sinulla on tallentamattomia muutoksia. Oletko varma, että haluat hylätä ne?",
     "no": "Ei, jatka muokkaamista",
-    "yesDiscard": "Kyllä, hylkää"
+    "yesDiscard": "Kyllä, hylkää",
+    "uploading": "Lähetetään..."
   },
   "sidebar": {
     "dashboard": "Ohjauspaneeli",
@@ -38,6 +39,7 @@
     "addTagAriaLabel": "Lisää tunniste",
     "addTagTitle": "Lisää tunniste",
     "today": "Tänään",
+    "total": "Total",
     "upcoming": "Tulevat",
     "nextActions": "Seuraavat toimet",
     "inbox": "Saapuneet",
@@ -98,6 +100,7 @@
   "tasks": {
     "title": "Tehtävät",
     "today": "Tänään",
+    "total": "Total",
     "backlog": "Työjonossa",
     "inProgress": "Käynnissä",
     "dueToday": "Erääntyy tänään",
@@ -140,7 +143,11 @@
     "noProject": "Ei projektia",
     "unknownProject": "Tuntematon projekti",
     "tasks": "tehtävät",
-    "showingItems": "Näytetään {{current}} / {{total}} kohdetta"
+    "showingItems": "Näytetään {{current}} / {{total}} kohdetta",
+    "overdue": "Erääntynyt",
+    "planned": "Suunniteltu",
+    "open": "Avaa",
+    "completed": "Valmis"
   },
   "timeline": {
     "activityTimeline": "Toiminta-aikajana",
@@ -153,6 +160,7 @@
       "statusChanged": "Tila muutettu",
       "priorityChanged": "Prioriteetti muutettu",
       "dueDateChanged": "Eräpäivä muutettu",
+      "deferUntilChanged": "Defer date changed",
       "nameUpdated": "Nimi päivitetty",
       "descriptionUpdated": "Kuvaus päivitetty",
       "noteUpdated": "Muistutus päivitetty",
@@ -163,6 +171,7 @@
       "status": "Tila",
       "priority": "Prioriteetti",
       "dueDate": "Eräpäivä",
+      "deferUntil": "Defer until",
       "none": "Ei mitään",
       "recurrenceEndDateChanged": "Toistuvuuden päättymispäivämäärä on muuttunut",
       "recurrenceEndDate": "Toistuvuuden päättymispäivämäärä",
@@ -171,7 +180,10 @@
       "completionBasedChanged": "Suoritusperusteinen toistuvuus muuttunut",
       "projectIdChanged": "Määrätty projektiin",
       "recurrenceType": "Toistuvuustyyppi",
-      "recurrenceTypeChanged": "Toistuvuustyyppi muuttunut"
+      "recurrenceTypeChanged": "Toistuvuustyyppi muuttunut",
+      "recurrence_weekday_changed": "Toistopäivä muuttunut",
+      "recurrence_month_day_changed": "Toistokuukauden päivä muuttunut",
+      "recurrence_week_of_month_changed": "Toistokuukauden viikko muuttunut"
     },
     "justNow": "Juuri nyt",
     "minutesAgo": "{{minutes}}m sitten",
@@ -408,6 +420,7 @@
     "title": "Otsikko",
     "description": "Kuvaus",
     "dueDate": "Eräpäivä",
+      "deferUntil": "Defer until",
     "priority": "Prioriteetti",
     "status": "Tila",
     "assignedTo": "Määrätty",
@@ -425,6 +438,7 @@
         "status": "Tila",
         "priority": "Prioriteetti",
         "dueDate": "Eräpäivä",
+      "deferUntil": "Defer until",
         "note": "Huomautus",
         "recurrenceType": "Toista",
         "recurrenceInterval": "Joka",
@@ -433,7 +447,8 @@
         "weekOfMonth": "Kuukauden viikko",
         "recurrenceEndDate": "Loppupäivämäärä (valinnainen)",
         "completionBased": "Toista valmistumisen jälkeen",
-        "repeatOn": "Toista"
+        "repeatOn": "Toista",
+        "deferUntil": "Viivytä kunnes"
       },
       "projectSearchPlaceholder": "Etsi tai luo projekti...",
       "noMatchingProjects": "Ei vastaavia projekteja",
@@ -455,7 +470,8 @@
         "noVerb": "Mitä erityistä toimintoa sinun tarvitsee tehdä? Yritä aloittaa verbillä.",
         "vague": "Yritä aloittaa toimintaverbillä kuten \"Soita\", \"Kirjoita\", \"Aikatauluta\" tai \"Tutki\""
       },
-      "selectAtLeastOneDay": "Valitse vähintään yksi päivä"
+      "selectAtLeastOneDay": "Valitse vähintään yksi päivä",
+      "deferUntilPlaceholder": "Valitse viivytyspäivämäärä ja -aika"
     },
     "noteTitle": "Muistion Otsikko",
     "noteContent": "Muistion Sisältö",
@@ -533,7 +549,12 @@
     "createSuccess": "Projekti luotiin onnistuneesti!",
     "createdAndAssigned": "Projekti luotu ja osoitettu",
     "createError": "Projektin luominen epäonnistui",
-    "viewProject": "Siirry projektiin"
+    "viewProject": "Siirry projektiin",
+    "editProject": "Muokkaa projektia",
+    "editBanner": "Muokkaa projektin banneria",
+    "currentBanner": "Nykyinen banneri",
+    "choosePreset": "Valitse esiasetettu banneri:",
+    "orUploadOwn": "Tai lataa oma:"
   },
   "errors": {
     "required": "Tämä kenttä on pakollinen",
@@ -558,7 +579,10 @@
     "tagNameRequired": "Tunnisteen nimi on pakollinen.",
     "failedToSaveTag": "Tunnisteen tallentaminen epäonnistui.",
     "projectNameRequired": "Projektin nimi on pakollinen.",
-    "projectSaveFailed": "Projektin tallentaminen epäonnistui."
+    "projectSaveFailed": "Projektin tallentaminen epäonnistui.",
+    "projectImageTooLarge": "Kuva on liian suuri. Valitse tiedosto, joka on alle 10MB.",
+    "projectImageUpload": "Kuvan lataaminen epäonnistui. Kokeile pienempää tiedostoa tai toista formaattia.",
+    "bannerSaveFailed": "Bannerin tallentaminen epäonnistui"
   },
   "inbox": {
     "title": "Saapuneet",
@@ -604,6 +628,7 @@
   },
   "dateIndicators": {
     "today": "TÄNÄÄN",
+    "total": "Total",
     "tomorrow": "HUOMENNA",
     "yesterday": "EILEN",
     "nextWeek": "ensi viikolla",
@@ -615,6 +640,7 @@
       "noName": "Näet tehtäviä tietylle projektille. Käytä tätä tilaa hallitaksesi ja seurataksesi tähän projektiin liittyviä tehtäviä."
     },
     "today": "Nämä ovat tehtävät, joiden eräpäivä on tänään tai tehtävät, jotka olet aikatauluttanut välittömään käsittelyyn. Käytä tätä näkymää keskittyäksesi siihen, mitä on saatava valmiiksi tänään. Merkitse tehtävät valmiiksi, päivitä niiden tila tai säädä eräpäiviä tarvittaessa.",
+    "total": "Total",
     "inbox": "Saapuneet-kansio on paikka, jossa kaikki luokittelemattomat tehtävät sijaitsevat. Tehtävät, joita ei ole liitetty projektiin tai joilla ei ole määräaikaa, näkyvät täällä. Tämä on \"aivopurkaus\"-alueesi, johon voit nopeasti kirjata tehtäviä ja järjestää niitä myöhemmin.",
     "next": "Tämä näkymä näyttää kaikki tehtävät, jotka ovat toteutettavissa lähitulevaisuudessa. Nämä tehtävät ovat valmiita käsiteltäväksi seuraavaksi, eikä niillä ole pitkän aikavälin määräaikoja. Tämä on hyvä paikka keskittyä, kun haluat edistyä nopeasti tehtävissä.",
     "upcoming": "Tämä näkymä korostaa tehtäviä, jotka on aikataulutettu tulevalle viikolle. Se auttaa sinua valmistautumaan ja pysymään aikarajojen edellä antamalla yleiskatsauksen työstä, jonka sinun on käsiteltävä lähitulevaisuudessa. Tehtävät, joilla on määräajat seuraavien 7 päivän aikana, näkyvät täällä.",
@@ -635,7 +661,8 @@
     "taskCreated": "Tehtävä luotu onnistuneesti!",
     "taskUpdated": "Tehtävä päivitetty onnistuneesti!",
     "taskDeleted": "Tehtävä poistettu onnistuneesti!",
-    "noteDeleted": "Muistiinpano poistettiin onnistuneesti!"
+    "noteDeleted": "Muistiinpano poistettiin onnistuneesti!",
+    "bannerUpdated": "Banneri päivitettiin onnistuneesti!"
   },
   "note": {
     "title": "Otsikko",
@@ -653,6 +680,7 @@
       "status": "Tila",
       "priority": "Prioriteetti",
       "dueDate": "Eräpäivä",
+      "deferUntil": "Defer until",
       "note": "Muistiinpano"
     },
     "create": "Luo",
@@ -731,6 +759,7 @@
     "noTags": "Ei tunnisteita",
     "priority": "Prioriteetti",
     "dueDate": "Eräpäivä",
+      "deferUntil": "Defer until",
     "recurringSetup": "Toistuva asetukset",
     "notRecurring": "Tämä tehtävä ei ole vielä toistuva.",
     "clickToEditTitle": "Napsauta muokataksesi otsikkoa",
@@ -751,7 +780,11 @@
     "parentTask": "Ylätason tehtävä",
     "includingToday": "mukana tänään",
     "has": "on",
-    "fromProject": "projektista"
+    "fromProject": "projektista",
+    "deferUntil": "Viivytä kunnes",
+    "noDeferUntil": "Ei viivytystä ennen",
+    "deferUntilUpdated": "Viivytä kunnes päivitys onnistuu",
+    "deferUntilUpdateError": "Viivytyksen päivittäminen epäonnistui"
   },
   "projects": {
     "loading": "Ladataan projekteja...",
@@ -782,7 +815,9 @@
       "planned_desc": "Määritelty ja valmis aloittamaan",
       "in_progress_desc": "Aktiivista työtä käynnissä",
       "blocked_desc": "Tilapäisesti keskeytetty tai jumissa",
-      "completed_desc": "Valmistunut ja tehty"
+      "completed_desc": "Valmistunut ja tehty",
+      "active": "Käynnissä",
+      "active_desc": "Aktiivista työtä tapahtuu"
     },
     "showMetrics": "Näytä mittarit",
     "hideMetrics": "Piilota mittarit"
@@ -885,6 +920,7 @@
     "week": "Viikko",
     "day": "Päivä",
     "today": "Tänään",
+    "total": "Total",
     "addEvent": "Lisää Tapahtuma",
     "weekView": "Viikkonäkymä",
     "dayView": "Päivänäkymä",
@@ -908,6 +944,7 @@
     "title": "Otsikko",
     "status": "Tila",
     "dueDate": "Eräpäivä",
+      "deferUntil": "Defer until",
     "priority": "Prioriteetti",
     "project": "Projekti",
     "area": "Alue",
@@ -1109,6 +1146,7 @@
     "searchText": "Hakuteksti",
     "priority": "Prioriteetti",
     "dueDate": "Eräpäivä",
+      "deferUntil": "Defer until",
     "noCriteriaSet": "Ei erityisiä kriteereitä asetettu",
     "priorityLabel": "Prioriteetti:",
     "dueLabel": "Eräpäivä:",

@@ -22,7 +22,8 @@
     "discardChanges": "Buang perubahan?",
     "discardChangesMessage": "Anda memiliki perubahan yang belum disimpan. Apakah Anda yakin ingin membuangnya?",
     "no": "Tidak, lanjutkan mengedit",
-    "yesDiscard": "Ya, buang"
+    "yesDiscard": "Ya, buang",
+    "uploading": "Mengunggah..."
   },
   "sidebar": {
     "dashboard": "Dasbor",
@@ -38,6 +39,7 @@
     "addTagAriaLabel": "Tambahkan Tag",
     "addTagTitle": "Tambahkan Tag",
     "today": "Hari Ini",
+    "total": "Total",
     "upcoming": "Akan Datang",
     "nextActions": "Tindakan Selanjutnya",
     "inbox": "Kotak Masuk",
@@ -98,6 +100,7 @@
   "tasks": {
     "title": "Tugas",
     "today": "Hari Ini",
+    "total": "Total",
     "backlog": "Backlog",
     "inProgress": "Dalam Proses",
     "dueToday": "Jatuh Tempo Hari Ini",
@@ -140,7 +143,11 @@
     "noProject": "Tanpa proyek",
     "unknownProject": "Proyek tidak dikenal",
     "tasks": "tugas",
-    "showingItems": "Menampilkan {{current}} dari {{total}} item"
+    "showingItems": "Menampilkan {{current}} dari {{total}} item",
+    "overdue": "Terlambat",
+    "planned": "Direncanakan",
+    "open": "Buka",
+    "completed": "Selesai"
   },
   "timeline": {
     "activityTimeline": "Garis Waktu Aktivitas",
@@ -153,6 +160,7 @@
       "statusChanged": "Status diubah",
       "priorityChanged": "Prioritas diubah",
       "dueDateChanged": "Tanggal jatuh tempo diubah",
+      "deferUntilChanged": "Defer date changed",
       "nameUpdated": "Nama diperbarui",
       "descriptionUpdated": "Deskripsi diperbarui",
       "noteUpdated": "Catatan diperbarui",
@@ -163,6 +171,7 @@
       "status": "Status",
       "priority": "Prioritas",
       "dueDate": "Tanggal jatuh tempo",
+      "deferUntil": "Defer until",
       "none": "Tidak ada",
       "recurrenceEndDateChanged": "Tanggal akhir pengulangan telah diubah",
       "recurrenceEndDate": "Tanggal akhir pengulangan",
@@ -171,7 +180,10 @@
       "completionBasedChanged": "Perulangan berbasis penyelesaian diubah",
       "projectIdChanged": "Ditugaskan ke proyek",
       "recurrenceType": "Jenis perulangan",
-      "recurrenceTypeChanged": "Jenis perulangan diubah"
+      "recurrenceTypeChanged": "Jenis perulangan diubah",
+      "recurrence_weekday_changed": "Hari ulang tahun berubah",
+      "recurrence_month_day_changed": "Hari bulan ulang tahun berubah",
+      "recurrence_week_of_month_changed": "Minggu bulan ulang tahun berubah"
     },
     "justNow": "Baru saja",
     "minutesAgo": "{{minutes}}m yang lalu",
@@ -408,6 +420,7 @@
     "title": "Judul",
     "description": "Deskripsi",
     "dueDate": "Tanggal Jatuh Tempo",
+      "deferUntil": "Defer until",
     "priority": "Prioritas",
     "status": "Status",
     "assignedTo": "Ditetapkan Untuk",
@@ -425,6 +438,7 @@
         "status": "Status",
         "priority": "Prioritas",
         "dueDate": "Tanggal Jatuh Tempo",
+      "deferUntil": "Defer until",
         "note": "Catatan",
         "recurrenceType": "Ulangi",
         "recurrenceInterval": "Setiap",
@@ -433,7 +447,8 @@
         "weekOfMonth": "Minggu dalam bulan",
         "recurrenceEndDate": "Tanggal akhir (opsional)",
         "completionBased": "Ulangi setelah penyelesaian",
-        "repeatOn": "Ulangi pada"
+        "repeatOn": "Ulangi pada",
+        "deferUntil": "Tunda Hingga"
       },
       "projectSearchPlaceholder": "Cari atau buat proyek...",
       "noMatchingProjects": "Tidak ada proyek yang cocok",
@@ -455,7 +470,8 @@
         "noVerb": "Tindakan spesifik apa yang perlu Anda ambil? Cobalah mulai dengan kata kerja.",
         "vague": "Cobalah mulai dengan kata kerja aksi seperti \"Hubungi\", \"Tulis\", \"Jadwalkan\", atau \"Teliti\""
       },
-      "selectAtLeastOneDay": "Silakan pilih setidaknya satu hari"
+      "selectAtLeastOneDay": "Silakan pilih setidaknya satu hari",
+      "deferUntilPlaceholder": "Pilih tanggal dan waktu tunda hingga"
     },
     "noteTitle": "Judul Catatan",
     "noteContent": "Konten Catatan",
@@ -533,7 +549,12 @@
     "createSuccess": "Proyek berhasil dibuat!",
     "createdAndAssigned": "Proyek dibuat dan ditugaskan",
     "createError": "Gagal membuat proyek",
-    "viewProject": "Pergi ke proyek"
+    "viewProject": "Pergi ke proyek",
+    "editProject": "Edit proyek",
+    "editBanner": "Edit spanduk proyek",
+    "currentBanner": "Spanduk saat ini",
+    "choosePreset": "Pilih spanduk preset:",
+    "orUploadOwn": "Atau unggah milik Anda sendiri:"
   },
   "errors": {
     "required": "Kolom ini diperlukan",
@@ -558,7 +579,10 @@
     "tagNameRequired": "Nama tag diperlukan.",
     "failedToSaveTag": "Gagal untuk menyimpan tag.",
     "projectNameRequired": "Nama proyek diperlukan.",
-    "projectSaveFailed": "Gagal untuk menyimpan proyek."
+    "projectSaveFailed": "Gagal untuk menyimpan proyek.",
+    "projectImageTooLarge": "Gambar terlalu besar. Silakan pilih file di bawah 10MB.",
+    "projectImageUpload": "Gagal mengunggah gambar. Silakan coba file yang lebih kecil atau format yang berbeda.",
+    "bannerSaveFailed": "Gagal menyimpan spanduk"
   },
   "inbox": {
     "title": "Kotak Masuk",
@@ -604,6 +628,7 @@
   },
   "dateIndicators": {
     "today": "HARI INI",
+    "total": "Total",
     "tomorrow": "ESOK",
     "yesterday": "KEMARIN",
     "nextWeek": "minggu depan",
@@ -615,6 +640,7 @@
       "noName": "Anda sedang melihat tugas untuk proyek tertentu. Gunakan ruang ini untuk mengelola dan melacak tugas yang terkait dengan proyek ini."
     },
     "today": "Ini adalah tugas yang jatuh tempo hari ini atau tugas yang telah Anda jadwalkan untuk perhatian segera. Gunakan tampilan ini untuk fokus pada apa yang perlu diselesaikan hari ini. Tandai tugas sebagai selesai, perbarui statusnya, atau sesuaikan tanggal jatuh temponya jika perlu.",
+    "total": "Total",
     "inbox": "Kotak masuk adalah tempat semua tugas yang tidak terkategori berada. Tugas yang belum ditugaskan ke proyek atau diberikan tanggal jatuh tempo akan muncul di sini. Ini adalah area \"brain dump\" Anda di mana Anda dapat dengan cepat mencatat tugas dan mengorganisirnya nanti.",
     "next": "Tampilan ini menunjukkan semua tugas yang dapat dikerjakan dalam waktu dekat. Tugas-tugas ini siap untuk dikerjakan selanjutnya dan tidak memiliki tenggat waktu jangka panjang. Ini adalah tempat yang baik untuk fokus ketika Anda ingin membuat kemajuan cepat pada tugas.",
     "upcoming": "Tampilan ini menyoroti tugas yang dijadwalkan untuk minggu mendatang. Ini membantu Anda mempersiapkan dan tetap di depan tenggat waktu dengan memberikan gambaran umum tentang pekerjaan yang perlu Anda tangani dalam waktu dekat. Tugas dengan tanggal jatuh tempo dalam 7 hari ke depan akan muncul di sini.",
@@ -635,7 +661,8 @@
     "taskCreated": "Tugas berhasil dibuat!",
     "taskUpdated": "Tugas berhasil diperbarui!",
     "taskDeleted": "Tugas berhasil dihapus!",
-    "noteDeleted": "Catatan berhasil dihapus!"
+    "noteDeleted": "Catatan berhasil dihapus!",
+    "bannerUpdated": "Spanduk berhasil diperbarui!"
   },
   "note": {
     "title": "Judul",
@@ -653,6 +680,7 @@
       "status": "Status",
       "priority": "Prioritas",
       "dueDate": "Tanggal Jatuh Tempo",
+      "deferUntil": "Defer until",
       "note": "Catatan"
     },
     "create": "Buat",
@@ -731,6 +759,7 @@
     "noTags": "Tidak ada tag",
     "priority": "Prioritas",
     "dueDate": "Tanggal Jatuh Tempo",
+      "deferUntil": "Defer until",
     "recurringSetup": "Pengaturan Berulang",
     "notRecurring": "Tugas ini belum berulang.",
     "clickToEditTitle": "Klik untuk mengedit judul",
@@ -751,7 +780,11 @@
     "parentTask": "Tugas Induk",
     "includingToday": "termasuk hari ini",
     "has": "memiliki",
-    "fromProject": "dari proyek"
+    "fromProject": "dari proyek",
+    "deferUntil": "Tunda Hingga",
+    "noDeferUntil": "Tidak ada tunda hingga",
+    "deferUntilUpdated": "Tunda hingga diperbarui dengan sukses",
+    "deferUntilUpdateError": "Gagal memperbarui tunda hingga"
   },
   "projects": {
     "loading": "Memuat proyek...",
@@ -782,7 +815,9 @@
       "planned_desc": "Sudah ditentukan dan siap untuk dimulai",
       "in_progress_desc": "Pekerjaan aktif sedang berlangsung",
       "blocked_desc": "Sementara terhenti atau terjebak",
-      "completed_desc": "Selesai dan selesai"
+      "completed_desc": "Selesai dan selesai",
+      "active": "Sedang Berlangsung",
+      "active_desc": "Pekerjaan aktif sedang berlangsung"
     },
     "showMetrics": "Tampilkan metrik",
     "hideMetrics": "Sembunyikan metrik"
@@ -885,6 +920,7 @@
     "week": "Minggu",
     "day": "Hari",
     "today": "Hari Ini",
+    "total": "Total",
     "addEvent": "Tambah Acara",
     "weekView": "Tampilan Minggu",
     "dayView": "Tampilan Hari",
@@ -908,6 +944,7 @@
     "title": "Judul",
     "status": "Status",
     "dueDate": "Tanggal Jatuh Tempo",
+      "deferUntil": "Defer until",
     "priority": "Prioritas",
     "project": "Proyek",
     "area": "Area",
@@ -1109,6 +1146,7 @@
     "searchText": "Teks Pencarian",
     "priority": "Prioritas",
     "dueDate": "Tanggal Jatuh Tempo",
+      "deferUntil": "Defer until",
     "noCriteriaSet": "Tidak ada kriteria spesifik yang ditetapkan",
     "priorityLabel": "Prioritas:",
     "dueLabel": "Jatuh Tempo:",

@@ -8,6 +8,7 @@ const {
     fetchTasksInProgress,
     fetchTodayPlanTasks,
     fetchTasksDueToday,
+    fetchOverdueTasks,
     fetchSomedayTaskIds,
     fetchNonProjectTasks,
     fetchProjectTasks,
@@ -140,6 +141,7 @@ async function computeTaskMetrics(
         tasksInProgress,
         todayPlanTasks,
         tasksDueToday,
+        tasksOverdue,
         tasksCompletedToday,
         weeklyCompletions,
     ] = await Promise.all([
@@ -148,6 +150,7 @@ async function computeTaskMetrics(
         fetchTasksInProgress(visibleTasksWhere),
         fetchTodayPlanTasks(visibleTasksWhere),
         fetchTasksDueToday(visibleTasksWhere, userTimezone),
+        fetchOverdueTasks(visibleTasksWhere, userTimezone),
         fetchTasksCompletedToday(userId, userTimezone),
         computeWeeklyCompletions(userId, userTimezone),
     ]);
@@ -167,6 +170,7 @@ async function computeTaskMetrics(
         tasks_in_progress_count: tasksInProgress.length,
         tasks_in_progress: tasksInProgress,
         tasks_due_today: tasksDueToday,
+        tasks_overdue: tasksOverdue,
         today_plan_tasks: todayPlanTasks,
         suggested_tasks: suggestedTasks,
         tasks_completed_today: tasksCompletedToday,
@@ -176,8 +180,41 @@ async function computeTaskMetrics(
 
 async function getTaskMetrics(userId, timezone) {
     const metrics = await computeTaskMetrics(userId, timezone);
-    const { buildMetricsResponse } = require('../core/serializers');
-    return await buildMetricsResponse(metrics);
+    const {
+        buildMetricsResponse,
+        serializeTasks,
+    } = require('../core/serializers');
+
+    const response = await buildMetricsResponse(metrics);
+
+    const serializedLists = {
+        tasks_in_progress: await serializeTasks(
+            metrics.tasks_in_progress,
+            timezone
+        ),
+        tasks_today_plan: await serializeTasks(
+            metrics.today_plan_tasks,
+            timezone
+        ),
+        tasks_due_today: await serializeTasks(
+            metrics.tasks_due_today,
+            timezone
+        ),
+        tasks_overdue: await serializeTasks(metrics.tasks_overdue, timezone),
+        suggested_tasks: await serializeTasks(
+            metrics.suggested_tasks,
+            timezone
+        ),
+        tasks_completed_today: await serializeTasks(
+            metrics.tasks_completed_today,
+            timezone
+        ),
+    };
+
+    Object.assign(response, serializedLists);
+    response.dashboard_lists = serializedLists;
+
+    return response;
 }
 
 module.exports = {

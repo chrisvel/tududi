@@ -12,26 +12,17 @@ red() { printf "\033[31m%s\033[0m\n" "$*"; }
 green() { printf "\033[32m%s\033[0m\n" "$*"; }
 yellow() { printf "\033[33m%s\033[0m\n" "$*"; }
 
-# Ensure dependencies in e2e/
+# Ensure dependencies in root
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 E2E_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 ROOT_DIR="$(cd "$E2E_DIR/.." && pwd)"
 
-cd "$E2E_DIR"
-if [ ! -f package.json ]; then
-  red "e2e/package.json not found"
-  exit 1
-fi
+cd "$ROOT_DIR"
 
-# Install e2e deps and browsers
-if [ ! -d node_modules ]; then
-  yellow "Installing e2e dependencies..."
-  npm ci
-fi
-
+# Check if Playwright is installed
 if ! npx playwright --version >/dev/null 2>&1; then
   yellow "Installing Playwright browsers..."
-  npm run install-browsers
+  npx playwright install --with-deps
 fi
 
 # Start backend and frontend
@@ -108,8 +99,8 @@ for i in {1..60}; do
   fi
 done
 
-# Run tests
-cd "$E2E_DIR"
+# Run tests (specify config file since we're running from root)
+cd "$ROOT_DIR"
 
 yellow "Running Playwright tests..."
 APP_URL="$FRONTEND_URL" \
@@ -117,11 +108,11 @@ E2E_EMAIL="${E2E_EMAIL:-test@tududi.com}" \
 E2E_PASSWORD="${E2E_PASSWORD:-password123}" \
 bash -c '
   if [ "${E2E_MODE:-}" = "ui" ]; then
-    npm run test:ui
+    npx playwright test --ui --config=e2e/playwright.config.ts
   elif [ "${E2E_MODE:-}" = "headed" ]; then
-    # Respect E2E_SLOWMO and run only Firefox sequentially
-    npx playwright test --headed --project=Firefox --workers=1
+    # Respect E2E_SLOWMO and run only Chromium sequentially
+    npx playwright test --headed --project=Chromium --workers=1 --config=e2e/playwright.config.ts
   else
-    npx playwright test --workers=5
+    npx playwright test --config=e2e/playwright.config.ts
   fi
 '

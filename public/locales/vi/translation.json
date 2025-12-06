@@ -22,7 +22,8 @@
     "discardChanges": "Bỏ qua thay đổi?",
     "discardChangesMessage": "Bạn có thay đổi chưa lưu. Bạn có chắc chắn muốn bỏ qua chúng không?",
     "no": "Không, tiếp tục chỉnh sửa",
-    "yesDiscard": "Có, bỏ qua"
+    "yesDiscard": "Có, bỏ qua",
+    "uploading": "Đang tải lên..."
   },
   "sidebar": {
     "dashboard": "Bảng điều khiển",
@@ -38,6 +39,7 @@
     "addTagAriaLabel": "Thêm Thẻ",
     "addTagTitle": "Thêm Thẻ",
     "today": "Hôm nay",
+    "total": "Total",
     "upcoming": "Sắp tới",
     "nextActions": "Các Hành động Tiếp theo",
     "inbox": "Hộp thư đến",
@@ -98,6 +100,7 @@
   "tasks": {
     "title": "Nhiệm vụ",
     "today": "Hôm nay",
+    "total": "Total",
     "backlog": "Danh sách chờ",
     "inProgress": "Đang tiến hành",
     "dueToday": "Hạn chót hôm nay",
@@ -140,7 +143,11 @@
     "noProject": "Không có dự án",
     "unknownProject": "Dự án không xác định",
     "tasks": "nhiệm vụ",
-    "showingItems": "Hiển thị {{current}} trong số {{total}} mục"
+    "showingItems": "Hiển thị {{current}} trong số {{total}} mục",
+    "overdue": "Quá hạn",
+    "planned": "Đã lên kế hoạch",
+    "open": "Mở",
+    "completed": "Đã hoàn thành"
   },
   "timeline": {
     "activityTimeline": "Dòng Thời Gian Hoạt Động",
@@ -153,6 +160,7 @@
       "statusChanged": "Trạng thái đã thay đổi",
       "priorityChanged": "Độ ưu tiên đã thay đổi",
       "dueDateChanged": "Ngày đến hạn đã thay đổi",
+      "deferUntilChanged": "Defer date changed",
       "nameUpdated": "Tên đã được cập nhật",
       "descriptionUpdated": "Mô tả đã được cập nhật",
       "noteUpdated": "Ghi chú đã được cập nhật",
@@ -163,6 +171,7 @@
       "status": "Trạng thái",
       "priority": "Độ ưu tiên",
       "dueDate": "Ngày đến hạn",
+      "deferUntil": "Defer until",
       "none": "Không có",
       "recurrenceEndDateChanged": "Ngày kết thúc chu kỳ đã thay đổi",
       "recurrenceEndDate": "Ngày kết thúc chu kỳ",
@@ -171,7 +180,10 @@
       "completionBasedChanged": "Thay đổi tần suất dựa trên hoàn thành",
       "projectIdChanged": "Được gán cho một dự án",
       "recurrenceType": "Loại tần suất",
-      "recurrenceTypeChanged": "Thay đổi loại tần suất"
+      "recurrenceTypeChanged": "Thay đổi loại tần suất",
+      "recurrence_weekday_changed": "Ngày trong tuần lặp lại đã thay đổi",
+      "recurrence_month_day_changed": "Ngày trong tháng lặp lại đã thay đổi",
+      "recurrence_week_of_month_changed": "Tuần trong tháng lặp lại đã thay đổi"
     },
     "justNow": "Vừa xong",
     "minutesAgo": "{{minutes}} phút trước",
@@ -408,6 +420,7 @@
     "title": "Tiêu đề",
     "description": "Mô tả",
     "dueDate": "Ngày hết hạn",
+      "deferUntil": "Defer until",
     "priority": "Độ ưu tiên",
     "status": "Trạng thái",
     "assignedTo": "Giao cho",
@@ -425,6 +438,7 @@
         "status": "Trạng thái",
         "priority": "Độ ưu tiên",
         "dueDate": "Ngày hết hạn",
+      "deferUntil": "Defer until",
         "note": "Ghi chú",
         "recurrenceType": "Lặp lại",
         "recurrenceInterval": "Mỗi",
@@ -433,7 +447,8 @@
         "weekOfMonth": "Tuần trong tháng",
         "recurrenceEndDate": "Ngày kết thúc (tùy chọn)",
         "completionBased": "Lặp lại sau khi hoàn thành",
-        "repeatOn": "Lặp lại vào"
+        "repeatOn": "Lặp lại vào",
+        "deferUntil": "Hoãn đến"
       },
       "projectSearchPlaceholder": "Tìm kiếm hoặc tạo một dự án...",
       "noMatchingProjects": "Không có dự án nào phù hợp",
@@ -455,7 +470,8 @@
         "noVerb": "Bạn cần thực hiện hành động cụ thể nào? Hãy thử bắt đầu bằng một động từ.",
         "vague": "Hãy thử bắt đầu bằng một động từ hành động như \"Gọi\", \"Viết\", \"Lên lịch\", hoặc \"Nghiên cứu\""
       },
-      "selectAtLeastOneDay": "Vui lòng chọn ít nhất một ngày"
+      "selectAtLeastOneDay": "Vui lòng chọn ít nhất một ngày",
+      "deferUntilPlaceholder": "Chọn ngày và giờ hoãn đến"
     },
     "noteTitle": "Tiêu đề ghi chú",
     "noteContent": "Nội dung ghi chú",
@@ -533,7 +549,12 @@
     "createSuccess": "Dự án đã được tạo thành công!",
     "createdAndAssigned": "Dự án đã được tạo và gán",
     "createError": "Tạo dự án không thành công",
-    "viewProject": "Đi đến dự án"
+    "viewProject": "Đi đến dự án",
+    "editProject": "Chỉnh sửa dự án",
+    "editBanner": "Chỉnh sửa biểu ngữ dự án",
+    "currentBanner": "Biểu ngữ hiện tại",
+    "choosePreset": "Chọn một biểu ngữ đã định sẵn:",
+    "orUploadOwn": "Hoặc tải lên của riêng bạn:"
   },
   "errors": {
     "required": "Trường này là bắt buộc",
@@ -558,7 +579,10 @@
     "tagNameRequired": "Tên thẻ là bắt buộc.",
     "failedToSaveTag": "Không thể lưu thẻ.",
     "projectNameRequired": "Tên dự án là bắt buộc.",
-    "projectSaveFailed": "Không thể lưu dự án."
+    "projectSaveFailed": "Không thể lưu dự án.",
+    "projectImageTooLarge": "Hình ảnh quá lớn. Vui lòng chọn tệp dưới 10MB.",
+    "projectImageUpload": "Tải lên hình ảnh thất bại. Vui lòng thử tệp nhỏ hơn hoặc định dạng khác.",
+    "bannerSaveFailed": "Lưu biểu ngữ thất bại"
   },
   "inbox": {
     "title": "Hộp thư đến",
@@ -604,6 +628,7 @@
   },
   "dateIndicators": {
     "today": "HÔM NAY",
+    "total": "Total",
     "tomorrow": "NGÀY MAI",
     "yesterday": "HÔM QUÁ",
     "nextWeek": "tuần tới",
@@ -615,6 +640,7 @@
       "noName": "Bạn đang xem các nhiệm vụ cho một dự án cụ thể. Sử dụng không gian này để quản lý và theo dõi các nhiệm vụ liên quan đến dự án này."
     },
     "today": "Đây là các nhiệm vụ đến hạn hôm nay hoặc các nhiệm vụ bạn đã lên lịch để chú ý ngay lập tức. Sử dụng chế độ xem này để tập trung vào những gì cần hoàn thành hôm nay. Đánh dấu các nhiệm vụ là đã hoàn thành, cập nhật trạng thái của chúng, hoặc điều chỉnh ngày đến hạn nếu cần.",
+    "total": "Total",
     "inbox": "Hộp thư đến là nơi chứa tất cả các nhiệm vụ chưa được phân loại. Các nhiệm vụ chưa được gán cho một dự án hoặc chưa có ngày đến hạn sẽ xuất hiện ở đây. Đây là khu vực \"đổ não\" của bạn, nơi bạn có thể nhanh chóng ghi lại các nhiệm vụ và tổ chức chúng sau.",
     "next": "Chế độ xem này hiển thị tất cả các nhiệm vụ có thể thực hiện trong tương lai gần. Những nhiệm vụ này sẵn sàng để làm tiếp theo và không có thời hạn dài hạn. Đây là nơi tốt để tập trung khi bạn muốn tiến bộ nhanh chóng trong các nhiệm vụ.",
     "upcoming": "Chế độ xem này nổi bật các nhiệm vụ đã được lên lịch cho tuần tới. Nó giúp bạn chuẩn bị và đi trước thời hạn bằng cách cung cấp cái nhìn tổng quan về công việc bạn cần giải quyết trong tương lai gần. Các nhiệm vụ có ngày đến hạn trong vòng 7 ngày tới sẽ xuất hiện ở đây.",
@@ -635,7 +661,8 @@
     "taskCreated": "Nhiệm vụ đã được tạo thành công!",
     "taskUpdated": "Nhiệm vụ đã được cập nhật thành công!",
     "taskDeleted": "Nhiệm vụ đã được xóa thành công!",
-    "noteDeleted": "Ghi chú đã được xóa thành công!"
+    "noteDeleted": "Ghi chú đã được xóa thành công!",
+    "bannerUpdated": "Biểu ngữ đã được cập nhật thành công!"
   },
   "note": {
     "title": "Tiêu đề",
@@ -653,6 +680,7 @@
       "status": "Trạng thái",
       "priority": "Độ ưu tiên",
       "dueDate": "Ngày hết hạn",
+      "deferUntil": "Defer until",
       "note": "Ghi chú"
     },
     "create": "Tạo",
@@ -696,6 +724,7 @@
     "noTags": "Không có thẻ",
     "priority": "Độ ưu tiên",
     "dueDate": "Ngày hết hạn",
+      "deferUntil": "Defer until",
     "recurringSetup": "Cài đặt lặp lại",
     "notRecurring": "Công việc này chưa lặp lại.",
     "clickToEditTitle": "Nhấp để chỉnh sửa tiêu đề",
@@ -751,7 +780,11 @@
     "parentTask": "Nhiệm vụ Cha",
     "includingToday": "bao gồm hôm nay",
     "has": "có",
-    "fromProject": "từ dự án"
+    "fromProject": "từ dự án",
+    "deferUntil": "Hoãn đến",
+    "noDeferUntil": "Không có hoãn đến",
+    "deferUntilUpdated": "Hoãn đến đã được cập nhật thành công",
+    "deferUntilUpdateError": "Cập nhật hoãn đến không thành công"
   },
   "projects": {
     "loading": "Đang tải dự án...",
@@ -782,7 +815,9 @@
       "planned_desc": "Đã xác định và sẵn sàng bắt đầu",
       "in_progress_desc": "Công việc đang diễn ra",
       "blocked_desc": "Tạm dừng hoặc bị mắc kẹt",
-      "completed_desc": "Đã hoàn tất và xong"
+      "completed_desc": "Đã hoàn tất và xong",
+      "active": "Đang tiến hành",
+      "active_desc": "Công việc đang diễn ra"
     },
     "showMetrics": "Hiển thị số liệu",
     "hideMetrics": "Ẩn số liệu"
@@ -885,6 +920,7 @@
     "week": "Tuần",
     "day": "Ngày",
     "today": "Hôm nay",
+    "total": "Total",
     "addEvent": "Thêm Sự Kiện",
     "weekView": "Chế độ xem Tuần",
     "dayView": "Chế độ xem Ngày",
@@ -908,6 +944,7 @@
     "title": "Tiêu đề",
     "status": "Trạng thái",
     "dueDate": "Ngày hết hạn",
+      "deferUntil": "Defer until",
     "priority": "Độ ưu tiên",
     "project": "Dự án",
     "area": "Khu vực",
@@ -1109,6 +1146,7 @@
     "searchText": "Văn bản tìm kiếm",
     "priority": "Độ ưu tiên",
     "dueDate": "Ngày đến hạn",
+      "deferUntil": "Defer until",
     "noCriteriaSet": "Không có tiêu chí cụ thể nào được thiết lập",
     "priorityLabel": "Độ ưu tiên:",
     "dueLabel": "Đến hạn:",

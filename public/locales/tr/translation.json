@@ -22,7 +22,8 @@
     "discardChanges": "Değişiklikleri iptal et?",
     "discardChangesMessage": "Kaydedilmemiş değişiklikleriniz var. Onları iptal etmek istediğinizden emin misiniz?",
     "no": "Hayır, düzenlemeye devam et",
-    "yesDiscard": "Evet, iptal et"
+    "yesDiscard": "Evet, iptal et",
+    "uploading": "Yükleniyor..."
   },
   "sidebar": {
     "dashboard": "Gösterge Paneli",
@@ -38,6 +39,7 @@
     "addTagAriaLabel": "Etiket Ekle",
     "addTagTitle": "Etiket Ekle",
     "today": "Bugün",
+    "total": "Total",
     "upcoming": "Gelecek",
     "nextActions": "Sonraki Eylemler",
     "inbox": "Gelen Kutusu",
@@ -98,6 +100,7 @@
   "tasks": {
     "title": "Görevler",
     "today": "Bugün",
+    "total": "Total",
     "backlog": "Bekleyen",
     "inProgress": "Devam Ediyor",
     "dueToday": "Bugün Vadesi Gelen",
@@ -140,7 +143,11 @@
     "noProject": "Proje yok",
     "unknownProject": "Bilinmeyen proje",
     "tasks": "görevler",
-    "showingItems": "{{total}} öğeden {{current}} tanesi gösteriliyor"
+    "showingItems": "{{total}} öğeden {{current}} tanesi gösteriliyor",
+    "overdue": "Gecikmiş",
+    "planned": "Planlanmış",
+    "open": "Aç",
+    "completed": "Tamamlandı"
   },
   "timeline": {
     "activityTimeline": "Etkinlik Zaman Çizelgesi",
@@ -153,6 +160,7 @@
       "statusChanged": "Durum değiştirildi",
       "priorityChanged": "Öncelik değiştirildi",
       "dueDateChanged": "Son tarih değiştirildi",
+      "deferUntilChanged": "Defer date changed",
       "nameUpdated": "İsim güncellendi",
       "descriptionUpdated": "Açıklama güncellendi",
       "noteUpdated": "Not güncellendi",
@@ -163,6 +171,7 @@
       "status": "Durum",
       "priority": "Öncelik",
       "dueDate": "Son tarih",
+      "deferUntil": "Defer until",
       "none": "Yok",
       "recurrenceEndDateChanged": "Tekrar son tarihi değiştirildi",
       "recurrenceEndDate": "Tekrar son tarihi",
@@ -171,7 +180,10 @@
       "completionBasedChanged": "Tamamlamaya dayalı tekrar değiştirildi",
       "projectIdChanged": "Bir projeye atandı",
       "recurrenceType": "Tekrar türü",
-      "recurrenceTypeChanged": "Tekrar türü değiştirildi"
+      "recurrenceTypeChanged": "Tekrar türü değiştirildi",
+      "recurrence_weekday_changed": "Tekrar gün değişti",
+      "recurrence_month_day_changed": "Tekrar ay günü değişti",
+      "recurrence_week_of_month_changed": "Tekrar ayın haftası değişti"
     },
     "justNow": "Şu anda",
     "minutesAgo": "{{minutes}}d önce",
@@ -408,6 +420,7 @@
     "title": "Başlık",
     "description": "Açıklama",
     "dueDate": "Son Tarih",
+      "deferUntil": "Defer until",
     "priority": "Öncelik",
     "status": "Durum",
     "assignedTo": "Atanan",
@@ -425,6 +438,7 @@
         "status": "Durum",
         "priority": "Öncelik",
         "dueDate": "Son Tarih",
+      "deferUntil": "Defer until",
         "note": "Not",
         "recurrenceType": "Tekrar",
         "recurrenceInterval": "Her",
@@ -433,7 +447,8 @@
         "weekOfMonth": "Ayın Haftası",
         "recurrenceEndDate": "Bitiş tarihi (isteğe bağlı)",
         "completionBased": "Tamamlandıktan sonra tekrar et",
-        "repeatOn": "Şu tarihlerde tekrar et"
+        "repeatOn": "Şu tarihlerde tekrar et",
+        "deferUntil": "Erteleme Tarihi"
       },
       "projectSearchPlaceholder": "Proje ara veya oluştur...",
       "noMatchingProjects": "Eşleşen proje yok",
@@ -455,7 +470,8 @@
         "noVerb": "Hangi spesifik eylemi gerçekleştirmeniz gerekiyor? Bir fiille başlamayı deneyin.",
         "vague": "\"Ara\", \"Yaz\", \"Planla\" veya \"Araştır\" gibi bir eylem fiili ile başlamayı deneyin"
       },
-      "selectAtLeastOneDay": "Lütfen en az bir gün seçin"
+      "selectAtLeastOneDay": "Lütfen en az bir gün seçin",
+      "deferUntilPlaceholder": "Erteleme tarihi ve saatini seçin"
     },
     "noteTitle": "Not Başlığı",
     "noteContent": "Not İçeriği",
@@ -533,7 +549,12 @@
     "createSuccess": "Proje başarıyla oluşturuldu!",
     "createdAndAssigned": "Proje oluşturuldu ve atandı",
     "createError": "Proje oluşturulamadı",
-    "viewProject": "Projeye git"
+    "viewProject": "Projeye git",
+    "editProject": "Projeyi düzenle",
+    "editBanner": "Proje afişini düzenle",
+    "currentBanner": "Mevcut afiş",
+    "choosePreset": "Bir ön ayar afişi seçin:",
+    "orUploadOwn": "Ya da kendi afişinizi yükleyin:"
   },
   "errors": {
     "required": "Bu alan gereklidir",
@@ -558,7 +579,10 @@
     "tagNameRequired": "Etiket adı gereklidir.",
     "failedToSaveTag": "Etiketi kaydetmekte başarısız olundu.",
     "projectNameRequired": "Proje adı gereklidir.",
-    "projectSaveFailed": "Projeyi kaydetmekte başarısız olundu."
+    "projectSaveFailed": "Projeyi kaydetmekte başarısız olundu.",
+    "projectImageTooLarge": "Görüntü çok büyük. Lütfen 10MB'den küçük bir dosya seçin.",
+    "projectImageUpload": "Görüntü yüklenemedi. Lütfen daha küçük bir dosya veya farklı bir format deneyin.",
+    "bannerSaveFailed": "Afiş kaydedilemedi"
   },
   "inbox": {
     "title": "Gelen Kutusu",
@@ -604,6 +628,7 @@
   },
   "dateIndicators": {
     "today": "BUGÜN",
+    "total": "Total",
     "tomorrow": "YARIN",
     "yesterday": "DÜN",
     "nextWeek": "gelecek hafta",
@@ -615,6 +640,7 @@
       "noName": "Belirli bir proje için görevleri görüntülüyorsunuz. Bu alanı, bu projeyle ilişkili görevleri yönetmek ve takip etmek için kullanın."
     },
     "today": "Bugün vadesi gelen veya acil dikkat gerektiren görevler bunlardır. Bugün tamamlanması gerekenlere odaklanmak için bu görünümü kullanın. Görevleri tamamlanmış olarak işaretleyin, durumlarını güncelleyin veya gerekirse son tarihlerini ayarlayın.",
+    "total": "Total",
     "inbox": "Gelen kutusu, tüm kategorize edilmemiş görevlerin bulunduğu yerdir. Bir projeye atanmış veya son tarihi belirlenmemiş görevler burada görünecektir. Bu, görevleri hızlıca not alıp daha sonra düzenleyebileceğiniz \"beyin fırtınası\" alanınızdır.",
     "next": "Bu görünüm, yakın gelecekte yapılabilir olan tüm görevleri gösterir. Bu görevler, üzerinde çalışmaya hazırdır ve uzun vadeli son tarihleri yoktur. Hızlı ilerleme kaydetmek istediğinizde odaklanmak için iyi bir yerdir.",
     "upcoming": "Bu görünüm, önümüzdeki hafta için planlanmış görevleri vurgular. Size yakın gelecekte ele almanız gereken işlerin genel bir görünümünü sunarak hazırlık yapmanıza ve son tarihlerden önde olmanıza yardımcı olur. Önümüzdeki 7 gün içinde son tarihi olan görevler burada görünecektir.",
@@ -635,7 +661,8 @@
     "taskCreated": "Görev başarıyla oluşturuldu!",
     "taskUpdated": "Görev başarıyla güncellendi!",
     "taskDeleted": "Görev başarıyla silindi!",
-    "noteDeleted": "Not başarıyla silindi!"
+    "noteDeleted": "Not başarıyla silindi!",
+    "bannerUpdated": "Afiş başarıyla güncellendi!"
   },
   "note": {
     "title": "Başlık",
@@ -653,6 +680,7 @@
       "status": "Durum",
       "priority": "Öncelik",
       "dueDate": "Son Tarih",
+      "deferUntil": "Defer until",
       "note": "Not"
     },
     "create": "Oluştur",
@@ -696,6 +724,7 @@
     "noTags": "Etiket yok",
     "priority": "Öncelik",
     "dueDate": "Son Tarih",
+      "deferUntil": "Defer until",
     "recurringSetup": "Tekrarlayan Ayar",
     "notRecurring": "Bu görev henüz tekrarlanmıyor.",
     "clickToEditTitle": "Başlığı düzenlemek için tıklayın",
@@ -751,7 +780,11 @@
     "parentTask": "Üst Görev",
     "includingToday": "bugün dahil",
     "has": "var",
-    "fromProject": "projeden"
+    "fromProject": "projeden",
+    "deferUntil": "Erteleme Tarihi",
+    "noDeferUntil": "Erteleme yok",
+    "deferUntilUpdated": "Başarıyla erteleme tarihi güncellendi",
+    "deferUntilUpdateError": "Erteleme tarihini güncelleme başarısız oldu"
   },
   "projects": {
     "loading": "Projeler yükleniyor...",
@@ -782,7 +815,9 @@
       "planned_desc": "Kapsam belirlendi ve başlamaya hazır",
       "in_progress_desc": "Aktif çalışma devam ediyor",
       "blocked_desc": "Geçici olarak duraklatıldı veya takıldı",
-      "completed_desc": "Tamamlandı ve sona erdi"
+      "completed_desc": "Tamamlandı ve sona erdi",
+      "active": "Devam Ediyor",
+      "active_desc": "Aktif çalışma sürüyor"
     },
     "showMetrics": "Metrikleri göster",
     "hideMetrics": "Metrikleri gizle"
@@ -885,6 +920,7 @@
     "week": "Hafta",
     "day": "Gün",
     "today": "Bugün",
+    "total": "Total",
     "addEvent": "Etkinlik Ekle",
     "weekView": "Hafta Görünümü",
     "dayView": "Gün Görünümü",
@@ -908,6 +944,7 @@
     "title": "Başlık",
     "status": "Durum",
     "dueDate": "Son Tarih",
+      "deferUntil": "Defer until",
     "priority": "Öncelik",
     "project": "Proje",
     "area": "Alan",
@@ -1109,6 +1146,7 @@
     "searchText": "Arama Metni",
     "priority": "Öncelik",
     "dueDate": "Son Tarih",
+      "deferUntil": "Defer until",
     "noCriteriaSet": "Belirli bir kriter ayarlanmamış",
     "priorityLabel": "Öncelik:",
     "dueLabel": "Son Tarih:",

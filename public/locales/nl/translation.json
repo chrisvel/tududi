@@ -22,7 +22,8 @@
     "discardChanges": "Wijzigingen negeren?",
     "discardChangesMessage": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je ze wilt negeren?",
     "no": "Nee, blijf bewerken",
-    "yesDiscard": "Ja, negeren"
+    "yesDiscard": "Ja, negeren",
+    "uploading": "Uploaden..."
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -38,6 +39,7 @@
     "addTagAriaLabel": "Voeg Tag Toe",
     "addTagTitle": "Voeg Tag Toe",
     "today": "Vandaag",
+    "total": "Total",
     "upcoming": "Aankomende",
     "nextActions": "Volgende Acties",
     "inbox": "Inbox",
@@ -98,6 +100,7 @@
   "tasks": {
     "title": "Taken",
     "today": "Vandaag",
+    "total": "Total",
     "backlog": "Achterstand",
     "inProgress": "Bezig",
     "dueToday": "Vervalt Vandaag",
@@ -140,7 +143,11 @@
     "noProject": "Geen project",
     "unknownProject": "Onbekend project",
     "tasks": "taken",
-    "showingItems": "{{current}} van {{total}} items weergegeven"
+    "showingItems": "{{current}} van {{total}} items weergegeven",
+    "overdue": "Te laat",
+    "planned": "Gepland",
+    "open": "Open",
+    "completed": "Voltooid"
   },
   "timeline": {
     "activityTimeline": "Activiteit Tijdlijn",
@@ -153,6 +160,7 @@
       "statusChanged": "Status gewijzigd",
       "priorityChanged": "Prioriteit gewijzigd",
       "dueDateChanged": "Vervaldatum gewijzigd",
+      "deferUntilChanged": "Defer date changed",
       "nameUpdated": "Naam bijgewerkt",
       "descriptionUpdated": "Beschrijving bijgewerkt",
       "noteUpdated": "Notitie bijgewerkt",
@@ -163,6 +171,7 @@
       "status": "Status",
       "priority": "Prioriteit",
       "dueDate": "Vervaldatum",
+      "deferUntil": "Defer until",
       "none": "Geen",
       "recurrenceEndDateChanged": "Einddatum van herhaling gewijzigd",
       "recurrenceEndDate": "Einddatum van herhaling",
@@ -171,7 +180,10 @@
       "completionBasedChanged": "Voltooiingsgebaseerde herhaling gewijzigd",
       "projectIdChanged": "Toegewezen aan een project",
       "recurrenceType": "Herhalings type",
-      "recurrenceTypeChanged": "Herhalings type gewijzigd"
+      "recurrenceTypeChanged": "Herhalings type gewijzigd",
+      "recurrence_weekday_changed": "Herhalingsweekdag gewijzigd",
+      "recurrence_month_day_changed": "Herhalingsmaanddag gewijzigd",
+      "recurrence_week_of_month_changed": "Herhalingsweek van de maand gewijzigd"
     },
     "justNow": "Net nu",
     "minutesAgo": "{{minutes}}m geleden",
@@ -408,6 +420,7 @@
     "title": "Titel",
     "description": "Beschrijving",
     "dueDate": "Vervaldatum",
+      "deferUntil": "Defer until",
     "priority": "Prioriteit",
     "status": "Status",
     "assignedTo": "Toegewezen Aan",
@@ -425,6 +438,7 @@
         "status": "Status",
         "priority": "Prioriteit",
         "dueDate": "Vervaldatum",
+      "deferUntil": "Defer until",
         "note": "Opmerking",
         "recurrenceType": "Herhaal",
         "recurrenceInterval": "Elke",
@@ -433,7 +447,8 @@
         "weekOfMonth": "Week van de maand",
         "recurrenceEndDate": "Einddatum (optioneel)",
         "completionBased": "Herhaal na voltooiing",
-        "repeatOn": "Herhaal op"
+        "repeatOn": "Herhaal op",
+        "deferUntil": "Uitstellen Tot"
       },
       "projectSearchPlaceholder": "Zoek of maak een project...",
       "noMatchingProjects": "Geen overeenkomende projecten",
@@ -455,7 +470,8 @@
         "noVerb": "Welke specifieke actie moet je ondernemen? Probeer te beginnen met een werkwoord.",
         "vague": "Probeer te beginnen met een actie werkwoord zoals \"Bel\", \"Schrijf\", \"Plan\" of \"Onderzoek\""
       },
-      "selectAtLeastOneDay": "Selecteer alstublieft minimaal één dag"
+      "selectAtLeastOneDay": "Selecteer alstublieft minimaal één dag",
+      "deferUntilPlaceholder": "Selecteer uitstel tot datum en tijd"
     },
     "noteTitle": "Notitietitel",
     "noteContent": "Notitie-inhoud",
@@ -533,7 +549,12 @@
     "createSuccess": "Project succesvol aangemaakt!",
     "createdAndAssigned": "Project aangemaakt en toegewezen",
     "createError": "Mislukt om project aan te maken",
-    "viewProject": "Ga naar project"
+    "viewProject": "Ga naar project",
+    "editProject": "Project bewerken",
+    "editBanner": "Bewerk projectbanner",
+    "currentBanner": "Huidige banner",
+    "choosePreset": "Kies een vooraf ingestelde banner:",
+    "orUploadOwn": "Of upload je eigen:"
   },
   "errors": {
     "required": "Dit veld is verplicht",
@@ -558,7 +579,10 @@
     "tagNameRequired": "Naam van de tag is verplicht.",
     "failedToSaveTag": "Het opslaan van de tag is mislukt.",
     "projectNameRequired": "Naam van het project is verplicht.",
-    "projectSaveFailed": "Het opslaan van het project is mislukt."
+    "projectSaveFailed": "Het opslaan van het project is mislukt.",
+    "projectImageTooLarge": "Afbeelding is te groot. Kies een bestand onder de 10MB.",
+    "projectImageUpload": "Uploaden van afbeelding mislukt. Probeer een kleiner bestand of een ander formaat.",
+    "bannerSaveFailed": "Opslaan van banner mislukt"
   },
   "inbox": {
     "title": "Inbox",
@@ -604,6 +628,7 @@
   },
   "dateIndicators": {
     "today": "VANDAAG",
+    "total": "Total",
     "tomorrow": "MORGEN",
     "yesterday": "GISTEREN",
     "nextWeek": "volgende week",
@@ -615,6 +640,7 @@
       "noName": "Je bekijkt taken voor een specifiek project. Gebruik deze ruimte om taken te beheren en bij te houden die aan dit project zijn gekoppeld."
     },
     "today": "Dit zijn de taken die vandaag vervallen of taken die je hebt ingepland voor onmiddellijke aandacht. Gebruik deze weergave om je te concentreren op wat vandaag moet worden voltooid. Markeer taken als voltooid, werk hun status bij of pas hun vervaldatums aan indien nodig.",
+    "total": "Total",
     "inbox": "De inbox is waar alle ongecategoriseerde taken zich bevinden. Taken die niet aan een project zijn toegewezen of geen vervaldatum hebben, verschijnen hier. Dit is jouw \"brain dump\"-gebied waar je snel taken kunt opschrijven en ze later kunt organiseren.",
     "next": "Deze weergave toont alle taken die op korte termijn actie vereisen. Deze taken zijn klaar om als volgende te worden opgepakt en hebben geen lange termijn deadlines. Het is een goede plek om je op te concentreren wanneer je snel vooruitgang wilt boeken met taken.",
     "upcoming": "Deze weergave benadrukt taken die zijn ingepland voor de komende week. Het helpt je om je voor te bereiden en vooruit te blijven op deadlines door je een overzicht te geven van het werk dat je in de nabije toekomst moet aanpakken. Taken met vervaldatums binnen de komende 7 dagen verschijnen hier.",
@@ -635,7 +661,8 @@
     "taskCreated": "Taak succesvol aangemaakt!",
     "taskUpdated": "Taak succesvol bijgewerkt!",
     "taskDeleted": "Taak succesvol verwijderd!",
-    "noteDeleted": "Notitie succesvol verwijderd!"
+    "noteDeleted": "Notitie succesvol verwijderd!",
+    "bannerUpdated": "Banner succesvol bijgewerkt!"
   },
   "note": {
     "title": "Titel",
@@ -653,6 +680,7 @@
       "status": "Status",
       "priority": "Prioriteit",
       "dueDate": "Vervaldatum",
+      "deferUntil": "Defer until",
       "note": "Opmerking"
     },
     "create": "Aanmaken",
@@ -731,6 +759,7 @@
     "noTags": "Geen tags",
     "priority": "Prioriteit",
     "dueDate": "Vervaldatum",
+      "deferUntil": "Defer until",
     "noDueDate": "Geen vervaldatum",
     "recurringSetup": "Terugkerende instellingen",
     "notRecurring": "Deze taak is nog niet terugkerend.",
@@ -751,7 +780,11 @@
     "parentTask": "Bovenliggende Taak",
     "includingToday": "inclusief vandaag",
     "has": "heeft",
-    "fromProject": "van het project"
+    "fromProject": "van het project",
+    "deferUntil": "Uitstellen Tot",
+    "noDeferUntil": "Geen uitstel tot",
+    "deferUntilUpdated": "Uitstel tot succesvol bijgewerkt",
+    "deferUntilUpdateError": "Bijwerken van uitstel tot is mislukt"
   },
   "projects": {
     "loading": "Projecten laden...",
@@ -782,7 +815,9 @@
       "planned_desc": "Afgebakend en klaar om te starten",
       "in_progress_desc": "Actief werk aan de gang",
       "blocked_desc": "Tijdelijk gepauzeerd of vastgelopen",
-      "completed_desc": "Afgerond en gedaan"
+      "completed_desc": "Afgerond en gedaan",
+      "active": "In uitvoering",
+      "active_desc": "Actief werk aan de gang"
     },
     "showMetrics": "Toon statistieken",
     "hideMetrics": "Verberg statistieken"
@@ -885,6 +920,7 @@
     "week": "Week",
     "day": "Dag",
     "today": "Vandaag",
+    "total": "Total",
     "addEvent": "Evenement Toevoegen",
     "weekView": "Weekweergave",
     "dayView": "Dagweergave",
@@ -908,6 +944,7 @@
     "title": "Titel",
     "status": "Status",
     "dueDate": "Vervaldatum",
+      "deferUntil": "Defer until",
     "priority": "Prioriteit",
     "project": "Project",
     "area": "Gebied",
@@ -1109,6 +1146,7 @@
     "searchText": "Zoektekst",
     "priority": "Prioriteit",
     "dueDate": "Vervaldatum",
+      "deferUntil": "Defer until",
     "noCriteriaSet": "Geen specifieke criteria ingesteld",
     "priorityLabel": "Prioriteit:",
     "dueLabel": "Vervaldatum:",

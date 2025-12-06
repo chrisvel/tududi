@@ -16,7 +16,7 @@ describe('Subtasks API', () => {
                     : Task.STATUS.NOT_STARTED
                 : Task.STATUS.DONE;
 
-        return agent.patch(`/api/task/${taskId}`).send({ status: newStatus });
+        return agent.patch(`/api/task/${task.uid}`).send({ status: newStatus });
     };
 
     beforeEach(async () => {
@@ -219,7 +219,7 @@ describe('Subtasks API', () => {
             };
 
             const response = await agent
-                .patch(`/api/task/${parentTask.id}`)
+                .patch(`/api/task/${parentTask.uid}`)
 
                 .send(updateData)
                 .expect(200);
@@ -267,7 +267,7 @@ describe('Subtasks API', () => {
             };
 
             await agent
-                .patch(`/api/task/${parentTask.id}`)
+                .patch(`/api/task/${parentTask.uid}`)
 
                 .send(updateData)
                 .expect(200);
@@ -305,7 +305,7 @@ describe('Subtasks API', () => {
             };
 
             await agent
-                .patch(`/api/task/${parentTask.id}`)
+                .patch(`/api/task/${parentTask.uid}`)
 
                 .send(updateData)
                 .expect(200);

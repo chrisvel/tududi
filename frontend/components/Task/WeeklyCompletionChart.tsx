@@ -6,6 +6,8 @@ import {
     YAxis,
     ResponsiveContainer,
     Tooltip,
+    LabelList,
+    CartesianGrid,
 } from 'recharts';
 import { useTranslation } from 'react-i18next';
 import { WeeklyCompletion } from '../../entities/Metrics';
@@ -50,6 +52,12 @@ const WeeklyCompletionChart: React.FC<WeeklyCompletionChartProps> = ({
                         data={data}
                         margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
                     >
+                        <CartesianGrid
+                            strokeDasharray="3 3"
+                            vertical={false}
+                            stroke="currentColor"
+                            className="stroke-gray-200 dark:stroke-gray-700"
+                        />
                         <XAxis
                             dataKey="dayName"
                             axisLine={false}
@@ -72,13 +80,26 @@ const WeeklyCompletionChart: React.FC<WeeklyCompletionChartProps> = ({
                             width={25}
                             domain={[0, 'dataMax']}
                         />
-                        <Tooltip content={<CustomTooltip />} />
+                        <Tooltip content={<CustomTooltip />} cursor={false} />
                         <Bar
                             dataKey="count"
                             fill="#3b82f6"
                             radius={[2, 2, 0, 0]}
-                            minPointSize={2}
-                        />
+                            activeBar={{ fill: '#2563eb' }}
+                        >
+                            <LabelList
+                                dataKey="count"
+                                position="center"
+                                style={{
+                                    fontSize: '12px',
+                                    fontWeight: 'bold',
+                                    fill: 'white',
+                                }}
+                                formatter={(value: number) =>
+                                    value > 0 ? value : ''
+                                }
+                            />
+                        </Bar>
                     </BarChart>
                 </ResponsiveContainer>
             </div>

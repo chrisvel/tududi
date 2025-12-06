@@ -16,6 +16,7 @@ import {
     getCreatorFromBannerUrl,
     isPresetBanner,
 } from '../../utils/bannersService';
+import { getAssetPath } from '../../config/paths';
 
 interface ProjectBannerProps {
     project: Project;
@@ -47,7 +48,7 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
             <div className="mb-6 overflow-hidden relative group">
                 {project.image_url ? (
                     <img
-                        src={project.image_url}
+                        src={getAssetPath(project.image_url)}
                         alt={project.name}
                         className="w-full h-[282px] object-cover"
                     />
@@ -174,7 +175,7 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                                 onEditBannerClick();
                             }}
                             className="p-2 bg-black bg-opacity-50 text-purple-400 hover:text-purple-300 hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
-                            title={t('project.editBanner', 'Edit Banner')}
+                            title={t('project.projectImage', 'Project image')}
                         >
                             <CameraIcon className="h-5 w-5" />
                         </button>
@@ -183,6 +184,7 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                         ref={editButtonRef}
                         type="button"
                         className="p-2 bg-black bg-opacity-50 text-blue-400 hover:text-blue-300 hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
+                        title={t('project.editProject', 'Edit project')}
                     >
                         <PencilSquareIcon className="h-5 w-5" />
                     </button>
@@ -194,6 +196,7 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                             onDeleteClick();
                         }}
                         className="p-2 bg-black bg-opacity-50 text-red-400 hover:text-red-300 hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
+                        title={t('project.deleteProject', 'Delete project')}
                     >
                         <TrashIcon className="h-5 w-5" />
                     </button>

@@ -22,7 +22,8 @@
     "discardChanges": "Änderungen verwerfen?",
     "discardChangesMessage": "Sie haben nicht gespeicherte Änderungen. Sind Sie sicher, dass Sie diese verwerfen möchten?",
     "no": "Nein, weiter bearbeiten",
-    "yesDiscard": "Ja, verwerfen"
+    "yesDiscard": "Ja, verwerfen",
+    "uploading": "Hochladen..."
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -34,6 +35,7 @@
     "areas": "Bereiche",
     "tags": "Tags",
     "today": "Heute",
+    "total": "Total",
     "upcoming": "Demnächst",
     "nextActions": "Nächste Aktionen",
     "inbox": "Eingang",
@@ -99,8 +101,10 @@
     "title": "Aufgaben",
     "backlog": "Backlog",
     "inProgress": "In Bearbeitung",
+    "overdue": "Überfällig",
+    "planned": "Geplant",
     "dueToday": "Heute fällig",
-    "completedToday": "Heute abgeschlossen",
+    "completedToday": "Abgeschlossen",
     "myPlanToday": "Mein Plan für Heute",
     "noPlanToday": "Noch keine Aufgaben für heute geplant",
     "addToPlanHint": "Verwende die Kalendersymbole neben den Aufgaben, um sie zu deinem heutigen Plan hinzuzufügen",
@@ -108,6 +112,7 @@
     "addToToday": "Zu heutigem Plan hinzufügen",
     "removeFromToday": "Aus heutigem Plan entfernen",
     "today": "Heute",
+    "total": "Total",
     "stale": "Veraltet",
     "suggested": "Vorgeschlagen",
     "weeklyCompletions": "Wöchentlicher Fortschritt",
@@ -140,7 +145,9 @@
     "noProject": "Kein Projekt",
     "unknownProject": "Unbekanntes Projekt",
     "tasks": "Aufgaben",
-    "showingItems": "{{current}} von {{total}} Elementen angezeigt"
+    "showingItems": "{{current}} von {{total}} Elementen angezeigt",
+    "open": "Öffnen",
+    "completed": "Abgeschlossen"
   },
   "timeline": {
     "activityTimeline": "Aktivitätsverlauf",
@@ -153,6 +160,7 @@
       "statusChanged": "Status geändert",
       "priorityChanged": "Priorität geändert",
       "dueDateChanged": "Fälligkeitsdatum geändert",
+      "deferUntilChanged": "Defer date changed",
       "nameUpdated": "Name aktualisiert",
       "descriptionUpdated": "Beschreibung aktualisiert",
       "noteUpdated": "Notiz aktualisiert",
@@ -163,6 +171,7 @@
       "status": "Status",
       "priority": "Priorität",
       "dueDate": "Fälligkeitsdatum",
+      "deferUntil": "Defer until",
       "none": "Keine",
       "recurrenceEndDateChanged": "Das Enddatum der Wiederholung wurde geändert",
       "recurrenceEndDate": "Enddatum der Wiederholung",
@@ -171,7 +180,10 @@
       "completionBasedChanged": "Änderung der auf Abschluss basierenden Wiederholung",
       "projectIdChanged": "Einem Projekt zugewiesen",
       "recurrenceType": "Wiederholungstyp",
-      "recurrenceTypeChanged": "Wiederholungstyp geändert"
+      "recurrenceTypeChanged": "Wiederholungstyp geändert",
+      "recurrence_weekday_changed": "Wochentag der Wiederholung geändert",
+      "recurrence_month_day_changed": "Tag des Monats der Wiederholung geändert",
+      "recurrence_week_of_month_changed": "Woche des Monats der Wiederholung geändert"
     },
     "justNow": "Gerade eben",
     "minutesAgo": "{{minutes}}m her",
@@ -203,8 +215,10 @@
         "status": "Status",
         "priority": "Priorität",
         "dueDate": "Fälligkeitsdatum",
+      "deferUntil": "Defer until",
         "note": "Notiz",
-        "repeatOn": "Wiederholen am"
+        "repeatOn": "Wiederholen am",
+        "deferUntil": "Aufschieben bis"
       },
       "recurrenceSettings": "Wiederholungseinstellungen",
       "completionBasedHelp": "Falls aktiviert, wird die nächste Aufgabe basierend auf dem Abschlussdatum statt dem Fälligkeitsdatum erstellt",
@@ -227,13 +241,15 @@
         "noVerb": "Welche spezifische Aktion müssen Sie durchführen? Versuchen Sie, mit einem Verb zu beginnen.",
         "vague": "Versuchen Sie, mit einem Aktionsverb wie \"Anrufen\", \"Schreiben\", \"Planen\" oder \"Forschen\" zu beginnen"
       },
-      "selectAtLeastOneDay": "Bitte wählen Sie mindestens einen Tag aus"
+      "selectAtLeastOneDay": "Bitte wählen Sie mindestens einen Tag aus",
+      "deferUntilPlaceholder": "Wählen Sie das Datum und die Uhrzeit für das Aufschieben aus"
     },
     "noteTitle": "Notiz-Titel",
     "noteContent": "Notiz-Inhalt",
     "noteTitlePlaceholder": "Notiz-Titel eingeben",
     "noteContentPlaceholder": "Notiz-Inhalt eingeben",
     "dueDate": "Fälligkeitsdatum",
+      "deferUntil": "Defer until",
     "priority": "Priorität",
     "status": "Status",
     "assignedTo": "Zugewiesen an",
@@ -310,7 +326,10 @@
     "areaNameRequired": "Bereichsname ist erforderlich.",
     "failedToSaveArea": "Speichern des Bereichs fehlgeschlagen.",
     "tagNameRequired": "Tag-Name ist erforderlich.",
-    "failedToSaveTag": "Speichern des Tags fehlgeschlagen."
+    "failedToSaveTag": "Speichern des Tags fehlgeschlagen.",
+    "projectImageTooLarge": "Bild ist zu groß. Bitte wählen Sie eine Datei unter 10MB.",
+    "projectImageUpload": "Hochladen des Bildes fehlgeschlagen. Bitte versuchen Sie eine kleinere Datei oder ein anderes Format.",
+    "bannerSaveFailed": "Speichern des Banners fehlgeschlagen"
   },
   "success": {
     "noteUpdated": "Notiz erfolgreich aktualisiert!",
@@ -325,7 +344,8 @@
     "taskCreated": "Aufgabe erfolgreich erstellt!",
     "taskUpdated": "Aufgabe erfolgreich aktualisiert!",
     "taskDeleted": "Aufgabe erfolgreich gelöscht!",
-    "noteDeleted": "Notiz erfolgreich gelöscht!"
+    "noteDeleted": "Notiz erfolgreich gelöscht!",
+    "bannerUpdated": "Banner erfolgreich aktualisiert!"
   },
   "notes": {
     "title": "Notizen",
@@ -410,7 +430,12 @@
     "createSuccess": "Projekt erfolgreich erstellt!",
     "createdAndAssigned": "Projekt erstellt und zugewiesen",
     "createError": "Projekt konnte nicht erstellt werden",
-    "viewProject": "Zum Projekt gehen"
+    "viewProject": "Zum Projekt gehen",
+    "editProject": "Projekt bearbeiten",
+    "editBanner": "Projektbanner bearbeiten",
+    "currentBanner": "Aktuelles Banner",
+    "choosePreset": "Wählen Sie ein vordefiniertes Banner:",
+    "orUploadOwn": "Oder laden Sie Ihr eigenes hoch:"
   },
   "profile": {
     "title": "Profil-Einstellungen",
@@ -596,6 +621,7 @@
       "status": "Status",
       "priority": "Priorität",
       "dueDate": "Fälligkeitsdatum",
+      "deferUntil": "Defer until",
       "note": "Notiz"
     },
     "create": "Erstellen",
@@ -665,6 +691,7 @@
     "noTags": "Keine Tags",
     "priority": "Priorität",
     "dueDate": "Fälligkeitsdatum",
+      "deferUntil": "Defer until",
     "recurringSetup": "Wiederkehrende Einrichtung",
     "notRecurring": "Diese Aufgabe ist noch nicht wiederkehrend.",
     "clickToEditTitle": "Klicken Sie, um den Titel zu bearbeiten",
@@ -685,13 +712,18 @@
     "parentTask": "Übergeordnete Aufgabe",
     "includingToday": "einschließlich heute",
     "has": "hat",
-    "fromProject": "vom Projekt"
+    "fromProject": "vom Projekt",
+    "deferUntil": "Bis später verschieben",
+    "noDeferUntil": "Keine Verschiebung bis",
+    "deferUntilUpdated": "Bis zur erfolgreichen Aktualisierung verschieben",
+    "deferUntilUpdateError": "Aktualisierung der Verschiebung bis fehlgeschlagen"
   },
   "calendar": {
     "month": "Monat",
     "week": "Woche",
     "day": "Tag",
     "today": "Heute",
+    "total": "Total",
     "addEvent": "Ereignis hinzufügen",
     "weekView": "Wochenansicht",
     "dayView": "Tagesansicht",
@@ -715,6 +747,7 @@
     "title": "Titel",
     "status": "Status",
     "dueDate": "Fälligkeitsdatum",
+      "deferUntil": "Defer until",
     "priority": "Priorität",
     "project": "Projekt",
     "area": "Bereich",
@@ -816,6 +849,7 @@
   },
   "dateIndicators": {
     "today": "HEUTE",
+    "total": "Total",
     "tomorrow": "MORGEN",
     "yesterday": "GESTERN",
     "nextWeek": "nächste Woche",
@@ -827,6 +861,7 @@
       "noName": "Sie betrachten Aufgaben für ein bestimmtes Projekt. Nutzen Sie diesen Raum, um Aufgaben zu verwalten und zu verfolgen, die mit diesem Projekt verbunden sind."
     },
     "today": "Dies sind die Aufgaben, die heute fällig sind oder die Sie für sofortige Aufmerksamkeit geplant haben. Nutzen Sie diese Ansicht, um sich auf das zu konzentrieren, was heute erledigt werden muss. Markieren Sie Aufgaben als erledigt, aktualisieren Sie ihren Status oder passen Sie ihre Fälligkeitsdaten bei Bedarf an.",
+    "total": "Total",
     "inbox": "Der Posteingang ist der Ort, an dem alle nicht kategorisierten Aufgaben leben. Aufgaben, die keinem Projekt zugewiesen wurden oder kein Fälligkeitsdatum haben, werden hier angezeigt. Dies ist Ihr Bereich für \"Gehirn-Dump\", in dem Sie schnell Aufgaben notieren und später organisieren können.",
     "next": "Diese Ansicht zeigt alle Aufgaben, die in naher Zukunft bearbeitet werden können. Diese Aufgaben sind bereit, als nächstes bearbeitet zu werden und haben keine langfristigen Fristen. Es ist ein guter Ort, um sich zu konzentrieren, wenn Sie schnelle Fortschritte bei den Aufgaben machen möchten.",
     "upcoming": "Diese Ansicht hebt Aufgaben hervor, die für die kommende Woche geplant sind. Sie hilft Ihnen, sich vorzubereiten und Fristen einzuhalten, indem sie Ihnen einen Überblick über die Arbeit gibt, die Sie in naher Zukunft erledigen müssen. Aufgaben mit Fälligkeitsdaten innerhalb der nächsten 7 Tage werden hier angezeigt.",
@@ -872,7 +907,9 @@
       "planned_desc": "Definiert und bereit zum Start",
       "in_progress_desc": "Aktive Arbeit im Gange",
       "blocked_desc": "Vorübergehend pausiert oder festgefahren",
-      "completed_desc": "Fertiggestellt und abgeschlossen"
+      "completed_desc": "Fertiggestellt und abgeschlossen",
+      "active": "In Bearbeitung",
+      "active_desc": "Aktive Arbeit im Gange"
     },
     "showMetrics": "Metriken anzeigen",
     "hideMetrics": "Metriken ausblenden"
@@ -1118,6 +1155,7 @@
     "searchText": "Suchtext",
     "priority": "Priorität",
     "dueDate": "Fälligkeitsdatum",
+      "deferUntil": "Defer until",
     "noCriteriaSet": "Keine spezifischen Kriterien festgelegt",
     "priorityLabel": "Priorität:",
     "dueLabel": "Fällig:",

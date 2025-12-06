@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { TagIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 import TagInput from '../../Tag/TagInput';
 import { Task } from '../../../entities/Task';
@@ -12,6 +13,7 @@ interface TaskTagsCardProps {
     isLoadingTags: boolean;
     onUpdate: (tags: string[]) => Promise<void>;
     onLoadTags: () => void;
+    getTagLink?: (tag: any) => string;
 }
 
 const TaskTagsCard: React.FC<TaskTagsCardProps> = ({
@@ -21,6 +23,7 @@ const TaskTagsCard: React.FC<TaskTagsCardProps> = ({
     isLoadingTags,
     onUpdate,
     onLoadTags,
+    getTagLink,
 }) => {
     const { t } = useTranslation();
     const [isEditing, setIsEditing] = useState(false);
@@ -95,25 +98,34 @@ const TaskTagsCard: React.FC<TaskTagsCardProps> = ({
                 ) : task.tags && task.tags.length > 0 ? (
                     <div>
                         {task.tags.map((tag: any, index: number) => (
-                            <button
+                            <div
                                 key={tag.uid || tag.id || tag.name}
-                                type="button"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleStartEdit();
-                                }}
                                 className={`group flex w-full items-center justify-between px-3 py-2.5 bg-white dark:bg-gray-900 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${
                                     index === 0 ? 'rounded-t-lg' : ''
                                 } ${index === task.tags.length - 1 ? 'rounded-b-lg' : ''}`}
                             >
-                                <div className="flex items-center space-x-2 min-w-0">
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleStartEdit();
+                                    }}
+                                    className="flex items-center space-x-2 min-w-0 flex-1 text-left"
+                                >
                                     <TagIcon className="h-4 w-4 text-gray-500 dark:text-gray-400" />
                                     <span className="text-sm text-gray-900 dark:text-gray-100 truncate">
                                         {tag.name}
                                     </span>
-                                </div>
-                                <ArrowRightIcon className="h-4 w-4 text-blue-600 dark:text-blue-400 group-hover:text-blue-700 dark:group-hover:text-blue-300 flex-shrink-0" />
-                            </button>
+                                </button>
+                                <Link
+                                    to={getTagLink ? getTagLink(tag) : '#'}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="p-1.5 rounded-full text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors flex-shrink-0"
+                                    title={t('tag.viewTag', 'Go to tag')}
+                                >
+                                    <ArrowRightIcon className="h-4 w-4" />
+                                </Link>
+                            </div>
                         ))}
                     </div>
                 ) : (

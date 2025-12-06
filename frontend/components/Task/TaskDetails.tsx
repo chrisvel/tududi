@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
@@ -30,6 +30,7 @@ import {
     TaskRecurrenceCard,
     TaskDueDateCard,
     TaskDeferUntilCard,
+    TaskAttachmentsCard,
 } from './TaskDetails/';
 
 const TaskDetails: React.FC = () => {
@@ -46,11 +47,9 @@ const TaskDetails: React.FC = () => {
         state.tasksStore.tasks.find((t: Task) => t.uid === uid)
     );
 
-    // Get subtasks from the task data (already loaded in global store)
     const subtasks = task?.subtasks || task?.Subtasks || [];
 
-    // Local state
-    const [loading, setLoading] = useState(!task); // Only show loading if task not in store
+    const [loading, setLoading] = useState(!task);
     const [error, setError] = useState<string | null>(null);
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
@@ -130,23 +129,19 @@ const TaskDetails: React.FC = () => {
         task?.completion_based,
     ]);
 
-    // Load tags early and check for pending modal state on mount
     useEffect(() => {
-        // Preload tags if not already loaded
         if (!tagsStore.hasLoaded && !tagsStore.isLoading) {
             tagsStore.loadTags();
         }
 
         try {
-            // Check for subtasks modal state
             const pendingStateStr = sessionStorage.getItem('pendingModalState');
             if (pendingStateStr) {
                 const pendingState = JSON.parse(pendingStateStr);
-                const isRecent = Date.now() - pendingState.timestamp < 2000; // Within 2 seconds
+                const isRecent = Date.now() - pendingState.timestamp < 2000;
                 const isCorrectTask = pendingState.taskId === uid;
 
                 if (isRecent && isCorrectTask && pendingState.isOpen) {
-                    // Use microtask to avoid lifecycle method warning
                     queueMicrotask(() => {
                         setIsTaskModalOpen(true);
                         setFocusSubtasks(pendingState.focusSubtasks);
@@ -155,17 +150,15 @@ const TaskDetails: React.FC = () => {
                 }
             }
 
-            // Check for edit modal state
             const pendingEditStateStr = sessionStorage.getItem(
                 'pendingTaskEditModalState'
             );
             if (pendingEditStateStr) {
                 const pendingEditState = JSON.parse(pendingEditStateStr);
-                const isRecent = Date.now() - pendingEditState.timestamp < 5000; // Within 5 seconds
+                const isRecent = Date.now() - pendingEditState.timestamp < 5000;
                 const isCorrectTask = pendingEditState.taskId === uid;
 
                 if (isRecent && isCorrectTask && pendingEditState.isOpen) {
-                    // Use microtask to avoid lifecycle method warning
                     queueMicrotask(() => {
                         setIsTaskModalOpen(true);
                         setFocusSubtasks(false);
@@ -201,7 +194,7 @@ const TaskDetails: React.FC = () => {
     };
 
     const handleSaveRecurrence = async () => {
-        if (!task?.id) {
+        if (!task?.uid) {
             setIsEditingRecurrence(false);
             return;
         }
@@ -231,7 +224,7 @@ const TaskDetails: React.FC = () => {
                 completion_based: recurrenceForm.completion_based,
             };
 
-            await updateTask(task.id, { ...task, ...recurrencePayload });
+            await updateTask(task.uid, { ...task, ...recurrencePayload });
 
             if (uid) {
                 const updatedTask = await fetchTaskByUid(uid);
@@ -279,7 +272,7 @@ const TaskDetails: React.FC = () => {
     };
 
     const handleSaveDueDate = async () => {
-        if (!task?.id) {
+        if (!task?.uid) {
             setIsEditingDueDate(false);
             setEditedDueDate(task?.due_date || '');
             return;
@@ -290,7 +283,6 @@ const TaskDetails: React.FC = () => {
             return;
         }
 
-        // Validate defer_until vs due_date
         if (task.defer_until && editedDueDate) {
             const deferDate = new Date(task.defer_until);
             const dueDate = new Date(editedDueDate);
@@ -309,7 +301,7 @@ const TaskDetails: React.FC = () => {
         }
 
         try {
-            await updateTask(task.id, {
+            await updateTask(task.uid, {
                 ...task,
                 due_date: editedDueDate || null,
             });
@@ -353,7 +345,7 @@ const TaskDetails: React.FC = () => {
     };
 
     const handleSaveDeferUntil = async () => {
-        if (!task?.id) {
+        if (!task?.uid) {
             setIsEditingDeferUntil(false);
             setEditedDeferUntil(task?.defer_until || '');
             return;
@@ -364,7 +356,6 @@ const TaskDetails: React.FC = () => {
             return;
         }
 
-        // Validate defer_until vs due_date
         if (editedDeferUntil && task.due_date) {
             const deferDate = new Date(editedDeferUntil);
             const dueDate = new Date(task.due_date);
@@ -383,7 +374,7 @@ const TaskDetails: React.FC = () => {
         }
 
         try {
-            await updateTask(task.id, {
+            await updateTask(task.uid, {
                 defer_until: editedDeferUntil || null,
             });
 
@@ -550,12 +541,10 @@ const TaskDetails: React.FC = () => {
                 return;
             }
 
-            // If task is not in store, load it
             if (!task) {
                 try {
                     setLoading(true);
                     const fetchedTask = await fetchTaskByUid(uid);
-                    // Add the task to the store
                     tasksStore.setTasks([...tasksStore.tasks, fetchedTask]);
                 } catch (fetchError) {
                     setError('Task not found');
@@ -564,17 +553,13 @@ const TaskDetails: React.FC = () => {
                     setLoading(false);
                 }
             }
-
-            // Subtasks are already loaded as part of the task data from the global store
         };
 
         fetchTaskData();
     }, [uid, task, tasksStore]);
 
-    // Load next iterations for recurring tasks (both parent tasks and child tasks)
     useEffect(() => {
         const loadNextIterations = async () => {
-            // For parent tasks, use the task's own ID
             if (
                 task?.id &&
                 task.recurrence_type &&
@@ -582,7 +567,13 @@ const TaskDetails: React.FC = () => {
             ) {
                 try {
                     setLoadingIterations(true);
-                    const iterations = await fetchTaskNextIterations(task.id);
+                    const startFromDate = task.due_date
+                        ? task.due_date.split('T')[0]
+                        : undefined;
+                    const iterations = await fetchTaskNextIterations(
+                        task.id,
+                        startFromDate
+                    );
                     setNextIterations(iterations);
                 } catch (error) {
                     console.error('Error loading next iterations:', error);
@@ -590,9 +581,7 @@ const TaskDetails: React.FC = () => {
                 } finally {
                     setLoadingIterations(false);
                 }
-            }
-            // For child tasks, use the parent task's ID and start from the child's due date
-            else if (
+            } else if (
                 task?.recurring_parent_id &&
                 parentTask?.id &&
                 parentTask.recurrence_type &&
@@ -601,7 +590,6 @@ const TaskDetails: React.FC = () => {
                 try {
                     setLoadingIterations(true);
 
-                    // If child task has a due date, start iterations from that date
                     const startFromDate = task.due_date
                         ? task.due_date.split('T')[0]
                         : undefined;
@@ -637,7 +625,6 @@ const TaskDetails: React.FC = () => {
         parentTask?.last_generated_date,
     ]);
 
-    // Load parent task for child tasks (recurring instances)
     useEffect(() => {
         const loadParentTask = async () => {
             if (task?.recurring_parent_uid) {
@@ -665,17 +652,15 @@ const TaskDetails: React.FC = () => {
     };
 
     const handleSaveSubtasks = async () => {
-        if (!task?.id) {
+        if (!task?.uid) {
             setIsEditingSubtasks(false);
             setEditedSubtasks([]);
             return;
         }
 
         try {
-            // Update task with new subtasks
-            await updateTask(task.id, { ...task, subtasks: editedSubtasks });
+            await updateTask(task.uid, { ...task, subtasks: editedSubtasks });
 
-            // Refresh the task from server to get updated subtasks
             if (uid) {
                 const updatedTask = await fetchTaskByUid(uid);
                 const existingIndex = tasksStore.tasks.findIndex(
@@ -693,7 +678,6 @@ const TaskDetails: React.FC = () => {
             );
             setIsEditingSubtasks(false);
 
-            // Refresh timeline to show subtask changes
             setTimelineRefreshKey((prev) => prev + 1);
         } catch (error) {
             console.error('Error updating subtasks:', error);
@@ -711,9 +695,9 @@ const TaskDetails: React.FC = () => {
     };
 
     const handleToggleSubtaskCompletion = async (subtask: Task) => {
-        if (!subtask.id) return;
+        if (!subtask.uid) return;
         try {
-            await toggleTaskCompletion(subtask.id, subtask);
+            await toggleTaskCompletion(subtask.uid, subtask);
             if (uid) {
                 const updatedTask = await fetchTaskByUid(uid);
                 const existingIndex = tasksStore.tasks.findIndex(
@@ -732,12 +716,11 @@ const TaskDetails: React.FC = () => {
     };
 
     const handleProjectSelection = async (project: Project) => {
-        if (!task?.id) return;
+        if (!task?.uid) return;
 
         try {
-            await updateTask(task.id, { ...task, project_id: project.id });
+            await updateTask(task.uid, { ...task, project_id: project.id });
 
-            // Refresh the task from server
             if (uid) {
                 const updatedTask = await fetchTaskByUid(uid);
                 const existingIndex = tasksStore.tasks.findIndex(
@@ -754,7 +737,6 @@ const TaskDetails: React.FC = () => {
                 t('task.projectUpdated', 'Project updated successfully')
             );
 
-            // Refresh timeline
             setTimelineRefreshKey((prev) => prev + 1);
         } catch (error) {
             console.error('Error updating project:', error);
@@ -765,12 +747,11 @@ const TaskDetails: React.FC = () => {
     };
 
     const handleClearProject = async () => {
-        if (!task?.id) return;
+        if (!task?.uid) return;
 
         try {
-            await updateTask(task.id, { ...task, project_id: null });
+            await updateTask(task.uid, { ...task, project_id: null });
 
-            // Refresh the task from server
             if (uid) {
                 const updatedTask = await fetchTaskByUid(uid);
                 const existingIndex = tasksStore.tasks.findIndex(
@@ -787,7 +768,6 @@ const TaskDetails: React.FC = () => {
                 t('task.projectCleared', 'Project cleared successfully')
             );
 
-            // Refresh timeline
             setTimelineRefreshKey((prev) => prev + 1);
         } catch (error) {
             console.error('Error clearing project:', error);
@@ -804,7 +784,6 @@ const TaskDetails: React.FC = () => {
             e.nativeEvent.stopImmediatePropagation();
         }
 
-        // Store modal state in sessionStorage to persist across re-mounts
         const modalState = {
             isOpen: true,
             taskId: uid,
@@ -819,23 +798,80 @@ const TaskDetails: React.FC = () => {
         setIsTaskModalOpen(true);
     };
 
+    const refreshRecurringSetup = useCallback(
+        async (latestTask?: Task | null) => {
+            if (!latestTask) {
+                setNextIterations([]);
+                return;
+            }
+
+            const isTemplateTask =
+                latestTask.recurrence_type &&
+                latestTask.recurrence_type !== 'none' &&
+                !latestTask.recurring_parent_id;
+            const canUseParentIterations =
+                !!latestTask.recurring_parent_id &&
+                !!parentTask?.id &&
+                parentTask?.recurrence_type &&
+                parentTask.recurrence_type !== 'none';
+
+            if (!isTemplateTask && !canUseParentIterations) {
+                setNextIterations([]);
+                return;
+            }
+
+            try {
+                setLoadingIterations(true);
+                if (isTemplateTask) {
+                    const startFromDate = latestTask.due_date
+                        ? latestTask.due_date.split('T')[0]
+                        : undefined;
+                    const iterations = await fetchTaskNextIterations(
+                        latestTask.id,
+                        startFromDate
+                    );
+                    setNextIterations(iterations);
+                } else if (canUseParentIterations && parentTask?.id) {
+                    const startFromDate = latestTask.due_date
+                        ? latestTask.due_date.split('T')[0]
+                        : undefined;
+                    const iterations = await fetchTaskNextIterations(
+                        parentTask.id,
+                        startFromDate
+                    );
+                    setNextIterations(iterations);
+                }
+            } catch (error) {
+                console.error('Error refreshing recurring setup:', error);
+                setNextIterations([]);
+            } finally {
+                setLoadingIterations(false);
+            }
+        },
+        [parentTask?.id, parentTask?.recurrence_type]
+    );
+
     const handleToggleCompletion = async () => {
-        if (!task?.id) return;
+        if (!task?.uid) return;
 
         try {
-            const updatedTask = await toggleTaskCompletion(task.id);
-            // Update the task in the global store
+            const updatedTask = await toggleTaskCompletion(task.uid, task);
+            let latestTaskData: Task | null = updatedTask;
+
             if (uid) {
-                const updatedTask = await fetchTaskByUid(uid);
+                const refreshedTask = await fetchTaskByUid(uid);
+                latestTaskData = refreshedTask;
                 const existingIndex = tasksStore.tasks.findIndex(
                     (t: Task) => t.uid === uid
                 );
                 if (existingIndex >= 0) {
                     const updatedTasks = [...tasksStore.tasks];
-                    updatedTasks[existingIndex] = updatedTask;
+                    updatedTasks[existingIndex] = refreshedTask;
                     tasksStore.setTasks(updatedTasks);
                 }
             }
+
+            await refreshRecurringSetup(latestTaskData);
 
             const statusMessage =
                 updatedTask.status === 'done' || updatedTask.status === 2
@@ -844,7 +880,6 @@ const TaskDetails: React.FC = () => {
 
             showSuccessToast(statusMessage);
 
-            // Refresh timeline to show status change activity
             setTimelineRefreshKey((prev) => prev + 1);
         } catch (error) {
             console.error('Error toggling task completion:', error);
@@ -856,9 +891,8 @@ const TaskDetails: React.FC = () => {
 
     const handleTaskUpdate = async (updatedTask: Task) => {
         try {
-            if (task?.id) {
-                await updateTask(task.id, updatedTask);
-                // Update the task in the global store
+            if (task?.uid) {
+                await updateTask(task.uid, updatedTask);
                 if (uid) {
                     const updatedTaskFromServer = await fetchTaskByUid(uid);
                     const existingIndex = tasksStore.tasks.findIndex(
@@ -871,9 +905,6 @@ const TaskDetails: React.FC = () => {
                     }
                 }
 
-                // Subtasks will be automatically updated when the task is reloaded from the global store
-
-                // Refresh timeline to show new activity
                 setTimelineRefreshKey((prev) => prev + 1);
             }
             setIsTaskModalOpen(false);
@@ -891,13 +922,13 @@ const TaskDetails: React.FC = () => {
     };
 
     const handleDeleteConfirm = async () => {
-        if (taskToDelete?.id) {
+        if (taskToDelete?.uid) {
             try {
-                await deleteTask(taskToDelete.id);
+                await deleteTask(taskToDelete.uid);
                 showSuccessToast(
                     t('task.deleteSuccess', 'Task deleted successfully')
                 );
-                navigate('/today'); // Navigate back to today view after deletion
+                navigate('/today');
             } catch (error) {
                 console.error('Error deleting task:', error);
                 showErrorToast(t('task.deleteError', 'Failed to delete task'));
@@ -927,9 +958,19 @@ const TaskDetails: React.FC = () => {
         return `/project/${project.id}`;
     };
 
-    // Wrapper handlers for new components
+    const getTagLink = (tag: any) => {
+        if (tag.uid) {
+            const slug = tag.name
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-|-$/g, '');
+            return `/tag/${tag.uid}-${slug}`;
+        }
+        return `/tag/${encodeURIComponent(tag.name)}`;
+    };
+
     const handleTitleUpdate = async (newTitle: string) => {
-        if (!task?.id || !newTitle.trim()) {
+        if (!task?.uid || !newTitle.trim()) {
             return;
         }
 
@@ -938,9 +979,8 @@ const TaskDetails: React.FC = () => {
         }
 
         try {
-            await updateTask(task.id, { ...task, name: newTitle.trim() });
+            await updateTask(task.uid, { ...task, name: newTitle.trim() });
 
-            // Update the task in the global store
             if (uid) {
                 const updatedTask = await fetchTaskByUid(uid);
                 const existingIndex = tasksStore.tasks.findIndex(
@@ -957,7 +997,6 @@ const TaskDetails: React.FC = () => {
                 t('task.titleUpdated', 'Task title updated successfully')
             );
 
-            // Refresh timeline to show title change activity
             setTimelineRefreshKey((prev) => prev + 1);
         } catch (error) {
             console.error('Error updating task title:', error);
@@ -969,7 +1008,7 @@ const TaskDetails: React.FC = () => {
     };
 
     const handleContentUpdate = async (newContent: string) => {
-        if (!task?.id) {
+        if (!task?.uid) {
             return;
         }
 
@@ -980,9 +1019,8 @@ const TaskDetails: React.FC = () => {
         }
 
         try {
-            await updateTask(task.id, { ...task, note: trimmedContent });
+            await updateTask(task.uid, { ...task, note: trimmedContent });
 
-            // Update the task in the global store
             if (uid) {
                 const updatedTask = await fetchTaskByUid(uid);
                 const existingIndex = tasksStore.tasks.findIndex(
@@ -999,7 +1037,6 @@ const TaskDetails: React.FC = () => {
                 t('task.contentUpdated', 'Task content updated successfully')
             );
 
-            // Refresh timeline to show content change activity
             setTimelineRefreshKey((prev) => prev + 1);
         } catch (error) {
             console.error('Error updating task content:', error);
@@ -1011,18 +1048,15 @@ const TaskDetails: React.FC = () => {
     };
 
     const handleProjectCreateInlineWrapper = async (name: string) => {
-        if (!task?.id || !name.trim()) return;
+        if (!task?.uid || !name.trim()) return;
 
         try {
             const newProject = await createProject({ name });
 
-            // Add to projects store
             projectsStore.setProjects([...projectsStore.projects, newProject]);
 
-            // Update task with new project
-            await updateTask(task.id, { ...task, project_id: newProject.id });
+            await updateTask(task.uid, { ...task, project_id: newProject.id });
 
-            // Refresh the task from server
             if (uid) {
                 const updatedTask = await fetchTaskByUid(uid);
                 const existingIndex = tasksStore.tasks.findIndex(
@@ -1039,7 +1073,6 @@ const TaskDetails: React.FC = () => {
                 t('project.createdAndAssigned', 'Project created and assigned')
             );
 
-            // Refresh timeline
             setTimelineRefreshKey((prev) => prev + 1);
         } catch (error) {
             console.error('Error creating project:', error);
@@ -1051,7 +1084,7 @@ const TaskDetails: React.FC = () => {
     };
 
     const handleTagsUpdate = async (tags: string[]) => {
-        if (!task?.id) {
+        if (!task?.uid) {
             return;
         }
 
@@ -1064,7 +1097,7 @@ const TaskDetails: React.FC = () => {
         }
 
         try {
-            await updateTask(task.id, {
+            await updateTask(task.uid, {
                 ...task,
                 tags: tags.map((name) => ({ name })),
             });
@@ -1094,10 +1127,10 @@ const TaskDetails: React.FC = () => {
     };
 
     const handlePriorityUpdate = async (priority: any) => {
-        if (!task?.id) return;
+        if (!task?.uid) return;
 
         try {
-            await updateTask(task.id, {
+            await updateTask(task.uid, {
                 ...task,
                 priority: priority,
             });
@@ -1157,6 +1190,8 @@ const TaskDetails: React.FC = () => {
                     onTitleUpdate={handleTitleUpdate}
                     onEdit={handleEdit}
                     onDelete={handleDeleteClick}
+                    getProjectLink={getProjectLink}
+                    getTagLink={getTagLink}
                 />
 
                 {/* Summary and Overdue Alerts */}
@@ -1208,6 +1243,8 @@ const TaskDetails: React.FC = () => {
                                 nextIterations={nextIterations}
                                 canEdit={!task.recurring_parent_id}
                             />
+
+                            <TaskAttachmentsCard taskUid={task.uid} />
                         </div>
 
                         {/* Right Column - Metadata and Recent Activity */}
@@ -1232,6 +1269,7 @@ const TaskDetails: React.FC = () => {
                                 isLoadingTags={tagsStore.isLoading}
                                 onUpdate={handleTagsUpdate}
                                 onLoadTags={() => tagsStore.loadTags()}
+                                getTagLink={getTagLink}
                             />
 
                             {/* Priority Section */}
@@ -1288,16 +1326,17 @@ const TaskDetails: React.FC = () => {
                         onClose={() => {
                             setIsTaskModalOpen(false);
                             setFocusSubtasks(false);
-                            // Clear pending state when modal is closed
                             sessionStorage.removeItem('pendingModalState');
                             sessionStorage.removeItem(
                                 'pendingTaskEditModalState'
                             );
                         }}
                         onSave={handleTaskUpdate}
-                        onDelete={async (taskId: number) => {
-                            await deleteTask(taskId);
-                            navigate('/today');
+                        onDelete={async () => {
+                            if (task.uid) {
+                                await deleteTask(task.uid);
+                                navigate('/today');
+                            }
                         }}
                         projects={projects}
                         onCreateProject={handleCreateProject}

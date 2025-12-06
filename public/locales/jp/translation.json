@@ -22,7 +22,8 @@
     "discardChanges": "変更を破棄しますか？",
     "discardChangesMessage": "保存されていない変更があります。破棄してもよろしいですか？",
     "no": "いいえ、編集を続ける",
-    "yesDiscard": "はい、破棄する"
+    "yesDiscard": "はい、破棄する",
+    "uploading": "アップロード中..."
   },
   "sidebar": {
     "dashboard": "ダッシュボード",
@@ -34,6 +35,7 @@
     "areas": "エリア",
     "tags": "タグ",
     "today": "今日",
+    "total": "Total",
     "upcoming": "近日",
     "nextActions": "次のアクション",
     "inbox": "受信箱",
@@ -98,6 +100,7 @@
   "tasks": {
     "title": "タスク",
     "today": "今日",
+    "total": "Total",
     "backlog": "バックログ",
     "inProgress": "進行中",
     "dueToday": "本日の期限",
@@ -140,7 +143,11 @@
     "noProject": "プロジェクトなし",
     "unknownProject": "不明なプロジェクト",
     "tasks": "タスク",
-    "showingItems": "{{total}}件中{{current}}件を表示"
+    "showingItems": "{{total}}件中{{current}}件を表示",
+    "overdue": "期限切れ",
+    "planned": "計画中",
+    "open": "開く",
+    "completed": "完了"
   },
   "timeline": {
     "activityTimeline": "アクティビティタイムライン",
@@ -153,6 +160,7 @@
       "statusChanged": "ステータスが変更されました",
       "priorityChanged": "優先度が変更されました",
       "dueDateChanged": "期限が変更されました",
+      "deferUntilChanged": "Defer date changed",
       "nameUpdated": "名前が更新されました",
       "descriptionUpdated": "説明が更新されました",
       "noteUpdated": "メモが更新されました",
@@ -163,6 +171,7 @@
       "status": "ステータス",
       "priority": "優先度",
       "dueDate": "期限",
+      "deferUntil": "Defer until",
       "none": "なし",
       "recurrenceEndDateChanged": "繰り返し終了日が変更されました",
       "recurrenceEndDate": "繰り返し終了日",
@@ -171,7 +180,10 @@
       "completionBasedChanged": "完了ベースの繰り返しが変更されました",
       "projectIdChanged": "プロジェクトに割り当てられました",
       "recurrenceType": "繰り返しの種類",
-      "recurrenceTypeChanged": "繰り返しの種類が変更されました"
+      "recurrenceTypeChanged": "繰り返しの種類が変更されました",
+      "recurrence_weekday_changed": "繰り返し曜日が変更されました",
+      "recurrence_month_day_changed": "繰り返し月日が変更されました",
+      "recurrence_week_of_month_changed": "繰り返し月の週が変更されました"
     },
     "justNow": "たった今",
     "minutesAgo": "{{minutes}}分前",
@@ -391,6 +403,7 @@
     "title": "タイトル",
     "description": "説明",
     "dueDate": "期限",
+      "deferUntil": "Defer until",
     "priority": "優先度",
     "status": "状態",
     "assignedTo": "担当者",
@@ -418,8 +431,10 @@
         "status": "ステータス",
         "priority": "優先度",
         "dueDate": "期限日",
+      "deferUntil": "Defer until",
         "note": "ノート",
-        "repeatOn": "繰り返し"
+        "repeatOn": "繰り返し",
+        "deferUntil": "延期するまで"
       },
       "recurrenceSettings": "繰り返し設定",
       "completionBasedHelp": "チェックすると、次のタスクは期限日ではなく完了日に基づいて作成されます",
@@ -442,7 +457,8 @@
         "noVerb": "具体的な行動は何ですか？ 動詞で始めてみてください。",
         "vague": "\"電話する\"、\"書く\"、\"予定する\"、\"調査する\"などの動詞で始めてみてください"
       },
-      "selectAtLeastOneDay": "少なくとも1日を選択してください"
+      "selectAtLeastOneDay": "少なくとも1日を選択してください",
+      "deferUntilPlaceholder": "延期する日付と時間を選択"
     },
     "areaName": "エリア名",
     "areaDescription": "エリアの説明",
@@ -512,7 +528,10 @@
     "areaNameRequired": "エリア名が必要です。",
     "failedToSaveArea": "エリアの保存に失敗しました。",
     "tagNameRequired": "タグ名が必要です。",
-    "failedToSaveTag": "タグの保存に失敗しました。"
+    "failedToSaveTag": "タグの保存に失敗しました。",
+    "projectImageTooLarge": "画像が大きすぎます。10MB未満のファイルを選択してください。",
+    "projectImageUpload": "画像のアップロードに失敗しました。より小さいファイルまたは異なる形式を試してください。",
+    "bannerSaveFailed": "バナーの保存に失敗しました"
   },
   "success": {
     "noteUpdated": "ノートが正常に更新されました！",
@@ -527,7 +546,8 @@
     "taskCreated": "タスクが正常に作成されました！",
     "taskUpdated": "タスクが正常に更新されました！",
     "taskDeleted": "タスクが正常に削除されました！",
-    "noteDeleted": "ノートが正常に削除されました！"
+    "noteDeleted": "ノートが正常に削除されました！",
+    "bannerUpdated": "バナーが正常に更新されました！"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -544,6 +564,7 @@
       "noName": "特定のプロジェクトのタスクを表示しています。このスペースでプロジェクトに関連するタスクを管理してください。"
     },
     "today": "本日期限のタスクまたは即時対応のためのタスクが表示されます。今日完了すべきタスクに集中してください。ステータスの更新や完了マークが可能です。",
+    "total": "Total",
     "inbox": "受信トレイは、カテゴリ未割り当てのタスクが一覧表示されます。プロジェクトや期限が設定されていないタスクはここに集まります。アイデアやタスクをすぐに記録する場所としてご利用ください。",
     "next": "近日中に実行可能なタスクを表示します。すぐに取り掛かるべきタスクにフォーカスしてください。",
     "upcoming": "今後1週間以内に期限が来るタスクを表示します。今後の予定を把握し、締め切りに備えるのに役立ちます。",
@@ -580,7 +601,9 @@
       "planned_desc": "スコープが決まり、開始準備が整った",
       "in_progress_desc": "アクティブな作業が行われている",
       "blocked_desc": "一時的に停止または行き詰まっている",
-      "completed_desc": "完了し、終了した"
+      "completed_desc": "完了し、終了した",
+      "active": "進行中",
+      "active_desc": "アクティブな作業が行われています"
     },
     "showMetrics": "メトリクスを表示",
     "hideMetrics": "メトリクスを非表示"
@@ -712,7 +735,12 @@
     "createSuccess": "プロジェクトが正常に作成されました！",
     "createdAndAssigned": "プロジェクトが作成され、割り当てられました",
     "createError": "プロジェクトの作成に失敗しました",
-    "viewProject": "プロジェクトに移動"
+    "viewProject": "プロジェクトに移動",
+    "editProject": "プロジェクトを編集",
+    "editBanner": "プロジェクトバナーを編集",
+    "currentBanner": "現在のバナー",
+    "choosePreset": "プリセットバナーを選択:",
+    "orUploadOwn": "または自分のバナーをアップロード:"
   },
   "task": {
     "suggestions": {
@@ -730,6 +758,7 @@
       "status": "ステータス",
       "priority": "優先度",
       "dueDate": "期日",
+      "deferUntil": "Defer until",
       "note": "ノート"
     },
     "create": "作成",
@@ -799,6 +828,7 @@
     "noTags": "タグがありません",
     "priority": "優先度",
     "dueDate": "期限日",
+      "deferUntil": "Defer until",
     "recurringSetup": "繰り返し設定",
     "notRecurring": "このタスクはまだ繰り返しではありません。",
     "clickToEditTitle": "タイトルを編集するにはクリック",
@@ -819,13 +849,18 @@
     "parentTask": "親タスク",
     "includingToday": "今日を含む",
     "has": "持っている",
-    "fromProject": "プロジェクトから"
+    "fromProject": "プロジェクトから",
+    "deferUntil": "延期するまで",
+    "noDeferUntil": "延期なし",
+    "deferUntilUpdated": "正常に延期が更新されました",
+    "deferUntilUpdateError": "延期の更新に失敗しました"
   },
   "calendar": {
     "month": "月",
     "week": "週",
     "day": "日",
     "today": "今日",
+    "total": "Total",
     "addEvent": "イベントを追加",
     "weekView": "週表示",
     "dayView": "日表示",
@@ -849,6 +884,7 @@
     "title": "タイトル",
     "status": "ステータス",
     "dueDate": "期限",
+      "deferUntil": "Defer until",
     "priority": "優先度",
     "project": "プロジェクト",
     "area": "エリア",
@@ -898,6 +934,7 @@
   },
   "dateIndicators": {
     "today": "今日",
+    "total": "Total",
     "tomorrow": "明日",
     "yesterday": "昨日",
     "nextWeek": "来週",
@@ -1109,6 +1146,7 @@
     "searchText": "検索テキスト",
     "priority": "優先度",
     "dueDate": "期限",
+      "deferUntil": "Defer until",
     "noCriteriaSet": "特定の条件は設定されていません",
     "priorityLabel": "優先度:",
     "dueLabel": "期限:",

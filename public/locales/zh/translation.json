@@ -22,7 +22,8 @@
     "discardChanges": "放弃更改？",
     "discardChangesMessage": "您有未保存的更改。您确定要放弃它们吗？",
     "no": "不，继续编辑",
-    "yesDiscard": "是的，放弃"
+    "yesDiscard": "是的，放弃",
+    "uploading": "上传中..."
   },
   "sidebar": {
     "dashboard": "仪表板",
@@ -38,6 +39,7 @@
     "addTagAriaLabel": "添加标签",
     "addTagTitle": "添加标签",
     "today": "今天",
+    "total": "Total",
     "upcoming": "即将到来",
     "nextActions": "下一步行动",
     "inbox": "收件箱",
@@ -98,6 +100,7 @@
   "tasks": {
     "title": "任务",
     "today": "今天",
+    "total": "Total",
     "backlog": "待办事项",
     "inProgress": "进行中",
     "dueToday": "今天到期",
@@ -140,7 +143,11 @@
     "noProject": "无项目",
     "unknownProject": "未知项目",
     "tasks": "任务",
-    "showingItems": "显示 {{current}} / {{total}} 项"
+    "showingItems": "显示 {{current}} / {{total}} 项",
+    "overdue": "逾期",
+    "planned": "计划中",
+    "open": "打开",
+    "completed": "已完成"
   },
   "timeline": {
     "activityTimeline": "活动时间线",
@@ -153,6 +160,7 @@
       "statusChanged": "状态已更改",
       "priorityChanged": "优先级已更改",
       "dueDateChanged": "截止日期已更改",
+      "deferUntilChanged": "Defer date changed",
       "nameUpdated": "名称已更新",
       "descriptionUpdated": "描述已更新",
       "noteUpdated": "备注已更新",
@@ -163,6 +171,7 @@
       "status": "状态",
       "priority": "优先级",
       "dueDate": "截止日期",
+      "deferUntil": "Defer until",
       "none": "无",
       "recurrenceEndDateChanged": "重复结束日期已更改",
       "recurrenceEndDate": "重复结束日期",
@@ -171,7 +180,10 @@
       "completionBasedChanged": "基于完成的重复已更改",
       "projectIdChanged": "已分配到项目",
       "recurrenceType": "重复类型",
-      "recurrenceTypeChanged": "重复类型已更改"
+      "recurrenceTypeChanged": "重复类型已更改",
+      "recurrence_weekday_changed": "重复的星期几已更改",
+      "recurrence_month_day_changed": "重复的月份天数已更改",
+      "recurrence_week_of_month_changed": "重复的月份周数已更改"
     },
     "justNow": "刚刚",
     "minutesAgo": "{{minutes}}分钟前",
@@ -408,6 +420,7 @@
     "title": "标题",
     "description": "描述",
     "dueDate": "截止日期",
+      "deferUntil": "Defer until",
     "priority": "优先级",
     "status": "状态",
     "assignedTo": "分配给",
@@ -425,6 +438,7 @@
         "status": "状态",
         "priority": "优先级",
         "dueDate": "截止日期",
+      "deferUntil": "Defer until",
         "note": "备注",
         "recurrenceType": "重复类型",
         "recurrenceInterval": "每",
@@ -433,7 +447,8 @@
         "weekOfMonth": "每月的周",
         "recurrenceEndDate": "结束日期（可选）",
         "completionBased": "完成后重复",
-        "repeatOn": "重复于"
+        "repeatOn": "重复于",
+        "deferUntil": "延迟至"
       },
       "projectSearchPlaceholder": "搜索或创建项目...",
       "noMatchingProjects": "没有匹配的项目",
@@ -455,7 +470,8 @@
         "noVerb": "你需要采取什么具体行动？尝试以动词开头。",
         "vague": "尝试以动作动词开头，例如 \"打电话\"、\"写\"、\"安排\" 或 \"研究\""
       },
-      "selectAtLeastOneDay": "请至少选择一天"
+      "selectAtLeastOneDay": "请至少选择一天",
+      "deferUntilPlaceholder": "选择延迟至的日期和时间"
     },
     "noteTitle": "笔记标题",
     "noteContent": "笔记内容",
@@ -533,7 +549,12 @@
     "createSuccess": "项目创建成功！",
     "createdAndAssigned": "项目已创建并分配",
     "createError": "创建项目失败",
-    "viewProject": "前往项目"
+    "viewProject": "前往项目",
+    "editProject": "编辑项目",
+    "editBanner": "编辑项目横幅",
+    "currentBanner": "当前横幅",
+    "choosePreset": "选择一个预设横幅：",
+    "orUploadOwn": "或上传您自己的："
   },
   "errors": {
     "required": "此字段为必填项",
@@ -558,7 +579,10 @@
     "tagNameRequired": "标签名称是必需的。",
     "failedToSaveTag": "保存标签失败。",
     "projectNameRequired": "项目名称是必需的。",
-    "projectSaveFailed": "保存项目失败。"
+    "projectSaveFailed": "保存项目失败。",
+    "projectImageTooLarge": "图片太大。请选取一个小于10MB的文件。",
+    "projectImageUpload": "上传图片失败。请尝试一个更小的文件或不同的格式。",
+    "bannerSaveFailed": "保存横幅失败"
   },
   "inbox": {
     "title": "收件箱",
@@ -604,6 +628,7 @@
   },
   "dateIndicators": {
     "today": "今天",
+    "total": "Total",
     "tomorrow": "明天",
     "yesterday": "昨天",
     "nextWeek": "下周",
@@ -615,6 +640,7 @@
       "noName": "您正在查看特定项目的任务。利用这个空间管理和跟踪与该项目相关的任务。"
     },
     "today": "这些是今天到期的任务或您已安排立即处理的任务。利用此视图专注于今天需要完成的事项。标记任务为已完成，更新其状态，或根据需要调整到期日期。",
+    "total": "Total",
     "inbox": "收件箱是所有未分类任务的地方。未分配给项目或未设定到期日期的任务将在此显示。这是您的 \"脑力倾倒\" 区域，您可以快速记下任务并稍后整理。",
     "next": "此视图显示所有近期可操作的任务。这些任务准备好接下来进行处理，并且没有长期截止日期。当您希望在任务上快速取得进展时，这是一个很好的关注点。",
     "upcoming": "此视图突出显示计划在即将到来的星期内的任务。它帮助您准备并提前应对截止日期，通过提供您需要在不久的将来处理的工作的概览。到期日期在接下来的7天内的任务将在此显示。",
@@ -635,7 +661,8 @@
     "taskCreated": "任务创建成功！",
     "taskUpdated": "任务更新成功！",
     "taskDeleted": "任务删除成功！",
-    "noteDeleted": "笔记删除成功！"
+    "noteDeleted": "笔记删除成功！",
+    "bannerUpdated": "横幅更新成功！"
   },
   "note": {
     "title": "标题",
@@ -653,6 +680,7 @@
       "status": "状态",
       "priority": "优先级",
       "dueDate": "截止日期",
+      "deferUntil": "Defer until",
       "note": "备注"
     },
     "create": "创建",
@@ -696,6 +724,7 @@
     "noTags": "没有标签",
     "priority": "优先级",
     "dueDate": "截止日期",
+      "deferUntil": "Defer until",
     "recurringSetup": "重复设置",
     "notRecurring": "此任务尚未重复。",
     "clickToEditTitle": "点击编辑标题",
@@ -751,7 +780,11 @@
     "parentTask": "父任务",
     "includingToday": "包括今天",
     "has": "有",
-    "fromProject": "来自项目"
+    "fromProject": "来自项目",
+    "deferUntil": "延迟至",
+    "noDeferUntil": "无延迟至",
+    "deferUntilUpdated": "成功更新延迟至",
+    "deferUntilUpdateError": "更新延迟至失败"
   },
   "projects": {
     "loading": "加载项目中...",
@@ -782,7 +815,9 @@
       "planned_desc": "已确定范围并准备开始",
       "in_progress_desc": "正在进行的工作",
       "blocked_desc": "暂时暂停或卡住",
-      "completed_desc": "已完成并结束"
+      "completed_desc": "已完成并结束",
+      "active": "进行中",
+      "active_desc": "正在进行的工作"
     },
     "showMetrics": "显示指标",
     "hideMetrics": "隐藏指标"
@@ -885,6 +920,7 @@
     "week": "周",
     "day": "天",
     "today": "今天",
+    "total": "Total",
     "addEvent": "添加事件",
     "weekView": "周视图",
     "dayView": "天视图",
@@ -908,6 +944,7 @@
     "title": "标题",
     "status": "状态",
     "dueDate": "截止日期",
+      "deferUntil": "Defer until",
     "priority": "优先级",
     "project": "项目",
     "area": "区域",
@@ -1109,6 +1146,7 @@
     "searchText": "搜索文本",
     "priority": "优先级",
     "dueDate": "到期日期",
+      "deferUntil": "Defer until",
     "noCriteriaSet": "未设置特定条件",
     "priorityLabel": "优先级：",
     "dueLabel": "到期：",

@@ -7,6 +7,7 @@ import {
     ListBulletIcon,
     ClockIcon,
 } from '@heroicons/react/24/solid';
+import { PlusCircleIcon } from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
 import { loadInboxItemsToStore } from '../../utils/inboxService';
 
@@ -14,19 +15,19 @@ interface SidebarNavProps {
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
     location: Location;
     isDarkMode: boolean;
+    openTaskModal: (type?: 'simplified' | 'full') => void;
 }
 
 const SidebarNav: React.FC<SidebarNavProps> = ({
     handleNavClick,
     location,
+    openTaskModal,
 }) => {
     const { t } = useTranslation();
     const store = useStore();
 
-    // Get inbox items count for badge - use pagination.total for accurate count
     const inboxItemsCount = store.inboxStore.pagination.total;
 
-    // Load inbox items when component mounts to ensure badge shows correct count
     useEffect(() => {
         loadInboxItemsToStore(false).catch(console.error);
     }, []);
@@ -52,11 +53,11 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
             path: '/tasks?status=active',
             title: t('sidebar.allTasks', 'All Tasks'),
             icon: <ListBulletIcon className="h-5 w-5" />,
+            query: 'status=active',
         },
     ];
 
     const isActive = (path: string, query?: string) => {
-        // Handle special case for paths without query parameters
         if (path === '/inbox' || path === '/today') {
             const isPathMatch = location.pathname === path;
             return isPathMatch
@@ -64,7 +65,6 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                 : 'text-gray-700 dark:text-gray-300';
         }
 
-        // Handle upcoming with query parameters
         if (path.startsWith('/upcoming')) {
             const isPathMatch = location.pathname === '/upcoming';
             return isPathMatch
@@ -72,7 +72,6 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                 : 'text-gray-700 dark:text-gray-300';
         }
 
-        // Regular case for /tasks with query params
         const isPathMatch = location.pathname === '/tasks';
         const isQueryMatch = query
             ? location.search.includes(query)
@@ -100,13 +99,47 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                                 {link.icon}
                                 <span className="ml-2">{link.title}</span>
                             </div>
-                            {link.path === '/inbox' && inboxItemsCount > 0 && (
-                                <span className="text-sm font-bold text-blue-500 dark:text-blue-400">
-                                    {inboxItemsCount > 99
-                                        ? '99+'
-                                        : inboxItemsCount}
-                                </span>
-                            )}
+                            <div className="flex items-center gap-2">
+                                {link.path === '/inbox' &&
+                                    inboxItemsCount > 0 && (
+                                        <span className="text-sm font-bold text-blue-500 dark:text-blue-400">
+                                            {inboxItemsCount > 99
+                                                ? '99+'
+                                                : inboxItemsCount}
+                                        </span>
+                                    )}
+                                {link.path === '/tasks?status=active' && (
+                                    <div
+                                        role="button"
+                                        tabIndex={0}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            openTaskModal('full');
+                                        }}
+                                        onKeyDown={(e) => {
+                                            if (
+                                                e.key === 'Enter' ||
+                                                e.key === ' '
+                                            ) {
+                                                e.stopPropagation();
+                                                e.preventDefault();
+                                                openTaskModal('full');
+                                            }
+                                        }}
+                                        className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none cursor-pointer"
+                                        aria-label={t(
+                                            'sidebar.addTaskAriaLabel',
+                                            'Add Task'
+                                        )}
+                                        title={t(
+                                            'sidebar.addTaskTitle',
+                                            'Add Task'
+                                        )}
+                                    >
+                                        <PlusCircleIcon className="h-5 w-5" />
+                                    </div>
+                                )}
+                            </div>
                         </button>
                     </li>
                 </React.Fragment>

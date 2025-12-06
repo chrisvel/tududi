@@ -22,7 +22,8 @@
     "discardChanges": "هل تريد إلغاء التغييرات؟",
     "discardChangesMessage": "لديك تغييرات غير محفوظة. هل أنت متأكد أنك تريد إلغاءها؟",
     "no": "لا، استمر في التحرير",
-    "yesDiscard": "نعم، ألغِ"
+    "yesDiscard": "نعم، ألغِ",
+    "uploading": "جارٍ التحميل..."
   },
   "sidebar": {
     "dashboard": "لوحة التحكم",
@@ -38,6 +39,7 @@
     "addTagAriaLabel": "إضافة وسم",
     "addTagTitle": "إضافة وسم",
     "today": "اليوم",
+    "total": "Total",
     "upcoming": "القادم",
     "nextActions": "الإجراءات التالية",
     "inbox": "البريد الوارد",
@@ -98,12 +100,13 @@
   "tasks": {
     "title": "المهام",
     "today": "اليوم",
+    "total": "Total",
     "backlog": "المهام المتراكمة",
     "inProgress": "قيد التقدم",
     "dueToday": "مستحقة اليوم",
     "stale": "قديمة",
     "suggested": "مقترحة",
-    "completedToday": "مكتمل اليوم",
+    "completedToday": "مكتمل",
     "weeklyCompletions": "التقدم الأسبوعي",
     "taskCompleted": "تم إكمال المهمة",
     "tasksCompleted": "تم إكمال المهام",
@@ -140,7 +143,11 @@
     "noProject": "بدون مشروع",
     "unknownProject": "مشروع غير معروف",
     "tasks": "مهام",
-    "showingItems": "عرض {{current}} من {{total}} عنصر"
+    "showingItems": "عرض {{current}} من {{total}} عنصر",
+    "overdue": "متأخر",
+    "planned": "مخطط",
+    "open": "فتح",
+    "completed": "مكتمل"
   },
   "timeline": {
     "activityTimeline": "جدول الأنشطة",
@@ -153,6 +160,7 @@
       "statusChanged": "تم تغيير الحالة",
       "priorityChanged": "تم تغيير الأولوية",
       "dueDateChanged": "تم تغيير تاريخ الاستحقاق",
+      "deferUntilChanged": "Defer date changed",
       "nameUpdated": "تم تحديث الاسم",
       "descriptionUpdated": "تم تحديث الوصف",
       "noteUpdated": "تم تحديث الملاحظة",
@@ -163,6 +171,7 @@
       "status": "الحالة",
       "priority": "الأولوية",
       "dueDate": "تاريخ الاستحقاق",
+      "deferUntil": "Defer until",
       "none": "لا شيء",
       "recurrenceEndDateChanged": "تاريخ انتهاء التكرار تم تغييره",
       "recurrenceEndDate": "تاريخ انتهاء التكرار",
@@ -171,7 +180,10 @@
       "completionBasedChanged": "تغيير التكرار القائم على الإنجاز",
       "projectIdChanged": "مُعين لمشروع",
       "recurrenceType": "نوع التكرار",
-      "recurrenceTypeChanged": "تغيير نوع التكرار"
+      "recurrenceTypeChanged": "تغيير نوع التكرار",
+      "recurrence_weekday_changed": "تم تغيير يوم تكرار الأسبوع",
+      "recurrence_month_day_changed": "تم تغيير يوم تكرار الشهر",
+      "recurrence_week_of_month_changed": "تم تغيير أسبوع التكرار من الشهر"
     },
     "justNow": "الآن",
     "minutesAgo": "{{minutes}} دقيقة مضت",
@@ -408,6 +420,7 @@
     "title": "العنوان",
     "description": "الوصف",
     "dueDate": "تاريخ الاستحقاق",
+      "deferUntil": "Defer until",
     "priority": "الأولوية",
     "status": "الحالة",
     "assignedTo": "مُعين إلى",
@@ -425,6 +438,7 @@
         "status": "الحالة",
         "priority": "الأولوية",
         "dueDate": "تاريخ الاستحقاق",
+      "deferUntil": "Defer until",
         "note": "ملاحظة",
         "recurrenceType": "تكرار",
         "recurrenceInterval": "كل",
@@ -433,7 +447,8 @@
         "weekOfMonth": "أسبوع من الشهر",
         "recurrenceEndDate": "تاريخ الانتهاء (اختياري)",
         "completionBased": "كرر بعد الانتهاء",
-        "repeatOn": "التكرار في"
+        "repeatOn": "التكرار في",
+        "deferUntil": "تأجيل حتى"
       },
       "projectSearchPlaceholder": "ابحث أو أنشئ مشروعًا...",
       "noMatchingProjects": "لا توجد مشاريع مطابقة",
@@ -455,7 +470,8 @@
         "noVerb": "ما الإجراء المحدد الذي تحتاج إلى اتخاذه؟ حاول البدء بفعل.",
         "vague": "حاول البدء بفعل عمل مثل \"اتصل\"، \"اكتب\"، \"حدد موعدًا\"، أو \"ابحث\""
       },
-      "selectAtLeastOneDay": "يرجى اختيار يوم واحد على الأقل"
+      "selectAtLeastOneDay": "يرجى اختيار يوم واحد على الأقل",
+      "deferUntilPlaceholder": "اختر تاريخ ووقت التأجيل"
     },
     "noteTitle": "عنوان الملاحظة",
     "noteContent": "محتوى الملاحظة",
@@ -533,7 +549,12 @@
     "createSuccess": "تم إنشاء المشروع بنجاح!",
     "createdAndAssigned": "تم إنشاء المشروع وتعيينه",
     "createError": "فشل في إنشاء المشروع",
-    "viewProject": "اذهب إلى المشروع"
+    "viewProject": "اذهب إلى المشروع",
+    "editProject": "تعديل المشروع",
+    "editBanner": "تعديل لافتة المشروع",
+    "currentBanner": "اللافتة الحالية",
+    "choosePreset": "اختر لافتة مسبقة:",
+    "orUploadOwn": "أو قم بتحميل لافتتك الخاصة:"
   },
   "errors": {
     "required": "هذا الحقل مطلوب",
@@ -558,7 +579,10 @@
     "tagNameRequired": "اسم العلامة مطلوب.",
     "failedToSaveTag": "فشل في حفظ العلامة.",
     "projectNameRequired": "اسم المشروع مطلوب.",
-    "projectSaveFailed": "فشل في حفظ المشروع."
+    "projectSaveFailed": "فشل في حفظ المشروع.",
+    "projectImageTooLarge": "الصورة كبيرة جدًا. يرجى اختيار ملف أقل من 10 ميجابايت.",
+    "projectImageUpload": "فشل تحميل الصورة. يرجى تجربة ملف أصغر أو تنسيق مختلف.",
+    "bannerSaveFailed": "فشل حفظ اللافتة"
   },
   "inbox": {
     "title": "صندوق الوارد",
@@ -604,6 +628,7 @@
   },
   "dateIndicators": {
     "today": "اليوم",
+    "total": "Total",
     "tomorrow": "غداً",
     "yesterday": "أمس",
     "nextWeek": "الأسبوع المقبل",
@@ -615,6 +640,7 @@
       "noName": "أنت تعرض مهام لمشروع محدد. استخدم هذه المساحة لإدارة وتتبع المهام المرتبطة بهذا المشروع."
     },
     "today": "هذه هي المهام المستحقة اليوم أو المهام التي قمت بجدولتها للاهتمام الفوري. استخدم هذه العرض للتركيز على ما يحتاج إلى الإنجاز اليوم. قم بوضع علامة على المهام كمكتملة، أو تحديث حالتها، أو تعديل مواعيد استحقاقها إذا لزم الأمر.",
+    "total": "Total",
     "inbox": "صندوق الوارد هو المكان الذي تعيش فيه جميع المهام غير المصنفة. المهام التي لم يتم تعيينها لمشروع أو لم يتم إعطاؤها موعد استحقاق ستظهر هنا. هذه هي منطقة \"تفريغ الدماغ\" الخاصة بك حيث يمكنك بسرعة تدوين المهام وتنظيمها لاحقاً.",
     "next": "هذا العرض يظهر جميع المهام التي يمكن العمل عليها في المستقبل القريب. هذه المهام جاهزة للعمل عليها التالية وليس لديها مواعيد نهائية طويلة الأجل. إنه مكان جيد للتركيز عندما تبحث عن تحقيق تقدم سريع في المهام.",
     "upcoming": "هذا العرض يبرز المهام المجدولة للأسبوع المقبل. يساعدك على التحضير والبقاء متقدماً على المواعيد النهائية من خلال إعطائك نظرة عامة على العمل الذي تحتاج إلى التعامل معه في المستقبل القريب. ستظهر المهام ذات مواعيد الاستحقاق خلال الأيام السبعة القادمة هنا.",
@@ -635,7 +661,8 @@
     "taskCreated": "تم إنشاء المهمة بنجاح!",
     "taskUpdated": "تم تحديث المهمة بنجاح!",
     "taskDeleted": "تم حذف المهمة بنجاح!",
-    "noteDeleted": "تم حذف الملاحظة بنجاح!"
+    "noteDeleted": "تم حذف الملاحظة بنجاح!",
+    "bannerUpdated": "تم تحديث اللافتة بنجاح!"
   },
   "note": {
     "title": "العنوان",
@@ -653,6 +680,7 @@
       "status": "الحالة",
       "priority": "الأولوية",
       "dueDate": "تاريخ الاستحقاق",
+      "deferUntil": "Defer until",
       "note": "ملاحظة"
     },
     "create": "إنشاء",
@@ -711,6 +739,7 @@
     "noTags": "لا توجد وسوم",
     "priority": "الأولوية",
     "dueDate": "تاريخ الاستحقاق",
+      "deferUntil": "Defer until",
     "recurringSetup": "إعداد متكرر",
     "notRecurring": "هذه المهمة ليست متكررة بعد.",
     "clickToEditTitle": "انقر لتحرير العنوان",
@@ -751,7 +780,11 @@
     "parentTask": "المهمة الرئيسية",
     "includingToday": "بما في ذلك اليوم",
     "has": "يمتلك",
-    "fromProject": "من المشروع"
+    "fromProject": "من المشروع",
+    "deferUntil": "تأجيل حتى",
+    "noDeferUntil": "لا تأجيل حتى",
+    "deferUntilUpdated": "تأجيل حتى يتم التحديث بنجاح",
+    "deferUntilUpdateError": "فشل في تحديث التأجيل حتى"
   },
   "projects": {
     "loading": "جارٍ تحميل المشاريع...",
@@ -782,7 +815,9 @@
       "planned_desc": "تم تحديد نطاقها وجاهزة للبدء",
       "in_progress_desc": "يتم العمل النشط",
       "blocked_desc": "مؤقتًا متوقف أو عالق",
-      "completed_desc": "تم الانتهاء منها"
+      "completed_desc": "تم الانتهاء منها",
+      "active": "قيد التنفيذ",
+      "active_desc": "عمل نشط جارٍ"
     },
     "showMetrics": "عرض المقاييس",
     "hideMetrics": "إخفاء المقاييس"
@@ -885,6 +920,7 @@
     "week": "أسبوع",
     "day": "يوم",
     "today": "اليوم",
+    "total": "Total",
     "addEvent": "إضافة حدث",
     "weekView": "عرض الأسبوع",
     "dayView": "عرض اليوم",
@@ -908,6 +944,7 @@
     "title": "العنوان",
     "status": "الحالة",
     "dueDate": "تاريخ الاستحقاق",
+      "deferUntil": "Defer until",
     "priority": "الأولوية",
     "project": "المشروع",
     "area": "المنطقة",
@@ -1109,6 +1146,7 @@
     "searchText": "نص البحث",
     "priority": "الأولوية",
     "dueDate": "تاريخ الاستحقاق",
+      "deferUntil": "Defer until",
     "noCriteriaSet": "لم يتم تعيين أي معايير محددة",
     "priorityLabel": "الأولوية:",
     "dueLabel": "استحقاق:",

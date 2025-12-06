@@ -22,7 +22,8 @@
     "discardChanges": "Zavrzite spremembe?",
     "discardChangesMessage": "Imate neshranjene spremembe. Ste prepričani, da jih želite zavreči?",
     "no": "Ne, nadaljuj z urejanjem",
-    "yesDiscard": "Da, zavrzi"
+    "yesDiscard": "Da, zavrzi",
+    "uploading": "Nalagam..."
   },
   "sidebar": {
     "dashboard": "Nadzorna plošča",
@@ -45,6 +46,7 @@
     "addNoteTitle": "Dodaj opombo",
     "createNew": "Ustvari novo",
     "today": "Danes",
+    "total": "Total",
     "upcoming": "Prihajajoče",
     "nextActions": "Naslednje akcije",
     "inbox": "Prejeto",
@@ -98,6 +100,7 @@
   "tasks": {
     "title": "Naloge",
     "today": "Danes",
+    "total": "Total",
     "backlog": "Zamude",
     "inProgress": "V teku",
     "dueToday": "Zapade danes",
@@ -140,7 +143,11 @@
     "noProject": "Brez projekta",
     "unknownProject": "Neznan projekt",
     "tasks": "naloge",
-    "showingItems": "Prikazovanje {{current}} od {{total}} elementov"
+    "showingItems": "Prikazovanje {{current}} od {{total}} elementov",
+    "overdue": "Zapadlo",
+    "planned": "Načrtovano",
+    "open": "Odpri",
+    "completed": "Dokončano"
   },
   "timeline": {
     "activityTimeline": "Časovnica aktivnosti",
@@ -160,6 +167,7 @@
       "statusChanged": "Status spremenjen",
       "priorityChanged": "Prioriteta spremenjena",
       "dueDateChanged": "Rok spremenjen",
+      "deferUntilChanged": "Defer date changed",
       "nameUpdated": "Ime posodobljeno",
       "descriptionUpdated": "Opis posodobljen",
       "noteUpdated": "Opomba posodobljena",
@@ -170,6 +178,7 @@
       "status": "Status",
       "priority": "Prioriteta",
       "dueDate": "Rok",
+      "deferUntil": "Defer until",
       "none": "Nič",
       "recurrenceEndDateChanged": "Datum konca ponavljanja se je spremenil",
       "recurrenceEndDate": "Datum konca ponavljanja",
@@ -178,7 +187,10 @@
       "completionBasedChanged": "Sprememba ponavljanja na podlagi dokončanja",
       "projectIdChanged": "Dodeljeno projektu",
       "recurrenceType": "Vrsta ponavljanja",
-      "recurrenceTypeChanged": "Vrsta ponavljanja spremenjena"
+      "recurrenceTypeChanged": "Vrsta ponavljanja spremenjena",
+      "recurrence_weekday_changed": "Spremenjen dan ponavljanja",
+      "recurrence_month_day_changed": "Spremenjen dan v mesecu ponavljanja",
+      "recurrence_week_of_month_changed": "Spremenjena teden v mesecu ponavljanja"
     }
   },
   "profile": {
@@ -408,6 +420,7 @@
     "title": "Naslov",
     "description": "Opis",
     "dueDate": "Rok",
+      "deferUntil": "Defer until",
     "priority": "Prioriteta",
     "status": "Status",
     "assignedTo": "Dodeljeno",
@@ -425,6 +438,7 @@
         "status": "Status",
         "priority": "Prioriteta",
         "dueDate": "Rok",
+      "deferUntil": "Defer until",
         "note": "Opomba",
         "recurrenceType": "Ponovi",
         "recurrenceInterval": "Vsak",
@@ -433,7 +447,8 @@
         "weekOfMonth": "Teden v mesecu",
         "recurrenceEndDate": "Datum konca (neobvezno)",
         "completionBased": "Ponovi po zaključku",
-        "repeatOn": "Ponovi na"
+        "repeatOn": "Ponovi na",
+        "deferUntil": "Odmik do"
       },
       "projectSearchPlaceholder": "Išči ali ustvari projekt...",
       "noMatchingProjects": "Brez ustreznih projektov",
@@ -455,7 +470,8 @@
         "noVerb": "Katero specifično dejanje morate izvesti? Poskusite začeti z glagolom.",
         "vague": "Poskusite začeti z glagolom akcije, kot so \"Pokliči\", \"Napiši\", \"Načrtuj\" ali \"Raziskuj\""
       },
-      "selectAtLeastOneDay": "Prosimo, izberite vsaj en dan"
+      "selectAtLeastOneDay": "Prosimo, izberite vsaj en dan",
+      "deferUntilPlaceholder": "Izberite datum in čas odloga"
     },
     "noteTitle": "Naslov opombe",
     "noteContent": "Vsebina opombe",
@@ -533,7 +549,12 @@
     "createSuccess": "Projekt uspešno ustvarjen!",
     "createdAndAssigned": "Projekt ustvarjen in dodeljen",
     "createError": "Ustvarjanje projekta ni uspelo",
-    "viewProject": "Pojdi na projekt"
+    "viewProject": "Pojdi na projekt",
+    "editProject": "Uredi projekt",
+    "editBanner": "Uredi banner projekta",
+    "currentBanner": "Trenutni banner",
+    "choosePreset": "Izberite prednastavljen banner:",
+    "orUploadOwn": "Ali naložite svojega:"
   },
   "errors": {
     "required": "To polje je obvezno",
@@ -558,7 +579,10 @@
     "tagNameRequired": "Ime oznake je obvezno.",
     "failedToSaveTag": "Shranjevanje oznake ni uspelo.",
     "projectNameRequired": "Ime projekta je obvezno.",
-    "projectSaveFailed": "Shranjevanje projekta ni uspelo."
+    "projectSaveFailed": "Shranjevanje projekta ni uspelo.",
+    "projectImageTooLarge": "Slika je prevelika. Izberite datoteko, ki je manjša od 10 MB.",
+    "projectImageUpload": "Nalaganje slike ni uspelo. Poskusite z manjšo datoteko ali drugačnim formatom.",
+    "bannerSaveFailed": "Shranjevanje bannerja ni uspelo"
   },
   "inbox": {
     "title": "Prejeto",
@@ -604,6 +628,7 @@
   },
   "dateIndicators": {
     "today": "DANES",
+    "total": "Total",
     "tomorrow": "JUTRI",
     "yesterday": "VČERAJ",
     "nextWeek": "naslednji teden",
@@ -615,6 +640,7 @@
       "noName": "Ogledujete si naloge za določen projekt. Uporabite to območje za upravljanje in spremljanje nalog, povezanih s tem projektom."
     },
     "today": "To so naloge, ki so zapadle danes ali naloge, ki ste jih načrtovali za takojšnjo obravnavo. Uporabite to prikaz, da se osredotočite na to, kar je treba dokončati danes. Oznake nalog kot dokončane, posodobite njihov status ali prilagodite njihove roke, če je potrebno.",
+    "total": "Total",
     "inbox": "Prejeta pošta je prostor, kjer živijo vse nekategorizirane naloge. Naloge, ki niso dodeljene projektu ali nimajo roka, se bodo prikazale tukaj. To je vaše območje \"izpustitve misli\", kjer lahko hitro zapišete naloge in jih kasneje organizirate.",
     "next": "Ta prikaz prikazuje vse naloge, ki so izvedljive v bližnji prihodnosti. Te naloge so pripravljene za delo in nimajo dolgoročnih rokov. To je dobro mesto za osredotočanje, ko želite hitro napredovati pri nalogah.",
     "upcoming": "Ta prikaz izpostavlja naloge, ki so načrtovane za prihajajoči teden. Pomaga vam, da se pripravite in ostanete pred roki, saj vam daje pregled dela, ki ga morate obravnavati v bližnji prihodnosti. Naloge z roki v naslednjih 7 dneh se bodo prikazale tukaj.",
@@ -635,7 +661,8 @@
     "taskCreated": "Naloga uspešno ustvarjena!",
     "taskUpdated": "Naloga uspešno posodobljena!",
     "taskDeleted": "Naloga uspešno izbrisana!",
-    "noteDeleted": "Opomba je bila uspešno izbrisana!"
+    "noteDeleted": "Opomba je bila uspešno izbrisana!",
+    "bannerUpdated": "Banner je bil uspešno posodobljen!"
   },
   "note": {
     "title": "Naslov",
@@ -653,6 +680,7 @@
       "status": "Status",
       "priority": "Prioriteta",
       "dueDate": "Rok",
+      "deferUntil": "Defer until",
       "note": "Opomba"
     },
     "create": "Ustvari",
@@ -696,6 +724,7 @@
     "noTags": "Brez oznak",
     "priority": "Prioriteta",
     "dueDate": "Rok",
+      "deferUntil": "Defer until",
     "recurringSetup": "Nastavitev ponavljanja",
     "notRecurring": "Ta naloga še ni ponavljajoča.",
     "clickToEditTitle": "Kliknite za urejanje naslova",
@@ -751,7 +780,11 @@
     "parentTask": "Nadrejena naloga",
     "includingToday": "vključno s danes",
     "has": "ima",
-    "fromProject": "iz projekta"
+    "fromProject": "iz projekta",
+    "deferUntil": "Odmik do",
+    "noDeferUntil": "Brez odloga do",
+    "deferUntilUpdated": "Odmik do uspešno posodobljen",
+    "deferUntilUpdateError": "Posodobitev odloga do ni uspela"
   },
   "projects": {
     "loading": "Nalagam projekte...",
@@ -782,7 +815,9 @@
       "planned_desc": "Določeno in pripravljeno za začetek",
       "in_progress_desc": "Aktivno delo poteka",
       "blocked_desc": "Začasno ustavljeno ali zastojev",
-      "completed_desc": "Dokončano in opravljeno"
+      "completed_desc": "Dokončano in opravljeno",
+      "active": "V teku",
+      "active_desc": "Aktivno delo poteka"
     },
     "showMetrics": "Prikaži metrike",
     "hideMetrics": "Skrij metrike"
@@ -885,6 +920,7 @@
     "week": "Teden",
     "day": "Dan",
     "today": "Danes",
+    "total": "Total",
     "addEvent": "Dodaj dogodek",
     "weekView": "Pogled teden",
     "dayView": "Pogled dan",
@@ -908,6 +944,7 @@
     "title": "Naslov",
     "status": "Status",
     "dueDate": "Rok",
+      "deferUntil": "Defer until",
     "priority": "Prioriteta",
     "project": "Projekt",
     "area": "Območje",
@@ -1109,6 +1146,7 @@
     "searchText": "Iskalno besedilo",
     "priority": "Prioriteta",
     "dueDate": "Rok",
+      "deferUntil": "Defer until",
     "noCriteriaSet": "Nobena specifična merila niso nastavljena",
     "priorityLabel": "Prioriteta:",
     "dueLabel": "Rok:",

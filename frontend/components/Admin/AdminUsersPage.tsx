@@ -9,6 +9,7 @@ import {
 } from '@heroicons/react/24/outline';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import { getApiPath } from '../../config/paths';
+import { useToast } from '../Shared/ToastContext';
 
 interface AdminUserItem {
     id: number;
@@ -429,6 +430,7 @@ const AddUserModal: React.FC<{
 
 const AdminUsersPage: React.FC = () => {
     const { t } = useTranslation();
+    const { showSuccessToast, showErrorToast } = useToast();
     const [users, setUsers] = useState<AdminUserItem[] | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
@@ -523,9 +525,16 @@ const AdminUsersPage: React.FC = () => {
             setUsers((prev) =>
                 prev ? prev.filter((u) => u.id !== userToDelete.id) : null
             );
+            showSuccessToast(
+                t('admin.userDeletedSuccessfully', 'User deleted successfully')
+            );
             setUserToDelete(null);
         } catch (err: any) {
             setError(
+                err.message ||
+                    t('admin.failedToDeleteUser', 'Failed to delete user')
+            );
+            showErrorToast(
                 err.message ||
                     t('admin.failedToDeleteUser', 'Failed to delete user')
             );
@@ -731,7 +740,7 @@ const AdminUsersPage: React.FC = () => {
                         title={t('admin.deleteUser', 'Delete User')}
                         message={t(
                             'admin.confirmDeleteUser',
-                            'Are you sure you want to delete {{email}}? This action cannot be undone.',
+                            'Are you sure you want to delete {{email}}? This will permanently delete all associated data including tasks, projects, notes, tags, and other user content. This action cannot be undone.',
                             { email: userToDelete.email }
                         )}
                         onConfirm={handleDeleteUser}

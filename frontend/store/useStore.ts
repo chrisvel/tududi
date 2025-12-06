@@ -62,9 +62,9 @@ interface TasksStore {
     setError: (isError: boolean) => void;
     loadTasks: (query?: string) => Promise<void>;
     createTask: (taskData: Task) => Promise<Task>;
-    updateTask: (taskId: number, taskData: Task) => Promise<Task>;
-    deleteTask: (taskId: number) => Promise<void>;
-    toggleTaskCompletion: (taskId: number) => Promise<Task>;
+    updateTask: (taskUid: string, taskData: Task) => Promise<Task>;
+    deleteTask: (taskUid: string) => Promise<void>;
+    toggleTaskCompletion: (taskUid: string) => Promise<Task>;
     toggleTaskToday: (taskId: number) => Promise<Task>;
     loadTaskById: (taskId: number) => Promise<Task>;
     loadTaskByUid: (uid: string) => Promise<Task>;
@@ -382,15 +382,15 @@ export const useStore = create<StoreState>((set: any) => ({
                 throw error;
             }
         },
-        updateTask: async (taskId, taskData) => {
+        updateTask: async (taskUid, taskData) => {
             const { updateTask } = await import('../utils/tasksService');
             try {
-                const updatedTask = await updateTask(taskId, taskData);
+                const updatedTask = await updateTask(taskUid, taskData);
                 set((state) => ({
                     tasksStore: {
                         ...state.tasksStore,
                         tasks: state.tasksStore.tasks.map((task) =>
-                            task.id === taskId ? updatedTask : task
+                            task.uid === taskUid ? updatedTask : task
                         ),
                     },
                 }));
@@ -403,15 +403,15 @@ export const useStore = create<StoreState>((set: any) => ({
                 throw error;
             }
         },
-        deleteTask: async (taskId) => {
+        deleteTask: async (taskUid) => {
             const { deleteTask } = await import('../utils/tasksService');
             try {
-                await deleteTask(taskId);
+                await deleteTask(taskUid);
                 set((state) => ({
                     tasksStore: {
                         ...state.tasksStore,
                         tasks: state.tasksStore.tasks.filter(
-                            (task) => task.id !== taskId
+                            (task) => task.uid !== taskUid
                         ),
                     },
                 }));
@@ -423,17 +423,17 @@ export const useStore = create<StoreState>((set: any) => ({
                 throw error;
             }
         },
-        toggleTaskCompletion: async (taskId) => {
+        toggleTaskCompletion: async (taskUid) => {
             const { toggleTaskCompletion } = await import(
                 '../utils/tasksService'
             );
             try {
-                const updatedTask = await toggleTaskCompletion(taskId);
+                const updatedTask = await toggleTaskCompletion(taskUid);
                 set((state) => ({
                     tasksStore: {
                         ...state.tasksStore,
                         tasks: state.tasksStore.tasks.map((task) =>
-                            task.id === taskId ? updatedTask : task
+                            task.uid === taskUid ? updatedTask : task
                         ),
                     },
                 }));

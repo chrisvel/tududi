@@ -297,11 +297,14 @@ const ViewDetail: React.FC = () => {
     // Task handlers
     const handleTaskUpdate = async (updatedTask: Task) => {
         try {
-            const response = await fetch(getApiPath(`task/${updatedTask.id}`), {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updatedTask),
-            });
+            const response = await fetch(
+                getApiPath(`task/${updatedTask.uid}`),
+                {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatedTask),
+                }
+            );
 
             if (response.ok) {
                 setTasks((prevTasks) =>
@@ -315,15 +318,18 @@ const ViewDetail: React.FC = () => {
         }
     };
 
-    const handleTaskDelete = async (taskId: number) => {
+    const handleTaskDelete = async (taskUid: string) => {
         try {
-            const response = await fetch(getApiPath(`task/${taskId}`), {
-                method: 'DELETE',
-            });
+            const response = await fetch(
+                getApiPath(`task/${encodeURIComponent(taskUid)}`),
+                {
+                    method: 'DELETE',
+                }
+            );
 
             if (response.ok) {
                 setTasks((prevTasks) =>
-                    prevTasks.filter((task) => task.id !== taskId)
+                    prevTasks.filter((task) => task.uid !== taskUid)
                 );
             }
         } catch (error) {

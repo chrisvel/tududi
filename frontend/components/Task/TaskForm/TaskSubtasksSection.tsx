@@ -175,7 +175,7 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                                                     try {
                                                         const updatedSubtask =
                                                             await toggleTaskCompletion(
-                                                                subtask.id
+                                                                subtask.uid!
                                                             );
                                                         await onSubtaskUpdate(
                                                             updatedSubtask
@@ -249,7 +249,7 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                                                         try {
                                                             const updatedSubtask =
                                                                 await toggleTaskCompletion(
-                                                                    subtask.id
+                                                                    subtask.uid!
                                                                 );
                                                             await onSubtaskUpdate(
                                                                 updatedSubtask

@@ -1,16 +1,9 @@
-const {
-    generateRecurringTasksWithLock,
-} = require('../../../services/recurringTaskService');
 const { groupTasksByDay } = require('./grouping');
 const { serializeTasks } = require('../core/serializers');
 const { computeTaskMetrics } = require('../queries/metrics-computation');
 
 async function handleRecurringTasks(userId, queryType) {
-    if (queryType === 'upcoming') {
-        await generateRecurringTasksWithLock(userId, 7);
-    } else if (queryType === 'today') {
-        await generateRecurringTasksWithLock(userId, 1);
-    }
+    return;
 }
 
 async function buildGroupedTasks(
@@ -57,18 +50,27 @@ async function addDashboardLists(
 
     const listKeys = [
         'tasks_in_progress',
+        'tasks_today_plan',
         'tasks_due_today',
+        'tasks_overdue',
         'suggested_tasks',
         'tasks_completed_today',
     ];
 
+    const serializedLists = {};
+
     for (const key of listKeys) {
-        response[key] = await serializeTasks(
-            metricsData[key],
+        const metricsKey =
+            key === 'tasks_today_plan' ? 'today_plan_tasks' : key;
+        serializedLists[key] = await serializeTasks(
+            metricsData[metricsKey],
             timezone,
             serializationOptions
         );
     }
+
+    Object.assign(response, serializedLists);
+    response.dashboard_lists = serializedLists;
 }
 
 function addPerformanceHeaders(res, startTime, queryStats) {

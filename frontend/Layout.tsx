@@ -202,8 +202,8 @@ const Layout: React.FC<LayoutProps> = ({
 
     const handleSaveTask = async (taskData: Task) => {
         try {
-            if (taskData.id) {
-                await updateTask(taskData.id, taskData);
+            if (taskData.uid) {
+                await updateTask(taskData.uid, taskData);
                 const taskLink = (
                     <span>
                         {t('task.updated', 'Task')}{' '}
