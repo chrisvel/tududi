@@ -119,6 +119,7 @@ const TaskDetails: React.FC = () => {
         completion_based: task?.completion_based || false,
     });
     const [activePill, setActivePill] = useState('overview');
+    const [attachmentCount, setAttachmentCount] = useState(0);
 
     useEffect(() => {
         setEditedDueDate(task?.due_date || '');
@@ -1227,6 +1228,7 @@ const TaskDetails: React.FC = () => {
                     onDismissOverdueAlert={handleDismissOverdueAlert}
                     onToggleTodayPlan={handleToggleTodayPlan}
                     onQuickStatusToggle={handleQuickStatusToggle}
+                    attachmentCount={attachmentCount}
                 />
 
                 {/* Content - Full width layout */}
@@ -1332,7 +1334,10 @@ const TaskDetails: React.FC = () => {
                     {/* Attachments Pill */}
                     {activePill === 'attachments' && (
                         <div className="grid grid-cols-1">
-                            <TaskAttachmentsCard taskUid={task.uid} />
+                            <TaskAttachmentsCard
+                                taskUid={task.uid}
+                                onAttachmentsCountChange={setAttachmentCount}
+                            />
                         </div>
                     )}
 
