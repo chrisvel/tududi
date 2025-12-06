@@ -202,7 +202,10 @@ const TaskAttachmentsCard: React.FC<TaskAttachmentsCardProps> = ({
                         <CloudArrowUpIcon className="h-12 w-12 text-gray-400 dark:text-gray-500 mb-2" />
                         <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                             {uploading
-                                ? t('task.attachments.uploading', 'Uploading...')
+                                ? t(
+                                      'task.attachments.uploading',
+                                      'Uploading...'
+                                  )
                                 : t(
                                       'task.attachments.clickToUpload',
                                       'Click to upload'
@@ -231,7 +234,9 @@ const TaskAttachmentsCard: React.FC<TaskAttachmentsCardProps> = ({
                         onDelete={handleDelete}
                         onDownload={handleDownload}
                         onPreview={handlePreview}
-                        isPreviewOpen={previewAttachment?.uid === attachment.uid}
+                        isPreviewOpen={
+                            previewAttachment?.uid === attachment.uid
+                        }
                     />
                 ))}
             </div>
