@@ -16,6 +16,7 @@ import {
     toggleTaskCompletion,
 } from '../../utils/tasksService';
 import { createProject } from '../../utils/projectsService';
+import { fetchAttachments } from '../../utils/attachmentsService';
 import { useStore } from '../../store/useStore';
 import { useToast } from '../Shared/ToastContext';
 import LoadingScreen from '../Shared/LoadingScreen';
@@ -492,6 +493,22 @@ const TaskDetails: React.FC = () => {
 
         fetchTaskData();
     }, [uid, task, tasksStore]);
+
+    // Load attachment count when task is loaded
+    useEffect(() => {
+        const loadAttachmentCount = async () => {
+            if (task?.uid) {
+                try {
+                    const attachments = await fetchAttachments(task.uid);
+                    setAttachmentCount(attachments.length);
+                } catch (error) {
+                    console.error('Error loading attachment count:', error);
+                }
+            }
+        };
+
+        loadAttachmentCount();
+    }, [task?.uid]);
 
     useEffect(() => {
         const loadNextIterations = async () => {

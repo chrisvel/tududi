@@ -8,6 +8,7 @@ import {
     downloadAttachment,
     fetchAttachments,
     validateFile,
+    getAttachmentType,
 } from '../../../utils/attachmentsService';
 import { useToast } from '../../Shared/ToastContext';
 import ConfirmDialog from '../../Shared/ConfirmDialog';
@@ -248,7 +249,12 @@ const TaskAttachmentsCard: React.FC<TaskAttachmentsCardProps> = ({
                     onClick={() => setPreviewAttachment(null)}
                 >
                     <div
-                        className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl max-h-[90vh] overflow-auto"
+                        className={`bg-white dark:bg-gray-800 rounded-lg ${
+                            getAttachmentType(previewAttachment.mime_type) ===
+                            'pdf'
+                                ? 'w-full max-w-[95vw] h-[95vh]'
+                                : 'max-w-4xl max-h-[90vh]'
+                        } overflow-auto`}
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
@@ -262,10 +268,16 @@ const TaskAttachmentsCard: React.FC<TaskAttachmentsCardProps> = ({
                                 ✕
                             </button>
                         </div>
-                        <div className="p-4">
+                        <div className="p-1">
                             <AttachmentPreview
                                 attachment={previewAttachment}
-                                maxHeight="70vh"
+                                maxHeight={
+                                    getAttachmentType(
+                                        previewAttachment.mime_type
+                                    ) === 'pdf'
+                                        ? 'calc(95vh - 80px)'
+                                        : '70vh'
+                                }
                             />
                         </div>
                     </div>
