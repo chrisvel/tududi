@@ -41,6 +41,20 @@ const TaskAttachmentsCard: React.FC<TaskAttachmentsCardProps> = ({
         loadAttachments();
     }, [taskUid]);
 
+    // Handle Escape key to close preview modal
+    useEffect(() => {
+        const handleEscape = (e: KeyboardEvent) => {
+            if (e.key === 'Escape' && previewAttachment) {
+                setPreviewAttachment(null);
+            }
+        };
+
+        document.addEventListener('keydown', handleEscape);
+        return () => {
+            document.removeEventListener('keydown', handleEscape);
+        };
+    }, [previewAttachment]);
+
     const loadAttachments = async () => {
         try {
             setLoading(true);
