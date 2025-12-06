@@ -39,15 +39,15 @@ set_db_file_permissions() {
 if [ "$CURRENT_UID" != "$PUID" ] || [ "$CURRENT_GID" != "$PGID" ]; then
     echo "Configuring user permissions..."
 
-    userdel app 2>/dev/null || true
-    groupdel app 2>/dev/null || true
+    deluser app 2>/dev/null || true
+    delgroup app 2>/dev/null || true
 
     if getent group "$PGID" >/dev/null 2>&1; then
         TARGET_GROUP=$(getent group "$PGID" | cut -d: -f1)
         echo "Using existing group '$TARGET_GROUP' with GUID $PGID"
     else
         # Create group "app" with our target group id
-        groupadd -g "$PGID" app
+        addgroup -g "$PGID" app
         TARGET_GROUP="app"
         echo "Created 'app' group with GID: $PGID"
     fi
@@ -57,7 +57,7 @@ if [ "$CURRENT_UID" != "$PUID" ] || [ "$CURRENT_GID" != "$PGID" ]; then
         echo "Using existing user '$TARGET_USER' with UID $PUID"
     else
         # Create user "app" with our target user id
-        useradd -m -u "$PUID" -g "$TARGET_GROUP" app
+        adduser -D -u "$PUID" -G "$TARGET_GROUP" app
         echo "Created 'app' user with UID: $PUID"
         TARGET_USER=app
     fi
