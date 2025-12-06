@@ -33,11 +33,13 @@ interface TaskDetailsHeaderProps {
     activePill: string;
     onPillChange: (pill: string) => void;
     showOverdueIcon?: boolean;
+    showPastDueBadge?: boolean;
     onOverdueIconClick?: () => void;
     isOverdueAlertVisible?: boolean;
     onDismissOverdueAlert?: () => void;
     onToggleTodayPlan?: () => void;
     onQuickStatusToggle?: () => void;
+    attachmentCount?: number;
 }
 
 const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
@@ -52,11 +54,13 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
     activePill,
     onPillChange,
     showOverdueIcon = false,
+    showPastDueBadge = false,
     onOverdueIconClick,
     isOverdueAlertVisible = false,
     onDismissOverdueAlert,
     onToggleTodayPlan,
     onQuickStatusToggle,
+    attachmentCount = 0,
 }) => {
     const { t } = useTranslation();
     const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -156,11 +160,11 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
         const status = task.status;
 
         if (status === 'not_started' || status === 0) {
-            return 'px-2.5 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-2 sm:ml-2 border border-gray-300 text-gray-600 dark:border-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/60';
+            return 'px-2 sm:px-2.5 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-1 sm:gap-2 sm:ml-2 border border-gray-300 text-gray-600 dark:border-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/60';
         }
 
         const baseClass =
-            'px-2.5 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-2 sm:ml-2 border';
+            'px-2 sm:px-2.5 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-1 sm:gap-2 sm:ml-2 border';
 
         if (status === 'in_progress' || status === 1) {
             return `${baseClass} border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30`;
@@ -231,11 +235,11 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
         const priority = task.priority;
 
         if (priority === null || priority === undefined) {
-            return 'px-2.5 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-2 sm:ml-1 border border-gray-300 text-gray-600 dark:border-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/60';
+            return 'px-2 sm:px-2.5 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-1 sm:gap-2 sm:ml-1 border border-gray-300 text-gray-600 dark:border-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/60';
         }
 
         const baseClass =
-            'px-2.5 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-2 sm:ml-1 border';
+            'px-2 sm:px-2.5 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-1 sm:gap-2 sm:ml-1 border';
 
         if (priority === 'low' || priority === 0) {
             return `${baseClass} border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30`;
@@ -367,13 +371,13 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                                         className: `h-4 w-4 ${getStatusIconClass()}`,
                                                     }
                                                 )}
-                                                <span className="capitalize">
+                                                <span className="capitalize hidden sm:inline">
                                                     {getStatusLabel()}
                                                 </span>
                                                 <ChevronDownIcon className="h-4 w-4" />
                                             </button>
                                             {statusDropdownOpen && (
-                                                <div className="absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 z-20">
+                                                <div className="absolute left-0 sm:right-0 sm:left-auto mt-2 w-48 rounded-lg shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 z-20">
                                                     <button
                                                         className={`w-full text-left px-3 py-2 text-sm rounded-t-lg flex items-center gap-2 ${
                                                             task.status === 0 ||
@@ -496,13 +500,13 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                                         className: `h-4 w-4 ${getPriorityIconClass()}`,
                                                     }
                                                 )}
-                                                <span className="capitalize">
+                                                <span className="capitalize hidden sm:inline">
                                                     {getPriorityLabel()}
                                                 </span>
                                                 <ChevronDownIcon className="h-4 w-4" />
                                             </button>
                                             {priorityDropdownOpen && (
-                                                <div className="absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 z-20">
+                                                <div className="absolute left-0 sm:right-0 sm:left-auto mt-2 w-48 rounded-lg shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 z-20">
                                                     <button
                                                         className={`w-full text-left px-3 py-2 text-sm rounded-t-lg flex items-center gap-2 ${
                                                             task.priority ===
@@ -635,6 +639,20 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                                 </div>
                                             )}
                                         </div>
+
+                                        {/* Past Due Badge - Right of priority button */}
+                                        {showPastDueBadge && (
+                                            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 flex-shrink-0">
+                                                <ExclamationTriangleIcon className="h-3 w-3 text-red-600 dark:text-red-400" />
+                                                <span className="text-xs font-medium text-red-700 dark:text-red-300 hidden sm:inline">
+                                                    {t(
+                                                        'task.pastDue',
+                                                        'Past Due'
+                                                    )}
+                                                </span>
+                                            </div>
+                                        )}
+
                                         {formattedUpdatedAt && (
                                             <span className="text-xs text-gray-400 dark:text-gray-500 sm:pl-1 mt-1 sm:mt-0">
                                                 {t(
@@ -763,13 +781,16 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                         </button>
                         <button
                             onClick={() => onPillChange('attachments')}
-                            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors relative ${
                                 activePill === 'attachments'
                                     ? 'bg-blue-500 dark:bg-blue-600 text-white'
                                     : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                             }`}
                         >
                             {t('task.attachments', 'Attachments')}
+                            {attachmentCount > 0 && (
+                                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full border border-white dark:border-gray-900"></span>
+                            )}
                         </button>
                         <button
                             onClick={() => onPillChange('activity')}

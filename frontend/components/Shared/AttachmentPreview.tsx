@@ -18,32 +18,39 @@ const AttachmentPreview: React.FC<AttachmentPreviewProps> = ({
     const [error, setError] = useState<string | null>(null);
 
     const type = getAttachmentType(attachment.mime_type);
+    const fileUrl = attachment.file_url;
 
     useEffect(() => {
-        if (type === 'text' && attachment.file_url) {
+        if (type === 'text' && fileUrl) {
             setLoading(true);
-            fetch(attachment.file_url, { credentials: 'include' })
+            fetch(fileUrl, { credentials: 'include' })
                 .then((res) => res.text())
                 .then((text) => {
                     setTextContent(text);
                     setLoading(false);
                 })
-                .catch(() => {
+                .catch((err) => {
+                    console.error('Failed to load text file:', err);
                     setError('Failed to load file content');
                     setLoading(false);
                 });
         }
-    }, [attachment.file_url, type]);
+    }, [fileUrl, type]);
 
-    if (!attachment.file_url) {
-        return null;
+    if (!fileUrl) {
+        console.warn('No file URL available for attachment:', attachment);
+        return (
+            <div className="text-sm text-gray-500 dark:text-gray-400 p-4">
+                Preview not available
+            </div>
+        );
     }
 
     if (type === 'image') {
         return (
             <div className={`rounded-lg overflow-hidden ${className}`}>
                 <img
-                    src={attachment.file_url}
+                    src={fileUrl}
                     alt={attachment.original_filename}
                     className="max-w-full h-auto"
                     style={{ maxHeight }}
@@ -58,7 +65,7 @@ const AttachmentPreview: React.FC<AttachmentPreviewProps> = ({
                 className={`rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 ${className}`}
             >
                 <iframe
-                    src={attachment.file_url}
+                    src={fileUrl}
                     title={attachment.original_filename}
                     className="w-full"
                     style={{ height: maxHeight }}
