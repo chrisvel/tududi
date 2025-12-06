@@ -13,6 +13,7 @@ import {
     fetchTaskNextIterations,
     TaskIteration,
     toggleTaskToday,
+    toggleTaskCompletion,
 } from '../../utils/tasksService';
 import { createProject } from '../../utils/projectsService';
 import { useStore } from '../../store/useStore';
