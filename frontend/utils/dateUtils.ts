@@ -23,6 +23,41 @@ export const getCurrentLocale = (): Locale => {
 };
 
 /**
+ * Checks if a task is past its due date
+ * @param task - Task object with due_date, status, and completed_at
+ * @returns True if task has a due date in the past and is not completed
+ */
+export const isTaskPastDue = (task: {
+    due_date?: string | null;
+    status: string | number;
+    completed_at: string | null;
+}): boolean => {
+    // If no due date, task is not past due
+    if (!task.due_date) {
+        return false;
+    }
+
+    // If task is completed, it's not past due
+    if (
+        task.completed_at ||
+        task.status === 'done' ||
+        task.status === 2 ||
+        task.status === 'archived' ||
+        task.status === 3
+    ) {
+        return false;
+    }
+
+    // Check if due date is in the past
+    const dueDate = new Date(task.due_date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Start of today
+    dueDate.setHours(0, 0, 0, 0); // Start of due date
+
+    return dueDate < today;
+};
+
+/**
  * Formats a date using the current locale from i18next
  *
  * @param date - The date to format
