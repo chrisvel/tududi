@@ -4,23 +4,22 @@ import { InboxItem } from '../../entities/InboxItem';
 import { useTranslation } from 'react-i18next';
 import {
     TrashIcon,
-    PencilIcon,
     DocumentTextIcon,
     FolderIcon,
     ClipboardDocumentListIcon,
     TagIcon,
-    EllipsisVerticalIcon,
 } from '@heroicons/react/24/outline';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import { Note } from '../../entities/Note';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import { useStore } from '../../store/useStore';
+import InboxCard from './InboxCard';
 
 interface InboxItemDetailProps {
     item: InboxItem;
     onDelete: (uid: string) => void;
-    onUpdate?: (uid: string) => Promise<void>;
+    onUpdate?: (uid: string, newContent: string) => Promise<void>;
     openTaskModal: (task: Task, inboxItemUid?: string) => void;
     openProjectModal: (project: Project | null, inboxItemUid?: string) => void;
     openNoteModal: (note: Note | null, inboxItemUid?: string) => void;
@@ -42,51 +41,40 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     } = useStore();
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [isHovered, setIsHovered] = useState(false);
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const buttonRef = useRef<HTMLButtonElement>(null);
-    const dropdownId = useRef(
-        `dropdown-${Math.random().toString(36).substr(2, 9)}`
-    ).current;
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedContent, setEditedContent] = useState(item.content);
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const inputRef = useRef<HTMLInputElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (isDropdownOpen && buttonRef.current) {
-                const target = event.target as Node;
-                const isOutsideButton = !buttonRef.current.contains(target);
-                const currentDropdown = document.querySelector(
-                    `[data-dropdown-id="${dropdownId}"]`
-                );
-                const isOutsideDropdown = !currentDropdown?.contains(target);
+        if (isEditing && inputRef.current) {
+            inputRef.current.focus();
+            inputRef.current.select();
+        }
+    }, [isEditing]);
 
-                if (isOutsideButton && isOutsideDropdown) {
-                    setIsDropdownOpen(false);
-                }
-            }
-        };
-
-        const handleCloseOtherDropdowns = (event: CustomEvent) => {
-            if (event.detail.dropdownId !== dropdownId && isDropdownOpen) {
-                setIsDropdownOpen(false);
-            }
-        };
-
-        if (isDropdownOpen) {
-            document.addEventListener('click', handleClickOutside);
-            document.addEventListener(
-                'closeOtherDropdowns',
-                handleCloseOtherDropdowns as EventListener
-            );
+    useEffect(() => {
+        if (!isEditing && !isDrawerOpen) {
+            return;
         }
 
-        return () => {
-            document.removeEventListener('click', handleClickOutside);
-            document.removeEventListener(
-                'closeOtherDropdowns',
-                handleCloseOtherDropdowns as EventListener
-            );
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                containerRef.current &&
+                !containerRef.current.contains(event.target as Node)
+            ) {
+                setIsEditing(false);
+                setIsDrawerOpen(false);
+                setEditedContent(item.content);
+            }
         };
-    }, [isDropdownOpen, dropdownId]);
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isEditing, isDrawerOpen, item.content]);
 
     const parseHashtags = (text: string): string[] => {
         const trimmedText = text.trim();
@@ -392,287 +380,176 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         setShowConfirmDialog(false);
     };
 
-    return (
-        <div
-            className="rounded-lg shadow-sm bg-white dark:bg-gray-900 mt-1"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-        >
-            <div className="flex items-center px-4 py-2 gap-2">
-                <div className="flex-1 w-4/5">
-                    <button
-                        onClick={() => {
-                            if (onUpdate && item.uid !== undefined) {
-                                onUpdate(item.uid);
-                            }
-                        }}
-                        className="text-base font-medium text-gray-900 dark:text-gray-300 break-words text-left cursor-pointer w-full"
-                    >
-                        {cleanedContent || item.content}
-                    </button>
+    const handleStartEdit = () => {
+        if (!isEditing) {
+            setIsEditing(true);
+            setIsDrawerOpen(true);
+            setEditedContent(item.content);
+        }
+    };
 
-                    {(hashtags.length > 0 || projectRefs.length > 0) && (
-                        <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1">
-                            {projectRefs.length > 0 && (
-                                <div className="flex items-center">
-                                    <FolderIcon className="h-3 w-3 mr-1" />
-                                    <span>
-                                        {projectRefs.map(
-                                            (projectRef, index) => {
-                                                const matchingProject =
-                                                    projects.find(
-                                                        (project) =>
-                                                            project.name.toLowerCase() ===
-                                                            projectRef.toLowerCase()
-                                                    );
+    const handleSaveEdit = async () => {
+        if (!onUpdate || item.uid === undefined || !editedContent.trim()) {
+            return;
+        }
 
-                                                if (matchingProject) {
-                                                    return (
-                                                        <React.Fragment
-                                                            key={projectRef}
-                                                        >
-                                                            <Link
-                                                                to={
-                                                                    matchingProject.uid
-                                                                        ? `/project/${matchingProject.uid}-${matchingProject.name
-                                                                              .toLowerCase()
-                                                                              .replace(
-                                                                                  /[^a-z0-9]+/g,
-                                                                                  '-'
-                                                                              )
-                                                                              .replace(
-                                                                                  /^-|-$/g,
-                                                                                  ''
-                                                                              )}`
-                                                                        : `/project/${matchingProject.id}`
-                                                                }
-                                                                className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
-                                                            >
-                                                                {projectRef}
-                                                            </Link>
-                                                            {index <
-                                                                projectRefs.length -
-                                                                    1 && ', '}
-                                                        </React.Fragment>
-                                                    );
-                                                } else {
-                                                    return (
-                                                        <React.Fragment
-                                                            key={projectRef}
-                                                        >
-                                                            <span>
-                                                                {projectRef}
-                                                            </span>
-                                                            {index <
-                                                                projectRefs.length -
-                                                                    1 && ', '}
-                                                        </React.Fragment>
-                                                    );
-                                                }
-                                            }
-                                        )}
-                                    </span>
-                                </div>
-                            )}
+        await onUpdate(item.uid, editedContent.trim());
+        setIsEditing(false);
+        setIsDrawerOpen(false);
+    };
 
-                            {projectRefs.length > 0 && hashtags.length > 0 && (
-                                <span className="mx-2">•</span>
-                            )}
+    const handleCancelEdit = () => {
+        setIsEditing(false);
+        setIsDrawerOpen(false);
+        setEditedContent(item.content);
+    };
 
-                            {hashtags.length > 0 && (
-                                <div className="flex items-center">
-                                    <TagIcon className="h-3 w-3 mr-1" />
-                                    <span>
-                                        {hashtags.map((hashtag, index) => {
-                                            return (
-                                                <React.Fragment key={hashtag}>
-                                                    <Link
-                                                        to={`/tag/${encodeURIComponent(hashtag)}`}
-                                                        className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
-                                                    >
-                                                        {hashtag}
-                                                    </Link>
-                                                    {index <
-                                                        hashtags.length - 1 &&
-                                                        ', '}
-                                                </React.Fragment>
-                                            );
-                                        })}
-                                    </span>
-                                </div>
-                            )}
+    const renderDisplayBody = () => (
+        <div className="flex flex-col gap-2">
+            <p className="text-base font-medium text-gray-900 dark:text-gray-300 break-words">
+                {cleanedContent || item.content}
+            </p>
+
+            {(hashtags.length > 0 || projectRefs.length > 0) && (
+                <div className="flex flex-wrap items-center text-xs text-gray-500 dark:text-gray-400 gap-2">
+                    {projectRefs.length > 0 && (
+                        <div className="flex items-center">
+                            <FolderIcon className="h-3 w-3 mr-1" />
+                            <span>
+                                {projectRefs.map((projectRef, index) => {
+                                    const matchingProject = projects.find(
+                                        (project) =>
+                                            project.name.toLowerCase() ===
+                                            projectRef.toLowerCase()
+                                    );
+
+                                    if (matchingProject) {
+                                        return (
+                                            <React.Fragment key={projectRef}>
+                                                <Link
+                                                    to={
+                                                        matchingProject.uid
+                                                            ? `/project/${matchingProject.uid}-${matchingProject.name
+                                                                  .toLowerCase()
+                                                                  .replace(/[^a-z0-9]+/g, '-')
+                                                                  .replace(/^-|-$/g, '')}`
+                                                            : `/project/${matchingProject.id}`
+                                                    }
+                                                    className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
+                                                >
+                                                    {projectRef}
+                                                </Link>
+                                                {index < projectRefs.length - 1 && ', '}
+                                            </React.Fragment>
+                                        );
+                                    } else {
+                                        return (
+                                            <React.Fragment key={projectRef}>
+                                                <span>{projectRef}</span>
+                                                {index < projectRefs.length - 1 && ', '}
+                                            </React.Fragment>
+                                        );
+                                    }
+                                })}
+                            </span>
+                        </div>
+                    )}
+
+                    {projectRefs.length > 0 && hashtags.length > 0 && (
+                        <span className="mx-1 text-gray-400">•</span>
+                    )}
+
+                    {hashtags.length > 0 && (
+                        <div className="flex items-center">
+                            <TagIcon className="h-3 w-3 mr-1" />
+                            <span>
+                                {hashtags.map((hashtag, index) => {
+                                    return (
+                                        <React.Fragment key={hashtag}>
+                                            <Link
+                                                to={`/tag/${encodeURIComponent(hashtag)}`}
+                                                className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
+                                            >
+                                                {hashtag}
+                                            </Link>
+                                            {index < hashtags.length - 1 && ', '}
+                                        </React.Fragment>
+                                    );
+                                })}
+                            </span>
                         </div>
                     )}
                 </div>
+            )}
+        </div>
+    );
 
-                <div className="hidden md:flex items-center justify-end w-1/5 space-x-1">
-                    {loading && <div className="spinner" />}
+    const renderEditBody = () => (
+        <div className="flex flex-col sm:flex-row sm:items-start gap-3">
+            <div className="relative flex-1">
+                <input
+                    ref={inputRef}
+                    type="text"
+                    value={editedContent}
+                    onChange={(e) => setEditedContent(e.target.value)}
+                    className="w-full text-base font-normal bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 px-0 py-2 placeholder-gray-400 dark:placeholder-gray-500"
+                    placeholder={t('inbox.captureThought', 'Capture a thought...')}
+                />
+            </div>
+        </div>
+    );
 
-                    <button
-                        onClick={() => {
-                            if (onUpdate && item.uid !== undefined) {
-                                onUpdate(item.uid);
-                            }
-                        }}
-                        className={`p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
-                        title={t('common.edit')}
-                    >
-                        <PencilIcon className="h-4 w-4" />
-                    </button>
-
+    const renderActionsSection = () => (
+        <div className="pt-3 mt-3 border-t border-gray-100 dark:border-gray-800">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-wrap items-center gap-2">
+                    {loading && <div className="spinner h-4 w-4" />}
                     <button
                         onClick={handleConvertToTask}
-                        className={`p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-full transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
-                        title={t('inbox.createTask')}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-700 dark:text-blue-200 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-200 dark:focus:ring-offset-gray-900"
                     >
                         <ClipboardDocumentListIcon className="h-4 w-4" />
+                        + {t('inbox.createTask', 'Task')}
                     </button>
-
-                    <button
-                        onClick={handleConvertToProject}
-                        className={`p-2 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900 rounded-full transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
-                        title={t('inbox.createProject')}
-                    >
-                        <FolderIcon className="h-4 w-4" />
-                    </button>
-
                     <button
                         onClick={handleConvertToNote}
-                        className={`p-2 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900 rounded-full transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
-                        title={t('inbox.createNote', 'Create Note')}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-purple-700 dark:text-purple-200 bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800 rounded-md hover:bg-purple-100 dark:hover:bg-purple-900/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-200 dark:focus:ring-offset-gray-900"
                     >
                         <DocumentTextIcon className="h-4 w-4" />
+                        + {t('inbox.createNote', 'Note')}
                     </button>
-
+                    <button
+                        onClick={handleConvertToProject}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-green-700 dark:text-green-200 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 rounded-md hover:bg-green-100 dark:hover:bg-green-900/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-200 dark:focus:ring-offset-gray-900"
+                    >
+                        <FolderIcon className="h-4 w-4" />
+                        + {t('inbox.createProject', 'Project')}
+                    </button>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
                     <button
                         onClick={handleDelete}
-                        className={`p-2 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900 rounded-full transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
-                        title={t('common.delete', 'Delete')}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-300 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 rounded-md hover:bg-red-100 dark:hover:bg-red-900/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-200 dark:focus:ring-offset-gray-900"
                     >
                         <TrashIcon className="h-4 w-4" />
+                        {t('common.delete', 'Delete')}
                     </button>
-                </div>
-
-                <div className="flex md:hidden items-center justify-end w-1/5 relative">
-                    {loading && <div className="spinner mr-2" />}
-                    <button
-                        ref={buttonRef}
-                        type="button"
-                        data-dropdown-button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            const newOpenState = !isDropdownOpen;
-
-                            if (newOpenState) {
-                                document.dispatchEvent(
-                                    new CustomEvent('closeOtherDropdowns', {
-                                        detail: { dropdownId },
-                                    })
-                                );
-                            }
-
-                            setIsDropdownOpen(newOpenState);
-                        }}
-                        className="flex items-center justify-center w-8 h-8 rounded-full transition-all duration-200 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    >
-                        <EllipsisVerticalIcon className="h-5 w-5" />
-                    </button>
-
-                    {isDropdownOpen && (
-                        <div
-                            data-dropdown-id={dropdownId}
-                            className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-[9999] transform-gpu"
-                            style={{
-                                transform:
-                                    buttonRef.current &&
-                                    buttonRef.current.getBoundingClientRect()
-                                        .bottom +
-                                        240 >
-                                        window.innerHeight
-                                        ? 'translateY(-100%) translateY(-8px)'
-                                        : 'none',
-                            }}
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <div className="py-1">
-                                <button
-                                    type="button"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        if (onUpdate) {
-                                            const identifier =
-                                                item.uid ??
-                                                (item.id !== undefined
-                                                    ? String(item.id)
-                                                    : null);
-
-                                            if (identifier) {
-                                                onUpdate(identifier);
-                                            } else {
-                                                console.warn(
-                                                    'Inbox item is missing an identifier for update.'
-                                                );
-                                            }
-                                        }
-                                        setIsDropdownOpen(false);
-                                    }}
-                                    className="w-full px-4 py-2 text-sm text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                >
-                                    {t('common.edit', 'Edit')}
-                                </button>
-
-                                <button
-                                    type="button"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleConvertToTask();
-                                        setIsDropdownOpen(false);
-                                    }}
-                                    className="w-full px-4 py-2 text-sm text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                >
-                                    {t('inbox.createTask', 'Create Task')}
-                                </button>
-
-                                <button
-                                    type="button"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleConvertToProject();
-                                        setIsDropdownOpen(false);
-                                    }}
-                                    className="w-full px-4 py-2 text-sm text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                >
-                                    {t('inbox.createProject', 'Create Project')}
-                                </button>
-
-                                <button
-                                    type="button"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleConvertToNote();
-                                        setIsDropdownOpen(false);
-                                    }}
-                                    className="w-full px-4 py-2 text-sm text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                >
-                                    {t('inbox.createNote', 'Create Note')}
-                                </button>
-
-                                <button
-                                    type="button"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleDelete();
-                                        setIsDropdownOpen(false);
-                                    }}
-                                    className="w-full px-4 py-2 text-sm text-left text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
-                                >
-                                    {t('common.delete', 'Delete')}
-                                </button>
-                            </div>
-                        </div>
-                    )}
                 </div>
             </div>
+        </div>
+    );
+
+    return (
+        <div ref={containerRef} className="mt-3">
+            <InboxCard
+                isActive={isEditing}
+                onClick={!isEditing ? handleStartEdit : undefined}
+            >
+                <div className="p-4">
+                    {isEditing ? renderEditBody() : renderDisplayBody()}
+                    {isDrawerOpen && renderActionsSection()}
+                </div>
+            </InboxCard>
             {showConfirmDialog && (
                 <ConfirmDialog
                     title={t('inbox.deleteConfirmTitle', 'Delete Item')}

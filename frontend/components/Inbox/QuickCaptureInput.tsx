@@ -15,6 +15,7 @@ import { isUrl } from '../../utils/urlService';
 import { getApiPath } from '../../config/paths';
 import InboxSelectedChips from './InboxSelectedChips';
 import SuggestionsDropdown from './SuggestionsDropdown';
+import InboxCard from './InboxCard';
 
 interface QuickCaptureInputProps {
     onTaskCreate?: (task: Task) => Promise<void>;
@@ -943,7 +944,7 @@ const QuickCaptureInput: React.FC<QuickCaptureInputProps> = ({
     );
 
     return (
-        <div className="w-full mb-6 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm">
+        <InboxCard className="w-full mb-6">
             <div className="p-4">
                 <div className="flex flex-col sm:flex-row sm:items-start gap-3">
                     <div className="relative flex-1">
@@ -1267,7 +1268,7 @@ const QuickCaptureInput: React.FC<QuickCaptureInputProps> = ({
                     </button>
                 </div>
             </div>
-        </div>
+        </InboxCard>
     );
 };
 
