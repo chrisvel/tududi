@@ -7,7 +7,7 @@ const { logError } = require('../services/logService');
 const { getAuthenticatedUserId } = require('../utils/request-utils');
 const router = express.Router();
 
-const TITLE_MAX_LENGTH = 80;
+const TITLE_MAX_LENGTH = 120;
 
 const buildTitleFromContent = (text) => {
     const normalized = text.trim();

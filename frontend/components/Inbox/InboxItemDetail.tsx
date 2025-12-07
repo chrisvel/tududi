@@ -232,6 +232,9 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     const displayText =
         item.title && item.title.trim().length > 0 ? item.title : fullContent;
     const baseContent = fullContent || displayText;
+    const cleanedPreviewText = cleanTextFromTagsAndProjects(displayText);
+    const previewText =
+        cleanedPreviewText.length > 0 ? cleanedPreviewText : displayText;
 
     const hashtags = useMemo(() => {
         const parsed = parseHashtags(fullContent);
@@ -654,11 +657,11 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     return (
         <div ref={containerRef}>
             {isEditing ? (
-                <div className="space-y-3">
-                    <QuickCaptureInput
-                        ref={composerRef}
-                        mode="edit"
-                        initialValue={fullContent}
+            <div className="space-y-3">
+                <QuickCaptureInput
+                    ref={composerRef}
+                    mode="edit"
+                    initialValue={fullContent}
                         hidePrimaryButton
                         projects={projects}
                         onSubmitOverride={handleSubmitEdit}
@@ -667,13 +670,14 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                         openTaskModal={openTaskModal}
                         openProjectModal={openProjectModal}
                         openNoteModal={openNoteModal}
-                        cardClassName="mb-0"
-                        multiline={hasLongContent}
-                    />
-                </div>
-            ) : (
-                <InboxCard className="w-full">
-                    <div className="flex items-center px-4 py-3 gap-3">
+                    cardClassName="mb-0"
+                    multiline={hasLongContent}
+                />
+                {renderMetadata()}
+            </div>
+        ) : (
+            <InboxCard className="w-full">
+                <div className="flex items-center px-4 py-3 gap-3">
                         <div
                             className="flex-shrink-0"
                             title={iconTooltip}
@@ -696,9 +700,8 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                                 onClick={handleStartEdit}
                                 className="text-base font-medium text-gray-900 dark:text-gray-300 break-words text-left cursor-pointer w-full hover:text-blue-600 dark:hover:text-blue-400"
                             >
-                                {linkifyContent(displayText)}
+                                {linkifyContent(previewText)}
                             </button>
-                            {renderMetadata()}
                         </div>
                     </div>
                 </InboxCard>
