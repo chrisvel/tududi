@@ -645,7 +645,10 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                             <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 flex-shrink-0">
                                                 <ExclamationTriangleIcon className="h-3 w-3 text-red-600 dark:text-red-400" />
                                                 <span className="text-xs font-medium text-red-700 dark:text-red-300 hidden sm:inline">
-                                                    {t('task.pastDue', 'Past Due')}
+                                                    {t(
+                                                        'task.pastDue',
+                                                        'Past Due'
+                                                    )}
                                                 </span>
                                             </div>
                                         )}
