@@ -201,7 +201,10 @@ const InboxItems: React.FC = () => {
         }
     };
 
-    const handleUpdateItem = async (uid: string, newContent: string): Promise<void> => {
+    const handleUpdateItem = async (
+        uid: string,
+        newContent: string
+    ): Promise<void> => {
         try {
             await updateInboxItemWithStore(uid, newContent);
             showSuccessToast(t('inbox.itemUpdated'));
@@ -622,7 +625,6 @@ const InboxItems: React.FC = () => {
                         return null;
                     }
                 })()}
-
             </div>
         </div>
     );

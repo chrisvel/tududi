@@ -310,8 +310,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         cleanedOverride?: string
     ) => {
         const sourceText = textOverride ?? item.content;
-        const sourceHashtags =
-            hashtagOverride ?? parseHashtags(sourceText);
+        const sourceHashtags = hashtagOverride ?? parseHashtags(sourceText);
         const sourceProjectRefs =
             projectRefsOverride ?? parseProjectRefs(sourceText);
         const cleaned =
@@ -348,9 +347,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         };
     };
 
-    const handleConvertToTask = (
-        context?: InboxComposerFooterContext
-    ) => {
+    const handleConvertToTask = (context?: InboxComposerFooterContext) => {
         try {
             const payload = buildConversionPayload(
                 context?.text,
@@ -385,9 +382,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         await onUpdate(item.uid, text);
     };
 
-    const handleConvertToProject = (
-        context?: InboxComposerFooterContext
-    ) => {
+    const handleConvertToProject = (context?: InboxComposerFooterContext) => {
         try {
             const payload = buildConversionPayload(
                 context?.text,
@@ -417,8 +412,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         context?: InboxComposerFooterContext
     ) => {
         const sourceText = context?.text ?? item.content;
-        let title =
-            sourceText.split('\n')[0] || sourceText.substring(0, 50);
+        let title = sourceText.split('\n')[0] || sourceText.substring(0, 50);
         let content = sourceText;
         let isBookmark = false;
 
@@ -484,9 +478,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         }
     };
 
-    const renderComposerFooter = (
-        context: InboxComposerFooterContext
-    ) => (
+    const renderComposerFooter = (context: InboxComposerFooterContext) => (
         <div className="pt-3 mt-3 border-t border-gray-100 dark:border-gray-800">
             <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex flex-wrap items-center gap-2">
@@ -495,22 +487,22 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                         onClick={() => handleConvertToTask(context)}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-700 dark:text-blue-200 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-200 dark:focus:ring-offset-gray-900"
                     >
-                        <ClipboardDocumentListIcon className="h-4 w-4" />
-                        + {t('inbox.createTask', 'Task')}
+                        <ClipboardDocumentListIcon className="h-4 w-4" />+{' '}
+                        {t('inbox.createTask', 'Task')}
                     </button>
                     <button
                         onClick={() => handleConvertToNote(context)}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-purple-700 dark:text-purple-200 bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800 rounded-md hover:bg-purple-100 dark:hover:bg-purple-900/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-200 dark:focus:ring-offset-gray-900"
                     >
-                        <DocumentTextIcon className="h-4 w-4" />
-                        + {t('inbox.createNote', 'Note')}
+                        <DocumentTextIcon className="h-4 w-4" />+{' '}
+                        {t('inbox.createNote', 'Note')}
                     </button>
                     <button
                         onClick={() => handleConvertToProject(context)}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-green-700 dark:text-green-200 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 rounded-md hover:bg-green-100 dark:hover:bg-green-900/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-200 dark:focus:ring-offset-gray-900"
                     >
-                        <FolderIcon className="h-4 w-4" />
-                        + {t('inbox.createProject', 'Project')}
+                        <FolderIcon className="h-4 w-4" />+{' '}
+                        {t('inbox.createProject', 'Project')}
                     </button>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
@@ -580,7 +572,8 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                                 {linkifyContent(cleanedContent || item.content)}
                             </button>
 
-                            {(hashtags.length > 0 || projectRefs.length > 0) && (
+                            {(hashtags.length > 0 ||
+                                projectRefs.length > 0) && (
                                 <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1">
                                     {projectRefs.length > 0 && (
                                         <div className="flex items-center">
@@ -625,7 +618,8 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                                                                     </Link>
                                                                     {index <
                                                                         projectRefs.length -
-                                                                            1 && ', '}
+                                                                            1 &&
+                                                                        ', '}
                                                                 </React.Fragment>
                                                             );
                                                         } else {
@@ -642,7 +636,8 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                                                                     </span>
                                                                     {index <
                                                                         projectRefs.length -
-                                                                            1 && ', '}
+                                                                            1 &&
+                                                                        ', '}
                                                                 </React.Fragment>
                                                             );
                                                         }
@@ -677,7 +672,8 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                                                                 </Link>
                                                                 {index <
                                                                     hashtags.length -
-                                                                        1 && ', '}
+                                                                        1 &&
+                                                                    ', '}
                                                             </React.Fragment>
                                                         );
                                                     }
@@ -688,7 +684,6 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                                 </div>
                             )}
                         </div>
-
                     </div>
                 </InboxCard>
             )}
