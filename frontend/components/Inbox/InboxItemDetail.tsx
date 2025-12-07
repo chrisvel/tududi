@@ -657,11 +657,11 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     return (
         <div ref={containerRef}>
             {isEditing ? (
-            <div className="space-y-3">
-                <QuickCaptureInput
-                    ref={composerRef}
-                    mode="edit"
-                    initialValue={fullContent}
+                <div className="space-y-3">
+                    <QuickCaptureInput
+                        ref={composerRef}
+                        mode="edit"
+                        initialValue={fullContent}
                         hidePrimaryButton
                         projects={projects}
                         onSubmitOverride={handleSubmitEdit}
@@ -670,14 +670,14 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                         openTaskModal={openTaskModal}
                         openProjectModal={openProjectModal}
                         openNoteModal={openNoteModal}
-                    cardClassName="mb-0"
-                    multiline={hasLongContent}
-                />
-                {renderMetadata()}
-            </div>
-        ) : (
-            <InboxCard className="w-full">
-                <div className="flex items-center px-4 py-3 gap-3">
+                        cardClassName="mb-0"
+                        multiline={hasLongContent}
+                    />
+                    {renderMetadata()}
+                </div>
+            ) : (
+                <InboxCard className="w-full">
+                    <div className="flex items-center px-4 py-3 gap-3">
                         <div
                             className="flex-shrink-0"
                             title={iconTooltip}

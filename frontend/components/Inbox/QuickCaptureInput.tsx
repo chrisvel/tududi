@@ -22,9 +22,11 @@ import {
     FolderIcon,
     PlusIcon,
     LightBulbIcon,
+    LinkIcon,
+    XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
-import { isUrl } from '../../utils/urlService';
+import { isUrl, extractUrlTitle } from '../../utils/urlService';
 import { getApiPath } from '../../config/paths';
 import InboxSelectedChips from './InboxSelectedChips';
 import SuggestionsDropdown from './SuggestionsDropdown';
@@ -61,6 +63,48 @@ interface QuickCaptureInputProps {
     cardClassName?: string;
     multiline?: boolean;
 }
+
+interface UrlPreviewState {
+    detectedText: string;
+    url: string;
+    title: string | null;
+    description: string | null;
+    image: string | null;
+    isLoading: boolean;
+    error?: string | null;
+}
+
+const urlWithProtocolRegex = /(https?:\/\/[^\s]+)/i;
+const urlWithoutProtocolRegex =
+    /(?:^|\s)((?:www\.)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(?::[0-9]{1,5})?(?:\/[^\s]*)?)/i;
+
+const normalizeUrl = (value: string) => {
+    if (!value) {
+        return '';
+    }
+    if (/^https?:\/\//i.test(value)) {
+        return value;
+    }
+    return `https://${value}`;
+};
+
+const extractFirstUrlFromText = (text: string): string | null => {
+    if (!text) {
+        return null;
+    }
+
+    const withProtocolMatch = text.match(urlWithProtocolRegex);
+    if (withProtocolMatch && withProtocolMatch[0]) {
+        return withProtocolMatch[0];
+    }
+
+    const withoutProtocolMatch = text.match(urlWithoutProtocolRegex);
+    if (withoutProtocolMatch && withoutProtocolMatch[1]) {
+        return withoutProtocolMatch[1];
+    }
+
+    return null;
+};
 
 const QuickCaptureInput = React.forwardRef<
     QuickCaptureInputHandle,
@@ -120,6 +164,13 @@ const QuickCaptureInput = React.forwardRef<
         const [isAnalyzing, setIsAnalyzing] = useState(false);
         const analysisTimeoutRef = useRef<NodeJS.Timeout>();
         const analysisRequestIdRef = useRef(0);
+        const [urlPreview, setUrlPreview] = useState<UrlPreviewState | null>(
+            null
+        );
+        const [urlPreviewImageError, setUrlPreviewImageError] =
+            useState(false);
+        const urlPreviewRequestIdRef = useRef(0);
+        const dismissedPreviewUrlRef = useRef<string | null>(null);
 
         const isEditMode = mode === 'edit';
 
@@ -138,6 +189,8 @@ const QuickCaptureInput = React.forwardRef<
         const clearComposerText = useCallback(() => {
             setInputText('');
             setAnalysisResult(null);
+            setUrlPreview(null);
+            dismissedPreviewUrlRef.current = null;
             if (inputRef.current) {
                 inputRef.current.focus();
             }
@@ -227,6 +280,81 @@ const QuickCaptureInput = React.forwardRef<
 
             return matches;
         };
+
+        const fetchUrlPreview = useCallback(
+            async (rawUrl: string, detectedText: string) => {
+                const normalizedUrl = normalizeUrl(rawUrl);
+                urlPreviewRequestIdRef.current += 1;
+                const currentRequestId = urlPreviewRequestIdRef.current;
+
+                dismissedPreviewUrlRef.current = null;
+                setUrlPreviewImageError(false);
+                setUrlPreview({
+                    detectedText,
+                    url: normalizedUrl,
+                    title: null,
+                    description: null,
+                    image: null,
+                    isLoading: true,
+                    error: null,
+                });
+
+                const result = await extractUrlTitle(normalizedUrl);
+
+                if (currentRequestId !== urlPreviewRequestIdRef.current) {
+                    return;
+                }
+
+                setUrlPreview((prev) => {
+                    if (!prev || prev.url !== normalizedUrl) {
+                        return prev;
+                    }
+
+                    return {
+                        ...prev,
+                        title: result.title ?? null,
+                        description: result.description ?? null,
+                        image: result.image ?? null,
+                        isLoading: false,
+                        error: result.error ?? null,
+                    };
+                });
+            },
+            []
+        );
+
+        useEffect(() => {
+            const detectedUrl = extractFirstUrlFromText(inputText);
+
+            if (!detectedUrl) {
+                if (urlPreview) {
+                    setUrlPreview(null);
+                }
+                dismissedPreviewUrlRef.current = null;
+                urlPreviewRequestIdRef.current += 1;
+                return;
+            }
+
+            const normalized = normalizeUrl(detectedUrl);
+
+            if (dismissedPreviewUrlRef.current === normalized) {
+                return;
+            }
+
+            if (urlPreview && urlPreview.url === normalized) {
+                return;
+            }
+
+            fetchUrlPreview(detectedUrl, detectedUrl);
+        }, [inputText, fetchUrlPreview, urlPreview]);
+
+        useEffect(() => {
+            if (!urlPreview) {
+                setUrlPreviewImageError(false);
+                return;
+            }
+            setUrlPreviewImageError(false);
+        }, [urlPreview?.url]);
 
         const tokenizeText = (text: string): string[] => {
             const tokens: string[] = [];
@@ -1322,7 +1450,7 @@ const QuickCaptureInput = React.forwardRef<
                 className={`w-full border border-blue-300 dark:border-blue-600 ${cardClasses}`}
             >
                 <div className="px-4 py-3">
-                    <div className="flex flex-col sm:flex-row sm:items-start gap-3">
+                    <div className={`flex flex-col sm:flex-row sm:gap-4 gap-3 ${shouldShowPrimaryButton ? 'sm:items-center' : 'sm:items-start'}`}>
                         <div className="relative flex-1">
                             <div className="flex items-center gap-3">
                                 <LightBulbIcon className="h-5 w-5 text-amber-400 dark:text-amber-300" />
@@ -1808,6 +1936,130 @@ const QuickCaptureInput = React.forwardRef<
                                 renderLabel={(project) => <>+{project.name}</>}
                             />
 
+                            {urlPreview && (
+                                <div className="mt-3 rounded-lg border border-blue-100 bg-blue-50/70 p-3 dark:border-blue-800 dark:bg-blue-900/20">
+                                    <div className="flex items-start gap-3">
+                                        <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center overflow-hidden rounded-md bg-blue-100 dark:bg-blue-800">
+                                            {urlPreview.isLoading ? (
+                                                <svg
+                                                    className="h-5 w-5 animate-spin text-blue-600 dark:text-blue-300"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <circle
+                                                        className="opacity-25"
+                                                        cx="12"
+                                                        cy="12"
+                                                        r="10"
+                                                        stroke="currentColor"
+                                                        strokeWidth="4"
+                                                    />
+                                                    <path
+                                                        className="opacity-75"
+                                                        fill="currentColor"
+                                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                    />
+                                                </svg>
+                                            ) : urlPreview.image &&
+                                              !urlPreviewImageError ? (
+                                                <img
+                                                    src={urlPreview.image}
+                                                    alt={urlPreview.title ?? urlPreview.url}
+                                                    className="h-full w-full object-cover"
+                                                    onError={() =>
+                                                        setUrlPreviewImageError(
+                                                            true
+                                                        )
+                                                    }
+                                                />
+                                            ) : (
+                                                <LinkIcon className="h-6 w-6 text-blue-600 dark:text-blue-300" />
+                                            )}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-start justify-between gap-2">
+                                                <div className="min-w-0">
+                                                    <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                                                        {urlPreview.title ||
+                                                            t(
+                                                                'inbox.linkPreview',
+                                                                'Link preview'
+                                                            )}
+                                                    </p>
+                                                    {urlPreview.description && (
+                                                        <p className="mt-1 text-xs text-gray-600 dark:text-gray-400 break-words">
+                                                            {urlPreview.description}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        dismissedPreviewUrlRef.current =
+                                                            urlPreview.url;
+                                                        setUrlPreview(null);
+                                                    }}
+                                                    className="rounded-md p-1 text-gray-400 transition hover:bg-white/60 hover:text-gray-600 dark:hover:bg-white/10"
+                                                    aria-label={t(
+                                                        'common.dismiss',
+                                                        'Dismiss'
+                                                    )}
+                                                >
+                                                    <XMarkIcon className="h-4 w-4" />
+                                                </button>
+                                            </div>
+                                            <div className="mt-2 flex flex-wrap items-center gap-2">
+                                                <span className="text-xs text-gray-500 dark:text-gray-400 break-all">
+                                                    {urlPreview.url}
+                                                </span>
+                                                {!urlPreview.isLoading &&
+                                                    !urlPreview.error && (
+                                                        <a
+                                                            href={urlPreview.url}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="text-xs font-medium text-blue-700 hover:underline dark:text-blue-300"
+                                                        >
+                                                            {t(
+                                                                'common.open',
+                                                                'Open'
+                                                            )}
+                                                        </a>
+                                                    )}
+                                                {urlPreview.error &&
+                                                    !urlPreview.isLoading && (
+                                                        <>
+                                                            <span className="text-xs text-red-500">
+                                                                {t(
+                                                                    'inbox.linkPreviewError',
+                                                                    'Could not fetch link details'
+                                                                )}
+                                                            </span>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() =>
+                                                                    fetchUrlPreview(
+                                                                        urlPreview.url,
+                                                                        urlPreview.detectedText ||
+                                                                            urlPreview.url
+                                                                    )
+                                                                }
+                                                                className="text-xs font-medium text-blue-700 hover:underline dark:text-blue-300"
+                                                            >
+                                                                {t(
+                                                                    'common.retry',
+                                                                    'Retry'
+                                                                )}
+                                                            </button>
+                                                        </>
+                                                    )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
                             {(() => {
                                 const suggestion = getSuggestion();
                                 return suggestion.type && suggestion.message ? (
@@ -1859,7 +2111,7 @@ const QuickCaptureInput = React.forwardRef<
                                 type="button"
                                 onClick={() => handleSubmit(false)}
                                 disabled={!inputText.trim() || isSaving}
-                                className={`inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-colors ${
+                                className={`self-start sm:self-center mt-2 sm:mt-0 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:ring-offset-1 dark:focus:ring-offset-gray-800 transition-colors ${
                                     inputText.trim() && !isSaving
                                         ? 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600'
                                         : 'bg-blue-400 dark:bg-blue-700 cursor-not-allowed'
@@ -1868,7 +2120,7 @@ const QuickCaptureInput = React.forwardRef<
                                 {isSaving ? (
                                     <>
                                         <svg
-                                            className="animate-spin h-4 w-4 mr-2"
+                                            className="animate-spin h-3.5 w-3.5"
                                             xmlns="http://www.w3.org/2000/svg"
                                             fill="none"
                                             viewBox="0 0 24 24"
@@ -1891,7 +2143,7 @@ const QuickCaptureInput = React.forwardRef<
                                     </>
                                 ) : (
                                     <>
-                                        <PlusIcon className="h-4 w-4 mr-1" />
+                                        <PlusIcon className="h-3.5 w-3.5" />
                                         {t('common.add', 'Add')}
                                     </>
                                 )}
