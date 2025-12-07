@@ -1291,7 +1291,10 @@ const QuickCaptureInput = React.forwardRef<
                                         </span>
                                         <FolderIcon className="h-4 w-4" />
                                         <span className="hidden sm:inline">
-                                            {t('inbox.createProject', 'Project')}
+                                            {t(
+                                                'inbox.createProject',
+                                                'Project'
+                                            )}
                                         </span>
                                     </span>
                                 </button>
