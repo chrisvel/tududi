@@ -320,8 +320,13 @@ const processMessage = async (user, update) => {
         return; // Silently ignore unauthorized users
     }
 
-    // If this user already has a chat bound and it doesn't match this update, ignore
-    if (user.telegram_chat_id && user.telegram_chat_id !== chatId) {
+    // If allowed users list is configured allow multiple chats
+    if (
+        (!user.telegram_allowed_users ||
+            user.telegram_allowed_users.trim() === '') &&
+        user.telegram_chat_id &&
+        user.telegram_chat_id !== chatId
+    ) {
         return;
     }
 
@@ -571,4 +576,5 @@ module.exports = {
     _createMessageParams: createMessageParams,
     _createTelegramUrl: createTelegramUrl,
     _isAuthorizedTelegramUser: isAuthorizedTelegramUser,
+    _processMessage: processMessage,
 };

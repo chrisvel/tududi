@@ -1,5 +1,6 @@
 const { User, InboxItem } = require('../../../models');
 const telegramPoller = require('../../../services/telegramPoller');
+const https = require('https');
 
 // Mock the database models
 jest.mock('../../../models', () => ({
@@ -202,5 +203,68 @@ describe('TelegramPoller Duplicate Prevention', () => {
                 userStatus: {},
             });
         });
+    });
+});
+
+describe('Multiple Telegram Allowed Users', () => {
+    test('should allow multiple authorized Telegram users when telegram_allowed_users is configured', async () => {
+        const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
+
+        https.request.mockImplementation((url, options, callback) => {
+            // Simulate successful response
+            const mockResponse = {
+                on: jest.fn((event, handler) => {
+                    if (event === 'data') handler(JSON.stringify({}));
+                    if (event === 'end') handler();
+                    return mockResponse;
+                }),
+            };
+
+            callback(mockResponse);
+
+            return {
+                on: jest.fn(),
+                write: jest.fn(),
+                end: jest.fn(),
+            };
+        });
+
+        const user = {
+            id: 1,
+            telegram_bot_token: 'test-token',
+            telegram_chat_id: '111111111',
+            telegram_allowed_users: '@bob, @alice',
+        };
+
+        const bobUpdate = {
+            message: {
+                from: { id: 100, username: 'bob' },
+                chat: { id: 111111111 }, // telegram_chat_id
+                text: 'Test message from Bob',
+                message_id: 1,
+            },
+        };
+
+        const aliceUpdate = {
+            message: {
+                from: { id: 200, username: 'alice' },
+                chat: { id: 222222222 }, // Different chat ID
+                text: 'Test message from Alice',
+                message_id: 2,
+            },
+        };
+
+        await telegramPoller._processMessage(user, aliceUpdate);
+        await telegramPoller._processMessage(user, bobUpdate);
+
+        // Both should log successful processing
+        expect(consoleLogSpy).toHaveBeenCalledWith(
+            expect.stringContaining('Test message from Alice')
+        );
+        expect(consoleLogSpy).toHaveBeenCalledWith(
+            expect.stringContaining('Test message from Bob')
+        );
+
+        consoleLogSpy.mockRestore();
     });
 });
