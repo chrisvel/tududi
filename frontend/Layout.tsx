@@ -363,7 +363,6 @@ const Layout: React.FC<LayoutProps> = ({
                     setCurrentUser={setCurrentUser}
                     isSidebarOpen={isSidebarOpen}
                     setIsSidebarOpen={setIsSidebarOpen}
-                    openTaskModal={openTaskModal}
                 />
                 <Sidebar
                     isSidebarOpen={isSidebarOpen}
@@ -401,7 +400,6 @@ const Layout: React.FC<LayoutProps> = ({
                     setCurrentUser={setCurrentUser}
                     isSidebarOpen={isSidebarOpen}
                     setIsSidebarOpen={setIsSidebarOpen}
-                    openTaskModal={openTaskModal}
                 />
                 <Sidebar
                     isSidebarOpen={isSidebarOpen}
@@ -439,7 +437,6 @@ const Layout: React.FC<LayoutProps> = ({
                     setCurrentUser={setCurrentUser}
                     isSidebarOpen={isSidebarOpen}
                     setIsSidebarOpen={setIsSidebarOpen}
-                    openTaskModal={openTaskModal}
                 />
                 <Sidebar
                     isSidebarOpen={isSidebarOpen}

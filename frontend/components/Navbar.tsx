@@ -24,7 +24,6 @@ interface NavbarProps {
     setCurrentUser: React.Dispatch<React.SetStateAction<any>>;
     isSidebarOpen: boolean;
     setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    openTaskModal: (type?: 'simplified' | 'full') => void;
 }
 
 const Navbar: React.FC<NavbarProps> = ({
@@ -32,7 +31,6 @@ const Navbar: React.FC<NavbarProps> = ({
     setCurrentUser,
     isSidebarOpen,
     setIsSidebarOpen,
-    openTaskModal,
     isDarkMode,
 }) => {
     const { t } = useTranslation();
@@ -201,7 +199,7 @@ const Navbar: React.FC<NavbarProps> = ({
                     </button>
 
                     <button
-                        onClick={() => openTaskModal('simplified')}
+                        onClick={() => navigate('/inbox')}
                         className="flex items-center bg-blue-500 hover:bg-blue-600 text-white rounded-full focus:outline-none transition-all duration-200 px-2 py-2 md:px-3 md:py-2"
                         aria-label="Quick Inbox Capture"
                         title="Quick Inbox Capture"

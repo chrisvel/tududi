@@ -19,6 +19,7 @@ import TaskModal from '../Task/TaskModal';
 import ProjectModal from '../Project/ProjectModal';
 import NoteModal from '../Note/NoteModal';
 import InboxModal from './InboxModal';
+import QuickCaptureInput from './QuickCaptureInput';
 import { createTask } from '../../utils/tasksService';
 import { createProject } from '../../utils/projectsService';
 import { createNote } from '../../utils/notesService';
@@ -457,6 +458,13 @@ const InboxItems: React.FC = () => {
                         </div>
                     </div>
                 </div>
+
+                <QuickCaptureInput
+                    onTaskCreate={handleSaveTask}
+                    onNoteCreate={handleSaveNote}
+                    projects={projects}
+                    autoFocus={true}
+                />
 
                 {inboxItems.length === 0 ? (
                     <div className="flex justify-center items-center mt-4">
