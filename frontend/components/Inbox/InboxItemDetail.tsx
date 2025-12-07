@@ -606,8 +606,8 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                                             >
                                                 {projectRef}
                                             </Link>
-                                            {index <
-                                                projectRefs.length - 1 && ', '}
+                                            {index < projectRefs.length - 1 &&
+                                                ', '}
                                         </React.Fragment>
                                     );
                                 }
@@ -615,8 +615,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                                 return (
                                     <React.Fragment key={projectRef}>
                                         <span>{projectRef}</span>
-                                        {index <
-                                            projectRefs.length - 1 && ', '}
+                                        {index < projectRefs.length - 1 && ', '}
                                     </React.Fragment>
                                 );
                             })}

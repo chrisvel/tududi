@@ -168,8 +168,9 @@ describe('Inbox Routes - No Tags Scenario', () => {
         });
 
         it('should truncate title and preserve full content for long inputs', async () => {
-            const longContent = 'This is a very long inbox entry that exceeds the title limit and should therefore store the entire text inside the content field while keeping a shortened preview in the title for easier scanning within the list view.'
-                + ' Additional details continue to make this string exceed the cutoff threshold so we can verify ellipsis handling and storage of the full payload without truncation.';
+            const longContent =
+                'This is a very long inbox entry that exceeds the title limit and should therefore store the entire text inside the content field while keeping a shortened preview in the title for easier scanning within the list view.' +
+                ' Additional details continue to make this string exceed the cutoff threshold so we can verify ellipsis handling and storage of the full payload without truncation.';
 
             const response = await agent
                 .post('/api/inbox')
