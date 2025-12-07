@@ -89,9 +89,9 @@ const QuickCaptureInput = React.forwardRef<
         const [isSaving, setIsSaving] = useState(false);
         const { showSuccessToast, showErrorToast } = useToast();
         const inputRef = useRef<HTMLInputElement>(null);
-    const { tagsStore } = useStore();
-    const { setTags, refreshTags } = tagsStore;
-    const tags = tagsStore.getTags();
+        const { tagsStore } = useStore();
+        const { setTags, refreshTags } = tagsStore;
+        const tags = tagsStore.getTags();
         const [showTagSuggestions, setShowTagSuggestions] = useState(false);
         const [filteredTags, setFilteredTags] = useState<Tag[]>([]);
         const [showProjectSuggestions, setShowProjectSuggestions] =
@@ -887,35 +887,38 @@ const QuickCaptureInput = React.forwardRef<
             }
         };
 
-    const createMissingTags = async (text: string): Promise<void> => {
-        const hashtagsInText = getAllTags(text);
-        const currentTags = tagsStore.getTags();
-        const existingTagNames = currentTags.map((tag) =>
-            tag.name.toLowerCase()
-        );
-        const missingTags = hashtagsInText.filter(
-            (tagName) => !existingTagNames.includes(tagName.toLowerCase())
-        );
+        const createMissingTags = async (text: string): Promise<void> => {
+            const hashtagsInText = getAllTags(text);
+            const currentTags = tagsStore.getTags();
+            const existingTagNames = currentTags.map((tag) =>
+                tag.name.toLowerCase()
+            );
+            const missingTags = hashtagsInText.filter(
+                (tagName) => !existingTagNames.includes(tagName.toLowerCase())
+            );
 
-        let createdNewTag = false;
-        for (const tagName of missingTags) {
-            try {
-                const newTag = await createTag({ name: tagName });
-                setTags([...tagsStore.getTags(), newTag]);
-                createdNewTag = true;
-            } catch (error) {
-                console.error(`Failed to create tag "${tagName}":`, error);
+            let createdNewTag = false;
+            for (const tagName of missingTags) {
+                try {
+                    const newTag = await createTag({ name: tagName });
+                    setTags([...tagsStore.getTags(), newTag]);
+                    createdNewTag = true;
+                } catch (error) {
+                    console.error(`Failed to create tag "${tagName}":`, error);
+                }
             }
-        }
 
-        if (createdNewTag && typeof refreshTags === 'function') {
-            try {
-                await refreshTags();
-            } catch (error) {
-                console.error('Failed to refresh tags after creation:', error);
+            if (createdNewTag && typeof refreshTags === 'function') {
+                try {
+                    await refreshTags();
+                } catch (error) {
+                    console.error(
+                        'Failed to refresh tags after creation:',
+                        error
+                    );
+                }
             }
-        }
-    };
+        };
 
         const createMissingProjects = async (text: string): Promise<void> => {
             const projectsInText = getAllProjects(text);
