@@ -487,22 +487,43 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                         onClick={() => handleConvertToTask(context)}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-700 dark:text-blue-200 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-200 dark:focus:ring-offset-gray-900"
                     >
-                        <ClipboardDocumentListIcon className="h-4 w-4" />+{' '}
-                        {t('inbox.createTask', 'Task')}
+                        <span className="flex items-center gap-1">
+                            <span className="sm:hidden text-sm font-semibold leading-none">
+                                +
+                            </span>
+                            <ClipboardDocumentListIcon className="h-4 w-4" />
+                            <span className="hidden sm:inline">
+                                {t('inbox.createTask', 'Task')}
+                            </span>
+                        </span>
                     </button>
                     <button
                         onClick={() => handleConvertToNote(context)}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-purple-700 dark:text-purple-200 bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800 rounded-md hover:bg-purple-100 dark:hover:bg-purple-900/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-200 dark:focus:ring-offset-gray-900"
                     >
-                        <DocumentTextIcon className="h-4 w-4" />+{' '}
-                        {t('inbox.createNote', 'Note')}
+                        <span className="flex items-center gap-1">
+                            <span className="sm:hidden text-sm font-semibold leading-none">
+                                +
+                            </span>
+                            <DocumentTextIcon className="h-4 w-4" />
+                            <span className="hidden sm:inline">
+                                {t('inbox.createNote', 'Note')}
+                            </span>
+                        </span>
                     </button>
                     <button
                         onClick={() => handleConvertToProject(context)}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-green-700 dark:text-green-200 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 rounded-md hover:bg-green-100 dark:hover:bg-green-900/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-200 dark:focus:ring-offset-gray-900"
                     >
-                        <FolderIcon className="h-4 w-4" />+{' '}
-                        {t('inbox.createProject', 'Project')}
+                        <span className="flex items-center gap-1">
+                            <span className="sm:hidden text-sm font-semibold leading-none">
+                                +
+                            </span>
+                            <FolderIcon className="h-4 w-4" />
+                            <span className="hidden sm:inline">
+                                {t('inbox.createProject', 'Project')}
+                            </span>
+                        </span>
                     </button>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
@@ -511,7 +532,9 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-300 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 rounded-md hover:bg-red-100 dark:hover:bg-red-900/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-200 dark:focus:ring-offset-gray-900"
                     >
                         <TrashIcon className="h-4 w-4" />
-                        {t('common.delete', 'Delete')}
+                        <span className="hidden sm:inline">
+                            {t('common.delete', 'Delete')}
+                        </span>
                     </button>
                 </div>
             </div>
