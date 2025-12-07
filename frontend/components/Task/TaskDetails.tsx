@@ -32,7 +32,7 @@ import {
     TaskDeferUntilCard,
     TaskAttachmentsCard,
 } from './TaskDetails/';
-import { isTaskOverdue } from '../../utils/dateUtils';
+import { isTaskOverdue, isTaskPastDue } from '../../utils/dateUtils';
 
 const TaskDetails: React.FC = () => {
     const { uid } = useParams<{ uid: string }>();
@@ -206,6 +206,7 @@ const TaskDetails: React.FC = () => {
     };
 
     const isOverdue = task ? isTaskOverdue(task) : false;
+    const isPastDue = task ? isTaskPastDue(task) : false;
 
     useEffect(() => {
         if (!isOverdue) {
@@ -1240,6 +1241,7 @@ const TaskDetails: React.FC = () => {
                     activePill={activePill}
                     onPillChange={setActivePill}
                     showOverdueIcon={isOverdue}
+                    showPastDueBadge={isPastDue}
                     onOverdueIconClick={handleOverdueIconClick}
                     isOverdueAlertVisible={isOverdue && isOverdueBubbleVisible}
                     onDismissOverdueAlert={handleDismissOverdueAlert}
