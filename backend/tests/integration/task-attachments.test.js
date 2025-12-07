@@ -281,7 +281,9 @@ describe('Task Attachments Routes', () => {
 
                 expect(response.status).toBe(200);
                 expect(response.body[0].file_url).toBeDefined();
-                expect(response.body[0].file_url).toContain('/api/uploads/tasks/');
+                expect(response.body[0].file_url).toContain(
+                    '/api/uploads/tasks/'
+                );
             });
 
             it('should return empty array for task with no attachments', async () => {
@@ -498,7 +500,10 @@ describe('Task Attachments Routes', () => {
             await fs.mkdir(uploadPath, { recursive: true });
 
             // Create a test file
-            const testFilePath = path.join(uploadPath, 'task-download-test.pdf');
+            const testFilePath = path.join(
+                uploadPath,
+                'task-download-test.pdf'
+            );
             await fs.writeFile(testFilePath, 'test download content');
 
             // Create attachment record

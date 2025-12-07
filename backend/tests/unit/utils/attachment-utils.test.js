@@ -181,7 +181,6 @@ describe('Attachment Utils', () => {
         it('should return false for text', () => {
             expect(isImageFile('text/plain')).toBe(false);
         });
-
     });
 
     describe('isPdfFile', () => {
