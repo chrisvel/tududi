@@ -59,6 +59,7 @@ interface QuickCaptureInputProps {
     openProjectModal?: (project: Project | null, inboxItemUid?: string) => void;
     openNoteModal?: (note: Note | null, inboxItemUid?: string) => void;
     cardClassName?: string;
+    multiline?: boolean;
 }
 
 const QuickCaptureInput = React.forwardRef<
@@ -81,6 +82,7 @@ const QuickCaptureInput = React.forwardRef<
             openProjectModal,
             openNoteModal,
             cardClassName,
+            multiline = false,
         },
         ref
     ) => {
@@ -88,7 +90,7 @@ const QuickCaptureInput = React.forwardRef<
         const [inputText, setInputText] = useState<string>(initialValue);
         const [isSaving, setIsSaving] = useState(false);
         const { showSuccessToast, showErrorToast } = useToast();
-        const inputRef = useRef<HTMLInputElement>(null);
+        const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
         const { tagsStore } = useStore();
         const { setTags, refreshTags } = tagsStore;
         const tags = tagsStore.getTags();
@@ -380,10 +382,10 @@ const QuickCaptureInput = React.forwardRef<
             }
         };
 
-        const calculateDropdownPosition = (
-            input: HTMLInputElement,
-            cursorPos: number
-        ) => {
+    const calculateDropdownPosition = (
+        input: HTMLInputElement | HTMLTextAreaElement,
+        cursorPos: number
+    ) => {
             const temp = document.createElement('span');
             temp.style.visibility = 'hidden';
             temp.style.position = 'absolute';
@@ -504,7 +506,9 @@ const QuickCaptureInput = React.forwardRef<
             return { left: textWidth, top: input.offsetHeight };
         };
 
-        const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
             const newText = e.target.value;
             const newCursorPosition = e.target.selectionStart || 0;
 
@@ -1157,15 +1161,16 @@ const QuickCaptureInput = React.forwardRef<
         );
 
         const composerFooterContext = useMemo<InboxComposerFooterContext>(
-            () => ({
-                text: inputText,
-                cleanedText: getCleanedContent(inputText.trim()),
-                hashtags: getAllTags(inputText),
-                projectRefs: getAllProjects(inputText),
-                clearText: clearComposerText,
-            }),
-            [inputText, clearComposerText]
-        );
+        () => ({
+            text: inputText,
+            cleanedText: getCleanedContent(inputText.trim()),
+            hashtags: getAllTags(inputText),
+            projectRefs: getAllProjects(inputText),
+            clearText: clearComposerText,
+            updateText: (value: string) => setInputText(value),
+        }),
+        [inputText, clearComposerText]
+    );
 
         const defaultFooterActions =
             !renderFooterActions &&
@@ -1319,65 +1324,285 @@ const QuickCaptureInput = React.forwardRef<
                         <div className="relative flex-1">
                             <div className="flex items-center gap-3">
                                 <LightBulbIcon className="h-5 w-5 text-amber-400 dark:text-amber-300" />
-                                <input
-                                    ref={inputRef}
-                                    type="text"
-                                    value={inputText}
-                                    onChange={handleChange}
-                                    onSelect={(e) => {
-                                        const pos =
-                                            e.currentTarget.selectionStart || 0;
-                                        setCursorPosition(pos);
-                                        if (
-                                            showTagSuggestions ||
-                                            showProjectSuggestions
-                                        ) {
-                                            const position =
-                                                calculateDropdownPosition(
-                                                    e.currentTarget,
-                                                    pos
-                                                );
-                                            setDropdownPosition(position);
-                                        }
-                                    }}
-                                    onKeyUp={(e) => {
-                                        const pos =
-                                            e.currentTarget.selectionStart || 0;
-                                        setCursorPosition(pos);
-                                        if (
-                                            showTagSuggestions ||
-                                            showProjectSuggestions
-                                        ) {
-                                            const position =
-                                                calculateDropdownPosition(
-                                                    e.currentTarget,
-                                                    pos
-                                                );
-                                            setDropdownPosition(position);
-                                        }
-                                    }}
-                                    onClick={(e) => {
-                                        const pos =
-                                            e.currentTarget.selectionStart || 0;
-                                        setCursorPosition(pos);
-                                        if (
-                                            showTagSuggestions ||
-                                            showProjectSuggestions
-                                        ) {
-                                            const position =
-                                                calculateDropdownPosition(
-                                                    e.currentTarget,
-                                                    pos
-                                                );
-                                            setDropdownPosition(position);
-                                        }
-                                    }}
-                                    className="w-full text-base font-normal bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 px-0 py-2 placeholder-gray-400 dark:placeholder-gray-500"
-                                    placeholder={t(
-                                        'inbox.captureThought',
-                                        'Capture a thought...'
-                                    )}
-                                    onKeyDown={(e) => {
+                                {multiline ? (
+                                    <textarea
+                                        ref={(el) => {
+                                            inputRef.current = el;
+                                        }}
+                                        value={inputText}
+                                        rows={6}
+                                        onChange={handleChange}
+                                        onSelect={(e) => {
+                                            const pos =
+                                                e.currentTarget.selectionStart ||
+                                                0;
+                                            setCursorPosition(pos);
+                                            if (
+                                                showTagSuggestions ||
+                                                showProjectSuggestions
+                                            ) {
+                                                const position =
+                                                    calculateDropdownPosition(
+                                                        e.currentTarget,
+                                                        pos
+                                                    );
+                                                setDropdownPosition(position);
+                                            }
+                                        }}
+                                        onKeyUp={(e) => {
+                                            const pos =
+                                                e.currentTarget.selectionStart ||
+                                                0;
+                                            setCursorPosition(pos);
+                                            if (
+                                                showTagSuggestions ||
+                                                showProjectSuggestions
+                                            ) {
+                                                const position =
+                                                    calculateDropdownPosition(
+                                                        e.currentTarget,
+                                                        pos
+                                                    );
+                                                setDropdownPosition(position);
+                                            }
+                                        }}
+                                        onClick={(e) => {
+                                            const pos =
+                                                e.currentTarget.selectionStart ||
+                                                0;
+                                            setCursorPosition(pos);
+                                            if (
+                                                showTagSuggestions ||
+                                                showProjectSuggestions
+                                            ) {
+                                                const position =
+                                                    calculateDropdownPosition(
+                                                        e.currentTarget,
+                                                        pos
+                                                    );
+                                                setDropdownPosition(position);
+                                            }
+                                        }}
+                                        className="w-full text-base font-normal bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 px-0 py-2 placeholder-gray-400 dark:placeholder-gray-500 resize-none"
+                                        placeholder={t(
+                                            'inbox.captureThought',
+                                            'Capture a thought...'
+                                        )}
+                                        onKeyDown={(e) => {
+                                            const hasTagSuggestions =
+                                                showTagSuggestions &&
+                                                filteredTags.length > 0;
+                                            const hasProjectSuggestions =
+                                                showProjectSuggestions &&
+                                                filteredProjects.length > 0;
+
+                                            if (hasTagSuggestions) {
+                                                if (e.key === 'ArrowDown') {
+                                                    e.preventDefault();
+                                                    setSelectedSuggestionIndex(
+                                                        (prev) =>
+                                                            prev <
+                                                            filteredTags.length -
+                                                                1
+                                                                ? prev + 1
+                                                                : 0
+                                                    );
+                                                    return;
+                                                } else if (e.key === 'ArrowUp') {
+                                                    e.preventDefault();
+                                                    setSelectedSuggestionIndex(
+                                                        (prev) =>
+                                                            prev > 0
+                                                                ? prev - 1
+                                                                : filteredTags.length -
+                                                                  1
+                                                    );
+                                                    return;
+                                                } else if (e.key === 'Tab') {
+                                                    e.preventDefault();
+                                                    const selectedTag =
+                                                        selectedSuggestionIndex >= 0
+                                                            ? filteredTags[
+                                                                  selectedSuggestionIndex
+                                                              ]
+                                                            : filteredTags[0];
+                                                    handleTagSelect(
+                                                        selectedTag.name
+                                                    );
+                                                    return;
+                                                } else if (
+                                                    e.key === 'Enter' &&
+                                                    selectedSuggestionIndex >= 0
+                                                ) {
+                                                    e.preventDefault();
+                                                    handleTagSelect(
+                                                        filteredTags[
+                                                            selectedSuggestionIndex
+                                                        ].name
+                                                    );
+                                                    return;
+                                                } else if (e.key === 'Escape') {
+                                                    e.preventDefault();
+                                                    setShowTagSuggestions(false);
+                                                    setFilteredTags([]);
+                                                    setSelectedSuggestionIndex(
+                                                        -1
+                                                    );
+                                                    return;
+                                                }
+                                            }
+
+                                            if (hasProjectSuggestions) {
+                                                if (e.key === 'ArrowDown') {
+                                                    e.preventDefault();
+                                                    setSelectedSuggestionIndex(
+                                                        (prev) =>
+                                                            prev <
+                                                            filteredProjects.length -
+                                                                1
+                                                                ? prev + 1
+                                                                : 0
+                                                    );
+                                                    return;
+                                                } else if (e.key === 'ArrowUp') {
+                                                    e.preventDefault();
+                                                    setSelectedSuggestionIndex(
+                                                        (prev) =>
+                                                            prev > 0
+                                                                ? prev - 1
+                                                                : filteredProjects.length -
+                                                                  1
+                                                    );
+                                                    return;
+                                                } else if (e.key === 'Tab') {
+                                                    e.preventDefault();
+                                                    const selectedProject =
+                                                        selectedSuggestionIndex >= 0
+                                                            ? filteredProjects[
+                                                                  selectedSuggestionIndex
+                                                              ]
+                                                            : filteredProjects[0];
+                                                    handleProjectSelect(
+                                                        selectedProject.name
+                                                    );
+                                                    return;
+                                                } else if (
+                                                    e.key === 'Enter' &&
+                                                    selectedSuggestionIndex >= 0
+                                                ) {
+                                                    e.preventDefault();
+                                                    handleProjectSelect(
+                                                        filteredProjects[
+                                                            selectedSuggestionIndex
+                                                        ].name
+                                                    );
+                                                    return;
+                                                } else if (e.key === 'Escape') {
+                                                    e.preventDefault();
+                                                    setShowProjectSuggestions(
+                                                        false
+                                                    );
+                                                    setFilteredProjects([]);
+                                                    setSelectedSuggestionIndex(
+                                                        -1
+                                                    );
+                                                    return;
+                                                }
+                                            }
+
+                                            if (
+                                                e.key === 'Escape' &&
+                                                !hasTagSuggestions &&
+                                                !hasProjectSuggestions
+                                            ) {
+                                                e.preventDefault();
+                                                if (!isSaving) {
+                                                    handleSubmit();
+                                                }
+                                                return;
+                                            }
+
+                                            if (
+                                                e.key === 'Enter' &&
+                                                !e.shiftKey &&
+                                                !isSaving
+                                            ) {
+                                                if (
+                                                    hasTagSuggestions ||
+                                                    hasProjectSuggestions
+                                                ) {
+                                                    return;
+                                                }
+                                                e.preventDefault();
+                                                handleSubmit();
+                                            }
+                                        }}
+                                    ></textarea>
+                                ) : (
+                                    <input
+                                        ref={(el) => {
+                                            inputRef.current = el;
+                                        }}
+                                        type="text"
+                                        value={inputText}
+                                        onChange={handleChange}
+                                        onSelect={(e) => {
+                                            const pos =
+                                                e.currentTarget.selectionStart ||
+                                                0;
+                                            setCursorPosition(pos);
+                                            if (
+                                                showTagSuggestions ||
+                                                showProjectSuggestions
+                                            ) {
+                                                const position =
+                                                    calculateDropdownPosition(
+                                                        e.currentTarget,
+                                                        pos
+                                                    );
+                                                setDropdownPosition(position);
+                                            }
+                                        }}
+                                        onKeyUp={(e) => {
+                                            const pos =
+                                                e.currentTarget.selectionStart ||
+                                                0;
+                                            setCursorPosition(pos);
+                                            if (
+                                                showTagSuggestions ||
+                                                showProjectSuggestions
+                                            ) {
+                                                const position =
+                                                    calculateDropdownPosition(
+                                                        e.currentTarget,
+                                                        pos
+                                                    );
+                                                setDropdownPosition(position);
+                                            }
+                                        }}
+                                        onClick={(e) => {
+                                            const pos =
+                                                e.currentTarget.selectionStart ||
+                                                0;
+                                            setCursorPosition(pos);
+                                            if (
+                                                showTagSuggestions ||
+                                                showProjectSuggestions
+                                            ) {
+                                                const position =
+                                                    calculateDropdownPosition(
+                                                        e.currentTarget,
+                                                        pos
+                                                    );
+                                                setDropdownPosition(position);
+                                            }
+                                        }}
+                                        className="w-full text-base font-normal bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 px-0 py-2 placeholder-gray-400 dark:placeholder-gray-500"
+                                        placeholder={t(
+                                            'inbox.captureThought',
+                                            'Capture a thought...'
+                                        )}
+                                        onKeyDown={(e) => {
                                         const hasTagSuggestions =
                                             showTagSuggestions &&
                                             filteredTags.length > 0;
@@ -1522,6 +1747,7 @@ const QuickCaptureInput = React.forwardRef<
                                         }
                                     }}
                                 />
+                                )}
                             </div>
 
                             <InboxSelectedChips
