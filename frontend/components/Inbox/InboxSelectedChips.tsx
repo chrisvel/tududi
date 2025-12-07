@@ -21,19 +21,28 @@ const InboxSelectedChips: React.FC<InboxSelectedChipsProps> = ({
     onRemoveTag,
     onRemoveProject,
 }) => {
+    const slugify = (text: string) =>
+        text
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-|-$/g, '');
+
     const renderTagChip = (tagName: string, index: number) => {
         const tag = tags.find(
             (t) => t.name.toLowerCase() === tagName.toLowerCase()
         );
 
         if (tag) {
+            const tagPath = tag.uid
+                ? `/tag/${tag.uid}-${slugify(tag.name)}`
+                : `/tag/${encodeURIComponent(tag.name)}`;
             return (
                 <span
                     key={`${tagName}-${index}`}
                     className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 dark:bg-blue-900/20 rounded text-blue-600 dark:text-blue-400"
                 >
                     <Link
-                        to={`/tag/${encodeURIComponent(tag.name)}`}
+                        to={tagPath}
                         className="hover:underline"
                         onClick={(e) => e.stopPropagation()}
                     >

@@ -451,6 +451,10 @@ const InboxItems: React.FC = () => {
                     onNoteCreate={handleSaveNote}
                     projects={projects}
                     autoFocus={true}
+                    openTaskModal={handleOpenTaskModal}
+                    openProjectModal={handleOpenProjectModal}
+                    openNoteModal={handleOpenNoteModal}
+                    cardClassName="mb-4"
                 />
 
                 {inboxItems.length === 0 ? (

@@ -21,7 +21,7 @@ const InboxCard: React.FC<InboxCardProps> = ({
     return (
         <div
             onClick={onClick}
-            className={`w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm transition-shadow duration-200 ${activeClasses} ${interactiveClasses} ${className}`}
+            className={`w-full bg-white dark:bg-gray-900 rounded-xl shadow-sm transition-shadow duration-200 ${activeClasses} ${interactiveClasses} ${className}`}
         >
             {children}
         </div>

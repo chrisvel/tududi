@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { InboxItem } from '../../entities/InboxItem';
 import { useTranslation } from 'react-i18next';
@@ -8,13 +8,19 @@ import {
     FolderIcon,
     ClipboardDocumentListIcon,
     TagIcon,
+    GlobeAltIcon,
 } from '@heroicons/react/24/outline';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import { Note } from '../../entities/Note';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import { useStore } from '../../store/useStore';
+import QuickCaptureInput, {
+    InboxComposerFooterContext,
+    QuickCaptureInputHandle,
+} from './QuickCaptureInput';
 import InboxCard from './InboxCard';
+import { isUrl } from '../../utils/urlService';
 
 interface InboxItemDetailProps {
     item: InboxItem;
@@ -42,20 +48,11 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const [loading, setLoading] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const [editedContent, setEditedContent] = useState(item.content);
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-    const inputRef = useRef<HTMLInputElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+    const composerRef = useRef<QuickCaptureInputHandle>(null);
 
     useEffect(() => {
-        if (isEditing && inputRef.current) {
-            inputRef.current.focus();
-            inputRef.current.select();
-        }
-    }, [isEditing]);
-
-    useEffect(() => {
-        if (!isEditing && !isDrawerOpen) {
+        if (!isEditing) {
             return;
         }
 
@@ -64,17 +61,31 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                 containerRef.current &&
                 !containerRef.current.contains(event.target as Node)
             ) {
-                setIsEditing(false);
-                setIsDrawerOpen(false);
-                setEditedContent(item.content);
+                if (composerRef.current) {
+                    void composerRef.current.submit();
+                } else {
+                    setIsEditing(false);
+                }
+            }
+        };
+
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                if (composerRef.current) {
+                    void composerRef.current.submit();
+                } else {
+                    setIsEditing(false);
+                }
             }
         };
 
         document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('keydown', handleKeyDown);
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('keydown', handleKeyDown);
         };
-    }, [isEditing, isDrawerOpen, item.content]);
+    }, [isEditing]);
 
     const parseHashtags = (text: string): string[] => {
         const trimmedText = text.trim();
@@ -217,38 +228,143 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         return cleanedTokens.join(' ').trim();
     };
 
-    const hashtags = parseHashtags(item.content);
+    const hashtags = useMemo(() => {
+        const parsed = parseHashtags(item.content);
+        const hasBookmark = parsed.some(
+            (tag) => tag.toLowerCase() === 'bookmark'
+        );
+        if (!hasBookmark && isUrl(item.content.trim())) {
+            return [...parsed, 'bookmark'];
+        }
+        return parsed;
+    }, [item.content]);
     const projectRefs = parseProjectRefs(item.content);
     const cleanedContent = cleanTextFromTagsAndProjects(item.content);
 
-    const handleConvertToTask = () => {
-        try {
-            const taskTags = hashtags.map((hashtagName) => {
-                const existingTag = tags.find(
-                    (tag) =>
-                        tag.name.toLowerCase() === hashtagName.toLowerCase()
-                );
-                return existingTag || { name: hashtagName };
-            });
+    const slugify = (text: string) =>
+        text
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-|-$/g, '');
 
-            let projectId = undefined;
-            if (projectRefs.length > 0) {
-                const projectName = projectRefs[0];
-                const matchingProject = projects.find(
-                    (project) =>
-                        project.name.toLowerCase() === projectName.toLowerCase()
+    const getTagLink = (tagName: string) => {
+        const tag = tags.find(
+            (t) => t.name.toLowerCase() === tagName.toLowerCase()
+        );
+        if (tag?.uid) {
+            return `/tag/${tag.uid}-${slugify(tag.name)}`;
+        }
+        return `/tag/${encodeURIComponent(tagName)}`;
+    };
+
+    const linkifyContent = (text: string): React.ReactNode => {
+        const urlRegex = /(https?:\/\/[^\s]+)/gi;
+        const matches = [...text.matchAll(urlRegex)];
+
+        if (matches.length === 0) {
+            return text;
+        }
+
+        const nodes: React.ReactNode[] = [];
+        let lastIndex = 0;
+
+        matches.forEach((match, idx) => {
+            const start = match.index ?? 0;
+            const url = match[0];
+            if (start > lastIndex) {
+                nodes.push(
+                    <React.Fragment key={`text-${idx}-${start}`}>
+                        {text.slice(lastIndex, start)}
+                    </React.Fragment>
                 );
-                if (matchingProject) {
-                    projectId = matchingProject.id;
-                }
             }
+            nodes.push(
+                <a
+                    key={`url-${idx}-${start}`}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 dark:text-blue-400 underline-offset-2 hover:underline break-all"
+                >
+                    {url}
+                </a>
+            );
+            lastIndex = start + url.length;
+        });
+
+        if (lastIndex < text.length) {
+            nodes.push(
+                <React.Fragment key={`text-tail-${lastIndex}`}>
+                    {text.slice(lastIndex)}
+                </React.Fragment>
+            );
+        }
+
+        return nodes;
+    };
+
+    const buildConversionPayload = (
+        textOverride?: string,
+        hashtagOverride?: string[],
+        projectRefsOverride?: string[],
+        cleanedOverride?: string
+    ) => {
+        const sourceText = textOverride ?? item.content;
+        const sourceHashtags =
+            hashtagOverride ?? parseHashtags(sourceText);
+        const sourceProjectRefs =
+            projectRefsOverride ?? parseProjectRefs(sourceText);
+        const cleaned =
+            cleanedOverride ??
+            cleanTextFromTagsAndProjects(sourceText) ??
+            sourceText;
+
+        const tagObjects = sourceHashtags.map((hashtagName) => {
+            const existingTag = tags.find(
+                (tag) => tag.name.toLowerCase() === hashtagName.toLowerCase()
+            );
+            return existingTag || { name: hashtagName };
+        });
+
+        let projectId = undefined;
+        if (sourceProjectRefs.length > 0) {
+            const projectName = sourceProjectRefs[0];
+            const matchingProject = projects.find(
+                (project) =>
+                    project.name.toLowerCase() === projectName.toLowerCase()
+            );
+            if (matchingProject) {
+                projectId = matchingProject.id;
+            }
+        }
+
+        return {
+            sourceText,
+            cleanedContent: cleaned,
+            tagObjects,
+            projectId,
+            projectRefsList: sourceProjectRefs,
+            hashtagsList: sourceHashtags,
+        };
+    };
+
+    const handleConvertToTask = (
+        context?: InboxComposerFooterContext
+    ) => {
+        try {
+            const payload = buildConversionPayload(
+                context?.text,
+                context?.hashtags,
+                context?.projectRefs,
+                context?.cleanedText
+            );
 
             const newTask: Task = {
-                name: cleanedContent || item.content,
+                name: payload.cleanedContent || item.content,
                 status: 'not_started',
                 priority: null,
-                tags: taskTags,
-                project_id: projectId,
+                tags: payload.tagObjects,
+                project_id: payload.projectId,
                 completed_at: null,
             };
 
@@ -262,21 +378,29 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         }
     };
 
-    const handleConvertToProject = () => {
+    const handleSubmitEdit = async (text: string) => {
+        if (!onUpdate || item.uid === undefined) {
+            return;
+        }
+        await onUpdate(item.uid, text);
+    };
+
+    const handleConvertToProject = (
+        context?: InboxComposerFooterContext
+    ) => {
         try {
-            const projectTags = hashtags.map((hashtagName) => {
-                const existingTag = tags.find(
-                    (tag) =>
-                        tag.name.toLowerCase() === hashtagName.toLowerCase()
-                );
-                return existingTag || { name: hashtagName };
-            });
+            const payload = buildConversionPayload(
+                context?.text,
+                context?.hashtags,
+                context?.projectRefs,
+                context?.cleanedText
+            );
 
             const newProject: Project = {
-                name: cleanedContent || item.content,
+                name: payload.cleanedContent || item.content,
                 description: '',
                 state: 'planned',
-                tags: projectTags,
+                tags: payload.tagObjects,
             };
 
             if (item.uid !== undefined) {
@@ -289,18 +413,21 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         }
     };
 
-    const handleConvertToNote = async () => {
+    const handleConvertToNote = async (
+        context?: InboxComposerFooterContext
+    ) => {
+        const sourceText = context?.text ?? item.content;
         let title =
-            item.content.split('\n')[0] || item.content.substring(0, 50);
-        let content = item.content;
+            sourceText.split('\n')[0] || sourceText.substring(0, 50);
+        let content = sourceText;
         let isBookmark = false;
 
         try {
-            const { isUrl, extractUrlTitle } = await import(
+            const { isUrl: detectUrl, extractUrlTitle } = await import(
                 '../../utils/urlService'
             );
 
-            if (isUrl(item.content.trim())) {
+            if (detectUrl(sourceText.trim())) {
                 setLoading(true);
                 try {
                     const timeoutPromise = new Promise((_, reject) =>
@@ -308,13 +435,13 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                     );
 
                     const result = (await Promise.race([
-                        extractUrlTitle(item.content.trim()),
+                        extractUrlTitle(sourceText.trim()),
                         timeoutPromise,
                     ])) as any;
 
                     if (result && result.title) {
                         title = result.title;
-                        content = item.content;
+                        content = sourceText;
                         isBookmark = true;
                     }
                 } catch (titleError) {
@@ -329,37 +456,25 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             setLoading(false);
         }
 
-        const hashtagTags = hashtags.map((hashtagName) => {
-            const existingTag = tags.find(
-                (tag) => tag.name.toLowerCase() === hashtagName.toLowerCase()
-            );
-            return existingTag || { name: hashtagName };
-        });
+        const payload = buildConversionPayload(
+            context?.text,
+            context?.hashtags,
+            context?.projectRefs,
+            context?.cleanedText
+        );
 
         const bookmarkTag = isBookmark ? [{ name: 'bookmark' }] : [];
-        const tagObjects = [...hashtagTags, ...bookmarkTag];
+        const tagObjects = [...payload.tagObjects, ...bookmarkTag];
 
         const finalTitle =
-            title === content ? cleanedContent || item.content : title;
-        const finalContent = cleanedContent || item.content;
-
-        let projectId = undefined;
-        if (projectRefs.length > 0) {
-            const projectName = projectRefs[0];
-            const matchingProject = projects.find(
-                (project) =>
-                    project.name.toLowerCase() === projectName.toLowerCase()
-            );
-            if (matchingProject) {
-                projectId = matchingProject.id;
-            }
-        }
+            title === content ? payload.cleanedContent || sourceText : title;
+        const finalContent = payload.cleanedContent || sourceText;
 
         const newNote: Note = {
             title: finalTitle,
             content: finalContent,
             tags: tagObjects,
-            project_uid: projectId,
+            project_uid: payload.projectId,
         };
 
         if (item.uid !== undefined) {
@@ -369,157 +484,29 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         }
     };
 
-    const handleDelete = () => {
-        setShowConfirmDialog(true);
-    };
-
-    const confirmDelete = () => {
-        if (item.uid !== undefined) {
-            onDelete(item.uid);
-        }
-        setShowConfirmDialog(false);
-    };
-
-    const handleStartEdit = () => {
-        if (!isEditing) {
-            setIsEditing(true);
-            setIsDrawerOpen(true);
-            setEditedContent(item.content);
-        }
-    };
-
-    const handleSaveEdit = async () => {
-        if (!onUpdate || item.uid === undefined || !editedContent.trim()) {
-            return;
-        }
-
-        await onUpdate(item.uid, editedContent.trim());
-        setIsEditing(false);
-        setIsDrawerOpen(false);
-    };
-
-    const handleCancelEdit = () => {
-        setIsEditing(false);
-        setIsDrawerOpen(false);
-        setEditedContent(item.content);
-    };
-
-    const renderDisplayBody = () => (
-        <div className="flex flex-col gap-2">
-            <p className="text-base font-medium text-gray-900 dark:text-gray-300 break-words">
-                {cleanedContent || item.content}
-            </p>
-
-            {(hashtags.length > 0 || projectRefs.length > 0) && (
-                <div className="flex flex-wrap items-center text-xs text-gray-500 dark:text-gray-400 gap-2">
-                    {projectRefs.length > 0 && (
-                        <div className="flex items-center">
-                            <FolderIcon className="h-3 w-3 mr-1" />
-                            <span>
-                                {projectRefs.map((projectRef, index) => {
-                                    const matchingProject = projects.find(
-                                        (project) =>
-                                            project.name.toLowerCase() ===
-                                            projectRef.toLowerCase()
-                                    );
-
-                                    if (matchingProject) {
-                                        return (
-                                            <React.Fragment key={projectRef}>
-                                                <Link
-                                                    to={
-                                                        matchingProject.uid
-                                                            ? `/project/${matchingProject.uid}-${matchingProject.name
-                                                                  .toLowerCase()
-                                                                  .replace(/[^a-z0-9]+/g, '-')
-                                                                  .replace(/^-|-$/g, '')}`
-                                                            : `/project/${matchingProject.id}`
-                                                    }
-                                                    className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
-                                                >
-                                                    {projectRef}
-                                                </Link>
-                                                {index < projectRefs.length - 1 && ', '}
-                                            </React.Fragment>
-                                        );
-                                    } else {
-                                        return (
-                                            <React.Fragment key={projectRef}>
-                                                <span>{projectRef}</span>
-                                                {index < projectRefs.length - 1 && ', '}
-                                            </React.Fragment>
-                                        );
-                                    }
-                                })}
-                            </span>
-                        </div>
-                    )}
-
-                    {projectRefs.length > 0 && hashtags.length > 0 && (
-                        <span className="mx-1 text-gray-400">•</span>
-                    )}
-
-                    {hashtags.length > 0 && (
-                        <div className="flex items-center">
-                            <TagIcon className="h-3 w-3 mr-1" />
-                            <span>
-                                {hashtags.map((hashtag, index) => {
-                                    return (
-                                        <React.Fragment key={hashtag}>
-                                            <Link
-                                                to={`/tag/${encodeURIComponent(hashtag)}`}
-                                                className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
-                                            >
-                                                {hashtag}
-                                            </Link>
-                                            {index < hashtags.length - 1 && ', '}
-                                        </React.Fragment>
-                                    );
-                                })}
-                            </span>
-                        </div>
-                    )}
-                </div>
-            )}
-        </div>
-    );
-
-    const renderEditBody = () => (
-        <div className="flex flex-col sm:flex-row sm:items-start gap-3">
-            <div className="relative flex-1">
-                <input
-                    ref={inputRef}
-                    type="text"
-                    value={editedContent}
-                    onChange={(e) => setEditedContent(e.target.value)}
-                    className="w-full text-base font-normal bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 px-0 py-2 placeholder-gray-400 dark:placeholder-gray-500"
-                    placeholder={t('inbox.captureThought', 'Capture a thought...')}
-                />
-            </div>
-        </div>
-    );
-
-    const renderActionsSection = () => (
+    const renderComposerFooter = (
+        context: InboxComposerFooterContext
+    ) => (
         <div className="pt-3 mt-3 border-t border-gray-100 dark:border-gray-800">
-            <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex flex-wrap items-center gap-2">
                     {loading && <div className="spinner h-4 w-4" />}
                     <button
-                        onClick={handleConvertToTask}
+                        onClick={() => handleConvertToTask(context)}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-700 dark:text-blue-200 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-200 dark:focus:ring-offset-gray-900"
                     >
                         <ClipboardDocumentListIcon className="h-4 w-4" />
                         + {t('inbox.createTask', 'Task')}
                     </button>
                     <button
-                        onClick={handleConvertToNote}
+                        onClick={() => handleConvertToNote(context)}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-purple-700 dark:text-purple-200 bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800 rounded-md hover:bg-purple-100 dark:hover:bg-purple-900/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-200 dark:focus:ring-offset-gray-900"
                     >
                         <DocumentTextIcon className="h-4 w-4" />
                         + {t('inbox.createNote', 'Note')}
                     </button>
                     <button
-                        onClick={handleConvertToProject}
+                        onClick={() => handleConvertToProject(context)}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-green-700 dark:text-green-200 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 rounded-md hover:bg-green-100 dark:hover:bg-green-900/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-200 dark:focus:ring-offset-gray-900"
                     >
                         <FolderIcon className="h-4 w-4" />
@@ -539,17 +526,172 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         </div>
     );
 
+    const handleDelete = () => {
+        setShowConfirmDialog(true);
+    };
+
+    const confirmDelete = () => {
+        if (item.uid !== undefined) {
+            onDelete(item.uid);
+        }
+        setShowConfirmDialog(false);
+    };
+
+    const handleStartEdit = () => {
+        if (!isEditing) {
+            setIsEditing(true);
+        }
+    };
+
     return (
-        <div ref={containerRef} className="mt-3">
-            <InboxCard
-                isActive={isEditing}
-                onClick={!isEditing ? handleStartEdit : undefined}
-            >
-                <div className="p-4">
-                    {isEditing ? renderEditBody() : renderDisplayBody()}
-                    {isDrawerOpen && renderActionsSection()}
-                </div>
-            </InboxCard>
+        <div ref={containerRef}>
+            {isEditing ? (
+                <QuickCaptureInput
+                    ref={composerRef}
+                    mode="edit"
+                    initialValue={item.content}
+                    hidePrimaryButton
+                    projects={projects}
+                    onSubmitOverride={handleSubmitEdit}
+                    onAfterSubmit={() => setIsEditing(false)}
+                    renderFooterActions={renderComposerFooter}
+                    openTaskModal={openTaskModal}
+                    openProjectModal={openProjectModal}
+                    openNoteModal={openNoteModal}
+                    cardClassName="mb-0"
+                />
+            ) : (
+                <InboxCard className="w-full">
+                    <div className="flex items-center px-4 py-3 gap-3">
+                        <div className="flex-shrink-0">
+                            {hashtags.some(
+                                (tag) => tag.toLowerCase() === 'bookmark'
+                            ) ? (
+                                <GlobeAltIcon className="h-5 w-5 text-blue-500 dark:text-blue-300" />
+                            ) : (
+                                <DocumentTextIcon className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+                            )}
+                        </div>
+                        <div className="flex-1">
+                            <button
+                                onClick={handleStartEdit}
+                                className="text-base font-medium text-gray-900 dark:text-gray-300 break-words text-left cursor-pointer w-full hover:text-blue-600 dark:hover:text-blue-400"
+                            >
+                                {linkifyContent(cleanedContent || item.content)}
+                            </button>
+
+                            {(hashtags.length > 0 || projectRefs.length > 0) && (
+                                <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                    {projectRefs.length > 0 && (
+                                        <div className="flex items-center">
+                                            <FolderIcon className="h-3 w-3 mr-1" />
+                                            <span>
+                                                {projectRefs.map(
+                                                    (projectRef, index) => {
+                                                        const matchingProject =
+                                                            projects.find(
+                                                                (project) =>
+                                                                    project.name.toLowerCase() ===
+                                                                    projectRef.toLowerCase()
+                                                            );
+
+                                                        if (matchingProject) {
+                                                            return (
+                                                                <React.Fragment
+                                                                    key={
+                                                                        projectRef
+                                                                    }
+                                                                >
+                                                                    <Link
+                                                                        to={
+                                                                            matchingProject.uid
+                                                                                ? `/project/${matchingProject.uid}-${matchingProject.name
+                                                                                      .toLowerCase()
+                                                                                      .replace(
+                                                                                          /[^a-z0-9]+/g,
+                                                                                          '-'
+                                                                                      )
+                                                                                      .replace(
+                                                                                          /^-|-$/g,
+                                                                                          ''
+                                                                                      )}`
+                                                                                : `/project/${matchingProject.id}`
+                                                                        }
+                                                                        className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
+                                                                    >
+                                                                        {
+                                                                            projectRef
+                                                                        }
+                                                                    </Link>
+                                                                    {index <
+                                                                        projectRefs.length -
+                                                                            1 && ', '}
+                                                                </React.Fragment>
+                                                            );
+                                                        } else {
+                                                            return (
+                                                                <React.Fragment
+                                                                    key={
+                                                                        projectRef
+                                                                    }
+                                                                >
+                                                                    <span>
+                                                                        {
+                                                                            projectRef
+                                                                        }
+                                                                    </span>
+                                                                    {index <
+                                                                        projectRefs.length -
+                                                                            1 && ', '}
+                                                                </React.Fragment>
+                                                            );
+                                                        }
+                                                    }
+                                                )}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {projectRefs.length > 0 &&
+                                        hashtags.length > 0 && (
+                                            <span className="mx-2">•</span>
+                                        )}
+
+                                    {hashtags.length > 0 && (
+                                        <div className="flex items-center">
+                                            <TagIcon className="h-3 w-3 mr-1" />
+                                            <span>
+                                                {hashtags.map(
+                                                    (hashtag, index) => {
+                                                        return (
+                                                            <React.Fragment
+                                                                key={hashtag}
+                                                            >
+                                                                <Link
+                                                                    to={getTagLink(
+                                                                        hashtag
+                                                                    )}
+                                                                    className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
+                                                                >
+                                                                    {hashtag}
+                                                                </Link>
+                                                                {index <
+                                                                    hashtags.length -
+                                                                        1 && ', '}
+                                                            </React.Fragment>
+                                                        );
+                                                    }
+                                                )}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+
+                    </div>
+                </InboxCard>
+            )}
             {showConfirmDialog && (
                 <ConfirmDialog
                     title={t('inbox.deleteConfirmTitle', 'Delete Item')}

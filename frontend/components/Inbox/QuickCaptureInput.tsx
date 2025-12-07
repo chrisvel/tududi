@@ -1,4 +1,11 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, {
+    useState,
+    useEffect,
+    useRef,
+    useCallback,
+    useMemo,
+    useImperativeHandle,
+} from 'react';
 import { Task } from '../../entities/Task';
 import { Tag } from '../../entities/Tag';
 import { Project } from '../../entities/Project';
@@ -9,7 +16,13 @@ import { createInboxItemWithStore } from '../../utils/inboxService';
 import { isAuthError } from '../../utils/authUtils';
 import { createTag } from '../../utils/tagsService';
 import { createProject } from '../../utils/projectsService';
-import { PlusIcon } from '@heroicons/react/24/outline';
+import {
+    ClipboardDocumentListIcon,
+    DocumentTextIcon,
+    FolderIcon,
+    PlusIcon,
+    LightBulbIcon,
+} from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
 import { isUrl } from '../../utils/urlService';
 import { getApiPath } from '../../config/paths';
@@ -17,21 +30,60 @@ import InboxSelectedChips from './InboxSelectedChips';
 import SuggestionsDropdown from './SuggestionsDropdown';
 import InboxCard from './InboxCard';
 
+export interface QuickCaptureInputHandle {
+    submit: (forceInbox?: boolean) => Promise<void>;
+}
+
+export interface InboxComposerFooterContext {
+    text: string;
+    cleanedText: string;
+    hashtags: string[];
+    projectRefs: string[];
+    clearText: () => void;
+}
+
 interface QuickCaptureInputProps {
     onTaskCreate?: (task: Task) => Promise<void>;
     onNoteCreate?: (note: Note) => Promise<void>;
     projects?: Project[];
     autoFocus?: boolean;
+    mode?: 'create' | 'edit';
+    initialValue?: string;
+    hidePrimaryButton?: boolean;
+    onSubmitOverride?: (text: string) => Promise<void>;
+    onAfterSubmit?: () => void;
+    renderFooterActions?: (context: InboxComposerFooterContext) => React.ReactNode;
+    openTaskModal?: (task: Task, inboxItemUid?: string) => void;
+    openProjectModal?: (project: Project | null, inboxItemUid?: string) => void;
+    openNoteModal?: (note: Note | null, inboxItemUid?: string) => void;
+    cardClassName?: string;
 }
 
-const QuickCaptureInput: React.FC<QuickCaptureInputProps> = ({
-    onTaskCreate,
-    onNoteCreate,
-    projects: propProjects = [],
-    autoFocus = false,
-}) => {
+const QuickCaptureInput = React.forwardRef<
+    QuickCaptureInputHandle,
+    QuickCaptureInputProps
+>(
+    (
+        {
+            onTaskCreate,
+            onNoteCreate,
+            projects: propProjects = [],
+            autoFocus = false,
+            mode = 'create',
+            initialValue = '',
+            hidePrimaryButton = false,
+            onSubmitOverride,
+            onAfterSubmit,
+            renderFooterActions,
+            openTaskModal,
+            openProjectModal,
+            openNoteModal,
+            cardClassName,
+        },
+        ref
+    ) => {
     const { t } = useTranslation();
-    const [inputText, setInputText] = useState<string>('');
+    const [inputText, setInputText] = useState<string>(initialValue);
     const [isSaving, setIsSaving] = useState(false);
     const { showSuccessToast, showErrorToast } = useToast();
     const inputRef = useRef<HTMLInputElement>(null);
@@ -61,12 +113,29 @@ const QuickCaptureInput: React.FC<QuickCaptureInputProps> = ({
     } | null>(null);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const analysisTimeoutRef = useRef<NodeJS.Timeout>();
+    const analysisRequestIdRef = useRef(0);
+
+    const isEditMode = mode === 'edit';
+
+    useEffect(() => {
+        if (isEditMode) {
+            setInputText(initialValue || '');
+        }
+    }, [initialValue, isEditMode]);
 
     useEffect(() => {
         if (autoFocus && inputRef.current) {
             inputRef.current.focus();
         }
     }, [autoFocus]);
+
+    const clearComposerText = useCallback(() => {
+        setInputText('');
+        setAnalysisResult(null);
+        if (inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, []);
 
     const parseHashtags = (text: string): string[] => {
         const trimmedText = text.trim();
@@ -256,25 +325,49 @@ const QuickCaptureInput: React.FC<QuickCaptureInputProps> = ({
         return '';
     };
 
+    const escapeRegExp = (value: string) =>
+        value.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+
+    const cleanInputSpacing = (text: string) =>
+        text
+            .replace(/\s{2,}/g, ' ')
+            .replace(/\s+\n/g, '\n')
+            .replace(/\n\s+/g, '\n')
+            .trim();
+
     const removeTagFromText = (tagToRemove: string) => {
-        const words = inputText.trim().split(/\s+/);
-        const filteredWords = words.filter(
-            (word) => word !== `#${tagToRemove}`
+        const escaped = escapeRegExp(tagToRemove);
+        const pattern = new RegExp(
+            `(^|\\s)#${escaped}(?=$|\\s)`,
+            'gi'
         );
-        const newText = filteredWords.join(' ').trim();
-        setInputText(newText);
+        const updated = cleanInputSpacing(
+            inputText.replace(pattern, (_, prefix) => prefix ?? '')
+        );
+        setInputText(updated);
+        setAnalysisResult(null);
         if (inputRef.current) {
             inputRef.current.focus();
         }
     };
 
     const removeProjectFromText = (projectToRemove: string) => {
-        const words = inputText.trim().split(/\s+/);
-        const filteredWords = words.filter(
-            (word) => word !== `+${projectToRemove}`
+        const escaped = escapeRegExp(projectToRemove);
+        const quotedPattern = new RegExp(
+            `(^|\\s)\\+"${escaped}"(?=$|\\s)`,
+            'gi'
         );
-        const newText = filteredWords.join(' ').trim();
-        setInputText(newText);
+        const simplePattern = new RegExp(
+            `(^|\\s)\\+${escaped}(?=$|\\s)`,
+            'gi'
+        );
+        const updated = cleanInputSpacing(
+            inputText
+                .replace(quotedPattern, (_, prefix) => prefix ?? '')
+                .replace(simplePattern, (_, prefix) => prefix ?? '')
+        );
+        setInputText(updated);
+        setAnalysisResult(null);
         if (inputRef.current) {
             inputRef.current.focus();
         }
@@ -526,6 +619,27 @@ const QuickCaptureInput: React.FC<QuickCaptureInputProps> = ({
             .trim();
     };
 
+    const buildTagObjects = (hashtagNames: string[]) => {
+        return hashtagNames.map((hashtagName) => {
+            const existingTag = tags.find(
+                (tag) => tag.name.toLowerCase() === hashtagName.toLowerCase()
+            );
+            return existingTag || { name: hashtagName };
+        });
+    };
+
+    const resolveProjectId = (projectRefsList: string[]) => {
+        if (projectRefsList.length === 0) {
+            return undefined;
+        }
+        const projectName = projectRefsList[0];
+        const matchingProject = projects.find(
+            (project) =>
+                project.name.toLowerCase() === projectName.toLowerCase()
+        );
+        return matchingProject ? matchingProject.id : undefined;
+    };
+
     const getSuggestion = (): {
         type: 'note' | 'task' | null;
         message: string | null;
@@ -561,45 +675,70 @@ const QuickCaptureInput: React.FC<QuickCaptureInputProps> = ({
         return { type: null, message: null, projectName: null };
     };
 
-    const analyzeText = useCallback(async (text: string) => {
-        if (!text.trim()) {
-            setAnalysisResult(null);
-            return;
-        }
-
-        try {
-            setIsAnalyzing(true);
-            const response = await fetch(getApiPath('inbox/analyze-text'), {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify({ content: text }),
-            });
-
-            if (response.ok) {
-                const result = await response.json();
-                setAnalysisResult(result);
-            } else {
-                console.error('Failed to analyze text:', response.statusText);
-                setAnalysisResult(null);
+    const analyzeText = useCallback(
+        async (text: string, requestId: number) => {
+            if (!text.trim()) {
+                if (analysisRequestIdRef.current === requestId) {
+                    setAnalysisResult(null);
+                    setIsAnalyzing(false);
+                }
+                return;
             }
-        } catch (error) {
-            console.error('Error analyzing text:', error);
-            setAnalysisResult(null);
-        } finally {
-            setIsAnalyzing(false);
-        }
-    }, []);
+
+            try {
+                if (analysisRequestIdRef.current === requestId) {
+                    setIsAnalyzing(true);
+                }
+                const response = await fetch(getApiPath('inbox/analyze-text'), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ content: text }),
+                });
+
+                if (analysisRequestIdRef.current !== requestId) {
+                    return;
+                }
+
+                if (response.ok) {
+                    const result = await response.json();
+                    setAnalysisResult(result);
+                } else {
+                    console.error(
+                        'Failed to analyze text:',
+                        response.statusText
+                    );
+                    setAnalysisResult(null);
+                }
+            } catch (error) {
+                if (analysisRequestIdRef.current !== requestId) {
+                    return;
+                }
+                console.error('Error analyzing text:', error);
+                setAnalysisResult(null);
+            } finally {
+                if (analysisRequestIdRef.current === requestId) {
+                    setIsAnalyzing(false);
+                }
+            }
+        },
+        []
+    );
 
     useEffect(() => {
         if (analysisTimeoutRef.current) {
             clearTimeout(analysisTimeoutRef.current);
         }
 
+        const requestId = analysisRequestIdRef.current + 1;
+        analysisRequestIdRef.current = requestId;
+
+        const textForAnalysis = inputText;
+
         analysisTimeoutRef.current = setTimeout(() => {
-            analyzeText(inputText);
+            analyzeText(textForAnalysis, requestId);
         }, 300);
 
         return () => {
@@ -769,16 +908,26 @@ const QuickCaptureInput: React.FC<QuickCaptureInputProps> = ({
 
     const handleSubmit = useCallback(
         async (forceInbox = false) => {
-            if (!inputText.trim() || isSaving) return;
+            const trimmedText = inputText.trim();
+            if ((!trimmedText && !isEditMode) || isSaving) return;
 
             setIsSaving(true);
 
             try {
-                if (analysisResult?.suggested_type === 'task' && !forceInbox && onTaskCreate) {
-                    await createMissingTags(inputText.trim());
-                    await createMissingProjects(inputText.trim());
+                if (onSubmitOverride) {
+                    await createMissingTags(trimmedText);
+                    await createMissingProjects(trimmedText);
+                    await onSubmitOverride(trimmedText);
+                    onAfterSubmit?.();
+                    setIsSaving(false);
+                    return;
+                }
 
-                    const cleanedText = getCleanedContent(inputText.trim());
+                if (analysisResult?.suggested_type === 'task' && !forceInbox && onTaskCreate) {
+                    await createMissingTags(trimmedText);
+                    await createMissingProjects(trimmedText);
+
+                    const cleanedText = getCleanedContent(trimmedText);
 
                     const taskTags = analysisResult.parsed_tags.map(
                         (tagName) => {
@@ -831,10 +980,10 @@ const QuickCaptureInput: React.FC<QuickCaptureInputProps> = ({
                 }
 
                 if (analysisResult?.suggested_type === 'note' && !forceInbox && onNoteCreate) {
-                    await createMissingTags(inputText.trim());
-                    await createMissingProjects(inputText.trim());
+                    await createMissingTags(trimmedText);
+                    await createMissingProjects(trimmedText);
 
-                    const cleanedText = getCleanedContent(inputText.trim());
+                    const cleanedText = getCleanedContent(trimmedText);
 
                     const hashtagTags = analysisResult.parsed_tags.map(
                         (tagName) => {
@@ -848,7 +997,7 @@ const QuickCaptureInput: React.FC<QuickCaptureInputProps> = ({
                     );
 
                     const isUrlContent =
-                        isUrl(inputText.trim()) ||
+                        isUrl(trimmedText) ||
                         analysisResult.suggested_reason === 'url_detected';
                     const bookmarkTag = isUrlContent
                         ? [{ name: 'bookmark' }]
@@ -877,8 +1026,8 @@ const QuickCaptureInput: React.FC<QuickCaptureInputProps> = ({
                     }
 
                     const newNote: Note = {
-                        title: cleanedText || inputText.trim(),
-                        content: inputText.trim(),
+                        title: cleanedText || trimmedText,
+                        content: trimmedText,
                         tags: taskTags,
                         project_id: projectId,
                     };
@@ -907,7 +1056,9 @@ const QuickCaptureInput: React.FC<QuickCaptureInputProps> = ({
                 }
 
                 try {
-                    await createInboxItemWithStore(inputText.trim());
+                    await createMissingTags(trimmedText);
+                    await createMissingProjects(trimmedText);
+                    await createInboxItemWithStore(trimmedText);
                     showSuccessToast(t('inbox.itemAdded'));
                     setInputText('');
                     setAnalysisResult(null);
@@ -940,203 +1091,357 @@ const QuickCaptureInput: React.FC<QuickCaptureInputProps> = ({
             createMissingProjects,
             getCleanedContent,
             projects,
+            onSubmitOverride,
+            onAfterSubmit,
         ]
     );
 
+    useImperativeHandle(
+        ref,
+        () => ({
+            submit: (forceInbox = false) => handleSubmit(forceInbox),
+        }),
+        [handleSubmit]
+    );
+
+    const composerFooterContext = useMemo<InboxComposerFooterContext>(
+        () => ({
+            text: inputText,
+            cleanedText: getCleanedContent(inputText.trim()),
+            hashtags: getAllTags(inputText),
+            projectRefs: getAllProjects(inputText),
+            clearText: clearComposerText,
+        }),
+        [inputText, clearComposerText]
+    );
+
+    const defaultFooterActions =
+        !renderFooterActions &&
+        !isEditMode &&
+        (openTaskModal || openProjectModal || openNoteModal)
+            ? (
+                  <div className="pt-3 mt-3 border-t border-gray-100 dark:border-gray-800">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                          <div className="flex flex-wrap items-center gap-2">
+                              {openTaskModal && (
+                                  <button
+                                      onClick={() => {
+                                          const taskTags = buildTagObjects(
+                                              composerFooterContext.hashtags
+                                          );
+                                          const projectId = resolveProjectId(
+                                              composerFooterContext.projectRefs
+                                          );
+                                          const cleaned =
+                                              composerFooterContext.cleanedText ||
+                                              composerFooterContext.text.trim();
+                                          if (!cleaned) {
+                                              return;
+                                          }
+                                          const newTask: Task = {
+                                              name: cleaned,
+                                              status: 'not_started',
+                                              priority: null,
+                                              tags: taskTags,
+                                              project_id: projectId,
+                                              completed_at: null,
+                                          };
+                                          openTaskModal(newTask);
+                                          composerFooterContext.clearText();
+                                      }}
+                                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-700 dark:text-blue-200 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-200 dark:focus:ring-offset-gray-900"
+                                  >
+                                      <ClipboardDocumentListIcon className="h-4 w-4" />
+                                      + {t('inbox.createTask', 'Task')}
+                                  </button>
+                              )}
+                              {openNoteModal && (
+                                  <button
+                                      onClick={() => {
+                                          const hashtagTags = buildTagObjects(
+                                              composerFooterContext.hashtags
+                                          );
+                                          const bookmarkTag = composerFooterContext.hashtags.some(
+                                              (tag) =>
+                                                  tag.toLowerCase() ===
+                                                  'bookmark'
+                                          )
+                                              ? []
+                                              : isUrl(
+                                                    composerFooterContext.text.trim()
+                                                )
+                                                ? [{ name: 'bookmark' }]
+                                                : [];
+                                          const noteTags = [
+                                              ...hashtagTags,
+                                              ...bookmarkTag,
+                                          ];
+                                          const projectId = resolveProjectId(
+                                              composerFooterContext.projectRefs
+                                          );
+                                          const newNote: Note = {
+                                              title:
+                                                  composerFooterContext.cleanedText ||
+                                                  composerFooterContext.text.trim(),
+                                              content:
+                                                  composerFooterContext.text.trim(),
+                                              tags: noteTags,
+                                              project_uid: projectId,
+                                          };
+                                          openNoteModal(newNote);
+                                          composerFooterContext.clearText();
+                                      }}
+                                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-purple-700 dark:text-purple-200 bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800 rounded-md hover:bg-purple-100 dark:hover:bg-purple-900/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-200 dark:focus:ring-offset-gray-900"
+                                  >
+                                      <DocumentTextIcon className="h-4 w-4" />
+                                      + {t('inbox.createNote', 'Note')}
+                                  </button>
+                              )}
+                              {openProjectModal && (
+                                  <button
+                                      onClick={() => {
+                                          const cleaned =
+                                              composerFooterContext.cleanedText ||
+                                              composerFooterContext.text.trim();
+                                          if (!cleaned) {
+                                              return;
+                                          }
+                                          const newProject: Project = {
+                                              name: cleaned,
+                                              description: '',
+                                              state: 'planned',
+                                              tags: buildTagObjects(
+                                                  composerFooterContext.hashtags
+                                              ),
+                                          };
+                                          openProjectModal(newProject);
+                                          composerFooterContext.clearText();
+                                      }}
+                                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-green-700 dark:text-green-200 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 rounded-md hover:bg-green-100 dark:hover:bg-green-900/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-200 dark:focus:ring-offset-gray-900"
+                                  >
+                                      <FolderIcon className="h-4 w-4" />
+                                      + {t('inbox.createProject', 'Project')}
+                                  </button>
+                              )}
+                          </div>
+                      </div>
+                  </div>
+              )
+            : null;
+
+    const footerActions =
+        renderFooterActions?.(composerFooterContext) || defaultFooterActions;
+
+    const shouldShowPrimaryButton = !hidePrimaryButton && !isEditMode;
+
+    const cardClasses = cardClassName ?? 'mb-6';
+
     return (
-        <InboxCard className="w-full mb-6">
-            <div className="p-4">
+        <InboxCard className={`w-full ${cardClasses}`}>
+            <div className="px-4 py-3">
                 <div className="flex flex-col sm:flex-row sm:items-start gap-3">
                     <div className="relative flex-1">
-                        <input
-                            ref={inputRef}
-                            type="text"
-                            value={inputText}
-                            onChange={handleChange}
-                            onSelect={(e) => {
-                                const pos =
-                                    e.currentTarget.selectionStart || 0;
-                                setCursorPosition(pos);
-                                if (
-                                    showTagSuggestions ||
-                                    showProjectSuggestions
-                                ) {
-                                    const position =
-                                        calculateDropdownPosition(
-                                            e.currentTarget,
-                                            pos
-                                        );
-                                    setDropdownPosition(position);
-                                }
-                            }}
-                            onKeyUp={(e) => {
-                                const pos =
-                                    e.currentTarget.selectionStart || 0;
-                                setCursorPosition(pos);
-                                if (
-                                    showTagSuggestions ||
-                                    showProjectSuggestions
-                                ) {
-                                    const position =
-                                        calculateDropdownPosition(
-                                            e.currentTarget,
-                                            pos
-                                        );
-                                    setDropdownPosition(position);
-                                }
-                            }}
-                            onClick={(e) => {
-                                const pos =
-                                    e.currentTarget.selectionStart || 0;
-                                setCursorPosition(pos);
-                                if (
-                                    showTagSuggestions ||
-                                    showProjectSuggestions
-                                ) {
-                                    const position =
-                                        calculateDropdownPosition(
-                                            e.currentTarget,
-                                            pos
-                                        );
-                                    setDropdownPosition(position);
-                                }
-                            }}
-                            className="w-full text-base font-normal bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 px-0 py-2 placeholder-gray-400 dark:placeholder-gray-500"
-                            placeholder={t('inbox.captureThought', 'Capture a thought...')}
-                            onKeyDown={(e) => {
-                                if (
-                                    showTagSuggestions &&
-                                    filteredTags.length > 0
-                                ) {
-                                    if (e.key === 'ArrowDown') {
-                                        e.preventDefault();
-                                        setSelectedSuggestionIndex(
-                                            (prev) =>
-                                                prev <
-                                                filteredTags.length - 1
-                                                    ? prev + 1
-                                                    : 0
-                                        );
-                                        return;
-                                    } else if (e.key === 'ArrowUp') {
-                                        e.preventDefault();
-                                        setSelectedSuggestionIndex(
-                                            (prev) =>
-                                                prev > 0
-                                                    ? prev - 1
-                                                    : filteredTags.length -
-                                                      1
-                                        );
-                                        return;
-                                    } else if (e.key === 'Tab') {
-                                        e.preventDefault();
-                                        const selectedTag =
-                                            selectedSuggestionIndex >= 0
-                                                ? filteredTags[
-                                                      selectedSuggestionIndex
-                                                  ]
-                                                : filteredTags[0];
-                                        handleTagSelect(
-                                            selectedTag.name
-                                        );
-                                        return;
-                                    } else if (
-                                        e.key === 'Enter' &&
-                                        selectedSuggestionIndex >= 0
-                                    ) {
-                                        e.preventDefault();
-                                        handleTagSelect(
-                                            filteredTags[
-                                                selectedSuggestionIndex
-                                            ].name
-                                        );
-                                        return;
-                                    } else if (e.key === 'Escape') {
-                                        e.preventDefault();
-                                        setShowTagSuggestions(false);
-                                        setFilteredTags([]);
-                                        setSelectedSuggestionIndex(-1);
-                                        return;
-                                    }
-                                }
-
-                                if (
-                                    showProjectSuggestions &&
-                                    filteredProjects.length > 0
-                                ) {
-                                    if (e.key === 'ArrowDown') {
-                                        e.preventDefault();
-                                        setSelectedSuggestionIndex(
-                                            (prev) =>
-                                                prev <
-                                                filteredProjects.length -
-                                                    1
-                                                    ? prev + 1
-                                                    : 0
-                                        );
-                                        return;
-                                    } else if (e.key === 'ArrowUp') {
-                                        e.preventDefault();
-                                        setSelectedSuggestionIndex(
-                                            (prev) =>
-                                                prev > 0
-                                                    ? prev - 1
-                                                    : filteredProjects.length -
-                                                      1
-                                        );
-                                        return;
-                                    } else if (e.key === 'Tab') {
-                                        e.preventDefault();
-                                        const selectedProject =
-                                            selectedSuggestionIndex >= 0
-                                                ? filteredProjects[
-                                                      selectedSuggestionIndex
-                                                  ]
-                                                : filteredProjects[0];
-                                        handleProjectSelect(
-                                            selectedProject.name
-                                        );
-                                        return;
-                                    } else if (
-                                        e.key === 'Enter' &&
-                                        selectedSuggestionIndex >= 0
-                                    ) {
-                                        e.preventDefault();
-                                        handleProjectSelect(
-                                            filteredProjects[
-                                                selectedSuggestionIndex
-                                            ].name
-                                        );
-                                        return;
-                                    } else if (e.key === 'Escape') {
-                                        e.preventDefault();
-                                        setShowProjectSuggestions(
-                                            false
-                                        );
-                                        setFilteredProjects([]);
-                                        setSelectedSuggestionIndex(-1);
-                                        return;
-                                    }
-                                }
-
-                                if (
-                                    e.key === 'Enter' &&
-                                    !e.shiftKey &&
-                                    !isSaving
-                                ) {
+                        <div className="flex items-center gap-3">
+                            <LightBulbIcon className="h-5 w-5 text-amber-400 dark:text-amber-300" />
+                            <input
+                                ref={inputRef}
+                                type="text"
+                                value={inputText}
+                                onChange={handleChange}
+                                onSelect={(e) => {
+                                    const pos =
+                                        e.currentTarget.selectionStart || 0;
+                                    setCursorPosition(pos);
                                     if (
-                                        (showTagSuggestions &&
-                                            filteredTags.length > 0) ||
-                                        (showProjectSuggestions &&
-                                            filteredProjects.length > 0)
+                                        showTagSuggestions ||
+                                        showProjectSuggestions
                                     ) {
+                                        const position =
+                                            calculateDropdownPosition(
+                                                e.currentTarget,
+                                                pos
+                                            );
+                                        setDropdownPosition(position);
+                                    }
+                                }}
+                                onKeyUp={(e) => {
+                                    const pos =
+                                        e.currentTarget.selectionStart || 0;
+                                    setCursorPosition(pos);
+                                    if (
+                                        showTagSuggestions ||
+                                        showProjectSuggestions
+                                    ) {
+                                        const position =
+                                            calculateDropdownPosition(
+                                                e.currentTarget,
+                                                pos
+                                            );
+                                        setDropdownPosition(position);
+                                    }
+                                }}
+                                onClick={(e) => {
+                                    const pos =
+                                        e.currentTarget.selectionStart || 0;
+                                    setCursorPosition(pos);
+                                    if (
+                                        showTagSuggestions ||
+                                        showProjectSuggestions
+                                    ) {
+                                        const position =
+                                            calculateDropdownPosition(
+                                                e.currentTarget,
+                                                pos
+                                            );
+                                        setDropdownPosition(position);
+                                    }
+                                }}
+                                className="w-full text-base font-normal bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 px-0 py-2 placeholder-gray-400 dark:placeholder-gray-500"
+                                placeholder={t('inbox.captureThought', 'Capture a thought...')}
+                                onKeyDown={(e) => {
+                                    const hasTagSuggestions =
+                                        showTagSuggestions &&
+                                        filteredTags.length > 0;
+                                    const hasProjectSuggestions =
+                                        showProjectSuggestions &&
+                                        filteredProjects.length > 0;
+
+                                    if (hasTagSuggestions) {
+                                        if (e.key === 'ArrowDown') {
+                                            e.preventDefault();
+                                            setSelectedSuggestionIndex(
+                                                (prev) =>
+                                                    prev <
+                                                    filteredTags.length - 1
+                                                        ? prev + 1
+                                                        : 0
+                                            );
+                                            return;
+                                        } else if (e.key === 'ArrowUp') {
+                                            e.preventDefault();
+                                            setSelectedSuggestionIndex(
+                                                (prev) =>
+                                                    prev > 0
+                                                        ? prev - 1
+                                                        : filteredTags.length -
+                                                          1
+                                            );
+                                            return;
+                                        } else if (e.key === 'Tab') {
+                                            e.preventDefault();
+                                            const selectedTag =
+                                                selectedSuggestionIndex >= 0
+                                                    ? filteredTags[
+                                                          selectedSuggestionIndex
+                                                      ]
+                                                    : filteredTags[0];
+                                            handleTagSelect(
+                                                selectedTag.name
+                                            );
+                                            return;
+                                        } else if (
+                                            e.key === 'Enter' &&
+                                            selectedSuggestionIndex >= 0
+                                        ) {
+                                            e.preventDefault();
+                                            handleTagSelect(
+                                                filteredTags[
+                                                    selectedSuggestionIndex
+                                                ].name
+                                            );
+                                            return;
+                                        } else if (e.key === 'Escape') {
+                                            e.preventDefault();
+                                            setShowTagSuggestions(false);
+                                            setFilteredTags([]);
+                                            setSelectedSuggestionIndex(-1);
+                                            return;
+                                        }
+                                    }
+
+                                    if (hasProjectSuggestions) {
+                                        if (e.key === 'ArrowDown') {
+                                            e.preventDefault();
+                                            setSelectedSuggestionIndex(
+                                                (prev) =>
+                                                    prev <
+                                                    filteredProjects.length -
+                                                        1
+                                                        ? prev + 1
+                                                        : 0
+                                            );
+                                            return;
+                                        } else if (e.key === 'ArrowUp') {
+                                            e.preventDefault();
+                                            setSelectedSuggestionIndex(
+                                                (prev) =>
+                                                    prev > 0
+                                                        ? prev - 1
+                                                        : filteredProjects.length -
+                                                          1
+                                            );
+                                            return;
+                                        } else if (e.key === 'Tab') {
+                                            e.preventDefault();
+                                            const selectedProject =
+                                                selectedSuggestionIndex >= 0
+                                                    ? filteredProjects[
+                                                          selectedSuggestionIndex
+                                                      ]
+                                                    : filteredProjects[0];
+                                            handleProjectSelect(
+                                                selectedProject.name
+                                            );
+                                            return;
+                                        } else if (
+                                            e.key === 'Enter' &&
+                                            selectedSuggestionIndex >= 0
+                                        ) {
+                                            e.preventDefault();
+                                            handleProjectSelect(
+                                                filteredProjects[
+                                                    selectedSuggestionIndex
+                                                ].name
+                                            );
+                                            return;
+                                        } else if (e.key === 'Escape') {
+                                            e.preventDefault();
+                                            setShowProjectSuggestions(false);
+                                            setFilteredProjects([]);
+                                            setSelectedSuggestionIndex(-1);
+                                            return;
+                                        }
+                                    }
+
+                                    if (
+                                        e.key === 'Escape' &&
+                                        !hasTagSuggestions &&
+                                        !hasProjectSuggestions
+                                    ) {
+                                        e.preventDefault();
+                                        if (!isSaving) {
+                                            handleSubmit();
+                                        }
                                         return;
                                     }
-                                    e.preventDefault();
-                                    handleSubmit();
-                                }
-                            }}
-                        />
+
+                                    if (
+                                        e.key === 'Enter' &&
+                                        !e.shiftKey &&
+                                        !isSaving
+                                    ) {
+                                        if (
+                                            hasTagSuggestions ||
+                                            hasProjectSuggestions
+                                        ) {
+                                            return;
+                                        }
+                                        e.preventDefault();
+                                        handleSubmit();
+                                    }
+                                }}
+                            />
+                        </div>
 
                         <InboxSelectedChips
                             selectedTags={getAllTags(inputText)}
@@ -1225,51 +1530,56 @@ const QuickCaptureInput: React.FC<QuickCaptureInputProps> = ({
                             ) : null;
                         })()}
                     </div>
-                    <button
-                        type="button"
-                        onClick={() => handleSubmit(false)}
-                        disabled={!inputText.trim() || isSaving}
-                        className={`inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-colors ${
-                            inputText.trim() && !isSaving
-                                ? 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600'
-                                : 'bg-blue-400 dark:bg-blue-700 cursor-not-allowed'
-                        }`}
-                    >
-                        {isSaving ? (
-                            <>
-                                <svg
-                                    className="animate-spin h-4 w-4 mr-2"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <circle
-                                        className="opacity-25"
-                                        cx="12"
-                                        cy="12"
-                                        r="10"
-                                        stroke="currentColor"
-                                        strokeWidth="4"
-                                    ></circle>
-                                    <path
-                                        className="opacity-75"
-                                        fill="currentColor"
-                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                    ></path>
-                                </svg>
-                                {t('common.saving')}
-                            </>
-                        ) : (
-                            <>
-                                <PlusIcon className="h-4 w-4 mr-1" />
-                                {t('common.add', 'Add')}
-                            </>
-                        )}
-                    </button>
+                    {shouldShowPrimaryButton && (
+                        <button
+                            type="button"
+                            onClick={() => handleSubmit(false)}
+                            disabled={!inputText.trim() || isSaving}
+                            className={`inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-colors ${
+                                inputText.trim() && !isSaving
+                                    ? 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600'
+                                    : 'bg-blue-400 dark:bg-blue-700 cursor-not-allowed'
+                            }`}
+                        >
+                            {isSaving ? (
+                                <>
+                                    <svg
+                                        className="animate-spin h-4 w-4 mr-2"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <circle
+                                            className="opacity-25"
+                                            cx="12"
+                                            cy="12"
+                                            r="10"
+                                            stroke="currentColor"
+                                            strokeWidth="4"
+                                        ></circle>
+                                        <path
+                                            className="opacity-75"
+                                            fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                        ></path>
+                                    </svg>
+                                    {t('common.saving')}
+                                </>
+                            ) : (
+                                <>
+                                    <PlusIcon className="h-4 w-4 mr-1" />
+                                    {t('common.add', 'Add')}
+                                </>
+                            )}
+                        </button>
+                    )}
                 </div>
+                {footerActions}
             </div>
         </InboxCard>
     );
-};
+});
+
+QuickCaptureInput.displayName = 'QuickCaptureInput';
 
 export default QuickCaptureInput;
