@@ -9,7 +9,6 @@ import {
     ClipboardDocumentListIcon,
     TagIcon,
     GlobeAltIcon,
-    ChatBubbleOvalLeftEllipsisIcon,
 } from '@heroicons/react/24/outline';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
@@ -249,7 +248,6 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         [hashtags]
     );
     const projectRefs = parseProjectRefs(fullContent);
-    const cleanedContent = cleanTextFromTagsAndProjects(displayText);
     const hasLongContent =
         Boolean(item.title && item.title.trim()) &&
         item.title !== null &&
