@@ -1318,7 +1318,9 @@ const QuickCaptureInput = React.forwardRef<
         const cardClasses = cardClassName ?? 'mb-6';
 
         return (
-            <InboxCard className={`w-full ${cardClasses}`}>
+            <InboxCard
+                className={`w-full border border-blue-300 dark:border-blue-600 ${cardClasses}`}
+            >
                 <div className="px-4 py-3">
                     <div className="flex flex-col sm:flex-row sm:items-start gap-3">
                         <div className="relative flex-1">

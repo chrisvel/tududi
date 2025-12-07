@@ -252,6 +252,9 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         Boolean(item.title && item.title.trim()) &&
         item.title !== null &&
         item.title !== fullContent;
+    const iconTooltip = isBookmarkItem
+        ? t('inbox.iconTooltip.bookmark', 'Bookmark link')
+        : t('inbox.iconTooltip.text', 'Captured text');
 
     const slugify = (text: string) =>
         text
@@ -671,7 +674,11 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             ) : (
                 <InboxCard className="w-full">
                     <div className="flex items-center px-4 py-3 gap-3">
-                        <div className="flex-shrink-0">
+                        <div
+                            className="flex-shrink-0"
+                            title={iconTooltip}
+                            aria-label={iconTooltip}
+                        >
                             {isBookmarkItem ? (
                                 <GlobeAltIcon className="h-5 w-5 text-blue-500 dark:text-blue-300" />
                             ) : (
