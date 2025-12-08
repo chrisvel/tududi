@@ -965,9 +965,10 @@
     "staleTasksDesc": "Tareas no actualizadas en {{days}} días",
     "stuckProjects": "Proyectos Atascados",
     "stuckProjectsDesc": "Proyectos no actualizados recientemente",
-    "issuesFound": "Se encontraron {{count}} problema(s) de productividad que necesitan atención",
     "reviewItems": "Haga clic para revisar y mejorar su flujo de trabajo",
-    "suggestion": "Haga clic en cualquier elemento de arriba para abrirlo y hacer mejoras."
+    "suggestion": "Haga clic en cualquier elemento de arriba para abrirlo y hacer mejoras.",
+    "issuesFound_one": "1 problema de productividad necesita atención",
+    "issuesFound_other": "{{count}} problemas de productividad necesitan atención"
   },
   "pages": {
     "notFound": {

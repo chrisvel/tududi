@@ -921,9 +921,9 @@
     "staleTasksDesc": "{{days}}日間更新されていないタスク",
     "stuckProjects": "進行が停止しているプロジェクト",
     "stuckProjectsDesc": "最近更新されていないプロジェクト",
-    "issuesFound": "{{count}}の生産性の問題が見つかりました。注意が必要です",
     "reviewItems": "クリックしてレビューし、ワークフローを改善します",
-    "suggestion": "上記の任意のアイテムをクリックして開き、改善を行います。"
+    "suggestion": "上記の任意のアイテムをクリックして開き、改善を行います。",
+    "issuesFound_other": "{{count}}の生産性の問題に注意が必要です"
   },
   "priority": {
     "low": "低",

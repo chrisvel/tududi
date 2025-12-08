@@ -364,9 +364,10 @@
     "staleTasksDesc": "Tâches non mises à jour depuis {{days}} jours",
     "stuckProjects": "Projets Coincés",
     "stuckProjectsDesc": "Projets non mis à jour récemment",
-    "issuesFound": "Trouvé {{count}} problème(s) de productivité nécessitant une attention",
     "reviewItems": "Cliquez pour examiner et améliorer votre flux de travail",
-    "suggestion": "Cliquez sur n'importe quel élément ci-dessus pour l'ouvrir et apporter des améliorations."
+    "suggestion": "Cliquez sur n'importe quel élément ci-dessus pour l'ouvrir et apporter des améliorations.",
+    "issuesFound_one": "1 problème de productivité nécessite une attention",
+    "issuesFound_other": "{{count}} problèmes de productivité nécessitent une attention"
   },
   "nextTask": {
     "suggestion": "Puisqu'il n'y a rien en cours, que diriez-vous de commencer par",

@@ -364,9 +364,9 @@
     "staleTasksDesc": "Tugas yang tidak diperbarui dalam {{days}} hari",
     "stuckProjects": "Proyek Terjebak",
     "stuckProjectsDesc": "Proyek yang tidak diperbarui baru-baru ini",
-    "issuesFound": "Ditemukan {{count}} masalah produktivitas yang memerlukan perhatian",
     "reviewItems": "Klik untuk meninjau dan meningkatkan alur kerja Anda",
-    "suggestion": "Klik pada item mana pun di atas untuk membukanya dan melakukan perbaikan."
+    "suggestion": "Klik pada item mana pun di atas untuk membukanya dan melakukan perbaikan.",
+    "issuesFound_other": "{{count}} masalah produktivitas memerlukan perhatian"
   },
   "nextTask": {
     "suggestion": "Karena tidak ada yang sedang berlangsung, bagaimana jika mulai dengan",

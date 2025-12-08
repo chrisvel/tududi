@@ -364,9 +364,9 @@
     "staleTasksDesc": "Nhiệm vụ không được cập nhật trong {{days}} ngày",
     "stuckProjects": "Dự án Bị Kẹt",
     "stuckProjectsDesc": "Dự án không được cập nhật gần đây",
-    "issuesFound": "Tìm thấy {{count}} vấn đề năng suất cần được chú ý",
     "reviewItems": "Nhấn để xem xét và cải thiện quy trình làm việc của bạn",
-    "suggestion": "Nhấn vào bất kỳ mục nào ở trên để mở nó và thực hiện cải tiến."
+    "suggestion": "Nhấn vào bất kỳ mục nào ở trên để mở nó và thực hiện cải tiến.",
+    "issuesFound_other": "{{count}} vấn đề năng suất cần được chú ý"
   },
   "nextTask": {
     "suggestion": "Vì không có gì đang tiến hành, bạn có muốn bắt đầu với",

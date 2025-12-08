@@ -364,9 +364,10 @@
     "staleTasksDesc": "Tehtävät, joita ei ole päivitetty {{days}} päivään",
     "stuckProjects": "Jumiutuneet projektit",
     "stuckProjectsDesc": "Projekteja, joita ei ole äskettäin päivitetty",
-    "issuesFound": "Löydettiin {{count}} tuottavuusongelmaa, jotka tarvitsevat huomiota",
     "reviewItems": "Napsauta tarkistaaksesi ja parantaaksesi työnkulkuasi",
-    "suggestion": "Napsauta mitä tahansa yllä olevaa kohdetta avatakseen sen ja tehdäkseen parannuksia."
+    "suggestion": "Napsauta mitä tahansa yllä olevaa kohdetta avatakseen sen ja tehdäkseen parannuksia.",
+    "issuesFound_one": "1 tuottavuusongelma tarvitsee huomiota",
+    "issuesFound_other": "{{count}} tuottavuusongelmaa tarvitsee huomiota"
   },
   "nextTask": {
     "suggestion": "Koska mitään ei ole käynnissä, mitä jos aloittaisit",

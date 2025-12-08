@@ -364,9 +364,10 @@
     "staleTasksDesc": "Naloge, ki niso bile posodobljene v {{days}} dneh",
     "stuckProjects": "Zagozdene projekte",
     "stuckProjectsDesc": "Projekti, ki niso bili nedavno posodobljeni",
-    "issuesFound": "Najdenih {{count}} težav s produktivnostjo, ki potrebujejo pozornost",
     "reviewItems": "Kliknite za pregled in izboljšanje svojega delovnega toka",
-    "suggestion": "Kliknite na katerikoli element zgoraj, da ga odprete in izboljšate."
+    "suggestion": "Kliknite na katerikoli element zgoraj, da ga odprete in izboljšate.",
+    "issuesFound_one": "1 težava s produktivnostjo potrebuje pozornost",
+    "issuesFound_other": "{{count}} težav s produktivnostjo potrebuje pozornost"
   },
   "nextTask": {
     "suggestion": "Ker ni nič v teku, kaj pa, če začnete s",
