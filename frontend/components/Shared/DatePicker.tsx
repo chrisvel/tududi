@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import {
     ChevronLeftIcon,
@@ -9,6 +9,8 @@ import {
     getFirstDayOfWeek,
     getLocaleFirstDayOfWeek,
 } from '../../utils/profileService';
+import { useTranslation } from 'react-i18next';
+import { resolveUserLocale } from '../../utils/localeUtils';
 
 interface DatePickerProps {
     value: string;
@@ -25,6 +27,11 @@ const DatePicker: React.FC<DatePickerProps> = ({
     disabled = false,
     className = '',
 }) => {
+    const { i18n } = useTranslation();
+    const displayLocale = useMemo(
+        () => resolveUserLocale(i18n?.language),
+        [i18n?.language]
+    );
     const [isOpen, setIsOpen] = useState(false);
     const [position, setPosition] = useState({
         top: 0,
@@ -77,7 +84,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
         if (!dateString) return placeholder;
         const date = parseDate(dateString);
         if (!date || isNaN(date.getTime())) return placeholder;
-        return date.toLocaleDateString('en-US', {
+        return date.toLocaleDateString(displayLocale, {
             year: 'numeric',
             month: 'short',
             day: 'numeric',

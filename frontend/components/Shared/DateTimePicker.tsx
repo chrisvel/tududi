@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import {
     ChevronLeftIcon,
@@ -9,6 +9,8 @@ import {
     getFirstDayOfWeek,
     getLocaleFirstDayOfWeek,
 } from '../../utils/profileService';
+import { useTranslation } from 'react-i18next';
+import { resolveUserLocale } from '../../utils/localeUtils';
 
 interface DateTimePickerProps {
     value: string; // ISO string
@@ -25,6 +27,11 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
     disabled = false,
     className = '',
 }) => {
+    const { i18n } = useTranslation();
+    const displayLocale = useMemo(
+        () => resolveUserLocale(i18n?.language),
+        [i18n?.language]
+    );
     const [isOpen, setIsOpen] = useState(false);
     const [position, setPosition] = useState({
         top: 0,
@@ -101,19 +108,24 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
         const { date, time } = parseDateTime(isoString);
         if (!date) return placeholder;
 
-        const dateStr = date.toLocaleDateString('en-US', {
+        const displayDate = new Date(date);
+        if (time) {
+            const [hours, minutes] = time.split(':');
+            displayDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+        }
+
+        const dateStr = displayDate.toLocaleDateString(displayLocale, {
             year: 'numeric',
             month: 'short',
             day: 'numeric',
         });
 
-        // Convert 24h to 12h format for display
-        const [hours, minutes] = time.split(':');
-        const hour = parseInt(hours);
-        const ampm = hour >= 12 ? 'PM' : 'AM';
-        const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+        const timeStr = displayDate.toLocaleTimeString(displayLocale, {
+            hour: 'numeric',
+            minute: '2-digit',
+        });
 
-        return `${dateStr} at ${displayHour}:${minutes} ${ampm}`;
+        return `${dateStr} at ${timeStr}`;
     };
 
     useEffect(() => {
