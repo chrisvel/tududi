@@ -143,7 +143,7 @@
     "noProject": "Brez projekta",
     "unknownProject": "Neznan projekt",
     "tasks": "naloge",
-    "showingItems": "Prikazovanje {{current}} od {{total}} elementov",
+    "showingItems": "Prikazovanje {{current}} od {{total}} nalog",
     "overdue": "Zapadlo",
     "planned": "Načrtovano",
     "open": "Odpri",

@@ -358,7 +358,7 @@
     "noProject": "Sin proyecto",
     "unknownProject": "Proyecto desconocido",
     "tasks": "tareas",
-    "showingItems": "Mostrando {{current}} de {{total}} elementos",
+    "showingItems": "Mostrando {{current}} de {{total}} tareas",
     "open": "Abrir",
     "completed": "Completado"
   },

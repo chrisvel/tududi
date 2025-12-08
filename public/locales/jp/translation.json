@@ -143,7 +143,7 @@
     "noProject": "プロジェクトなし",
     "unknownProject": "不明なプロジェクト",
     "tasks": "タスク",
-    "showingItems": "{{total}}件中{{current}}件を表示",
+    "showingItems": "{{total}}件のタスク中{{current}}件を表示",
     "overdue": "期限切れ",
     "planned": "計画中",
     "open": "開く",

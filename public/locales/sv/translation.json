@@ -143,7 +143,7 @@
     "noProject": "Inget projekt",
     "unknownProject": "Okänt projekt",
     "tasks": "uppgifter",
-    "showingItems": "Visar {{current}} av {{total}} objekt",
+    "showingItems": "Visar {{current}} av {{total}} uppgifter",
     "overdue": "Förfallen",
     "planned": "Planerad",
     "open": "Öppna",

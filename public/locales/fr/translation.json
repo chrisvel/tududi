@@ -145,7 +145,7 @@
     "noProject": "Aucun projet",
     "unknownProject": "Projet inconnu",
     "tasks": "tâches",
-    "showingItems": "Affichage de {{current}} sur {{total}} éléments",
+    "showingItems": "Affichage de {{current}} sur {{total}} tâches",
     "open": "Ouvrir",
     "completed": "Terminé"
   },

@@ -143,7 +143,7 @@
     "noProject": "Nessun progetto",
     "unknownProject": "Progetto sconosciuto",
     "tasks": "attività",
-    "showingItems": "Visualizzazione di {{current}} su {{total}} elementi",
+    "showingItems": "Visualizzazione di {{current}} su {{total}} attività",
     "overdue": "Scaduto",
     "planned": "Pianificato",
     "open": "Apri",

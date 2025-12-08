@@ -143,7 +143,7 @@
     "noProject": "بدون مشروع",
     "unknownProject": "مشروع غير معروف",
     "tasks": "مهام",
-    "showingItems": "عرض {{current}} من {{total}} عنصر",
+    "showingItems": "عرض {{current}} من {{total}} مهمة",
     "overdue": "متأخر",
     "planned": "مخطط",
     "open": "فتح",

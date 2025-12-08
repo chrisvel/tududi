@@ -143,7 +143,7 @@
     "noProject": "Intet projekt",
     "unknownProject": "Ukendt projekt",
     "tasks": "opgaver",
-    "showingItems": "Viser {{current}} af {{total}} elementer",
+    "showingItems": "Viser {{current}} af {{total}} opgaver",
     "overdue": "Forsinket",
     "planned": "Planlagt",
     "open": "Åbn",

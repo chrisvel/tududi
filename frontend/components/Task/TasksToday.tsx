@@ -1392,7 +1392,7 @@ const TasksToday: React.FC = () => {
                                     <div className="text-center text-sm text-gray-500 dark:text-gray-400 pt-2 pb-4">
                                         {t(
                                             'tasks.showingItems',
-                                            'Showing {{current}} of {{total}} items',
+                                            'Showing {{current}} of {{total}} tasks',
                                             {
                                                 current: Math.min(
                                                     overdueDisplayLimit,
@@ -1506,7 +1506,7 @@ const TasksToday: React.FC = () => {
                                 <div className="text-center text-sm text-gray-500 dark:text-gray-400 pt-2 pb-4">
                                     {t(
                                         'tasks.showingItems',
-                                        'Showing {{current}} of {{total}} items',
+                                        'Showing {{current}} of {{total}} tasks',
                                         {
                                             current: (
                                                 metrics.today_plan_tasks || []
@@ -1599,7 +1599,7 @@ const TasksToday: React.FC = () => {
                                     <div className="text-center text-sm text-gray-500 dark:text-gray-400 pt-2 pb-4">
                                         {t(
                                             'tasks.showingItems',
-                                            'Showing {{current}} of {{total}} items',
+                                            'Showing {{current}} of {{total}} tasks',
                                             {
                                                 current: Math.min(
                                                     dueTodayDisplayLimit,
@@ -1748,7 +1748,7 @@ const TasksToday: React.FC = () => {
                                             <div className="text-center text-sm text-gray-500 dark:text-gray-400 pt-2 pb-4">
                                                 {t(
                                                     'tasks.showingItems',
-                                                    'Showing {{current}} of {{total}} items',
+                                                    'Showing {{current}} of {{total}} tasks',
                                                     {
                                                         current: Math.min(
                                                             completedTodayDisplayLimit,

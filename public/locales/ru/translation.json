@@ -143,7 +143,7 @@
     "noProject": "Без проекта",
     "unknownProject": "Неизвестный проект",
     "tasks": "задачи",
-    "showingItems": "Показано {{current}} из {{total}} элементов",
+    "showingItems": "Показано {{current}} из {{total}} задач",
     "overdue": "Просрочено",
     "planned": "Запланировано",
     "open": "Открыть",
