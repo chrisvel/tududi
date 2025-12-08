@@ -17,7 +17,7 @@ module.exports = (sequelize) => {
                 defaultValue: uid,
             },
             content: {
-                type: DataTypes.TEXT('long'),
+                type: DataTypes.TEXT,
                 allowNull: false,
             },
             title: {
