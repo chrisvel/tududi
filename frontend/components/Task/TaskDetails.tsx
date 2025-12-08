@@ -16,6 +16,7 @@ import {
     toggleTaskCompletion,
 } from '../../utils/tasksService';
 import { createProject } from '../../utils/projectsService';
+import { fetchAttachments } from '../../utils/attachmentsService';
 import { useStore } from '../../store/useStore';
 import { useToast } from '../Shared/ToastContext';
 import LoadingScreen from '../Shared/LoadingScreen';
@@ -29,8 +30,9 @@ import {
     TaskRecurrenceCard,
     TaskDueDateCard,
     TaskDeferUntilCard,
+    TaskAttachmentsCard,
 } from './TaskDetails/';
-import { isTaskOverdue } from '../../utils/dateUtils';
+import { isTaskOverdue, isTaskPastDue } from '../../utils/dateUtils';
 
 const TaskDetails: React.FC = () => {
     const { uid } = useParams<{ uid: string }>();
@@ -118,6 +120,7 @@ const TaskDetails: React.FC = () => {
         completion_based: task?.completion_based || false,
     });
     const [activePill, setActivePill] = useState('overview');
+    const [attachmentCount, setAttachmentCount] = useState(0);
 
     useEffect(() => {
         setEditedDueDate(task?.due_date || '');
@@ -203,6 +206,7 @@ const TaskDetails: React.FC = () => {
     };
 
     const isOverdue = task ? isTaskOverdue(task) : false;
+    const isPastDue = task ? isTaskPastDue(task) : false;
 
     useEffect(() => {
         if (!isOverdue) {
@@ -490,6 +494,22 @@ const TaskDetails: React.FC = () => {
 
         fetchTaskData();
     }, [uid, task, tasksStore]);
+
+    // Load attachment count when task is loaded
+    useEffect(() => {
+        const loadAttachmentCount = async () => {
+            if (task?.uid) {
+                try {
+                    const attachments = await fetchAttachments(task.uid);
+                    setAttachmentCount(attachments.length);
+                } catch (error) {
+                    console.error('Error loading attachment count:', error);
+                }
+            }
+        };
+
+        loadAttachmentCount();
+    }, [task?.uid]);
 
     useEffect(() => {
         const loadNextIterations = async () => {
@@ -1221,11 +1241,13 @@ const TaskDetails: React.FC = () => {
                     activePill={activePill}
                     onPillChange={setActivePill}
                     showOverdueIcon={isOverdue}
+                    showPastDueBadge={isPastDue}
                     onOverdueIconClick={handleOverdueIconClick}
                     isOverdueAlertVisible={isOverdue && isOverdueBubbleVisible}
                     onDismissOverdueAlert={handleDismissOverdueAlert}
                     onToggleTodayPlan={handleToggleTodayPlan}
                     onQuickStatusToggle={handleQuickStatusToggle}
+                    attachmentCount={attachmentCount}
                 />
 
                 {/* Content - Full width layout */}
@@ -1330,13 +1352,11 @@ const TaskDetails: React.FC = () => {
 
                     {/* Attachments Pill */}
                     {activePill === 'attachments' && (
-                        <div className="text-center py-12">
-                            <p className="text-gray-500 dark:text-gray-400">
-                                {t(
-                                    'task.attachmentsComingSoon',
-                                    'Attachments feature coming soon'
-                                )}
-                            </p>
+                        <div className="grid grid-cols-1">
+                            <TaskAttachmentsCard
+                                taskUid={task.uid}
+                                onAttachmentsCountChange={setAttachmentCount}
+                            />
                         </div>
                     )}
 
