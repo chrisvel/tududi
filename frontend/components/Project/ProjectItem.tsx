@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
 import {
@@ -10,11 +10,16 @@ import {
     StopIcon,
     CheckCircleIcon,
     ShareIcon,
+    ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
 import { Project, ProjectState } from '../../entities/Project';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '../Shared/ToastContext';
 import { getCurrentUser } from '../../utils/userUtils';
+import Tooltip from '../Shared/Tooltip';
+import { differenceInCalendarDays } from 'date-fns';
+import { listShares, ListSharesResponseRow } from '../../utils/sharesService';
+import { getApiPath } from '../../config/paths';
 
 interface ProjectItemProps {
     project: Project;
@@ -78,6 +83,22 @@ const getStateLabel = (state: ProjectState | undefined, t: any): string => {
     }
 };
 
+const projectShareCache = new Map<string, ListSharesResponseRow[]>();
+const failedShareCache = new Set<string>();
+const MAX_SHARE_AVATARS = 4;
+
+const getShareInitials = (value?: string | null) => {
+    if (!value) return '?';
+    const cleaned = value
+        .replace(/@.*/, '')
+        .split(/[\s._-]+/)
+        .filter((part) => part.length > 0)
+        .map((part) => part[0].toUpperCase())
+        .join('');
+    return cleaned.substring(0, 2) || '?';
+};
+
+
 const ProjectItem: React.FC<ProjectItemProps> = ({
     project,
     viewMode,
@@ -94,6 +115,151 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
     const currentUser = getCurrentUser();
     const isOwner =
         currentUser && (project as any).user_uid === currentUser.uid;
+    const descriptionText = project.description?.trim();
+    const listTitleClasses =
+        'block w-full text-md font-semibold text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-gray-200 transition-colors truncate';
+    const listTitleLink = (
+        <Link
+            to={
+                project.uid
+                    ? `/project/${project.uid}-${project.name
+                          .toLowerCase()
+                          .replace(/[^a-z0-9]+/g, '-')
+                          .replace(/^-|-$/g, '')}`
+                    : `/project/${project.id}`
+            }
+            className={listTitleClasses}
+        >
+            {project.name}
+        </Link>
+    );
+    const [sharedUsers, setSharedUsers] = useState<
+        ListSharesResponseRow[] | null
+    >(() => {
+        if (project.uid && projectShareCache.has(project.uid)) {
+            return projectShareCache.get(project.uid) || null;
+        }
+        return null;
+    });
+
+    useEffect(() => {
+        if (project.uid && projectShareCache.has(project.uid)) {
+            setSharedUsers(projectShareCache.get(project.uid) || null);
+        } else if (!project.is_shared) {
+            setSharedUsers(null);
+        }
+    }, [project.uid, project.is_shared]);
+
+    useEffect(() => {
+        if (
+            !project.is_shared ||
+            !project.uid ||
+            projectShareCache.has(project.uid) ||
+            failedShareCache.has(project.uid)
+        ) {
+            return;
+        }
+
+        let isMounted = true;
+        listShares('project', project.uid)
+            .then((rows) => {
+                if (!isMounted) return;
+                const filtered = rows.filter((row) => !row.is_owner);
+                projectShareCache.set(project.uid as string, filtered);
+                setSharedUsers(filtered);
+            })
+            .catch((error) => {
+                if (!isMounted) return;
+                failedShareCache.add(project.uid as string);
+                console.error(
+                    'Failed to fetch shares for project',
+                    project.uid,
+                    error
+                );
+            });
+
+        return () => {
+            isMounted = false;
+        };
+    }, [project.uid, project.is_shared]);
+
+    const dueInfo = useMemo(() => {
+        if (!project.due_date_at) {
+            return {
+                text: t('projectItem.noDueDate', 'No due date'),
+                isOverdue: false,
+            };
+        }
+        const dueDate = new Date(project.due_date_at);
+        if (Number.isNaN(dueDate.getTime())) {
+            return {
+                text: t('projectItem.noDueDate', 'No due date'),
+                isOverdue: false,
+            };
+        }
+        const diff = differenceInCalendarDays(dueDate, new Date());
+        if (diff === 0) {
+            return {
+                text: t('projectItem.dueToday', 'Due today'),
+                isOverdue: false,
+            };
+        }
+
+        const unit =
+            Math.abs(diff) === 1
+                ? t('projectItem.day', 'day')
+                : t('projectItem.days', 'days');
+
+        if (diff > 0) {
+            return {
+                text: t('projectItem.dueIn', 'Due in {{count}} {{unit}}', {
+                    count: diff,
+                    unit,
+                }),
+                isOverdue: false,
+            };
+        }
+
+        return {
+            text: t(
+                'projectItem.overdue',
+                'Overdue {{count}} {{unit}} ago',
+                {
+                    count: Math.abs(diff),
+                    unit,
+                }
+            ),
+            isOverdue: true,
+        };
+    }, [project.due_date_at, t]);
+
+    const shareAvatars = useMemo(() => {
+        if (!project.is_shared) {
+            return {
+                avatars: [] as ListSharesResponseRow[],
+                remaining: 0,
+            };
+        }
+
+        const knownShares = sharedUsers ?? [];
+        const avatars = knownShares.slice(0, MAX_SHARE_AVATARS);
+        const totalCount =
+            (sharedUsers?.length ??
+                project.share_count ??
+                avatars.length) || 0;
+        const remaining = Math.max(0, totalCount - avatars.length);
+
+        return { avatars, remaining };
+    }, [project.is_shared, project.share_count, sharedUsers]);
+
+    const getShareDisplayName = (email?: string | null) => {
+        if (!email) {
+            return t('projectItem.sharedUser', 'Shared user');
+        }
+        const [namePart] = email.split('@');
+        if (!namePart) return email;
+        return namePart.charAt(0).toUpperCase() + namePart.slice(1);
+    };
     return (
         <div
             className={`${
@@ -102,68 +268,271 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                     : 'bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-row items-center p-4 group'
             }`}
             style={{
-                minHeight: viewMode === 'cards' ? '250px' : 'auto',
-                maxHeight: viewMode === 'cards' ? '250px' : 'auto',
+                minHeight: viewMode === 'cards' ? '260px' : 'auto',
+                maxHeight: viewMode === 'cards' ? '260px' : 'auto',
             }}
         >
             {viewMode === 'cards' && (
-                <Link
-                    to={
-                        project.uid
-                            ? `/project/${project.uid}-${project.name
-                                  .toLowerCase()
-                                  .replace(/[^a-z0-9]+/g, '-')
-                                  .replace(/^-|-$/g, '')}`
-                            : `/project/${project.id}`
-                    }
-                >
-                    <div
-                        className="bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden rounded-t-lg relative cursor-pointer hover:opacity-90 transition-opacity"
-                        style={{ height: '140px' }}
+                <div className="relative">
+                    <Link
+                        to={
+                            project.uid
+                                ? `/project/${project.uid}-${project.name
+                                      .toLowerCase()
+                                      .replace(/[^a-z0-9]+/g, '-')
+                                      .replace(/^-|-$/g, '')}`
+                                : `/project/${project.id}`
+                        }
+                        className="block"
                     >
-                        {project.image_url ? (
-                            <img
-                                src={project.image_url}
-                                alt={project.name}
-                                className="w-full h-full object-cover"
-                            />
-                        ) : (
-                            <span
-                                className="text-2xl font-extrabold text-gray-500 dark:text-gray-400 opacity-20"
-                                aria-label={t('projectItem.projectInitials')}
-                            >
-                                {getProjectInitials(project.name)}
-                            </span>
-                        )}
-
-                        {/* Icons in top right corner of image area */}
-                        <div className="absolute top-2 right-2 z-10 flex items-center space-x-2">
-                            {/* Shared project icon */}
-                            {project.is_shared && (
-                                <ShareIcon
-                                    className="h-4 w-4 text-green-500 dark:text-green-400 opacity-70 drop-shadow-sm"
-                                    title={t(
-                                        'projectItem.sharedProject',
-                                        'Shared with team'
-                                    )}
+                        <div className="relative h-40 overflow-hidden rounded-t-lg bg-gray-200 dark:bg-gray-700">
+                            {project.image_url ? (
+                                <img
+                                    src={project.image_url}
+                                    alt={project.name}
+                                    className="w-full h-full object-cover"
                                 />
+                            ) : (
+                                <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 dark:from-blue-600 dark:to-purple-700"></div>
                             )}
-
-                            {/* State icon */}
-                            {(() => {
-                                const { icon: StateIcon } = getStateIcon(
-                                    project.state
-                                );
-                                return (
-                                    <StateIcon
-                                        className="h-4 w-4 text-gray-500 dark:text-gray-400 opacity-70 drop-shadow-sm"
-                                        title={getStateLabel(project.state, t)}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                            <div className="absolute top-2 right-2 z-20 flex items-center space-x-2">
+                                {project.is_shared && (
+                                    <ShareIcon
+                                        className="h-4 w-4 text-green-400 drop-shadow-sm"
+                                        title={t(
+                                            'projectItem.sharedProject',
+                                            'Shared with team'
+                                        )}
                                     />
-                                );
-                            })()}
+                                )}
+                                {(() => {
+                                    const { icon: StateIcon } = getStateIcon(
+                                        project.state
+                                    );
+                                    return (
+                                        <StateIcon
+                                            className="h-4 w-4 text-white/80 drop-shadow-sm"
+                                            title={getStateLabel(project.state, t)}
+                                        />
+                                    );
+                                })()}
+                                <div className="relative dropdown-container">
+                                    <button
+                                        className="p-1.5 rounded-full bg-black/30 text-white hover:bg-black/60 focus:outline-none backdrop-blur-sm"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            const projectId = project.id;
+                                            if (projectId !== undefined) {
+                                                setActiveDropdown(
+                                                    activeDropdown === projectId
+                                                        ? null
+                                                        : projectId
+                                                );
+                                            }
+                                        }}
+                                        aria-label={t(
+                                            'projectItem.toggleDropdownMenu'
+                                        )}
+                                        data-testid={`project-dropdown-${project.id}`}
+                                    >
+                                        <EllipsisVerticalIcon className="h-5 w-5" />
+                                    </button>
+                                    {project.id !== undefined &&
+                                        activeDropdown === project.id && (
+                                            <div className="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-800 shadow-lg rounded-md z-30">
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        if (!isOwner) {
+                                                            showErrorToast(
+                                                                t(
+                                                                    'errors.permissionDenied',
+                                                                    'Permission denied'
+                                                                )
+                                                            );
+                                                            setActiveDropdown(null);
+                                                            return;
+                                                        }
+                                                        handleEditProject(project);
+                                                        setActiveDropdown(null);
+                                                    }}
+                                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                                                    data-testid={`project-edit-${project.id}`}
+                                                >
+                                                    {t('projectItem.edit')}
+                                                </button>
+                                                {isOwner && (
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
+                                                            onOpenShare(project);
+                                                            setActiveDropdown(null);
+                                                        }}
+                                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                                                    >
+                                                        {t(
+                                                            'projectItem.share',
+                                                            'Share'
+                                                        )}
+                                                    </button>
+                                                )}
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        if (
+                                                            project.id ===
+                                                                undefined ||
+                                                            project.id === null
+                                                        ) {
+                                                            console.error(
+                                                                'Cannot delete project: Invalid ID',
+                                                                project
+                                                            );
+                                                            return;
+                                                        }
+                                                        setProjectToDelete(project);
+                                                        setIsConfirmDialogOpen(true);
+                                                        setActiveDropdown(null);
+                                                    }}
+                                                    className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                                                    data-testid={`project-delete-${project.id}`}
+                                                >
+                                                    {t('projectItem.delete')}
+                                                </button>
+                                            </div>
+                                        )}
+                                </div>
+                            </div>
+                        </div>
+                    </Link>
+                </div>
+            )}
+
+            {viewMode === 'cards' && (
+                <div className="flex flex-1 flex-col px-4 pt-3 pb-4">
+                    <div className="space-y-0.5 flex-1">
+                        <Tooltip
+                            content={
+                                <div className="max-w-xs space-y-1 text-white">
+                                    <p className="text-sm font-semibold text-white">
+                                        {project.name}
+                                    </p>
+                                    {descriptionText && (
+                                        <p className="text-sm text-white/90">
+                                            {descriptionText}
+                                        </p>
+                                    )}
+                                </div>
+                            }
+                            className="w-full"
+                        >
+                            <Link
+                                to={
+                                    project.uid
+                                        ? `/project/${project.uid}-${project.name
+                                              .toLowerCase()
+                                              .replace(/[^a-z0-9]+/g, '-')
+                                              .replace(/^-|-$/g, '')}`
+                                        : `/project/${project.id}`
+                                }
+                                className="block text-lg font-semibold text-gray-900 dark:text-gray-100 hover:underline truncate"
+                            >
+                                {project.name}
+                            </Link>
+                        </Tooltip>
+                    </div>
+                    <div className="mt-auto pt-2 space-y-2">
+                        <div className="flex items-center space-x-2">
+                            <div
+                                className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1 cursor-help overflow-hidden"
+                                title={
+                                    (project as any).task_status
+                                        ? `${(project as any).task_status.done} of ${(project as any).task_status.total} tasks completed (${getCompletionPercentage()}%)`
+                                        : t('projectItem.completionPercentage', {
+                                              percentage: getCompletionPercentage(),
+                                          })
+                                }
+                            >
+                                <div
+                                    className="bg-blue-500 h-1 rounded-full transition-all duration-300"
+                                    style={{
+                                        width: `${getCompletionPercentage()}%`,
+                                    }}
+                                ></div>
+                            </div>
+                            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">
+                                {(project as any).task_status
+                                    ? `${(project as any).task_status.done}/${(project as any).task_status.total}`
+                                    : '0/0'}
+                            </span>
+                        </div>
+                            <div className="flex items-center justify-between text-[11px] text-gray-500 dark:text-gray-400">
+                                <div className="flex items-center min-w-0">
+                                {dueInfo.isOverdue ? (
+                                    <span className="inline-flex items-center space-x-1 rounded-full bg-red-100 px-2 py-0.5 text-red-700 dark:bg-red-900/40 dark:text-red-300 font-semibold text-[11px] leading-snug">
+                                        <ExclamationTriangleIcon className="h-3 w-3 flex-shrink-0" style={{ marginTop: '1px' }} />
+                                        <span>{dueInfo.text}</span>
+                                    </span>
+                                ) : (
+                                    <span className="truncate">{dueInfo.text}</span>
+                                )}
+                            </div>
+                            <div className="flex items-center justify-end min-w-0 h-7">
+                                {project.is_shared && (
+                                    <div className="flex items-center -space-x-2 h-full">
+                                        <>
+                                            {shareAvatars.avatars.map((share) => (
+                                                <Tooltip
+                                                    key={`${project.uid}-${share.user_id}`}
+                                                    content={
+                                                        share.email
+                                                            ? getShareDisplayName(share.email)
+                                                            : t(
+                                                                  'projectItem.sharedUser',
+                                                                  'Shared user'
+                                                              )
+                                                    }
+                                                >
+                                                    {share.avatar_image ? (
+                                                        <img
+                                                            src={getApiPath(share.avatar_image)}
+                                                            alt={getShareDisplayName(share.email)}
+                                                            className="h-7 w-7 rounded-full border-2 border-white object-cover shadow-sm dark:border-gray-900"
+                                                        />
+                                                    ) : (
+                                                        <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-gradient-to-br from-blue-500 to-purple-500 text-xs font-semibold text-white shadow-sm dark:border-gray-900">
+                                                            {getShareInitials(share.email)}
+                                                        </span>
+                                                    )}
+                                                </Tooltip>
+                                            ))}
+                                            {shareAvatars.remaining > 0 && (
+                                                <Tooltip
+                                                    content={t(
+                                                        'projectItem.moreSharedUsers',
+                                                        '+{{count}} more users',
+                                                        {
+                                                            count: shareAvatars.remaining,
+                                                        }
+                                                    )}
+                                                >
+                                                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-gray-200 text-xs font-semibold text-gray-700 shadow-sm dark:border-gray-900 dark:bg-gray-700 dark:text-gray-200">
+                                                        +{shareAvatars.remaining}
+                                                    </span>
+                                                </Tooltip>
+                                            )}
+                                        </>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
-                </Link>
+                </div>
             )}
 
             {viewMode === 'list' && (
@@ -194,130 +563,12 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                 </Link>
             )}
 
-            <div
-                className={`flex justify-between ${
-                    viewMode === 'cards'
-                        ? 'items-start p-4 flex-1'
-                        : 'items-center flex-1'
-                }`}
-            >
-                <div
-                    className={`flex ${viewMode === 'cards' ? 'flex-col' : 'items-center'}`}
-                >
-                    <Link
-                        to={
-                            project.uid
-                                ? `/project/${project.uid}-${project.name
-                                      .toLowerCase()
-                                      .replace(/[^a-z0-9]+/g, '-')
-                                      .replace(/^-|-$/g, '')}`
-                                : `/project/${project.id}`
-                        }
-                        className={`${
-                            viewMode === 'cards'
-                                ? 'text-lg font-semibold text-gray-900 dark:text-gray-100 hover:underline line-clamp-2'
-                                : 'text-md font-semibold text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-gray-200 transition-colors'
-                        }`}
-                    >
-                        {project.name}
-                    </Link>
-                    {viewMode === 'cards' && project.description && (
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
-                            {project.description}
-                        </p>
-                    )}
-                </div>
-                <div className="relative dropdown-container">
-                    {viewMode === 'cards' ? (
-                        <>
-                            <button
-                                className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-400 focus:outline-none"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    const projectId = project.id;
-                                    if (projectId !== undefined) {
-                                        setActiveDropdown(
-                                            activeDropdown === projectId
-                                                ? null
-                                                : projectId
-                                        );
-                                    }
-                                }}
-                                aria-label={t('projectItem.toggleDropdownMenu')}
-                                data-testid={`project-dropdown-${project.id}`}
-                            >
-                                <EllipsisVerticalIcon className="h-5 w-5" />
-                            </button>
-
-                            {project.id !== undefined &&
-                                activeDropdown === project.id && (
-                                    <div className="absolute right-0 mt-2 w-28 bg-white dark:bg-gray-700 shadow-lg rounded-md z-10">
-                                        <button
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                if (!isOwner) {
-                                                    showErrorToast(
-                                                        t(
-                                                            'errors.permissionDenied',
-                                                            'Permission denied'
-                                                        )
-                                                    );
-                                                    setActiveDropdown(null);
-                                                    return;
-                                                }
-                                                handleEditProject(project);
-                                                setActiveDropdown(null);
-                                            }}
-                                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-                                            data-testid={`project-edit-${project.id}`}
-                                        >
-                                            {t('projectItem.edit')}
-                                        </button>
-                                        {isOwner && (
-                                            <button
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    e.stopPropagation();
-                                                    onOpenShare(project);
-                                                    setActiveDropdown(null);
-                                                }}
-                                                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-                                            >
-                                                {t(
-                                                    'projectItem.share',
-                                                    'Share'
-                                                )}
-                                            </button>
-                                        )}
-                                        <button
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                if (
-                                                    project.id === undefined ||
-                                                    project.id === null
-                                                ) {
-                                                    console.error(
-                                                        'Cannot delete project: Invalid ID',
-                                                        project
-                                                    );
-                                                    return;
-                                                }
-                                                setProjectToDelete(project);
-                                                setIsConfirmDialogOpen(true);
-                                                setActiveDropdown(null);
-                                            }}
-                                            className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-                                            data-testid={`project-delete-${project.id}`}
-                                        >
-                                            {t('projectItem.delete')}
-                                        </button>
-                                    </div>
-                                )}
-                        </>
-                    ) : (
+            {viewMode === 'list' && (
+                <div className="flex justify-between items-center flex-1">
+                    <div className="flex items-center min-w-0">
+                        {listTitleLink}
+                    </div>
+                    <div className="relative dropdown-container">
                         <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             <button
                                 onClick={(e) => {
@@ -379,35 +630,6 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                 <TrashIcon className="h-5 w-5" />
                             </button>
                         </div>
-                    )}
-                </div>
-            </div>
-
-            {viewMode === 'cards' && (
-                <div className="absolute bottom-4 left-0 right-0 px-4">
-                    <div className="flex items-center space-x-2">
-                        <div
-                            className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 cursor-help"
-                            title={
-                                (project as any).task_status
-                                    ? `${(project as any).task_status.done} of ${(project as any).task_status.total} tasks completed (${getCompletionPercentage()}%)`
-                                    : t('projectItem.completionPercentage', {
-                                          percentage: getCompletionPercentage(),
-                                      })
-                            }
-                        >
-                            <div
-                                className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                                style={{
-                                    width: `${getCompletionPercentage()}%`,
-                                }}
-                            ></div>
-                        </div>
-                        <span className="text-xs text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">
-                            {(project as any).task_status
-                                ? `${(project as any).task_status.done}/${(project as any).task_status.total}`
-                                : '0/0'}
-                        </span>
                     </div>
                 </div>
             )}

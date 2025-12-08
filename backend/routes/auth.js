@@ -210,6 +210,7 @@ router.post('/login', authLimiter, async (req, res) => {
                 language: user.language,
                 appearance: user.appearance,
                 timezone: user.timezone,
+                avatar_image: user.avatar_image,
                 is_admin: admin,
             },
         });

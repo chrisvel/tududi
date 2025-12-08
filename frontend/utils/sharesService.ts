@@ -33,9 +33,11 @@ export async function grantShare(req: ShareGrantRequest): Promise<void> {
 
 export interface ListSharesResponseRow {
     user_id: number;
-    access_level: AccessLevel;
-    created_at: string;
+    access_level: AccessLevel | 'owner';
+    created_at: string | null;
     email?: string | null;
+    avatar_image?: string | null;
+    is_owner?: boolean;
 }
 
 export async function listShares(

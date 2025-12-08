@@ -227,7 +227,7 @@ router.get('/shares', async (req, res) => {
 
         if (resource) {
             const owner = await User.findByPk(resource.user_id, {
-                attributes: ['id', 'email'],
+                attributes: ['id', 'email', 'avatar_image'],
             });
             if (owner) {
                 ownerInfo = {
@@ -235,6 +235,7 @@ router.get('/shares', async (req, res) => {
                     access_level: 'owner',
                     created_at: null,
                     email: owner.email,
+                    avatar_image: owner.avatar_image,
                     is_owner: true,
                 };
             }
@@ -245,7 +246,7 @@ router.get('/shares', async (req, res) => {
             attributes: ['user_id', 'access_level', 'created_at'],
             raw: true,
         });
-        // Attach emails for display
+        // Attach emails and avatar images for display
         const userIds = Array.from(new Set(rows.map((r) => r.user_id))).filter(
             Boolean
         );
@@ -253,17 +254,18 @@ router.get('/shares', async (req, res) => {
         if (userIds.length) {
             const users = await User.findAll({
                 where: { id: userIds },
-                attributes: ['id', 'email'],
+                attributes: ['id', 'email', 'avatar_image'],
                 raw: true,
             });
             usersById = users.reduce((acc, u) => {
-                acc[u.id] = u.email;
+                acc[u.id] = { email: u.email, avatar_image: u.avatar_image };
                 return acc;
             }, {});
         }
         const withEmails = rows.map((r) => ({
             ...r,
-            email: usersById[r.user_id] || null,
+            email: usersById[r.user_id]?.email || null,
+            avatar_image: usersById[r.user_id]?.avatar_image || null,
             is_owner: false,
         }));
 

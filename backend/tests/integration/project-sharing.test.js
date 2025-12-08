@@ -61,6 +61,65 @@ describe('Project Sharing Integration Tests', () => {
         await sequelize.close();
     });
 
+    describe('Project visibility', () => {
+        test('shared user should see shared project in /api/projects', async () => {
+            const response = await sharedUserAgent.get('/api/projects');
+
+            expect(response.status).toBe(200);
+            expect(response.body.projects).toBeDefined();
+
+            const sharedProjectUids = response.body.projects.map((p) => p.uid);
+
+            expect(sharedProjectUids).toContain(project.uid);
+        });
+
+        test('shared project should have is_shared flag and share_count in /api/projects', async () => {
+            const response = await ownerAgent.get('/api/projects');
+
+            expect(response.status).toBe(200);
+            expect(response.body.projects).toBeDefined();
+
+            const sharedProject = response.body.projects.find(
+                (p) => p.uid === project.uid
+            );
+
+            expect(sharedProject).toBeDefined();
+            expect(sharedProject.is_shared).toBe(true);
+            expect(sharedProject.share_count).toBeGreaterThan(0);
+        });
+
+        test('owner can fetch share list with emails via /api/shares', async () => {
+            const response = await ownerAgent.get(
+                `/api/shares?resource_type=project&resource_uid=${project.uid}`
+            );
+
+            expect(response.status).toBe(200);
+            expect(response.body.shares).toBeDefined();
+            expect(Array.isArray(response.body.shares)).toBe(true);
+
+            // Should include owner
+            const ownerShare = response.body.shares.find(
+                (s) => s.is_owner === true
+            );
+            expect(ownerShare).toBeDefined();
+            expect(ownerShare.email).toBe(ownerUser.email);
+            expect(ownerShare.access_level).toBe('owner');
+            // Avatar field should exist (may be null if no avatar set)
+            expect(ownerShare).toHaveProperty('avatar_image');
+
+            // Should include shared user
+            const sharedUserShare = response.body.shares.find(
+                (s) => s.email === sharedUser.email
+            );
+            expect(sharedUserShare).toBeDefined();
+            expect(sharedUserShare.is_owner).toBe(false);
+            expect(sharedUserShare.email).toBe(sharedUser.email);
+            expect(['ro', 'rw']).toContain(sharedUserShare.access_level);
+            // Avatar field should exist (may be null if no avatar set)
+            expect(sharedUserShare).toHaveProperty('avatar_image');
+        });
+    });
+
     describe('Issue 1: Task and Note Visibility in Shared Projects', () => {
         test('shared user should see tasks in shared project', async () => {
             // Owner creates a task in the shared project
