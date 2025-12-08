@@ -6,6 +6,7 @@ const {
     Task,
     Note,
     Permission,
+    TaskAttachment,
     sequelize,
 } = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
@@ -400,6 +401,219 @@ describe('Project Sharing Integration Tests', () => {
 
             expect(response.status).toBe(200);
             expect(response.body.tasks).toBeDefined();
+        });
+    });
+
+    describe('Task Attachments in Shared Projects', () => {
+        let taskInSharedProject;
+
+        beforeEach(async () => {
+            // Owner creates a task in the shared project
+            const taskResponse = await ownerAgent.post('/api/task').send({
+                name: 'Task with attachments in shared project',
+                project_id: project.id,
+                priority: 1,
+                status: 0,
+            });
+            taskInSharedProject = taskResponse.body;
+        });
+
+        test('shared user with RW access can view attachments in shared project task', async () => {
+            // Owner creates an attachment on the task
+            const attachment = await TaskAttachment.create({
+                task_id: taskInSharedProject.id,
+                user_id: ownerUser.id,
+                original_filename: 'shared-document.pdf',
+                stored_filename: 'task-shared-123.pdf',
+                file_size: 1024,
+                mime_type: 'application/pdf',
+                file_path: 'tasks/task-shared-123.pdf',
+            });
+
+            // Shared user should be able to view attachments
+            const response = await sharedUserAgent.get(
+                `/api/tasks/${taskInSharedProject.uid}/attachments`
+            );
+
+            expect(response.status).toBe(200);
+            expect(Array.isArray(response.body)).toBe(true);
+            expect(response.body.length).toBe(1);
+            expect(response.body[0].original_filename).toBe(
+                'shared-document.pdf'
+            );
+        });
+
+        test('shared user with RW access can upload attachments to shared project task', async () => {
+            const path = require('path');
+            const fs = require('fs').promises;
+            const testFilesDir = path.join(__dirname, '../test-files');
+
+            // Ensure test files directory exists
+            await fs.mkdir(testFilesDir, { recursive: true });
+
+            // Create a test file
+            const testFilePath = path.join(testFilesDir, 'test-upload.pdf');
+            await fs.writeFile(
+                testFilePath,
+                'Test PDF content for shared user'
+            );
+
+            // Shared user uploads attachment
+            const response = await sharedUserAgent
+                .post('/api/upload/task-attachment')
+                .field('taskUid', taskInSharedProject.uid)
+                .attach('file', testFilePath);
+
+            expect(response.status).toBe(201);
+            expect(response.body.original_filename).toBe('test-upload.pdf');
+            expect(response.body.task_id).toBe(taskInSharedProject.id);
+        });
+
+        test('shared user with RW access can delete attachments from shared project task', async () => {
+            // Owner creates an attachment on the task
+            const attachment = await TaskAttachment.create({
+                task_id: taskInSharedProject.id,
+                user_id: ownerUser.id,
+                original_filename: 'to-delete.pdf',
+                stored_filename: 'task-delete-shared-123.pdf',
+                file_size: 1024,
+                mime_type: 'application/pdf',
+                file_path: 'tasks/task-delete-shared-123.pdf',
+            });
+
+            // Shared user deletes the attachment
+            const response = await sharedUserAgent.delete(
+                `/api/tasks/${taskInSharedProject.uid}/attachments/${attachment.uid}`
+            );
+
+            expect(response.status).toBe(200);
+            expect(response.body.message).toBe(
+                'Attachment deleted successfully'
+            );
+        });
+
+        test('shared user with RW access can download attachments from shared project task', async () => {
+            const path = require('path');
+            const fs = require('fs').promises;
+            const uploadPath = path.join(__dirname, '../../uploads/tasks');
+
+            // Create upload directory
+            await fs.mkdir(uploadPath, { recursive: true });
+
+            // Create a test file
+            const testFilePath = path.join(
+                uploadPath,
+                'task-download-shared.pdf'
+            );
+            await fs.writeFile(testFilePath, 'test download content');
+
+            // Owner creates an attachment on the task
+            const attachment = await TaskAttachment.create({
+                task_id: taskInSharedProject.id,
+                user_id: ownerUser.id,
+                original_filename: 'download-shared.pdf',
+                stored_filename: 'task-download-shared.pdf',
+                file_size: 1024,
+                mime_type: 'application/pdf',
+                file_path: 'tasks/task-download-shared.pdf',
+            });
+
+            // Shared user downloads the attachment
+            const response = await sharedUserAgent.get(
+                `/api/attachments/${attachment.uid}/download`
+            );
+
+            expect(response.status).toBe(200);
+        });
+
+        test('shared user with RO access can view attachments but not upload', async () => {
+            // Change permission to read-only
+            await Permission.update(
+                { access_level: 'ro' },
+                {
+                    where: {
+                        resource_uid: project.uid,
+                        user_id: sharedUser.id,
+                    },
+                }
+            );
+
+            // Owner creates an attachment on the task
+            await TaskAttachment.create({
+                task_id: taskInSharedProject.id,
+                user_id: ownerUser.id,
+                original_filename: 'readonly-doc.pdf',
+                stored_filename: 'task-readonly-123.pdf',
+                file_size: 1024,
+                mime_type: 'application/pdf',
+                file_path: 'tasks/task-readonly-123.pdf',
+            });
+
+            // Shared user can view attachments
+            const viewResponse = await sharedUserAgent.get(
+                `/api/tasks/${taskInSharedProject.uid}/attachments`
+            );
+            expect(viewResponse.status).toBe(200);
+            expect(viewResponse.body.length).toBe(1);
+
+            // But cannot upload
+            const path = require('path');
+            const fs = require('fs').promises;
+            const testFilesDir = path.join(__dirname, '../test-files');
+            await fs.mkdir(testFilesDir, { recursive: true });
+            const testFilePath = path.join(testFilesDir, 'test-ro-upload.pdf');
+            await fs.writeFile(testFilePath, 'Test content');
+
+            const uploadResponse = await sharedUserAgent
+                .post('/api/upload/task-attachment')
+                .field('taskUid', taskInSharedProject.uid)
+                .attach('file', testFilePath);
+
+            expect(uploadResponse.status).toBe(403);
+        });
+
+        test('shared user with RO access can download but not delete attachments', async () => {
+            // Change permission to read-only
+            await Permission.update(
+                { access_level: 'ro' },
+                {
+                    where: {
+                        resource_uid: project.uid,
+                        user_id: sharedUser.id,
+                    },
+                }
+            );
+
+            const path = require('path');
+            const fs = require('fs').promises;
+            const uploadPath = path.join(__dirname, '../../uploads/tasks');
+            await fs.mkdir(uploadPath, { recursive: true });
+
+            const testFilePath = path.join(uploadPath, 'task-ro-download.pdf');
+            await fs.writeFile(testFilePath, 'test content');
+
+            // Owner creates an attachment
+            const attachment = await TaskAttachment.create({
+                task_id: taskInSharedProject.id,
+                user_id: ownerUser.id,
+                original_filename: 'ro-test.pdf',
+                stored_filename: 'task-ro-download.pdf',
+                file_size: 1024,
+                mime_type: 'application/pdf',
+                file_path: 'tasks/task-ro-download.pdf',
+            });
+
+            // Can download
+            const downloadResponse = await sharedUserAgent.get(
+                `/api/attachments/${attachment.uid}/download`
+            );
+            expect(downloadResponse.status).toBe(200);
+
+            // Cannot delete
+            const deleteResponse = await sharedUserAgent.delete(
+                `/api/tasks/${taskInSharedProject.uid}/attachments/${attachment.uid}`
+            );
+            expect(deleteResponse.status).toBe(403);
         });
     });
 });

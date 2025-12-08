@@ -460,19 +460,7 @@ const InboxItems: React.FC = () => {
                     cardClassName="mb-4"
                 />
 
-                {inboxItems.length === 0 ? (
-                    <div className="flex justify-center items-center mt-4">
-                        <div className="w-full max-w bg-black/2 dark:bg-gray-900/25 rounded-l px-10 py-24 flex flex-col items-center opacity-95">
-                            <InboxIcon className="h-20 w-20 text-gray-400 opacity-30 mb-6" />
-                            <p className="text-2xl font-light text-center text-gray-600 dark:text-gray-300 mb-2">
-                                {t('inbox.empty')}
-                            </p>
-                            <p className="text-base text-center text-gray-400 dark:text-gray-400">
-                                {t('inbox.emptyDescription')}
-                            </p>
-                        </div>
-                    </div>
-                ) : (
+                {inboxItems.length > 0 && (
                     <div className="space-y-4">
                         <div className="space-y-2">
                             {inboxItems.map((item) => (

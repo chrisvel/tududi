@@ -13,6 +13,7 @@ const {
     getFileUrl,
 } = require('../utils/attachment-utils');
 const { getAuthenticatedUserId } = require('../utils/request-utils');
+const permissionsService = require('../services/permissionsService');
 
 const router = express.Router();
 
@@ -82,8 +83,14 @@ router.post(
                 return res.status(404).json({ error: 'Task not found' });
             }
 
-            // Check if user owns the task
-            if (task.user_id !== userId) {
+            // Check if user has write access to the task (includes shared projects)
+            const access = await permissionsService.getAccess(
+                userId,
+                'task',
+                taskUid
+            );
+            const LEVELS = { none: 0, ro: 1, rw: 2, admin: 3 };
+            if (LEVELS[access] < LEVELS.rw) {
                 // Clean up uploaded file
                 if (req.file) {
                     await deleteFileFromDisk(req.file.path);
@@ -159,8 +166,14 @@ router.get('/tasks/:taskUid/attachments', async (req, res) => {
             return res.status(404).json({ error: 'Task not found' });
         }
 
-        // Check if user owns the task
-        if (task.user_id !== userId) {
+        // Check if user has read access to the task (includes shared projects)
+        const access = await permissionsService.getAccess(
+            userId,
+            'task',
+            taskUid
+        );
+        const LEVELS = { none: 0, ro: 1, rw: 2, admin: 3 };
+        if (LEVELS[access] < LEVELS.ro) {
             return res
                 .status(403)
                 .json({ error: 'Not authorized to view this task' });
@@ -202,8 +215,14 @@ router.delete(
                 return res.status(404).json({ error: 'Task not found' });
             }
 
-            // Check if user owns the task
-            if (task.user_id !== userId) {
+            // Check if user has write access to the task (includes shared projects)
+            const access = await permissionsService.getAccess(
+                userId,
+                'task',
+                taskUid
+            );
+            const LEVELS = { none: 0, ro: 1, rw: 2, admin: 3 };
+            if (LEVELS[access] < LEVELS.rw) {
                 return res
                     .status(403)
                     .json({ error: 'Not authorized to modify this task' });
@@ -252,8 +271,14 @@ router.get('/attachments/:attachmentUid/download', async (req, res) => {
             return res.status(404).json({ error: 'Attachment not found' });
         }
 
-        // Check if user owns the task
-        if (attachment.Task.user_id !== userId) {
+        // Check if user has read access to the task (includes shared projects)
+        const access = await permissionsService.getAccess(
+            userId,
+            'task',
+            attachment.Task.uid
+        );
+        const LEVELS = { none: 0, ro: 1, rw: 2, admin: 3 };
+        if (LEVELS[access] < LEVELS.ro) {
             return res
                 .status(403)
                 .json({ error: 'Not authorized to download this file' });

@@ -49,6 +49,9 @@ public/assets/
 test-results/
 .last-run.json
 
+# Test files
+backend/tests/test-files/
+
 # Temporary files
 tmp/
 *.bak
