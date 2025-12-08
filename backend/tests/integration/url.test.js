@@ -1,6 +1,10 @@
 const request = require('supertest');
-const app = require('../../app');
 const { createTestUser } = require('../helpers/testUtils');
+
+// Mock fetch before loading the app
+global.fetch = jest.fn();
+
+const app = require('../../app');
 
 describe('URL Routes', () => {
     let user, agent;
@@ -16,6 +20,9 @@ describe('URL Routes', () => {
             email: 'test@example.com',
             password: 'password123',
         });
+
+        // Reset mocks before each test
+        jest.clearAllMocks();
     });
 
     describe('GET /api/url/title', () => {
@@ -36,6 +43,16 @@ describe('URL Routes', () => {
         });
 
         it('should return title for valid URL', async () => {
+            // Mock successful HTML fetch
+            global.fetch.mockResolvedValue({
+                ok: true,
+                headers: {
+                    get: () => 'text/html',
+                },
+                text: async () =>
+                    '<html><head><title>Herman Melville - Moby-Dick</title></head></html>',
+            });
+
             const response = await agent
                 .get('/api/url/title')
                 .query({ url: 'https://httpbin.org/html' });
@@ -44,14 +61,20 @@ describe('URL Routes', () => {
             expect(response.body).toHaveProperty('url');
             expect(response.body).toHaveProperty('title');
             expect(response.body.url).toBe('https://httpbin.org/html');
-            // Title could be extracted or null depending on network conditions
-            expect(
-                typeof response.body.title === 'string' ||
-                    response.body.title === null
-            ).toBe(true);
-        }, 10000);
+            expect(response.body.title).toBe('Herman Melville - Moby-Dick');
+        });
 
         it('should handle URL without protocol', async () => {
+            // Mock successful HTML fetch
+            global.fetch.mockResolvedValue({
+                ok: true,
+                headers: {
+                    get: () => 'text/html',
+                },
+                text: async () =>
+                    '<html><head><title>Test Page</title></head></html>',
+            });
+
             const response = await agent
                 .get('/api/url/title')
                 .query({ url: 'httpbin.org/html' });
@@ -60,14 +83,15 @@ describe('URL Routes', () => {
             expect(response.body).toHaveProperty('url');
             expect(response.body).toHaveProperty('title');
             expect(response.body.url).toBe('httpbin.org/html');
-            // Title could be extracted or null depending on network conditions
-            expect(
-                typeof response.body.title === 'string' ||
-                    response.body.title === null
-            ).toBe(true);
-        }, 10000);
+            expect(response.body.title).toBe('Test Page');
+        });
 
         it('should handle invalid URL gracefully', async () => {
+            // Mock failed fetch
+            global.fetch.mockRejectedValue(
+                new Error('getaddrinfo ENOTFOUND not-a-valid-url')
+            );
+
             const response = await agent
                 .get('/api/url/title')
                 .query({ url: 'not-a-valid-url' });
@@ -76,14 +100,15 @@ describe('URL Routes', () => {
             expect(response.body).toHaveProperty('url');
             expect(response.body).toHaveProperty('title');
             expect(response.body.url).toBe('not-a-valid-url');
-            // Title could be null or error message
-            expect(
-                response.body.title === null ||
-                    typeof response.body.title === 'string'
-            ).toBe(true);
+            expect(response.body.title).toBe(null);
         });
 
         it('should handle unreachable URL', async () => {
+            // Mock failed fetch for unreachable URL
+            global.fetch.mockRejectedValue(
+                new Error('getaddrinfo ENOTFOUND nonexistent-domain-12345.com')
+            );
+
             const response = await agent
                 .get('/api/url/title')
                 .query({ url: 'https://nonexistent-domain-12345.com' });
@@ -118,6 +143,16 @@ describe('URL Routes', () => {
         });
 
         it('should extract URL from text and get title', async () => {
+            // Mock successful HTML fetch
+            global.fetch.mockResolvedValue({
+                ok: true,
+                headers: {
+                    get: () => 'text/html',
+                },
+                text: async () =>
+                    '<html><head><title>Herman Melville - Moby-Dick</title><meta name="description" content="A classic novel"></head></html>',
+            });
+
             const testText =
                 'Check out this interesting site: https://httpbin.org/html';
             const response = await agent
@@ -128,15 +163,20 @@ describe('URL Routes', () => {
             expect(response.body.found).toBe(true);
             expect(response.body.url).toBe('https://httpbin.org/html');
             expect(response.body.originalText).toBe(testText);
-            expect(response.body).toHaveProperty('title');
-            // Title could be extracted or null depending on network conditions
-            expect(
-                typeof response.body.title === 'string' ||
-                    response.body.title === null
-            ).toBe(true);
-        }, 10000);
+            expect(response.body.title).toBe('Herman Melville - Moby-Dick');
+        });
 
         it('should extract first URL when multiple URLs in text', async () => {
+            // Mock successful HTML fetch
+            global.fetch.mockResolvedValue({
+                ok: true,
+                headers: {
+                    get: () => 'text/html',
+                },
+                text: async () =>
+                    '<html><head><title>Test Page</title></head></html>',
+            });
+
             const testText =
                 'Check out https://httpbin.org/html and also https://example.com';
             const response = await agent
@@ -147,10 +187,20 @@ describe('URL Routes', () => {
             expect(response.body.found).toBe(true);
             expect(response.body.url).toBe('https://httpbin.org/html');
             expect(response.body.originalText).toBe(testText);
-            expect(response.body).toHaveProperty('title');
-        }, 10000);
+            expect(response.body.title).toBe('Test Page');
+        });
 
         it('should detect URLs without protocol', async () => {
+            // Mock successful HTML fetch
+            global.fetch.mockResolvedValue({
+                ok: true,
+                headers: {
+                    get: () => 'text/html',
+                },
+                text: async () =>
+                    '<html><head><title>Test Page</title></head></html>',
+            });
+
             const testText = 'Visit httpbin.org/html for testing';
             const response = await agent
                 .post('/api/url/extract-from-text')
