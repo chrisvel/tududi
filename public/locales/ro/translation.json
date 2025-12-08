@@ -364,9 +364,10 @@
     "staleTasksDesc": "Sarcini neactualizate în {{days}} zile",
     "stuckProjects": "Proiecte Blocate",
     "stuckProjectsDesc": "Proiecte neactualizate recent",
-    "issuesFound": "Am găsit {{count}} problemă(e) de productivitate care necesită atenție",
     "reviewItems": "Faceți clic pentru a revizui și îmbunătăți fluxul de lucru",
-    "suggestion": "Faceți clic pe orice element de mai sus pentru a-l deschide și a face îmbunătățiri."
+    "suggestion": "Faceți clic pe orice element de mai sus pentru a-l deschide și a face îmbunătățiri.",
+    "issuesFound_one": "1 problemă de productivitate necesită atenție",
+    "issuesFound_other": "{{count}} probleme de productivitate necesită atenție"
   },
   "nextTask": {
     "suggestion": "Deoarece nu există nimic în desfășurare, ce părere ai despre a începe cu",

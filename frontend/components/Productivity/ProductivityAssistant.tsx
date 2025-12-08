@@ -386,7 +386,6 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
                     <p className="text-gray-700 dark:text-gray-300 font-medium">
                         {t(
                             'productivity.issuesFound',
-                            'Found {{count}} productivity issue(s) that need attention',
                             { count: totalIssues }
                         )}
                     </p>

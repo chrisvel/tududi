@@ -364,9 +364,10 @@
     "staleTasksDesc": "Zadania nieaktualizowane przez {{days}} dni",
     "stuckProjects": "Zablokowane projekty",
     "stuckProjectsDesc": "Projekty nieaktualizowane ostatnio",
-    "issuesFound": "Znaleziono {{count}} problem(ów) z produktywnością, które wymagają uwagi",
     "reviewItems": "Kliknij, aby przejrzeć i poprawić swój przepływ pracy",
-    "suggestion": "Kliknij na dowolny element powyżej, aby go otworzyć i wprowadzić poprawki."
+    "suggestion": "Kliknij na dowolny element powyżej, aby go otworzyć i wprowadzić poprawki.",
+    "issuesFound_one": "1 problem z produktywnością wymaga uwagi",
+    "issuesFound_other": "{{count}} problemów z produktywnością wymaga uwagi"
   },
   "nextTask": {
     "suggestion": "Ponieważ nic nie jest w toku, co powiesz na rozpoczęcie od",

@@ -364,9 +364,10 @@
     "staleTasksDesc": "Taken niet bijgewerkt in {{days}} dagen",
     "stuckProjects": "Vastgelopen Projecten",
     "stuckProjectsDesc": "Projecten die recentelijk niet zijn bijgewerkt",
-    "issuesFound": "Gevonden {{count}} productiviteitsprobleem(en) die aandacht nodig hebben",
     "reviewItems": "Klik om je workflow te beoordelen en te verbeteren",
-    "suggestion": "Klik op een van de bovenstaande items om het te openen en verbeteringen aan te brengen."
+    "suggestion": "Klik op een van de bovenstaande items om het te openen en verbeteringen aan te brengen.",
+    "issuesFound_one": "1 productiviteitsprobleem heeft aandacht nodig",
+    "issuesFound_other": "{{count}} productiviteitsproblemen hebben aandacht nodig"
   },
   "nextTask": {
     "suggestion": "Aangezien er niets in uitvoering is, wat dacht je ervan om te beginnen met",

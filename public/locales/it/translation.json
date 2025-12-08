@@ -364,9 +364,10 @@
     "staleTasksDesc": "Attività non aggiornate da {{days}} giorni",
     "stuckProjects": "Progetti Bloccati",
     "stuckProjectsDesc": "Progetti non aggiornati di recente",
-    "issuesFound": "Trovati {{count}} problema(i) di produttività che necessitano attenzione",
     "reviewItems": "Clicca per rivedere e migliorare il tuo flusso di lavoro",
-    "suggestion": "Clicca su qualsiasi elemento sopra per aprirlo e apportare miglioramenti."
+    "suggestion": "Clicca su qualsiasi elemento sopra per aprirlo e apportare miglioramenti.",
+    "issuesFound_one": "1 problema di produttività necessita attenzione",
+    "issuesFound_other": "{{count}} problemi di produttività necessitano attenzione"
   },
   "nextTask": {
     "suggestion": "Dato che non c'è nulla in corso, che ne dici di iniziare con",

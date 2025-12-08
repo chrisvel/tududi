@@ -364,9 +364,10 @@
     "staleTasksDesc": "Oppgaver som ikke er oppdatert på {{days}} dager",
     "stuckProjects": "Fastlåste prosjekter",
     "stuckProjectsDesc": "Prosjekter som ikke er oppdatert nylig",
-    "issuesFound": "Fant {{count}} produktivitetsproblem(er) som trenger oppmerksomhet",
     "reviewItems": "Klikk for å gjennomgå og forbedre arbeidsflyten din",
-    "suggestion": "Klikk på et hvilket som helst element ovenfor for å åpne det og gjøre forbedringer."
+    "suggestion": "Klikk på et hvilket som helst element ovenfor for å åpne det og gjøre forbedringer.",
+    "issuesFound_one": "1 produktivitetsproblem trenger oppmerksomhet",
+    "issuesFound_other": "{{count}} produktivitetsproblemer trenger oppmerksomhet"
   },
   "nextTask": {
     "suggestion": "Siden det ikke er noe i gang, hva med å starte med",

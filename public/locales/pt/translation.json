@@ -364,9 +364,10 @@
     "staleTasksDesc": "Tarefas não atualizadas em {{days}} dias",
     "stuckProjects": "Projetos Empacados",
     "stuckProjectsDesc": "Projetos não atualizados recentemente",
-    "issuesFound": "Encontrado {{count}} problema(s) de produtividade que precisam de atenção",
     "reviewItems": "Clique para revisar e melhorar seu fluxo de trabalho",
-    "suggestion": "Clique em qualquer item acima para abri-lo e fazer melhorias."
+    "suggestion": "Clique em qualquer item acima para abri-lo e fazer melhorias.",
+    "issuesFound_one": "1 problema de produtividade precisa de atenção",
+    "issuesFound_other": "{{count}} problemas de produtividade precisam de atenção"
   },
   "nextTask": {
     "suggestion": "Como não há nada em andamento, que tal começar com",

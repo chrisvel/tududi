@@ -364,9 +364,9 @@
     "staleTasksDesc": "在{{days}}天内未更新的任务",
     "stuckProjects": "卡住的项目",
     "stuckProjectsDesc": "最近未更新的项目",
-    "issuesFound": "发现{{count}}个生产力问题需要关注",
     "reviewItems": "点击以审查和改善您的工作流程",
-    "suggestion": "点击上面的任何项目以打开并进行改进。"
+    "suggestion": "点击上面的任何项目以打开并进行改进。",
+    "issuesFound_other": "{{count}}个生产力问题需要关注"
   },
   "nextTask": {
     "suggestion": "由于没有进行中的任务，您觉得从这个开始怎么样",

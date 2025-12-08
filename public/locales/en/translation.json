@@ -363,7 +363,8 @@
     "staleTasksDesc": "Tasks not updated in {{days}} days",
     "stuckProjects": "Stuck Projects",
     "stuckProjectsDesc": "Projects not updated recently",
-    "issuesFound": "Found {{count}} productivity issue(s) that need attention",
+    "issuesFound_one": "1 productivity issue needs attention",
+    "issuesFound_other": "{{count}} productivity issues need attention",
     "reviewItems": "Click to review and improve your workflow",
     "suggestion": "Click on any item above to open it and make improvements."
   },

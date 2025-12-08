@@ -802,9 +802,10 @@
     "staleTasksDesc": "Aufgaben, die in {{days}} Tagen nicht aktualisiert wurden",
     "stuckProjects": "Festgefahrene Projekte",
     "stuckProjectsDesc": "Projekte, die kürzlich nicht aktualisiert wurden",
-    "issuesFound": "Gefunden {{count}} Produktivitätsproblem(e), die Aufmerksamkeit benötigen",
     "reviewItems": "Klicken Sie, um Ihre Arbeitsabläufe zu überprüfen und zu verbessern",
-    "suggestion": "Klicken Sie auf einen der oben genannten Punkte, um ihn zu öffnen und Verbesserungen vorzunehmen."
+    "suggestion": "Klicken Sie auf einen der oben genannten Punkte, um ihn zu öffnen und Verbesserungen vorzunehmen.",
+    "issuesFound_one": "1 Produktivitätsproblem benötigt Aufmerksamkeit",
+    "issuesFound_other": "{{count}} Produktivitätsprobleme benötigen Aufmerksamkeit"
   },
   "auth": {
     "login": "Anmelden",

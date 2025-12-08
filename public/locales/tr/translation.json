@@ -364,9 +364,10 @@
     "staleTasksDesc": "{{days}} gündür güncellenmeyen görevler",
     "stuckProjects": "Sıkışmış Projeler",
     "stuckProjectsDesc": "Son zamanlarda güncellenmeyen projeler",
-    "issuesFound": "Dikkat gerektiren {{count}} verimlilik sorunu bulundu",
     "reviewItems": "Çalışma akışınızı gözden geçirmek ve geliştirmek için tıklayın",
-    "suggestion": "Geliştirmeler yapmak için yukarıdaki herhangi bir öğeye tıklayın."
+    "suggestion": "Geliştirmeler yapmak için yukarıdaki herhangi bir öğeye tıklayın.",
+    "issuesFound_one": "1 verimlilik sorunu dikkat gerektiriyor",
+    "issuesFound_other": "{{count}} verimlilik sorunu dikkat gerektiriyor"
   },
   "nextTask": {
     "suggestion": "Şu anda devam eden bir şey olmadığı için, {{variable}} ile başlamayı düşünür müsün?",
