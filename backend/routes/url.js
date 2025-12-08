@@ -7,7 +7,7 @@ const router = express.Router();
 
 let nodeFetchInstance = null;
 try {
-    // eslint-disable-next-line global-require, import/no-extraneous-dependencies
+    // eslint-disable-next-line global-require
     nodeFetchInstance = require('node-fetch');
 } catch {
     nodeFetchInstance = null;
@@ -265,8 +265,7 @@ async function fetchMetadataViaFetch(normalizedUrl) {
             headers: {
                 'User-Agent':
                     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-                Accept:
-                    'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
             },
         },
         7000
