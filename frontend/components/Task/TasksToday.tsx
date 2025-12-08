@@ -669,6 +669,15 @@ const TasksToday: React.FC = () => {
                 return newMetrics;
             });
 
+            // Update pagination total to match the actual count of today_plan_tasks
+            setMetrics((prevMetrics) => {
+                setPagination((prevPagination) => ({
+                    ...prevPagination,
+                    total: prevMetrics.today_plan_tasks?.length || 0,
+                }));
+                return prevMetrics;
+            });
+
             // Update the store with the updated task
             useStore.getState().tasksStore.updateTaskInStore(updatedTask);
 
@@ -742,6 +751,15 @@ const TasksToday: React.FC = () => {
                     return newMetrics;
                 });
 
+                // Update pagination total after server response
+                setMetrics((prevMetrics) => {
+                    setPagination((prevPagination) => ({
+                        ...prevPagination,
+                        total: prevMetrics.today_plan_tasks?.length || 0,
+                    }));
+                    return prevMetrics;
+                });
+
                 // Also update the store with server response
                 useStore
                     .getState()
@@ -776,6 +794,12 @@ const TasksToday: React.FC = () => {
                         tasks_completed_today:
                             result.tasks_completed_today || [],
                     } as any);
+                    // Update pagination to match the reloaded tasks
+                    setPagination((prev) => ({
+                        ...prev,
+                        ...(result.pagination || {}),
+                        total: result.tasks?.length || 0, // Use actual task count
+                    }));
                 }
             } catch (error) {
                 console.error('Error deleting task:', error);
@@ -805,6 +829,12 @@ const TasksToday: React.FC = () => {
                         tasks_completed_today:
                             result.tasks_completed_today || [],
                     } as any);
+                    // Update pagination to match the reloaded tasks
+                    setPagination((prev) => ({
+                        ...prev,
+                        ...(result.pagination || {}),
+                        total: result.tasks?.length || 0, // Use actual task count
+                    }));
                 }
             } catch (error) {
                 console.error('Error toggling task today status:', error);
