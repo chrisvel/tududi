@@ -167,8 +167,7 @@ const QuickCaptureInput = React.forwardRef<
         const [urlPreview, setUrlPreview] = useState<UrlPreviewState | null>(
             null
         );
-        const [urlPreviewImageError, setUrlPreviewImageError] =
-            useState(false);
+        const [urlPreviewImageError, setUrlPreviewImageError] = useState(false);
         const urlPreviewRequestIdRef = useRef(0);
         const dismissedPreviewUrlRef = useRef<string | null>(null);
 
@@ -1450,7 +1449,9 @@ const QuickCaptureInput = React.forwardRef<
                 className={`w-full border border-blue-300 dark:border-blue-600 ${cardClasses}`}
             >
                 <div className="px-4 py-3">
-                    <div className={`flex flex-col sm:flex-row sm:gap-4 gap-3 ${shouldShowPrimaryButton ? 'sm:items-center' : 'sm:items-start'}`}>
+                    <div
+                        className={`flex flex-col sm:flex-row sm:gap-4 gap-3 ${shouldShowPrimaryButton ? 'sm:items-center' : 'sm:items-start'}`}
+                    >
                         <div className="relative flex-1">
                             <div className="flex items-center gap-3">
                                 <LightBulbIcon className="h-5 w-5 text-amber-400 dark:text-amber-300" />
@@ -1654,7 +1655,7 @@ const QuickCaptureInput = React.forwardRef<
                                                 !hasProjectSuggestions
                                             ) {
                                                 e.preventDefault();
-                                                if (!isSaving) {
+                                                if (isEditMode && !isSaving) {
                                                     handleSubmit();
                                                 }
                                                 return;
@@ -1876,7 +1877,7 @@ const QuickCaptureInput = React.forwardRef<
                                                 !hasProjectSuggestions
                                             ) {
                                                 e.preventDefault();
-                                                if (!isSaving) {
+                                                if (isEditMode && !isSaving) {
                                                     handleSubmit();
                                                 }
                                                 return;
@@ -1965,7 +1966,10 @@ const QuickCaptureInput = React.forwardRef<
                                               !urlPreviewImageError ? (
                                                 <img
                                                     src={urlPreview.image}
-                                                    alt={urlPreview.title ?? urlPreview.url}
+                                                    alt={
+                                                        urlPreview.title ??
+                                                        urlPreview.url
+                                                    }
                                                     className="h-full w-full object-cover"
                                                     onError={() =>
                                                         setUrlPreviewImageError(
@@ -1989,7 +1993,9 @@ const QuickCaptureInput = React.forwardRef<
                                                     </p>
                                                     {urlPreview.description && (
                                                         <p className="mt-1 text-xs text-gray-600 dark:text-gray-400 break-words">
-                                                            {urlPreview.description}
+                                                            {
+                                                                urlPreview.description
+                                                            }
                                                         </p>
                                                     )}
                                                 </div>
@@ -2016,7 +2022,9 @@ const QuickCaptureInput = React.forwardRef<
                                                 {!urlPreview.isLoading &&
                                                     !urlPreview.error && (
                                                         <a
-                                                            href={urlPreview.url}
+                                                            href={
+                                                                urlPreview.url
+                                                            }
                                                             target="_blank"
                                                             rel="noopener noreferrer"
                                                             className="text-xs font-medium text-blue-700 hover:underline dark:text-blue-300"

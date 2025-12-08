@@ -71,11 +71,8 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
 
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
-                if (composerRef.current) {
-                    void composerRef.current.submit();
-                } else {
-                    setIsEditing(false);
-                }
+                event.preventDefault();
+                setIsEditing(false);
             }
         };
 
