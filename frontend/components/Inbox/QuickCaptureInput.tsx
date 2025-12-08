@@ -777,7 +777,7 @@ const QuickCaptureInput = React.forwardRef<
             });
         };
 
-        const resolveProjectId = (projectRefsList: string[]) => {
+        const resolveProjectUid = (projectRefsList: string[]) => {
             if (projectRefsList.length === 0) {
                 return undefined;
             }
@@ -786,7 +786,7 @@ const QuickCaptureInput = React.forwardRef<
                 (project) =>
                     project.name.toLowerCase() === projectName.toLowerCase()
             );
-            return matchingProject ? matchingProject.id : undefined;
+            return matchingProject ? matchingProject.uid : undefined;
         };
 
         const getSuggestion = (): {
@@ -1312,7 +1312,7 @@ const QuickCaptureInput = React.forwardRef<
                                         const taskTags = buildTagObjects(
                                             composerFooterContext.hashtags
                                         );
-                                        const projectId = resolveProjectId(
+                                        const projectUid = resolveProjectUid(
                                             composerFooterContext.projectRefs
                                         );
                                         const cleaned =
@@ -1326,7 +1326,7 @@ const QuickCaptureInput = React.forwardRef<
                                             status: 'not_started',
                                             priority: null,
                                             tags: taskTags,
-                                            project_id: projectId,
+                                            project_uid: projectUid,
                                             completed_at: null,
                                         };
                                         openTaskModal(newTask);
@@ -1367,7 +1367,7 @@ const QuickCaptureInput = React.forwardRef<
                                             ...hashtagTags,
                                             ...bookmarkTag,
                                         ];
-                                        const projectId = resolveProjectId(
+                                        const projectUid = resolveProjectUid(
                                             composerFooterContext.projectRefs
                                         );
                                         const newNote: Note = {
@@ -1377,7 +1377,7 @@ const QuickCaptureInput = React.forwardRef<
                                             content:
                                                 composerFooterContext.text.trim(),
                                             tags: noteTags,
-                                            project_uid: projectId,
+                                            project_uid: projectUid,
                                         };
                                         openNoteModal(newNote);
                                         composerFooterContext.clearText();
