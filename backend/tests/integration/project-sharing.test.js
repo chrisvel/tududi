@@ -68,9 +68,7 @@ describe('Project Sharing Integration Tests', () => {
             expect(response.status).toBe(200);
             expect(response.body.projects).toBeDefined();
 
-            const sharedProjectUids = response.body.projects.map(
-                (p) => p.uid
-            );
+            const sharedProjectUids = response.body.projects.map((p) => p.uid);
 
             expect(sharedProjectUids).toContain(project.uid);
         });
