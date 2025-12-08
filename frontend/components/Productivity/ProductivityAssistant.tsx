@@ -11,14 +11,6 @@ import {
 } from '@heroicons/react/24/outline';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
-import TaskModal from '../Task/TaskModal';
-import {
-    fetchTaskById,
-    updateTask,
-    deleteTask,
-} from '../../utils/tasksService';
-import { createProject } from '../../utils/projectsService';
-import { useToast } from '../Shared/ToastContext';
 import { getVagueTasks } from '../../utils/taskIntelligenceService';
 
 interface ProductivityInsight {
@@ -47,19 +39,12 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
 }) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const { showSuccessToast, showErrorToast } = useToast();
 
     const [isExpanded, setIsExpanded] = useState(false);
     const [insights, setInsights] = useState<ProductivityInsight[]>([]);
     const [expandedInsights, setExpandedInsights] = useState<Set<number>>(
         new Set()
     );
-
-    // Modal states
-    const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
-    const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-    const [allProjects, setAllProjects] = useState<Project[]>(projects);
-    const [loading, setLoading] = useState(false);
 
     const PROJECT_VERBS = [
         'plan',
@@ -292,23 +277,13 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
         setExpandedInsights(newExpanded);
     };
 
-    const handleItemClick = async (item: Task | Project) => {
+    const handleItemClick = (item: Task | Project) => {
         const isTask = 'status' in item;
 
         if (isTask) {
-            // Handle task click - open task modal
-            try {
-                setLoading(true);
-                const fullTask = await fetchTaskById(item.id!);
-                setSelectedTask(fullTask);
-                setIsTaskModalOpen(true);
-            } catch (error) {
-                console.error('Failed to fetch task:', error);
-                showErrorToast(
-                    t('errors.failedToLoadTask', 'Failed to load task')
-                );
-            } finally {
-                setLoading(false);
+            // Handle task click - navigate to task details page
+            if (item.uid) {
+                navigate(`/task/${item.uid}`);
             }
         } else {
             // Handle project click - navigate to project page
@@ -324,52 +299,6 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
         }
     };
 
-    const handleTaskSave = async (updatedTask: Task) => {
-        try {
-            if (updatedTask.uid) {
-                await updateTask(updatedTask.uid, updatedTask);
-                setIsTaskModalOpen(false);
-                setSelectedTask(null);
-                // Optionally refresh the parent component data
-            }
-        } catch (error) {
-            console.error('Failed to update task:', error);
-            showErrorToast(t('task.updateError', 'Failed to update task'));
-        }
-    };
-
-    const handleTaskDelete = async () => {
-        try {
-            if (selectedTask?.uid) {
-                await deleteTask(selectedTask.uid);
-                setIsTaskModalOpen(false);
-                setSelectedTask(null);
-                showSuccessToast(
-                    t('task.deleteSuccess', 'Task deleted successfully')
-                );
-                // Optionally refresh the parent component data
-            }
-        } catch (error) {
-            console.error('Failed to delete task:', error);
-            showErrorToast(t('task.deleteError', 'Failed to delete task'));
-        }
-    };
-
-    const handleCreateProject = async (name: string): Promise<Project> => {
-        try {
-            const project = await createProject({ name, state: 'planned' });
-            setAllProjects((prev) => [...prev, project]);
-            return project;
-        } catch (error) {
-            console.error('Failed to create project:', error);
-            throw error;
-        }
-    };
-
-    // Use projects passed as props instead of making additional API calls
-    useEffect(() => {
-        setAllProjects(projects);
-    }, [projects]);
 
     if (totalIssues === 0) {
         return null;
@@ -440,7 +369,6 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
                                                                 )
                                                             }
                                                             className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline text-left"
-                                                            disabled={loading}
                                                         >
                                                             • {item.name}
                                                         </button>
@@ -477,22 +405,6 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
                         </p>
                     </div>
                 </div>
-            )}
-
-            {/* Task Modal */}
-            {selectedTask && (
-                <TaskModal
-                    isOpen={isTaskModalOpen}
-                    onClose={() => {
-                        setIsTaskModalOpen(false);
-                        setSelectedTask(null);
-                    }}
-                    task={selectedTask}
-                    onSave={handleTaskSave}
-                    onDelete={handleTaskDelete}
-                    projects={allProjects}
-                    onCreateProject={handleCreateProject}
-                />
             )}
         </div>
     );
