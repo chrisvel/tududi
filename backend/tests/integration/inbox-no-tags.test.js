@@ -138,6 +138,7 @@ describe('Inbox Routes - No Tags Scenario', () => {
 
             expect(response.status).toBe(201);
             expect(response.body.content).toBe(inboxData.content);
+            expect(response.body.title).toBe(inboxData.content);
             expect(response.body.source).toBe(inboxData.source);
             expect(response.body.status).toBe('added');
             expect(response.body.uid).toBeDefined();
@@ -156,6 +157,7 @@ describe('Inbox Routes - No Tags Scenario', () => {
 
                 expect(response.status).toBe(201);
                 expect(response.body.content).toBe(item.content);
+                expect(response.body.title).toBe(item.content);
                 expect(response.body.source).toBe(item.source);
             }
 
@@ -163,6 +165,23 @@ describe('Inbox Routes - No Tags Scenario', () => {
             const getResponse = await agent.get('/api/inbox');
             expect(getResponse.status).toBe(200);
             expect(getResponse.body.length).toBe(3);
+        });
+
+        it('should truncate title and preserve full content for long inputs', async () => {
+            const longContent =
+                'This is a very long inbox entry that exceeds the title limit and should therefore store the entire text inside the content field while keeping a shortened preview in the title for easier scanning within the list view.' +
+                ' Additional details continue to make this string exceed the cutoff threshold so we can verify ellipsis handling and storage of the full payload without truncation.';
+
+            const response = await agent
+                .post('/api/inbox')
+                .send({ content: longContent, source: 'web' });
+
+            expect(response.status).toBe(201);
+            expect(response.body.content).toBe(longContent.trim());
+            expect(response.body.title.length).toBeLessThan(
+                response.body.content.length
+            );
+            expect(response.body.title.endsWith('...')).toBe(true);
         });
     });
 

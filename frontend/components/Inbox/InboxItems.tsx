@@ -18,7 +18,7 @@ import LoadingScreen from '../Shared/LoadingScreen';
 import TaskModal from '../Task/TaskModal';
 import ProjectModal from '../Project/ProjectModal';
 import NoteModal from '../Note/NoteModal';
-import InboxModal from './InboxModal';
+import QuickCaptureInput from './QuickCaptureInput';
 import { createTask } from '../../utils/tasksService';
 import { createProject } from '../../utils/projectsService';
 import { createNote } from '../../utils/notesService';
@@ -53,7 +53,6 @@ const InboxItems: React.FC = () => {
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
     const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isInfoExpanded, setIsInfoExpanded] = useState(false);
 
     const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
@@ -63,8 +62,6 @@ const InboxItems: React.FC = () => {
     const [currentConversionItemUid, setCurrentConversionItemUid] = useState<
         string | null
     >(null);
-
-    const [itemToEdit, setItemToEdit] = useState<string | null>(null);
 
     const defaultTask = useMemo(
         () => ({
@@ -204,19 +201,13 @@ const InboxItems: React.FC = () => {
         }
     };
 
-    const handleUpdateItem = async (uid: string): Promise<void> => {
-        setItemToEdit(uid);
-        setIsEditModalOpen(true);
-    };
-
-    const handleSaveEditedItem = async (text: string) => {
+    const handleUpdateItem = async (
+        uid: string,
+        newContent: string
+    ): Promise<void> => {
         try {
-            if (itemToEdit !== null) {
-                await updateInboxItemWithStore(itemToEdit, text);
-                showSuccessToast(t('inbox.itemUpdated'));
-            }
-            setIsEditModalOpen(false);
-            setItemToEdit(null);
+            await updateInboxItemWithStore(uid, newContent);
+            showSuccessToast(t('inbox.itemUpdated'));
         } catch (error) {
             console.error('Failed to update inbox item:', error);
             showErrorToast(t('inbox.updateError'));
@@ -458,6 +449,17 @@ const InboxItems: React.FC = () => {
                     </div>
                 </div>
 
+                <QuickCaptureInput
+                    onTaskCreate={handleSaveTask}
+                    onNoteCreate={handleSaveNote}
+                    projects={projects}
+                    autoFocus={true}
+                    openTaskModal={handleOpenTaskModal}
+                    openProjectModal={handleOpenProjectModal}
+                    openNoteModal={handleOpenNoteModal}
+                    cardClassName="mb-4"
+                />
+
                 {inboxItems.length === 0 ? (
                     <div className="flex justify-center items-center mt-4">
                         <div className="w-full max-w bg-black/2 dark:bg-gray-900/25 rounded-l px-10 py-24 flex flex-col items-center opacity-95">
@@ -623,35 +625,6 @@ const InboxItems: React.FC = () => {
                         return null;
                     }
                 })()}
-
-                {isEditModalOpen && itemToEdit !== null && (
-                    <InboxModal
-                        isOpen={isEditModalOpen}
-                        onClose={() => {
-                            setIsEditModalOpen(false);
-                            setItemToEdit(null);
-                        }}
-                        onSave={handleSaveTask}
-                        onSaveNote={handleSaveNote}
-                        initialText={
-                            inboxItems.find((item) => item.uid === itemToEdit)
-                                ?.content || ''
-                        }
-                        editMode={true}
-                        onEdit={handleSaveEditedItem}
-                        onConvertToTask={async () => {
-                            if (itemToEdit !== null) {
-                                await handleProcessItem(itemToEdit);
-                            }
-                        }}
-                        onConvertToNote={async () => {
-                            if (itemToEdit !== null) {
-                                await handleProcessItem(itemToEdit);
-                            }
-                        }}
-                        projects={projects}
-                    />
-                )}
             </div>
         </div>
     );

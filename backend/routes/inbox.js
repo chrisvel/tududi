@@ -7,6 +7,16 @@ const { logError } = require('../services/logService');
 const { getAuthenticatedUserId } = require('../utils/request-utils');
 const router = express.Router();
 
+const TITLE_MAX_LENGTH = 120;
+
+const buildTitleFromContent = (text) => {
+    const normalized = text.trim();
+    if (normalized.length <= TITLE_MAX_LENGTH) {
+        return normalized;
+    }
+    return `${normalized.slice(0, TITLE_MAX_LENGTH).trim()}...`;
+};
+
 const getUserIdOrUnauthorized = (req, res) => {
     const userId = getAuthenticatedUserId(req);
     if (!userId) {
@@ -80,15 +90,25 @@ router.post('/inbox', async (req, res) => {
         if (!userId) return;
         const { content, source } = req.body;
 
-        if (!content || _.isEmpty(content.trim())) {
+        if (
+            !content ||
+            typeof content !== 'string' ||
+            _.isEmpty(content.trim())
+        ) {
             return res.status(400).json({ error: 'Content is required' });
         }
 
         // Ensure source is never null/undefined
         const finalSource = source && source.trim() ? source.trim() : 'manual';
+        const normalizedContent = content.trim();
+        if (!normalizedContent) {
+            return res.status(400).json({ error: 'Content cannot be empty' });
+        }
+        const generatedTitle = buildTitleFromContent(normalizedContent);
 
         const item = await InboxItem.create({
-            content: content.trim(),
+            content: normalizedContent,
+            title: generatedTitle,
             source: finalSource,
             user_id: userId,
         });
@@ -96,6 +116,7 @@ router.post('/inbox', async (req, res) => {
         res.status(201).json(
             _.pick(item, [
                 'uid',
+                'title',
                 'content',
                 'status',
                 'source',
@@ -127,6 +148,7 @@ router.get('/inbox/:uid', async (req, res) => {
             where: { uid: req.params.uid, user_id: userId },
             attributes: [
                 'uid',
+                'title',
                 'content',
                 'status',
                 'source',
@@ -166,13 +188,28 @@ router.patch('/inbox/:uid', async (req, res) => {
         const { content, status } = req.body;
         const updateData = {};
 
-        if (content != null) updateData.content = content;
+        if (content != null) {
+            if (typeof content !== 'string') {
+                return res
+                    .status(400)
+                    .json({ error: 'Content must be a string' });
+            }
+            const normalizedContent = content.trim();
+            if (!normalizedContent) {
+                return res
+                    .status(400)
+                    .json({ error: 'Content cannot be empty' });
+            }
+            updateData.content = normalizedContent;
+            updateData.title = buildTitleFromContent(normalizedContent);
+        }
         if (status != null) updateData.status = status;
 
         await item.update(updateData);
         res.json(
             _.pick(item, [
                 'uid',
+                'title',
                 'content',
                 'status',
                 'source',
@@ -240,6 +277,7 @@ router.patch('/inbox/:uid/process', async (req, res) => {
         res.json(
             _.pick(item, [
                 'uid',
+                'title',
                 'content',
                 'status',
                 'source',

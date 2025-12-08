@@ -5,6 +5,44 @@ const { URL } = require('url');
 const { logError } = require('../services/logService');
 const router = express.Router();
 
+let nodeFetchInstance = null;
+try {
+    // eslint-disable-next-line global-require
+    nodeFetchInstance = require('node-fetch');
+} catch {
+    nodeFetchInstance = null;
+}
+
+const getFetchImplementation = () => {
+    if (typeof fetch === 'function') {
+        return fetch;
+    }
+    if (nodeFetchInstance) {
+        return nodeFetchInstance;
+    }
+    return null;
+};
+
+const fetchWithTimeout = async (url, options = {}, timeoutMs = 7000) => {
+    const fetchFn = getFetchImplementation();
+    if (!fetchFn) {
+        throw new Error('Fetch API is not available in this environment');
+    }
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+        const response = await fetchFn(url, {
+            ...options,
+            signal: controller.signal,
+        });
+        return response;
+    } finally {
+        clearTimeout(timeout);
+    }
+};
+
 // Fast regex-based metadata extraction (much faster than cheerio for head content)
 function extractMetadataFromHtml(html) {
     try {
@@ -139,34 +177,137 @@ function handleYouTubeUrl(url) {
     return null;
 }
 
-// Helper function to fetch URL metadata with redirect handling
-async function fetchUrlMetadata(url, maxRedirects = 5) {
-    return new Promise((resolve) => {
-        // Add protocol if missing
-        if (!url.startsWith('http://') && !url.startsWith('https://')) {
-            url = 'http://' + url;
-        }
+const finalizeMetadata = (metadata, sourceUrl) => {
+    if (!metadata) {
+        return null;
+    }
 
-        // Handle YouTube URLs specially to avoid anti-bot issues
-        if (url.includes('youtube.com') || url.includes('youtu.be')) {
-            const youtubeMetadata = handleYouTubeUrl(url);
-            if (youtubeMetadata) {
-                resolve(youtubeMetadata);
-            } else {
-                resolve(null);
+    const enriched = { ...metadata };
+
+    if (
+        enriched.image &&
+        !enriched.image.startsWith('http') &&
+        !enriched.image.startsWith('//')
+    ) {
+        enriched.image = resolveUrl(sourceUrl, enriched.image);
+    }
+
+    if (!enriched.title) {
+        try {
+            enriched.title = new URL(sourceUrl).hostname;
+        } catch {
+            enriched.title = sourceUrl;
+        }
+    }
+
+    return enriched;
+};
+
+// Helper function to fetch URL metadata with proper redirect/timeout handling
+async function fetchUrlMetadata(url) {
+    if (!url) {
+        return null;
+    }
+
+    let normalizedUrl = url.trim();
+    if (
+        !normalizedUrl.startsWith('http://') &&
+        !normalizedUrl.startsWith('https://')
+    ) {
+        normalizedUrl = `https://${normalizedUrl}`;
+    }
+
+    // Handle YouTube URLs specially to avoid anti-bot issues
+    if (
+        normalizedUrl.includes('youtube.com') ||
+        normalizedUrl.includes('youtu.be')
+    ) {
+        const youtubeMetadata = handleYouTubeUrl(normalizedUrl);
+        if (youtubeMetadata) {
+            return youtubeMetadata;
+        }
+    }
+
+    try {
+        if (getFetchImplementation()) {
+            const metadata = await fetchMetadataViaFetch(normalizedUrl);
+            if (metadata) {
+                return metadata;
             }
-            return;
         }
+    } catch (error) {
+        logError('Error fetching URL metadata via fetch:', error);
+    }
 
-        // Global timeout for the entire operation
+    const httpMetadata = await fetchMetadataViaHttp(normalizedUrl);
+    if (httpMetadata) {
+        return httpMetadata;
+    }
+
+    try {
+        const proxyMetadata = await fetchMetadataViaProxy(normalizedUrl);
+        if (proxyMetadata) {
+            return proxyMetadata;
+        }
+    } catch (error) {
+        logError('Error fetching URL metadata via proxy:', error);
+    }
+
+    return null;
+}
+
+async function fetchMetadataViaFetch(normalizedUrl) {
+    const response = await fetchWithTimeout(
+        normalizedUrl,
+        {
+            method: 'GET',
+            redirect: 'follow',
+            headers: {
+                'User-Agent':
+                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            },
+        },
+        7000
+    );
+
+    if (!response || !response.ok) {
+        return null;
+    }
+
+    const contentType = response.headers.get('content-type');
+    if (contentType && !contentType.includes('text/html')) {
+        return null;
+    }
+
+    const html = await response.text();
+    if (!html) {
+        return null;
+    }
+
+    return finalizeMetadata(extractMetadataFromHtml(html), normalizedUrl);
+}
+
+function fetchMetadataViaHttp(normalizedUrl, maxRedirects = 5) {
+    return new Promise((resolve) => {
+        let finished = false;
+        const fallbackResolve = (metadata, sourceUrl = normalizedUrl) => {
+            if (finished) {
+                return;
+            }
+            finished = true;
+            clearTimeout(globalTimeout);
+            resolve(finalizeMetadata(metadata, sourceUrl));
+        };
+
         const globalTimeout = setTimeout(() => {
-            resolve(null);
-        }, 3000); // 3 second max for entire operation
+            fallbackResolve(null);
+        }, 6000);
 
         function makeRequest(currentUrl, redirectCount = 0) {
             if (redirectCount > maxRedirects) {
                 clearTimeout(globalTimeout);
-                resolve(null);
+                fallbackResolve(null);
                 return;
             }
 
@@ -178,9 +319,9 @@ async function fetchUrlMetadata(url, maxRedirects = 5) {
                 const options = {
                     hostname: urlObj.hostname,
                     port: urlObj.port || (isHttps ? 443 : 80),
-                    path: urlObj.pathname + urlObj.search,
+                    path: urlObj.pathname + urlObj.search || '/',
                     method: 'GET',
-                    timeout: 2000, // Reduced from 5000ms to 2000ms
+                    timeout: 4000,
                     headers: {
                         'User-Agent':
                             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
@@ -188,7 +329,15 @@ async function fetchUrlMetadata(url, maxRedirects = 5) {
                 };
 
                 const req = client.request(options, (res) => {
-                    // Handle redirects (301, 302, 303, 307, 308)
+                    let resolvedForRequest = false;
+                    const conclude = (metadata) => {
+                        if (resolvedForRequest) {
+                            return;
+                        }
+                        resolvedForRequest = true;
+                        fallbackResolve(metadata, currentUrl);
+                    };
+
                     if (
                         [301, 302, 303, 307, 308].includes(res.statusCode) &&
                         res.headers.location
@@ -197,32 +346,30 @@ async function fetchUrlMetadata(url, maxRedirects = 5) {
                             res.headers.location,
                             currentUrl
                         ).href;
+                        res.resume();
                         makeRequest(redirectUrl, redirectCount + 1);
                         return;
                     }
 
-                    // If not a successful response, resolve with null
                     if (res.statusCode < 200 || res.statusCode >= 400) {
-                        clearTimeout(globalTimeout);
-                        resolve(null);
+                        conclude(null);
                         return;
                     }
 
                     let data = '';
                     let totalBytes = 0;
-                    const maxBytes = 20000; // Reduced from 100KB to 20KB - most meta tags are in head
+                    const maxBytes = 40000;
                     let foundMeta = false;
 
                     res.on('data', (chunk) => {
                         totalBytes += chunk.length;
                         if (totalBytes > maxBytes) {
-                            clearTimeout(globalTimeout);
-                            req.destroy();
+                            res.destroy();
+                            conclude(extractMetadataFromHtml(data));
                             return;
                         }
                         data += chunk;
 
-                        // Early termination if we've found essential meta tags and closed head
                         if (
                             !foundMeta &&
                             (data.includes('og:title') ||
@@ -232,53 +379,71 @@ async function fetchUrlMetadata(url, maxRedirects = 5) {
                             foundMeta = true;
                         }
 
-                        // Stop early if we have meta tags and hit end of head
                         if (foundMeta && data.includes('</head>')) {
-                            clearTimeout(globalTimeout);
-                            req.destroy();
-                            return;
+                            res.destroy();
+                            conclude(extractMetadataFromHtml(data));
                         }
                     });
 
                     res.on('end', () => {
-                        clearTimeout(globalTimeout);
-                        const metadata = extractMetadataFromHtml(data);
-
-                        // Resolve relative image URLs to absolute
-                        if (
-                            metadata.image &&
-                            !metadata.image.startsWith('http')
-                        ) {
-                            metadata.image = resolveUrl(
-                                currentUrl,
-                                metadata.image
-                            );
-                        }
-
-                        resolve(metadata);
+                        conclude(extractMetadataFromHtml(data));
+                    });
+                    res.on('error', () => {
+                        conclude(null);
                     });
                 });
 
-                req.on('error', (err) => {
-                    clearTimeout(globalTimeout);
-                    resolve(null);
+                req.on('error', () => {
+                    fallbackResolve(null);
                 });
 
                 req.on('timeout', () => {
-                    clearTimeout(globalTimeout);
                     req.destroy();
-                    resolve(null);
+                    fallbackResolve(null);
                 });
 
                 req.end();
             } catch (error) {
                 clearTimeout(globalTimeout);
-                resolve(null);
+                fallbackResolve(null);
             }
         }
 
-        makeRequest(url);
+        makeRequest(normalizedUrl);
     });
+}
+
+async function fetchMetadataViaProxy(normalizedUrl) {
+    const fetchFn = getFetchImplementation();
+    if (!fetchFn) {
+        return null;
+    }
+
+    const proxiedUrl = `https://r.jina.ai/${normalizedUrl}`;
+
+    const response = await fetchWithTimeout(
+        proxiedUrl,
+        {
+            method: 'GET',
+            headers: {
+                'User-Agent':
+                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                Accept: 'text/html,application/xhtml+xml',
+            },
+        },
+        7000
+    );
+
+    if (!response || !response.ok) {
+        return null;
+    }
+
+    const html = await response.text();
+    if (!html) {
+        return null;
+    }
+
+    return finalizeMetadata(extractMetadataFromHtml(html), normalizedUrl);
 }
 
 // GET /api/url/title

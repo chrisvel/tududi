@@ -153,11 +153,15 @@ export const loadInboxItemsToStore = async (
                 newTelegramItems.length > 0
             ) {
                 // Get some minimal info about the items for the notification
+                const previewSource =
+                    newTelegramItems[0].title ||
+                    newTelegramItems[0].content ||
+                    '';
                 const notificationData = {
                     count: newTelegramItems.length,
                     firstItemContent:
-                        newTelegramItems[0].content.substring(0, 30) +
-                        (newTelegramItems[0].content.length > 30 ? '...' : ''),
+                        previewSource.substring(0, 30) +
+                        (previewSource.length > 30 ? '...' : ''),
                 };
 
                 // Dispatch a custom event with the notification data

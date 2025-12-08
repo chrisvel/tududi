@@ -15,7 +15,8 @@ export interface Task {
     today?: boolean;
     today_move_count?: number;
     tags?: Tag[];
-    project_id?: number;
+    project_id?: number; // Deprecated, use project_uid
+    project_uid?: string; // Foreign key for project by uid
     Project?: Project;
     created_at?: string;
     updated_at?: string;
