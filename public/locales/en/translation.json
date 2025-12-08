@@ -146,7 +146,7 @@
     "noProject": "No project",
     "unknownProject": "Unknown project",
     "tasks": "tasks",
-    "showingItems": "Showing {{current}} of {{total}} items"
+    "showingItems": "Showing {{current}} of {{total}} tasks"
   },
   "timeline": {
     "activityTimeline": "Activity Timeline",

@@ -143,7 +143,7 @@
     "noProject": "프로젝트 없음",
     "unknownProject": "알 수 없는 프로젝트",
     "tasks": "작업",
-    "showingItems": "{{total}}개 중 {{current}}개 표시",
+    "showingItems": "총 {{total}}개 작업 중 {{current}}개 표시",
     "overdue": "연체",
     "planned": "계획됨",
     "open": "열기",

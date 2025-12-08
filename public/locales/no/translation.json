@@ -143,7 +143,7 @@
     "noProject": "Ingen prosjekt",
     "unknownProject": "Ukjent prosjekt",
     "tasks": "oppgaver",
-    "showingItems": "Viser {{current}} av {{total}} elementer",
+    "showingItems": "Viser {{current}} av {{total}} oppgaver",
     "overdue": "Forsinket",
     "planned": "Planlagt",
     "open": "Åpne",

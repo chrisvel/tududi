@@ -143,7 +143,7 @@
     "noProject": "Tanpa proyek",
     "unknownProject": "Proyek tidak dikenal",
     "tasks": "tugas",
-    "showingItems": "Menampilkan {{current}} dari {{total}} item",
+    "showingItems": "Menampilkan {{current}} dari {{total}} tugas",
     "overdue": "Terlambat",
     "planned": "Direncanakan",
     "open": "Buka",

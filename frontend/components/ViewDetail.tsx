@@ -906,7 +906,7 @@ const ViewDetail: React.FC = () => {
                             <div className="text-center text-sm text-gray-500 dark:text-gray-400 pt-2 pb-4">
                                 {t(
                                     'tasks.showingItems',
-                                    'Showing {{current}} of {{total}} items',
+                                    'Showing {{current}} of {{total}} tasks',
                                     {
                                         current: displayTasks.length,
                                         total: totalCount,

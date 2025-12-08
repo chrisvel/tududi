@@ -143,7 +143,7 @@
     "noProject": "Brak projektu",
     "unknownProject": "Nieznany projekt",
     "tasks": "zadania",
-    "showingItems": "Wyświetlanie {{current}} z {{total}} elementów",
+    "showingItems": "Wyświetlanie {{current}} z {{total}} zadań",
     "overdue": "Przeterminowane",
     "planned": "Zaplanowane",
     "open": "Otwórz",
