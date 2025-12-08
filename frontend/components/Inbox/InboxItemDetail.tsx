@@ -394,6 +394,15 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         if (!onUpdate || item.uid === undefined) {
             return;
         }
+
+        const trimmedCurrent = baseContent.trim();
+        const trimmedNew = text.trim();
+
+        if (trimmedCurrent === trimmedNew) {
+            setIsEditing(false);
+            return;
+        }
+
         await onUpdate(item.uid, text);
     };
 
