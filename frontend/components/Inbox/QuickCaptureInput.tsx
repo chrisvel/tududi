@@ -76,7 +76,7 @@ interface UrlPreviewState {
 
 const urlWithProtocolRegex = /(https?:\/\/[^\s]+)/i;
 const urlWithoutProtocolRegex =
-    /(?:^|\s)((?:www\.)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(?::[0-9]{1,5})?(?:\/[^\s]*)?)/i;
+    /(?:^|\s)((?:www\.)?[a-z0-9]+([-.]{1}[a-z0-9]+)*\.[a-z]{2,5}(?::[0-9]{1,5})?(?:\/[^\s]*)?)/i;
 
 const normalizeUrl = (value: string) => {
     if (!value) {
