@@ -1450,7 +1450,7 @@ const QuickCaptureInput = React.forwardRef<
             >
                 <div className="px-4 py-3">
                     <div
-                        className={`flex flex-row gap-3 ${shouldShowPrimaryButton ? 'items-center justify-between' : 'items-start'}`}
+                        className={`flex flex-row gap-3 ${shouldShowPrimaryButton ? 'items-start justify-between' : 'items-start'}`}
                     >
                         <div className="relative flex-1">
                             <div className="flex items-center gap-3">
@@ -2119,7 +2119,7 @@ const QuickCaptureInput = React.forwardRef<
                                 type="button"
                                 onClick={() => handleSubmit(false)}
                                 disabled={!inputText.trim() || isSaving}
-                                className={`flex-shrink-0 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:ring-offset-1 dark:focus:ring-offset-gray-800 transition-colors ${
+                                className={`flex-shrink-0 self-start mt-2 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:ring-offset-1 dark:focus:ring-offset-gray-800 transition-colors ${
                                     inputText.trim() && !isSaving
                                         ? 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600'
                                         : 'bg-blue-400 dark:bg-blue-700 cursor-not-allowed'
