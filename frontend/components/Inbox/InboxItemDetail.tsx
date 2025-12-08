@@ -584,7 +584,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
 
     const renderMetadata = () =>
         (hashtags.length > 0 || projectRefs.length > 0) && (
-            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1">
+            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1 ml-8">
                 {projectRefs.length > 0 && (
                     <div className="flex items-center">
                         <FolderIcon className="h-3 w-3 mr-1" />
@@ -663,52 +663,52 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     return (
         <div ref={containerRef}>
             {isEditing ? (
-                <div className="space-y-3">
-                    <QuickCaptureInput
-                        ref={composerRef}
-                        mode="edit"
-                        initialValue={fullContent}
-                        hidePrimaryButton
-                        projects={projects}
-                        onSubmitOverride={handleSubmitEdit}
-                        onAfterSubmit={() => setIsEditing(false)}
-                        renderFooterActions={renderComposerFooter}
-                        openTaskModal={openTaskModal}
-                        openProjectModal={openProjectModal}
-                        openNoteModal={openNoteModal}
-                        cardClassName="mb-0"
-                        multiline={hasLongContent}
-                    />
-                    {renderMetadata()}
-                </div>
+                <QuickCaptureInput
+                    ref={composerRef}
+                    mode="edit"
+                    initialValue={fullContent}
+                    hidePrimaryButton
+                    projects={projects}
+                    onSubmitOverride={handleSubmitEdit}
+                    onAfterSubmit={() => setIsEditing(false)}
+                    renderFooterActions={renderComposerFooter}
+                    openTaskModal={openTaskModal}
+                    openProjectModal={openProjectModal}
+                    openNoteModal={openNoteModal}
+                    cardClassName="mb-0"
+                    multiline={hasLongContent}
+                />
             ) : (
                 <InboxCard className="w-full">
-                    <div className="flex items-center px-4 py-3 gap-3">
-                        <div
-                            className="flex-shrink-0"
-                            title={iconTooltip}
-                            aria-label={iconTooltip}
-                        >
-                            {isBookmarkItem ? (
-                                <GlobeAltIcon className="h-5 w-5 text-blue-500 dark:text-blue-300" />
-                            ) : (
-                                <DocumentTextIcon
-                                    className={`h-5 w-5 ${
-                                        hasLongContent
-                                            ? 'text-purple-500 dark:text-purple-300'
-                                            : 'text-gray-400 dark:text-gray-500'
-                                    }`}
-                                />
-                            )}
-                        </div>
-                        <div className="flex-1">
-                            <button
-                                onClick={handleStartEdit}
-                                className="text-base font-medium text-gray-900 dark:text-gray-300 break-words text-left cursor-pointer w-full hover:text-blue-600 dark:hover:text-blue-400"
+                    <div className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                            <div
+                                className="flex-shrink-0"
+                                title={iconTooltip}
+                                aria-label={iconTooltip}
                             >
-                                {linkifyContent(previewText)}
-                            </button>
+                                {isBookmarkItem ? (
+                                    <GlobeAltIcon className="h-5 w-5 text-blue-500 dark:text-blue-300" />
+                                ) : (
+                                    <DocumentTextIcon
+                                        className={`h-5 w-5 ${
+                                            hasLongContent
+                                                ? 'text-purple-500 dark:text-purple-300'
+                                                : 'text-gray-400 dark:text-gray-500'
+                                        }`}
+                                    />
+                                )}
+                            </div>
+                            <div className="flex-1">
+                                <button
+                                    onClick={handleStartEdit}
+                                    className="text-base font-medium text-gray-900 dark:text-gray-300 break-words text-left cursor-pointer w-full hover:text-blue-600 dark:hover:text-blue-400"
+                                >
+                                    {linkifyContent(previewText)}
+                                </button>
+                            </div>
                         </div>
+                        {renderMetadata()}
                     </div>
                 </InboxCard>
             )}
