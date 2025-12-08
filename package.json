@@ -9,7 +9,7 @@
     "start": "bash scripts/start-all-dev.sh",
     "dev": "npm run frontend:dev",
     "build": "npm run frontend:build",
-    "pre-push": "npm run lint:fix && npm run format:fix",
+    "pre-push": "lint-staged",
     "pre-release": "npm run lint:fix && npm run format:fix && npm run test && npm run test:ui",
     "test": "npm run backend:test",
     "test:backend": "npm run backend:test",
@@ -102,6 +102,7 @@
     "identity-obj-proxy": "^3.0.0",
     "jest": "^29.0.0",
     "jest-environment-jsdom": "^29.0.0",
+    "lint-staged": "^16.2.7",
     "nodemon": "~3.0.1",
     "postcss": "^8.4.47",
     "postcss-loader": "^8.1.1",
@@ -164,5 +165,15 @@
     "use-debounce": "^10.0.6",
     "uuid": "~11.1.0",
     "web-push": "^3.6.7"
+  },
+  "lint-staged": {
+    "frontend/**/*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "backend/**/*.{js,ts}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   }
 }
