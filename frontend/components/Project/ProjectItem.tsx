@@ -15,6 +15,7 @@ import { Project, ProjectState } from '../../entities/Project';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '../Shared/ToastContext';
 import { getCurrentUser } from '../../utils/userUtils';
+import Tooltip from '../Shared/Tooltip';
 
 interface ProjectItemProps {
     project: Project;
@@ -94,6 +95,30 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
     const currentUser = getCurrentUser();
     const isOwner =
         currentUser && (project as any).user_uid === currentUser.uid;
+    const descriptionText = project.description?.trim();
+    const cardTitleClasses =
+        'block w-full text-lg font-semibold text-gray-900 dark:text-gray-100 hover:underline truncate';
+    const listTitleClasses =
+        'block w-full text-md font-semibold text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-gray-200 transition-colors truncate';
+    const descriptionClasses =
+        'text-xs text-gray-500 dark:text-gray-400 mt-1 mb-4 truncate';
+    const titleLink = (
+        <Link
+            to={
+                project.uid
+                    ? `/project/${project.uid}-${project.name
+                          .toLowerCase()
+                          .replace(/[^a-z0-9]+/g, '-')
+                          .replace(/^-|-$/g, '')}`
+                    : `/project/${project.id}`
+            }
+            className={
+                viewMode === 'cards' ? cardTitleClasses : listTitleClasses
+            }
+        >
+            {project.name}
+        </Link>
+    );
     return (
         <div
             className={`${
@@ -197,34 +222,32 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
             <div
                 className={`flex justify-between ${
                     viewMode === 'cards'
-                        ? 'items-start p-4 flex-1'
+                        ? 'items-start flex-1 px-4 pt-4 pb-16'
                         : 'items-center flex-1'
                 }`}
             >
                 <div
-                    className={`flex ${viewMode === 'cards' ? 'flex-col' : 'items-center'}`}
+                    className={`flex min-w-0 ${
+                        viewMode === 'cards' ? 'flex-col space-y-1' : 'items-center'
+                    }`}
                 >
-                    <Link
-                        to={
-                            project.uid
-                                ? `/project/${project.uid}-${project.name
-                                      .toLowerCase()
-                                      .replace(/[^a-z0-9]+/g, '-')
-                                      .replace(/^-|-$/g, '')}`
-                                : `/project/${project.id}`
-                        }
-                        className={`${
-                            viewMode === 'cards'
-                                ? 'text-lg font-semibold text-gray-900 dark:text-gray-100 hover:underline line-clamp-2'
-                                : 'text-md font-semibold text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-gray-200 transition-colors'
-                        }`}
-                    >
-                        {project.name}
-                    </Link>
-                    {viewMode === 'cards' && project.description && (
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
-                            {project.description}
-                        </p>
+                    {viewMode === 'cards' ? (
+                        <Tooltip
+                            content={project.name}
+                            className="w-full"
+                            position="bottom"
+                        >
+                            {titleLink}
+                        </Tooltip>
+                    ) : (
+                        titleLink
+                    )}
+                    {viewMode === 'cards' && descriptionText && (
+                        <Tooltip content={descriptionText} className="w-full">
+                            <p className={descriptionClasses}>
+                                {descriptionText}
+                            </p>
+                        </Tooltip>
                     )}
                 </div>
                 <div className="relative dropdown-container">
