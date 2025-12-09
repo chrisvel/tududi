@@ -1,5 +1,11 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import React, {
+    useState,
+    useEffect,
+    useRef,
+    useMemo,
+    useCallback,
+} from 'react';
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     TrashIcon,
@@ -16,12 +22,14 @@ import { Task } from '../entities/Task';
 import { Note } from '../entities/Note';
 import { Project } from '../entities/Project';
 import TaskList from './Task/TaskList';
+import GroupedTaskList from './Task/GroupedTaskList';
 import ProjectItem from './Project/ProjectItem';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import { searchUniversal } from '../utils/searchService';
 import { getApiPath } from '../config/paths';
 import { SortOption } from './Shared/SortFilterButton';
 import IconSortDropdown from './Shared/IconSortDropdown';
+import { useStore } from '../store/useStore';
 
 interface View {
     id: number;
@@ -41,10 +49,44 @@ const ViewDetail: React.FC = () => {
     const { t } = useTranslation();
     const { uid } = useParams<{ uid: string }>();
     const navigate = useNavigate();
+    const location = useLocation();
     const [view, setView] = useState<View | null>(null);
     const [tasks, setTasks] = useState<Task[]>([]);
     const [notes, setNotes] = useState<Note[]>([]);
     const [projects, setProjects] = useState<Project[]>([]);
+    const globalProjects = useStore(
+        (state) => state.projectsStore.projects
+    );
+    const updateQueryParams = useCallback(
+        (updates: Record<string, string | null>) => {
+            const params = new URLSearchParams(location.search);
+            let shouldNavigate = false;
+
+            Object.entries(updates).forEach(([key, value]) => {
+                if (value === null || value === '') {
+                    if (params.has(key)) {
+                        params.delete(key);
+                        shouldNavigate = true;
+                    }
+                } else if (params.get(key) !== value) {
+                    params.set(key, value);
+                    shouldNavigate = true;
+                }
+            });
+
+            if (shouldNavigate) {
+                const searchString = params.toString();
+                navigate(
+                    {
+                        pathname: location.pathname,
+                        search: searchString ? `?${searchString}` : '',
+                    },
+                    { replace: true }
+                );
+            }
+        },
+        [location.pathname, location.search, navigate]
+    );
     const [isLoading, setIsLoading] = useState(true);
     const [isEditingName, setIsEditingName] = useState(false);
     const [editedName, setEditedName] = useState('');
@@ -58,6 +100,7 @@ const ViewDetail: React.FC = () => {
         'all' | 'active' | 'completed'
     >('active');
     const [orderBy, setOrderBy] = useState<string>('created_at:desc');
+    const [groupBy, setGroupBy] = useState<'none' | 'project'>('none');
 
     // Pagination state
     const [offset, setOffset] = useState(0);
@@ -83,6 +126,50 @@ const ViewDetail: React.FC = () => {
         { value: 'status:desc', label: t('sort.status', 'Status') },
         { value: 'created_at:desc', label: t('sort.created_at', 'Created At') },
     ];
+
+    const projectLookupList = useMemo(() => {
+        const map = new Map<string, Project>();
+
+        const addProject = (project?: Project | null) => {
+            if (!project) return;
+            const key =
+                (project.uid && `uid-${project.uid}`) ??
+                (project.id !== undefined && project.id !== null
+                    ? `id-${project.id}`
+                    : undefined);
+            if (!key) return;
+            if (!map.has(key)) {
+                map.set(key, project);
+            }
+        };
+
+        globalProjects.forEach(addProject);
+        projects.forEach(addProject);
+
+        return Array.from(map.values());
+    }, [globalProjects, projects]);
+
+    const projectLookupMap = useMemo(() => {
+        const byId = new Map<number, Project>();
+        const byUid = new Map<string, Project>();
+
+        projectLookupList.forEach((project) => {
+            if (project.id !== undefined && project.id !== null) {
+                const numericId =
+                    typeof project.id === 'string'
+                        ? Number(project.id)
+                        : project.id;
+                if (!Number.isNaN(numericId)) {
+                    byId.set(numericId, project);
+                }
+            }
+            if (project.uid) {
+                byUid.set(project.uid, project);
+            }
+        });
+
+        return { byId, byUid };
+    }, [projectLookupList]);
 
     // Filter and sort tasks
     const displayTasks = useMemo(() => {
@@ -171,12 +258,146 @@ const ViewDetail: React.FC = () => {
             return 0;
         });
 
-        return sortedTasks;
-    }, [tasks, taskStatusFilter, taskSearchQuery, orderBy, t]);
+        return sortedTasks.map((task) => {
+            if (task.Project) {
+                return task;
+            }
+
+            let matchedProject: Project | undefined;
+            if (
+                task.project_id !== undefined &&
+                task.project_id !== null &&
+                typeof task.project_id !== 'string'
+            ) {
+                matchedProject = projectLookupMap.byId.get(task.project_id);
+            }
+
+            if (!matchedProject && task.project_uid) {
+                matchedProject = projectLookupMap.byUid.get(task.project_uid);
+            }
+
+            if (!matchedProject && typeof task.project_id === 'string') {
+                const numericId = Number(task.project_id);
+                if (!Number.isNaN(numericId)) {
+                    matchedProject = projectLookupMap.byId.get(numericId);
+                }
+            }
+
+            return matchedProject
+                ? {
+                      ...task,
+                      Project: matchedProject,
+                  }
+                : task;
+        });
+    }, [
+        tasks,
+        taskStatusFilter,
+        taskSearchQuery,
+        orderBy,
+        t,
+        projectLookupMap,
+    ]);
+
+    const handleSortChange = useCallback(
+        (newOrderBy: string, options?: { skipUrlUpdate?: boolean }) => {
+            setOrderBy(newOrderBy);
+            if (!options?.skipUrlUpdate) {
+                updateQueryParams({
+                    order_by:
+                        newOrderBy === 'created_at:desc' ? null : newOrderBy,
+                });
+            }
+        },
+        [updateQueryParams]
+    );
+
+    const handleStatusChange = useCallback(
+        (
+            status: 'all' | 'active' | 'completed',
+            options?: { skipUrlUpdate?: boolean }
+        ) => {
+            setTaskStatusFilter(status);
+            if (!options?.skipUrlUpdate) {
+                updateQueryParams({
+                    status: status === 'active' ? null : status,
+                });
+            }
+        },
+        [updateQueryParams]
+    );
+
+    const handleGroupByChange = useCallback(
+        (value: 'none' | 'project', options?: { skipUrlUpdate?: boolean }) => {
+            setGroupBy(value);
+            if (uid) {
+                localStorage.setItem(`view_${uid}_group_by`, value);
+            }
+            if (!options?.skipUrlUpdate) {
+                updateQueryParams({
+                    group_by: value === 'none' ? null : value,
+                });
+            }
+        },
+        [uid, updateQueryParams]
+    );
+
+    const handleSearchChange = useCallback(
+        (value: string, options?: { skipUrlUpdate?: boolean }) => {
+            setTaskSearchQuery(value);
+            if (!options?.skipUrlUpdate) {
+                updateQueryParams({
+                    search: value.trim() ? value : null,
+                });
+            }
+        },
+        [updateQueryParams]
+    );
+
+    const showCompletedTasks = taskStatusFilter !== 'active';
 
     useEffect(() => {
         fetchViewAndResults();
     }, [uid]);
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const urlOrderBy = params.get('order_by') || 'created_at:desc';
+        handleSortChange(urlOrderBy, { skipUrlUpdate: true });
+
+        const urlStatus = params.get('status');
+        const normalizedStatus =
+            urlStatus === 'completed'
+                ? 'completed'
+                : urlStatus === 'all'
+                  ? 'all'
+                  : 'active';
+        handleStatusChange(normalizedStatus, { skipUrlUpdate: true });
+
+        const urlGroup =
+            params.get('group_by') === 'project' ? 'project' : 'none';
+        setGroupBy((prev) => {
+            if (prev !== urlGroup) {
+                if (uid) {
+                    localStorage.setItem(`view_${uid}_group_by`, urlGroup);
+                }
+                return urlGroup;
+            }
+            return prev;
+        });
+
+        const urlSearch = params.get('search') || '';
+        if (urlSearch) {
+            setIsSearchExpanded(true);
+        }
+        handleSearchChange(urlSearch, { skipUrlUpdate: true });
+    }, [
+        location.search,
+        uid,
+        handleSortChange,
+        handleStatusChange,
+        handleSearchChange,
+    ]);
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -552,12 +773,51 @@ const ViewDetail: React.FC = () => {
                         <IconSortDropdown
                             options={sortOptions}
                             value={orderBy}
-                            onChange={setOrderBy}
+                            onChange={handleSortChange}
                             ariaLabel={t('views.sortTasks', 'Sort tasks')}
                             title={t('views.sortTasks', 'Sort tasks')}
                             dropdownLabel={t('tasks.sortBy', 'Sort by')}
                             footerContent={
                                 <div className="space-y-3">
+                                    <div>
+                                        <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
+                                            {t('tasks.groupBy', 'Group by')}
+                                        </div>
+                                        <div className="py-1">
+                                            {['none', 'project'].map((val) => (
+                                                <button
+                                                    key={val}
+                                                    onClick={() =>
+                                                        handleGroupByChange(
+                                                            val as
+                                                                | 'none'
+                                                                | 'project'
+                                                        )
+                                                    }
+                                                    className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                                                        groupBy === val
+                                                            ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                                                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                    }`}
+                                                >
+                                                    <span>
+                                                        {val === 'project'
+                                                            ? t(
+                                                                  'tasks.groupByProject',
+                                                                  'Project'
+                                                              )
+                                                            : t(
+                                                                  'tasks.grouping.none',
+                                                                  'None'
+                                                              )}
+                                                    </span>
+                                                    {groupBy === val && (
+                                                        <CheckIcon className="h-4 w-4" />
+                                                    )}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
                                     <div>
                                         <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-t border-b border-gray-200 dark:border-gray-700">
                                             {t('tasks.show', 'Show')}
@@ -594,7 +854,7 @@ const ViewDetail: React.FC = () => {
                                                         key={opt.key}
                                                         type="button"
                                                         onClick={() =>
-                                                            setTaskStatusFilter(
+                                                            handleStatusChange(
                                                                 opt.key as
                                                                     | 'all'
                                                                     | 'active'
@@ -651,7 +911,7 @@ const ViewDetail: React.FC = () => {
                                                                 orderBy.split(
                                                                     ':'
                                                                 );
-                                                            setOrderBy(
+                                                            handleSortChange(
                                                                 `${field}:${dir.key}`
                                                             );
                                                         }}
@@ -878,7 +1138,7 @@ const ViewDetail: React.FC = () => {
                                 'Search tasks...'
                             )}
                             value={taskSearchQuery}
-                            onChange={(e) => setTaskSearchQuery(e.target.value)}
+                            onChange={(e) => handleSearchChange(e.target.value)}
                             className="w-full bg-transparent border-none focus:ring-0 focus:outline-none dark:text-white"
                         />
                     </div>
@@ -890,16 +1150,35 @@ const ViewDetail: React.FC = () => {
                         <h3 className="text-lg font-light text-gray-900 dark:text-white mb-4">
                             {t('tasks.title')} ({displayTasks.length})
                         </h3>
-                        <TaskList
-                            tasks={displayTasks}
-                            onTaskUpdate={handleTaskUpdate}
-                            onTaskCompletionToggle={handleTaskCompletionToggle}
-                            onTaskDelete={handleTaskDelete}
-                            projects={projects}
-                            hideProjectName={false}
-                            onToggleToday={handleToggleToday}
-                            showCompletedTasks={taskStatusFilter !== 'active'}
-                        />
+                        {groupBy === 'project' ? (
+                            <GroupedTaskList
+                                tasks={displayTasks}
+                                groupBy="project"
+                                onTaskUpdate={handleTaskUpdate}
+                                onTaskCompletionToggle={
+                                    handleTaskCompletionToggle
+                                }
+                                onTaskDelete={handleTaskDelete}
+                                projects={projectLookupList}
+                                hideProjectName={false}
+                                onToggleToday={handleToggleToday}
+                                showCompletedTasks={showCompletedTasks}
+                                searchQuery={taskSearchQuery}
+                            />
+                        ) : (
+                            <TaskList
+                                tasks={displayTasks}
+                                onTaskUpdate={handleTaskUpdate}
+                                onTaskCompletionToggle={
+                                    handleTaskCompletionToggle
+                                }
+                                onTaskDelete={handleTaskDelete}
+                                projects={projectLookupList}
+                                hideProjectName={false}
+                                onToggleToday={handleToggleToday}
+                                showCompletedTasks={showCompletedTasks}
+                            />
+                        )}
                         {/* Load more button */}
                         {hasMore && (
                             <div className="flex justify-center pt-4">
