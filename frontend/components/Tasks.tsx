@@ -536,7 +536,7 @@ const Tasks: React.FC = () => {
 
     return (
         <div
-            className={`w-full pt-4 pb-8 ${isUpcomingView ? 'pl-2 sm:pl-4' : 'px-2 sm:px-4 lg:px-6'}`}
+            className={`w-full pt-4 pb-8 ${isUpcomingView ? 'pl-4 sm:pl-6 md:pl-8' : 'px-2 sm:px-4 lg:px-6'}`}
         >
             <div
                 className={`w-full ${isUpcomingView ? '' : 'max-w-5xl mx-auto'}`}
