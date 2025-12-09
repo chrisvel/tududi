@@ -14,10 +14,15 @@ TEST_PATTERN="$1"
 BROWSER="${2:-Chromium}"
 
 # Config
-APP_URL_DEFAULT="http://localhost:8080"
-BACKEND_URL="http://localhost:3002"
+FRONTEND_PORT="${FRONTEND_PORT:-4180}"
+FRONTEND_HOST="${FRONTEND_HOST:-127.0.0.1}"
+BACKEND_PORT="${BACKEND_PORT:-3310}"
+BACKEND_HOST="${BACKEND_HOST:-127.0.0.1}"
+BACKEND_URL="${BACKEND_URL:-http://${BACKEND_HOST}:${BACKEND_PORT}}"
 BACKEND_HEALTH="${BACKEND_URL}/api/health"
+APP_URL_DEFAULT="http://${FRONTEND_HOST}:${FRONTEND_PORT}"
 FRONTEND_URL="${APP_URL:-$APP_URL_DEFAULT}"
+FRONTEND_ORIGIN="${FRONTEND_ORIGIN:-$FRONTEND_URL}"
 
 # Colors
 red() { printf "\033[31m%s\033[0m\n" "$*"; }
@@ -51,7 +56,8 @@ rm -f backend/db/test.sqlite3
 yellow "Starting backend with test database..."
 (cd backend && \
 NODE_ENV=test \
-PORT=3002 \
+PORT=$BACKEND_PORT \
+HOST=$BACKEND_HOST \
 DB_FILE=db/test.sqlite3 \
 TUDUDI_USER_EMAIL="${E2E_EMAIL:-test@tududi.com}" \
 TUDUDI_USER_PASSWORD="${E2E_PASSWORD:-password123}" \
@@ -67,8 +73,8 @@ cleanup() {
 
   # Kill by ports (best-effort)
   if command -v lsof >/dev/null 2>&1; then
-    FRONTEND_PIDS_KILL=$(lsof -ti tcp:8080 || true)
-    BACKEND_PIDS_KILL=$(lsof -ti tcp:3002 || true)
+    FRONTEND_PIDS_KILL=$(lsof -ti tcp:${FRONTEND_PORT} || true)
+    BACKEND_PIDS_KILL=$(lsof -ti tcp:${BACKEND_PORT} || true)
     if [ -n "${FRONTEND_PIDS_KILL:-}" ]; then kill ${FRONTEND_PIDS_KILL} >/dev/null 2>&1 || true; fi
     if [ -n "${BACKEND_PIDS_KILL:-}" ]; then kill ${BACKEND_PIDS_KILL} >/dev/null 2>&1 || true; fi
   fi
@@ -98,6 +104,10 @@ for i in {1..60}; do
 done
 
 yellow "Starting frontend dev server..."
+BACKEND_URL="$BACKEND_URL" \
+FRONTEND_PORT="$FRONTEND_PORT" \
+FRONTEND_HOST="$FRONTEND_HOST" \
+FRONTEND_ORIGIN="$FRONTEND_ORIGIN" \
 npm run frontend:dev >/dev/null 2>&1 &
 FRONTEND_PID=$!
 

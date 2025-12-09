@@ -5,6 +5,14 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
+const frontendPort = parseInt(process.env.FRONTEND_PORT || '8080', 10);
+const frontendHost = process.env.FRONTEND_HOST || '0.0.0.0';
+const backendUrl = process.env.BACKEND_URL || 'http://localhost:3002';
+const frontendUrl = new URL(
+    process.env.FRONTEND_ORIGIN || `http://localhost:${frontendPort}`
+);
+const frontendOrigin = frontendUrl.origin;
+const frontendCookieDomain = frontendUrl.hostname;
 
 module.exports = {
     entry: './frontend/index.tsx',
@@ -29,22 +37,22 @@ module.exports = {
         },
         hot: isDevelopment,
         watchFiles: isDevelopment ? ['frontend/**/*'] : [],
-        port: 8080,
-        host: '0.0.0.0',
+        port: frontendPort,
+        host: frontendHost,
         historyApiFallback: true,
         proxy: [
             {
                 context: ['/api', '/locales'],
-                target: 'http://localhost:3002',
+                target: backendUrl,
                 changeOrigin: true,
                 secure: false,
-                cookieDomainRewrite: 'localhost',
+                cookieDomainRewrite: frontendCookieDomain,
                 headers: {
                     'Access-Control-Allow-Origin': '*',
                 },
                 onProxyRes: function (proxyRes, req, res) {
                     proxyRes.headers['Access-Control-Allow-Origin'] =
-                        'http://localhost:8080';
+                        frontendOrigin;
                     proxyRes.headers['Access-Control-Allow-Credentials'] =
                         'true';
                 },
