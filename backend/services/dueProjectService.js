@@ -105,7 +105,12 @@ async function checkDueProjects() {
 
                 // Build sources array based on user preferences
                 const sources = [];
-                if (shouldSendTelegramNotification(project.User, notificationType)) {
+                if (
+                    shouldSendTelegramNotification(
+                        project.User,
+                        notificationType
+                    )
+                ) {
                     sources.push('telegram');
                 }
 

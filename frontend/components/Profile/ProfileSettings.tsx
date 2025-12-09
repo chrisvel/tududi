@@ -1074,152 +1074,173 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     <div className="flex-1 min-w-0">
                         <div className="bg-white dark:bg-gray-950 rounded-lg shadow-md p-6">
                             <form onSubmit={handleSubmit} className="space-y-8">
-                    <GeneralTab
-                        isActive={activeTab === 'general'}
-                        formData={formData}
-                        onChange={handleChange}
-                        onAppearanceChange={(appearance) =>
-                            setFormData((prev) => ({ ...prev, appearance }))
-                        }
-                        onLanguageChange={(languageCode) => {
-                            const localeFirstDay =
-                                getLocaleFirstDayOfWeek(languageCode);
-                            setFormData((prev) => ({
-                                ...prev,
-                                language: languageCode,
-                                first_day_of_week: localeFirstDay,
-                            }));
-                        }}
-                        onTimezoneChange={(timezone) =>
-                            setFormData((prev) => ({ ...prev, timezone }))
-                        }
-                        onFirstDayChange={(value) =>
-                            setFormData((prev) => ({
-                                ...prev,
-                                first_day_of_week: value,
-                            }))
-                        }
-                        avatarPreview={avatarPreview}
-                        onAvatarSelect={handleAvatarSelect}
-                        onAvatarRemove={handleAvatarRemove}
-                        timezonesByRegion={timezonesByRegion}
-                        getRegionDisplayName={getRegionDisplayName}
-                    />
+                                <GeneralTab
+                                    isActive={activeTab === 'general'}
+                                    formData={formData}
+                                    onChange={handleChange}
+                                    onAppearanceChange={(appearance) =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            appearance,
+                                        }))
+                                    }
+                                    onLanguageChange={(languageCode) => {
+                                        const localeFirstDay =
+                                            getLocaleFirstDayOfWeek(
+                                                languageCode
+                                            );
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            language: languageCode,
+                                            first_day_of_week: localeFirstDay,
+                                        }));
+                                    }}
+                                    onTimezoneChange={(timezone) =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            timezone,
+                                        }))
+                                    }
+                                    onFirstDayChange={(value) =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            first_day_of_week: value,
+                                        }))
+                                    }
+                                    avatarPreview={avatarPreview}
+                                    onAvatarSelect={handleAvatarSelect}
+                                    onAvatarRemove={handleAvatarRemove}
+                                    timezonesByRegion={timezonesByRegion}
+                                    getRegionDisplayName={getRegionDisplayName}
+                                />
 
-                    <SecurityTab
-                        isActive={activeTab === 'security'}
-                        formData={formData}
-                        showCurrentPassword={showCurrentPassword}
-                        showNewPassword={showNewPassword}
-                        showConfirmPassword={showConfirmPassword}
-                        onChange={handleChange}
-                        onToggleCurrentPassword={() =>
-                            setShowCurrentPassword((prev) => !prev)
-                        }
-                        onToggleNewPassword={() =>
-                            setShowNewPassword((prev) => !prev)
-                        }
-                        onToggleConfirmPassword={() =>
-                            setShowConfirmPassword((prev) => !prev)
-                        }
-                    />
+                                <SecurityTab
+                                    isActive={activeTab === 'security'}
+                                    formData={formData}
+                                    showCurrentPassword={showCurrentPassword}
+                                    showNewPassword={showNewPassword}
+                                    showConfirmPassword={showConfirmPassword}
+                                    onChange={handleChange}
+                                    onToggleCurrentPassword={() =>
+                                        setShowCurrentPassword((prev) => !prev)
+                                    }
+                                    onToggleNewPassword={() =>
+                                        setShowNewPassword((prev) => !prev)
+                                    }
+                                    onToggleConfirmPassword={() =>
+                                        setShowConfirmPassword((prev) => !prev)
+                                    }
+                                />
 
-                    <ApiKeysTab
-                        isActive={activeTab === 'apiKeys'}
-                        apiKeys={apiKeys}
-                        apiKeysLoading={apiKeysLoading}
-                        generatedApiToken={generatedApiToken}
-                        newApiKeyName={newApiKeyName}
-                        newApiKeyExpiration={newApiKeyExpiration}
-                        revokeInFlightId={revokeInFlightId}
-                        deleteInFlightId={deleteInFlightId}
-                        pendingDeleteId={apiKeyToDelete?.id ?? null}
-                        onCreateApiKey={handleCreateApiKey}
-                        onCopyGeneratedToken={handleCopyGeneratedToken}
-                        onRevokeApiKey={handleRevokeApiKey}
-                        onRequestDelete={(apiKey) => setApiKeyToDelete(apiKey)}
-                        onUpdateNewName={setNewApiKeyName}
-                        onUpdateNewExpiration={setNewApiKeyExpiration}
-                        getApiKeyStatus={getApiKeyStatus}
-                        formatDateTime={formatDateTime}
-                        isCreatingApiKey={isCreatingApiKey}
-                    />
+                                <ApiKeysTab
+                                    isActive={activeTab === 'apiKeys'}
+                                    apiKeys={apiKeys}
+                                    apiKeysLoading={apiKeysLoading}
+                                    generatedApiToken={generatedApiToken}
+                                    newApiKeyName={newApiKeyName}
+                                    newApiKeyExpiration={newApiKeyExpiration}
+                                    revokeInFlightId={revokeInFlightId}
+                                    deleteInFlightId={deleteInFlightId}
+                                    pendingDeleteId={apiKeyToDelete?.id ?? null}
+                                    onCreateApiKey={handleCreateApiKey}
+                                    onCopyGeneratedToken={
+                                        handleCopyGeneratedToken
+                                    }
+                                    onRevokeApiKey={handleRevokeApiKey}
+                                    onRequestDelete={(apiKey) =>
+                                        setApiKeyToDelete(apiKey)
+                                    }
+                                    onUpdateNewName={setNewApiKeyName}
+                                    onUpdateNewExpiration={
+                                        setNewApiKeyExpiration
+                                    }
+                                    getApiKeyStatus={getApiKeyStatus}
+                                    formatDateTime={formatDateTime}
+                                    isCreatingApiKey={isCreatingApiKey}
+                                />
 
-                    <ProductivityTab
-                        isActive={activeTab === 'productivity'}
-                        pomodoroEnabled={Boolean(formData.pomodoro_enabled)}
-                        onTogglePomodoro={() =>
-                            setFormData((prev) => ({
-                                ...prev,
-                                pomodoro_enabled: !prev.pomodoro_enabled,
-                            }))
-                        }
-                    />
+                                <ProductivityTab
+                                    isActive={activeTab === 'productivity'}
+                                    pomodoroEnabled={Boolean(
+                                        formData.pomodoro_enabled
+                                    )}
+                                    onTogglePomodoro={() =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            pomodoro_enabled:
+                                                !prev.pomodoro_enabled,
+                                        }))
+                                    }
+                                />
 
-                    <NotificationsTab
-                        isActive={activeTab === 'notifications'}
-                        notificationPreferences={
-                            formData.notification_preferences
-                        }
-                        onChange={(preferences) =>
-                            setFormData((prev) => ({
-                                ...prev,
-                                notification_preferences: preferences,
-                            }))
-                        }
-                    />
+                                <NotificationsTab
+                                    isActive={activeTab === 'notifications'}
+                                    notificationPreferences={
+                                        formData.notification_preferences
+                                    }
+                                    onChange={(preferences) =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            notification_preferences:
+                                                preferences,
+                                        }))
+                                    }
+                                />
 
-                    <TelegramTab
-                        isActive={activeTab === 'telegram'}
-                        formData={formData}
-                        profile={profile}
-                        telegramBotInfo={telegramBotInfo}
-                        isPolling={isPolling}
-                        telegramSetupStatus={telegramSetupStatus}
-                        onChange={handleChange}
-                        onSetup={handleSetupTelegram}
-                        onStartPolling={handleStartPolling}
-                        onStopPolling={handleStopPolling}
-                        onToggleSummary={() =>
-                            setFormData((prev) => ({
-                                ...prev,
-                                task_summary_enabled:
-                                    !prev.task_summary_enabled,
-                            }))
-                        }
-                        onSelectFrequency={(frequency) =>
-                            setFormData((prev) => ({
-                                ...prev,
-                                task_summary_frequency: frequency,
-                            }))
-                        }
-                        onSendTestSummary={handleSendTestSummary}
-                        formatFrequency={formatFrequency}
-                    />
+                                <TelegramTab
+                                    isActive={activeTab === 'telegram'}
+                                    formData={formData}
+                                    profile={profile}
+                                    telegramBotInfo={telegramBotInfo}
+                                    isPolling={isPolling}
+                                    telegramSetupStatus={telegramSetupStatus}
+                                    onChange={handleChange}
+                                    onSetup={handleSetupTelegram}
+                                    onStartPolling={handleStartPolling}
+                                    onStopPolling={handleStopPolling}
+                                    onToggleSummary={() =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            task_summary_enabled:
+                                                !prev.task_summary_enabled,
+                                        }))
+                                    }
+                                    onSelectFrequency={(frequency) =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            task_summary_frequency: frequency,
+                                        }))
+                                    }
+                                    onSendTestSummary={handleSendTestSummary}
+                                    formatFrequency={formatFrequency}
+                                />
 
-                    <AiTab
-                        isActive={activeTab === 'ai'}
-                        formData={formData}
-                        onToggle={(field) =>
-                            setFormData((prev) => ({
-                                ...prev,
-                                [field]: !prev[field],
-                            }))
-                        }
-                    />
+                                <AiTab
+                                    isActive={activeTab === 'ai'}
+                                    formData={formData}
+                                    onToggle={(field) =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            [field]: !prev[field],
+                                        }))
+                                    }
+                                />
 
-                    <div className="flex justify-end dark:border-gray-700">
-                        <button
-                            type="submit"
-                            className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-200 flex items-center space-x-2"
-                        >
-                            <CheckIcon className="w-5 h-5" />
-                            <span>
-                                {t('profile.saveChanges', 'Save Changes')}
-                            </span>
-                        </button>
-                    </div>
-                        </form>
+                                <div className="flex justify-end dark:border-gray-700">
+                                    <button
+                                        type="submit"
+                                        className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-200 flex items-center space-x-2"
+                                    >
+                                        <CheckIcon className="w-5 h-5" />
+                                        <span>
+                                            {t(
+                                                'profile.saveChanges',
+                                                'Save Changes'
+                                            )}
+                                        </span>
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>

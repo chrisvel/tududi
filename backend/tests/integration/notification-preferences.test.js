@@ -32,11 +32,36 @@ describe('Notification Preferences', () => {
 
             expect(response.status).toBe(200);
             expect(response.body.notification_preferences).toEqual({
-                dueTasks: { inApp: true, email: false, push: false, telegram: false },
-                overdueTasks: { inApp: true, email: false, push: false, telegram: false },
-                dueProjects: { inApp: true, email: false, push: false, telegram: false },
-                overdueProjects: { inApp: true, email: false, push: false, telegram: false },
-                deferUntil: { inApp: true, email: false, push: false, telegram: false },
+                dueTasks: {
+                    inApp: true,
+                    email: false,
+                    push: false,
+                    telegram: false,
+                },
+                overdueTasks: {
+                    inApp: true,
+                    email: false,
+                    push: false,
+                    telegram: false,
+                },
+                dueProjects: {
+                    inApp: true,
+                    email: false,
+                    push: false,
+                    telegram: false,
+                },
+                overdueProjects: {
+                    inApp: true,
+                    email: false,
+                    push: false,
+                    telegram: false,
+                },
+                deferUntil: {
+                    inApp: true,
+                    email: false,
+                    push: false,
+                    telegram: false,
+                },
             });
         });
 

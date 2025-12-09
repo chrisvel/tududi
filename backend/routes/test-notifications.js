@@ -7,7 +7,8 @@ const { v4: uuid } = require('uuid');
 const NOTIFICATION_TEMPLATES = {
     task_due_soon: {
         title: 'Task Due Soon',
-        message: 'Your test task "Complete project documentation" is due in 2 hours',
+        message:
+            'Your test task "Complete project documentation" is due in 2 hours',
         level: 'warning',
         data: {
             taskUid: uuid(),
@@ -23,7 +24,9 @@ const NOTIFICATION_TEMPLATES = {
         data: {
             taskUid: uuid(),
             taskName: 'Review pull request #123',
-            dueDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+            dueDate: new Date(
+                Date.now() - 3 * 24 * 60 * 60 * 1000
+            ).toISOString(),
             isOverdue: true,
         },
     },
@@ -45,13 +48,16 @@ const NOTIFICATION_TEMPLATES = {
         data: {
             projectUid: uuid(),
             projectName: 'Website Redesign',
-            dueDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+            dueDate: new Date(
+                Date.now() - 1 * 24 * 60 * 60 * 1000
+            ).toISOString(),
             isOverdue: true,
         },
     },
     defer_until: {
         title: 'Task Now Active',
-        message: 'Your test task "Follow up with client" is now available to work on',
+        message:
+            'Your test task "Follow up with client" is now available to work on',
         level: 'info',
         data: {
             taskUid: uuid(),
@@ -120,7 +126,14 @@ router.post('/trigger', async (req, res) => {
 
         // Fetch user with notification preferences
         const user = await User.findByPk(userId, {
-            attributes: ['id', 'name', 'surname', 'notification_preferences', 'telegram_bot_token', 'telegram_chat_id'],
+            attributes: [
+                'id',
+                'name',
+                'surname',
+                'notification_preferences',
+                'telegram_bot_token',
+                'telegram_chat_id',
+            ],
         });
 
         if (!user) {

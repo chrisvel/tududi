@@ -19,7 +19,8 @@ const { v4: uuid } = require('uuid');
 const NOTIFICATION_TEMPLATES = {
     task_due_soon: {
         title: '📌 Task Due Soon',
-        message: 'Your test task "Complete project documentation" is due in 2 hours',
+        message:
+            'Your test task "Complete project documentation" is due in 2 hours',
         level: 'warning',
         data: {
             taskUid: uuid(),
@@ -35,7 +36,9 @@ const NOTIFICATION_TEMPLATES = {
         data: {
             taskUid: uuid(),
             taskName: 'Review pull request #123',
-            dueDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+            dueDate: new Date(
+                Date.now() - 3 * 24 * 60 * 60 * 1000
+            ).toISOString(),
             isOverdue: true,
         },
     },
@@ -57,13 +60,16 @@ const NOTIFICATION_TEMPLATES = {
         data: {
             projectUid: uuid(),
             projectName: 'Website Redesign',
-            dueDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+            dueDate: new Date(
+                Date.now() - 1 * 24 * 60 * 60 * 1000
+            ).toISOString(),
             isOverdue: true,
         },
     },
     defer_until: {
         title: '🕐 Task Now Active',
-        message: 'Your test task "Follow up with client" is now available to work on',
+        message:
+            'Your test task "Follow up with client" is now available to work on',
         level: 'info',
         data: {
             taskUid: uuid(),
@@ -108,7 +114,13 @@ async function getSources(user, notificationType) {
 
 async function triggerNotification(userId, notificationType) {
     const user = await User.findByPk(userId, {
-        attributes: ['id', 'email', 'notification_preferences', 'telegram_bot_token', 'telegram_chat_id'],
+        attributes: [
+            'id',
+            'email',
+            'notification_preferences',
+            'telegram_bot_token',
+            'telegram_chat_id',
+        ],
     });
 
     if (!user) {
@@ -119,15 +131,22 @@ async function triggerNotification(userId, notificationType) {
     const template = NOTIFICATION_TEMPLATES[notificationType];
     if (!template) {
         console.error(`❌ Unknown notification type: ${notificationType}`);
-        console.log('Available types:', Object.keys(NOTIFICATION_TEMPLATES).join(', '));
+        console.log(
+            'Available types:',
+            Object.keys(NOTIFICATION_TEMPLATES).join(', ')
+        );
         return;
     }
 
     // Get sources based on user preferences
     const sources = await getSources(user, notificationType);
 
-    console.log(`\n📬 Triggering ${notificationType} notification for ${user.email}`);
-    console.log(`   Sources: ${sources.length > 0 ? sources.join(', ') : 'none (in-app only)'}`);
+    console.log(
+        `\n📬 Triggering ${notificationType} notification for ${user.email}`
+    );
+    console.log(
+        `   Sources: ${sources.length > 0 ? sources.join(', ') : 'none (in-app only)'}`
+    );
 
     if (sources.includes('telegram') && !user.telegram_bot_token) {
         console.log('   ⚠️  Warning: Telegram enabled but bot not configured');
@@ -163,7 +182,7 @@ async function triggerAllNotifications(userId) {
     for (const type of Object.keys(NOTIFICATION_TEMPLATES)) {
         await triggerNotification(userId, type);
         // Small delay between notifications
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 500));
     }
 
     console.log('\n✨ All notifications triggered!\n');
@@ -175,11 +194,12 @@ async function listUsers() {
     });
 
     console.log('\n📋 Available users:\n');
-    users.forEach(user => {
-        const telegramStatus = user.telegram_bot_token && user.telegram_chat_id
-            ? '✅'
-            : '❌';
-        console.log(`   ${user.id}. ${user.email} (Telegram: ${telegramStatus})`);
+    users.forEach((user) => {
+        const telegramStatus =
+            user.telegram_bot_token && user.telegram_chat_id ? '✅' : '❌';
+        console.log(
+            `   ${user.id}. ${user.email} (Telegram: ${telegramStatus})`
+        );
     });
     console.log('');
 }
@@ -228,7 +248,9 @@ Examples:
 
     if (!userId) {
         console.log('❌ Error: User ID is required\n');
-        console.log('Usage: node backend/scripts/test-notifications.js [userId] [notificationType]');
+        console.log(
+            'Usage: node backend/scripts/test-notifications.js [userId] [notificationType]'
+        );
         console.log('Run with --help for more information');
         console.log('\nTip: Run with --list to see available users');
         process.exit(1);
@@ -245,7 +267,7 @@ Examples:
 }
 
 // Run the script
-main().catch(error => {
+main().catch((error) => {
     console.error('❌ Script failed:', error);
     process.exit(1);
 });

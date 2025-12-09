@@ -20,7 +20,12 @@ const DEFAULT_PREFERENCES: NotificationPreferences = {
     dueTasks: { inApp: true, email: false, push: false, telegram: false },
     overdueTasks: { inApp: true, email: false, push: false, telegram: false },
     dueProjects: { inApp: true, email: false, push: false, telegram: false },
-    overdueProjects: { inApp: true, email: false, push: false, telegram: false },
+    overdueProjects: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+    },
     deferUntil: { inApp: true, email: false, push: false, telegram: false },
 };
 
@@ -28,8 +33,16 @@ interface NotificationTypeRowProps {
     icon: React.ComponentType<{ className?: string }>;
     label: string;
     description: string;
-    preferences: { inApp: boolean; email: boolean; push: boolean; telegram: boolean };
-    onToggle: (channel: 'inApp' | 'email' | 'push' | 'telegram', value: boolean) => void;
+    preferences: {
+        inApp: boolean;
+        email: boolean;
+        push: boolean;
+        telegram: boolean;
+    };
+    onToggle: (
+        channel: 'inApp' | 'email' | 'push' | 'telegram',
+        value: boolean
+    ) => void;
     telegramConfigured: boolean;
 }
 
@@ -93,7 +106,11 @@ const NotificationTypeRow: React.FC<NotificationTypeRowProps> = ({
                 {renderToggle('push', preferences.push, false)}
             </td>
             <td className="py-4 px-4 text-center">
-                {renderToggle('telegram', preferences.telegram, telegramConfigured)}
+                {renderToggle(
+                    'telegram',
+                    preferences.telegram,
+                    telegramConfigured
+                )}
             </td>
         </tr>
     );
@@ -106,7 +123,8 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
 }) => {
     const { t } = useTranslation();
     const [profile, setProfile] = React.useState<any>(null);
-    const [selectedTestType, setSelectedTestType] = React.useState<string>('task_due_soon');
+    const [selectedTestType, setSelectedTestType] =
+        React.useState<string>('task_due_soon');
     const [testLoading, setTestLoading] = React.useState<boolean>(false);
     const [testMessage, setTestMessage] = React.useState<string>('');
 
@@ -116,9 +134,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
             fetch('/api/profile')
                 .then((res) => res.json())
                 .then((data) => setProfile(data))
-                .catch((err) =>
-                    console.error('Failed to fetch profile', err)
-                );
+                .catch((err) => console.error('Failed to fetch profile', err));
         }
     }, [isActive]);
 
@@ -167,15 +183,16 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
 
             if (response.ok) {
                 const sources = data.notification.sources;
-                const sourcesList = sources.length > 0
-                    ? sources.join(', ')
-                    : 'in-app only';
+                const sourcesList =
+                    sources.length > 0 ? sources.join(', ') : 'in-app only';
                 setTestMessage(`✅ Test notification sent! (${sourcesList})`);
             } else {
                 setTestMessage(`❌ Failed: ${data.error}`);
             }
         } catch (error) {
-            setTestMessage(`❌ Error: ${error.message || 'Failed to send test'}`);
+            setTestMessage(
+                `❌ Error: ${error.message || 'Failed to send test'}`
+            );
         } finally {
             setTestLoading(false);
             // Clear message after 5 seconds
@@ -247,7 +264,10 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 </div>
                             </th>
                             <th className="py-3 px-4 text-center text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                {t('notifications.channels.telegram', 'Telegram')}
+                                {t(
+                                    'notifications.channels.telegram',
+                                    'Telegram'
+                                )}
                             </th>
                         </tr>
                     </thead>
@@ -358,16 +378,25 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                             {t('notifications.types.dueTasks', 'Due Tasks')}
                         </option>
                         <option value="task_overdue">
-                            {t('notifications.types.overdueTasks', 'Overdue Tasks')}
+                            {t(
+                                'notifications.types.overdueTasks',
+                                'Overdue Tasks'
+                            )}
                         </option>
                         <option value="defer_until">
                             {t('notifications.types.deferUntil', 'Defer Until')}
                         </option>
                         <option value="project_due_soon">
-                            {t('notifications.types.dueProjects', 'Due Projects')}
+                            {t(
+                                'notifications.types.dueProjects',
+                                'Due Projects'
+                            )}
                         </option>
                         <option value="project_overdue">
-                            {t('notifications.types.overdueProjects', 'Overdue Projects')}
+                            {t(
+                                'notifications.types.overdueProjects',
+                                'Overdue Projects'
+                            )}
                         </option>
                     </select>
                     <button

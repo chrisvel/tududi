@@ -6,7 +6,12 @@ const DEFAULT_PREFERENCES = {
     dueTasks: { inApp: true, email: false, push: false, telegram: false },
     overdueTasks: { inApp: true, email: false, push: false, telegram: false },
     dueProjects: { inApp: true, email: false, push: false, telegram: false },
-    overdueProjects: { inApp: true, email: false, push: false, telegram: false },
+    overdueProjects: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+    },
     deferUntil: { inApp: true, email: false, push: false, telegram: false },
 };
 
