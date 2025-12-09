@@ -3,11 +3,16 @@
  */
 
 const DEFAULT_PREFERENCES = {
-    dueTasks: { inApp: true, email: false, push: false },
-    overdueTasks: { inApp: true, email: false, push: false },
-    dueProjects: { inApp: true, email: false, push: false },
-    overdueProjects: { inApp: true, email: false, push: false },
-    deferUntil: { inApp: true, email: false, push: false },
+    dueTasks: { inApp: true, email: false, push: false, telegram: false },
+    overdueTasks: { inApp: true, email: false, push: false, telegram: false },
+    dueProjects: { inApp: true, email: false, push: false, telegram: false },
+    overdueProjects: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+    },
+    deferUntil: { inApp: true, email: false, push: false, telegram: false },
 };
 
 /**
@@ -48,6 +53,33 @@ function shouldSendInAppNotification(user, notificationType) {
 }
 
 /**
+ * Check if user has enabled Telegram notifications for a specific type
+ * @param {Object} user - User model instance with notification_preferences field
+ * @param {string} notificationType - Backend notification type (e.g., 'task_due_soon', 'task_overdue')
+ * @returns {boolean} - True if Telegram notifications are enabled for this type
+ */
+function shouldSendTelegramNotification(user, notificationType) {
+    // If no user or no preferences set, default to disabled for Telegram
+    if (!user || !user.notification_preferences) {
+        return false;
+    }
+
+    const prefs = user.notification_preferences;
+
+    // Map notification type to preference key
+    const prefKey =
+        NOTIFICATION_TYPE_MAPPING[notificationType] || notificationType;
+
+    // If notification type not configured, default to disabled
+    if (!prefs[prefKey]) {
+        return false;
+    }
+
+    // Check if telegram channel is enabled (default to false if not set)
+    return prefs[prefKey].telegram === true;
+}
+
+/**
  * Get default notification preferences
  * @returns {Object} - Default preferences object
  */
@@ -57,6 +89,7 @@ function getDefaultNotificationPreferences() {
 
 module.exports = {
     shouldSendInAppNotification,
+    shouldSendTelegramNotification,
     getDefaultNotificationPreferences,
     NOTIFICATION_TYPE_MAPPING,
 };

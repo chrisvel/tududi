@@ -46,7 +46,7 @@ const TelegramTab: React.FC<TelegramTabProps> = ({
     if (!isActive) return null;
 
     return (
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-blue-300 dark:border-blue-700 mb-8">
+        <div className="mb-8">
             <h3 className="text-xl font-semibold text-blue-700 dark:text-blue-300 mb-6 flex items-center">
                 <TelegramIcon className="w-6 h-6 mr-3 text-blue-500" />
                 {t('profile.telegramIntegration', 'Telegram Integration')}

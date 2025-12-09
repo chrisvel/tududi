@@ -3,17 +3,9 @@ const { Op } = require('sequelize');
 const { logError } = require('./logService');
 const {
     shouldSendInAppNotification,
+    shouldSendTelegramNotification,
 } = require('../utils/notificationPreferences');
 
-/**
- * Service to check for deferred tasks that are now active
- * and create notifications for users
- */
-
-/**
- * Check for tasks that have a defer_until date that has passed
- * and create notifications for the task owners
- */
 async function checkDeferredTasks() {
     try {
         const now = new Date();
@@ -55,13 +47,10 @@ async function checkDeferredTasks() {
 
         for (const task of deferredTasks) {
             try {
-                // Check if user wants defer until notifications
                 if (!shouldSendInAppNotification(task.User, 'deferUntil')) {
                     continue;
                 }
 
-                // Check for existing notifications (including dismissed ones)
-                // If a notification was dismissed, don't create it again
                 const recentNotifications = await Notification.findAll({
                     where: {
                         user_id: task.user_id,
@@ -79,9 +68,12 @@ async function checkDeferredTasks() {
                 );
 
                 if (existingNotification) {
-                    // Skip if notification exists, even if it was dismissed
-                    // This prevents re-notifying users about tasks they've already dismissed
                     continue;
+                }
+
+                const sources = [];
+                if (shouldSendTelegramNotification(task.User, 'deferUntil')) {
+                    sources.push('telegram');
                 }
 
                 await Notification.createNotification({
@@ -89,7 +81,7 @@ async function checkDeferredTasks() {
                     type: 'task_due_soon',
                     title: 'Task is now active',
                     message: `Your task "${task.name}" is now available to work on`,
-                    sources: [],
+                    sources,
                     data: {
                         taskUid: task.uid,
                         taskName: task.name,
@@ -119,15 +111,11 @@ async function checkDeferredTasks() {
     }
 }
 
-/**
- * Get statistics about deferred tasks
- */
 async function getDeferredTaskStats() {
     try {
         const now = new Date();
 
         const [totalDeferred, activeNow, activeSoon] = await Promise.all([
-            // Total tasks with defer_until set
             Task.count({
                 where: {
                     defer_until: {
@@ -139,7 +127,6 @@ async function getDeferredTaskStats() {
                 },
             }),
 
-            // Tasks that should be active now
             Task.count({
                 where: {
                     defer_until: {
@@ -152,7 +139,6 @@ async function getDeferredTaskStats() {
                 },
             }),
 
-            // Tasks that will be active in the next hour
             Task.count({
                 where: {
                     defer_until: {

@@ -10,11 +10,36 @@ describe('notificationPreferences utils', () => {
             const defaults = getDefaultNotificationPreferences();
 
             expect(defaults).toEqual({
-                dueTasks: { inApp: true, email: false, push: false },
-                overdueTasks: { inApp: true, email: false, push: false },
-                dueProjects: { inApp: true, email: false, push: false },
-                overdueProjects: { inApp: true, email: false, push: false },
-                deferUntil: { inApp: true, email: false, push: false },
+                dueTasks: {
+                    inApp: true,
+                    email: false,
+                    push: false,
+                    telegram: false,
+                },
+                overdueTasks: {
+                    inApp: true,
+                    email: false,
+                    push: false,
+                    telegram: false,
+                },
+                dueProjects: {
+                    inApp: true,
+                    email: false,
+                    push: false,
+                    telegram: false,
+                },
+                overdueProjects: {
+                    inApp: true,
+                    email: false,
+                    push: false,
+                    telegram: false,
+                },
+                deferUntil: {
+                    inApp: true,
+                    email: false,
+                    push: false,
+                    telegram: false,
+                },
             });
         });
 

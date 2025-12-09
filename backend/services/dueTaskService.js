@@ -3,6 +3,7 @@ const { Op } = require('sequelize');
 const { logError } = require('./logService');
 const {
     shouldSendInAppNotification,
+    shouldSendTelegramNotification,
 } = require('../utils/notificationPreferences');
 
 /**
@@ -100,13 +101,21 @@ async function checkDueTasks() {
                     isOverdue
                 );
 
+                // Build sources array based on user preferences
+                const sources = [];
+                if (
+                    shouldSendTelegramNotification(task.User, notificationType)
+                ) {
+                    sources.push('telegram');
+                }
+
                 await Notification.createNotification({
                     userId: task.user_id,
                     type: notificationType,
                     title,
                     message,
                     level,
-                    sources: [],
+                    sources,
                     data: {
                         taskUid: task.uid,
                         taskName: task.name,

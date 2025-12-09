@@ -56,7 +56,7 @@ const ApiKeysTab: React.FC<ApiKeysTabProps> = ({
     if (!isActive) return null;
 
     return (
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+        <div>
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
                 <KeyIcon className="w-6 h-6 mr-3 text-indigo-500" />
                 {t('profile.apiKeys.title', 'API Keys')}

@@ -5,11 +5,36 @@ export interface ProfileSettingsProps {
 }
 
 export interface NotificationPreferences {
-    dueTasks: { inApp: boolean; email: boolean; push: boolean };
-    overdueTasks: { inApp: boolean; email: boolean; push: boolean };
-    dueProjects: { inApp: boolean; email: boolean; push: boolean };
-    overdueProjects: { inApp: boolean; email: boolean; push: boolean };
-    deferUntil: { inApp: boolean; email: boolean; push: boolean };
+    dueTasks: {
+        inApp: boolean;
+        email: boolean;
+        push: boolean;
+        telegram: boolean;
+    };
+    overdueTasks: {
+        inApp: boolean;
+        email: boolean;
+        push: boolean;
+        telegram: boolean;
+    };
+    dueProjects: {
+        inApp: boolean;
+        email: boolean;
+        push: boolean;
+        telegram: boolean;
+    };
+    overdueProjects: {
+        inApp: boolean;
+        email: boolean;
+        push: boolean;
+        telegram: boolean;
+    };
+    deferUntil: {
+        inApp: boolean;
+        email: boolean;
+        push: boolean;
+        telegram: boolean;
+    };
 }
 
 export interface Profile {
