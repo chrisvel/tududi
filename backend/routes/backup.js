@@ -28,7 +28,8 @@ const checkBackupsEnabled = (req, res, next) => {
     if (!backupsEnabled) {
         return res.status(403).json({
             error: 'Backups feature is disabled',
-            message: 'The backups feature is currently disabled. Please contact your administrator.',
+            message:
+                'The backups feature is currently disabled. Please contact your administrator.',
         });
     }
     next();
@@ -39,7 +40,8 @@ router.use(checkBackupsEnabled);
 async function parseUploadedBackup(fileBuffer, filename) {
     let backupJson;
 
-    const isGzipped = filename.toLowerCase().endsWith('.gz') ||
+    const isGzipped =
+        filename.toLowerCase().endsWith('.gz') ||
         (fileBuffer[0] === 0x1f && fileBuffer[1] === 0x8b);
 
     if (isGzipped) {
@@ -57,10 +59,18 @@ const upload = multer({
         fileSize: 100 * 1024 * 1024,
     },
     fileFilter: (req, file, cb) => {
-        const allowedMimes = ['application/json', 'application/gzip', 'application/x-gzip'];
+        const allowedMimes = [
+            'application/json',
+            'application/gzip',
+            'application/x-gzip',
+        ];
         const fileExt = file.originalname.toLowerCase();
 
-        if (allowedMimes.includes(file.mimetype) || fileExt.endsWith('.json') || fileExt.endsWith('.gz')) {
+        if (
+            allowedMimes.includes(file.mimetype) ||
+            fileExt.endsWith('.json') ||
+            fileExt.endsWith('.gz')
+        ) {
             cb(null, true);
         } else {
             cb(new Error('Only JSON and gzip files are allowed'), false);
@@ -109,7 +119,10 @@ router.post('/backup/import', upload.single('backup'), async (req, res) => {
 
         let backupData;
         try {
-            backupData = await parseUploadedBackup(req.file.buffer, req.file.originalname);
+            backupData = await parseUploadedBackup(
+                req.file.buffer,
+                req.file.originalname
+            );
         } catch (parseError) {
             return res.status(400).json({
                 error: 'Invalid backup file',
@@ -167,7 +180,10 @@ router.post('/backup/validate', upload.single('backup'), async (req, res) => {
 
         let backupData;
         try {
-            backupData = await parseUploadedBackup(req.file.buffer, req.file.originalname);
+            backupData = await parseUploadedBackup(
+                req.file.buffer,
+                req.file.originalname
+            );
         } catch (parseError) {
             return res.status(400).json({
                 valid: false,
@@ -265,7 +281,9 @@ router.get('/backup/:uid/download', async (req, res) => {
         const fileBuffer = await fs.readFile(filePath);
         const isCompressed = backup.file_path.endsWith('.gz');
         const filename = `tududi-backup-${new Date().toISOString().split('T')[0]}${isCompressed ? '.json.gz' : '.json'}`;
-        const contentType = isCompressed ? 'application/gzip' : 'application/json';
+        const contentType = isCompressed
+            ? 'application/gzip'
+            : 'application/json';
         res.setHeader('Content-Type', contentType);
         res.setHeader(
             'Content-Disposition',

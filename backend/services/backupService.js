@@ -243,11 +243,7 @@ async function exportUserData(userId) {
  * @param {boolean} options.merge - If true, merge with existing data (default: true)
  * @returns {Promise<object>} - Import statistics
  */
-async function importUserData(
-    userId,
-    backupData,
-    options = { merge: true }
-) {
+async function importUserData(userId, backupData, options = { merge: true }) {
     const transaction = await sequelize.transaction();
 
     try {
@@ -365,7 +361,8 @@ async function importUserData(
                             priority: projectData.priority,
                             due_date_at: projectData.due_date_at,
                             image_url: projectData.image_url,
-                            task_show_completed: projectData.task_show_completed,
+                            task_show_completed:
+                                projectData.task_show_completed,
                             task_sort_order: projectData.task_sort_order,
                             state: projectData.state,
                             user_id: userId,
@@ -377,7 +374,10 @@ async function importUserData(
                     uidToIdMap.projects[projectData.uid] = newProject.id;
 
                     // Create project-tag relationships
-                    if (projectData.tag_uids && projectData.tag_uids.length > 0) {
+                    if (
+                        projectData.tag_uids &&
+                        projectData.tag_uids.length > 0
+                    ) {
                         const tagIds = projectData.tag_uids
                             .map((uid) => uidToIdMap.tags[uid])
                             .filter(Boolean);
@@ -454,7 +454,10 @@ async function importUserData(
                     }
 
                     // Create recurring completions
-                    if (taskData.completions && taskData.completions.length > 0) {
+                    if (
+                        taskData.completions &&
+                        taskData.completions.length > 0
+                    ) {
                         for (const completion of taskData.completions) {
                             await RecurringCompletion.create(
                                 {
@@ -467,7 +470,10 @@ async function importUserData(
                     }
 
                     // Create task attachments
-                    if (taskData.attachments && taskData.attachments.length > 0) {
+                    if (
+                        taskData.attachments &&
+                        taskData.attachments.length > 0
+                    ) {
                         for (const attachment of taskData.attachments) {
                             await TaskAttachment.create(
                                 {
@@ -487,10 +493,7 @@ async function importUserData(
 
             // Second pass: update parent_task_id and recurring_parent_id
             for (const taskData of backupData.data.tasks) {
-                if (
-                    taskData.parent_task_id ||
-                    taskData.recurring_parent_id
-                ) {
+                if (taskData.parent_task_id || taskData.recurring_parent_id) {
                     const task = await Task.findOne({
                         where: { uid: taskData.uid, user_id: userId },
                         transaction,
@@ -521,7 +524,8 @@ async function importUserData(
                                 transaction,
                             });
                             if (recurringParent) {
-                                updates.recurring_parent_id = recurringParent.id;
+                                updates.recurring_parent_id =
+                                    recurringParent.id;
                             }
                         }
 
@@ -774,7 +778,10 @@ async function cleanOldBackups(userId) {
                 try {
                     await fs.unlink(filePath);
                 } catch (err) {
-                    console.error(`Failed to delete backup file: ${filePath}`, err);
+                    console.error(
+                        `Failed to delete backup file: ${filePath}`,
+                        err
+                    );
                 }
 
                 // Delete database record
