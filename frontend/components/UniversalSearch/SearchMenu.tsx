@@ -62,10 +62,16 @@ const deferOptions = [
     { value: 'next_month', labelKey: 'dateIndicators.nextMonth' },
 ];
 
-const recurringOptions = [
-    { value: 'recurring', labelKey: 'search.recurringFilter.recurring' },
-    { value: 'non_recurring', labelKey: 'search.recurringFilter.nonRecurring' },
-    { value: 'instances', labelKey: 'search.recurringFilter.instances' },
+const extrasOptions = [
+    { value: 'recurring', labelKey: 'search.extrasFilter.isRecurring' },
+    { value: 'overdue', labelKey: 'search.extrasFilter.isOverdue' },
+    { value: 'has_content', labelKey: 'search.extrasFilter.hasContent' },
+    { value: 'deferred', labelKey: 'search.extrasFilter.isDeferred' },
+    { value: 'has_tags', labelKey: 'search.extrasFilter.hasTags' },
+    {
+        value: 'assigned_to_project',
+        labelKey: 'search.extrasFilter.isAssignedToProject',
+    },
 ];
 
 const SearchMenu: React.FC<SearchMenuProps> = ({
@@ -82,9 +88,7 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
     const [selectedDue, setSelectedDue] = useState<string | null>(null);
     const [selectedDefer, setSelectedDefer] = useState<string | null>(null);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
-    const [selectedRecurring, setSelectedRecurring] = useState<string | null>(
-        null
-    );
+    const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
     const [availableTags, setAvailableTags] = useState<
         Array<{ id: number; name: string }>
     >([]);
@@ -132,9 +136,11 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
         );
     };
 
-    const handleRecurringToggle = (recurring: string) => {
-        setSelectedRecurring(
-            selectedRecurring === recurring ? null : recurring
+    const handleExtrasToggle = (extra: string) => {
+        setSelectedExtras((prev) =>
+            prev.includes(extra)
+                ? prev.filter((e) => e !== extra)
+                : [...prev, extra]
         );
     };
 
@@ -162,7 +168,7 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                     due: selectedDue || null,
                     defer: selectedDefer || null,
                     tags: selectedTags.length > 0 ? selectedTags : null,
-                    recurring: selectedRecurring || null,
+                    extras: selectedExtras.length > 0 ? selectedExtras : null,
                 }),
             });
 
@@ -350,25 +356,45 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
             parts.push(...tagsWithSeparators);
         }
 
-        // Add recurring filter
-        if (selectedRecurring) {
-            const recurringOption = recurringOptions.find(
-                (opt) => opt.value === selectedRecurring
-            );
-            const recurringLabel = recurringOption
-                ? t(recurringOption.labelKey)
-                : selectedRecurring;
+        // Add extras filters
+        if (selectedExtras.length > 0) {
             parts.push(
-                <span key="recurring-label">{t('search.thatAre') + ' '}</span>
+                <span key="extras-label">{t('search.thatAre') + ' '}</span>
             );
-            parts.push(
-                <span
-                    key="recurring"
-                    style={{ fontWeight: 800, fontStyle: 'normal' }}
-                >
-                    {recurringLabel}
-                </span>
-            );
+            const extrasElements = selectedExtras.map((extra) => {
+                const extraOption = extrasOptions.find(
+                    (opt) => opt.value === extra
+                );
+                const extraLabel = extraOption
+                    ? t(extraOption.labelKey)
+                    : extra;
+                return (
+                    <span
+                        key={`extra-${extra}`}
+                        style={{ fontWeight: 800, fontStyle: 'normal' }}
+                    >
+                        {extraLabel}
+                    </span>
+                );
+            });
+            const extrasWithSeparators: React.ReactNode[] = [];
+            extrasElements.forEach((extraEl, index) => {
+                if (index > 0) {
+                    if (index === extrasElements.length - 1) {
+                        extrasWithSeparators.push(
+                            <span key={`sep-extra-and-${index}`}>
+                                {' ' + t('search.and') + ' '}
+                            </span>
+                        );
+                    } else {
+                        extrasWithSeparators.push(
+                            <span key={`sep-extra-comma-${index}`}>{', '}</span>
+                        );
+                    }
+                }
+                extrasWithSeparators.push(extraEl);
+            });
+            parts.push(...extrasWithSeparators);
         }
 
         if (parts.length === 0) return null;
@@ -389,7 +415,7 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
         selectedDue ||
         selectedDefer ||
         selectedTags.length > 0 ||
-        selectedRecurring;
+        selectedExtras.length > 0;
 
     return (
         <div
@@ -567,29 +593,21 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                                 {t('search.extras')}
                             </div>
 
-                            {/* Recurring Filters */}
-                            <div>
-                                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1.5">
-                                    {t('search.recurringFilter.label')}
-                                </div>
-                                <div className="flex flex-wrap gap-2">
-                                    {recurringOptions.map((option) => (
-                                        <FilterBadge
-                                            key={option.value}
-                                            name={t(option.labelKey)}
-                                            color="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200"
-                                            isSelected={
-                                                selectedRecurring ===
-                                                option.value
-                                            }
-                                            onToggle={() =>
-                                                handleRecurringToggle(
-                                                    option.value
-                                                )
-                                            }
-                                        />
-                                    ))}
-                                </div>
+                            {/* Extras Filters */}
+                            <div className="flex flex-wrap gap-2">
+                                {extrasOptions.map((option) => (
+                                    <FilterBadge
+                                        key={option.value}
+                                        name={t(option.labelKey)}
+                                        color="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200"
+                                        isSelected={selectedExtras.includes(
+                                            option.value
+                                        )}
+                                        onToggle={() =>
+                                            handleExtrasToggle(option.value)
+                                        }
+                                    />
+                                ))}
                             </div>
                         </div>
 
@@ -683,7 +701,7 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                 selectedDue={selectedDue}
                 selectedDefer={selectedDefer}
                 selectedTags={selectedTags}
-                selectedRecurring={selectedRecurring}
+                selectedExtras={selectedExtras}
                 onClose={onClose}
             />
         </div>

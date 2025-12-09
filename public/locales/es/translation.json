@@ -1207,7 +1207,15 @@
       "instances": "instancias recurrentes"
     },
     "deferUntilFilter": "Aplazar hasta",
-    "deferUntil": ", aplazar hasta"
+    "deferUntil": ", aplazar hasta",
+    "extrasFilter": {
+      "isRecurring": "es Recurrente",
+      "isOverdue": "está Vencido",
+      "hasContent": "tiene Contenido",
+      "isDeferred": "está Diferido",
+      "hasTags": "tiene Etiquetas",
+      "isAssignedToProject": "está Asignado al Proyecto"
+    }
   },
   "subtasks": {
     "placeholder": "Agregar una subtarea..."

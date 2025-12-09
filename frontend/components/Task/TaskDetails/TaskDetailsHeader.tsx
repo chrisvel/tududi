@@ -40,6 +40,7 @@ interface TaskDetailsHeaderProps {
     onToggleTodayPlan?: () => void;
     onQuickStatusToggle?: () => void;
     attachmentCount?: number;
+    subtasksCount?: number;
 }
 
 const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
@@ -61,6 +62,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
     onToggleTodayPlan,
     onQuickStatusToggle,
     attachmentCount = 0,
+    subtasksCount = 0,
 }) => {
     const { t } = useTranslation();
     const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -657,7 +659,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                             <span className="text-xs text-gray-400 dark:text-gray-500 sm:pl-1 mt-1 sm:mt-0">
                                                 {t(
                                                     'task.lastUpdatedAt',
-                                                    'Last updated at'
+                                                    'Updated at'
                                                 )}
                                                 :{' '}
                                                 <span className="text-gray-500 dark:text-gray-400">
@@ -761,23 +763,30 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                         </button>
                         <button
                             onClick={() => onPillChange('subtasks')}
-                            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors relative ${
                                 activePill === 'subtasks'
                                     ? 'bg-blue-500 dark:bg-blue-600 text-white'
                                     : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                             }`}
                         >
                             {t('task.subtasks', 'Subtasks')}
+                            {subtasksCount > 0 && (
+                                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full border border-white dark:border-gray-900"></span>
+                            )}
                         </button>
                         <button
-                            onClick={() => onPillChange('schedule')}
-                            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                                activePill === 'schedule'
+                            onClick={() => onPillChange('recurrence')}
+                            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors relative ${
+                                activePill === 'recurrence'
                                     ? 'bg-blue-500 dark:bg-blue-600 text-white'
                                     : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                             }`}
                         >
-                            {t('task.schedule', 'Schedule')}
+                            {t('task.recurrence', 'Recurrence')}
+                            {task.recurrence_type &&
+                                task.recurrence_type !== 'none' && (
+                                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full border border-white dark:border-gray-900"></span>
+                                )}
                         </button>
                         <button
                             onClick={() => onPillChange('attachments')}

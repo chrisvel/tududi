@@ -1206,7 +1206,15 @@
       "instances": "定期的なインスタンス"
     },
     "deferUntilFilter": "フィルターまで遅延",
-    "deferUntil": "、遅延するまで"
+    "deferUntil": "、遅延するまで",
+    "extrasFilter": {
+      "isRecurring": "繰り返し",
+      "isOverdue": "期限切れ",
+      "hasContent": "コンテンツあり",
+      "isDeferred": "保留中",
+      "hasTags": "タグあり",
+      "isAssignedToProject": "プロジェクトに割り当てられている"
+    }
   },
   "subtasks": {
     "placeholder": "サブタスクを追加..."

@@ -97,9 +97,7 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({ onImportSuccess }) => {
             await loadBackups();
         } catch (error) {
             console.error('Export error:', error);
-            showErrorToast(
-                t('backup.exportError', 'Failed to create backup')
-            );
+            showErrorToast(t('backup.exportError', 'Failed to create backup'));
         } finally {
             setIsExporting(false);
         }
@@ -164,7 +162,10 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({ onImportSuccess }) => {
                 try {
                     await deleteSavedBackup(backupUid);
                     showSuccessToast(
-                        t('backup.deleteSuccess', 'Backup deleted successfully!')
+                        t(
+                            'backup.deleteSuccess',
+                            'Backup deleted successfully!'
+                        )
                     );
                     // Reload the backup list
                     await loadBackups();
@@ -234,9 +235,7 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({ onImportSuccess }) => {
             }
         } catch (error) {
             console.error('Import error:', error);
-            showErrorToast(
-                t('backup.importError', 'Failed to import backup')
-            );
+            showErrorToast(t('backup.importError', 'Failed to import backup'));
         } finally {
             setIsImporting(false);
         }
@@ -260,7 +259,9 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({ onImportSuccess }) => {
                     title={confirmDialog.title}
                     message={confirmDialog.message}
                     onConfirm={confirmDialog.onConfirm}
-                    onCancel={() => setConfirmDialog({ ...confirmDialog, isOpen: false })}
+                    onCancel={() =>
+                        setConfirmDialog({ ...confirmDialog, isOpen: false })
+                    }
                 />
             )}
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -291,7 +292,12 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({ onImportSuccess }) => {
                             >
                                 <div className="flex items-center justify-center space-x-2">
                                     <ArrowDownTrayIcon className="h-5 w-5" />
-                                    <span>{t('backup.createBackup', 'Create Backup')}</span>
+                                    <span>
+                                        {t(
+                                            'backup.createBackup',
+                                            'Create Backup'
+                                        )}
+                                    </span>
                                 </div>
                             </button>
                             <button
@@ -304,7 +310,12 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({ onImportSuccess }) => {
                             >
                                 <div className="flex items-center justify-center space-x-2">
                                     <ArrowUpTrayIcon className="h-5 w-5" />
-                                    <span>{t('backup.importFromFile', 'Import from File')}</span>
+                                    <span>
+                                        {t(
+                                            'backup.importFromFile',
+                                            'Import from File'
+                                        )}
+                                    </span>
                                 </div>
                             </button>
                         </div>
@@ -316,7 +327,10 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({ onImportSuccess }) => {
                             <div className="space-y-6">
                                 <div>
                                     <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                                        {t('backup.createNewBackup', 'Create New Backup')}
+                                        {t(
+                                            'backup.createNewBackup',
+                                            'Create New Backup'
+                                        )}
                                     </h3>
                                     <p className="text-sm text-gray-600 dark:text-gray-400">
                                         {t(
@@ -353,12 +367,18 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({ onImportSuccess }) => {
                                                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                                                 ></path>
                                             </svg>
-                                            {t('backup.creating', 'Creating backup...')}
+                                            {t(
+                                                'backup.creating',
+                                                'Creating backup...'
+                                            )}
                                         </>
                                     ) : (
                                         <>
                                             <ArrowDownTrayIcon className="h-5 w-5 mr-2" />
-                                            {t('backup.createBackupNow', 'Create Backup Now')}
+                                            {t(
+                                                'backup.createBackupNow',
+                                                'Create Backup Now'
+                                            )}
                                         </>
                                     )}
                                 </button>
@@ -367,14 +387,19 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({ onImportSuccess }) => {
                                 <div className="mt-8">
                                     <div className="flex items-center justify-between mb-4">
                                         <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-                                            {t('backup.savedBackups', 'Saved Backups')}
+                                            {t(
+                                                'backup.savedBackups',
+                                                'Saved Backups'
+                                            )}
                                         </h3>
                                         <button
                                             onClick={loadBackups}
                                             disabled={isLoadingBackups}
                                             className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center"
                                         >
-                                            <ArrowPathIcon className={`h-4 w-4 mr-1 ${isLoadingBackups ? 'animate-spin' : ''}`} />
+                                            <ArrowPathIcon
+                                                className={`h-4 w-4 mr-1 ${isLoadingBackups ? 'animate-spin' : ''}`}
+                                            />
                                             {t('common.refresh', 'Refresh')}
                                         </button>
                                     </div>
@@ -385,7 +410,10 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({ onImportSuccess }) => {
                                         </div>
                                     ) : savedBackups.length === 0 ? (
                                         <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                                            {t('backup.noBackups', 'No backups found. Create your first backup above.')}
+                                            {t(
+                                                'backup.noBackups',
+                                                'No backups found. Create your first backup above.'
+                                            )}
                                         </div>
                                     ) : (
                                         <div className="overflow-x-auto">
@@ -393,74 +421,136 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({ onImportSuccess }) => {
                                                 <thead className="bg-gray-50 dark:bg-gray-700">
                                                     <tr>
                                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                            {t('backup.createdAt', 'Created')}
+                                                            {t(
+                                                                'backup.createdAt',
+                                                                'Created'
+                                                            )}
                                                         </th>
                                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                            {t('backup.version', 'Version')}
+                                                            {t(
+                                                                'backup.version',
+                                                                'Version'
+                                                            )}
                                                         </th>
                                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                            {t('backup.size', 'Size')}
+                                                            {t(
+                                                                'backup.size',
+                                                                'Size'
+                                                            )}
                                                         </th>
                                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                            {t('backup.contents', 'Contents')}
+                                                            {t(
+                                                                'backup.contents',
+                                                                'Contents'
+                                                            )}
                                                         </th>
                                                         <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                            {t('backup.actions', 'Actions')}
+                                                            {t(
+                                                                'backup.actions',
+                                                                'Actions'
+                                                            )}
                                                         </th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                                    {savedBackups.map((backup) => (
-                                                        <tr key={backup.uid} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                                                {formatDate(backup.created_at)}
-                                                            </td>
-                                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                                                {backup.version}
-                                                            </td>
-                                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                                                {formatFileSize(backup.file_size)}
-                                                            </td>
-                                                            <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                                                                <div className="flex flex-wrap gap-2">
-                                                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                                                                        {backup.item_counts.tasks} tasks
-                                                                    </span>
-                                                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                                                                        {backup.item_counts.projects} projects
-                                                                    </span>
-                                                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
-                                                                        {backup.item_counts.notes} notes
-                                                                    </span>
-                                                                </div>
-                                                            </td>
-                                                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                                <div className="flex items-center justify-end space-x-2">
-                                                                    <button
-                                                                        onClick={() => handleRestoreBackup(backup.uid)}
-                                                                        className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
-                                                                        title={t('backup.restore', 'Restore')}
-                                                                    >
-                                                                        <ArrowPathIcon className="h-5 w-5" />
-                                                                    </button>
-                                                                    <button
-                                                                        onClick={() => handleDownloadBackup(backup.uid)}
-                                                                        className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
-                                                                        title={t('backup.download', 'Download')}
-                                                                    >
-                                                                        <ArrowDownTrayIcon className="h-5 w-5" />
-                                                                    </button>
-                                                                    <button
-                                                                        onClick={() => handleDeleteBackup(backup.uid)}
-                                                                        className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
-                                                                        title={t('backup.delete', 'Delete')}
-                                                                    >
-                                                                        <TrashIcon className="h-5 w-5" />
-                                                                    </button>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    ))}
+                                                    {savedBackups.map(
+                                                        (backup) => (
+                                                            <tr
+                                                                key={backup.uid}
+                                                                className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                                                            >
+                                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                                                    {formatDate(
+                                                                        backup.created_at
+                                                                    )}
+                                                                </td>
+                                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                                    {
+                                                                        backup.version
+                                                                    }
+                                                                </td>
+                                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                                    {formatFileSize(
+                                                                        backup.file_size
+                                                                    )}
+                                                                </td>
+                                                                <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                                                                    <div className="flex flex-wrap gap-2">
+                                                                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                                                            {
+                                                                                backup
+                                                                                    .item_counts
+                                                                                    .tasks
+                                                                            }{' '}
+                                                                            tasks
+                                                                        </span>
+                                                                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                                                            {
+                                                                                backup
+                                                                                    .item_counts
+                                                                                    .projects
+                                                                            }{' '}
+                                                                            projects
+                                                                        </span>
+                                                                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                                                                            {
+                                                                                backup
+                                                                                    .item_counts
+                                                                                    .notes
+                                                                            }{' '}
+                                                                            notes
+                                                                        </span>
+                                                                    </div>
+                                                                </td>
+                                                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                                    <div className="flex items-center justify-end space-x-2">
+                                                                        <button
+                                                                            onClick={() =>
+                                                                                handleRestoreBackup(
+                                                                                    backup.uid
+                                                                                )
+                                                                            }
+                                                                            className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                                                                            title={t(
+                                                                                'backup.restore',
+                                                                                'Restore'
+                                                                            )}
+                                                                        >
+                                                                            <ArrowPathIcon className="h-5 w-5" />
+                                                                        </button>
+                                                                        <button
+                                                                            onClick={() =>
+                                                                                handleDownloadBackup(
+                                                                                    backup.uid
+                                                                                )
+                                                                            }
+                                                                            className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
+                                                                            title={t(
+                                                                                'backup.download',
+                                                                                'Download'
+                                                                            )}
+                                                                        >
+                                                                            <ArrowDownTrayIcon className="h-5 w-5" />
+                                                                        </button>
+                                                                        <button
+                                                                            onClick={() =>
+                                                                                handleDeleteBackup(
+                                                                                    backup.uid
+                                                                                )
+                                                                            }
+                                                                            className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                                                                            title={t(
+                                                                                'backup.delete',
+                                                                                'Delete'
+                                                                            )}
+                                                                        >
+                                                                            <TrashIcon className="h-5 w-5" />
+                                                                        </button>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        )
+                                                    )}
                                                 </tbody>
                                             </table>
                                         </div>
@@ -471,7 +561,10 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({ onImportSuccess }) => {
                             <div className="space-y-6">
                                 <div>
                                     <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                                        {t('backup.importTitle', 'Import from File')}
+                                        {t(
+                                            'backup.importTitle',
+                                            'Import from File'
+                                        )}
                                     </h3>
                                     <p className="text-sm text-gray-600 dark:text-gray-400">
                                         {t(
@@ -502,16 +595,24 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({ onImportSuccess }) => {
                                 />
 
                                 <button
-                                    onClick={() => fileInputRef.current?.click()}
+                                    onClick={() =>
+                                        fileInputRef.current?.click()
+                                    }
                                     className="w-full flex items-center justify-center px-6 py-8 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:border-blue-500 dark:hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400 transition duration-150 ease-in-out"
                                 >
                                     <div className="text-center">
                                         <ArrowUpTrayIcon className="h-12 w-12 mx-auto mb-2" />
                                         <p className="text-base font-medium">
-                                            {t('backup.selectFile', 'Select Backup File')}
+                                            {t(
+                                                'backup.selectFile',
+                                                'Select Backup File'
+                                            )}
                                         </p>
                                         <p className="text-sm mt-1">
-                                            {t('backup.clickToUpload', 'Click to browse files')}
+                                            {t(
+                                                'backup.clickToUpload',
+                                                'Click to browse files'
+                                            )}
                                         </p>
                                     </div>
                                 </button>
@@ -524,7 +625,10 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({ onImportSuccess }) => {
                                                     {selectedFile.name}
                                                 </p>
                                                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                                                    {(selectedFile.size / 1024).toFixed(2)} KB
+                                                    {(
+                                                        selectedFile.size / 1024
+                                                    ).toFixed(2)}{' '}
+                                                    KB
                                                 </p>
                                             </div>
                                             {isValidating && (
@@ -554,71 +658,139 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({ onImportSuccess }) => {
                                             )}
                                         </div>
 
-                                        {validationResult?.valid && validationResult.summary && (
-                                            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
-                                                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                                                    {t('backup.backupContents', 'Backup contents:')}
-                                                </p>
-                                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm text-gray-600 dark:text-gray-400">
-                                                    <div className="flex items-center">
-                                                        <CheckIcon className="h-4 w-4 mr-2 text-green-600" />
-                                                        {validationResult.summary.tasks} tasks
-                                                    </div>
-                                                    <div className="flex items-center">
-                                                        <CheckIcon className="h-4 w-4 mr-2 text-green-600" />
-                                                        {validationResult.summary.projects} projects
-                                                    </div>
-                                                    <div className="flex items-center">
-                                                        <CheckIcon className="h-4 w-4 mr-2 text-green-600" />
-                                                        {validationResult.summary.notes} notes
-                                                    </div>
-                                                    <div className="flex items-center">
-                                                        <CheckIcon className="h-4 w-4 mr-2 text-green-600" />
-                                                        {validationResult.summary.tags} tags
-                                                    </div>
-                                                    <div className="flex items-center">
-                                                        <CheckIcon className="h-4 w-4 mr-2 text-green-600" />
-                                                        {validationResult.summary.areas} areas
-                                                    </div>
-                                                    <div className="flex items-center">
-                                                        <CheckIcon className="h-4 w-4 mr-2 text-green-600" />
-                                                        {validationResult.summary.views} views
+                                        {validationResult?.valid &&
+                                            validationResult.summary && (
+                                                <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+                                                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                                                        {t(
+                                                            'backup.backupContents',
+                                                            'Backup contents:'
+                                                        )}
+                                                    </p>
+                                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm text-gray-600 dark:text-gray-400">
+                                                        <div className="flex items-center">
+                                                            <CheckIcon className="h-4 w-4 mr-2 text-green-600" />
+                                                            {
+                                                                validationResult
+                                                                    .summary
+                                                                    .tasks
+                                                            }{' '}
+                                                            tasks
+                                                        </div>
+                                                        <div className="flex items-center">
+                                                            <CheckIcon className="h-4 w-4 mr-2 text-green-600" />
+                                                            {
+                                                                validationResult
+                                                                    .summary
+                                                                    .projects
+                                                            }{' '}
+                                                            projects
+                                                        </div>
+                                                        <div className="flex items-center">
+                                                            <CheckIcon className="h-4 w-4 mr-2 text-green-600" />
+                                                            {
+                                                                validationResult
+                                                                    .summary
+                                                                    .notes
+                                                            }{' '}
+                                                            notes
+                                                        </div>
+                                                        <div className="flex items-center">
+                                                            <CheckIcon className="h-4 w-4 mr-2 text-green-600" />
+                                                            {
+                                                                validationResult
+                                                                    .summary
+                                                                    .tags
+                                                            }{' '}
+                                                            tags
+                                                        </div>
+                                                        <div className="flex items-center">
+                                                            <CheckIcon className="h-4 w-4 mr-2 text-green-600" />
+                                                            {
+                                                                validationResult
+                                                                    .summary
+                                                                    .areas
+                                                            }{' '}
+                                                            areas
+                                                        </div>
+                                                        <div className="flex items-center">
+                                                            <CheckIcon className="h-4 w-4 mr-2 text-green-600" />
+                                                            {
+                                                                validationResult
+                                                                    .summary
+                                                                    .views
+                                                            }{' '}
+                                                            views
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        )}
+                                            )}
 
-                                        {validationResult && !validationResult.valid && (
-                                            <div className="mt-4 pt-4 border-t border-red-200 dark:border-red-800">
-                                                {validationResult.versionIncompatible ? (
-                                                    <>
-                                                        <p className="text-sm font-medium text-red-700 dark:text-red-300 mb-2">
-                                                            {t('backup.versionIncompatible', 'Version Incompatible')}
-                                                        </p>
-                                                        <p className="text-sm text-red-600 dark:text-red-400">
-                                                            {validationResult.message}
-                                                        </p>
-                                                        <p className="text-sm text-red-600 dark:text-red-400 mt-2">
-                                                            {t('backup.backupVersion', 'Backup version')}: {validationResult.backupVersion}
-                                                        </p>
-                                                        <p className="text-sm text-red-600 dark:text-red-400">
-                                                            {t('backup.currentVersion', 'Current version')}: {appVersion}
-                                                        </p>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <p className="text-sm font-medium text-red-700 dark:text-red-300 mb-2">
-                                                            {t('backup.validationErrors', 'Validation errors:')}
-                                                        </p>
-                                                        <ul className="text-sm text-red-600 dark:text-red-400 space-y-1">
-                                                            {validationResult.errors?.map((error, index) => (
-                                                                <li key={index}>• {error}</li>
-                                                            ))}
-                                                        </ul>
-                                                    </>
-                                                )}
-                                            </div>
-                                        )}
+                                        {validationResult &&
+                                            !validationResult.valid && (
+                                                <div className="mt-4 pt-4 border-t border-red-200 dark:border-red-800">
+                                                    {validationResult.versionIncompatible ? (
+                                                        <>
+                                                            <p className="text-sm font-medium text-red-700 dark:text-red-300 mb-2">
+                                                                {t(
+                                                                    'backup.versionIncompatible',
+                                                                    'Version Incompatible'
+                                                                )}
+                                                            </p>
+                                                            <p className="text-sm text-red-600 dark:text-red-400">
+                                                                {
+                                                                    validationResult.message
+                                                                }
+                                                            </p>
+                                                            <p className="text-sm text-red-600 dark:text-red-400 mt-2">
+                                                                {t(
+                                                                    'backup.backupVersion',
+                                                                    'Backup version'
+                                                                )}
+                                                                :{' '}
+                                                                {
+                                                                    validationResult.backupVersion
+                                                                }
+                                                            </p>
+                                                            <p className="text-sm text-red-600 dark:text-red-400">
+                                                                {t(
+                                                                    'backup.currentVersion',
+                                                                    'Current version'
+                                                                )}
+                                                                : {appVersion}
+                                                            </p>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <p className="text-sm font-medium text-red-700 dark:text-red-300 mb-2">
+                                                                {t(
+                                                                    'backup.validationErrors',
+                                                                    'Validation errors:'
+                                                                )}
+                                                            </p>
+                                                            <ul className="text-sm text-red-600 dark:text-red-400 space-y-1">
+                                                                {validationResult.errors?.map(
+                                                                    (
+                                                                        error,
+                                                                        index
+                                                                    ) => (
+                                                                        <li
+                                                                            key={
+                                                                                index
+                                                                            }
+                                                                        >
+                                                                            •{' '}
+                                                                            {
+                                                                                error
+                                                                            }
+                                                                        </li>
+                                                                    )
+                                                                )}
+                                                            </ul>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            )}
                                     </div>
                                 )}
 
@@ -650,12 +822,18 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({ onImportSuccess }) => {
                                                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                                                     ></path>
                                                 </svg>
-                                                {t('backup.importing', 'Importing...')}
+                                                {t(
+                                                    'backup.importing',
+                                                    'Importing...'
+                                                )}
                                             </>
                                         ) : (
                                             <>
                                                 <ArrowUpTrayIcon className="h-5 w-5 mr-2" />
-                                                {t('backup.restoreBackup', 'Restore Backup')}
+                                                {t(
+                                                    'backup.restoreBackup',
+                                                    'Restore Backup'
+                                                )}
                                             </>
                                         )}
                                     </button>

@@ -1206,7 +1206,15 @@
       "instances": "instances récurrentes"
     },
     "deferUntilFilter": "Différer jusqu'à",
-    "deferUntil": ", différer jusqu'à"
+    "deferUntil": ", différer jusqu'à",
+    "extrasFilter": {
+      "isRecurring": "est Récurrent",
+      "isOverdue": "est En Retard",
+      "hasContent": "a du Contenu",
+      "isDeferred": "est Différé",
+      "hasTags": "a des Étiquettes",
+      "isAssignedToProject": "est Assigné au Projet"
+    }
   },
   "subtasks": {
     "placeholder": "Ajouter une sous-tâche..."

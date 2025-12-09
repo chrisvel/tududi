@@ -1210,7 +1210,15 @@
       "instances": "επαναλαμβανόμενες περιπτώσεις"
     },
     "deferUntilFilter": "Αναβολή μέχρι",
-    "deferUntil": ", αναβολή μέχρι"
+    "deferUntil": ", αναβολή μέχρι",
+    "extrasFilter": {
+      "isRecurring": "είναι Επαναλαμβανόμενο",
+      "isOverdue": "είναι Υπερβολικό",
+      "hasContent": "έχει Περιεχόμενο",
+      "isDeferred": "είναι Αναβληθέν",
+      "hasTags": "έχει Ετικέτες",
+      "isAssignedToProject": "είναι Ανατεθειμένο σε Έργο"
+    }
   },
   "subtasks": {
     "placeholder": "Προσθέστε μια υποεργασία..."

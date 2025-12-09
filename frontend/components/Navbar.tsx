@@ -38,7 +38,10 @@ const Navbar: React.FC<NavbarProps> = ({
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
     const [pomodoroEnabled, setPomodoroEnabled] = useState(true); // Default to true
-    const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({ backups: false, calendar: false });
+    const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({
+        backups: false,
+        calendar: false,
+    });
     const dropdownRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
 
@@ -264,7 +267,10 @@ const Navbar: React.FC<NavbarProps> = ({
                                         className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                                         onClick={() => setIsDropdownOpen(false)}
                                     >
-                                        {t('navigation.backupRestore', 'Backup & Restore')}
+                                        {t(
+                                            'navigation.backupRestore',
+                                            'Backup & Restore'
+                                        )}
                                     </Link>
                                 )}
                                 {currentUser?.is_admin === true && (

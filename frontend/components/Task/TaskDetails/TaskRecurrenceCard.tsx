@@ -113,9 +113,6 @@ const TaskRecurrenceCard: React.FC<TaskRecurrenceCardProps> = ({
 
     return (
         <div>
-            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                {t('task.recurringSetup', 'Recurring Setup')}
-            </h4>
             <div
                 className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 p-6 space-y-4 ${
                     canEdit && !isEditing ? 'cursor-pointer' : ''
@@ -239,7 +236,7 @@ const TaskRecurrenceCard: React.FC<TaskRecurrenceCardProps> = ({
                             <div className="text-sm text-gray-600 dark:text-gray-400 text-center">
                                 {t(
                                     'task.notRecurring',
-                                    'This task is not recurring yet.'
+                                    'Add recurrence details'
                                 )}
                             </div>
                         )}

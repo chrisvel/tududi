@@ -51,6 +51,10 @@ module.exports = (sequelize) => {
                 type: DataTypes.STRING,
                 allowNull: true,
             },
+            defer: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
             tags: {
                 type: DataTypes.TEXT,
                 allowNull: true,
@@ -60,6 +64,17 @@ module.exports = (sequelize) => {
                 },
                 set(value) {
                     this.setDataValue('tags', JSON.stringify(value));
+                },
+            },
+            extras: {
+                type: DataTypes.TEXT,
+                allowNull: true,
+                get() {
+                    const rawValue = this.getDataValue('extras');
+                    return rawValue ? JSON.parse(rawValue) : [];
+                },
+                set(value) {
+                    this.setDataValue('extras', JSON.stringify(value));
                 },
             },
             recurring: {

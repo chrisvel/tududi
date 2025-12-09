@@ -1206,7 +1206,15 @@
       "instances": "instansi berulang"
     },
     "deferUntilFilter": "Tunda Hingga",
-    "deferUntil": ", tunda hingga"
+    "deferUntil": ", tunda hingga",
+    "extrasFilter": {
+      "isRecurring": "adalah Berulang",
+      "isOverdue": "adalah Terlambat",
+      "hasContent": "memiliki Konten",
+      "isDeferred": "adalah Ditunda",
+      "hasTags": "memiliki Tag",
+      "isAssignedToProject": "adalah Ditugaskan ke Proyek"
+    }
   },
   "subtasks": {
     "placeholder": "Tambahkan subtugas..."

@@ -98,7 +98,6 @@ const getShareInitials = (value?: string | null) => {
     return cleaned.substring(0, 2) || '?';
 };
 
-
 const ProjectItem: React.FC<ProjectItemProps> = ({
     project,
     viewMode,
@@ -221,14 +220,10 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
         }
 
         return {
-            text: t(
-                'projectItem.overdue',
-                'Overdue {{count}} {{unit}} ago',
-                {
-                    count: Math.abs(diff),
-                    unit,
-                }
-            ),
+            text: t('projectItem.overdue', 'Overdue {{count}} {{unit}} ago', {
+                count: Math.abs(diff),
+                unit,
+            }),
             isOverdue: true,
         };
     }, [project.due_date_at, t]);
@@ -244,9 +239,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
         const knownShares = sharedUsers ?? [];
         const avatars = knownShares.slice(0, MAX_SHARE_AVATARS);
         const totalCount =
-            (sharedUsers?.length ??
-                project.share_count ??
-                avatars.length) || 0;
+            (sharedUsers?.length ?? project.share_count ?? avatars.length) || 0;
         const remaining = Math.max(0, totalCount - avatars.length);
 
         return { avatars, remaining };
@@ -313,7 +306,10 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                     return (
                                         <StateIcon
                                             className="h-4 w-4 text-white/80 drop-shadow-sm"
-                                            title={getStateLabel(project.state, t)}
+                                            title={getStateLabel(
+                                                project.state,
+                                                t
+                                            )}
                                         />
                                     );
                                 })()}
@@ -353,10 +349,14 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                                                     'Permission denied'
                                                                 )
                                                             );
-                                                            setActiveDropdown(null);
+                                                            setActiveDropdown(
+                                                                null
+                                                            );
                                                             return;
                                                         }
-                                                        handleEditProject(project);
+                                                        handleEditProject(
+                                                            project
+                                                        );
                                                         setActiveDropdown(null);
                                                     }}
                                                     className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
@@ -369,8 +369,12 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                                         onClick={(e) => {
                                                             e.preventDefault();
                                                             e.stopPropagation();
-                                                            onOpenShare(project);
-                                                            setActiveDropdown(null);
+                                                            onOpenShare(
+                                                                project
+                                                            );
+                                                            setActiveDropdown(
+                                                                null
+                                                            );
                                                         }}
                                                         className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
                                                     >
@@ -395,8 +399,12 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                                             );
                                                             return;
                                                         }
-                                                        setProjectToDelete(project);
-                                                        setIsConfirmDialogOpen(true);
+                                                        setProjectToDelete(
+                                                            project
+                                                        );
+                                                        setIsConfirmDialogOpen(
+                                                            true
+                                                        );
                                                         setActiveDropdown(null);
                                                     }}
                                                     className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
@@ -453,9 +461,13 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                 title={
                                     (project as any).task_status
                                         ? `${(project as any).task_status.done} of ${(project as any).task_status.total} tasks completed (${getCompletionPercentage()}%)`
-                                        : t('projectItem.completionPercentage', {
-                                              percentage: getCompletionPercentage(),
-                                          })
+                                        : t(
+                                              'projectItem.completionPercentage',
+                                              {
+                                                  percentage:
+                                                      getCompletionPercentage(),
+                                              }
+                                          )
                                 }
                             >
                                 <div
@@ -471,46 +483,61 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                     : '0/0'}
                             </span>
                         </div>
-                            <div className="flex items-center justify-between text-[11px] text-gray-500 dark:text-gray-400">
-                                <div className="flex items-center min-w-0">
+                        <div className="flex items-center justify-between text-[11px] text-gray-500 dark:text-gray-400">
+                            <div className="flex items-center min-w-0">
                                 {dueInfo.isOverdue ? (
                                     <span className="inline-flex items-center space-x-1 rounded-full bg-red-100 px-2 py-0.5 text-red-700 dark:bg-red-900/40 dark:text-red-300 font-semibold text-[11px] leading-snug">
-                                        <ExclamationTriangleIcon className="h-3 w-3 flex-shrink-0" style={{ marginTop: '1px' }} />
+                                        <ExclamationTriangleIcon
+                                            className="h-3 w-3 flex-shrink-0"
+                                            style={{ marginTop: '1px' }}
+                                        />
                                         <span>{dueInfo.text}</span>
                                     </span>
                                 ) : (
-                                    <span className="truncate">{dueInfo.text}</span>
+                                    <span className="truncate">
+                                        {dueInfo.text}
+                                    </span>
                                 )}
                             </div>
                             <div className="flex items-center justify-end min-w-0 h-7">
                                 {project.is_shared && (
                                     <div className="flex items-center -space-x-2 h-full">
                                         <>
-                                            {shareAvatars.avatars.map((share) => (
-                                                <Tooltip
-                                                    key={`${project.uid}-${share.user_id}`}
-                                                    content={
-                                                        share.email
-                                                            ? getShareDisplayName(share.email)
-                                                            : t(
-                                                                  'projectItem.sharedUser',
-                                                                  'Shared user'
-                                                              )
-                                                    }
-                                                >
-                                                    {share.avatar_image ? (
-                                                        <img
-                                                            src={getApiPath(share.avatar_image)}
-                                                            alt={getShareDisplayName(share.email)}
-                                                            className="h-7 w-7 rounded-full border-2 border-white object-cover shadow-sm dark:border-gray-900"
-                                                        />
-                                                    ) : (
-                                                        <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-gradient-to-br from-blue-500 to-purple-500 text-xs font-semibold text-white shadow-sm dark:border-gray-900">
-                                                            {getShareInitials(share.email)}
-                                                        </span>
-                                                    )}
-                                                </Tooltip>
-                                            ))}
+                                            {shareAvatars.avatars.map(
+                                                (share) => (
+                                                    <Tooltip
+                                                        key={`${project.uid}-${share.user_id}`}
+                                                        content={
+                                                            share.email
+                                                                ? getShareDisplayName(
+                                                                      share.email
+                                                                  )
+                                                                : t(
+                                                                      'projectItem.sharedUser',
+                                                                      'Shared user'
+                                                                  )
+                                                        }
+                                                    >
+                                                        {share.avatar_image ? (
+                                                            <img
+                                                                src={getApiPath(
+                                                                    share.avatar_image
+                                                                )}
+                                                                alt={getShareDisplayName(
+                                                                    share.email
+                                                                )}
+                                                                className="h-7 w-7 rounded-full border-2 border-white object-cover shadow-sm dark:border-gray-900"
+                                                            />
+                                                        ) : (
+                                                            <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-gradient-to-br from-blue-500 to-purple-500 text-xs font-semibold text-white shadow-sm dark:border-gray-900">
+                                                                {getShareInitials(
+                                                                    share.email
+                                                                )}
+                                                            </span>
+                                                        )}
+                                                    </Tooltip>
+                                                )
+                                            )}
                                             {shareAvatars.remaining > 0 && (
                                                 <Tooltip
                                                     content={t(
@@ -522,7 +549,8 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                                     )}
                                                 >
                                                     <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-gray-200 text-xs font-semibold text-gray-700 shadow-sm dark:border-gray-900 dark:bg-gray-700 dark:text-gray-200">
-                                                        +{shareAvatars.remaining}
+                                                        +
+                                                        {shareAvatars.remaining}
                                                     </span>
                                                 </Tooltip>
                                             )}

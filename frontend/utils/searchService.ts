@@ -7,7 +7,7 @@ interface SearchParams {
     due?: string;
     defer?: string;
     tags?: string[];
-    recurring?: string;
+    extras?: string[];
     limit?: number;
     offset?: number;
     excludeSubtasks?: boolean;
@@ -66,8 +66,8 @@ export const searchUniversal = async (
             queryParams.append('tags', params.tags.join(','));
         }
 
-        if (params.recurring) {
-            queryParams.append('recurring', params.recurring);
+        if (params.extras && params.extras.length > 0) {
+            queryParams.append('extras', params.extras.join(','));
         }
 
         if (params.limit !== undefined) {

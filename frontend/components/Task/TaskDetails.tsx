@@ -1248,6 +1248,7 @@ const TaskDetails: React.FC = () => {
                     onToggleTodayPlan={handleToggleTodayPlan}
                     onQuickStatusToggle={handleQuickStatusToggle}
                     attachmentCount={attachmentCount}
+                    subtasksCount={subtasks.length}
                 />
 
                 {/* Content - Full width layout */}
@@ -1285,49 +1286,47 @@ const TaskDetails: React.FC = () => {
                                     onLoadTags={() => tagsStore.loadTags()}
                                     getTagLink={getTagLink}
                                 />
+
+                                <TaskDueDateCard
+                                    task={task}
+                                    isEditing={isEditingDueDate}
+                                    editedDueDate={editedDueDate}
+                                    onChangeDate={setEditedDueDate}
+                                    onStartEdit={handleStartDueDateEdit}
+                                    onSave={handleSaveDueDate}
+                                    onCancel={handleCancelDueDateEdit}
+                                />
+
+                                <TaskDeferUntilCard
+                                    task={task}
+                                    isEditing={isEditingDeferUntil}
+                                    editedDeferUntil={editedDeferUntil}
+                                    onChangeDateTime={setEditedDeferUntil}
+                                    onStartEdit={handleStartDeferUntilEdit}
+                                    onSave={handleSaveDeferUntil}
+                                    onCancel={handleCancelDeferUntilEdit}
+                                />
                             </div>
                         </div>
                     )}
 
-                    {/* Schedule Pill */}
-                    {activePill === 'schedule' && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <TaskDueDateCard
+                    {/* Recurrence Pill */}
+                    {activePill === 'recurrence' && (
+                        <div className="grid grid-cols-1">
+                            <TaskRecurrenceCard
                                 task={task}
-                                isEditing={isEditingDueDate}
-                                editedDueDate={editedDueDate}
-                                onChangeDate={setEditedDueDate}
-                                onStartEdit={handleStartDueDateEdit}
-                                onSave={handleSaveDueDate}
-                                onCancel={handleCancelDueDateEdit}
+                                parentTask={parentTask}
+                                loadingParent={loadingParent}
+                                isEditing={isEditingRecurrence}
+                                recurrenceForm={recurrenceForm}
+                                onStartEdit={handleStartRecurrenceEdit}
+                                onChange={handleRecurrenceChange}
+                                onSave={handleSaveRecurrence}
+                                onCancel={handleCancelRecurrenceEdit}
+                                loadingIterations={loadingIterations}
+                                nextIterations={nextIterations}
+                                canEdit={!task.recurring_parent_id}
                             />
-
-                            <TaskDeferUntilCard
-                                task={task}
-                                isEditing={isEditingDeferUntil}
-                                editedDeferUntil={editedDeferUntil}
-                                onChangeDateTime={setEditedDeferUntil}
-                                onStartEdit={handleStartDeferUntilEdit}
-                                onSave={handleSaveDeferUntil}
-                                onCancel={handleCancelDeferUntilEdit}
-                            />
-
-                            <div className="md:col-span-2">
-                                <TaskRecurrenceCard
-                                    task={task}
-                                    parentTask={parentTask}
-                                    loadingParent={loadingParent}
-                                    isEditing={isEditingRecurrence}
-                                    recurrenceForm={recurrenceForm}
-                                    onStartEdit={handleStartRecurrenceEdit}
-                                    onChange={handleRecurrenceChange}
-                                    onSave={handleSaveRecurrence}
-                                    onCancel={handleCancelRecurrenceEdit}
-                                    loadingIterations={loadingIterations}
-                                    nextIterations={nextIterations}
-                                    canEdit={!task.recurring_parent_id}
-                                />
-                            </div>
                         </div>
                     )}
 
@@ -1362,16 +1361,11 @@ const TaskDetails: React.FC = () => {
 
                     {/* Activity Pill */}
                     {activePill === 'activity' && (
-                        <div>
-                            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                {t('task.recentActivity', 'Recent Activity')}
-                            </h4>
-                            <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 p-6">
-                                <TaskTimeline
-                                    taskUid={task.uid}
-                                    refreshKey={timelineRefreshKey}
-                                />
-                            </div>
+                        <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 p-6">
+                            <TaskTimeline
+                                taskUid={task.uid}
+                                refreshKey={timelineRefreshKey}
+                            />
                         </div>
                     )}
                 </div>

@@ -1206,7 +1206,15 @@
       "instances": "herhalende instanties"
     },
     "deferUntilFilter": "Uitstellen tot",
-    "deferUntil": ", uitstellen tot"
+    "deferUntil": ", uitstellen tot",
+    "extrasFilter": {
+      "isRecurring": "is Herhalend",
+      "isOverdue": "is Achterstallig",
+      "hasContent": "heeft Inhoud",
+      "isDeferred": "is Uitgesteld",
+      "hasTags": "heeft Tags",
+      "isAssignedToProject": "is Toegewezen aan Project"
+    }
   },
   "subtasks": {
     "placeholder": "Voeg een subtaak toe..."

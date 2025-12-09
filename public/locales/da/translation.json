@@ -1206,7 +1206,15 @@
       "instances": "gentagende instanser"
     },
     "deferUntilFilter": "Udskyd indtil",
-    "deferUntil": ", udskyd indtil"
+    "deferUntil": ", udskyd indtil",
+    "extrasFilter": {
+      "isRecurring": "er tilbagevendende",
+      "isOverdue": "er forfalden",
+      "hasContent": "har indhold",
+      "isDeferred": "er udsat",
+      "hasTags": "har tags",
+      "isAssignedToProject": "er tildelt projekt"
+    }
   },
   "subtasks": {
     "placeholder": "Tilføj en underopgave..."

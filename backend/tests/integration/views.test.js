@@ -76,7 +76,9 @@ describe('Views Routes', () => {
                 filters: ['Task', 'Project'],
                 priority: 'high',
                 due: 'today',
+                defer: 'tomorrow',
                 tags: ['work', 'important'],
+                extras: ['recurring', 'has_content'],
             });
 
             expect(response.status).toBe(201);
@@ -85,7 +87,21 @@ describe('Views Routes', () => {
             expect(response.body.filters).toEqual(['Task', 'Project']);
             expect(response.body.priority).toBe('high');
             expect(response.body.due).toBe('today');
+            expect(response.body.defer).toBe('tomorrow');
             expect(response.body.tags).toEqual(['work', 'important']);
+            expect(response.body.extras).toEqual(['recurring', 'has_content']);
+        });
+
+        it('should create a view that persists extras without tags', async () => {
+            const response = await agent.post('/api/views').send({
+                name: 'Recurring Tasks',
+                filters: ['Task'],
+                extras: ['recurring', 'overdue'],
+            });
+
+            expect(response.status).toBe(201);
+            expect(response.body.extras).toEqual(['recurring', 'overdue']);
+            expect(response.body.tags).toEqual([]);
         });
 
         it('should require view name', async () => {
@@ -246,7 +262,9 @@ describe('Views Routes', () => {
                 filters: ['Task', 'Project'],
                 priority: 'high',
                 due: 'today',
+                defer: 'next_week',
                 tags: ['work', 'urgent'],
+                extras: ['recurring'],
                 is_pinned: true,
             });
 
@@ -256,7 +274,9 @@ describe('Views Routes', () => {
             expect(response.body.filters).toEqual(['Task', 'Project']);
             expect(response.body.priority).toBe('high');
             expect(response.body.due).toBe('today');
+            expect(response.body.defer).toBe('next_week');
             expect(response.body.tags).toEqual(['work', 'urgent']);
+            expect(response.body.extras).toEqual(['recurring']);
             expect(response.body.is_pinned).toBe(true);
         });
     });

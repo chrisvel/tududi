@@ -723,7 +723,7 @@
     "dueDate": "Due Date",
     "noDueDate": "No due date",
     "recurringSetup": "Recurring Setup",
-    "notRecurring": "This task is not recurring yet.",
+    "notRecurring": "Add recurrence details",
     "instanceOf": "This is an instance of a recurring task",
     "parentTask": "Parent Task",
     "clickToEditTitle": "Click to edit title",
@@ -1179,11 +1179,13 @@
     "deferUntilFilter": "Defer Until",
     "deferUntil": ", defer until",
     "tagsFilter": "Tags",
-    "recurringFilter": {
-      "label": "Recurring",
-      "recurring": "recurring templates",
-      "nonRecurring": "non-recurring",
-      "instances": "recurring instances"
+    "extrasFilter": {
+      "isRecurring": "is Recurring",
+      "isOverdue": "is Overdue",
+      "hasContent": "has Content",
+      "isDeferred": "is Deferred",
+      "hasTags": "has Tags",
+      "isAssignedToProject": "is Assigned to Project"
     },
     "saveAsSmartView": "Save as Smart View",
     "viewName": "View Name",

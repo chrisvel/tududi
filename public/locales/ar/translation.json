@@ -745,7 +745,7 @@
     "dueDate": "تاريخ الاستحقاق",
     "deferUntil": "تأجيل حتى",
     "recurringSetup": "إعداد متكرر",
-    "notRecurring": "هذه المهمة ليست متكررة بعد.",
+    "notRecurring": "أضف تفاصيل التكرار",
     "clickToEditTitle": "انقر لتحرير العنوان",
     "clickToEditContent": "انقر لتحرير المحتوى",
     "clickToAddContent": "انقر لإضافة محتوى",
@@ -1206,7 +1206,15 @@
       "instances": "حالات متكررة"
     },
     "deferUntilFilter": "تأجيل حتى",
-    "deferUntil": "، تأجيل حتى"
+    "deferUntil": "، تأجيل حتى",
+    "extrasFilter": {
+      "isRecurring": "يتكرر",
+      "isOverdue": "متأخر",
+      "hasContent": "يمتلك محتوى",
+      "isDeferred": "مؤجل",
+      "hasTags": "يمتلك علامات",
+      "isAssignedToProject": "مخصص لمشروع"
+    }
   },
   "subtasks": {
     "placeholder": "أضف مهمة فرعية..."

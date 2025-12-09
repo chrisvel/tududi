@@ -1206,7 +1206,15 @@
       "instances": "ponavljajoče se instance"
     },
     "deferUntilFilter": "Odloži do",
-    "deferUntil": ", odloži do"
+    "deferUntil": ", odloži do",
+    "extrasFilter": {
+      "isRecurring": "je ponavljajoče",
+      "isOverdue": "je zapadlo",
+      "hasContent": "ima vsebino",
+      "isDeferred": "je odloženo",
+      "hasTags": "ima oznake",
+      "isAssignedToProject": "je dodeljeno projektu"
+    }
   },
   "subtasks": {
     "placeholder": "Dodaj podnalogo..."

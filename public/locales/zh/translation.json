@@ -1206,7 +1206,15 @@
       "instances": "循环实例"
     },
     "deferUntilFilter": "延迟到",
-    "deferUntil": "，延迟到"
+    "deferUntil": "，延迟到",
+    "extrasFilter": {
+      "isRecurring": "是重复的",
+      "isOverdue": "已逾期",
+      "hasContent": "有内容",
+      "isDeferred": "已延迟",
+      "hasTags": "有标签",
+      "isAssignedToProject": "已分配给项目"
+    }
   },
   "subtasks": {
     "placeholder": "添加子任务..."

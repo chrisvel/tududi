@@ -299,7 +299,6 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
         }
     };
 
-
     if (totalIssues === 0) {
         return null;
     }
@@ -313,10 +312,7 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
                 <ExclamationTriangleIcon className="h-6 w-6 text-yellow-500 dark:text-yellow-400 mr-3" />
                 <div className="flex-1 text-left">
                     <p className="text-gray-700 dark:text-gray-300 font-medium">
-                        {t(
-                            'productivity.issuesFound',
-                            { count: totalIssues }
-                        )}
+                        {t('productivity.issuesFound', { count: totalIssues })}
                     </p>
                     <p className="text-yellow-600 dark:text-yellow-400 text-sm">
                         {t(

@@ -1206,7 +1206,15 @@
       "instances": "các phiên bản lặp lại"
     },
     "deferUntilFilter": "Hoãn lại cho đến",
-    "deferUntil": ", hoãn lại cho đến"
+    "deferUntil": ", hoãn lại cho đến",
+    "extrasFilter": {
+      "isRecurring": "là Lặp lại",
+      "isOverdue": "đã Quá hạn",
+      "hasContent": "có Nội dung",
+      "isDeferred": "đã Hoãn lại",
+      "hasTags": "có Thẻ",
+      "isAssignedToProject": "được Giao cho Dự án"
+    }
   },
   "subtasks": {
     "placeholder": "Thêm một công việc phụ..."
