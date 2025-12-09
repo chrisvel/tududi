@@ -4,16 +4,13 @@ const { safeChangeColumn } = require('../utils/migration-utils');
 
 module.exports = {
     async up(queryInterface, Sequelize) {
-        // Get all users with notification_preferences
         const [users] = await queryInterface.sequelize.query(
             'SELECT id, notification_preferences FROM users WHERE notification_preferences IS NOT NULL'
         );
 
-        // Update each user's notification_preferences to include telegram: false
         for (const user of users) {
             const prefs = user.notification_preferences;
 
-            // Add telegram: false to each notification type
             if (prefs.dueTasks) {
                 prefs.dueTasks.telegram = false;
             }
@@ -42,7 +39,6 @@ module.exports = {
             );
         }
 
-        // Update the column default for new users
         await safeChangeColumn(
             queryInterface,
             'users',
@@ -89,16 +85,13 @@ module.exports = {
     },
 
     async down(queryInterface, Sequelize) {
-        // Get all users with notification_preferences
         const [users] = await queryInterface.sequelize.query(
             'SELECT id, notification_preferences FROM users WHERE notification_preferences IS NOT NULL'
         );
 
-        // Remove telegram field from each user's notification_preferences
         for (const user of users) {
             const prefs = user.notification_preferences;
 
-            // Remove telegram from each notification type
             if (prefs.dueTasks) {
                 delete prefs.dueTasks.telegram;
             }
@@ -115,7 +108,6 @@ module.exports = {
                 delete prefs.deferUntil.telegram;
             }
 
-            // Update the user's preferences
             await queryInterface.sequelize.query(
                 'UPDATE users SET notification_preferences = :prefs WHERE id = :id',
                 {
@@ -127,7 +119,6 @@ module.exports = {
             );
         }
 
-        // Restore the column default to original (without telegram)
         await safeChangeColumn(
             queryInterface,
             'users',
