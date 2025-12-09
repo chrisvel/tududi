@@ -18,7 +18,7 @@ interface Notification {
     message: string;
     level: 'info' | 'warning' | 'error' | 'success';
     source: string;
-    is_read: boolean;
+    read_at: string | null;
     created_at: string;
     data?: {
         taskUid?: string;
@@ -104,10 +104,23 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
                     credentials: 'include',
                 }
             );
+
             if (response.ok) {
-                setNotifications((prev) =>
-                    prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
-                );
+                const data = await response.json();
+                const updatedNotification: Notification | undefined =
+                    data.notification;
+                if (updatedNotification) {
+                    setNotifications((prev) =>
+                        prev.map((n) =>
+                            n.id === id
+                                ? {
+                                      ...n,
+                                      read_at: updatedNotification.read_at,
+                                  }
+                                : n
+                        )
+                    );
+                }
                 fetchUnreadCount();
             }
         } catch (error) {
@@ -124,9 +137,11 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
                     credentials: 'include',
                 }
             );
+
             if (response.ok) {
+                const now = new Date().toISOString();
                 setNotifications((prev) =>
-                    prev.map((n) => ({ ...n, is_read: true }))
+                    prev.map((n) => ({ ...n, read_at: now }))
                 );
                 setUnreadCount(0);
             }
@@ -292,7 +307,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
                                             ? 'border-gray-700'
                                             : 'border-gray-200'
                                     } ${
-                                        !notification.is_read
+                                        !notification.read_at
                                             ? isDarkMode
                                                 ? 'bg-gray-700/50'
                                                 : 'bg-blue-50'
@@ -335,7 +350,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
                                                     </p>
                                                 </div>
                                                 <div className="flex items-center space-x-1 ml-2">
-                                                    {!notification.is_read && (
+                                                    {!notification.read_at && (
                                                         <button
                                                             onClick={(e) => {
                                                                 e.stopPropagation();

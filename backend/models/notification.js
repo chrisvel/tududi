@@ -126,18 +126,13 @@ module.exports = (sequelize) => {
         }
     );
 
-    // Define associations
     Notification.associate = function (models) {
-        // Notification belongs to User
         Notification.belongsTo(models.User, {
             foreignKey: 'user_id',
             as: 'User',
         });
     };
 
-    /**
-     * Create a notification and send it via configured sources
-     */
     Notification.createNotification = async function ({
         userId,
         type,
@@ -166,9 +161,6 @@ module.exports = (sequelize) => {
         return notification;
     };
 
-    /**
-     * Send email notification
-     */
     async function sendEmailNotification(
         userId,
         title,
@@ -202,9 +194,6 @@ module.exports = (sequelize) => {
         }
     }
 
-    /**
-     * Mark a notification as read
-     */
     Notification.prototype.markAsRead = async function () {
         if (!this.read_at) {
             this.read_at = new Date();
@@ -213,25 +202,16 @@ module.exports = (sequelize) => {
         return this;
     };
 
-    /**
-     * Mark a notification as unread
-     */
     Notification.prototype.markAsUnread = async function () {
         this.read_at = null;
         await this.save();
         return this;
     };
 
-    /**
-     * Check if notification is read
-     */
     Notification.prototype.isRead = function () {
         return this.read_at !== null;
     };
 
-    /**
-     * Dismiss (soft delete) a notification
-     */
     Notification.prototype.dismiss = async function () {
         if (!this.dismissed_at) {
             this.dismissed_at = new Date();
@@ -240,16 +220,10 @@ module.exports = (sequelize) => {
         return this;
     };
 
-    /**
-     * Check if notification is dismissed
-     */
     Notification.prototype.isDismissed = function () {
         return this.dismissed_at !== null;
     };
 
-    /**
-     * Get notifications for a user with pagination
-     */
     Notification.getUserNotifications = async function (userId, options = {}) {
         const {
             limit = 10,
@@ -260,7 +234,7 @@ module.exports = (sequelize) => {
 
         const where = {
             user_id: userId,
-            dismissed_at: null, // Exclude dismissed notifications
+            dismissed_at: null,
         };
         if (!includeRead) {
             where.read_at = null;
@@ -282,22 +256,16 @@ module.exports = (sequelize) => {
         };
     };
 
-    /**
-     * Get count of unread notifications for a user
-     */
     Notification.getUnreadCount = async function (userId) {
         return await Notification.count({
             where: {
                 user_id: userId,
                 read_at: null,
-                dismissed_at: null, // Exclude dismissed notifications
+                dismissed_at: null,
             },
         });
     };
 
-    /**
-     * Mark all notifications as read for a user
-     */
     Notification.markAllAsRead = async function (userId) {
         return await Notification.update(
             { read_at: new Date() },
@@ -305,7 +273,7 @@ module.exports = (sequelize) => {
                 where: {
                     user_id: userId,
                     read_at: null,
-                    dismissed_at: null, // Only mark non-dismissed notifications as read
+                    dismissed_at: null,
                 },
             }
         );
