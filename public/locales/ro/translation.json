@@ -23,7 +23,8 @@
     "discardChangesMessage": "Ai modificări nesalvate. Ești sigur că vrei să le renunți?",
     "no": "Nu, continuă editarea",
     "yesDiscard": "Da, renunță",
-    "uploading": "Se încarcă..."
+    "uploading": "Se încarcă...",
+    "refresh": "Reîmprospătare"
   },
   "sidebar": {
     "dashboard": "Tabloul de bord",
@@ -63,7 +64,8 @@
     "profileSettings": "Setări Profil",
     "settings": "Setări",
     "about": "Despre",
-    "logout": "Deconectare"
+    "logout": "Deconectare",
+    "backupRestore": "Backup și Restaurare"
   },
   "settings": {
     "todayPageSettings": "Setări Pagina de Azi",
@@ -1208,5 +1210,52 @@
   },
   "subtasks": {
     "placeholder": "Adaugă o subtask..."
+  },
+  "backup": {
+    "title": "Backup și Restaurare",
+    "description": "Creează backup-uri sau restaurează din backup-uri anterioare. Ultimele 5 backup-uri sunt salvate automat.",
+    "createBackup": "Creează Backup",
+    "importFromFile": "Importă din Fișier",
+    "createNewBackup": "Creează Backup Nou",
+    "createDescription": "Creează un nou backup al tuturor datelor tale. Backup-urile sunt salvate pe server și le poți restaura mai târziu.",
+    "createBackupNow": "Creează Backup Acum",
+    "creating": "Se creează backup...",
+    "exportSuccess": "Backup creat cu succes!",
+    "exportError": "Crearea backup-ului a eșuat",
+    "savedBackups": "Backup-uri Salvate",
+    "noBackups": "Nu au fost găsite backup-uri. Creează primul tău backup mai sus.",
+    "createdAt": "Creat",
+    "version": "Versiune",
+    "currentVersion": "Versiunea curentă",
+    "size": "Dimensiune",
+    "contents": "Conținut",
+    "actions": "Acțiuni",
+    "importSuccess": "Backup importat cu succes! Creat: {{tasks}} sarcini, {{projects}} proiecte, {{notes}} note",
+    "importError": "Importul backup-ului a eșuat",
+    "backupContents": "Conținutul backup-ului:",
+    "validationError": "Fișierul selectat nu este un backup valid",
+    "validationErrors": "Erori de validare:",
+    "versionIncompatible": "Versiune incompatibilă",
+    "backupVersion": "Versiunea backup-ului",
+    "restore": "Restaurare",
+    "download": "Descarcă",
+    "downloadSuccess": "Backup descărcat cu succes!",
+    "downloadError": "Eșec la descărcarea backup-ului",
+    "confirmRestore": "Restaurare Backup",
+    "confirmRestoreMessage": "Ești sigur că vrei să restaurezi acest backup? Aceasta va combina datele salvate cu datele tale curente.",
+    "restoreSuccess": "Backup restaurat cu succes! Creat: {{tasks}} sarcini, {{projects}} proiecte, {{notes}} note",
+    "restoreError": "Eșec la restaurarea backup-ului",
+    "confirmDelete": "Șterge Backup",
+    "confirmDeleteMessage": "Ești sigur că vrei să ștergi acest backup? Această acțiune nu poate fi anulată.",
+    "deleteSuccess": "Backup șters cu succes!",
+    "deleteError": "Eșec la ștergerea backup-ului",
+    "importTitle": "Import din Fișier",
+    "importDescription": "Încarcă un fișier de backup pentru a-ți restaura datele. Datele tale existente vor fi păstrate, iar elementele noi din backup vor fi adăugate.",
+    "importNote": "Important:",
+    "importNoteDescription": "Importul va combina datele cu elementele tale existente. Elementele duplicate (același UID) vor fi omise.",
+    "selectFile": "Selectează Fișierul de Backup",
+    "clickToUpload": "Click pentru a naviga la fișiere",
+    "restoreBackup": "Restaurare Backup",
+    "importing": "Importare..."
   }
 }

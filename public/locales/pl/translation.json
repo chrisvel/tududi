@@ -23,7 +23,8 @@
     "discardChangesMessage": "Masz niezapisane zmiany. Czy na pewno chcesz je porzucić?",
     "no": "Nie, kontynuuj edytowanie",
     "yesDiscard": "Tak, porzuć",
-    "uploading": "Przesyłanie..."
+    "uploading": "Przesyłanie...",
+    "refresh": "Odśwież"
   },
   "sidebar": {
     "dashboard": "Panel sterowania",
@@ -63,7 +64,8 @@
     "profileSettings": "Ustawienia profilu",
     "settings": "Ustawienia",
     "about": "O aplikacji",
-    "logout": "Wyloguj się"
+    "logout": "Wyloguj się",
+    "backupRestore": "Kopia zapasowa i przywracanie"
   },
   "settings": {
     "todayPageSettings": "Ustawienia strony dzisiaj",
@@ -1208,5 +1210,52 @@
   },
   "subtasks": {
     "placeholder": "Dodaj podzadanie..."
+  },
+  "backup": {
+    "title": "Kopia zapasowa i przywracanie",
+    "description": "Twórz kopie zapasowe lub przywracaj z poprzednich kopii zapasowych. Twoje ostatnie 5 kopii zapasowych jest automatycznie zapisywanych.",
+    "createBackup": "Utwórz kopię zapasową",
+    "importFromFile": "Importuj z pliku",
+    "createNewBackup": "Utwórz nową kopię zapasową",
+    "createDescription": "Utwórz nową kopię zapasową wszystkich swoich danych. Kopie zapasowe są zapisywane na serwerze i możesz je przywrócić później.",
+    "createBackupNow": "Utwórz kopię zapasową teraz",
+    "creating": "Tworzenie kopii zapasowej...",
+    "exportSuccess": "Kopia zapasowa została pomyślnie utworzona!",
+    "exportError": "Nie udało się utworzyć kopii zapasowej",
+    "savedBackups": "Zapisane kopie zapasowe",
+    "noBackups": "Nie znaleziono kopii zapasowych. Utwórz swoją pierwszą kopię zapasową powyżej.",
+    "createdAt": "Utworzono",
+    "version": "Wersja",
+    "currentVersion": "Bieżąca wersja",
+    "size": "Rozmiar",
+    "contents": "Zawartość",
+    "actions": "Akcje",
+    "importSuccess": "Kopia zapasowa została pomyślnie zaimportowana! Utworzono: {{tasks}} zadań, {{projects}} projektów, {{notes}} notatek",
+    "importError": "Nie udało się zaimportować kopii zapasowej",
+    "backupContents": "Zawartość kopii zapasowej:",
+    "validationError": "Wybrany plik nie jest prawidłową kopią zapasową",
+    "validationErrors": "Błędy walidacji:",
+    "versionIncompatible": "Wersja niekompatybilna",
+    "backupVersion": "Wersja kopii zapasowej",
+    "restore": "Przywróć",
+    "download": "Pobierz",
+    "downloadSuccess": "Kopia zapasowa została pomyślnie pobrana!",
+    "downloadError": "Nie udało się pobrać kopii zapasowej",
+    "confirmRestore": "Przywróć kopię zapasową",
+    "confirmRestoreMessage": "Czy na pewno chcesz przywrócić tę kopię zapasową? To połączy dane z kopii zapasowej z twoimi aktualnymi danymi.",
+    "restoreSuccess": "Kopia zapasowa została pomyślnie przywrócona! Utworzono: {{tasks}} zadań, {{projects}} projektów, {{notes}} notatek",
+    "restoreError": "Nie udało się przywrócić kopii zapasowej",
+    "confirmDelete": "Usuń kopię zapasową",
+    "confirmDeleteMessage": "Czy na pewno chcesz usunąć tę kopię zapasową? Ta akcja nie może być cofnięta.",
+    "deleteSuccess": "Kopia zapasowa została pomyślnie usunięta!",
+    "deleteError": "Nie udało się usunąć kopii zapasowej",
+    "importTitle": "Importuj z pliku",
+    "importDescription": "Prześlij plik kopii zapasowej, aby przywrócić swoje dane. Twoje istniejące dane zostaną zachowane, a nowe elementy z kopii zapasowej zostaną dodane.",
+    "importNote": "WaŜne:",
+    "importNoteDescription": "Import połączy dane z twoimi istniejącymi elementami. Duplikaty (ten sam UID) zostaną pominięte.",
+    "selectFile": "Wybierz plik kopii zapasowej",
+    "clickToUpload": "Kliknij, aby przeszukać pliki",
+    "restoreBackup": "Przywróć kopię zapasową",
+    "importing": "Importowanie..."
   }
 }

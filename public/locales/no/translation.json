@@ -23,7 +23,8 @@
     "discardChangesMessage": "Du har usikrede endringer. Er du sikker på at du vil forkaste dem?",
     "no": "Nei, fortsett å redigere",
     "yesDiscard": "Ja, forkast",
-    "uploading": "Laster opp..."
+    "uploading": "Laster opp...",
+    "refresh": "Oppdater"
   },
   "sidebar": {
     "dashboard": "Dashbord",
@@ -63,7 +64,8 @@
     "profileSettings": "Profilinnstillinger",
     "settings": "Innstillinger",
     "about": "Om",
-    "logout": "Logg ut"
+    "logout": "Logg ut",
+    "backupRestore": "Sikkerhetskopiering og gjenoppretting"
   },
   "settings": {
     "todayPageSettings": "Innstillinger for Dagens Side",
@@ -1208,5 +1210,52 @@
   },
   "subtasks": {
     "placeholder": "Legg til en underoppgave..."
+  },
+  "backup": {
+    "title": "Sikkerhetskopiering og gjenoppretting",
+    "description": "Lag sikkerhetskopier eller gjenopprett fra tidligere sikkerhetskopier. Dine siste 5 sikkerhetskopier lagres automatisk.",
+    "createBackup": "Lag sikkerhetskopi",
+    "importFromFile": "Importer fra fil",
+    "createNewBackup": "Lag ny sikkerhetskopi",
+    "createDescription": "Lag en ny sikkerhetskopi av alle dataene dine. Sikkerhetskopier lagres på serveren, og du kan gjenopprette dem senere.",
+    "createBackupNow": "Lag sikkerhetskopi nå",
+    "creating": "Lager sikkerhetskopi...",
+    "exportSuccess": "Sikkerhetskopi opprettet med suksess!",
+    "exportError": "Feil ved oppretting av sikkerhetskopi",
+    "savedBackups": "Lagrede sikkerhetskopier",
+    "noBackups": "Ingen sikkerhetskopier funnet. Lag din første sikkerhetskopi ovenfor.",
+    "createdAt": "Opprettet",
+    "version": "Versjon",
+    "currentVersion": "Nåværende versjon",
+    "size": "Størrelse",
+    "contents": "Innhold",
+    "actions": "Handlinger",
+    "restore": "Gjenopprett",
+    "download": "Last ned",
+    "downloadSuccess": "Sikkerhetskopiering lastet ned med suksess!",
+    "downloadError": "Feil ved nedlasting av sikkerhetskopi",
+    "confirmRestore": "Gjenopprett sikkerhetskopi",
+    "confirmRestoreMessage": "Er du sikker på at du vil gjenopprette denne sikkerhetskopien? Dette vil slå sammen de sikkerhetskopierte dataene med dine nåværende data.",
+    "restoreSuccess": "Sikkerhetskopi gjenopprettet med suksess! Opprettet: {{tasks}} oppgaver, {{projects}} prosjekter, {{notes}} notater",
+    "restoreError": "Feil ved gjenoppretting av sikkerhetskopi",
+    "confirmDelete": "Slett sikkerhetskopi",
+    "confirmDeleteMessage": "Er du sikker på at du vil slette denne sikkerhetskopien? Denne handlingen kan ikke angres.",
+    "deleteSuccess": "Sikkerhetskopi slettet med suksess!",
+    "deleteError": "Feil ved sletting av sikkerhetskopi",
+    "importTitle": "Importer fra fil",
+    "importDescription": "Last opp en sikkerhetskopifil for å gjenopprette dataene dine. Dine eksisterende data vil bli bevart, og nye elementer fra sikkerhetskopien vil bli lagt til.",
+    "importNote": "Viktig:",
+    "importNoteDescription": "Import vil slå sammen data med dine eksisterende elementer. Duplikate elementer (samme UID) vil bli utelatt.",
+    "selectFile": "Velg sikkerhetskopifil",
+    "clickToUpload": "Klikk for å bla gjennom filer",
+    "restoreBackup": "Gjenopprett sikkerhetskopi",
+    "importing": "Importer...",
+    "importSuccess": "Sikkerhetskopi importert med suksess! Opprettet: {{tasks}} oppgaver, {{projects}} prosjekter, {{notes}} notater",
+    "importError": "Feil ved import av sikkerhetskopi",
+    "backupContents": "Innhold i sikkerhetskopi:",
+    "validationError": "Den valgte filen er ikke en gyldig sikkerhetskopi",
+    "validationErrors": "Valideringsfeil:",
+    "versionIncompatible": "Versjon inkompatibel",
+    "backupVersion": "Sikkerhetskopiversjon"
   }
 }

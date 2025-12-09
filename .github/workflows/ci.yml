@@ -28,6 +28,9 @@ jobs:
 
     - name: Run backend tests
       run: npm run backend:test
+      env:
+        FF_ENABLE_BACKUPS: 'true'
+        FF_ENABLE_CALENDAR: 'true'
 
     - name: Build frontend
       run: npm run build

@@ -23,7 +23,8 @@
     "discardChangesMessage": "Bạn có thay đổi chưa lưu. Bạn có chắc chắn muốn bỏ qua chúng không?",
     "no": "Không, tiếp tục chỉnh sửa",
     "yesDiscard": "Có, bỏ qua",
-    "uploading": "Đang tải lên..."
+    "uploading": "Đang tải lên...",
+    "refresh": "Làm mới"
   },
   "sidebar": {
     "dashboard": "Bảng điều khiển",
@@ -63,7 +64,8 @@
     "profileSettings": "Cài đặt Hồ sơ",
     "settings": "Cài đặt",
     "about": "Giới thiệu",
-    "logout": "Đăng xuất"
+    "logout": "Đăng xuất",
+    "backupRestore": "Sao lưu & Khôi phục"
   },
   "settings": {
     "todayPageSettings": "Cài đặt Trang Hôm nay",
@@ -366,7 +368,8 @@
     "stuckProjectsDesc": "Dự án không được cập nhật gần đây",
     "reviewItems": "Nhấn để xem xét và cải thiện quy trình làm việc của bạn",
     "suggestion": "Nhấn vào bất kỳ mục nào ở trên để mở nó và thực hiện cải tiến.",
-    "issuesFound_other": "{{count}} vấn đề năng suất cần được chú ý"
+    "issuesFound_other": "{{count}} vấn đề năng suất cần được chú ý",
+    "issuesFound_one": "1 vấn đề năng suất cần được chú ý"
   },
   "nextTask": {
     "suggestion": "Vì không có gì đang tiến hành, bạn có muốn bắt đầu với",
@@ -1207,5 +1210,52 @@
   },
   "subtasks": {
     "placeholder": "Thêm một công việc phụ..."
+  },
+  "backup": {
+    "title": "Sao lưu & Khôi phục",
+    "description": "Tạo bản sao lưu hoặc khôi phục từ các bản sao lưu trước đó. 5 bản sao lưu cuối cùng của bạn sẽ được lưu tự động.",
+    "createBackup": "Tạo bản sao lưu",
+    "importFromFile": "Nhập từ tệp",
+    "createNewBackup": "Tạo bản sao lưu mới",
+    "createDescription": "Tạo một bản sao lưu mới cho tất cả dữ liệu của bạn. Các bản sao lưu được lưu trên máy chủ và bạn có thể khôi phục chúng sau.",
+    "createBackupNow": "Tạo bản sao lưu ngay bây giờ",
+    "creating": "Đang tạo bản sao lưu...",
+    "exportSuccess": "Tạo bản sao lưu thành công!",
+    "exportError": "Tạo bản sao lưu không thành công",
+    "savedBackups": "Các bản sao lưu đã lưu",
+    "noBackups": "Không tìm thấy bản sao lưu nào. Tạo bản sao lưu đầu tiên của bạn ở trên.",
+    "createdAt": "Đã tạo",
+    "version": "Phiên bản",
+    "currentVersion": "Phiên bản hiện tại",
+    "size": "Kích thước",
+    "contents": "Nội dung",
+    "actions": "Hành động",
+    "restore": "Khôi phục",
+    "download": "Tải xuống",
+    "downloadSuccess": "Sao lưu đã được tải xuống thành công!",
+    "downloadError": "Tải xuống sao lưu thất bại",
+    "confirmRestore": "Khôi phục Sao lưu",
+    "confirmRestoreMessage": "Bạn có chắc chắn muốn khôi phục sao lưu này không? Điều này sẽ hợp nhất dữ liệu đã sao lưu với dữ liệu hiện tại của bạn.",
+    "restoreSuccess": "Sao lưu đã được khôi phục thành công! Đã tạo: {{tasks}} nhiệm vụ, {{projects}} dự án, {{notes}} ghi chú",
+    "restoreError": "Khôi phục sao lưu thất bại",
+    "confirmDelete": "Xóa Sao lưu",
+    "confirmDeleteMessage": "Bạn có chắc chắn muốn xóa sao lưu này không? Hành động này không thể hoàn tác.",
+    "deleteSuccess": "Sao lưu đã được xóa thành công!",
+    "deleteError": "Xóa sao lưu thất bại",
+    "importTitle": "Nhập từ Tệp",
+    "importDescription": "Tải lên một tệp sao lưu để khôi phục dữ liệu của bạn. Dữ liệu hiện có của bạn sẽ được bảo tồn, và các mục mới từ sao lưu sẽ được thêm vào.",
+    "importNote": "Quan trọng:",
+    "importNoteDescription": "Nhập sẽ hợp nhất dữ liệu với các mục hiện có của bạn. Các mục trùng lặp (cùng UID) sẽ bị bỏ qua.",
+    "selectFile": "Chọn Tệp Sao lưu",
+    "clickToUpload": "Nhấp để duyệt tệp",
+    "restoreBackup": "Khôi phục Sao lưu",
+    "importing": "Đang nhập...",
+    "importSuccess": "Nhập bản sao lưu thành công! Đã tạo: {{tasks}} nhiệm vụ, {{projects}} dự án, {{notes}} ghi chú",
+    "importError": "Không thể nhập bản sao lưu",
+    "backupContents": "Nội dung bản sao lưu:",
+    "validationError": "Tệp được chọn không phải là bản sao lưu hợp lệ",
+    "validationErrors": "Lỗi xác thực:",
+    "versionIncompatible": "Phiên bản không tương thích",
+    "backupVersion": "Phiên bản bản sao lưu"
   }
 }

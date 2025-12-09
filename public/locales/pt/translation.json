@@ -23,7 +23,8 @@
     "discardChangesMessage": "Você tem alterações não salvas. Tem certeza de que deseja descartá-las?",
     "no": "Não, continuar editando",
     "yesDiscard": "Sim, descartar",
-    "uploading": "Carregando..."
+    "uploading": "Carregando...",
+    "refresh": "Atualizar"
   },
   "sidebar": {
     "dashboard": "Painel",
@@ -63,7 +64,8 @@
     "profileSettings": "Configurações do Perfil",
     "settings": "Configurações",
     "about": "Sobre",
-    "logout": "Sair"
+    "logout": "Sair",
+    "backupRestore": "Backup e Restauração"
   },
   "settings": {
     "todayPageSettings": "Configurações da Página de Hoje",
@@ -1208,5 +1210,52 @@
   },
   "subtasks": {
     "placeholder": "Adicionar uma subtarefa..."
+  },
+  "backup": {
+    "title": "Backup e Restauração",
+    "description": "Crie backups ou restaure a partir de backups anteriores. Seus últimos 5 backups são salvos automaticamente.",
+    "createBackup": "Criar Backup",
+    "importFromFile": "Importar de Arquivo",
+    "createNewBackup": "Criar Novo Backup",
+    "createDescription": "Crie um novo backup de todos os seus dados. Os backups são salvos no servidor e você pode restaurá-los mais tarde.",
+    "createBackupNow": "Criar Backup Agora",
+    "creating": "Criando backup...",
+    "exportSuccess": "Backup criado com sucesso!",
+    "exportError": "Falha ao criar backup",
+    "savedBackups": "Backups Salvos",
+    "noBackups": "Nenhum backup encontrado. Crie seu primeiro backup acima.",
+    "createdAt": "Criado",
+    "version": "Versão",
+    "currentVersion": "Versão atual",
+    "size": "Tamanho",
+    "contents": "Conteúdo",
+    "actions": "Ações",
+    "restore": "Restaurar",
+    "download": "Baixar",
+    "downloadSuccess": "Backup baixado com sucesso!",
+    "downloadError": "Falha ao baixar o backup",
+    "confirmRestore": "Restaurar Backup",
+    "confirmRestoreMessage": "Você tem certeza de que deseja restaurar este backup? Isso irá mesclar os dados do backup com seus dados atuais.",
+    "restoreSuccess": "Backup restaurado com sucesso! Criado: {{tasks}} tarefas, {{projects}} projetos, {{notes}} notas",
+    "restoreError": "Falha ao restaurar o backup",
+    "confirmDelete": "Excluir Backup",
+    "confirmDeleteMessage": "Você tem certeza de que deseja excluir este backup? Esta ação não pode ser desfeita.",
+    "deleteSuccess": "Backup excluído com sucesso!",
+    "deleteError": "Falha ao excluir o backup",
+    "importTitle": "Importar de Arquivo",
+    "importDescription": "Carregue um arquivo de backup para restaurar seus dados. Seus dados existentes serão preservados e novos itens do backup serão adicionados.",
+    "importNote": "Importante:",
+    "importNoteDescription": "A importação irá mesclar dados com seus itens existentes. Itens duplicados (mesmo UID) serão ignorados.",
+    "selectFile": "Selecionar Arquivo de Backup",
+    "clickToUpload": "Clique para navegar nos arquivos",
+    "restoreBackup": "Restaurar Backup",
+    "importing": "Importando...",
+    "importSuccess": "Backup importado com sucesso! Criado: {{tasks}} tarefas, {{projects}} projetos, {{notes}} notas",
+    "importError": "Falha ao importar o backup",
+    "backupContents": "Conteúdo do backup:",
+    "validationError": "O arquivo selecionado não é um backup válido",
+    "validationErrors": "Erros de validação:",
+    "versionIncompatible": "Versão Incompatível",
+    "backupVersion": "Versão do backup"
   }
 }

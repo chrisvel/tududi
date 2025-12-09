@@ -167,6 +167,7 @@ healthPaths.forEach(registerHealthCheck);
 // Routes
 const registerApiRoutes = (basePath) => {
     app.use(basePath, require('./routes/auth'));
+    app.use(basePath, require('./routes/feature-flags'));
 
     app.use(basePath, requireAuth);
     app.use(basePath, require('./routes/tasks'));
@@ -183,6 +184,7 @@ const registerApiRoutes = (basePath) => {
     app.use(basePath, require('./routes/quotes'));
     app.use(basePath, require('./routes/task-events'));
     app.use(basePath, require('./routes/task-attachments'));
+    app.use(basePath, require('./routes/backup'));
     app.use(`${basePath}/search`, require('./routes/search'));
     app.use(`${basePath}/views`, require('./routes/views'));
     app.use(`${basePath}/notifications`, require('./routes/notifications'));

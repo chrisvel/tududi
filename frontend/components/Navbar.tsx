@@ -12,6 +12,7 @@ import PomodoroTimer from './Shared/PomodoroTimer';
 import UniversalSearch from './UniversalSearch/UniversalSearch';
 import NotificationsDropdown from './Notifications/NotificationsDropdown';
 import { getApiPath } from '../config/paths';
+import { getFeatureFlags, FeatureFlags } from '../utils/featureFlags';
 
 interface NavbarProps {
     isDarkMode: boolean;
@@ -37,6 +38,7 @@ const Navbar: React.FC<NavbarProps> = ({
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
     const [pomodoroEnabled, setPomodoroEnabled] = useState(true); // Default to true
+    const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({ backups: false, calendar: false });
     const dropdownRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
 
@@ -80,7 +82,7 @@ const Navbar: React.FC<NavbarProps> = ({
         };
     }, []);
 
-    // Fetch user's pomodoro setting
+    // Fetch user's pomodoro setting and feature flags
     useEffect(() => {
         const fetchProfile = async () => {
             try {
@@ -101,7 +103,13 @@ const Navbar: React.FC<NavbarProps> = ({
             }
         };
 
+        const fetchFlags = async () => {
+            const flags = await getFeatureFlags();
+            setFeatureFlags(flags);
+        };
+
         fetchProfile();
+        fetchFlags();
 
         // Listen for Pomodoro setting changes from ProfileSettings
         const handlePomodoroSettingChange = (event: CustomEvent) => {
@@ -250,6 +258,15 @@ const Navbar: React.FC<NavbarProps> = ({
                                         'Profile Settings'
                                     )}
                                 </Link>
+                                {featureFlags.backups && (
+                                    <Link
+                                        to="/backup"
+                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                        onClick={() => setIsDropdownOpen(false)}
+                                    >
+                                        {t('navigation.backupRestore', 'Backup & Restore')}
+                                    </Link>
+                                )}
                                 {currentUser?.is_admin === true && (
                                     <Link
                                         to="/admin/users"
