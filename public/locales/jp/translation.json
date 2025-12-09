@@ -23,7 +23,8 @@
     "discardChangesMessage": "保存されていない変更があります。破棄してもよろしいですか？",
     "no": "いいえ、編集を続ける",
     "yesDiscard": "はい、破棄する",
-    "uploading": "アップロード中..."
+    "uploading": "アップロード中...",
+    "refresh": "更新"
   },
   "sidebar": {
     "dashboard": "ダッシュボード",
@@ -63,7 +64,8 @@
     "profileSettings": "プロフィール設定",
     "settings": "設定",
     "about": "について",
-    "logout": "ログアウト"
+    "logout": "ログアウト",
+    "backupRestore": "バックアップと復元"
   },
   "settings": {
     "todayPageSettings": "今日のページ設定",
@@ -923,7 +925,8 @@
     "stuckProjectsDesc": "最近更新されていないプロジェクト",
     "reviewItems": "クリックしてレビューし、ワークフローを改善します",
     "suggestion": "上記の任意のアイテムをクリックして開き、改善を行います。",
-    "issuesFound_other": "{{count}}の生産性の問題に注意が必要です"
+    "issuesFound_other": "{{count}}の生産性の問題に注意が必要です",
+    "issuesFound_one": "1つの生産性の問題に注意が必要です"
   },
   "priority": {
     "low": "低",
@@ -1207,5 +1210,52 @@
   },
   "subtasks": {
     "placeholder": "サブタスクを追加..."
+  },
+  "backup": {
+    "title": "バックアップと復元",
+    "description": "バックアップを作成するか、以前のバックアップから復元します。最後の5つのバックアップは自動的に保存されます。",
+    "createBackup": "バックアップを作成",
+    "importFromFile": "ファイルからインポート",
+    "createNewBackup": "新しいバックアップを作成",
+    "createDescription": "すべてのデータの新しいバックアップを作成します。バックアップはサーバーに保存され、後で復元できます。",
+    "createBackupNow": "今すぐバックアップを作成",
+    "creating": "バックアップを作成中...",
+    "exportSuccess": "バックアップが正常に作成されました！",
+    "exportError": "バックアップの作成に失敗しました",
+    "savedBackups": "保存されたバックアップ",
+    "noBackups": "バックアップが見つかりません。上記で最初のバックアップを作成してください。",
+    "createdAt": "作成日",
+    "version": "バージョン",
+    "currentVersion": "現在のバージョン",
+    "size": "サイズ",
+    "contents": "内容",
+    "actions": "アクション",
+    "restore": "復元",
+    "download": "ダウンロード",
+    "downloadSuccess": "バックアップが正常にダウンロードされました！",
+    "downloadError": "バックアップのダウンロードに失敗しました",
+    "confirmRestore": "バックアップを復元",
+    "confirmRestoreMessage": "このバックアップを復元してもよろしいですか？これはバックアップされたデータを現在のデータと統合します。",
+    "restoreSuccess": "バックアップが正常に復元されました！作成されたタスク: {{tasks}}、プロジェクト: {{projects}}、ノート: {{notes}}",
+    "restoreError": "バックアップの復元に失敗しました",
+    "confirmDelete": "バックアップを削除",
+    "confirmDeleteMessage": "このバックアップを削除してもよろしいですか？この操作は元に戻せません。",
+    "deleteSuccess": "バックアップが正常に削除されました！",
+    "deleteError": "バックアップの削除に失敗しました",
+    "importTitle": "ファイルからインポート",
+    "importDescription": "バックアップファイルをアップロードしてデータを復元します。既存のデータは保持され、バックアップからの新しいアイテムが追加されます。",
+    "importNote": "重要:",
+    "importNoteDescription": "インポートは既存のアイテムとデータを統合します。重複アイテム（同じUID）はスキップされます。",
+    "selectFile": "バックアップファイルを選択",
+    "clickToUpload": "ファイルを参照するにはクリック",
+    "restoreBackup": "バックアップを復元",
+    "importing": "インポート中...",
+    "importSuccess": "バックアップが正常にインポートされました！ 作成されたタスク: {{tasks}}、プロジェクト: {{projects}}、ノート: {{notes}}",
+    "importError": "バックアップのインポートに失敗しました",
+    "backupContents": "バックアップの内容:",
+    "validationError": "選択したファイルは有効なバックアップではありません",
+    "validationErrors": "検証エラー:",
+    "versionIncompatible": "バージョンが互換性がありません",
+    "backupVersion": "バックアップバージョン"
   }
 }

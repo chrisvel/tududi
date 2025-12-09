@@ -23,7 +23,8 @@
     "discardChangesMessage": "Hai modifiche non salvate. Sei sicuro di volerle scartare?",
     "no": "No, continua a modificare",
     "yesDiscard": "Sì, scarta",
-    "uploading": "Caricamento..."
+    "uploading": "Caricamento...",
+    "refresh": "Aggiorna"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -63,7 +64,8 @@
     "profileSettings": "Impostazioni Profilo",
     "settings": "Impostazioni",
     "about": "Informazioni",
-    "logout": "Disconnetti"
+    "logout": "Disconnetti",
+    "backupRestore": "Backup e Ripristino"
   },
   "settings": {
     "todayPageSettings": "Impostazioni Pagina Oggi",
@@ -1208,5 +1210,52 @@
   },
   "subtasks": {
     "placeholder": "Aggiungi un sottocompito..."
+  },
+  "backup": {
+    "title": "Backup e Ripristino",
+    "description": "Crea backup o ripristina da backup precedenti. I tuoi ultimi 5 backup vengono salvati automaticamente.",
+    "createBackup": "Crea Backup",
+    "importFromFile": "Importa da File",
+    "createNewBackup": "Crea Nuovo Backup",
+    "createDescription": "Crea un nuovo backup di tutti i tuoi dati. I backup vengono salvati sul server e puoi ripristinarli in seguito.",
+    "createBackupNow": "Crea Backup Ora",
+    "creating": "Creazione del backup...",
+    "exportSuccess": "Backup creato con successo!",
+    "exportError": "Creazione del backup fallita",
+    "savedBackups": "Backup Salvati",
+    "noBackups": "Nessun backup trovato. Crea il tuo primo backup sopra.",
+    "createdAt": "Creato",
+    "version": "Versione",
+    "currentVersion": "Versione attuale",
+    "size": "Dimensione",
+    "contents": "Contenuti",
+    "actions": "Azioni",
+    "restore": "Ripristina",
+    "download": "Scarica",
+    "downloadSuccess": "Backup scaricato con successo!",
+    "downloadError": "Impossibile scaricare il backup",
+    "confirmRestore": "Ripristina Backup",
+    "confirmRestoreMessage": "Sei sicuro di voler ripristinare questo backup? Questo fonderà i dati di backup con i tuoi dati attuali.",
+    "restoreSuccess": "Backup ripristinato con successo! Creati: {{tasks}} attività, {{projects}} progetti, {{notes}} note",
+    "restoreError": "Impossibile ripristinare il backup",
+    "confirmDelete": "Elimina Backup",
+    "confirmDeleteMessage": "Sei sicuro di voler eliminare questo backup? Questa azione non può essere annullata.",
+    "deleteSuccess": "Backup eliminato con successo!",
+    "deleteError": "Impossibile eliminare il backup",
+    "importTitle": "Importa da File",
+    "importDescription": "Carica un file di backup per ripristinare i tuoi dati. I tuoi dati esistenti saranno preservati e i nuovi elementi dal backup saranno aggiunti.",
+    "importNote": "Importante:",
+    "importNoteDescription": "L'importazione fonderà i dati con i tuoi elementi esistenti. Gli elementi duplicati (stesso UID) saranno ignorati.",
+    "selectFile": "Seleziona File di Backup",
+    "clickToUpload": "Clicca per sfogliare i file",
+    "restoreBackup": "Ripristina Backup",
+    "importing": "Importazione...",
+    "importSuccess": "Backup importato con successo! Creati: {{tasks}} attività, {{projects}} progetti, {{notes}} note",
+    "importError": "Impossibile importare il backup",
+    "backupContents": "Contenuti del backup:",
+    "validationError": "Il file selezionato non è un backup valido",
+    "validationErrors": "Errori di convalida:",
+    "versionIncompatible": "Versione incompatibile",
+    "backupVersion": "Versione del backup"
   }
 }

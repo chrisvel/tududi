@@ -23,7 +23,8 @@
     "discardChangesMessage": "Du har osparade ändringar. Är du säker på att du vill kasta bort dem?",
     "no": "Nej, fortsätt redigera",
     "yesDiscard": "Ja, kasta bort",
-    "uploading": "Laddar upp..."
+    "uploading": "Laddar upp...",
+    "refresh": "Uppdatera"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -63,7 +64,8 @@
     "profileSettings": "Profilinställningar",
     "settings": "Inställningar",
     "about": "Om",
-    "logout": "Logga ut"
+    "logout": "Logga ut",
+    "backupRestore": "Säkerhetskopiera & Återställ"
   },
   "settings": {
     "todayPageSettings": "Inställningar för dagens sida",
@@ -1208,5 +1210,52 @@
   },
   "subtasks": {
     "placeholder": "Lägg till en deluppgift..."
+  },
+  "backup": {
+    "title": "Säkerhetskopiera & Återställ",
+    "description": "Skapa säkerhetskopior eller återställ från tidigare säkerhetskopior. Dina senaste 5 säkerhetskopior sparas automatiskt.",
+    "createBackup": "Skapa säkerhetskopia",
+    "importFromFile": "Importera från fil",
+    "createNewBackup": "Skapa ny säkerhetskopia",
+    "createDescription": "Skapa en ny säkerhetskopia av alla dina data. Säkerhetskopior sparas på servern och du kan återställa dem senare.",
+    "createBackupNow": "Skapa säkerhetskopia nu",
+    "creating": "Skapar säkerhetskopia...",
+    "exportSuccess": "Säkerhetskopian skapades framgångsrikt!",
+    "exportError": "Misslyckades med att skapa säkerhetskopia",
+    "savedBackups": "Sparade säkerhetskopior",
+    "noBackups": "Inga säkerhetskopior hittades. Skapa din första säkerhetskopia ovan.",
+    "createdAt": "Skapad",
+    "version": "Version",
+    "currentVersion": "Aktuell version",
+    "size": "Storlek",
+    "contents": "Innehåll",
+    "actions": "Åtgärder",
+    "restore": "Återställ",
+    "download": "Ladda ner",
+    "downloadSuccess": "Backup nedladdad framgångsrikt!",
+    "downloadError": "Misslyckades med att ladda ner backup",
+    "confirmRestore": "Återställ Backup",
+    "confirmRestoreMessage": "Är du säker på att du vill återställa denna backup? Detta kommer att slå samman den säkerhetskopierade datan med din nuvarande data.",
+    "restoreSuccess": "Backup återställd framgångsrikt! Skapade: {{tasks}} uppgifter, {{projects}} projekt, {{notes}} anteckningar",
+    "restoreError": "Misslyckades med att återställa backup",
+    "confirmDelete": "Ta bort Backup",
+    "confirmDeleteMessage": "Är du säker på att du vill ta bort denna backup? Denna åtgärd kan inte ångras.",
+    "deleteSuccess": "Backup borttagen framgångsrikt!",
+    "deleteError": "Misslyckades med att ta bort backup",
+    "importTitle": "Importera från Fil",
+    "importDescription": "Ladda upp en backupfil för att återställa din data. Din befintliga data kommer att bevaras, och nya objekt från backupen kommer att läggas till.",
+    "importNote": "Viktigt:",
+    "importNoteDescription": "Import kommer att slå samman data med dina befintliga objekt. Duplicerade objekt (samma UID) kommer att hoppas över.",
+    "selectFile": "Välj Backupfil",
+    "clickToUpload": "Klicka för att bläddra bland filer",
+    "restoreBackup": "Återställ Backup",
+    "importing": "Importerar...",
+    "importSuccess": "Backup importerad framgångsrikt! Skapade: {{tasks}} uppgifter, {{projects}} projekt, {{notes}} anteckningar",
+    "importError": "Misslyckades med att importera backup",
+    "backupContents": "Backupinnehåll:",
+    "validationError": "Den valda filen är inte en giltig backup",
+    "validationErrors": "Valideringsfel:",
+    "versionIncompatible": "Version inkompatibel",
+    "backupVersion": "Backupversion"
   }
 }

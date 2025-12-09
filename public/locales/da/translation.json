@@ -23,7 +23,8 @@
     "discardChangesMessage": "Du har ikke gemte ændringer. Er du sikker på, at du vil forkaste dem?",
     "no": "Nej, fortsæt med at redigere",
     "yesDiscard": "Ja, forkast",
-    "uploading": "Uploader..."
+    "uploading": "Uploader...",
+    "refresh": "Opdater"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -63,7 +64,8 @@
     "profileSettings": "Profilindstillinger",
     "settings": "Indstillinger",
     "about": "Om",
-    "logout": "Log ud"
+    "logout": "Log ud",
+    "backupRestore": "Backup & Gendan"
   },
   "settings": {
     "todayPageSettings": "Indstillinger for i dag",
@@ -1208,5 +1210,52 @@
   },
   "subtasks": {
     "placeholder": "Tilføj en underopgave..."
+  },
+  "backup": {
+    "title": "Backup & Gendan",
+    "description": "Opret backups eller gendan fra tidligere backups. Dine sidste 5 backups gemmes automatisk.",
+    "createBackup": "Opret Backup",
+    "importFromFile": "Importer fra Fil",
+    "createNewBackup": "Opret Ny Backup",
+    "createDescription": "Opret en ny backup af alle dine data. Backups gemmes på serveren, og du kan gendanne dem senere.",
+    "createBackupNow": "Opret Backup Nu",
+    "creating": "Opretter backup...",
+    "exportSuccess": "Backup oprettet med succes!",
+    "exportError": "Fejl ved oprettelse af backup",
+    "savedBackups": "Gemte Backups",
+    "noBackups": "Ingen backups fundet. Opret din første backup ovenfor.",
+    "createdAt": "Oprettet",
+    "version": "Version",
+    "currentVersion": "Nuværende version",
+    "size": "Størrelse",
+    "contents": "Indhold",
+    "actions": "Handlinger",
+    "restore": "Gendan",
+    "download": "Download",
+    "downloadSuccess": "Backup downloadet med succes!",
+    "downloadError": "Fejl ved download af backup",
+    "confirmRestore": "Gendan Backup",
+    "confirmRestoreMessage": "Er du sikker på, at du vil gendanne denne backup? Dette vil sammenflette de sikkerhedskopierede data med dine nuværende data.",
+    "restoreSuccess": "Backup gendannet med succes! Oprettet: {{tasks}} opgaver, {{projects}} projekter, {{notes}} noter",
+    "restoreError": "Fejl ved gendannelse af backup",
+    "confirmDelete": "Slet Backup",
+    "confirmDeleteMessage": "Er du sikker på, at du vil slette denne backup? Denne handling kan ikke fortrydes.",
+    "deleteSuccess": "Backup slettet med succes!",
+    "deleteError": "Fejl ved sletning af backup",
+    "importTitle": "Importer fra Fil",
+    "importDescription": "Upload en backupfil for at gendanne dine data. Dine eksisterende data vil blive bevaret, og nye elementer fra backupen vil blive tilføjet.",
+    "importNote": "Vigtigt:",
+    "importNoteDescription": "Import vil sammenflette data med dine eksisterende elementer. Duplikerede elementer (samme UID) vil blive sprunget over.",
+    "selectFile": "Vælg Backup Fil",
+    "clickToUpload": "Klik for at gennemse filer",
+    "restoreBackup": "Gendan Backup",
+    "importing": "Importer...",
+    "importSuccess": "Backup importeret med succes! Oprettet: {{tasks}} opgaver, {{projects}} projekter, {{notes}} noter",
+    "importError": "Fejl ved import af backup",
+    "backupContents": "Backup indhold:",
+    "validationError": "Den valgte fil er ikke en gyldig backup",
+    "validationErrors": "Valideringsfejl:",
+    "versionIncompatible": "Version inkompatibel",
+    "backupVersion": "Backup version"
   }
 }

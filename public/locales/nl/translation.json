@@ -23,7 +23,8 @@
     "discardChangesMessage": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je ze wilt negeren?",
     "no": "Nee, blijf bewerken",
     "yesDiscard": "Ja, negeren",
-    "uploading": "Uploaden..."
+    "uploading": "Uploaden...",
+    "refresh": "Vernieuwen"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -63,7 +64,8 @@
     "profileSettings": "Profielinstellingen",
     "settings": "Instellingen",
     "about": "Over",
-    "logout": "Uitloggen"
+    "logout": "Uitloggen",
+    "backupRestore": "Back-up & Herstellen"
   },
   "settings": {
     "todayPageSettings": "Instellingen Vandaag Pagina",
@@ -1208,5 +1210,52 @@
   },
   "subtasks": {
     "placeholder": "Voeg een subtaak toe..."
+  },
+  "backup": {
+    "title": "Back-up & Herstellen",
+    "description": "Maak back-ups of herstel van eerdere back-ups. Je laatste 5 back-ups worden automatisch opgeslagen.",
+    "createBackup": "Maak Back-up",
+    "importFromFile": "Importeren vanuit Bestand",
+    "createNewBackup": "Maak Nieuwe Back-up",
+    "createDescription": "Maak een nieuwe back-up van al je gegevens. Back-ups worden op de server opgeslagen en je kunt ze later herstellen.",
+    "createBackupNow": "Maak Nu Back-up",
+    "creating": "Back-up aanmaken...",
+    "exportSuccess": "Back-up succesvol aangemaakt!",
+    "exportError": "Aanmaken van back-up mislukt",
+    "savedBackups": "Opgeslagen Back-ups",
+    "noBackups": "Geen back-ups gevonden. Maak hierboven je eerste back-up.",
+    "createdAt": "Aangemaakt",
+    "version": "Versie",
+    "currentVersion": "Huidige versie",
+    "size": "Grootte",
+    "contents": "Inhoud",
+    "actions": "Acties",
+    "restore": "Herstellen",
+    "download": "Downloaden",
+    "downloadSuccess": "Backup succesvol gedownload!",
+    "downloadError": "Het downloaden van de backup is mislukt",
+    "confirmRestore": "Backup Herstellen",
+    "confirmRestoreMessage": "Weet je zeker dat je deze backup wilt herstellen? Dit zal de geback-upte gegevens samenvoegen met je huidige gegevens.",
+    "restoreSuccess": "Backup succesvol hersteld! Aangemaakt: {{tasks}} taken, {{projects}} projecten, {{notes}} notities",
+    "restoreError": "Het herstellen van de backup is mislukt",
+    "confirmDelete": "Backup Verwijderen",
+    "confirmDeleteMessage": "Weet je zeker dat je deze backup wilt verwijderen? Deze actie kan niet ongedaan gemaakt worden.",
+    "deleteSuccess": "Backup succesvol verwijderd!",
+    "deleteError": "Het verwijderen van de backup is mislukt",
+    "importTitle": "Importeren vanuit Bestand",
+    "importDescription": "Upload een backupbestand om je gegevens te herstellen. Je bestaande gegevens blijven behouden en nieuwe items uit de backup worden toegevoegd.",
+    "importNote": "Belangrijk:",
+    "importNoteDescription": "Importeren zal gegevens samenvoegen met je bestaande items. Dubbele items (dezelfde UID) worden overgeslagen.",
+    "selectFile": "Selecteer Backupbestand",
+    "clickToUpload": "Klik om bestanden te doorbladeren",
+    "restoreBackup": "Backup Herstellen",
+    "importing": "Importeren...",
+    "importSuccess": "Backup succesvol geïmporteerd! Aangemaakt: {{tasks}} taken, {{projects}} projecten, {{notes}} notities",
+    "importError": "Importeren van backup mislukt",
+    "backupContents": "Inhoud van de backup:",
+    "validationError": "Het geselecteerde bestand is geen geldige backup",
+    "validationErrors": "Validatiefouten:",
+    "versionIncompatible": "Versie incompatibel",
+    "backupVersion": "Backupversie"
   }
 }

@@ -23,6 +23,9 @@ backend/coverage/
 backend/uploads/
 uploads/
 
+# Backup files
+backend/backups/
+
 # Docker volumes
 tududi_db/
 

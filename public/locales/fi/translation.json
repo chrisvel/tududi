@@ -23,7 +23,8 @@
     "discardChangesMessage": "Sinulla on tallentamattomia muutoksia. Oletko varma, että haluat hylätä ne?",
     "no": "Ei, jatka muokkaamista",
     "yesDiscard": "Kyllä, hylkää",
-    "uploading": "Lähetetään..."
+    "uploading": "Lähetetään...",
+    "refresh": "Päivitä"
   },
   "sidebar": {
     "dashboard": "Ohjauspaneeli",
@@ -63,7 +64,8 @@
     "profileSettings": "Profiiliasetukset",
     "settings": "Asetukset",
     "about": "Tietoja",
-    "logout": "Kirjaudu ulos"
+    "logout": "Kirjaudu ulos",
+    "backupRestore": "Varmuuskopioi & Palauta"
   },
   "settings": {
     "todayPageSettings": "Tänään-sivun asetukset",
@@ -1208,5 +1210,52 @@
   },
   "subtasks": {
     "placeholder": "Lisää alitehtävä..."
+  },
+  "backup": {
+    "title": "Varmuuskopioi & Palauta",
+    "description": "Luo varmuuskopioita tai palauta aiemmista varmuuskopioista. Viimeiset 5 varmuuskopiota tallennetaan automaattisesti.",
+    "createBackup": "Luo varmuuskopio",
+    "importFromFile": "Tuo tiedostosta",
+    "createNewBackup": "Luo uusi varmuuskopio",
+    "createDescription": "Luo uusi varmuuskopio kaikista tiedoistasi. Varmuuskopiot tallennetaan palvelimelle ja voit palauttaa ne myöhemmin.",
+    "createBackupNow": "Luo varmuuskopio nyt",
+    "creating": "Luodaan varmuuskopiota...",
+    "exportSuccess": "Varmuuskopio luotiin onnistuneesti!",
+    "exportError": "Varmuuskopion luominen epäonnistui",
+    "savedBackups": "Tallennetut varmuuskopiot",
+    "noBackups": "Varmuuskopioita ei löytynyt. Luo ensimmäinen varmuuskopiosi yllä.",
+    "createdAt": "Luotu",
+    "version": "Versio",
+    "currentVersion": "Nykyinen versio",
+    "size": "Koko",
+    "contents": "Sisältö",
+    "actions": "Toiminnot",
+    "restore": "Palauta",
+    "download": "Lataa",
+    "downloadSuccess": "Varasto ladattu onnistuneesti!",
+    "downloadError": "Varaston lataaminen epäonnistui",
+    "confirmRestore": "Palauta varasto",
+    "confirmRestoreMessage": "Oletko varma, että haluat palauttaa tämän varaston? Tämä yhdistää varatun tiedon nykyisiin tietoihisi.",
+    "restoreSuccess": "Varasto palautettu onnistuneesti! Luotu: {{tasks}} tehtävää, {{projects}} projektia, {{notes}} muistiota",
+    "restoreError": "Varaston palauttaminen epäonnistui",
+    "confirmDelete": "Poista varasto",
+    "confirmDeleteMessage": "Oletko varma, että haluat poistaa tämän varaston? Tätä toimintoa ei voi peruuttaa.",
+    "deleteSuccess": "Varasto poistettu onnistuneesti!",
+    "deleteError": "Varaston poistaminen epäonnistui",
+    "importTitle": "Tuo tiedostosta",
+    "importDescription": "Lataa varastotiedosto palauttaaksesi tietosi. Nykyiset tietosi säilytetään, ja varastosta lisätään uusia kohteita.",
+    "importNote": "Tärkeää:",
+    "importNoteDescription": "Tuo yhdistää tiedot nykyisiin kohteisiisi. Kaksoiskappaleet (sama UID) ohitetaan.",
+    "selectFile": "Valitse varastotiedosto",
+    "clickToUpload": "Napsauta selataksesi tiedostoja",
+    "restoreBackup": "Palauta varasto",
+    "importing": "Tuodaan...",
+    "importSuccess": "Varmuuskopio tuotiin onnistuneesti! Luotu: {{tasks}} tehtävää, {{projects}} projektia, {{notes}} muistiota",
+    "importError": "Varmuuskopion tuonti epäonnistui",
+    "backupContents": "Varmuuskopion sisältö:",
+    "validationError": "Valittu tiedosto ei ole voimassa oleva varmuuskopio",
+    "validationErrors": "Validointivirheet:",
+    "versionIncompatible": "Versio yhteensopimaton",
+    "backupVersion": "Varmuuskopion versio"
   }
 }

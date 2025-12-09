@@ -17,6 +17,7 @@ import NoteDetails from './components/Note/NoteDetails';
 import Calendar from './components/Calendar';
 import ProfileSettings from './components/Profile/ProfileSettings';
 import About from './components/About';
+import BackupRestore from './components/Backup/BackupRestore';
 import Layout from './Layout';
 import { User } from './entities/User';
 import TasksToday from './components/Task/TasksToday';
@@ -259,6 +260,10 @@ const App: React.FC = () => {
                             <Route
                                 path="/about"
                                 element={<About isDarkMode={isDarkMode} />}
+                            />
+                            <Route
+                                path="/backup"
+                                element={<BackupRestore />}
                             />
                             <Route
                                 path="/admin/users"

@@ -23,7 +23,8 @@
     "discardChangesMessage": "Kaydedilmemiş değişiklikleriniz var. Onları iptal etmek istediğinizden emin misiniz?",
     "no": "Hayır, düzenlemeye devam et",
     "yesDiscard": "Evet, iptal et",
-    "uploading": "Yükleniyor..."
+    "uploading": "Yükleniyor...",
+    "refresh": "Yenile"
   },
   "sidebar": {
     "dashboard": "Gösterge Paneli",
@@ -63,7 +64,8 @@
     "profileSettings": "Profil Ayarları",
     "settings": "Ayarlar",
     "about": "Hakkında",
-    "logout": "Çıkış Yap"
+    "logout": "Çıkış Yap",
+    "backupRestore": "Yedekleme & Geri Yükleme"
   },
   "settings": {
     "todayPageSettings": "Bugün Sayfası Ayarları",
@@ -1208,5 +1210,52 @@
   },
   "subtasks": {
     "placeholder": "Bir alt görev ekle..."
+  },
+  "backup": {
+    "title": "Yedekleme & Geri Yükleme",
+    "description": "Yedeklemeler oluşturun veya önceki yedeklemelerden geri yükleyin. Son 5 yedeğiniz otomatik olarak kaydedilir.",
+    "createBackup": "Yedek Oluştur",
+    "importFromFile": "Dosyadan İçe Aktar",
+    "createNewBackup": "Yeni Yedek Oluştur",
+    "createDescription": "Tüm verilerinizin yeni bir yedeğini oluşturun. Yedekler sunucuda kaydedilir ve daha sonra geri yükleyebilirsiniz.",
+    "createBackupNow": "Şimdi Yedek Oluştur",
+    "creating": "Yedek oluşturuluyor...",
+    "exportSuccess": "Yedek başarıyla oluşturuldu!",
+    "exportError": "Yedek oluşturulamadı",
+    "savedBackups": "Kaydedilen Yedekler",
+    "noBackups": "Yedek bulunamadı. Yukarıdan ilk yedeğinizi oluşturun.",
+    "createdAt": "Oluşturuldu",
+    "version": "Sürüm",
+    "currentVersion": "Mevcut sürüm",
+    "size": "Boyut",
+    "contents": "İçerik",
+    "actions": "Eylemler",
+    "restore": "Geri Yükle",
+    "download": "İndir",
+    "downloadSuccess": "Yedek başarıyla indirildi!",
+    "downloadError": "Yedeği indirmek başarısız oldu",
+    "confirmRestore": "Yedeği Geri Yükle",
+    "confirmRestoreMessage": "Bu yedeği geri yüklemek istediğinizden emin misiniz? Bu, yedeklenen verileri mevcut verilerinizle birleştirecektir.",
+    "restoreSuccess": "Yedek başarıyla geri yüklendi! Oluşturulan: {{tasks}} görev, {{projects}} proje, {{notes}} not",
+    "restoreError": "Yedeği geri yüklemek başarısız oldu",
+    "confirmDelete": "Yedeği Sil",
+    "confirmDeleteMessage": "Bu yedeği silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+    "deleteSuccess": "Yedek başarıyla silindi!",
+    "deleteError": "Yedeği silmek başarısız oldu",
+    "importTitle": "Dosyadan İçe Aktar",
+    "importDescription": "Verilerinizi geri yüklemek için bir yedek dosyası yükleyin. Mevcut verileriniz korunacak ve yedekten yeni öğeler eklenecektir.",
+    "importNote": "Önemli:",
+    "importNoteDescription": "İçe aktarma, verileri mevcut öğelerinizle birleştirecektir. Tekrar eden öğeler (aynı UID) atlanacaktır.",
+    "selectFile": "Yedek Dosyasını Seç",
+    "clickToUpload": "Dosyaları taramak için tıklayın",
+    "restoreBackup": "Yedeği Geri Yükle",
+    "importing": "İçe Aktarılıyor...",
+    "importSuccess": "Yedek başarıyla içe aktarıldı! Oluşturuldu: {{tasks}} görev, {{projects}} proje, {{notes}} not",
+    "importError": "Yedeği içe aktarmak başarısız oldu",
+    "backupContents": "Yedek içeriği:",
+    "validationError": "Seçilen dosya geçerli bir yedek değil",
+    "validationErrors": "Doğrulama hataları:",
+    "versionIncompatible": "Sürüm Uyuşmaz",
+    "backupVersion": "Yedek sürümü"
   }
 }

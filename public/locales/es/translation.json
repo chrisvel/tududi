@@ -23,7 +23,8 @@
     "discardChangesMessage": "Tienes cambios no guardados. ¿Estás seguro de que quieres descartarlos?",
     "no": "No, seguir editando",
     "yesDiscard": "Sí, descartar",
-    "uploading": "Subiendo..."
+    "uploading": "Subiendo...",
+    "refresh": "Actualizar"
   },
   "sidebar": {
     "dashboard": "Tablero",
@@ -63,7 +64,8 @@
     "profileSettings": "Configuración de Perfil",
     "settings": "Ajustes",
     "about": "Acerca de",
-    "logout": "Cerrar Sesión"
+    "logout": "Cerrar Sesión",
+    "backupRestore": "Copia de seguridad y restauración"
   },
   "settings": {
     "todayPageSettings": "Configuración de Página Hoy",
@@ -1209,5 +1211,52 @@
   },
   "subtasks": {
     "placeholder": "Agregar una subtarea..."
+  },
+  "backup": {
+    "restore": "Restaurar",
+    "download": "Descargar",
+    "downloadSuccess": "¡Copia de seguridad descargada con éxito!",
+    "downloadError": "Error al descargar la copia de seguridad",
+    "confirmRestore": "Restaurar copia de seguridad",
+    "confirmRestoreMessage": "¿Está seguro de que desea restaurar esta copia de seguridad? Esto fusionará los datos respaldados con sus datos actuales.",
+    "restoreSuccess": "¡Copia de seguridad restaurada con éxito! Creado: {{tasks}} tareas, {{projects}} proyectos, {{notes}} notas",
+    "restoreError": "Error al restaurar la copia de seguridad",
+    "confirmDelete": "Eliminar copia de seguridad",
+    "confirmDeleteMessage": "¿Está seguro de que desea eliminar esta copia de seguridad? Esta acción no se puede deshacer.",
+    "deleteSuccess": "¡Copia de seguridad eliminada con éxito!",
+    "deleteError": "Error al eliminar la copia de seguridad",
+    "importTitle": "Importar desde archivo",
+    "importDescription": "Suba un archivo de copia de seguridad para restaurar sus datos. Sus datos existentes se preservarán y se agregarán nuevos elementos de la copia de seguridad.",
+    "importNote": "Importante:",
+    "importNoteDescription": "La importación fusionará los datos con sus elementos existentes. Los elementos duplicados (mismo UID) serán omitidos.",
+    "selectFile": "Seleccionar archivo de copia de seguridad",
+    "clickToUpload": "Haga clic para buscar archivos",
+    "restoreBackup": "Restaurar copia de seguridad",
+    "importing": "Importando...",
+    "importSuccess": "¡Copia de seguridad importada con éxito! Creado: {{tasks}} tareas, {{projects}} proyectos, {{notes}} notas",
+    "importError": "Error al importar la copia de seguridad",
+    "backupContents": "Contenido de la copia de seguridad:",
+    "validationError": "El archivo seleccionado no es una copia de seguridad válida",
+    "validationErrors": "Errores de validación:",
+    "versionIncompatible": "Versión incompatible",
+    "backupVersion": "Versión de la copia de seguridad",
+    "title": "Copia de seguridad y restauración",
+    "description": "Crea copias de seguridad o restaura desde copias de seguridad anteriores. Tus últimas 5 copias de seguridad se guardan automáticamente.",
+    "createBackup": "Crear copia de seguridad",
+    "importFromFile": "Importar desde archivo",
+    "createNewBackup": "Crear nueva copia de seguridad",
+    "createDescription": "Crea una nueva copia de seguridad de todos tus datos. Las copias de seguridad se guardan en el servidor y puedes restaurarlas más tarde.",
+    "createBackupNow": "Crear copia de seguridad ahora",
+    "creating": "Creando copia de seguridad...",
+    "exportSuccess": "¡Copia de seguridad creada con éxito!",
+    "exportError": "Error al crear la copia de seguridad",
+    "savedBackups": "Copias de seguridad guardadas",
+    "noBackups": "No se encontraron copias de seguridad. Crea tu primera copia de seguridad arriba.",
+    "createdAt": "Creado",
+    "version": "Versión",
+    "currentVersion": "Versión actual",
+    "size": "Tamaño",
+    "contents": "Contenido",
+    "actions": "Acciones"
   }
 }

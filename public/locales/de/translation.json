@@ -23,7 +23,8 @@
     "discardChangesMessage": "Sie haben nicht gespeicherte Änderungen. Sind Sie sicher, dass Sie diese verwerfen möchten?",
     "no": "Nein, weiter bearbeiten",
     "yesDiscard": "Ja, verwerfen",
-    "uploading": "Hochladen..."
+    "uploading": "Hochladen...",
+    "refresh": "Aktualisieren"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -63,7 +64,8 @@
     "profileSettings": "Profil-Einstellungen",
     "settings": "Einstellungen",
     "about": "Über",
-    "logout": "Abmelden"
+    "logout": "Abmelden",
+    "backupRestore": "Sichern & Wiederherstellen"
   },
   "settings": {
     "todayPageSettings": "Heute-Seite Einstellungen",
@@ -1217,5 +1219,52 @@
   },
   "subtasks": {
     "placeholder": "Fügen Sie eine Unteraufgabe hinzu..."
+  },
+  "backup": {
+    "title": "Sichern & Wiederherstellen",
+    "description": "Erstellen Sie Sicherungen oder stellen Sie von vorherigen Sicherungen wieder her. Ihre letzten 5 Sicherungen werden automatisch gespeichert.",
+    "createBackup": "Sicherung erstellen",
+    "importFromFile": "Von Datei importieren",
+    "createNewBackup": "Neue Sicherung erstellen",
+    "createDescription": "Erstellen Sie eine neue Sicherung aller Ihrer Daten. Sicherungen werden auf dem Server gespeichert und Sie können sie später wiederherstellen.",
+    "createBackupNow": "Sicherung jetzt erstellen",
+    "creating": "Sicherung wird erstellt...",
+    "exportSuccess": "Sicherung erfolgreich erstellt!",
+    "exportError": "Sicherung konnte nicht erstellt werden",
+    "savedBackups": "Gespeicherte Sicherungen",
+    "noBackups": "Keine Sicherungen gefunden. Erstellen Sie oben Ihre erste Sicherung.",
+    "createdAt": "Erstellt",
+    "version": "Version",
+    "currentVersion": "Aktuelle Version",
+    "size": "Größe",
+    "contents": "Inhalt",
+    "actions": "Aktionen",
+    "restore": "Wiederherstellen",
+    "download": "Herunterladen",
+    "downloadSuccess": "Backup erfolgreich heruntergeladen!",
+    "downloadError": "Fehler beim Herunterladen des Backups",
+    "confirmRestore": "Backup wiederherstellen",
+    "confirmRestoreMessage": "Sind Sie sicher, dass Sie dieses Backup wiederherstellen möchten? Dies wird die gesicherten Daten mit Ihren aktuellen Daten zusammenführen.",
+    "restoreSuccess": "Backup erfolgreich wiederhergestellt! Erstellt: {{tasks}} Aufgaben, {{projects}} Projekte, {{notes}} Notizen",
+    "restoreError": "Fehler bei der Wiederherstellung des Backups",
+    "confirmDelete": "Backup löschen",
+    "confirmDeleteMessage": "Sind Sie sicher, dass Sie dieses Backup löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "deleteSuccess": "Backup erfolgreich gelöscht!",
+    "deleteError": "Fehler beim Löschen des Backups",
+    "importTitle": "Von Datei importieren",
+    "importDescription": "Laden Sie eine Backup-Datei hoch, um Ihre Daten wiederherzustellen. Ihre vorhandenen Daten werden beibehalten, und neue Elemente aus dem Backup werden hinzugefügt.",
+    "importNote": "Wichtig:",
+    "importNoteDescription": "Der Import wird die Daten mit Ihren vorhandenen Elementen zusammenführen. Doppelte Elemente (gleiche UID) werden übersprungen.",
+    "selectFile": "Backup-Datei auswählen",
+    "clickToUpload": "Klicken Sie, um Dateien auszuwählen",
+    "restoreBackup": "Backup wiederherstellen",
+    "importing": "Importiere...",
+    "importSuccess": "Backup erfolgreich importiert! Erstellt: {{tasks}} Aufgaben, {{projects}} Projekte, {{notes}} Notizen",
+    "importError": "Import des Backups fehlgeschlagen",
+    "backupContents": "Inhalt des Backups:",
+    "validationError": "Die ausgewählte Datei ist kein gültiges Backup",
+    "validationErrors": "Validierungsfehler:",
+    "versionIncompatible": "Version inkompatibel",
+    "backupVersion": "Backup-Version"
   }
 }

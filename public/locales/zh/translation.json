@@ -23,7 +23,8 @@
     "discardChangesMessage": "您有未保存的更改。您确定要放弃它们吗？",
     "no": "不，继续编辑",
     "yesDiscard": "是的，放弃",
-    "uploading": "上传中..."
+    "uploading": "上传中...",
+    "refresh": "刷新"
   },
   "sidebar": {
     "dashboard": "仪表板",
@@ -63,7 +64,8 @@
     "profileSettings": "个人设置",
     "settings": "设置",
     "about": "关于",
-    "logout": "注销"
+    "logout": "注销",
+    "backupRestore": "备份与恢复"
   },
   "settings": {
     "todayPageSettings": "今日页面设置",
@@ -366,7 +368,8 @@
     "stuckProjectsDesc": "最近未更新的项目",
     "reviewItems": "点击以审查和改善您的工作流程",
     "suggestion": "点击上面的任何项目以打开并进行改进。",
-    "issuesFound_other": "{{count}}个生产力问题需要关注"
+    "issuesFound_other": "{{count}}个生产力问题需要关注",
+    "issuesFound_one": "1 个生产力问题需要关注"
   },
   "nextTask": {
     "suggestion": "由于没有进行中的任务，您觉得从这个开始怎么样",
@@ -1207,5 +1210,52 @@
   },
   "subtasks": {
     "placeholder": "添加子任务..."
+  },
+  "backup": {
+    "title": "备份与恢复",
+    "description": "创建备份或从以前的备份中恢复。您的最后 5 个备份会自动保存。",
+    "createBackup": "创建备份",
+    "importFromFile": "从文件导入",
+    "createNewBackup": "创建新备份",
+    "createDescription": "创建您所有数据的新备份。备份保存在服务器上，您可以稍后恢复。",
+    "createBackupNow": "立即创建备份",
+    "creating": "正在创建备份...",
+    "exportSuccess": "备份创建成功！",
+    "exportError": "创建备份失败",
+    "savedBackups": "已保存的备份",
+    "noBackups": "未找到备份。请在上方创建您的第一个备份。",
+    "createdAt": "创建于",
+    "version": "版本",
+    "currentVersion": "当前版本",
+    "size": "大小",
+    "contents": "内容",
+    "actions": "操作",
+    "restore": "恢复",
+    "download": "下载",
+    "downloadSuccess": "备份下载成功！",
+    "downloadError": "下载备份失败",
+    "confirmRestore": "恢复备份",
+    "confirmRestoreMessage": "您确定要恢复此备份吗？这将把备份的数据与您当前的数据合并。",
+    "restoreSuccess": "备份恢复成功！创建了：{{tasks}} 个任务，{{projects}} 个项目，{{notes}} 条笔记",
+    "restoreError": "恢复备份失败",
+    "confirmDelete": "删除备份",
+    "confirmDeleteMessage": "您确定要删除此备份吗？此操作无法撤销。",
+    "deleteSuccess": "备份删除成功！",
+    "deleteError": "删除备份失败",
+    "importTitle": "从文件导入",
+    "importDescription": "上传备份文件以恢复您的数据。您现有的数据将被保留，备份中的新项目将被添加。",
+    "importNote": "重要：",
+    "importNoteDescription": "导入将与您现有的项目合并数据。重复项目（相同的UID）将被跳过。",
+    "selectFile": "选择备份文件",
+    "clickToUpload": "点击浏览文件",
+    "restoreBackup": "恢复备份",
+    "importing": "导入中...",
+    "importSuccess": "备份导入成功！创建了：{{tasks}} 个任务，{{projects}} 个项目，{{notes}} 个笔记",
+    "importError": "导入备份失败",
+    "backupContents": "备份内容：",
+    "validationError": "所选文件不是有效的备份",
+    "validationErrors": "验证错误：",
+    "versionIncompatible": "版本不兼容",
+    "backupVersion": "备份版本"
   }
 }

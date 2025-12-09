@@ -23,7 +23,8 @@
     "discardChangesMessage": "Imate neshranjene spremembe. Ste prepričani, da jih želite zavreči?",
     "no": "Ne, nadaljuj z urejanjem",
     "yesDiscard": "Da, zavrzi",
-    "uploading": "Nalagam..."
+    "uploading": "Nalagam...",
+    "refresh": "Osveži"
   },
   "sidebar": {
     "dashboard": "Nadzorna plošča",
@@ -63,7 +64,8 @@
     "profileSettings": "Nastavitve profila",
     "settings": "Nastavitve",
     "about": "O aplikaciji",
-    "logout": "Odjava"
+    "logout": "Odjava",
+    "backupRestore": "Varnostna kopija in obnova"
   },
   "settings": {
     "todayPageSettings": "Nastavitve strani Danes",
@@ -1208,5 +1210,52 @@
   },
   "subtasks": {
     "placeholder": "Dodaj podnalogo..."
+  },
+  "backup": {
+    "title": "Varnostna kopija in obnova",
+    "description": "Ustvarite varnostne kopije ali obnovite iz prejšnjih varnostnih kopij. Vaših zadnjih 5 varnostnih kopij je samodejno shranjenih.",
+    "createBackup": "Ustvari varnostno kopijo",
+    "importFromFile": "Uvozi iz datoteke",
+    "createNewBackup": "Ustvari novo varnostno kopijo",
+    "createDescription": "Ustvarite novo varnostno kopijo vseh vaših podatkov. Varnostne kopije so shranjene na strežniku in jih lahko obnovite kasneje.",
+    "createBackupNow": "Ustvari varnostno kopijo zdaj",
+    "creating": "Ustvarjanje varnostne kopije...",
+    "exportSuccess": "Varnostna kopija je bila uspešno ustvarjena!",
+    "exportError": "Ustvarjanje varnostne kopije je spodletelo",
+    "savedBackups": "Shranjene varnostne kopije",
+    "noBackups": "Nobena varnostna kopija ni bila najdena. Ustvarite svojo prvo varnostno kopijo zgoraj.",
+    "createdAt": "Ustvarjeno",
+    "version": "Različica",
+    "currentVersion": "Trenutna različica",
+    "size": "Velikost",
+    "contents": "Vsebina",
+    "actions": "Dejanja",
+    "restore": "Obnovi",
+    "download": "Prenesi",
+    "downloadSuccess": "Varnostna kopija je bila uspešno prenesena!",
+    "downloadError": "Prenos varnostne kopije ni uspel",
+    "confirmRestore": "Obnovi varnostno kopijo",
+    "confirmRestoreMessage": "Ali ste prepričani, da želite obnoviti to varnostno kopijo? To bo združilo podatke iz varnostne kopije z vašimi trenutnimi podatki.",
+    "restoreSuccess": "Varnostna kopija je bila uspešno obnovljena! Ustvarjeno: {{tasks}} nalog, {{projects}} projektov, {{notes}} opomb",
+    "restoreError": "Obnova varnostne kopije ni uspela",
+    "confirmDelete": "Izbriši varnostno kopijo",
+    "confirmDeleteMessage": "Ali ste prepričani, da želite izbrisati to varnostno kopijo? Teh dejanj ni mogoče razveljaviti.",
+    "deleteSuccess": "Varnostna kopija je bila uspešno izbrisana!",
+    "deleteError": "Brisanje varnostne kopije ni uspelo",
+    "importTitle": "Uvozi iz datoteke",
+    "importDescription": "Naložite datoteko varnostne kopije za obnovitev vaših podatkov. Vaši obstoječi podatki bodo ohranjeni, novi elementi iz varnostne kopije pa bodo dodani.",
+    "importNote": "Pomembno:",
+    "importNoteDescription": "Uvoz bo združil podatke z vašimi obstoječimi elementi. Podvojeni elementi (isti UID) bodo preskočeni.",
+    "selectFile": "Izberite datoteko varnostne kopije",
+    "clickToUpload": "Kliknite za iskanje datotek",
+    "restoreBackup": "Obnovi varnostno kopijo",
+    "importing": "Uvažam...",
+    "importSuccess": "Varnostna kopija je bila uspešno uvožena! Ustvarjeno: {{tasks}} nalog, {{projects}} projektov, {{notes}} opomb",
+    "importError": "Uvoz varnostne kopije je neuspešen",
+    "backupContents": "Vsebina varnostne kopije:",
+    "validationError": "Izbrana datoteka ni veljavna varnostna kopija",
+    "validationErrors": "Napake pri preverjanju:",
+    "versionIncompatible": "Različica ni združljiva",
+    "backupVersion": "Različica varnostne kopije"
   }
 }

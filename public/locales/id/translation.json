@@ -23,7 +23,8 @@
     "discardChangesMessage": "Anda memiliki perubahan yang belum disimpan. Apakah Anda yakin ingin membuangnya?",
     "no": "Tidak, lanjutkan mengedit",
     "yesDiscard": "Ya, buang",
-    "uploading": "Mengunggah..."
+    "uploading": "Mengunggah...",
+    "refresh": "Segarkan"
   },
   "sidebar": {
     "dashboard": "Dasbor",
@@ -63,7 +64,8 @@
     "profileSettings": "Pengaturan Profil",
     "settings": "Pengaturan",
     "about": "Tentang",
-    "logout": "Keluar"
+    "logout": "Keluar",
+    "backupRestore": "Cadangkan & Pulihkan"
   },
   "settings": {
     "todayPageSettings": "Pengaturan Halaman Hari Ini",
@@ -366,7 +368,8 @@
     "stuckProjectsDesc": "Proyek yang tidak diperbarui baru-baru ini",
     "reviewItems": "Klik untuk meninjau dan meningkatkan alur kerja Anda",
     "suggestion": "Klik pada item mana pun di atas untuk membukanya dan melakukan perbaikan.",
-    "issuesFound_other": "{{count}} masalah produktivitas memerlukan perhatian"
+    "issuesFound_other": "{{count}} masalah produktivitas memerlukan perhatian",
+    "issuesFound_one": "1 masalah produktivitas membutuhkan perhatian"
   },
   "nextTask": {
     "suggestion": "Karena tidak ada yang sedang berlangsung, bagaimana jika mulai dengan",
@@ -1207,5 +1210,52 @@
   },
   "subtasks": {
     "placeholder": "Tambahkan subtugas..."
+  },
+  "backup": {
+    "title": "Cadangkan & Pulihkan",
+    "description": "Buat cadangan atau pulihkan dari cadangan sebelumnya. 5 cadangan terakhir Anda disimpan secara otomatis.",
+    "createBackup": "Buat Cadangan",
+    "importFromFile": "Impor dari Berkas",
+    "createNewBackup": "Buat Cadangan Baru",
+    "createDescription": "Buat cadangan baru dari semua data Anda. Cadangan disimpan di server dan Anda dapat memulihkannya nanti.",
+    "createBackupNow": "Buat Cadangan Sekarang",
+    "creating": "Membuat cadangan...",
+    "exportSuccess": "Cadangan berhasil dibuat!",
+    "exportError": "Gagal membuat cadangan",
+    "savedBackups": "Cadangan yang Disimpan",
+    "noBackups": "Tidak ada cadangan yang ditemukan. Buat cadangan pertama Anda di atas.",
+    "createdAt": "Dibuat",
+    "version": "Versi",
+    "currentVersion": "Versi saat ini",
+    "size": "Ukuran",
+    "contents": "Isi",
+    "actions": "Tindakan",
+    "restore": "Pulihkan",
+    "download": "Unduh",
+    "downloadSuccess": "Cadangan berhasil diunduh!",
+    "downloadError": "Gagal mengunduh cadangan",
+    "confirmRestore": "Pulihkan Cadangan",
+    "confirmRestoreMessage": "Apakah Anda yakin ingin memulihkan cadangan ini? Ini akan menggabungkan data yang dicadangkan dengan data Anda saat ini.",
+    "restoreSuccess": "Cadangan berhasil dipulihkan! Dibuat: {{tasks}} tugas, {{projects}} proyek, {{notes}} catatan",
+    "restoreError": "Gagal memulihkan cadangan",
+    "confirmDelete": "Hapus Cadangan",
+    "confirmDeleteMessage": "Apakah Anda yakin ingin menghapus cadangan ini? Tindakan ini tidak dapat dibatalkan.",
+    "deleteSuccess": "Cadangan berhasil dihapus!",
+    "deleteError": "Gagal menghapus cadangan",
+    "importTitle": "Impor dari File",
+    "importDescription": "Unggah file cadangan untuk memulihkan data Anda. Data Anda yang ada akan dilestarikan, dan item baru dari cadangan akan ditambahkan.",
+    "importNote": "Penting:",
+    "importNoteDescription": "Impor akan menggabungkan data dengan item Anda yang ada. Item duplikat (UID yang sama) akan dilewati.",
+    "selectFile": "Pilih File Cadangan",
+    "clickToUpload": "Klik untuk menjelajahi file",
+    "restoreBackup": "Pulihkan Cadangan",
+    "importing": "Mengimpor...",
+    "importSuccess": "Cadangan berhasil diimpor! Dibuat: {{tasks}} tugas, {{projects}} proyek, {{notes}} catatan",
+    "importError": "Gagal mengimpor cadangan",
+    "backupContents": "Isi cadangan:",
+    "validationError": "File yang dipilih bukan cadangan yang valid",
+    "validationErrors": "Kesalahan validasi:",
+    "versionIncompatible": "Versi Tidak Kompatibel",
+    "backupVersion": "Versi cadangan"
   }
 }

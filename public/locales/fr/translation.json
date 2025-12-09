@@ -23,7 +23,8 @@
     "discardChangesMessage": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir les abandonner ?",
     "no": "Non, continuer à éditer",
     "yesDiscard": "Oui, abandonner",
-    "uploading": "Téléchargement..."
+    "uploading": "Téléchargement...",
+    "refresh": "Rafraîchir"
   },
   "sidebar": {
     "dashboard": "Tableau de bord",
@@ -63,7 +64,8 @@
     "profileSettings": "Paramètres du profil",
     "settings": "Paramètres",
     "about": "À propos",
-    "logout": "Déconnexion"
+    "logout": "Déconnexion",
+    "backupRestore": "Sauvegarde & Restauration"
   },
   "settings": {
     "todayPageSettings": "Paramètres de la page Aujourd'hui",
@@ -1208,5 +1210,52 @@
   },
   "subtasks": {
     "placeholder": "Ajouter une sous-tâche..."
+  },
+  "backup": {
+    "title": "Sauvegarde & Restauration",
+    "description": "Créez des sauvegardes ou restaurez à partir de sauvegardes précédentes. Vos 5 dernières sauvegardes sont automatiquement enregistrées.",
+    "createBackup": "Créer une sauvegarde",
+    "importFromFile": "Importer depuis un fichier",
+    "createNewBackup": "Créer une nouvelle sauvegarde",
+    "createDescription": "Créez une nouvelle sauvegarde de toutes vos données. Les sauvegardes sont enregistrées sur le serveur et vous pouvez les restaurer plus tard.",
+    "createBackupNow": "Créer une sauvegarde maintenant",
+    "creating": "Création de la sauvegarde...",
+    "exportSuccess": "Sauvegarde créée avec succès !",
+    "exportError": "Échec de la création de la sauvegarde",
+    "savedBackups": "Sauvegardes enregistrées",
+    "noBackups": "Aucune sauvegarde trouvée. Créez votre première sauvegarde ci-dessus.",
+    "createdAt": "Créé",
+    "version": "Version",
+    "currentVersion": "Version actuelle",
+    "size": "Taille",
+    "contents": "Contenu",
+    "actions": "Actions",
+    "restore": "Restaurer",
+    "download": "Télécharger",
+    "downloadSuccess": "Sauvegarde téléchargée avec succès !",
+    "downloadError": "Échec du téléchargement de la sauvegarde",
+    "confirmRestore": "Restaurer la sauvegarde",
+    "confirmRestoreMessage": "Êtes-vous sûr de vouloir restaurer cette sauvegarde ? Cela fusionnera les données sauvegardées avec vos données actuelles.",
+    "restoreSuccess": "Sauvegarde restaurée avec succès ! Créé : {{tasks}} tâches, {{projects}} projets, {{notes}} notes",
+    "restoreError": "Échec de la restauration de la sauvegarde",
+    "confirmDelete": "Supprimer la sauvegarde",
+    "confirmDeleteMessage": "Êtes-vous sûr de vouloir supprimer cette sauvegarde ? Cette action ne peut pas être annulée.",
+    "deleteSuccess": "Sauvegarde supprimée avec succès !",
+    "deleteError": "Échec de la suppression de la sauvegarde",
+    "importTitle": "Importer depuis un fichier",
+    "importDescription": "Téléchargez un fichier de sauvegarde pour restaurer vos données. Vos données existantes seront préservées, et les nouveaux éléments de la sauvegarde seront ajoutés.",
+    "importNote": "Important :",
+    "importNoteDescription": "L'importation fusionnera les données avec vos éléments existants. Les éléments en double (même UID) seront ignorés.",
+    "selectFile": "Sélectionner le fichier de sauvegarde",
+    "clickToUpload": "Cliquez pour parcourir les fichiers",
+    "restoreBackup": "Restaurer la sauvegarde",
+    "importing": "Importation...",
+    "importSuccess": "Sauvegarde importée avec succès ! Créé : {{tasks}} tâches, {{projects}} projets, {{notes}} notes",
+    "importError": "Échec de l'importation de la sauvegarde",
+    "backupContents": "Contenu de la sauvegarde :",
+    "validationError": "Le fichier sélectionné n'est pas une sauvegarde valide",
+    "validationErrors": "Erreurs de validation :",
+    "versionIncompatible": "Version incompatible",
+    "backupVersion": "Version de la sauvegarde"
   }
 }
