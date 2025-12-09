@@ -23,39 +23,40 @@ const fs = require('fs').promises;
 const gunzip = promisify(zlib.gunzip);
 const gzip = promisify(zlib.gzip);
 
-/**
- * Parse uploaded backup file (handles both compressed and uncompressed)
- * @param {Buffer} fileBuffer - The uploaded file buffer
- * @param {string} filename - The original filename
- * @returns {Promise<object>} - Parsed backup data
- */
+const checkBackupsEnabled = (req, res, next) => {
+    const backupsEnabled = process.env.FF_ENABLE_BACKUPS === 'true';
+    if (!backupsEnabled) {
+        return res.status(403).json({
+            error: 'Backups feature is disabled',
+            message: 'The backups feature is currently disabled. Please contact your administrator.',
+        });
+    }
+    next();
+};
+
+router.use(checkBackupsEnabled);
+
 async function parseUploadedBackup(fileBuffer, filename) {
     let backupJson;
 
-    // Check if file is gzipped (by extension or magic bytes)
     const isGzipped = filename.toLowerCase().endsWith('.gz') ||
-        (fileBuffer[0] === 0x1f && fileBuffer[1] === 0x8b); // gzip magic bytes
+        (fileBuffer[0] === 0x1f && fileBuffer[1] === 0x8b);
 
     if (isGzipped) {
-        // Decompress gzip
         const decompressed = await gunzip(fileBuffer);
         backupJson = decompressed.toString('utf8');
     } else {
-        // Plain JSON
         backupJson = fileBuffer.toString('utf8');
     }
 
     return JSON.parse(backupJson);
 }
-
-// Configure multer for file upload (in-memory storage)
 const upload = multer({
     storage: multer.memoryStorage(),
     limits: {
-        fileSize: 100 * 1024 * 1024, // 100MB limit
+        fileSize: 100 * 1024 * 1024,
     },
     fileFilter: (req, file, cb) => {
-        // Accept both JSON and gzip files
         const allowedMimes = ['application/json', 'application/gzip', 'application/x-gzip'];
         const fileExt = file.originalname.toLowerCase();
 
@@ -66,11 +67,6 @@ const upload = multer({
         }
     },
 });
-
-/**
- * POST /api/backup/export
- * Export user's data as JSON backup and save to server
- */
 router.post('/backup/export', async (req, res) => {
     try {
         const userId = getAuthenticatedUserId(req);
@@ -80,10 +76,7 @@ router.post('/backup/export', async (req, res) => {
 
         const backupData = await exportUserData(userId);
 
-        // Save backup to server
         const backup = await saveBackup(userId, backupData);
-
-        // Return backup metadata for confirmation
         res.json({
             success: true,
             message: 'Backup created successfully',
@@ -103,10 +96,6 @@ router.post('/backup/export', async (req, res) => {
     }
 });
 
-/**
- * POST /api/backup/import
- * Import backup data from JSON file
- */
 router.post('/backup/import', upload.single('backup'), async (req, res) => {
     try {
         const userId = getAuthenticatedUserId(req);
@@ -118,7 +107,6 @@ router.post('/backup/import', upload.single('backup'), async (req, res) => {
             return res.status(400).json({ error: 'No backup file provided' });
         }
 
-        // Parse JSON from uploaded file (handles both compressed and uncompressed)
         let backupData;
         try {
             backupData = await parseUploadedBackup(req.file.buffer, req.file.originalname);
@@ -129,7 +117,6 @@ router.post('/backup/import', upload.single('backup'), async (req, res) => {
             });
         }
 
-        // Validate backup data structure
         const validation = validateBackupData(backupData);
         if (!validation.valid) {
             return res.status(400).json({
@@ -138,7 +125,6 @@ router.post('/backup/import', upload.single('backup'), async (req, res) => {
             });
         }
 
-        // Check version compatibility
         const versionCheck = checkVersionCompatibility(backupData.version);
         if (!versionCheck.compatible) {
             return res.status(400).json({
@@ -148,9 +134,8 @@ router.post('/backup/import', upload.single('backup'), async (req, res) => {
             });
         }
 
-        // Import data (merge by default)
         const options = {
-            merge: req.body.merge !== 'false', // merge by default unless explicitly set to false
+            merge: req.body.merge !== 'false',
         };
 
         const stats = await importUserData(userId, backupData, options);
@@ -169,10 +154,6 @@ router.post('/backup/import', upload.single('backup'), async (req, res) => {
     }
 });
 
-/**
- * POST /api/backup/validate
- * Validate backup file without importing
- */
 router.post('/backup/validate', upload.single('backup'), async (req, res) => {
     try {
         const userId = getAuthenticatedUserId(req);
@@ -184,7 +165,6 @@ router.post('/backup/validate', upload.single('backup'), async (req, res) => {
             return res.status(400).json({ error: 'No backup file provided' });
         }
 
-        // Parse JSON from uploaded file (handles both compressed and uncompressed)
         let backupData;
         try {
             backupData = await parseUploadedBackup(req.file.buffer, req.file.originalname);
@@ -196,7 +176,6 @@ router.post('/backup/validate', upload.single('backup'), async (req, res) => {
             });
         }
 
-        // Validate backup data structure
         const validation = validateBackupData(backupData);
 
         if (!validation.valid) {
@@ -206,7 +185,6 @@ router.post('/backup/validate', upload.single('backup'), async (req, res) => {
             });
         }
 
-        // Check version compatibility
         const versionCheck = checkVersionCompatibility(backupData.version);
         if (!versionCheck.compatible) {
             return res.status(400).json({
@@ -217,7 +195,6 @@ router.post('/backup/validate', upload.single('backup'), async (req, res) => {
             });
         }
 
-        // Count items in backup
         const summary = {
             areas: backupData.data.areas?.length || 0,
             projects: backupData.data.projects?.length || 0,
@@ -245,10 +222,6 @@ router.post('/backup/validate', upload.single('backup'), async (req, res) => {
     }
 });
 
-/**
- * GET /api/backup/list
- * List all saved backups for the current user
- */
 router.get('/backup/list', async (req, res) => {
     try {
         const userId = getAuthenticatedUserId(req);
@@ -271,10 +244,6 @@ router.get('/backup/list', async (req, res) => {
     }
 });
 
-/**
- * GET /api/backup/:uid/download
- * Download a specific backup file
- */
 router.get('/backup/:uid/download', async (req, res) => {
     try {
         const userId = getAuthenticatedUserId(req);
@@ -282,7 +251,6 @@ router.get('/backup/:uid/download', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        // Find the backup record
         const backup = await Backup.findOne({
             where: { uid: req.params.uid, user_id: userId },
         });
@@ -294,15 +262,10 @@ router.get('/backup/:uid/download', async (req, res) => {
         const backupsDir = await getBackupsDirectory();
         const filePath = path.join(backupsDir, backup.file_path);
 
-        // Read the compressed file
         const fileBuffer = await fs.readFile(filePath);
-
-        // Determine filename and content type
         const isCompressed = backup.file_path.endsWith('.gz');
         const filename = `tududi-backup-${new Date().toISOString().split('T')[0]}${isCompressed ? '.json.gz' : '.json'}`;
         const contentType = isCompressed ? 'application/gzip' : 'application/json';
-
-        // Set headers for file download
         res.setHeader('Content-Type', contentType);
         res.setHeader(
             'Content-Disposition',
@@ -310,7 +273,6 @@ router.get('/backup/:uid/download', async (req, res) => {
         );
         res.setHeader('Content-Length', fileBuffer.length);
 
-        // Send the file
         res.send(fileBuffer);
     } catch (error) {
         logError('Error downloading backup:', error);
@@ -321,10 +283,6 @@ router.get('/backup/:uid/download', async (req, res) => {
     }
 });
 
-/**
- * POST /api/backup/:uid/restore
- * Restore data from a saved backup
- */
 router.post('/backup/:uid/restore', async (req, res) => {
     try {
         const userId = getAuthenticatedUserId(req);
@@ -332,10 +290,7 @@ router.post('/backup/:uid/restore', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        // Get the backup data
         const backupData = await getBackup(userId, req.params.uid);
-
-        // Check version compatibility
         const versionCheck = checkVersionCompatibility(backupData.version);
         if (!versionCheck.compatible) {
             return res.status(400).json({
@@ -345,9 +300,8 @@ router.post('/backup/:uid/restore', async (req, res) => {
             });
         }
 
-        // Import data (merge by default)
         const options = {
-            merge: req.body.merge !== false, // merge by default
+            merge: req.body.merge !== false,
         };
 
         const stats = await importUserData(userId, backupData, options);
@@ -366,10 +320,6 @@ router.post('/backup/:uid/restore', async (req, res) => {
     }
 });
 
-/**
- * DELETE /api/backup/:uid
- * Delete a specific backup
- */
 router.delete('/backup/:uid', async (req, res) => {
     try {
         const userId = getAuthenticatedUserId(req);

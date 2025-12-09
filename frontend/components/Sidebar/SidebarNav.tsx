@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Location } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -6,10 +6,12 @@ import {
     InboxIcon,
     ListBulletIcon,
     ClockIcon,
+    CalendarIcon,
 } from '@heroicons/react/24/solid';
 import { PlusCircleIcon } from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
 import { loadInboxItemsToStore } from '../../utils/inboxService';
+import { getFeatureFlags, FeatureFlags } from '../../utils/featureFlags';
 
 interface SidebarNavProps {
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
@@ -25,14 +27,21 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
 }) => {
     const { t } = useTranslation();
     const store = useStore();
+    const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({ backups: false, calendar: false });
 
     const inboxItemsCount = store.inboxStore.pagination.total;
 
     useEffect(() => {
         loadInboxItemsToStore(false).catch(console.error);
+
+        const fetchFlags = async () => {
+            const flags = await getFeatureFlags();
+            setFeatureFlags(flags);
+        };
+        fetchFlags();
     }, []);
 
-    const navLinks = [
+    const allNavLinks = [
         {
             path: '/inbox',
             title: t('sidebar.inbox', 'Inbox'),
@@ -50,6 +59,12 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
             icon: <ClockIcon className="h-5 w-5" />,
         },
         {
+            path: '/calendar',
+            title: t('sidebar.calendar', 'Calendar'),
+            icon: <CalendarIcon className="h-5 w-5" />,
+            featureFlag: 'calendar',
+        },
+        {
             path: '/tasks?status=active',
             title: t('sidebar.allTasks', 'All Tasks'),
             icon: <ListBulletIcon className="h-5 w-5" />,
@@ -57,8 +72,15 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
         },
     ];
 
+    const navLinks = allNavLinks.filter(link => {
+        if (link.featureFlag) {
+            return featureFlags[link.featureFlag as keyof FeatureFlags];
+        }
+        return true;
+    });
+
     const isActive = (path: string, query?: string) => {
-        if (path === '/inbox' || path === '/today') {
+        if (path === '/inbox' || path === '/today' || path === '/calendar') {
             const isPathMatch = location.pathname === path;
             return isPathMatch
                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
