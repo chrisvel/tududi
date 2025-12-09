@@ -30,6 +30,14 @@ interface TaskGroup {
     instances: Task[];
 }
 
+interface ProjectGroup {
+    key: string;
+    projectId?: number;
+    projectUid?: string;
+    tasks: Task[];
+    order: number;
+}
+
 const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
     tasks,
     groupedTasks,
@@ -62,15 +70,7 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
 
         // Filter tasks based on completion status
         const filteredTasks = showCompletedTasks
-            ? tasks.filter((task) => {
-                  // Show only completed tasks (done=2 or archived=3)
-                  const isCompleted =
-                      task.status === 'done' ||
-                      task.status === 'archived' ||
-                      task.status === 2 ||
-                      task.status === 3;
-                  return isCompleted;
-              })
+            ? tasks
             : tasks.filter((task) => {
                   // Show only non-completed tasks
                   const isCompleted =
@@ -144,15 +144,7 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
         Object.entries(groupedTasks).forEach(([groupName, groupTasks]) => {
             // Filter by completion status
             let filteredTasks = showCompletedTasks
-                ? groupTasks.filter((task) => {
-                      // Show only completed tasks
-                      const isCompleted =
-                          task.status === 'done' ||
-                          task.status === 'archived' ||
-                          task.status === 2 ||
-                          task.status === 3;
-                      return isCompleted;
-                  })
+                ? groupTasks
                 : groupTasks.filter((task) => {
                       // Show only non-completed tasks
                       const isCompleted =
@@ -184,16 +176,20 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
     const groupedByProject = useMemo(() => {
         if (groupBy !== 'project') return null;
 
+        const normalizeProjectId = (
+            value: number | string | null | undefined
+        ): number | undefined => {
+            if (typeof value === 'number') return value;
+            if (typeof value === 'string') {
+                const parsed = Number(value);
+                return Number.isNaN(parsed) ? undefined : parsed;
+            }
+            return undefined;
+        };
+
         // Apply completion filter
         const filtered = showCompletedTasks
-            ? tasks.filter((task) => {
-                  const isCompleted =
-                      task.status === 'done' ||
-                      task.status === 'archived' ||
-                      task.status === 2 ||
-                      task.status === 3;
-                  return isCompleted;
-              })
+            ? tasks
             : tasks.filter((task) => {
                   const isCompleted =
                       task.status === 'done' ||
@@ -212,19 +208,53 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
               )
             : filtered;
 
-        const byProject = new Map<string | number, Task[]>();
+        const getGroupKey = (
+            projectId?: number,
+            projectUid?: string
+        ): string => {
+            if (projectId !== undefined && projectId !== null) {
+                return `id-${projectId}`;
+            }
+            if (projectUid) {
+                return `uid-${projectUid}`;
+            }
+            return 'no_project';
+        };
+
+        const byProject = new Map<string, ProjectGroup>();
         filteredBySearch.forEach((task) => {
-            const key = task.project_id || 'no_project';
-            const arr = byProject.get(key) || [];
-            arr.push(task);
-            byProject.set(key, arr);
+            const resolvedProjectId =
+                normalizeProjectId(task.project_id) ??
+                normalizeProjectId(task.Project?.id);
+            const resolvedProjectUid =
+                task.project_uid || task.Project?.uid || undefined;
+
+            const key = getGroupKey(resolvedProjectId, resolvedProjectUid);
+
+            if (!byProject.has(key)) {
+                byProject.set(key, {
+                    key,
+                    projectId: resolvedProjectId,
+                    projectUid: resolvedProjectUid,
+                    tasks: [],
+                    order: byProject.size,
+                });
+            }
+            byProject.get(key)!.tasks.push(task);
         });
-        return Array.from(byProject.entries()).map(
-            ([projectId, projectTasks]) => ({
-                projectId,
-                tasks: projectTasks,
-            })
-        );
+
+        const groups = Array.from(byProject.values());
+        groups.sort((a, b) => {
+            if (a.key === 'no_project' && b.key !== 'no_project') {
+                return -1;
+            }
+            if (b.key === 'no_project' && a.key !== 'no_project') {
+                return 1;
+            }
+            return a.order - b.order;
+        });
+
+        return groups;
     }, [groupBy, tasks, showCompletedTasks, searchQuery]);
 
     const toggleRecurringGroup = (templateId: number) => {
@@ -363,10 +393,28 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
             {/* Standalone tasks */}
             {groupBy === 'project' && groupedByProject
                 ? groupedByProject.map(
-                      ({ projectId, tasks: projectTasks }, index) => {
+                      (
+                          { key, projectId, projectUid, tasks: projectTasks },
+                          index
+                      ) => {
+                          const matchingProject = projects.find((p) => {
+                              if (
+                                  projectId !== undefined &&
+                                  projectId !== null &&
+                                  p.id === projectId
+                              ) {
+                                  return true;
+                              }
+                              if (projectUid && p.uid === projectUid) {
+                                  return true;
+                              }
+                              return false;
+                          });
+
                           const projectName =
-                              projects.find((p) => p.id === projectId)?.name ||
-                              (projectId === 'no_project'
+                              matchingProject?.name ||
+                              projectTasks[0]?.Project?.name ||
+                              (key === 'no_project'
                                   ? t('tasks.noProject', 'No project')
                                   : t(
                                         'tasks.unknownProject',
@@ -374,7 +422,7 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
                                     ));
                           return (
                               <div
-                                  key={String(projectId)}
+                                  key={key}
                                   className={`space-y-1.5 pb-4 mb-2 border-b border-gray-200/50 dark:border-gray-800/60 last:border-b-0 ${index > 0 ? 'pt-4' : ''}`}
                               >
                                   <div className="flex items-center justify-between px-1 text-base font-semibold text-gray-900 dark:text-gray-100">
