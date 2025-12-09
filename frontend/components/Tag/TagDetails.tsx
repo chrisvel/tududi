@@ -15,6 +15,7 @@ import { Task } from '../../entities/Task';
 import { Note } from '../../entities/Note';
 import { Project } from '../../entities/Project';
 import TaskList from '../Task/TaskList';
+import GroupedTaskList from '../Task/GroupedTaskList';
 import ProjectItem from '../Project/ProjectItem';
 import ProjectShareModal from '../Project/ProjectShareModal';
 import TagModal from './TagModal';
@@ -40,7 +41,10 @@ const TagDetails: React.FC = () => {
     // Search, filter, and sort state
     const [taskSearchQuery, setTaskSearchQuery] = useState<string>('');
     const [isSearchExpanded, setIsSearchExpanded] = useState(false);
-    const [showCompleted, setShowCompleted] = useState(false);
+    const [taskStatusFilter, setTaskStatusFilter] = useState<
+        'all' | 'active' | 'completed'
+    >('active');
+    const [groupBy, setGroupBy] = useState<'none' | 'project'>('none');
     const [orderBy, setOrderBy] = useState<string>('created_at:desc');
 
     // Filter projects by current tag
@@ -51,6 +55,27 @@ const TagDetails: React.FC = () => {
                 (projectTag: any) => projectTag.name === tag?.name
             )
     );
+
+    const projectLookupList = useMemo(() => {
+        const map = new Map<string, Project>();
+        const addProject = (project?: Project | null) => {
+            if (!project) return;
+            const key =
+                (project.uid && `uid-${project.uid}`) ??
+                (project.id !== undefined && project.id !== null
+                    ? `id-${project.id}`
+                    : undefined);
+            if (!key) return;
+            if (!map.has(key)) {
+                map.set(key, project);
+            }
+        };
+
+        allProjects.forEach(addProject);
+        projects.forEach(addProject);
+
+        return Array.from(map.values());
+    }, [allProjects, projects]);
 
     // State for ProjectItem components
     const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
@@ -89,7 +114,7 @@ const TagDetails: React.FC = () => {
         let filteredTasks: Task[];
 
         // Filter by completion status
-        if (showCompleted) {
+        if (taskStatusFilter === 'completed') {
             filteredTasks = tasks.filter(
                 (task: Task) =>
                     task.status === 'done' ||
@@ -97,7 +122,7 @@ const TagDetails: React.FC = () => {
                     task.status === 2 ||
                     task.status === 3
             );
-        } else {
+        } else if (taskStatusFilter === 'active') {
             filteredTasks = tasks.filter(
                 (task: Task) =>
                     task.status !== 'done' &&
@@ -105,6 +130,8 @@ const TagDetails: React.FC = () => {
                     task.status !== 2 &&
                     task.status !== 3
             );
+        } else {
+            filteredTasks = tasks;
         }
 
         // Filter by search query
@@ -169,7 +196,7 @@ const TagDetails: React.FC = () => {
         });
 
         return sortedTasks;
-    }, [tasks, showCompleted, taskSearchQuery, orderBy, t]);
+    }, [tasks, taskStatusFilter, taskSearchQuery, orderBy, t]);
 
     useEffect(() => {
         const fetchTagData = async () => {
@@ -214,6 +241,16 @@ const TagDetails: React.FC = () => {
         };
         fetchTagData();
     }, [uidSlug, t]);
+
+    useEffect(() => {
+        const savedOrderBy =
+            localStorage.getItem('order_by') || 'created_at:desc';
+        setOrderBy(savedOrderBy);
+        const savedGroupBy =
+            (localStorage.getItem('tasks_group_by') as 'none' | 'project') ||
+            'none';
+        setGroupBy(savedGroupBy);
+    }, []);
 
     // Setup native event listener for edit button to avoid React event system conflicts
     useEffect(() => {
@@ -299,6 +336,14 @@ const TagDetails: React.FC = () => {
         }
     };
 
+    const handleTaskCompletionToggle = (updatedTask: Task) => {
+        setTasks((prevTasks) =>
+            prevTasks.map((task) =>
+                task.id === updatedTask.id ? updatedTask : task
+            )
+        );
+    };
+
     const getCompletionPercentage = (project: Project) => {
         return (project as any).completion_percentage || 0;
     };
@@ -339,6 +384,22 @@ const TagDetails: React.FC = () => {
             console.error('Error deleting tag:', error);
         }
     };
+
+    const handleSortChange = (order: string) => {
+        setOrderBy(order);
+        localStorage.setItem('order_by', order);
+    };
+
+    const handleGroupByChange = (value: 'none' | 'project') => {
+        setGroupBy(value);
+        localStorage.setItem('tasks_group_by', value);
+    };
+
+    const handleStatusChange = (value: 'all' | 'active' | 'completed') => {
+        setTaskStatusFilter(value);
+    };
+
+    const showCompletedTasks = taskStatusFilter !== 'active';
 
     if (loading) {
         return (
@@ -499,74 +560,197 @@ const TagDetails: React.FC = () => {
                         <IconSortDropdown
                             options={sortOptions}
                             value={orderBy}
-                            onChange={setOrderBy}
+                            onChange={handleSortChange}
                             ariaLabel={t('tasks.sortTasks', 'Sort tasks')}
                             title={t('tasks.sortTasks', 'Sort tasks')}
                             dropdownLabel={t('tasks.sortBy', 'Sort by')}
-                            extraContent={
-                                <button
-                                    type="button"
-                                    onClick={() => setShowCompleted((v) => !v)}
-                                    className="w-full flex items-center justify-between text-sm text-gray-700 dark:text-gray-300"
-                                    aria-pressed={showCompleted}
-                                    aria-label={
-                                        showCompleted
-                                            ? t(
-                                                  'tasks.hideCompleted',
-                                                  'Hide completed tasks'
-                                              )
-                                            : t(
-                                                  'tasks.showCompleted',
-                                                  'Show completed tasks'
-                                              )
-                                    }
-                                    title={
-                                        showCompleted
-                                            ? t(
-                                                  'tasks.hideCompleted',
-                                                  'Hide completed tasks'
-                                              )
-                                            : t(
-                                                  'tasks.showCompleted',
-                                                  'Show completed tasks'
-                                              )
-                                    }
-                                >
-                                    <span>
-                                        {t(
-                                            'tasks.showCompleted',
-                                            'Show completed'
-                                        )}
-                                    </span>
-                                    <span
-                                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                                            showCompleted
-                                                ? 'bg-blue-600'
-                                                : 'bg-gray-200 dark:bg-gray-600'
-                                        }`}
-                                    >
-                                        <span
-                                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                                showCompleted
-                                                    ? 'translate-x-4'
-                                                    : 'translate-x-0.5'
-                                            }`}
-                                        />
-                                    </span>
-                                </button>
+                            footerContent={
+                                <div className="space-y-3">
+                                    <div>
+                                        <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
+                                            {t('tasks.groupBy', 'Group by')}
+                                        </div>
+                                        <div className="py-1">
+                                            {['none', 'project'].map((val) => (
+                                                <button
+                                                    key={val}
+                                                    onClick={() =>
+                                                        handleGroupByChange(
+                                                            val as
+                                                                | 'none'
+                                                                | 'project'
+                                                        )
+                                                    }
+                                                    className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                                                        groupBy === val
+                                                            ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                                                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                    }`}
+                                                >
+                                                    <span>
+                                                        {val === 'project'
+                                                            ? t(
+                                                                  'tasks.groupByProject',
+                                                                  'Project'
+                                                              )
+                                                            : t(
+                                                                  'tasks.grouping.none',
+                                                                  'None'
+                                                              )}
+                                                    </span>
+                                                    {groupBy === val && (
+                                                        <CheckIcon className="h-4 w-4" />
+                                                    )}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-t border-b border-gray-200 dark:border-gray-700">
+                                            {t('tasks.show', 'Show')}
+                                        </div>
+                                        <div className="py-1 space-y-1">
+                                            {[
+                                                {
+                                                    key: 'active',
+                                                    label: t(
+                                                        'tasks.open',
+                                                        'Open'
+                                                    ),
+                                                },
+                                                {
+                                                    key: 'all',
+                                                    label: t(
+                                                        'tasks.all',
+                                                        'All'
+                                                    ),
+                                                },
+                                                {
+                                                    key: 'completed',
+                                                    label: t(
+                                                        'tasks.completed',
+                                                        'Completed'
+                                                    ),
+                                                },
+                                            ].map((opt) => {
+                                                const isActive =
+                                                    taskStatusFilter ===
+                                                    opt.key;
+                                                return (
+                                                    <button
+                                                        key={opt.key}
+                                                        type="button"
+                                                        onClick={() =>
+                                                            handleStatusChange(
+                                                                opt.key as
+                                                                    | 'all'
+                                                                    | 'active'
+                                                                    | 'completed'
+                                                            )
+                                                        }
+                                                        className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                                                            isActive
+                                                                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                                                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                        }`}
+                                                    >
+                                                        <span>{opt.label}</span>
+                                                        {isActive && (
+                                                            <CheckIcon className="h-4 w-4" />
+                                                        )}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-t border-b border-gray-200 dark:border-gray-700">
+                                            {t('tasks.direction', 'Direction')}
+                                        </div>
+                                        <div className="py-1">
+                                            {[
+                                                {
+                                                    key: 'asc',
+                                                    label: t(
+                                                        'tasks.ascending',
+                                                        'Ascending'
+                                                    ),
+                                                },
+                                                {
+                                                    key: 'desc',
+                                                    label: t(
+                                                        'tasks.descending',
+                                                        'Descending'
+                                                    ),
+                                                },
+                                            ].map((dir) => {
+                                                const currentDirection =
+                                                    orderBy.split(':')[1] ||
+                                                    'asc';
+                                                const isActive =
+                                                    currentDirection ===
+                                                    dir.key;
+                                                return (
+                                                    <button
+                                                        key={dir.key}
+                                                        onClick={() => {
+                                                            const [field] =
+                                                                orderBy.split(
+                                                                    ':'
+                                                                );
+                                                            handleSortChange(
+                                                                `${field}:${dir.key}`
+                                                            );
+                                                        }}
+                                                        className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                                                            isActive
+                                                                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                                                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                        }`}
+                                                    >
+                                                        <span>{dir.label}</span>
+                                                        {isActive && (
+                                                            <CheckIcon className="h-4 w-4" />
+                                                        )}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                </div>
                             }
                         />
                     </div>
                     {displayTasks.length > 0 ? (
-                        <TaskList
-                            tasks={displayTasks}
-                            onTaskUpdate={handleTaskUpdate}
-                            onTaskDelete={handleTaskDelete}
-                            projects={[]} // Empty since we're viewing by tag
-                            hideProjectName={false}
-                            onToggleToday={handleToggleToday}
-                            showCompletedTasks={showCompleted}
-                        />
+                        groupBy === 'project' ? (
+                            <GroupedTaskList
+                                tasks={displayTasks}
+                                groupBy="project"
+                                onTaskUpdate={handleTaskUpdate}
+                                onTaskCompletionToggle={
+                                    handleTaskCompletionToggle
+                                }
+                                onTaskDelete={handleTaskDelete}
+                                projects={projectLookupList}
+                                hideProjectName={false}
+                                onToggleToday={handleToggleToday}
+                                showCompletedTasks={showCompletedTasks}
+                                searchQuery={taskSearchQuery}
+                            />
+                        ) : (
+                            <TaskList
+                                tasks={displayTasks}
+                                onTaskUpdate={handleTaskUpdate}
+                                onTaskCompletionToggle={
+                                    handleTaskCompletionToggle
+                                }
+                                onTaskDelete={handleTaskDelete}
+                                projects={projectLookupList}
+                                hideProjectName={false}
+                                onToggleToday={handleToggleToday}
+                                showCompletedTasks={showCompletedTasks}
+                            />
+                        )
                     ) : (
                         <p className="text-sm text-gray-500 dark:text-gray-400">
                             {t('tasks.noTasksAvailable', 'No tasks available.')}
