@@ -71,7 +71,8 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                     due: selectedDue || undefined,
                     defer: selectedDefer || undefined,
                     tags: selectedTags.length > 0 ? selectedTags : undefined,
-                    extras: selectedExtras.length > 0 ? selectedExtras : undefined,
+                    extras:
+                        selectedExtras.length > 0 ? selectedExtras : undefined,
                 });
                 setResults(data.results);
             } catch (error) {

@@ -111,21 +111,15 @@ router.get('/', async (req, res) => {
                     break;
                 case 'tomorrow':
                     startDate = startOfToday.clone().add(1, 'day');
-                    endDate = startOfToday.clone()
-                        .add(1, 'day')
-                        .endOf('day');
+                    endDate = startOfToday.clone().add(1, 'day').endOf('day');
                     break;
                 case 'next_week':
                     startDate = startOfToday.clone();
-                    endDate = startOfToday.clone()
-                        .add(7, 'days')
-                        .endOf('day');
+                    endDate = startOfToday.clone().add(7, 'days').endOf('day');
                     break;
                 case 'next_month':
                     startDate = startOfToday.clone();
-                    endDate = startOfToday.clone()
-                        .add(1, 'month')
-                        .endOf('day');
+                    endDate = startOfToday.clone().add(1, 'month').endOf('day');
                     break;
             }
 
@@ -150,21 +144,15 @@ router.get('/', async (req, res) => {
                     break;
                 case 'tomorrow':
                     startDate = startOfToday.clone().add(1, 'day');
-                    endDate = startOfToday.clone()
-                        .add(1, 'day')
-                        .endOf('day');
+                    endDate = startOfToday.clone().add(1, 'day').endOf('day');
                     break;
                 case 'next_week':
                     startDate = startOfToday.clone();
-                    endDate = startOfToday.clone()
-                        .add(7, 'days')
-                        .endOf('day');
+                    endDate = startOfToday.clone().add(7, 'days').endOf('day');
                     break;
                 case 'next_month':
                     startDate = startOfToday.clone();
-                    endDate = startOfToday.clone()
-                        .add(1, 'month')
-                        .endOf('day');
+                    endDate = startOfToday.clone().add(1, 'month').endOf('day');
                     break;
             }
 

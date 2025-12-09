@@ -68,7 +68,10 @@ const extrasOptions = [
     { value: 'has_content', labelKey: 'search.extrasFilter.hasContent' },
     { value: 'deferred', labelKey: 'search.extrasFilter.isDeferred' },
     { value: 'has_tags', labelKey: 'search.extrasFilter.hasTags' },
-    { value: 'assigned_to_project', labelKey: 'search.extrasFilter.isAssignedToProject' },
+    {
+        value: 'assigned_to_project',
+        labelKey: 'search.extrasFilter.isAssignedToProject',
+    },
 ];
 
 const SearchMenu: React.FC<SearchMenuProps> = ({
@@ -597,15 +600,11 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                                         key={option.value}
                                         name={t(option.labelKey)}
                                         color="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200"
-                                        isSelected={
-                                            selectedExtras.includes(
-                                                option.value
-                                            )
-                                        }
+                                        isSelected={selectedExtras.includes(
+                                            option.value
+                                        )}
                                         onToggle={() =>
-                                            handleExtrasToggle(
-                                                option.value
-                                            )
+                                            handleExtrasToggle(option.value)
                                         }
                                     />
                                 ))}

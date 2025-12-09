@@ -251,8 +251,7 @@ const ViewDetail: React.FC = () => {
                         ? normalizedView.tags
                         : undefined,
                 extras:
-                    normalizedView.extras &&
-                    normalizedView.extras.length > 0
+                    normalizedView.extras && normalizedView.extras.length > 0
                         ? normalizedView.extras
                         : undefined,
                 limit: limit,
@@ -824,7 +823,8 @@ const ViewDetail: React.FC = () => {
                                                 (!view.tags ||
                                                     view.tags.length === 0) &&
                                                 (!view.extras ||
-                                                    view.extras.length === 0) && (
+                                                    view.extras.length ===
+                                                        0) && (
                                                     <p className="text-sm text-gray-600 dark:text-gray-400 italic">
                                                         {t(
                                                             'views.noCriteriaSet'

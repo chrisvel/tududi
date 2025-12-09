@@ -248,9 +248,7 @@ const Views: React.FC = () => {
                                                 {view.defer && (
                                                     <p>
                                                         •{' '}
-                                                        {t(
-                                                            'search.deferUntil'
-                                                        )}{' '}
+                                                        {t('search.deferUntil')}{' '}
                                                         {view.defer}
                                                     </p>
                                                 )}
@@ -258,9 +256,7 @@ const Views: React.FC = () => {
                                                     view.extras.length > 0 && (
                                                         <p>
                                                             •{' '}
-                                                            {t(
-                                                                'search.extras'
-                                                            )}
+                                                            {t('search.extras')}
                                                             :{' '}
                                                             {view.extras.join(
                                                                 ', '
