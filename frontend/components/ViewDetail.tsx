@@ -54,9 +54,7 @@ const ViewDetail: React.FC = () => {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [notes, setNotes] = useState<Note[]>([]);
     const [projects, setProjects] = useState<Project[]>([]);
-    const globalProjects = useStore(
-        (state) => state.projectsStore.projects
-    );
+    const globalProjects = useStore((state) => state.projectsStore.projects);
     const updateQueryParams = useCallback(
         (updates: Record<string, string | null>) => {
             const params = new URLSearchParams(location.search);
