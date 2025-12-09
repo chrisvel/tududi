@@ -52,6 +52,7 @@
     "migration:undo": "cd backend && npx sequelize-cli db:migrate:undo",
     "migration:undo:all": "cd backend && npx sequelize-cli db:migrate:undo:all",
     "migration:status": "cd backend && npx sequelize-cli db:migrate:status",
+    "test:notifications": "NODE_ENV=development node backend/scripts/test-notifications.js",
     "clean": "rimraf dist",
     "lint": "npm run frontend:lint && npm run backend:lint",
     "lint:fix": "npm run frontend:lint:fix && npm run backend:lint:fix",

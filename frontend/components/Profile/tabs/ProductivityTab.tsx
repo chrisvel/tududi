@@ -18,7 +18,7 @@ const ProductivityTab: React.FC<ProductivityTabProps> = ({
     if (!isActive) return null;
 
     return (
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+        <div>
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
                 <ClockIcon className="w-6 h-6 mr-3 text-green-500" />
                 {t('profile.productivityFeatures', 'Productivity Features')}

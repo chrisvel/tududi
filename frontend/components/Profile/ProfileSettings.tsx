@@ -1051,20 +1051,29 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
     return (
         <>
             <div
-                className="max-w-5xl mx-auto p-6"
+                className="max-w-7xl mx-auto p-6"
                 key={`profile-settings-${updateKey}`}
             >
                 <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
                     {t('profile.title')}
                 </h2>
 
-                <TabsNav
-                    tabs={tabs}
-                    activeTab={activeTab}
-                    onChange={(id) => setActiveTab(id)}
-                />
+                <div className="flex gap-8">
+                    {/* Left Sidebar */}
+                    <aside className="w-64 flex-shrink-0">
+                        <div className="sticky top-6 bg-white dark:bg-gray-950 rounded-lg shadow-md p-4">
+                            <TabsNav
+                                tabs={tabs}
+                                activeTab={activeTab}
+                                onChange={(id) => setActiveTab(id)}
+                            />
+                        </div>
+                    </aside>
 
-                <form onSubmit={handleSubmit} className="space-y-8">
+                    {/* Main Content */}
+                    <div className="flex-1 min-w-0">
+                        <div className="bg-white dark:bg-gray-950 rounded-lg shadow-md p-6">
+                            <form onSubmit={handleSubmit} className="space-y-8">
                     <GeneralTab
                         isActive={activeTab === 'general'}
                         formData={formData}
@@ -1210,7 +1219,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                             </span>
                         </button>
                     </div>
-                </form>
+                        </form>
+                        </div>
+                    </div>
+                </div>
             </div>
             {apiKeyToDelete && (
                 <ConfirmDialog

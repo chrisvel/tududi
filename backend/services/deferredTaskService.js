@@ -3,6 +3,7 @@ const { Op } = require('sequelize');
 const { logError } = require('./logService');
 const {
     shouldSendInAppNotification,
+    shouldSendTelegramNotification,
 } = require('../utils/notificationPreferences');
 
 /**
@@ -84,12 +85,19 @@ async function checkDeferredTasks() {
                     continue;
                 }
 
+                // Build sources array based on user preferences
+                // Use 'deferUntil' for preference check since this is a deferred task notification
+                const sources = [];
+                if (shouldSendTelegramNotification(task.User, 'deferUntil')) {
+                    sources.push('telegram');
+                }
+
                 await Notification.createNotification({
                     userId: task.user_id,
                     type: 'task_due_soon',
                     title: 'Task is now active',
                     message: `Your task "${task.name}" is now available to work on`,
-                    sources: [],
+                    sources,
                     data: {
                         taskUid: task.uid,
                         taskName: task.name,

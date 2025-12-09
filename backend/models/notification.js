@@ -158,6 +158,16 @@ module.exports = (sequelize) => {
             await sendEmailNotification(userId, title, message, Notification);
         }
 
+        if (sources.includes('telegram')) {
+            await sendTelegramNotification(
+                userId,
+                title,
+                message,
+                data,
+                Notification
+            );
+        }
+
         return notification;
     };
 
@@ -194,6 +204,47 @@ module.exports = (sequelize) => {
         }
     }
 
+    async function sendTelegramNotification(
+        userId,
+        title,
+        message,
+        data,
+        NotificationModel
+    ) {
+        try {
+            const telegramService = require('../services/telegramNotificationService');
+
+            if (!message) {
+                return;
+            }
+
+            const UserModel = NotificationModel.sequelize.models.User;
+            const user = await UserModel.findByPk(userId, {
+                attributes: [
+                    'id',
+                    'name',
+                    'surname',
+                    'telegram_bot_token',
+                    'telegram_chat_id',
+                ],
+            });
+
+            if (user && telegramService.isTelegramConfigured(user)) {
+                await telegramService.sendTelegramNotification(user, {
+                    title,
+                    message,
+                    data,
+                    level: 'info',
+                });
+            }
+        } catch (error) {
+            console.error('Failed to send Telegram notification:', error);
+        }
+    }
+
+    /**
+     * Mark a notification as read
+     */
     Notification.prototype.markAsRead = async function () {
         if (!this.read_at) {
             this.read_at = new Date();
