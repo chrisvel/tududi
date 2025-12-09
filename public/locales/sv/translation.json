@@ -1206,7 +1206,15 @@
       "instances": "återkommande instanser"
     },
     "deferUntilFilter": "Skjut upp tills",
-    "deferUntil": ", skjuta upp tills"
+    "deferUntil": ", skjuta upp tills",
+    "extrasFilter": {
+      "isRecurring": "är Återkommande",
+      "isOverdue": "är Försenad",
+      "hasContent": "har Innehåll",
+      "isDeferred": "är Utsatt",
+      "hasTags": "har Taggar",
+      "isAssignedToProject": "är Tilldelad Projekt"
+    }
   },
   "subtasks": {
     "placeholder": "Lägg till en deluppgift..."

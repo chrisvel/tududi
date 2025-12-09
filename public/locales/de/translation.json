@@ -1215,7 +1215,15 @@
       "instances": "wiederkehrende Instanzen"
     },
     "deferUntilFilter": "Bis zu",
-    "deferUntil": ", bis zu"
+    "deferUntil": ", bis zu",
+    "extrasFilter": {
+      "isRecurring": "ist wiederkehrend",
+      "isOverdue": "ist überfällig",
+      "hasContent": "hat Inhalt",
+      "isDeferred": "ist verschoben",
+      "hasTags": "hat Tags",
+      "isAssignedToProject": "ist einem Projekt zugewiesen"
+    }
   },
   "subtasks": {
     "placeholder": "Fügen Sie eine Unteraufgabe hinzu..."

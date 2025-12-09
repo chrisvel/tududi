@@ -1206,7 +1206,15 @@
       "instances": "instâncias recorrentes"
     },
     "deferUntilFilter": "Aguardar Até",
-    "deferUntil": ", aguardar até"
+    "deferUntil": ", aguardar até",
+    "extrasFilter": {
+      "isRecurring": "é Recorrente",
+      "isOverdue": "está Atrasado",
+      "hasContent": "tem Conteúdo",
+      "isDeferred": "está Adiado",
+      "hasTags": "tem Tags",
+      "isAssignedToProject": "está Atribuído ao Projeto"
+    }
   },
   "subtasks": {
     "placeholder": "Adicionar uma subtarefa..."

@@ -1206,7 +1206,15 @@
       "instances": "tekrarlayan örnekler"
     },
     "deferUntilFilter": "Ertele",
-    "deferUntil": ", ertele"
+    "deferUntil": ", ertele",
+    "extrasFilter": {
+      "isRecurring": "Tekrarlayan",
+      "isOverdue": "Vadesi Geçmiş",
+      "hasContent": "İçerik Var",
+      "isDeferred": "Ertelenmiş",
+      "hasTags": "Etiket Var",
+      "isAssignedToProject": "Projeye Atanmış"
+    }
   },
   "subtasks": {
     "placeholder": "Bir alt görev ekle..."

@@ -1206,7 +1206,15 @@
       "instances": "повторювані екземпляри"
     },
     "deferUntilFilter": "Відкласти до",
-    "deferUntil": ", відкласти до"
+    "deferUntil": ", відкласти до",
+    "extrasFilter": {
+      "isRecurring": "є повторюваним",
+      "isOverdue": "прострочено",
+      "hasContent": "має вміст",
+      "isDeferred": "відкладено",
+      "hasTags": "має теги",
+      "isAssignedToProject": "призначено проекту"
+    }
   },
   "subtasks": {
     "placeholder": "Додати підзадачу..."

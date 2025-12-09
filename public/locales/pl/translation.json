@@ -1206,7 +1206,15 @@
       "instances": "powtarzające się instancje"
     },
     "deferUntilFilter": "Odłóż do",
-    "deferUntil": ", odłóż do"
+    "deferUntil": ", odłóż do",
+    "extrasFilter": {
+      "isRecurring": "jest powtarzający się",
+      "isOverdue": "jest przeterminowany",
+      "hasContent": "ma zawartość",
+      "isDeferred": "jest odroczony",
+      "hasTags": "ma tagi",
+      "isAssignedToProject": "jest przypisany do projektu"
+    }
   },
   "subtasks": {
     "placeholder": "Dodaj podzadanie..."

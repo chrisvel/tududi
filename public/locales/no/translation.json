@@ -1206,7 +1206,15 @@
       "instances": "gjentakende instanser"
     },
     "deferUntilFilter": "Utsett til",
-    "deferUntil": ", utsett til"
+    "deferUntil": ", utsett til",
+    "extrasFilter": {
+      "isRecurring": "er Gjentakende",
+      "isOverdue": "er Forfalt",
+      "hasContent": "har Innhold",
+      "isDeferred": "er Utsatt",
+      "hasTags": "har Tagger",
+      "isAssignedToProject": "er Tildelt Prosjekt"
+    }
   },
   "subtasks": {
     "placeholder": "Legg til en underoppgave..."

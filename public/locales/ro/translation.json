@@ -1206,7 +1206,15 @@
       "instances": "instanțe recurente"
     },
     "deferUntilFilter": "Amână până la",
-    "deferUntil": ", amână până la"
+    "deferUntil": ", amână până la",
+    "extrasFilter": {
+      "isRecurring": "este Recurent",
+      "isOverdue": "este Întârziat",
+      "hasContent": "are Conținut",
+      "isDeferred": "este Amânat",
+      "hasTags": "are Etichete",
+      "isAssignedToProject": "este Atribuit Proiectului"
+    }
   },
   "subtasks": {
     "placeholder": "Adaugă o subtask..."

@@ -1206,7 +1206,15 @@
       "instances": "toistuvat instanssit"
     },
     "deferUntilFilter": "Viivästytä kunnes",
-    "deferUntil": ", viivästytä kunnes"
+    "deferUntil": ", viivästytä kunnes",
+    "extrasFilter": {
+      "isRecurring": "on Toistuva",
+      "isOverdue": "on Erääntynyt",
+      "hasContent": "on Sisältöä",
+      "isDeferred": "on Siirretty",
+      "hasTags": "on Tunnisteita",
+      "isAssignedToProject": "on Määrätty Projektiin"
+    }
   },
   "subtasks": {
     "placeholder": "Lisää alitehtävä..."

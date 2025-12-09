@@ -31,8 +31,9 @@ interface View {
     filters: string[];
     priority: string | null;
     due: string | null;
+    defer: string | null;
     tags: string[];
-    recurring: string | null;
+    extras: string[] | null;
     is_pinned: boolean;
 }
 
@@ -228,21 +229,32 @@ const ViewDetail: React.FC = () => {
                 return;
             }
             const viewData = await viewResponse.json();
-            setView(viewData);
+            const normalizedView: View = {
+                ...viewData,
+                tags: viewData.tags || [],
+                extras: viewData.extras || [],
+                defer: viewData.defer || null,
+            };
+            setView(normalizedView);
 
             const currentOffset = resetPagination ? 0 : offset;
 
             // Fetch search results with pagination and exclude subtasks
             const response = await searchUniversal({
-                query: viewData.search_query || '',
-                filters: viewData.filters,
-                priority: viewData.priority || undefined,
-                due: viewData.due || undefined,
+                query: normalizedView.search_query || '',
+                filters: normalizedView.filters,
+                priority: normalizedView.priority || undefined,
+                due: normalizedView.due || undefined,
+                defer: normalizedView.defer || undefined,
                 tags:
-                    viewData.tags && viewData.tags.length > 0
-                        ? viewData.tags
+                    normalizedView.tags && normalizedView.tags.length > 0
+                        ? normalizedView.tags
                         : undefined,
-                recurring: viewData.recurring || undefined,
+                extras:
+                    normalizedView.extras &&
+                    normalizedView.extras.length > 0
+                        ? normalizedView.extras
+                        : undefined,
                 limit: limit,
                 offset: currentOffset,
                 excludeSubtasks: true,
@@ -742,6 +754,19 @@ const ViewDetail: React.FC = () => {
                                                     </span>
                                                 </div>
                                             )}
+                                            {view.defer && (
+                                                <div>
+                                                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">
+                                                        {t('search.deferUntil')}
+                                                    </p>
+                                                    <span className="px-2 py-1 bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200 rounded text-xs font-medium capitalize">
+                                                        {view.defer.replace(
+                                                            /_/g,
+                                                            ' '
+                                                        )}
+                                                    </span>
+                                                </div>
+                                            )}
                                             {view.tags &&
                                                 view.tags.length > 0 && (
                                                     <div>
@@ -764,26 +789,42 @@ const ViewDetail: React.FC = () => {
                                                         </div>
                                                     </div>
                                                 )}
-                                            {view.recurring && (
-                                                <div>
-                                                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">
-                                                        {t('views.recurring')}
-                                                    </p>
-                                                    <span className="px-2 py-1 bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 rounded text-xs font-medium capitalize">
-                                                        {view.recurring.replace(
-                                                            /_/g,
-                                                            ' '
-                                                        )}
-                                                    </span>
-                                                </div>
-                                            )}
+                                            {view.extras &&
+                                                view.extras.length > 0 && (
+                                                    <div>
+                                                        <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">
+                                                            {t('search.extras')}
+                                                        </p>
+                                                        <div className="flex flex-wrap gap-1.5">
+                                                            {view.extras.map(
+                                                                (
+                                                                    extra,
+                                                                    index
+                                                                ) => (
+                                                                    <span
+                                                                        key={
+                                                                            index
+                                                                        }
+                                                                        className="px-2 py-1 bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 rounded text-xs font-medium capitalize"
+                                                                    >
+                                                                        {extra.replace(
+                                                                            /_/g,
+                                                                            ' '
+                                                                        )}
+                                                                    </span>
+                                                                )
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                )}
                                             {!view.filters.length &&
                                                 !view.search_query &&
                                                 !view.priority &&
                                                 !view.due &&
                                                 (!view.tags ||
                                                     view.tags.length === 0) &&
-                                                !view.recurring && (
+                                                (!view.extras ||
+                                                    view.extras.length === 0) && (
                                                     <p className="text-sm text-gray-600 dark:text-gray-400 italic">
                                                         {t(
                                                             'views.noCriteriaSet'

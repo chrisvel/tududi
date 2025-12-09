@@ -649,6 +649,197 @@ describe('Universal Search Routes', () => {
             });
         });
 
+        describe('Extras Filters', () => {
+            beforeEach(async () => {
+                const project = await Project.create({
+                    user_id: user.id,
+                    name: 'Extras Project',
+                    state: 'active',
+                });
+
+                const workTag = await Tag.create({
+                    user_id: user.id,
+                    name: 'extras-tag',
+                });
+
+                const recurringTemplate = await Task.create({
+                    user_id: user.id,
+                    name: 'Recurring Template',
+                    recurrence_type: 'weekly',
+                    status: 0,
+                });
+
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Recurring Instance',
+                    recurring_parent_id: recurringTemplate.id,
+                    status: 0,
+                });
+
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Regular Task',
+                    status: 0,
+                });
+
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Overdue Task',
+                    due_date: moment().subtract(2, 'days').toDate(),
+                    status: 0,
+                });
+
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Completed Overdue Task',
+                    due_date: moment().subtract(3, 'days').toDate(),
+                    completed_at: new Date(),
+                    status: 3,
+                });
+
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Content Task',
+                    note: 'Detailed context lives here',
+                    status: 0,
+                });
+
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Deferred Task',
+                    defer_until: moment().add(2, 'days').toDate(),
+                    status: 0,
+                });
+
+                const taggedTask = await Task.create({
+                    user_id: user.id,
+                    name: 'Tagged Task',
+                    status: 0,
+                });
+                await taggedTask.addTag(workTag);
+
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Project Task',
+                    project_id: project.id,
+                    status: 0,
+                });
+            });
+
+            const getTaskNames = (response) =>
+                response.body.results
+                    .filter((r) => r.type === 'Task')
+                    .map((task) => task.original_name || task.name);
+
+            it('should return only recurring tasks when extras contains recurring', async () => {
+                const response = await agent.get('/api/search').query({
+                    filters: 'Task',
+                    extras: 'recurring',
+                });
+
+                expect(response.status).toBe(200);
+                const names = getTaskNames(response);
+                expect(names).toEqual(
+                    expect.arrayContaining([
+                        'Recurring Template',
+                        'Recurring Instance',
+                    ])
+                );
+                expect(names).not.toContain('Regular Task');
+            });
+
+            it('should return overdue tasks and exclude completed ones', async () => {
+                const response = await agent.get('/api/search').query({
+                    filters: 'Task',
+                    extras: 'overdue',
+                });
+
+                expect(response.status).toBe(200);
+                const names = getTaskNames(response);
+                expect(names).toContain('Overdue Task');
+                expect(names).not.toContain('Completed Overdue Task');
+            });
+
+            it('should return tasks that have content', async () => {
+                const response = await agent.get('/api/search').query({
+                    filters: 'Task',
+                    extras: 'has_content',
+                });
+
+                expect(response.status).toBe(200);
+                const names = getTaskNames(response);
+                expect(names).toContain('Content Task');
+                expect(names).not.toContain('Regular Task');
+            });
+
+            it('should return deferred tasks', async () => {
+                const response = await agent.get('/api/search').query({
+                    filters: 'Task',
+                    extras: 'deferred',
+                });
+
+                expect(response.status).toBe(200);
+                const names = getTaskNames(response);
+                expect(names).toContain('Deferred Task');
+                expect(names).not.toContain('Regular Task');
+            });
+
+            it('should return tasks with tags', async () => {
+                const response = await agent.get('/api/search').query({
+                    filters: 'Task',
+                    extras: 'has_tags',
+                });
+
+                expect(response.status).toBe(200);
+                const names = getTaskNames(response);
+                expect(names).toContain('Tagged Task');
+                expect(names).not.toContain('Regular Task');
+            });
+
+            it('should return tasks assigned to projects', async () => {
+                const response = await agent.get('/api/search').query({
+                    filters: 'Task',
+                    extras: 'assigned_to_project',
+                });
+
+                expect(response.status).toBe(200);
+                const names = getTaskNames(response);
+                expect(names).toContain('Project Task');
+                expect(names).not.toContain('Regular Task');
+            });
+
+            it('should return only projects that have tags when extras include has_tags', async () => {
+                const taggedProject = await Project.create({
+                    user_id: user.id,
+                    name: 'Tagged Project',
+                    state: 'active',
+                });
+                const plainProject = await Project.create({
+                    user_id: user.id,
+                    name: 'Plain Project',
+                    state: 'active',
+                });
+                const projectTag = await Tag.create({
+                    user_id: user.id,
+                    name: 'project-tag',
+                });
+                await taggedProject.addTag(projectTag);
+
+                const response = await agent.get('/api/search').query({
+                    filters: 'Project',
+                    extras: 'has_tags',
+                });
+
+                expect(response.status).toBe(200);
+                const projectResults = response.body.results.filter(
+                    (r) => r.type === 'Project'
+                );
+                const projectNames = projectResults.map((p) => p.name);
+                expect(projectNames).toContain('Tagged Project');
+                expect(projectNames).not.toContain('Plain Project');
+            });
+        });
+
         describe('User Isolation', () => {
             let otherUser, otherAgent;
 

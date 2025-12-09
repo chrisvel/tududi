@@ -1179,11 +1179,13 @@
     "deferUntilFilter": "Defer Until",
     "deferUntil": ", defer until",
     "tagsFilter": "Tags",
-    "recurringFilter": {
-      "label": "Recurring",
-      "recurring": "recurring templates",
-      "nonRecurring": "non-recurring",
-      "instances": "recurring instances"
+    "extrasFilter": {
+      "isRecurring": "is Recurring",
+      "isOverdue": "is Overdue",
+      "hasContent": "has Content",
+      "isDeferred": "is Deferred",
+      "hasTags": "has Tags",
+      "isAssignedToProject": "is Assigned to Project"
     },
     "saveAsSmartView": "Save as Smart View",
     "viewName": "View Name",

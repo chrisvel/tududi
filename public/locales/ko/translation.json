@@ -1206,7 +1206,15 @@
       "instances": "반복 인스턴스"
     },
     "deferUntilFilter": "지연할 때까지",
-    "deferUntil": ", 지연할 때까지"
+    "deferUntil": ", 지연할 때까지",
+    "extrasFilter": {
+      "isRecurring": "반복됨",
+      "isOverdue": "연체됨",
+      "hasContent": "내용이 있음",
+      "isDeferred": "연기됨",
+      "hasTags": "태그가 있음",
+      "isAssignedToProject": "프로젝트에 할당됨"
+    }
   },
   "subtasks": {
     "placeholder": "하위 작업 추가..."

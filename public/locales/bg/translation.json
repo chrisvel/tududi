@@ -1206,7 +1206,15 @@
       "instances": "повтарящи се инстанции"
     },
     "deferUntilFilter": "Отложи до",
-    "deferUntil": ", отложи до"
+    "deferUntil": ", отложи до",
+    "extrasFilter": {
+      "isRecurring": "е Повтарящо се",
+      "isOverdue": "е Просрочено",
+      "hasContent": "има Съдържание",
+      "isDeferred": "е Отложено",
+      "hasTags": "има Тагове",
+      "isAssignedToProject": "е Назначено на Проект"
+    }
   },
   "subtasks": {
     "placeholder": "Добавете подзадача..."

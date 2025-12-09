@@ -27,6 +27,7 @@ const priorityToInt = (priorityStr) => {
  *   - due: filter by due date (today,tomorrow,next_week,next_month)
  *   - tags: comma-separated list of tag names to filter by
  *   - recurring: filter by recurrence type (recurring,non_recurring,instances)
+ *   - extras: comma-separated list of extra filters (recurring,overdue,has_content,deferred,has_tags,assigned_to_project)
  *   - limit: number of results to return (default: 20)
  *   - offset: number of results to skip (default: 0)
  *   - excludeSubtasks: if 'true', exclude tasks that have a parent_task_id or recurring_parent_id
@@ -46,6 +47,7 @@ router.get('/', async (req, res) => {
             defer,
             tags: tagsParam,
             recurring,
+            extras: extrasParam,
             limit: limitParam,
             offset: offsetParam,
             excludeSubtasks,
@@ -57,6 +59,18 @@ router.get('/', async (req, res) => {
         const tagNames = tagsParam
             ? tagsParam.split(',').map((t) => t.trim())
             : [];
+        const extras =
+            extrasParam && typeof extrasParam === 'string'
+                ? extrasParam
+                      .split(',')
+                      .map((extra) => extra.trim())
+                      .filter(Boolean)
+                : [];
+        const extrasSet = new Set(extras);
+        const userTimezone = req.currentUser?.timezone || 'UTC';
+        const nowMoment = moment().tz(userTimezone);
+        const startOfToday = nowMoment.clone().startOf('day');
+        const nowDate = nowMoment.toDate();
 
         // Pagination support
         const hasPagination =
@@ -88,35 +102,37 @@ router.get('/', async (req, res) => {
         // Calculate due date range based on filter
         let dueDateCondition = null;
         if (due) {
-            const now = moment().startOf('day');
             let startDate, endDate;
 
             switch (due) {
                 case 'today':
-                    startDate = now.clone();
-                    endDate = now.clone().endOf('day');
+                    startDate = startOfToday.clone();
+                    endDate = startOfToday.clone().endOf('day');
                     break;
                 case 'tomorrow':
-                    startDate = now.clone().add(1, 'day');
-                    endDate = now.clone().add(1, 'day').endOf('day');
+                    startDate = startOfToday.clone().add(1, 'day');
+                    endDate = startOfToday.clone()
+                        .add(1, 'day')
+                        .endOf('day');
                     break;
                 case 'next_week':
-                    startDate = now.clone();
-                    endDate = now.clone().add(7, 'days').endOf('day');
+                    startDate = startOfToday.clone();
+                    endDate = startOfToday.clone()
+                        .add(7, 'days')
+                        .endOf('day');
                     break;
                 case 'next_month':
-                    startDate = now.clone();
-                    endDate = now.clone().add(1, 'month').endOf('day');
+                    startDate = startOfToday.clone();
+                    endDate = startOfToday.clone()
+                        .add(1, 'month')
+                        .endOf('day');
                     break;
             }
 
             if (startDate && endDate) {
                 dueDateCondition = {
                     due_date: {
-                        [Op.between]: [
-                            startDate.toISOString(),
-                            endDate.toISOString(),
-                        ],
+                        [Op.between]: [startDate.toDate(), endDate.toDate()],
                     },
                 };
             }
@@ -125,35 +141,37 @@ router.get('/', async (req, res) => {
         // Calculate defer until date range based on filter
         let deferDateCondition = null;
         if (defer) {
-            const now = moment().startOf('day');
             let startDate, endDate;
 
             switch (defer) {
                 case 'today':
-                    startDate = now.clone();
-                    endDate = now.clone().endOf('day');
+                    startDate = startOfToday.clone();
+                    endDate = startOfToday.clone().endOf('day');
                     break;
                 case 'tomorrow':
-                    startDate = now.clone().add(1, 'day');
-                    endDate = now.clone().add(1, 'day').endOf('day');
+                    startDate = startOfToday.clone().add(1, 'day');
+                    endDate = startOfToday.clone()
+                        .add(1, 'day')
+                        .endOf('day');
                     break;
                 case 'next_week':
-                    startDate = now.clone();
-                    endDate = now.clone().add(7, 'days').endOf('day');
+                    startDate = startOfToday.clone();
+                    endDate = startOfToday.clone()
+                        .add(7, 'days')
+                        .endOf('day');
                     break;
                 case 'next_month':
-                    startDate = now.clone();
-                    endDate = now.clone().add(1, 'month').endOf('day');
+                    startDate = startOfToday.clone();
+                    endDate = startOfToday.clone()
+                        .add(1, 'month')
+                        .endOf('day');
                     break;
             }
 
             if (startDate && endDate) {
                 deferDateCondition = {
                     defer_until: {
-                        [Op.between]: [
-                            startDate.toISOString(),
-                            endDate.toISOString(),
-                        ],
+                        [Op.between]: [startDate.toDate(), endDate.toDate()],
                     },
                 };
             }
@@ -164,6 +182,7 @@ router.get('/', async (req, res) => {
             const taskConditions = {
                 user_id: userId,
             };
+            const taskExtraConditions = [];
 
             // Exclude subtasks and recurring instances if requested
             if (excludeSubtasks === 'true') {
@@ -196,12 +215,12 @@ router.get('/', async (req, res) => {
 
             // Add due date filter if specified
             if (dueDateCondition) {
-                Object.assign(taskConditions, dueDateCondition);
+                taskExtraConditions.push(dueDateCondition);
             }
 
             // Add defer until filter if specified
             if (deferDateCondition) {
-                Object.assign(taskConditions, deferDateCondition);
+                taskExtraConditions.push(deferDateCondition);
             }
 
             // Add recurring filter if specified
@@ -227,6 +246,64 @@ router.get('/', async (req, res) => {
                 }
             }
 
+            if (extrasSet.has('recurring')) {
+                taskExtraConditions.push({
+                    [Op.or]: [
+                        { recurrence_type: { [Op.ne]: 'none' } },
+                        { recurring_parent_id: { [Op.ne]: null } },
+                    ],
+                });
+            }
+
+            if (extrasSet.has('overdue')) {
+                taskExtraConditions.push({
+                    due_date: { [Op.lt]: nowDate },
+                });
+                taskExtraConditions.push({
+                    completed_at: null,
+                });
+            }
+
+            if (extrasSet.has('has_content')) {
+                const noteHasContent = sequelize.where(
+                    sequelize.fn(
+                        'LENGTH',
+                        sequelize.fn('TRIM', sequelize.col('Task.note'))
+                    ),
+                    { [Op.gt]: 0 }
+                );
+                const descriptionHasContent = sequelize.where(
+                    sequelize.fn(
+                        'LENGTH',
+                        sequelize.fn('TRIM', sequelize.col('Task.description'))
+                    ),
+                    { [Op.gt]: 0 }
+                );
+                taskExtraConditions.push({
+                    [Op.or]: [noteHasContent, descriptionHasContent],
+                });
+            }
+
+            if (extrasSet.has('deferred')) {
+                taskExtraConditions.push({
+                    defer_until: { [Op.gt]: nowDate },
+                });
+            }
+
+            if (extrasSet.has('assigned_to_project')) {
+                taskExtraConditions.push({
+                    project_id: { [Op.ne]: null },
+                });
+            }
+
+            if (taskExtraConditions.length > 0) {
+                if (taskConditions[Op.and]) {
+                    taskConditions[Op.and].push(...taskExtraConditions);
+                } else {
+                    taskConditions[Op.and] = taskExtraConditions;
+                }
+            }
+
             const taskInclude = [
                 {
                     model: Project,
@@ -245,32 +322,28 @@ router.get('/', async (req, res) => {
                 },
             ];
 
-            // Add tag filter if specified
+            const requireTags = tagIds.length > 0 || extrasSet.has('has_tags');
+            const tagInclude = {
+                model: Tag,
+                through: { attributes: [] },
+                attributes: ['id', 'name', 'uid'],
+                required: requireTags,
+            };
+
             if (tagIds.length > 0) {
-                taskInclude.push({
-                    model: Tag,
-                    where: {
-                        id: { [Op.in]: tagIds },
-                    },
-                    through: { attributes: [] },
-                    attributes: ['id', 'name', 'uid'],
-                    required: true,
-                });
-            } else {
-                // Always include tags for display, even if not filtering
-                taskInclude.push({
-                    model: Tag,
-                    through: { attributes: [] },
-                    attributes: ['id', 'name', 'uid'],
-                    required: false,
-                });
+                tagInclude.where = {
+                    id: { [Op.in]: tagIds },
+                };
             }
+
+            taskInclude.push(tagInclude);
 
             // Count total tasks if pagination is requested
             if (hasPagination) {
+                const countInclude = requireTags ? [tagInclude] : undefined;
                 totalCount += await Task.count({
                     where: taskConditions,
-                    include: tagIds.length > 0 ? taskInclude : undefined,
+                    include: countInclude,
                     distinct: true,
                 });
             }
@@ -333,19 +406,25 @@ router.get('/', async (req, res) => {
                 Object.assign(projectConditions, projectDueCondition);
             }
 
+            const requireProjectTags =
+                tagIds.length > 0 || extrasSet.has('has_tags');
             const projectInclude = [];
 
-            // Add tag filter if specified
-            if (tagIds.length > 0) {
-                projectInclude.push({
+            if (requireProjectTags) {
+                const projectTagInclude = {
                     model: Tag,
-                    where: {
-                        id: { [Op.in]: tagIds },
-                    },
                     through: { attributes: [] },
                     attributes: [],
                     required: true,
-                });
+                };
+
+                if (tagIds.length > 0) {
+                    projectTagInclude.where = {
+                        id: { [Op.in]: tagIds },
+                    };
+                }
+
+                projectInclude.push(projectTagInclude);
             }
 
             // Count total projects if pagination is requested

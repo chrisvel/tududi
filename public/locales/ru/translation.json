@@ -1206,7 +1206,15 @@
       "instances": "повторяющиеся экземпляры"
     },
     "deferUntilFilter": "Отложить до",
-    "deferUntil": ", отложить до"
+    "deferUntil": ", отложить до",
+    "extrasFilter": {
+      "isRecurring": "является повторяющимся",
+      "isOverdue": "просрочено",
+      "hasContent": "имеет содержимое",
+      "isDeferred": "отложено",
+      "hasTags": "имеет теги",
+      "isAssignedToProject": "назначено на проект"
+    }
   },
   "subtasks": {
     "placeholder": "Добавить подзадачу..."

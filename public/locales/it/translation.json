@@ -1206,7 +1206,15 @@
       "instances": "istanze ricorrenti"
     },
     "deferUntilFilter": "Rimanda fino a",
-    "deferUntil": ", rimanda fino a"
+    "deferUntil": ", rimanda fino a",
+    "extrasFilter": {
+      "isRecurring": "è Ricorrente",
+      "isOverdue": "è Scaduto",
+      "hasContent": "ha Contenuto",
+      "isDeferred": "è Rinviato",
+      "hasTags": "ha Tag",
+      "isAssignedToProject": "è Assegnato al Progetto"
+    }
   },
   "subtasks": {
     "placeholder": "Aggiungi un sottocompito..."

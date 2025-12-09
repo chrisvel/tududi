@@ -18,6 +18,9 @@ interface View {
     filters: string[];
     priority: string | null;
     due: string | null;
+    defer: string | null;
+    tags: string[];
+    extras: string[] | null;
     is_pinned: boolean;
 }
 
@@ -43,7 +46,13 @@ const Views: React.FC = () => {
             });
             if (response.ok) {
                 const data = await response.json();
-                setViews(data);
+                const normalized: View[] = data.map((view: View) => ({
+                    ...view,
+                    tags: view.tags || [],
+                    extras: view.extras || [],
+                    defer: view.defer || null,
+                }));
+                setViews(normalized);
             }
         } catch (error) {
             console.error('Error fetching views:', error);
@@ -236,6 +245,28 @@ const Views: React.FC = () => {
                                                         {view.due}
                                                     </p>
                                                 )}
+                                                {view.defer && (
+                                                    <p>
+                                                        •{' '}
+                                                        {t(
+                                                            'search.deferUntil'
+                                                        )}{' '}
+                                                        {view.defer}
+                                                    </p>
+                                                )}
+                                                {view.extras &&
+                                                    view.extras.length > 0 && (
+                                                        <p>
+                                                            •{' '}
+                                                            {t(
+                                                                'search.extras'
+                                                            )}
+                                                            :{' '}
+                                                            {view.extras.join(
+                                                                ', '
+                                                            )}
+                                                        </p>
+                                                    )}
                                             </div>
                                         </div>
 
