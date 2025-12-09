@@ -27,7 +27,10 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
 }) => {
     const { t } = useTranslation();
     const store = useStore();
-    const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({ backups: false, calendar: false });
+    const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({
+        backups: false,
+        calendar: false,
+    });
 
     const inboxItemsCount = store.inboxStore.pagination.total;
 
@@ -72,7 +75,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
         },
     ];
 
-    const navLinks = allNavLinks.filter(link => {
+    const navLinks = allNavLinks.filter((link) => {
         if (link.featureFlag) {
             return featureFlags[link.featureFlag as keyof FeatureFlags];
         }

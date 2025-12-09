@@ -222,9 +222,7 @@ export const importBackup = async (
 /**
  * Validate backup file without importing
  */
-export const validateBackup = async (
-    file: File
-): Promise<ValidationResult> => {
+export const validateBackup = async (file: File): Promise<ValidationResult> => {
     const formData = new FormData();
     formData.append('backup', file);
 

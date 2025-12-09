@@ -261,10 +261,7 @@ const App: React.FC = () => {
                                 path="/about"
                                 element={<About isDarkMode={isDarkMode} />}
                             />
-                            <Route
-                                path="/backup"
-                                element={<BackupRestore />}
-                            />
+                            <Route path="/backup" element={<BackupRestore />} />
                             <Route
                                 path="/admin/users"
                                 element={
