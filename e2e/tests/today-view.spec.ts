@@ -135,9 +135,6 @@ test.describe('Today', () => {
         } else {
             // If section not visible, the settings might be hiding it
             // Skip this assertion but don't fail the test
-            console.log(
-                'Overdue section not visible - may be hidden by settings'
-            );
         }
 
         // Clean up
@@ -195,9 +192,6 @@ test.describe('Today', () => {
             await expect(dueTodayTask).toBeVisible();
         } else {
             // If section not visible, the settings might be hiding it
-            console.log(
-                'Due Today section not visible - may be hidden by settings'
-            );
         }
 
         // Clean up
