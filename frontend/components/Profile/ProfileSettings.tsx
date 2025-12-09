@@ -1061,7 +1061,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 <div className="flex gap-8">
                     {/* Left Sidebar */}
                     <aside className="w-64 flex-shrink-0">
-                        <div className="sticky top-6 bg-white dark:bg-gray-950 rounded-lg shadow-md p-4">
+                        <div className="sticky top-6 bg-white dark:bg-gray-900 rounded-lg shadow-md p-4">
                             <TabsNav
                                 tabs={tabs}
                                 activeTab={activeTab}
@@ -1072,7 +1072,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
                     {/* Main Content */}
                     <div className="flex-1 min-w-0">
-                        <div className="bg-white dark:bg-gray-950 rounded-lg shadow-md p-6">
+                        <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-6">
                             <form onSubmit={handleSubmit} className="space-y-8">
                                 <GeneralTab
                                     isActive={activeTab === 'general'}
