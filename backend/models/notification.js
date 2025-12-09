@@ -168,7 +168,10 @@ module.exports = (sequelize) => {
         NotificationModel
     ) {
         try {
-            const { sendEmail, isEmailEnabled } = require('../services/emailService');
+            const {
+                sendEmail,
+                isEmailEnabled,
+            } = require('../services/emailService');
 
             if (!isEmailEnabled() || !message) {
                 return;
