@@ -1051,17 +1051,17 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
     return (
         <>
             <div
-                className="max-w-7xl mx-auto p-6"
+                className="max-w-7xl mx-auto p-4 sm:p-6"
                 key={`profile-settings-${updateKey}`}
             >
-                <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
+                <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4 sm:mb-6">
                     {t('profile.title')}
                 </h2>
 
-                <div className="flex gap-8">
+                <div className="flex flex-col lg:flex-row gap-4 sm:gap-8">
                     {/* Left Sidebar */}
-                    <aside className="w-64 flex-shrink-0">
-                        <div className="sticky top-6 bg-white dark:bg-gray-900 rounded-lg shadow-md p-4">
+                    <aside className="w-full lg:w-64 lg:flex-shrink-0">
+                        <div className="lg:sticky lg:top-6 bg-white dark:bg-gray-900 rounded-lg shadow-md p-4">
                             <TabsNav
                                 tabs={tabs}
                                 activeTab={activeTab}
@@ -1072,7 +1072,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
                     {/* Main Content */}
                     <div className="flex-1 min-w-0">
-                        <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-6">
+                        <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-4 sm:p-6">
                             <form onSubmit={handleSubmit} className="space-y-8">
                                 <GeneralTab
                                     isActive={activeTab === 'general'}
