@@ -1298,7 +1298,8 @@
     "validationError": "선택한 파일은 유효한 백업이 아닙니다",
     "validationErrors": "유효성 검사 오류:",
     "versionIncompatible": "버전 호환성 없음",
-    "backupVersion": "백업 버전"
+    "backupVersion": "백업 버전",
+    "restoreButton": "복원"
   },
   "notifications": {
     "table": {

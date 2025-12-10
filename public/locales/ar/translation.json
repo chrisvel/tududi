@@ -1298,7 +1298,8 @@
     "validationError": "الملف المحدد ليس نسخة احتياطية صالحة",
     "validationErrors": "أخطاء التحقق:",
     "versionIncompatible": "الإصدار غير متوافق",
-    "backupVersion": "إصدار النسخة الاحتياطية"
+    "backupVersion": "إصدار النسخة الاحتياطية",
+    "restoreButton": "استعادة"
   },
   "notifications": {
     "table": {

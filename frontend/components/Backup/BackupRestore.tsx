@@ -32,6 +32,7 @@ interface ConfirmDialogState {
     title: string;
     message: string;
     onConfirm: () => void;
+    confirmButtonText?: string;
 }
 
 const BackupRestore: React.FC<BackupRestoreProps> = ({ onImportSuccess }) => {
@@ -52,6 +53,7 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({ onImportSuccess }) => {
         title: '',
         message: '',
         onConfirm: () => {},
+        confirmButtonText: undefined,
     });
 
     const { showSuccessToast, showErrorToast } = useToast();
@@ -125,6 +127,7 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({ onImportSuccess }) => {
                 'backup.confirmRestoreMessage',
                 'Are you sure you want to restore this backup? This will merge the backed up data with your current data.'
             ),
+            confirmButtonText: t('backup.restoreButton', 'Restore'),
             onConfirm: async () => {
                 setConfirmDialog({ ...confirmDialog, isOpen: false });
                 try {
@@ -262,6 +265,7 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({ onImportSuccess }) => {
                     onCancel={() =>
                         setConfirmDialog({ ...confirmDialog, isOpen: false })
                     }
+                    confirmButtonText={confirmDialog.confirmButtonText}
                 />
             )}
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

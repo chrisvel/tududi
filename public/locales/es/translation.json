@@ -1299,7 +1299,8 @@
     "currentVersion": "Versión actual",
     "size": "Tamaño",
     "contents": "Contenido",
-    "actions": "Acciones"
+    "actions": "Acciones",
+    "restoreButton": "Restaurar"
   },
   "notifications": {
     "table": {

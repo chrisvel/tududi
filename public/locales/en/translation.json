@@ -1253,6 +1253,7 @@
     "contents": "Contents",
     "actions": "Actions",
     "restore": "Restore",
+    "restoreButton": "Restore",
     "download": "Download",
     "downloadSuccess": "Backup downloaded successfully!",
     "downloadError": "Failed to download backup",

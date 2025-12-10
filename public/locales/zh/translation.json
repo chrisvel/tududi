@@ -1298,7 +1298,8 @@
     "validationError": "所选文件不是有效的备份",
     "validationErrors": "验证错误：",
     "versionIncompatible": "版本不兼容",
-    "backupVersion": "备份版本"
+    "backupVersion": "备份版本",
+    "restoreButton": "恢复"
   },
   "notifications": {
     "table": {

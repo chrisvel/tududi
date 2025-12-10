@@ -1298,7 +1298,8 @@
     "validationError": "Den valgte filen er ikke en gyldig sikkerhetskopi",
     "validationErrors": "Valideringsfeil:",
     "versionIncompatible": "Versjon inkompatibel",
-    "backupVersion": "Sikkerhetskopiversjon"
+    "backupVersion": "Sikkerhetskopiversjon",
+    "restoreButton": "Gjenopprett"
   },
   "notifications": {
     "table": {

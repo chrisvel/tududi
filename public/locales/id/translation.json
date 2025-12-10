@@ -1298,7 +1298,8 @@
     "validationError": "File yang dipilih bukan cadangan yang valid",
     "validationErrors": "Kesalahan validasi:",
     "versionIncompatible": "Versi Tidak Kompatibel",
-    "backupVersion": "Versi cadangan"
+    "backupVersion": "Versi cadangan",
+    "restoreButton": "Pulihkan"
   },
   "notifications": {
     "table": {

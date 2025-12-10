@@ -1298,7 +1298,8 @@
     "validationError": "Izbrana datoteka ni veljavna varnostna kopija",
     "validationErrors": "Napake pri preverjanju:",
     "versionIncompatible": "Različica ni združljiva",
-    "backupVersion": "Različica varnostne kopije"
+    "backupVersion": "Različica varnostne kopije",
+    "restoreButton": "Obnovi"
   },
   "notifications": {
     "table": {

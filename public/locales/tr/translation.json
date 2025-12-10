@@ -1298,7 +1298,8 @@
     "validationError": "Seçilen dosya geçerli bir yedek değil",
     "validationErrors": "Doğrulama hataları:",
     "versionIncompatible": "Sürüm Uyuşmaz",
-    "backupVersion": "Yedek sürümü"
+    "backupVersion": "Yedek sürümü",
+    "restoreButton": "Geri Yükle"
   },
   "notifications": {
     "table": {

@@ -1298,7 +1298,8 @@
     "validationError": "Вибраний файл не є дійсною резервною копією",
     "validationErrors": "Помилки валідації:",
     "versionIncompatible": "Несумісна версія",
-    "backupVersion": "Версія резервної копії"
+    "backupVersion": "Версія резервної копії",
+    "restoreButton": "Відновити"
   },
   "notifications": {
     "table": {

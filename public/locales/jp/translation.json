@@ -1298,7 +1298,8 @@
     "validationError": "選択したファイルは有効なバックアップではありません",
     "validationErrors": "検証エラー:",
     "versionIncompatible": "バージョンが互換性がありません",
-    "backupVersion": "バックアップバージョン"
+    "backupVersion": "バックアップバージョン",
+    "restoreButton": "復元"
   },
   "notifications": {
     "table": {

@@ -1298,7 +1298,8 @@
     "selectFile": "Wybierz plik kopii zapasowej",
     "clickToUpload": "Kliknij, aby przeszukać pliki",
     "restoreBackup": "Przywróć kopię zapasową",
-    "importing": "Importowanie..."
+    "importing": "Importowanie...",
+    "restoreButton": "Przywróć"
   },
   "notifications": {
     "table": {

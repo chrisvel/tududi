@@ -1298,7 +1298,8 @@
     "validationError": "Tệp được chọn không phải là bản sao lưu hợp lệ",
     "validationErrors": "Lỗi xác thực:",
     "versionIncompatible": "Phiên bản không tương thích",
-    "backupVersion": "Phiên bản bản sao lưu"
+    "backupVersion": "Phiên bản bản sao lưu",
+    "restoreButton": "Khôi phục"
   },
   "notifications": {
     "table": {

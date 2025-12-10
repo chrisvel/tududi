@@ -1298,7 +1298,8 @@
     "validationError": "Het geselecteerde bestand is geen geldige backup",
     "validationErrors": "Validatiefouten:",
     "versionIncompatible": "Versie incompatibel",
-    "backupVersion": "Backupversie"
+    "backupVersion": "Backupversie",
+    "restoreButton": "Herstellen"
   },
   "notifications": {
     "table": {

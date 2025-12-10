@@ -1298,7 +1298,8 @@
     "validationError": "Le fichier sélectionné n'est pas une sauvegarde valide",
     "validationErrors": "Erreurs de validation :",
     "versionIncompatible": "Version incompatible",
-    "backupVersion": "Version de la sauvegarde"
+    "backupVersion": "Version de la sauvegarde",
+    "restoreButton": "Restaurer"
   },
   "notifications": {
     "table": {

@@ -1307,7 +1307,8 @@
     "validationError": "Die ausgewählte Datei ist kein gültiges Backup",
     "validationErrors": "Validierungsfehler:",
     "versionIncompatible": "Version inkompatibel",
-    "backupVersion": "Backup-Version"
+    "backupVersion": "Backup-Version",
+    "restoreButton": "Wiederherstellen"
   },
   "notifications": {
     "table": {

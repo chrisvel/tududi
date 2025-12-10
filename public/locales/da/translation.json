@@ -1298,7 +1298,8 @@
     "validationError": "Den valgte fil er ikke en gyldig backup",
     "validationErrors": "Valideringsfejl:",
     "versionIncompatible": "Version inkompatibel",
-    "backupVersion": "Backup version"
+    "backupVersion": "Backup version",
+    "restoreButton": "Gendan"
   },
   "notifications": {
     "table": {

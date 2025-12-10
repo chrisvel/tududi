@@ -6,6 +6,7 @@ interface ConfirmDialogProps {
     message: string;
     onConfirm: () => void;
     onCancel: () => void;
+    confirmButtonText?: string;
 }
 
 const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
@@ -13,6 +14,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
     message,
     onConfirm,
     onCancel,
+    confirmButtonText,
 }) => {
     const { t } = useTranslation();
 
@@ -44,7 +46,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                         className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none"
                         data-testid="confirm-dialog-confirm"
                     >
-                        {t('common.delete', 'Delete')}
+                        {confirmButtonText ?? t('common.delete', 'Delete')}
                     </button>
                 </div>
             </div>

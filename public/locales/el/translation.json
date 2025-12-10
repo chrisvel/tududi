@@ -1302,7 +1302,8 @@
     "validationError": "Το επιλεγμένο αρχείο δεν είναι έγκυρο αντίγραφο ασφαλείας",
     "validationErrors": "Σφάλματα επικύρωσης:",
     "versionIncompatible": "Μη συμβατή έκδοση",
-    "backupVersion": "Έκδοση αντιγράφου ασφαλείας"
+    "backupVersion": "Έκδοση αντιγράφου ασφαλείας",
+    "restoreButton": "Αποκατάσταση"
   },
   "notifications": {
     "table": {

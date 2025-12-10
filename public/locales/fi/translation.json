@@ -1298,7 +1298,8 @@
     "validationError": "Valittu tiedosto ei ole voimassa oleva varmuuskopio",
     "validationErrors": "Validointivirheet:",
     "versionIncompatible": "Versio yhteensopimaton",
-    "backupVersion": "Varmuuskopion versio"
+    "backupVersion": "Varmuuskopion versio",
+    "restoreButton": "Palauta"
   },
   "notifications": {
     "table": {
