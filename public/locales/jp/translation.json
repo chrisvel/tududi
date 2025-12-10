@@ -149,7 +149,8 @@
     "overdue": "期限切れ",
     "planned": "計画中",
     "open": "開く",
-    "completed": "完了"
+    "completed": "完了",
+    "noCompletedTasksToday": "本日完了したタスクはありません。"
   },
   "timeline": {
     "activityTimeline": "アクティビティタイムライン",
@@ -222,7 +223,8 @@
       "security": "セキュリティ",
       "productivity": "生産性",
       "telegram": "Telegram",
-      "ai": "AI機能"
+      "ai": "AI機能",
+      "notifications": "通知設定"
     },
     "security": "セキュリティ設定",
     "changePassword": "パスワード変更",
@@ -240,7 +242,6 @@
     "passwordChangeSuccess": "パスワードが正常に変更されました！",
     "changingPassword": "パスワードを変更中...",
     "accountSettings": "アカウント設定",
-    "aiProductivityFeatures": "AI & 生産性機能",
     "botSetup": "ボット設定",
     "successMessage": "プロフィールが正常に更新されました！",
     "settings": "プロフィール設定",
@@ -351,7 +352,9 @@
     "avatarUploadSuccess": "Avatar uploaded successfully!",
     "avatarRemoveSuccess": "Avatar removed successfully!",
     "avatarUploadFailed": "Failed to upload avatar",
-    "avatarRemoveFailed": "Failed to remove avatar"
+    "avatarRemoveFailed": "Failed to remove avatar",
+    "notificationsDescription": "重要なイベントについて通知を受け取る方法を選択してください。",
+    "aiFeatures": "AI機能"
   },
   "nextTask": {
     "suggestion": "進行中のものがないので、こちらから始めてみませんか",
@@ -607,7 +610,28 @@
       "active_desc": "アクティブな作業が行われています"
     },
     "showMetrics": "メトリクスを表示",
-    "hideMetrics": "メトリクスを非表示"
+    "hideMetrics": "メトリクスを非表示",
+    "progress": "進捗",
+    "taskMomentum": "タスクの勢い",
+    "activeTasks": "アクティブなタスク",
+    "dueSchedule": "期限スケジュール",
+    "next14Days": "今後14日間",
+    "noUpcomingDue": "今後14日間に期限はありません。",
+    "peakDay": "ピーク",
+    "none": "なし",
+    "next3days": "今後3日間",
+    "nextWeek": "今後7日間",
+    "recentCompletion": "最近の完了",
+    "last7And30": "過去7日と30日",
+    "weeklyPace": "週間ペース",
+    "prevWeekCompleted": "{{count}} 前週",
+    "vsPrevWeek": "対前週",
+    "monthlyCompletion": "30日間の完了",
+    "last30Days": "過去30日",
+    "nextUp": "次の最善の行動",
+    "focusTask": "最も影響力のあるタスク",
+    "focusHint": "このタスクを進行中と今日に移動",
+    "noNextAction": "すべて完了—未処理のタスクはありません。"
   },
   "projectItem": {
     "edit": "編集",
@@ -617,7 +641,15 @@
     "toggleDropdownMenu": "ドロップダウンメニューを切り替え",
     "projectInitials": "プロジェクトの頭文字",
     "share": "共有",
-    "sharedProject": "チームと共有"
+    "sharedProject": "チームと共有",
+    "noDueDate": "期限なし",
+    "dueToday": "今日期限",
+    "dueIn": "{{count}} {{unit}}後に期限",
+    "overdue": "{{count}} {{unit}}前に期限切れ",
+    "day": "日",
+    "days": "日",
+    "sharedUser": "共有ユーザー",
+    "moreSharedUsers": "+{{count}}人のユーザー"
   },
   "areas": {
     "title": "エリア",
@@ -865,7 +897,9 @@
     "activity": "アクティビティ",
     "lastUpdatedAt": "最終更新日時",
     "statusUpdated": "ステータスが正常に更新されました",
-    "statusUpdateError": "ステータスの更新に失敗しました"
+    "statusUpdateError": "ステータスの更新に失敗しました",
+    "updatedAt": "更新日時",
+    "upcoming": "今後"
   },
   "calendar": {
     "month": "月",
@@ -1265,5 +1299,46 @@
     "validationErrors": "検証エラー:",
     "versionIncompatible": "バージョンが互換性がありません",
     "backupVersion": "バックアップバージョン"
+  },
+  "notifications": {
+    "table": {
+      "type": "通知タイプ"
+    },
+    "channels": {
+      "inApp": "アプリ内",
+      "email": "メール",
+      "push": "プッシュ",
+      "telegram": "テレグラム"
+    },
+    "types": {
+      "dueTasks": "期限内のタスク",
+      "overdueTasks": "期限切れのタスク",
+      "deferUntil": "延期するまで",
+      "dueProjects": "期限内のプロジェクト",
+      "overdueProjects": "期限切れのプロジェクト"
+    },
+    "descriptions": {
+      "dueTasks": "24時間以内に期限が来るタスク",
+      "overdueTasks": "期限を過ぎたタスク",
+      "deferUntil": "作業可能になったタスク",
+      "dueProjects": "24時間以内に期限が来るプロジェクト",
+      "overdueProjects": "期限を過ぎたプロジェクト"
+    },
+    "telegram": {
+      "notConfigured": {
+        "title": "テレグラムが設定されていません:",
+        "message": "テレグラム通知を受け取るには、テレグラムタブでテレグラムボットを設定してください。"
+      }
+    },
+    "test": {
+      "title": "通知テスト",
+      "description": "テスト通知を送信して、アプリ内および有効なチャネル（Telegramなど）での表示を確認します。",
+      "send": "テストを送信",
+      "sending": "送信中..."
+    },
+    "info": {
+      "title": "注意:",
+      "message": "メールおよびプッシュ通知は近日中に提供予定です。アプリ内およびTelegram通知は現在利用可能です。"
+    }
   }
 }

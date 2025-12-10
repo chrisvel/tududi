@@ -149,7 +149,8 @@
     "overdue": "Просрочено",
     "planned": "Планирано",
     "open": "Отвори",
-    "completed": "Завършено"
+    "completed": "Завършено",
+    "noCompletedTasksToday": "Няма завършени задачи днес."
   },
   "timeline": {
     "activityTimeline": "Хронология на активността",
@@ -308,7 +309,8 @@
       "security": "Сигурност",
       "productivity": "Продуктивност",
       "telegram": "Телеграм",
-      "ai": "AI функции"
+      "ai": "AI функции",
+      "notifications": "Настройки за известия"
     },
     "security": "Настройки за сигурност",
     "changePassword": "Смяна на парола",
@@ -326,7 +328,6 @@
     "passwordChangeSuccess": "Паролата е сменена успешно!",
     "changingPassword": "Сменям паролата...",
     "accountSettings": "Настройки на акаунта и предпочитания",
-    "aiProductivityFeatures": "AI и функции за производителност",
     "botSetup": "Настройка на бота",
     "passwordChangeNote": "Промените на паролата ще бъдат запазени, когато кликнете \"Запази промените\" в долната част на формуляра.",
     "passwordChangeOptional": "Оставете полетата за парола празни, за да актуализирате други настройки, без да променяте паролата си.",
@@ -351,7 +352,9 @@
     "avatarUploadSuccess": "Avatar uploaded successfully!",
     "avatarRemoveSuccess": "Avatar removed successfully!",
     "avatarUploadFailed": "Failed to upload avatar",
-    "avatarRemoveFailed": "Failed to remove avatar"
+    "avatarRemoveFailed": "Failed to remove avatar",
+    "notificationsDescription": "Изберете как искате да бъдете уведомявани за важни събития.",
+    "aiFeatures": "AI функции"
   },
   "productivity": {
     "stalledProjects": "Забавени проекти",
@@ -797,7 +800,9 @@
     "activity": "Активност",
     "lastUpdatedAt": "Последно обновено на",
     "statusUpdated": "Статусът е обновен успешно",
-    "statusUpdateError": "Неуспешно обновяване на статуса"
+    "statusUpdateError": "Неуспешно обновяване на статуса",
+    "updatedAt": "Актуализирано на",
+    "upcoming": "предстоящ"
   },
   "projects": {
     "loading": "Зареждане на проекти...",
@@ -833,7 +838,28 @@
       "active_desc": "Активна работа в ход"
     },
     "showMetrics": "Покажи метрики",
-    "hideMetrics": "Скрий метрики"
+    "hideMetrics": "Скрий метрики",
+    "progress": "Прогрес",
+    "taskMomentum": "Инерция на задачите",
+    "activeTasks": "Активни задачи",
+    "dueSchedule": "График на падежите",
+    "next14Days": "Следващите 14 дни",
+    "noUpcomingDue": "Няма падежи в следващите 14 дни.",
+    "peakDay": "Пик",
+    "none": "Няма",
+    "next3days": "Следващите 3 дни",
+    "nextWeek": "Следващите 7 дни",
+    "recentCompletion": "Скорошни завършвания",
+    "last7And30": "Последните 7 и 30 дни",
+    "weeklyPace": "Седмична скорост",
+    "prevWeekCompleted": "{{count}} предишна седмица",
+    "vsPrevWeek": "спрямо предишна седмица",
+    "monthlyCompletion": "30-дневни завършвания",
+    "last30Days": "Последните 30 дни",
+    "nextUp": "Следващо най-добро действие",
+    "focusTask": "Най-въздействаща задача",
+    "focusHint": "Премества задачата в „в процес\" и „днес\"",
+    "noNextAction": "Всичко е наред - няма неизпълнени задачи."
   },
   "projectItem": {
     "edit": "Редактиране",
@@ -843,7 +869,15 @@
     "toggleDropdownMenu": "Превключи падащото меню",
     "projectInitials": "Инициали на проекта",
     "share": "Сподели",
-    "sharedProject": "Споделено с екипа"
+    "sharedProject": "Споделено с екипа",
+    "noDueDate": "Няма краен срок",
+    "dueToday": "С падеж днес",
+    "dueIn": "С падеж след {{count}} {{unit}}",
+    "overdue": "Просрочено с {{count}} {{unit}}",
+    "day": "ден",
+    "days": "дни",
+    "sharedUser": "Споделен потребител",
+    "moreSharedUsers": "+{{count}} повече потребители"
   },
   "areas": {
     "title": "Области",
@@ -1265,5 +1299,46 @@
     "validationErrors": "Грешки при валидиране:",
     "versionIncompatible": "Несъвместима версия",
     "backupVersion": "Версия на резервното копие"
+  },
+  "notifications": {
+    "table": {
+      "type": "Тип известие"
+    },
+    "channels": {
+      "inApp": "В приложението",
+      "email": "Имейл",
+      "push": "Push",
+      "telegram": "Telegram"
+    },
+    "types": {
+      "dueTasks": "Задължителни задачи",
+      "overdueTasks": "Закъснели задачи",
+      "deferUntil": "Отложи до",
+      "dueProjects": "Задължителни проекти",
+      "overdueProjects": "Закъснели проекти"
+    },
+    "descriptions": {
+      "dueTasks": "Задачи, които трябва да бъдат завършени в рамките на 24 часа",
+      "overdueTasks": "Задачи, които са преминали срока си",
+      "deferUntil": "Задачи, които сега са налични за работа",
+      "dueProjects": "Проекти, които трябва да бъдат завършени в рамките на 24 часа",
+      "overdueProjects": "Проекти, които са преминали срока си"
+    },
+    "telegram": {
+      "notConfigured": {
+        "title": "Telegram не е конфигуриран:",
+        "message": "За да получавате известия в Telegram, моля, конфигурирайте вашия Telegram бот в таба Telegram."
+      }
+    },
+    "test": {
+      "title": "Тестови известия",
+      "description": "Изпратете тестово известие, за да видите как изглежда в приложението и на активираните канали (Telegram и др.)",
+      "send": "Изпрати тест",
+      "sending": "Изпраща се..."
+    },
+    "info": {
+      "title": "Забележка:",
+      "message": "Имейл и Push известия ще бъдат налични скоро. В приложението и Telegram известията в момента са налични."
+    }
   }
 }

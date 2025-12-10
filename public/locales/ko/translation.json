@@ -149,7 +149,8 @@
     "overdue": "연체",
     "planned": "계획됨",
     "open": "열기",
-    "completed": "완료됨"
+    "completed": "완료됨",
+    "noCompletedTasksToday": "오늘 완료된 작업이 없습니다."
   },
   "timeline": {
     "activityTimeline": "활동 타임라인",
@@ -308,7 +309,8 @@
       "security": "보안",
       "productivity": "생산성",
       "telegram": "텔레그램",
-      "ai": "AI 기능"
+      "ai": "AI 기능",
+      "notifications": "알림 설정"
     },
     "security": "보안 설정",
     "changePassword": "비밀번호 변경",
@@ -326,7 +328,6 @@
     "passwordChangeSuccess": "비밀번호가 성공적으로 변경되었습니다!",
     "changingPassword": "비밀번호를 변경하는 중...",
     "accountSettings": "계정 및 기본 설정",
-    "aiProductivityFeatures": "AI 및 생산성 기능",
     "botSetup": "봇 설정",
     "passwordChangeNote": "비밀번호 변경 사항은 양식 하단의 \"변경 사항 저장\"을 클릭할 때 저장됩니다.",
     "passwordChangeOptional": "비밀번호 필드를 비워 두면 비밀번호를 변경하지 않고 다른 설정을 업데이트할 수 있습니다.",
@@ -351,7 +352,9 @@
     "avatarUploadSuccess": "Avatar uploaded successfully!",
     "avatarRemoveSuccess": "Avatar removed successfully!",
     "avatarUploadFailed": "Failed to upload avatar",
-    "avatarRemoveFailed": "Failed to remove avatar"
+    "avatarRemoveFailed": "Failed to remove avatar",
+    "notificationsDescription": "중요한 이벤트에 대한 알림 방식을 선택하세요.",
+    "aiFeatures": "AI 기능"
   },
   "productivity": {
     "stalledProjects": "정체된 프로젝트",
@@ -797,7 +800,9 @@
     "activity": "활동",
     "lastUpdatedAt": "마지막 업데이트 시각",
     "statusUpdated": "상태가 성공적으로 업데이트되었습니다",
-    "statusUpdateError": "상태 업데이트에 실패했습니다"
+    "statusUpdateError": "상태 업데이트에 실패했습니다",
+    "updatedAt": "업데이트 날짜",
+    "upcoming": "예정"
   },
   "projects": {
     "loading": "프로젝트 로딩 중...",
@@ -833,7 +838,28 @@
       "active_desc": "활동 중인 작업"
     },
     "showMetrics": "메트릭 표시",
-    "hideMetrics": "메트릭 숨기기"
+    "hideMetrics": "메트릭 숨기기",
+    "progress": "진행률",
+    "taskMomentum": "작업 추진력",
+    "activeTasks": "활성 작업",
+    "dueSchedule": "마감 일정",
+    "next14Days": "다음 14일",
+    "noUpcomingDue": "다음 14일 이내 마감일이 없습니다.",
+    "peakDay": "최고",
+    "none": "없음",
+    "next3days": "다음 3일",
+    "nextWeek": "다음 7일",
+    "recentCompletion": "최근 완료",
+    "last7And30": "최근 7일 및 30일",
+    "weeklyPace": "주간 속도",
+    "prevWeekCompleted": "{{count}} 이전 주",
+    "vsPrevWeek": "vs 이전 주",
+    "monthlyCompletion": "30일 완료",
+    "last30Days": "최근 30일",
+    "nextUp": "다음 최선의 조치",
+    "focusTask": "가장 영향력 있는 작업",
+    "focusHint": "이 작업을 진행 중 및 오늘로 이동",
+    "noNextAction": "모두 완료 - 미완료 작업 없음."
   },
   "projectItem": {
     "edit": "편집",
@@ -843,7 +869,15 @@
     "toggleDropdownMenu": "드롭다운 메뉴 전환",
     "projectInitials": "프로젝트 약어",
     "share": "공유",
-    "sharedProject": "팀과 공유됨"
+    "sharedProject": "팀과 공유됨",
+    "noDueDate": "마감일 없음",
+    "dueToday": "오늘 마감",
+    "dueIn": "{{count}} {{unit}} 후 마감",
+    "overdue": "{{count}} {{unit}} 전 만료",
+    "day": "일",
+    "days": "일",
+    "sharedUser": "공유 사용자",
+    "moreSharedUsers": "+{{count}}명 더 보기"
   },
   "areas": {
     "title": "영역",
@@ -1265,5 +1299,46 @@
     "validationErrors": "유효성 검사 오류:",
     "versionIncompatible": "버전 호환성 없음",
     "backupVersion": "백업 버전"
+  },
+  "notifications": {
+    "table": {
+      "type": "알림 유형"
+    },
+    "channels": {
+      "inApp": "앱 내",
+      "email": "이메일",
+      "push": "푸시",
+      "telegram": "텔레그램"
+    },
+    "types": {
+      "dueTasks": "기한이 있는 작업",
+      "overdueTasks": "연체된 작업",
+      "deferUntil": "연기할 때까지",
+      "dueProjects": "기한이 있는 프로젝트",
+      "overdueProjects": "연체된 프로젝트"
+    },
+    "descriptions": {
+      "dueTasks": "24시간 이내에 기한이 도래하는 작업",
+      "overdueTasks": "기한이 지난 작업",
+      "deferUntil": "현재 작업할 수 있는 작업",
+      "dueProjects": "24시간 이내에 기한이 도래하는 프로젝트",
+      "overdueProjects": "기한이 지난 프로젝트"
+    },
+    "telegram": {
+      "notConfigured": {
+        "title": "텔레그램 미설정:",
+        "message": "텔레그램 알림을 받으려면 텔레그램 탭에서 텔레그램 봇을 설정하세요."
+      }
+    },
+    "test": {
+      "title": "테스트 알림",
+      "description": "테스트 알림을 보내어 앱 내에서 및 활성화된 채널(텔레그램 등)에서 어떻게 표시되는지 확인하세요.",
+      "send": "테스트 보내기",
+      "sending": "전송 중..."
+    },
+    "info": {
+      "title": "참고:",
+      "message": "이메일 및 푸시 알림이 곧 제공됩니다. 현재 앱 내 및 텔레그램 알림이 가능합니다."
+    }
   }
 }

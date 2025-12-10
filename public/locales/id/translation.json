@@ -149,7 +149,8 @@
     "overdue": "Terlambat",
     "planned": "Direncanakan",
     "open": "Buka",
-    "completed": "Selesai"
+    "completed": "Selesai",
+    "noCompletedTasksToday": "Tidak ada tugas yang diselesaikan hari ini."
   },
   "timeline": {
     "activityTimeline": "Garis Waktu Aktivitas",
@@ -308,7 +309,8 @@
       "security": "Keamanan",
       "productivity": "Produktivitas",
       "telegram": "Telegram",
-      "ai": "Fitur AI"
+      "ai": "Fitur AI",
+      "notifications": "Preferensi Notifikasi"
     },
     "security": "Pengaturan Keamanan",
     "changePassword": "Ubah Kata Sandi",
@@ -326,7 +328,6 @@
     "passwordChangeSuccess": "Kata sandi berhasil diubah!",
     "changingPassword": "Mengubah kata sandi...",
     "accountSettings": "Akun & Preferensi",
-    "aiProductivityFeatures": "Fitur AI & Produktivitas",
     "botSetup": "Pengaturan Bot",
     "passwordChangeNote": "Perubahan kata sandi akan disimpan ketika Anda mengklik \"Simpan Perubahan\" di bagian bawah formulir.",
     "passwordChangeOptional": "Biarkan kolom kata sandi kosong untuk memperbarui pengaturan lain tanpa mengubah kata sandi Anda.",
@@ -351,7 +352,9 @@
     "avatarUploadSuccess": "Avatar uploaded successfully!",
     "avatarRemoveSuccess": "Avatar removed successfully!",
     "avatarUploadFailed": "Failed to upload avatar",
-    "avatarRemoveFailed": "Failed to remove avatar"
+    "avatarRemoveFailed": "Failed to remove avatar",
+    "notificationsDescription": "Pilih bagaimana Anda ingin diberi tahu tentang peristiwa penting.",
+    "aiFeatures": "Fitur AI"
   },
   "productivity": {
     "stalledProjects": "Proyek Terhenti",
@@ -797,7 +800,9 @@
     "activity": "Aktivitas",
     "lastUpdatedAt": "Terakhir diperbarui pada",
     "statusUpdated": "Status berhasil diperbarui",
-    "statusUpdateError": "Gagal memperbarui status"
+    "statusUpdateError": "Gagal memperbarui status",
+    "updatedAt": "Diperbarui pada",
+    "upcoming": "mendatang"
   },
   "projects": {
     "loading": "Memuat proyek...",
@@ -833,7 +838,28 @@
       "active_desc": "Pekerjaan aktif sedang berlangsung"
     },
     "showMetrics": "Tampilkan metrik",
-    "hideMetrics": "Sembunyikan metrik"
+    "hideMetrics": "Sembunyikan metrik",
+    "progress": "Kemajuan",
+    "taskMomentum": "Momentum tugas",
+    "activeTasks": "Tugas aktif",
+    "dueSchedule": "Jadwal jatuh tempo",
+    "next14Days": "14 hari ke depan",
+    "noUpcomingDue": "Tidak ada tanggal jatuh tempo dalam 14 hari ke depan.",
+    "peakDay": "Puncak",
+    "none": "Tidak ada",
+    "next3days": "3 hari ke depan",
+    "nextWeek": "7 hari ke depan",
+    "recentCompletion": "Penyelesaian terkini",
+    "last7And30": "7 & 30 hari terakhir",
+    "weeklyPace": "Kecepatan mingguan",
+    "prevWeekCompleted": "{{count}} minggu sebelumnya",
+    "vsPrevWeek": "vs minggu sebelumnya",
+    "monthlyCompletion": "Penyelesaian 30 hari",
+    "last30Days": "30 hari terakhir",
+    "nextUp": "Tindakan terbaik selanjutnya",
+    "focusTask": "Tugas paling berdampak",
+    "focusHint": "Memindahkan tugas ini ke sedang berlangsung dan hari ini",
+    "noNextAction": "Semua bersih—tidak ada tugas tertunda."
   },
   "projectItem": {
     "edit": "Sunting",
@@ -843,7 +869,15 @@
     "toggleDropdownMenu": "Alihkan menu dropdown",
     "projectInitials": "Inisial proyek",
     "share": "Bagikan",
-    "sharedProject": "Dibagikan dengan tim"
+    "sharedProject": "Dibagikan dengan tim",
+    "noDueDate": "Tidak ada tanggal jatuh tempo",
+    "dueToday": "Jatuh tempo hari ini",
+    "dueIn": "Jatuh tempo dalam {{count}} {{unit}}",
+    "overdue": "Terlambat {{count}} {{unit}}",
+    "day": "hari",
+    "days": "hari",
+    "sharedUser": "Pengguna bersama",
+    "moreSharedUsers": "+{{count}} pengguna lagi"
   },
   "areas": {
     "title": "Area",
@@ -1265,5 +1299,46 @@
     "validationErrors": "Kesalahan validasi:",
     "versionIncompatible": "Versi Tidak Kompatibel",
     "backupVersion": "Versi cadangan"
+  },
+  "notifications": {
+    "table": {
+      "type": "Jenis Notifikasi"
+    },
+    "channels": {
+      "inApp": "Dalam aplikasi",
+      "email": "Email",
+      "push": "Push",
+      "telegram": "Telegram"
+    },
+    "types": {
+      "dueTasks": "Tugas Jatuh Tempo",
+      "overdueTasks": "Tugas Terlambat",
+      "deferUntil": "Tunda Hingga",
+      "dueProjects": "Proyek Jatuh Tempo",
+      "overdueProjects": "Proyek Terlambat"
+    },
+    "descriptions": {
+      "dueTasks": "Tugas yang jatuh tempo dalam 24 jam",
+      "overdueTasks": "Tugas yang telah melewati tanggal jatuh tempo",
+      "deferUntil": "Tugas yang sekarang tersedia untuk dikerjakan",
+      "dueProjects": "Proyek yang jatuh tempo dalam 24 jam",
+      "overdueProjects": "Proyek yang telah melewati tanggal jatuh tempo"
+    },
+    "telegram": {
+      "notConfigured": {
+        "title": "Telegram Tidak Dikonfigurasi:",
+        "message": "Untuk menerima notifikasi Telegram, silakan konfigurasikan bot Telegram Anda di tab Telegram."
+      }
+    },
+    "test": {
+      "title": "Notifikasi Uji",
+      "description": "Kirim notifikasi percobaan untuk melihat bagaimana tampilannya di dalam aplikasi dan di saluran yang diaktifkan (Telegram, dll.)",
+      "send": "Kirim Percobaan",
+      "sending": "Mengirim..."
+    },
+    "info": {
+      "title": "Catatan:",
+      "message": "Notifikasi Email dan Push akan segera hadir. Notifikasi di dalam aplikasi dan Telegram saat ini tersedia."
+    }
   }
 }

@@ -149,7 +149,8 @@
     "overdue": "Gecikmiş",
     "planned": "Planlanmış",
     "open": "Aç",
-    "completed": "Tamamlandı"
+    "completed": "Tamamlandı",
+    "noCompletedTasksToday": "Bugün tamamlanan görev yok."
   },
   "timeline": {
     "activityTimeline": "Etkinlik Zaman Çizelgesi",
@@ -308,7 +309,8 @@
       "security": "Güvenlik",
       "productivity": "Verimlilik",
       "telegram": "Telegram",
-      "ai": "Yapay Zeka Özellikleri"
+      "ai": "Yapay Zeka Özellikleri",
+      "notifications": "Bildirim Tercihleri"
     },
     "security": "Güvenlik Ayarları",
     "changePassword": "Şifre Değiştir",
@@ -326,7 +328,6 @@
     "passwordChangeSuccess": "Şifre başarıyla değiştirildi!",
     "changingPassword": "Şifre değiştiriliyor...",
     "accountSettings": "Hesap & Tercihler",
-    "aiProductivityFeatures": "Yapay Zeka & Verimlilik Özellikleri",
     "botSetup": "Bot Ayarları",
     "passwordChangeNote": "\"Değişiklikleri Kaydet\" butonuna tıkladığınızda şifre değişiklikleri kaydedilecektir.",
     "passwordChangeOptional": "Şifre alanlarını boş bırakın, böylece şifrenizi değiştirmeden diğer ayarları güncelleyebilirsiniz.",
@@ -351,7 +352,9 @@
     "avatarUploadSuccess": "Avatar uploaded successfully!",
     "avatarRemoveSuccess": "Avatar removed successfully!",
     "avatarUploadFailed": "Failed to upload avatar",
-    "avatarRemoveFailed": "Failed to remove avatar"
+    "avatarRemoveFailed": "Failed to remove avatar",
+    "notificationsDescription": "Önemli olaylar hakkında nasıl bildirim almak istediğinizi seçin.",
+    "aiFeatures": "AI Özellikleri"
   },
   "productivity": {
     "stalledProjects": "Duraklayan Projeler",
@@ -797,7 +800,9 @@
     "activity": "Etkinlik",
     "lastUpdatedAt": "Son güncelleme zamanı",
     "statusUpdated": "Durum başarıyla güncellendi",
-    "statusUpdateError": "Durum güncellenemedi"
+    "statusUpdateError": "Durum güncellenemedi",
+    "updatedAt": "Güncellenme zamanı",
+    "upcoming": "yaklaşan"
   },
   "projects": {
     "loading": "Projeler yükleniyor...",
@@ -833,7 +838,28 @@
       "active_desc": "Aktif çalışma sürüyor"
     },
     "showMetrics": "Metrikleri göster",
-    "hideMetrics": "Metrikleri gizle"
+    "hideMetrics": "Metrikleri gizle",
+    "progress": "İlerleme",
+    "taskMomentum": "Görev momentumu",
+    "activeTasks": "Aktif görevler",
+    "dueSchedule": "Vade takvimi",
+    "next14Days": "Sonraki 14 gün",
+    "noUpcomingDue": "Sonraki 14 günde vade yok.",
+    "peakDay": "Zirve",
+    "none": "Yok",
+    "next3days": "Sonraki 3 gün",
+    "nextWeek": "Sonraki 7 gün",
+    "recentCompletion": "Son tamamlanma",
+    "last7And30": "Son 7 ve 30 gün",
+    "weeklyPace": "Haftalık tempo",
+    "prevWeekCompleted": "{{count}} önceki hafta",
+    "vsPrevWeek": "vs önceki hafta",
+    "monthlyCompletion": "30 günlük tamamlanmalar",
+    "last30Days": "Son 30 gün",
+    "nextUp": "Sonraki en iyi eylem",
+    "focusTask": "En etkili görev",
+    "focusHint": "Bu görevi devam ediyor ve bugün'e taşır",
+    "noNextAction": "Her şey açık - bekleyen görev yok."
   },
   "projectItem": {
     "edit": "Düzenle",
@@ -843,7 +869,15 @@
     "toggleDropdownMenu": "Açılır menüyü aç/kapa",
     "projectInitials": "Proje kısaltmaları",
     "share": "Paylaş",
-    "sharedProject": "Takımla paylaşıldı"
+    "sharedProject": "Takımla paylaşıldı",
+    "noDueDate": "Son tarih yok",
+    "dueToday": "Bugün sona eriyor",
+    "dueIn": "{{count}} {{unit}} içinde sona eriyor",
+    "overdue": "{{count}} {{unit}} önce süresi doldu",
+    "day": "gün",
+    "days": "gün",
+    "sharedUser": "Paylaşılan kullanıcı",
+    "moreSharedUsers": "+{{count}} kullanıcı daha"
   },
   "areas": {
     "title": "Alanlar",
@@ -1265,5 +1299,46 @@
     "validationErrors": "Doğrulama hataları:",
     "versionIncompatible": "Sürüm Uyuşmaz",
     "backupVersion": "Yedek sürümü"
+  },
+  "notifications": {
+    "table": {
+      "type": "Bildirim Türü"
+    },
+    "channels": {
+      "inApp": "Uygulama İçi",
+      "email": "E-posta",
+      "push": "Push",
+      "telegram": "Telegram"
+    },
+    "types": {
+      "dueTasks": "Vadesi Gelen Görevler",
+      "overdueTasks": "Vadesi Geçmiş Görevler",
+      "deferUntil": "Ertele",
+      "dueProjects": "Vadesi Gelen Projeler",
+      "overdueProjects": "Vadesi Geçmiş Projeler"
+    },
+    "descriptions": {
+      "dueTasks": "24 saat içinde vadesi gelen görevler",
+      "overdueTasks": "Vade tarihini geçmiş görevler",
+      "deferUntil": "Şu anda çalışılabilir olan görevler",
+      "dueProjects": "24 saat içinde vadesi gelen projeler",
+      "overdueProjects": "Vade tarihini geçmiş projeler"
+    },
+    "telegram": {
+      "notConfigured": {
+        "title": "Telegram Yapılandırılmamış:",
+        "message": "Telegram bildirimleri almak için lütfen Telegram sekmesinde Telegram botunuzu yapılandırın."
+      }
+    },
+    "test": {
+      "title": "Test Bildirimleri",
+      "description": "Test bildirimini göndererek uygulamada ve etkin kanallarda (Telegram, vb.) nasıl göründüğünü görün.",
+      "send": "Test Gönder",
+      "sending": "Gönderiliyor..."
+    },
+    "info": {
+      "title": "Not:",
+      "message": "E-posta ve Push bildirimleri yakında geliyor. Uygulama içi ve Telegram bildirimleri şu anda mevcuttur."
+    }
   }
 }

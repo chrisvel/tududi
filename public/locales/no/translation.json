@@ -149,7 +149,8 @@
     "overdue": "Forsinket",
     "planned": "Planlagt",
     "open": "Åpne",
-    "completed": "Fullført"
+    "completed": "Fullført",
+    "noCompletedTasksToday": "Ingen fullførte oppgaver i dag."
   },
   "timeline": {
     "activityTimeline": "Aktivitetslinje",
@@ -315,7 +316,8 @@
       "security": "Sikkerhet",
       "productivity": "Produktivitet",
       "telegram": "Telegram",
-      "ai": "AI-funksjoner"
+      "ai": "AI-funksjoner",
+      "notifications": "Varslingsinnstillinger"
     },
     "security": "Sikkerhetsinnstillinger",
     "changePassword": "Endre passord",
@@ -333,7 +335,6 @@
     "passwordChangeSuccess": "Passordet ble endret med suksess!",
     "changingPassword": "Endrer passord...",
     "accountSettings": "Konto & Innstillinger",
-    "aiProductivityFeatures": "AI & Produktivitetsfunksjoner",
     "botSetup": "Botoppsett",
     "passwordChangeNote": "Endringer i passordet vil bli lagret når du klikker på \"Lagre endringer\" nederst i skjemaet.",
     "passwordChangeOptional": "La passordfeltene stå tomme for å oppdatere andre innstillinger uten å endre passordet ditt.",
@@ -351,7 +352,9 @@
     "avatarUploadSuccess": "Avatar uploaded successfully!",
     "avatarRemoveSuccess": "Avatar removed successfully!",
     "avatarUploadFailed": "Failed to upload avatar",
-    "avatarRemoveFailed": "Failed to remove avatar"
+    "avatarRemoveFailed": "Failed to remove avatar",
+    "notificationsDescription": "Velg hvordan du vil bli varslet om viktige hendelser.",
+    "aiFeatures": "AI-funksjoner"
   },
   "productivity": {
     "stalledProjects": "Stagnerte prosjekter",
@@ -797,7 +800,9 @@
     "activity": "Aktivitet",
     "lastUpdatedAt": "Sist oppdatert kl",
     "statusUpdated": "Status oppdatert med suksess",
-    "statusUpdateError": "Feil ved oppdatering av status"
+    "statusUpdateError": "Feil ved oppdatering av status",
+    "updatedAt": "Oppdatert kl",
+    "upcoming": "kommende"
   },
   "projects": {
     "loading": "Laster prosjekter...",
@@ -833,7 +838,28 @@
       "active_desc": "Aktivt arbeid pågår"
     },
     "showMetrics": "Vis målinger",
-    "hideMetrics": "Skjul målinger"
+    "hideMetrics": "Skjul målinger",
+    "progress": "Fremdrift",
+    "taskMomentum": "Oppgavemomentum",
+    "activeTasks": "Aktive oppgaver",
+    "dueSchedule": "Forfallsoversikt",
+    "next14Days": "Neste 14 dager",
+    "noUpcomingDue": "Ingen frister de neste 14 dagene.",
+    "peakDay": "Topp",
+    "none": "Ingen",
+    "next3days": "Neste 3 dager",
+    "nextWeek": "Neste 7 dager",
+    "recentCompletion": "Nylig fullføring",
+    "last7And30": "Siste 7 og 30 dager",
+    "weeklyPace": "Ukentlig tempo",
+    "prevWeekCompleted": "{{count}} forrige uke",
+    "vsPrevWeek": "vs forrige uke",
+    "monthlyCompletion": "30-dagers fullføringer",
+    "last30Days": "Siste 30 dager",
+    "nextUp": "Neste beste handling",
+    "focusTask": "Mest innflytelsesrike oppgave",
+    "focusHint": "Flytter denne oppgaven til pågående og i dag",
+    "noNextAction": "Alt klart - ingen utestående oppgaver."
   },
   "projectItem": {
     "edit": "Rediger",
@@ -843,7 +869,15 @@
     "toggleDropdownMenu": "Veksle nedtrekksmeny",
     "projectInitials": "Prosjektinitialer",
     "share": "Del",
-    "sharedProject": "Delt med teamet"
+    "sharedProject": "Delt med teamet",
+    "noDueDate": "Ingen frist",
+    "dueToday": "Forfaller i dag",
+    "dueIn": "Forfaller om {{count}} {{unit}}",
+    "overdue": "Forfalt for {{count}} {{unit}} siden",
+    "day": "dag",
+    "days": "dager",
+    "sharedUser": "Delt bruker",
+    "moreSharedUsers": "+{{count}} flere brukere"
   },
   "areas": {
     "title": "Områder",
@@ -1265,5 +1299,46 @@
     "validationErrors": "Valideringsfeil:",
     "versionIncompatible": "Versjon inkompatibel",
     "backupVersion": "Sikkerhetskopiversjon"
+  },
+  "notifications": {
+    "table": {
+      "type": "Varslingstype"
+    },
+    "channels": {
+      "inApp": "I appen",
+      "email": "E-post",
+      "push": "Push",
+      "telegram": "Telegram"
+    },
+    "types": {
+      "dueTasks": "Forfalte oppgaver",
+      "overdueTasks": "Overforfalte oppgaver",
+      "deferUntil": "Utsett til",
+      "dueProjects": "Forfalte prosjekter",
+      "overdueProjects": "Overforfalte prosjekter"
+    },
+    "descriptions": {
+      "dueTasks": "Oppgaver som forfaller innen 24 timer",
+      "overdueTasks": "Oppgaver som har overskredet forfallsdato",
+      "deferUntil": "Oppgaver som nå er tilgjengelige for arbeid",
+      "dueProjects": "Prosjekter som forfaller innen 24 timer",
+      "overdueProjects": "Prosjekter som har overskredet forfallsdato"
+    },
+    "telegram": {
+      "notConfigured": {
+        "title": "Telegram ikke konfigurert:",
+        "message": "For å motta Telegram-varsler, vennligst konfigurer Telegram-boten din i Telegram-fanen."
+      }
+    },
+    "test": {
+      "title": "Testvarsler",
+      "description": "Send en testvarsling for å se hvordan den vises i appen og på aktiverte kanaler (Telegram, osv.)",
+      "send": "Send test",
+      "sending": "Sender..."
+    },
+    "info": {
+      "title": "Merk:",
+      "message": "E-post og Push-varsler kommer snart. Varsler i appen og Telegram er for øyeblikket tilgjengelige."
+    }
   }
 }

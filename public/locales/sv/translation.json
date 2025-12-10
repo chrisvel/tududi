@@ -149,7 +149,8 @@
     "overdue": "Förfallen",
     "planned": "Planerad",
     "open": "Öppna",
-    "completed": "Avslutad"
+    "completed": "Avslutad",
+    "noCompletedTasksToday": "Inga slutförda uppgifter idag."
   },
   "timeline": {
     "activityTimeline": "Aktivitetslinje",
@@ -315,7 +316,8 @@
       "security": "Säkerhet",
       "productivity": "Produktivitet",
       "telegram": "Telegram",
-      "ai": "AI-funktioner"
+      "ai": "AI-funktioner",
+      "notifications": "Notifikationsinställningar"
     },
     "security": "Säkerhetsinställningar",
     "changePassword": "Ändra lösenord",
@@ -333,7 +335,6 @@
     "passwordChangeSuccess": "Lösenordet har ändrats!",
     "changingPassword": "Ändrar lösenord...",
     "accountSettings": "Konto & Inställningar",
-    "aiProductivityFeatures": "AI & Produktivitetsfunktioner",
     "botSetup": "Bot-inställningar",
     "passwordChangeNote": "Ändringar av lösenordet sparas när du klickar på \"Spara ändringar\" längst ner i formuläret.",
     "passwordChangeOptional": "Lämna lösenordsfälten tomma för att uppdatera andra inställningar utan att ändra ditt lösenord.",
@@ -351,7 +352,9 @@
     "avatarUploadSuccess": "Avatar uploaded successfully!",
     "avatarRemoveSuccess": "Avatar removed successfully!",
     "avatarUploadFailed": "Failed to upload avatar",
-    "avatarRemoveFailed": "Failed to remove avatar"
+    "avatarRemoveFailed": "Failed to remove avatar",
+    "notificationsDescription": "Välj hur du vill bli meddelad om viktiga händelser.",
+    "aiFeatures": "AI-funktioner"
   },
   "productivity": {
     "stalledProjects": "Stagnerade projekt",
@@ -797,7 +800,9 @@
     "activity": "Aktivitet",
     "lastUpdatedAt": "Senast uppdaterad kl",
     "statusUpdated": "Status uppdaterad framgångsrikt",
-    "statusUpdateError": "Misslyckades med att uppdatera status"
+    "statusUpdateError": "Misslyckades med att uppdatera status",
+    "updatedAt": "Uppdaterad den",
+    "upcoming": "kommande"
   },
   "projects": {
     "loading": "Laddar projekt...",
@@ -833,7 +838,28 @@
       "active_desc": "Aktivt arbete pågår"
     },
     "showMetrics": "Visa mätvärden",
-    "hideMetrics": "Dölj mätvärden"
+    "hideMetrics": "Dölj mätvärden",
+    "progress": "Framsteg",
+    "taskMomentum": "Uppgiftsmomentum",
+    "activeTasks": "Aktiva uppgifter",
+    "dueSchedule": "Förfallschema",
+    "next14Days": "Nästa 14 dagar",
+    "noUpcomingDue": "Inga deadlines de närmaste 14 dagarna.",
+    "peakDay": "Topp",
+    "none": "Ingen",
+    "next3days": "Nästa 3 dagar",
+    "nextWeek": "Nästa 7 dagar",
+    "recentCompletion": "Senaste slutförande",
+    "last7And30": "Senaste 7 och 30 dagarna",
+    "weeklyPace": "Veckovis takt",
+    "prevWeekCompleted": "{{count}} föregående vecka",
+    "vsPrevWeek": "vs föregående vecka",
+    "monthlyCompletion": "30-dagars slutföranden",
+    "last30Days": "Senaste 30 dagarna",
+    "nextUp": "Nästa bästa åtgärd",
+    "focusTask": "Mest påverkande uppgift",
+    "focusHint": "Flyttar denna uppgift till pågående och idag",
+    "noNextAction": "Allt klart - inga utestående uppgifter."
   },
   "projectItem": {
     "edit": "Ändra",
@@ -843,7 +869,15 @@
     "toggleDropdownMenu": "Toggla rullgardinsmeny",
     "projectInitials": "Projektinitialer",
     "share": "Dela",
-    "sharedProject": "Delad med teamet"
+    "sharedProject": "Delad med teamet",
+    "noDueDate": "Ingen deadline",
+    "dueToday": "Förfaller idag",
+    "dueIn": "Förfaller om {{count}} {{unit}}",
+    "overdue": "Försenat med {{count}} {{unit}}",
+    "day": "dag",
+    "days": "dagar",
+    "sharedUser": "Delad användare",
+    "moreSharedUsers": "+{{count}} fler användare"
   },
   "areas": {
     "title": "Områden",
@@ -1265,5 +1299,46 @@
     "validationErrors": "Valideringsfel:",
     "versionIncompatible": "Version inkompatibel",
     "backupVersion": "Backupversion"
+  },
+  "notifications": {
+    "table": {
+      "type": "Notifikationstyp"
+    },
+    "channels": {
+      "inApp": "I appen",
+      "email": "E-post",
+      "push": "Push",
+      "telegram": "Telegram"
+    },
+    "types": {
+      "dueTasks": "Förfallna uppgifter",
+      "overdueTasks": "Överfallna uppgifter",
+      "deferUntil": "Skjut upp till",
+      "dueProjects": "Förfallna projekt",
+      "overdueProjects": "Överfallna projekt"
+    },
+    "descriptions": {
+      "dueTasks": "Uppgifter som förfaller inom 24 timmar",
+      "overdueTasks": "Uppgifter som har passerat sitt förfallodatum",
+      "deferUntil": "Uppgifter som nu är tillgängliga att arbeta med",
+      "dueProjects": "Projekt som förfaller inom 24 timmar",
+      "overdueProjects": "Projekt som har passerat sitt förfallodatum"
+    },
+    "telegram": {
+      "notConfigured": {
+        "title": "Telegram inte konfigurerat:",
+        "message": "För att ta emot Telegram-notifikationer, vänligen konfigurera din Telegram-bot i Telegram-fliken."
+      }
+    },
+    "test": {
+      "title": "Testnotifikationer",
+      "description": "Skicka en testnotifikation för att se hur den visas i appen och på aktiverade kanaler (Telegram, etc.)",
+      "send": "Skicka test",
+      "sending": "Skickar..."
+    },
+    "info": {
+      "title": "Notera:",
+      "message": "E-post och push-notifikationer kommer snart. In-app och Telegram-notifikationer är för närvarande tillgängliga."
+    }
   }
 }

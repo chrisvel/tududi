@@ -13,6 +13,7 @@ import UniversalSearch from './UniversalSearch/UniversalSearch';
 import NotificationsDropdown from './Notifications/NotificationsDropdown';
 import { getApiPath } from '../config/paths';
 import { getFeatureFlags, FeatureFlags } from '../utils/featureFlags';
+import { setUserTimezone } from '../utils/dateUtils';
 
 interface NavbarProps {
     isDarkMode: boolean;
@@ -99,6 +100,10 @@ const Navbar: React.FC<NavbarProps> = ({
                             ? profile.pomodoro_enabled
                             : true
                     );
+                    // Set user timezone for date formatting
+                    if (profile.timezone) {
+                        setUserTimezone(profile.timezone);
+                    }
                 }
             } catch (error) {
                 console.error('Error fetching profile:', error);

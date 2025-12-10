@@ -6,6 +6,7 @@ import React, {
     useCallback,
 } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { getLocalesPath, getApiPath } from '../../config/paths';
 import {
     UserIcon,
@@ -25,6 +26,7 @@ import {
     getTimezonesByRegion,
     getRegionDisplayName,
 } from '../../utils/timezoneUtils';
+import { setUserTimezone } from '../../utils/dateUtils';
 import type { ApiKeySummary } from '../../utils/apiKeysService';
 import {
     fetchApiKeys,
@@ -67,8 +69,26 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 }) => {
     const { t, i18n } = useTranslation();
     const { showSuccessToast, showErrorToast } = useToast();
+    const navigate = useNavigate();
+    const location = useLocation();
 
-    const [activeTab, setActiveTab] = useState('general');
+    // Get initial tab from URL query parameter (e.g., /profile?section=notifications)
+    const getTabFromQuery = useCallback(() => {
+        const params = new URLSearchParams(location.search);
+        const section = params.get('section');
+        const validTabs = [
+            'general',
+            'security',
+            'api-keys',
+            'productivity',
+            'telegram',
+            'ai',
+            'notifications',
+        ];
+        return section && validTabs.includes(section) ? section : 'general';
+    }, [location.search]);
+
+    const [activeTab, setActiveTab] = useState(() => getTabFromQuery());
     const timezonesByRegion = React.useMemo(() => {
         return getTimezonesByRegion();
     }, []);
@@ -124,6 +144,50 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
     const [deleteInFlightId, setDeleteInFlightId] = useState<number | null>(
         null
     );
+    // Update URL query parameter when tab changes (not on mount)
+    const isInitialMount = React.useRef(true);
+    useEffect(() => {
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
+            return;
+        }
+
+        const params = new URLSearchParams(location.search);
+        const currentSection = params.get('section');
+
+        let shouldNavigate = false;
+        let newUrl = '';
+
+        if (activeTab === 'general') {
+            // Remove section param for general tab
+            if (currentSection) {
+                params.delete('section');
+                const newSearch = params.toString();
+                newUrl = `/profile${newSearch ? `?${newSearch}` : ''}`;
+                shouldNavigate = true;
+            }
+        } else {
+            // Set section param for other tabs
+            if (currentSection !== activeTab) {
+                params.set('section', activeTab);
+                newUrl = `/profile?${params.toString()}`;
+                shouldNavigate = true;
+            }
+        }
+
+        if (shouldNavigate) {
+            navigate(newUrl, { replace: true });
+        }
+    }, [activeTab, navigate]);
+
+    // Update tab when URL query parameter changes (e.g., browser back/forward)
+    useEffect(() => {
+        const tabFromQuery = getTabFromQuery();
+        if (tabFromQuery !== activeTab) {
+            setActiveTab(tabFromQuery);
+        }
+    }, [getTabFromQuery]);
+
     const [apiKeyToDelete, setApiKeyToDelete] = useState<ApiKeySummary | null>(
         null
     );
@@ -891,6 +955,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             // Avatar removal is now handled immediately by handleAvatarRemove
             // No need to handle it here anymore
 
+            // Update timezone for date formatting
+            if (updatedProfile.timezone) {
+                setUserTimezone(updatedProfile.timezone);
+            }
+
             setProfile(updatedProfile);
 
             setFormData((prev) => ({
@@ -1022,7 +1091,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             icon: <ShieldCheckIcon className="w-5 h-5" />,
         },
         {
-            id: 'apiKeys',
+            id: 'api-keys',
             name: t('profile.tabs.apiKeys', 'API Keys'),
             icon: <KeyIcon className="w-5 h-5" />,
         },
@@ -1051,7 +1120,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
     return (
         <>
             <div
-                className="max-w-7xl mx-auto p-4 sm:p-6"
+                className="w-full p-4 sm:p-6"
                 key={`profile-settings-${updateKey}`}
             >
                 <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4 sm:mb-6">
@@ -1060,7 +1129,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
                 <div className="flex flex-col lg:flex-row gap-4 sm:gap-8">
                     {/* Left Sidebar */}
-                    <aside className="w-full lg:w-64 lg:flex-shrink-0">
+                    <aside className="w-full lg:w-80 lg:flex-shrink-0">
                         <div className="lg:sticky lg:top-6 bg-white dark:bg-gray-900 rounded-lg shadow-md p-4">
                             <TabsNav
                                 tabs={tabs}
@@ -1133,7 +1202,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                 />
 
                                 <ApiKeysTab
-                                    isActive={activeTab === 'apiKeys'}
+                                    isActive={activeTab === 'api-keys'}
                                     apiKeys={apiKeys}
                                     apiKeysLoading={apiKeysLoading}
                                     generatedApiToken={generatedApiToken}

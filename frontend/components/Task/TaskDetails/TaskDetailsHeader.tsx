@@ -656,13 +656,13 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                         )}
 
                                         {formattedUpdatedAt && (
-                                            <span className="text-xs text-gray-400 dark:text-gray-500 sm:pl-1 mt-1 sm:mt-0">
+                                            <span className="text-xs text-gray-400 dark:text-gray-600 sm:pl-1 mt-1 sm:mt-0">
                                                 {t(
-                                                    'task.lastUpdatedAt',
+                                                    'task.updatedAt',
                                                     'Updated at'
                                                 )}
                                                 :{' '}
-                                                <span className="text-gray-500 dark:text-gray-400">
+                                                <span className="text-gray-400 dark:text-gray-600">
                                                     {formattedUpdatedAt}
                                                 </span>
                                             </span>

@@ -149,7 +149,8 @@
     "overdue": "Întârziat",
     "planned": "Planificat",
     "open": "Deschide",
-    "completed": "Finalizat"
+    "completed": "Finalizat",
+    "noCompletedTasksToday": "Nicio sarcină finalizată astăzi."
   },
   "timeline": {
     "activityTimeline": "Cronologia activităților",
@@ -308,7 +309,8 @@
       "security": "Securitate",
       "productivity": "Productivitate",
       "telegram": "Telegram",
-      "ai": "Funcții AI"
+      "ai": "Funcții AI",
+      "notifications": "Preferințe de Notificare"
     },
     "security": "Setări de Securitate",
     "changePassword": "Schimbă Parola",
@@ -326,7 +328,6 @@
     "passwordChangeSuccess": "Parola a fost schimbată cu succes!",
     "changingPassword": "Se schimbă parola...",
     "accountSettings": "Cont și Preferințe",
-    "aiProductivityFeatures": "Funcții AI și de Productivitate",
     "botSetup": "Configurare Bot",
     "passwordChangeNote": "Schimbările de parolă vor fi salvate când faceți clic pe \"Salvați modificările\" la baza formularului.",
     "passwordChangeOptional": "Lăsați câmpurile pentru parolă goale pentru a actualiza alte setări fără a schimba parola.",
@@ -351,7 +352,9 @@
     "avatarUploadSuccess": "Avatar uploaded successfully!",
     "avatarRemoveSuccess": "Avatar removed successfully!",
     "avatarUploadFailed": "Failed to upload avatar",
-    "avatarRemoveFailed": "Failed to remove avatar"
+    "avatarRemoveFailed": "Failed to remove avatar",
+    "notificationsDescription": "Alege cum dorești să fii notificat despre evenimente importante.",
+    "aiFeatures": "Funcții AI"
   },
   "productivity": {
     "stalledProjects": "Proiecte Blocate",
@@ -797,7 +800,9 @@
     "activity": "Activitate",
     "lastUpdatedAt": "Ultima actualizare la",
     "statusUpdated": "Starea a fost actualizată cu succes",
-    "statusUpdateError": "Actualizarea stării a eșuat"
+    "statusUpdateError": "Actualizarea stării a eșuat",
+    "updatedAt": "Actualizat la",
+    "upcoming": "viitor"
   },
   "projects": {
     "loading": "Se încarcă proiectele...",
@@ -833,7 +838,28 @@
       "active_desc": "Lucrări active în desfășurare"
     },
     "showMetrics": "Arată metrici",
-    "hideMetrics": "Ascunde metrici"
+    "hideMetrics": "Ascunde metrici",
+    "progress": "Progres",
+    "taskMomentum": "Dinamica sarcinilor",
+    "activeTasks": "Sarcini active",
+    "dueSchedule": "Program termene",
+    "next14Days": "Următoarele 14 zile",
+    "noUpcomingDue": "Niciun termen în următoarele 14 zile.",
+    "peakDay": "Vârf",
+    "none": "Niciuna",
+    "next3days": "Următoarele 3 zile",
+    "nextWeek": "Următoarele 7 zile",
+    "recentCompletion": "Finalizare recentă",
+    "last7And30": "Ultimele 7 & 30 zile",
+    "weeklyPace": "Ritm săptămânal",
+    "prevWeekCompleted": "{{count}} săptămâna anterioară",
+    "vsPrevWeek": "vs săptămâna anterioară",
+    "monthlyCompletion": "Finalizări pe 30 zile",
+    "last30Days": "Ultimele 30 zile",
+    "nextUp": "Următoarea cea mai bună acțiune",
+    "focusTask": "Sarcina cu cel mai mare impact",
+    "focusHint": "Mută această sarcină la în progres și astăzi",
+    "noNextAction": "Totul în regulă - nicio sarcină în așteptare."
   },
   "projectItem": {
     "edit": "Editează",
@@ -843,7 +869,15 @@
     "toggleDropdownMenu": "Comută meniul derulant",
     "projectInitials": "Inițialele proiectului",
     "share": "Partajează",
-    "sharedProject": "Partajat cu echipa"
+    "sharedProject": "Partajat cu echipa",
+    "noDueDate": "Fără termen limită",
+    "dueToday": "Scade astăzi",
+    "dueIn": "Scade în {{count}} {{unit}}",
+    "overdue": "Expirat cu {{count}} {{unit}} în urmă",
+    "day": "zi",
+    "days": "zile",
+    "sharedUser": "Utilizator partajat",
+    "moreSharedUsers": "+{{count}} utilizatori în plus"
   },
   "areas": {
     "title": "Arii",
@@ -1265,5 +1299,46 @@
     "clickToUpload": "Click pentru a naviga la fișiere",
     "restoreBackup": "Restaurare Backup",
     "importing": "Importare..."
+  },
+  "notifications": {
+    "table": {
+      "type": "Tip de Notificare"
+    },
+    "channels": {
+      "inApp": "În aplicație",
+      "email": "Email",
+      "push": "Push",
+      "telegram": "Telegram"
+    },
+    "types": {
+      "dueTasks": "Sarcini Scadente",
+      "overdueTasks": "Sarcini Întârziate",
+      "deferUntil": "Amână Până La",
+      "dueProjects": "Proiecte Scadente",
+      "overdueProjects": "Proiecte Întârziate"
+    },
+    "descriptions": {
+      "dueTasks": "Sarcini care sunt scadente în următoarele 24 de ore",
+      "overdueTasks": "Sarcini care au depășit data limită",
+      "deferUntil": "Sarcini care sunt acum disponibile pentru a fi lucrate",
+      "dueProjects": "Proiecte care sunt scadente în următoarele 24 de ore",
+      "overdueProjects": "Proiecte care au depășit data limită"
+    },
+    "telegram": {
+      "notConfigured": {
+        "title": "Telegram Neconfigurat:",
+        "message": "Pentru a primi notificări pe Telegram, te rugăm să configurezi botul tău Telegram în tab-ul Telegram."
+      }
+    },
+    "test": {
+      "title": "Test Notificări",
+      "description": "Trimite o notificare de test pentru a vedea cum apare în aplicație și pe canalele activate (Telegram, etc.)",
+      "send": "Trimite Test",
+      "sending": "Se trimite..."
+    },
+    "info": {
+      "title": "Notă:",
+      "message": "Notificările prin Email și Push vor fi disponibile în curând. Notificările în aplicație și pe Telegram sunt disponibile în prezent."
+    }
   }
 }

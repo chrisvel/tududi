@@ -149,7 +149,8 @@
     "overdue": "Scaduto",
     "planned": "Pianificato",
     "open": "Apri",
-    "completed": "Completato"
+    "completed": "Completato",
+    "noCompletedTasksToday": "Nessuna attività completata oggi."
   },
   "timeline": {
     "activityTimeline": "Timeline delle Attività",
@@ -297,7 +298,8 @@
       "security": "Sicurezza",
       "productivity": "Produttività",
       "telegram": "Telegram",
-      "ai": "Funzioni AI"
+      "ai": "Funzioni AI",
+      "notifications": "Preferenze di Notifica"
     },
     "security": "Impostazioni Sicurezza",
     "changePassword": "Cambia Password",
@@ -315,7 +317,6 @@
     "passwordChangeSuccess": "Password cambiata con successo!",
     "changingPassword": "Cambio password...",
     "accountSettings": "Account e Preferenze",
-    "aiProductivityFeatures": "Funzioni AI e Produttività",
     "botSetup": "Configurazione Bot",
     "passwordChangeNote": "Le modifiche alla password verranno salvate quando clicchi \"Salva Modifiche\" in fondo al modulo.",
     "passwordChangeOptional": "Lascia vuoti i campi password per aggiornare altre impostazioni senza cambiare la password.",
@@ -351,7 +352,9 @@
     "avatarUploadSuccess": "Avatar uploaded successfully!",
     "avatarRemoveSuccess": "Avatar removed successfully!",
     "avatarUploadFailed": "Failed to upload avatar",
-    "avatarRemoveFailed": "Failed to remove avatar"
+    "avatarRemoveFailed": "Failed to remove avatar",
+    "notificationsDescription": "Scegli come desideri essere avvisato riguardo eventi importanti.",
+    "aiFeatures": "Funzionalità AI"
   },
   "productivity": {
     "stalledProjects": "Progetti Bloccati",
@@ -797,7 +800,9 @@
     "activity": "Attività",
     "lastUpdatedAt": "Ultimo aggiornamento il",
     "statusUpdated": "Stato aggiornato con successo",
-    "statusUpdateError": "Aggiornamento dello stato non riuscito"
+    "statusUpdateError": "Aggiornamento dello stato non riuscito",
+    "updatedAt": "Aggiornato il",
+    "upcoming": "imminente"
   },
   "projects": {
     "loading": "Caricamento progetti...",
@@ -833,7 +838,28 @@
       "active_desc": "Lavoro attivo in corso"
     },
     "showMetrics": "Mostra metriche",
-    "hideMetrics": "Nascondi metriche"
+    "hideMetrics": "Nascondi metriche",
+    "progress": "Progresso",
+    "taskMomentum": "Slancio delle attività",
+    "activeTasks": "Attività attive",
+    "dueSchedule": "Programma delle scadenze",
+    "next14Days": "Prossimi 14 giorni",
+    "noUpcomingDue": "Nessuna scadenza nei prossimi 14 giorni.",
+    "peakDay": "Picco",
+    "none": "Nessuno",
+    "next3days": "Prossimi 3 giorni",
+    "nextWeek": "Prossimi 7 giorni",
+    "recentCompletion": "Completamento recente",
+    "last7And30": "Ultimi 7 e 30 giorni",
+    "weeklyPace": "Ritmo settimanale",
+    "prevWeekCompleted": "{{count}} settimana precedente",
+    "vsPrevWeek": "vs settimana precedente",
+    "monthlyCompletion": "Completamenti di 30 giorni",
+    "last30Days": "Ultimi 30 giorni",
+    "nextUp": "Prossima azione migliore",
+    "focusTask": "Attività più impattante",
+    "focusHint": "Sposta questa attività su in corso e oggi",
+    "noNextAction": "Tutto a posto—nessuna attività in sospeso."
   },
   "projectItem": {
     "edit": "Modifica",
@@ -843,7 +869,15 @@
     "toggleDropdownMenu": "Attiva/disattiva menu a discesa",
     "projectInitials": "Iniziali progetto",
     "share": "Condividi",
-    "sharedProject": "Condiviso con il team"
+    "sharedProject": "Condiviso con il team",
+    "noDueDate": "Nessuna scadenza",
+    "dueToday": "Scade oggi",
+    "dueIn": "Scade tra {{count}} {{unit}}",
+    "overdue": "Scaduto {{count}} {{unit}} fa",
+    "day": "giorno",
+    "days": "giorni",
+    "sharedUser": "Utente condiviso",
+    "moreSharedUsers": "+{{count}} altri utenti"
   },
   "areas": {
     "title": "Aree",
@@ -1265,5 +1299,46 @@
     "validationErrors": "Errori di convalida:",
     "versionIncompatible": "Versione incompatibile",
     "backupVersion": "Versione del backup"
+  },
+  "notifications": {
+    "table": {
+      "type": "Tipo di Notifica"
+    },
+    "channels": {
+      "inApp": "In-app",
+      "email": "Email",
+      "push": "Push",
+      "telegram": "Telegram"
+    },
+    "types": {
+      "dueTasks": "Compiti Scaduti",
+      "overdueTasks": "Compiti In Ritardo",
+      "deferUntil": "Rimanda Fino a",
+      "dueProjects": "Progetti Scaduti",
+      "overdueProjects": "Progetti In Ritardo"
+    },
+    "descriptions": {
+      "dueTasks": "Compiti che scadono entro 24 ore",
+      "overdueTasks": "Compiti che hanno superato la loro data di scadenza",
+      "deferUntil": "Compiti che sono ora disponibili per lavorare",
+      "dueProjects": "Progetti che scadono entro 24 ore",
+      "overdueProjects": "Progetti che hanno superato la loro data di scadenza"
+    },
+    "telegram": {
+      "notConfigured": {
+        "title": "Telegram Non Configurato:",
+        "message": "Per ricevere notifiche Telegram, per favore configura il tuo bot Telegram nella scheda Telegram."
+      }
+    },
+    "test": {
+      "title": "Test delle Notifiche",
+      "description": "Invia una notifica di prova per vedere come appare nell'app e sui canali abilitati (Telegram, ecc.)",
+      "send": "Invia Test",
+      "sending": "Invio in corso..."
+    },
+    "info": {
+      "title": "Nota:",
+      "message": "Le notifiche via Email e Push arriveranno presto. Le notifiche in-app e su Telegram sono attualmente disponibili."
+    }
   }
 }

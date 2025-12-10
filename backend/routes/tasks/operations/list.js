@@ -12,7 +12,8 @@ async function buildGroupedTasks(
     groupBy,
     maxDays,
     orderBy,
-    timezone
+    timezone,
+    language = 'en'
 ) {
     if (queryType !== 'upcoming' || groupBy !== 'day') {
         return null;
@@ -21,7 +22,13 @@ async function buildGroupedTasks(
     const days = maxDays ? parseInt(maxDays, 10) : 7;
     const dayGroupingOrderBy = orderBy || 'due_date:asc';
 
-    return await groupTasksByDay(tasks, timezone, days, dayGroupingOrderBy);
+    return await groupTasksByDay(
+        tasks,
+        timezone,
+        days,
+        dayGroupingOrderBy,
+        language
+    );
 }
 
 async function serializeGroupedTasks(groupedTasks, timezone) {

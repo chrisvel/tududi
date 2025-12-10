@@ -149,7 +149,8 @@
     "overdue": "Zapadlo",
     "planned": "Načrtovano",
     "open": "Odpri",
-    "completed": "Dokončano"
+    "completed": "Dokončano",
+    "noCompletedTasksToday": "Danes ni zaključenih nalog."
   },
   "timeline": {
     "activityTimeline": "Časovnica aktivnosti",
@@ -315,7 +316,8 @@
       "security": "Varnost",
       "productivity": "Produktivnost",
       "telegram": "Telegram",
-      "ai": "AI Funkcije"
+      "ai": "AI Funkcije",
+      "notifications": "Nastavitve obvestil"
     },
     "security": "Nastavitve varnosti",
     "changePassword": "Spremeni geslo",
@@ -333,7 +335,6 @@
     "passwordChangeSuccess": "Geslo je bilo uspešno spremenjeno!",
     "changingPassword": "Spreminjanje gesla...",
     "accountSettings": "Račun in nastavitve",
-    "aiProductivityFeatures": "AI in funkcije produktivnosti",
     "botSetup": "Nastavitev bota",
     "passwordChangeNote": "Spremembe gesla bodo shranjene, ko kliknete \"Shrani spremembe\" na dnu obrazca.",
     "passwordChangeOptional": "Pustite polja za geslo prazna, da posodobite druge nastavitve brez spreminjanja gesla.",
@@ -351,7 +352,9 @@
     "avatarUploadSuccess": "Avatar uploaded successfully!",
     "avatarRemoveSuccess": "Avatar removed successfully!",
     "avatarUploadFailed": "Failed to upload avatar",
-    "avatarRemoveFailed": "Failed to remove avatar"
+    "avatarRemoveFailed": "Failed to remove avatar",
+    "notificationsDescription": "Izberite, kako želite biti obveščeni o pomembnih dogodkih.",
+    "aiFeatures": "Funkcije AI"
   },
   "productivity": {
     "stalledProjects": "Zastali projekti",
@@ -797,7 +800,9 @@
     "activity": "Dejavnost",
     "lastUpdatedAt": "Zadnja posodobitev ob",
     "statusUpdated": "Status uspešno posodobljen",
-    "statusUpdateError": "Posodobitev statusa ni uspela"
+    "statusUpdateError": "Posodobitev statusa ni uspela",
+    "updatedAt": "Posodobljeno ob",
+    "upcoming": "prihajajoč"
   },
   "projects": {
     "loading": "Nalagam projekte...",
@@ -833,7 +838,28 @@
       "active_desc": "Aktivno delo poteka"
     },
     "showMetrics": "Prikaži metrike",
-    "hideMetrics": "Skrij metrike"
+    "hideMetrics": "Skrij metrike",
+    "progress": "Napredek",
+    "taskMomentum": "Zagon nalog",
+    "activeTasks": "Aktivne naloge",
+    "dueSchedule": "Urnik rokov",
+    "next14Days": "Naslednjih 14 dni",
+    "noUpcomingDue": "Ni rokov v naslednjih 14 dneh.",
+    "peakDay": "Vrh",
+    "none": "Brez",
+    "next3days": "Naslednjih 3 dni",
+    "nextWeek": "Naslednjih 7 dni",
+    "recentCompletion": "Nedavno zaključeno",
+    "last7And30": "Zadnjih 7 in 30 dni",
+    "weeklyPace": "Tedenski tempo",
+    "prevWeekCompleted": "{{count}} prejšnji teden",
+    "vsPrevWeek": "vs prejšnji teden",
+    "monthlyCompletion": "30-dnevna zaključevanja",
+    "last30Days": "Zadnjih 30 dni",
+    "nextUp": "Naslednje najboljše dejanje",
+    "focusTask": "Najbolj vplivna naloga",
+    "focusHint": "Premakne to nalogo v v teku in danes",
+    "noNextAction": "Vse jasno - ni neizpolnjenih nalog."
   },
   "projectItem": {
     "edit": "Uredi",
@@ -843,7 +869,15 @@
     "toggleDropdownMenu": "Preklopi spustni meni",
     "projectInitials": "Inicialke projekta",
     "share": "Deli",
-    "sharedProject": "Deli z ekipo"
+    "sharedProject": "Deli z ekipo",
+    "noDueDate": "Ni roka",
+    "dueToday": "Zapade danes",
+    "dueIn": "Zapade čez {{count}} {{unit}}",
+    "overdue": "Zamujeno {{count}} {{unit}}",
+    "day": "dan",
+    "days": "dni",
+    "sharedUser": "Deljeni uporabnik",
+    "moreSharedUsers": "+{{count}} več uporabnikov"
   },
   "areas": {
     "title": "Območja",
@@ -1265,5 +1299,46 @@
     "validationErrors": "Napake pri preverjanju:",
     "versionIncompatible": "Različica ni združljiva",
     "backupVersion": "Različica varnostne kopije"
+  },
+  "notifications": {
+    "table": {
+      "type": "Vrsta obvestila"
+    },
+    "channels": {
+      "inApp": "V aplikaciji",
+      "email": "E-pošta",
+      "push": "Push",
+      "telegram": "Telegram"
+    },
+    "types": {
+      "dueTasks": "Naloge, ki zapadejo",
+      "overdueTasks": "Zamujene naloge",
+      "deferUntil": "Odloži do",
+      "dueProjects": "Projekti, ki zapadejo",
+      "overdueProjects": "Zamujeni projekti"
+    },
+    "descriptions": {
+      "dueTasks": "Naloge, ki zapadejo v 24 urah",
+      "overdueTasks": "Naloge, ki so prešle rok",
+      "deferUntil": "Naloge, ki so zdaj na voljo za delo",
+      "dueProjects": "Projekti, ki zapadejo v 24 urah",
+      "overdueProjects": "Projekti, ki so prešli rok"
+    },
+    "telegram": {
+      "notConfigured": {
+        "title": "Telegram ni konfiguriran:",
+        "message": "Da bi prejemali obvestila preko Telegrama, prosimo, konfigurirajte svoj Telegram bot na zavihku Telegram."
+      }
+    },
+    "test": {
+      "title": "Testna obvestila",
+      "description": "Pošlji testno obvestilo, da vidiš, kako se prikazuje v aplikaciji in na omogočenih kanalih (Telegram itd.)",
+      "send": "Pošlji test",
+      "sending": "Pošiljanje..."
+    },
+    "info": {
+      "title": "Opomba:",
+      "message": "Obvestila po e-pošti in potisna obvestila kmalu prihajajo. Obvestila v aplikaciji in na Telegramu so trenutno na voljo."
+    }
   }
 }

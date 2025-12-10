@@ -149,7 +149,8 @@
     "overdue": "متأخر",
     "planned": "مخطط",
     "open": "فتح",
-    "completed": "مكتمل"
+    "completed": "مكتمل",
+    "noCompletedTasksToday": "لا توجد مهام مكتملة اليوم."
   },
   "timeline": {
     "activityTimeline": "جدول الأنشطة",
@@ -308,7 +309,8 @@
       "security": "الأمان",
       "productivity": "الإنتاجية",
       "telegram": "تيليجرام",
-      "ai": "ميزات الذكاء الاصطناعي"
+      "ai": "ميزات الذكاء الاصطناعي",
+      "notifications": "تفضيلات الإشعارات"
     },
     "security": "إعدادات الأمان",
     "changePassword": "تغيير كلمة المرور",
@@ -326,7 +328,6 @@
     "passwordChangeSuccess": "تم تغيير كلمة المرور بنجاح!",
     "changingPassword": "جارٍ تغيير كلمة المرور...",
     "accountSettings": "الإعدادات والحسابات",
-    "aiProductivityFeatures": "ميزات الذكاء الاصطناعي والإنتاجية",
     "botSetup": "إعداد الروبوت",
     "passwordChangeNote": "سيتم حفظ تغييرات كلمة المرور عند النقر على \"حفظ التغييرات\" في أسفل النموذج.",
     "passwordChangeOptional": "اترك حقول كلمة المرور فارغة لتحديث الإعدادات الأخرى دون تغيير كلمة المرور الخاصة بك.",
@@ -351,7 +352,9 @@
     "avatarUploadSuccess": "Avatar uploaded successfully!",
     "avatarRemoveSuccess": "Avatar removed successfully!",
     "avatarUploadFailed": "Failed to upload avatar",
-    "avatarRemoveFailed": "Failed to remove avatar"
+    "avatarRemoveFailed": "Failed to remove avatar",
+    "notificationsDescription": "اختر كيف تريد أن تتلقى إشعارات حول الأحداث المهمة.",
+    "aiFeatures": "ميزات الذكاء الاصطناعي"
   },
   "productivity": {
     "stalledProjects": "المشاريع المتوقفة",
@@ -797,7 +800,9 @@
     "activity": "نشاط",
     "lastUpdatedAt": "آخر تحديث في",
     "statusUpdated": "تم تحديث الحالة بنجاح",
-    "statusUpdateError": "فشل في تحديث الحالة"
+    "statusUpdateError": "فشل في تحديث الحالة",
+    "updatedAt": "تم التحديث في",
+    "upcoming": "قادم"
   },
   "projects": {
     "loading": "جارٍ تحميل المشاريع...",
@@ -833,7 +838,28 @@
       "active_desc": "عمل نشط جارٍ"
     },
     "showMetrics": "عرض المقاييس",
-    "hideMetrics": "إخفاء المقاييس"
+    "hideMetrics": "إخفاء المقاييس",
+    "progress": "التقدم",
+    "taskMomentum": "زخم المهام",
+    "activeTasks": "المهام النشطة",
+    "dueSchedule": "جدول الاستحقاق",
+    "next14Days": "الأيام الـ 14 القادمة",
+    "noUpcomingDue": "لا توجد مواعيد استحقاق في الأيام الـ 14 القادمة.",
+    "peakDay": "الذروة",
+    "none": "لا شيء",
+    "next3days": "الأيام الـ 3 القادمة",
+    "nextWeek": "الأيام الـ 7 القادمة",
+    "recentCompletion": "الإنجازات الأخيرة",
+    "last7And30": "آخر 7 و 30 يومًا",
+    "weeklyPace": "الوتيرة الأسبوعية",
+    "prevWeekCompleted": "{{count}} الأسبوع السابق",
+    "vsPrevWeek": "مقابل الأسبوع السابق",
+    "monthlyCompletion": "إنجازات 30 يومًا",
+    "last30Days": "آخر 30 يومًا",
+    "nextUp": "الإجراء الأفضل التالي",
+    "focusTask": "المهمة الأكثر تأثيرًا",
+    "focusHint": "ينقل هذه المهمة إلى قيد التنفيذ واليوم",
+    "noNextAction": "كل شيء واضح - لا توجد مهام معلقة."
   },
   "projectItem": {
     "edit": "تعديل",
@@ -843,7 +869,15 @@
     "toggleDropdownMenu": "تبديل قائمة السحب",
     "projectInitials": "اختصارات المشروع",
     "share": "مشاركة",
-    "sharedProject": "مشاركة مع الفريق"
+    "sharedProject": "مشاركة مع الفريق",
+    "noDueDate": "لا يوجد تاريخ استحقاق",
+    "dueToday": "مستحق اليوم",
+    "dueIn": "مستحق خلال {{count}} {{unit}}",
+    "overdue": "متأخر منذ {{count}} {{unit}}",
+    "day": "يوم",
+    "days": "أيام",
+    "sharedUser": "مستخدم مشارك",
+    "moreSharedUsers": "+{{count}} مستخدمين آخرين"
   },
   "areas": {
     "title": "المناطق",
@@ -1265,5 +1299,46 @@
     "validationErrors": "أخطاء التحقق:",
     "versionIncompatible": "الإصدار غير متوافق",
     "backupVersion": "إصدار النسخة الاحتياطية"
+  },
+  "notifications": {
+    "table": {
+      "type": "نوع الإشعار"
+    },
+    "channels": {
+      "inApp": "داخل التطبيق",
+      "email": "البريد الإلكتروني",
+      "push": "إشعارات الدفع",
+      "telegram": "تيليجرام"
+    },
+    "types": {
+      "dueTasks": "المهام المستحقة",
+      "overdueTasks": "المهام المتأخرة",
+      "deferUntil": "تأجيل حتى",
+      "dueProjects": "المشاريع المستحقة",
+      "overdueProjects": "المشاريع المتأخرة"
+    },
+    "descriptions": {
+      "dueTasks": "المهام المستحقة خلال 24 ساعة",
+      "overdueTasks": "المهام التي تجاوزت تاريخ استحقاقها",
+      "deferUntil": "المهام المتاحة الآن للعمل عليها",
+      "dueProjects": "المشاريع المستحقة خلال 24 ساعة",
+      "overdueProjects": "المشاريع التي تجاوزت تاريخ استحقاقها"
+    },
+    "telegram": {
+      "notConfigured": {
+        "title": "تيليجرام غير مُعد:",
+        "message": "لتلقي إشعارات تيليجرام، يرجى إعداد بوت تيليجرام الخاص بك في علامة تيليجرام."
+      }
+    },
+    "test": {
+      "title": "اختبار الإشعارات",
+      "description": "أرسل إشعار اختبار لرؤية كيف يظهر داخل التطبيق وعلى القنوات المفعلة (تليجرام، إلخ)",
+      "send": "إرسال اختبار",
+      "sending": "جارٍ الإرسال..."
+    },
+    "info": {
+      "title": "ملاحظة:",
+      "message": "ستكون إشعارات البريد الإلكتروني وإشعارات الدفع متاحة قريبًا. الإشعارات داخل التطبيق وإشعارات تليجرام متاحة حاليًا."
+    }
   }
 }
