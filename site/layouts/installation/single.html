@@ -1,0 +1,63 @@
+{{ define "main" }}
+<section class="installation" id="installation" style="padding-top: 140px;">
+    <div class="container">
+        <div class="section-header">
+            <h1>{{ .Title }}</h1>
+            <p>Deploy <strong>tududi</strong> in minutes with Docker. No complex configuration, no external dependencies - just pull, configure, and run. Your data stays completely under your control.</p>
+        </div>
+        <div class="installation-steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Pull the latest image</h3>
+                    <p>First, pull the latest Docker image:</p>
+                    <code>docker pull chrisvel/tududi:latest</code>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Configure Environment Variables</h3>
+                    <p>Set up the required environment variables for your installation:</p>
+                    <div style="background-color: var(--card-bg); padding: 20px; border-radius: 8px; margin: 15px 0; border-left: 4px solid var(--primary-color);">
+                        <h4 style="color: var(--text-color); margin-bottom: 10px; font-size: 1.1rem;">Required Variables:</h4>
+                        <ul style="color: var(--secondary-color); margin: 0; padding-left: 20px; line-height: 1.6;">
+                            <li><strong style="color: var(--text-color);">TUDUDI_USER_EMAIL</strong> - Initial admin user's email</li>
+                            <li><strong style="color: var(--text-color);">TUDUDI_USER_PASSWORD</strong> - Initial admin user's password</li>
+                            <li><strong style="color: var(--text-color);">TUDUDI_SESSION_SECRET</strong> - Session encryption key</li>
+                        </ul>
+                        <h4 style="color: var(--text-color); margin: 15px 0 10px 0; font-size: 1.1rem;">Optional Variables:</h4>
+                        <ul style="color: var(--secondary-color); margin: 0; padding-left: 20px; line-height: 1.6;">
+                            <li><strong style="color: var(--text-color);">TUDUDI_ALLOWED_ORIGINS</strong> - Controls CORS access</li>
+                        </ul>
+                    </div>
+                    <p>Generate a secure session secret with: <code style="background-color: var(--card-bg); padding: 4px 8px; border-radius: 4px; font-family: monospace;">openssl rand -hex 64</code></p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Run the Docker container</h3>
+                    <p>Launch the application with your configuration:</p>
+                    <code>docker run \
+  -e TUDUDI_USER_EMAIL=myemail@example.com \
+  -e TUDUDI_USER_PASSWORD=mysecurepassword \
+  -e TUDUDI_SESSION_SECRET=$(openssl rand -hex 64) \
+  -e TUDUDI_ALLOWED_ORIGINS=https://tududi,http://tududi:3002 \
+  -v ~/tududi_db:/app/backend/db \
+  -v ~/tududi_uploads:/app/backend/uploads \
+  -p 3002:3002 \
+  -d chrisvel/tududi:latest</code>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>Access the application</h3>
+                    <p>Navigate to <a href="http://localhost:3002" style="color: var(--primary-color);">http://localhost:3002</a> and login with your credentials.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{{ end }}

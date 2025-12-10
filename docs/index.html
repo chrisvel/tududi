@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<meta name="generator" content="Hugo 0.152.2"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VC2N7ZBPEE"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-VC2N7ZBPEE');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tududi - Self-Hosted Task &amp; Project Management</title>
+    <meta name="description" content="Self-hosted task management with functional programming architecture, hierarchical organization, and multi-language support.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body data-theme="dark">
+    <header>
+    <div class="container">
+        <nav>
+            <a href="/" class="logo">
+                <img src="/public/wide-logo-dark.png" alt="tududi" class="logo-image logo-light">
+                <img src="/public/wide-logo-light.png" alt="tududi" class="logo-image logo-dark">
+            </a>
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links">
+                <li><a href="/features">Features</a></li>
+                <li><a href="/languages">Languages</a></li>
+                <li><a href="/screenshots">Screenshots</a></li>
+                <li><a href="/installation">Installation</a></li>
+                <li><a href="https://docs.tududi.com">Docs</a></li>
+                <li class="theme-switch">
+                    <span class="theme-switch-label"><i class="fas fa-moon"></i></span>
+                    <label class="switch">
+                        <input type="checkbox" id="theme-toggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </li>
+                <li><a href="https://github.com/chrisvel/tududi" class="cta-button">GitHub</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+    
+<section class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1>Productivity Made Simple</h1>
+            <div style="height: 20px;"></div>
+            <p>Join hundreds of users who stay organized with smart task management that adapts to their workflow.</p>
+            <div class="github-stars-display" style="margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; color: #4a5568;">
+                <i class="fab fa-github" style="font-size: 1.1rem;"></i>
+                <span id="github-stars" style="font-weight: 800;">Loading...</span>
+                <span>stars</span>
+            </div>
+            <div class="hero-spacer"></div>
+            <div class="hero-image-container">
+                <img src="/screenshots/all-light.png" alt="tududi - Light Mode Interface" class="hero-image hero-image-light">
+                <img src="/screenshots/all-dark.png" alt="tududi - Dark Mode Interface" class="hero-image hero-image-dark">
+                <img src="/screenshots/mobile-all-light.png" alt="tududi - Mobile Light Mode" class="mobile-overlay mobile-overlay-light">
+                <img src="/screenshots/mobile-all-dark.png" alt="tududi - Mobile Dark Mode" class="mobile-overlay mobile-overlay-dark">
+            </div>
+            <div class="hero-buttons">
+                <a href="/installation" class="primary-button">Quick Install</a>
+                <a href="/features" class="secondary-button">
+                    <i class="fas fa-list"></i>
+                    Explore Features
+                </a>
+                <a href="https://docs.tududi.com" class="secondary-button">
+                    <i class="fas fa-book"></i>
+                    Documentation
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="testimonials" style="padding: 80px 0; background: var(--gradient-primary); position: relative; overflow: hidden;">
+    <style>
+        @keyframes testimonialFade {
+            0% { opacity: 0; transform: translateY(20px); }
+            5% { opacity: 1; transform: translateY(0); }
+            15% { opacity: 1; transform: translateY(0); }
+            20% { opacity: 0; transform: translateY(-20px); }
+            100% { opacity: 0; transform: translateY(-20px); }
+        }
+
+        .testimonial-card {
+            animation: testimonialFade 20s infinite;
+            position: absolute;
+            width: 100%;
+            opacity: 0;
+        }
+
+        .testimonial-card:nth-child(1) { animation-delay: 0s; }
+        .testimonial-card:nth-child(2) { animation-delay: 4s; }
+        .testimonial-card:nth-child(3) { animation-delay: 8s; }
+        .testimonial-card:nth-child(4) { animation-delay: 12s; }
+        .testimonial-card:nth-child(5) { animation-delay: 16s; }
+    </style>
+    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 60 60%22 width=%2260%22 height=%2260%22%3E%3Cdefs%3E%3Cpattern id=%22testimonial-pattern%22 x=%220%22 y=%220%22 width=%2260%22 height=%2260%22 patternUnits=%22userSpaceOnUse%22%3E%3Ccircle cx=%2230%22 cy=%2230%22 r=%221.5%22 fill=%22rgba(255,255,255,0.1)%22/%3E%3C/pattern%3E%3C/defs%3E%3Crect width=%2260%22 height=%2260%22 fill=%22url(%23testimonial-pattern)%22/%3E%3C/svg%3E') repeat; opacity: 0.3;"></div>
+    <div class="container" style="position: relative; z-index: 1;">
+        <div class="section-header" style="text-align: center; margin-bottom: 60px;">
+            <h2 style="color: #1e293b; font-size: 2.5rem; font-weight: 700; margin-bottom: 16px;">What Users Are Saying</h2>
+            <p style="color: #4a5568; font-size: 1.1rem;">Join hundreds of satisfied users who have transformed their productivity with <strong>tududi</strong></p>
+        </div>
+        <div style="position: relative; max-width: 900px; margin: 0 auto; height: 120px; display: flex; align-items: center;">
+            <div class="testimonial-card" style="border-radius: 16px; padding: 30px; display: flex; align-items: center; gap: 25px;">
+                <div style="font-size: 3rem; flex-shrink: 0;">💎</div>
+                <blockquote class="testimonial-quote" style="font-size: 1.2rem; line-height: 1.6; margin: 0; font-style: italic; flex: 1; text-align: center; font-weight: 600;">"This may be the perfect to-do management tool available."</blockquote>
+                <div class="testimonial-source" style="display: flex; align-items: center; gap: 10px; flex-shrink: 0;">
+                    <i class="fab fa-github" style="font-size: 1.2rem;"></i>
+                    <span style="font-weight: 500;">GitHub</span>
+                </div>
+            </div>
+            <div class="testimonial-card" style="border-radius: 16px; padding: 30px; display: flex; align-items: center; gap: 25px;">
+                <div style="font-size: 3rem; flex-shrink: 0;">❤️</div>
+                <blockquote class="testimonial-quote" style="font-size: 1.2rem; line-height: 1.6; margin: 0; font-style: italic; flex: 1; text-align: center; font-weight: 600;">"I stumbled across this and love it"</blockquote>
+                <div class="testimonial-source" style="display: flex; align-items: center; gap: 10px; flex-shrink: 0;">
+                    <i class="fab fa-medium" style="font-size: 1.2rem;"></i>
+                    <span style="font-weight: 500;">Medium</span>
+                </div>
+            </div>
+            <div class="testimonial-card" style="border-radius: 16px; padding: 30px; display: flex; align-items: center; gap: 25px;">
+                <div style="font-size: 3rem; flex-shrink: 0;">⚡</div>
+                <blockquote class="testimonial-quote" style="font-size: 1.2rem; line-height: 1.6; margin: 0; font-style: italic; flex: 1; text-align: center; font-weight: 600;">"Looks somewhat like super productivity"</blockquote>
+                <div class="testimonial-source" style="display: flex; align-items: center; gap: 10px; flex-shrink: 0;">
+                    <i class="fab fa-reddit" style="font-size: 1.2rem;"></i>
+                    <span style="font-weight: 500;">Reddit</span>
+                </div>
+            </div>
+            <div class="testimonial-card" style="border-radius: 16px; padding: 30px; display: flex; align-items: center; gap: 25px;">
+                <div style="font-size: 3rem; flex-shrink: 0;">✨</div>
+                <blockquote class="testimonial-quote" style="font-size: 1.2rem; line-height: 1.6; margin: 0; font-style: italic; flex: 1; text-align: center; font-weight: 600;">"Why does this look so good?"</blockquote>
+                <div class="testimonial-source" style="display: flex; align-items: center; gap: 10px; flex-shrink: 0;">
+                    <i class="fab fa-reddit" style="font-size: 1.2rem;"></i>
+                    <span style="font-weight: 500;">Reddit</span>
+                </div>
+            </div>
+            <div class="testimonial-card" style="border-radius: 16px; padding: 30px; display: flex; align-items: center; gap: 25px;">
+                <div style="font-size: 3rem; flex-shrink: 0;">🎉</div>
+                <blockquote class="testimonial-quote" style="font-size: 1.2rem; line-height: 1.6; margin: 0; font-style: italic; flex: 1; text-align: center; font-weight: 600;">"This is amazing"</blockquote>
+                <div class="testimonial-source" style="display: flex; align-items: center; gap: 10px; flex-shrink: 0;">
+                    <i class="fab fa-reddit" style="font-size: 1.2rem;"></i>
+                    <span style="font-weight: 500;">Reddit</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="features" style="padding: 100px 0;">
+    <div class="container">
+        <div class="section-header">
+            <h2>Discover tududi</h2>
+            <p>Self-hosted task management with powerful features, global language support, and complete privacy control</p>
+        </div>
+        <div class="features-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+            <a href="/features" class="feature-card" style="text-decoration: none; cursor: pointer;">
+                <div class="feature-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h3>Features</h3>
+                <p>Explore 16+ powerful features including smart recurring tasks, subtasks, API access, and more.</p>
+            </a>
+            <a href="/languages" class="feature-card" style="text-decoration: none; cursor: pointer;">
+                <div class="feature-icon">
+                    <i class="fas fa-globe"></i>
+                </div>
+                <h3>Languages</h3>
+                <p>Available in 24 languages with full localization support for users worldwide.</p>
+            </a>
+            <a href="/screenshots" class="feature-card" style="text-decoration: none; cursor: pointer;">
+                <div class="feature-icon">
+                    <i class="fas fa-images"></i>
+                </div>
+                <h3>Screenshots</h3>
+                <p>See tududi's clean interface with dark and light themes across devices.</p>
+            </a>
+            <a href="/installation" class="feature-card" style="text-decoration: none; cursor: pointer;">
+                <div class="feature-icon">
+                    <i class="fas fa-download"></i>
+                </div>
+                <h3>Installation</h3>
+                <p>Deploy in minutes with Docker - simple setup, no complex configuration.</p>
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="cta">
+    <div class="container">
+        <h2>Take Control of Your Productivity</h2>
+        <p>Join thousands of users who've chosen privacy and control over their task management. Start your self-hosted <strong>tududi</strong> instance today and experience distraction-free productivity.</p>
+        <div class="cta-buttons">
+            <a href="/installation" class="cta-white">Get Started</a>
+            <a href="https://github.com/chrisvel/tududi" class="cta-outline">View on GitHub</a>
+        </div>
+    </div>
+</section>
+
+<section class="installation" style="padding: 60px 0; background-color: var(--bg-color);">
+    <div class="container">
+        <div class="section-header">
+            <h2>Join the <strong>tududi</strong> Community</h2>
+            <p>Connect with other users, get support, share ideas, and stay updated with the latest developments. Our community is here to help you get the most out of <strong>tududi</strong>.</p>
+        </div>
+        <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 40px;">
+            <a href="https://discord.gg/fkbeJ9CmcH" style="display: inline-block;">
+                <img src="https://img.shields.io/badge/Discord-Join%20Server-7289da?logo=discord&logoColor=white&style=for-the-badge" alt="Join Discord" style="height: 40px; transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+            </a>
+            <a href="https://www.reddit.com/r/tududi/" style="display: inline-block;">
+                <img src="https://img.shields.io/reddit/subreddit-subscribers/tududi?color=ff4500&label=Reddit&logo=reddit&logoColor=white&style=for-the-badge" alt="Join Reddit" style="height: 40px; transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+            </a>
+        </div>
+        <div style="text-align: center; margin-top: 30px;">
+            <p style="color: var(--secondary-color); font-size: 1rem;">Get help with installation, share your workflows, request features, and connect with fellow productivity enthusiasts!</p>
+        </div>
+    </div>
+</section>
+
+<section class="installation" style="padding: 50px 0; background-color: var(--bg-color);">
+    <div class="container">
+        <div class="installation-steps" style="text-align: center;">
+            <h3 style="color: var(--text-color); margin-bottom: 30px;">Check my other projects</h3>
+            <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; max-width: 900px; margin: 0 auto;">
+                <a href="https://reconya.com" style="display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-color); text-decoration: none; padding: 20px; border: 1px solid var(--border-color); border-radius: 12px; transition: all 0.3s ease; background-color: var(--card-bg); text-align: center; min-width: 200px;" onmouseover="this.style.borderColor='var(--primary-color)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border-color)'; this.style.transform='translateY(0)'">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <i class="fas fa-network-wired" style="font-size: 1.2rem; color: var(--primary-color);"></i>
+                        <span style="font-weight: 600; font-size: 1.1rem;">Reconya</span>
+                        <i class="fas fa-external-link-alt" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                    </div>
+                    <p style="font-size: 0.9rem; color: var(--secondary-color); margin: 0; line-height: 1.4;">Network reconnaissance and asset discovery tool</p>
+                </a>
+                <a href="https://breachharbor.com" style="display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-color); text-decoration: none; padding: 20px; border: 1px solid var(--border-color); border-radius: 12px; transition: all 0.3s ease; background-color: var(--card-bg); text-align: center; min-width: 200px;" onmouseover="this.style.borderColor='var(--primary-color)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border-color)'; this.style.transform='translateY(0)'">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <i class="fas fa-shield-alt" style="font-size: 1.2rem; color: var(--primary-color);"></i>
+                        <span style="font-weight: 600; font-size: 1.1rem;">BreachHarbor</span>
+                        <i class="fas fa-external-link-alt" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                    </div>
+                    <p style="font-size: 0.9rem; color: var(--secondary-color); margin: 0; line-height: 1.4;">Cybersecurity suite for digital asset protection</p>
+                </a>
+                <a href="https://hevetra.com" style="display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-color); text-decoration: none; padding: 20px; border: 1px solid var(--border-color); border-radius: 12px; transition: all 0.3s ease; background-color: var(--card-bg); text-align: center; min-width: 200px;" onmouseover="this.style.borderColor='var(--primary-color)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border-color)'; this.style.transform='translateY(0)'">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <i class="fas fa-baby" style="font-size: 1.2rem; color: var(--primary-color);"></i>
+                        <span style="font-weight: 600; font-size: 1.1rem;">Hevetra</span>
+                        <i class="fas fa-external-link-alt" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                    </div>
+                    <p style="font-size: 0.9rem; color: var(--secondary-color); margin: 0; line-height: 1.4;">Digital tracking for child health milestones</p>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+    <footer>
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>tududi</h3>
+                <p>Self-hosted task management with functional programming architecture, hierarchical organization, and multi-language support.</p>
+                <div class="social-icons">
+                    <a href="https://github.com/chrisvel/tududi"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h3>Links</h3>
+                <ul class="footer-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#languages">Languages</a></li>
+                    <li><a href="#screenshots">Screenshots</a></li>
+                    <li><a href="#installation">Installation</a></li>
+                    <li><a href="https://github.com/chrisvel/tududi">GitHub Repository</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Resources</h3>
+                <ul class="footer-links">
+                    <li><a href="https://docs.tududi.com"><i class="fas fa-book"></i> Documentation</a></li>
+                    <li><a href="https://github.com/users/chrisvel/projects/2">Roadmap</a></li>
+                    <li><a href="https://github.com/chrisvel/tududi/issues">Issues</a></li>
+                    <li><a href="https://github.com/chrisvel/tududi#-contributing">Contributing</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Community</h3>
+                <ul class="footer-links">
+                    <li><a href="https://discord.gg/fkbeJ9CmcH"><i class="fab fa-discord"></i> Discord Server</a></li>
+                    <li><a href="https://www.reddit.com/r/tududi/"><i class="fab fa-reddit"></i> r/tududi</a></li>
+                    <li><a href="mailto:info@tududi.com"><i class="fas fa-envelope"></i> info@tududi.com</a></li>
+                </ul>
+                <p style="font-size: 0.9rem; color: #b0b0b0; margin-top: 15px;">Join our community for support, discussions, and updates!</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 <strong>tududi</strong>. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+
+    <script src="/js/main.js"></script>
+</body>
+</html>

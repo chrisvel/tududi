@@ -1,0 +1,14 @@
+{{ define "main" }}
+<section class="features" style="padding-top: 140px;">
+    <div class="container">
+        <div class="section-header">
+            <h1>{{ .Title }}</h1>
+            {{ if .Description }}
+            <p>{{ .Description }}</p>
+            {{ end }}
+        </div>
+
+        {{ .Content }}
+    </div>
+</section>
+{{ end }}

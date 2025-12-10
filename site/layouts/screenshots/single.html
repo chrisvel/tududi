@@ -1,0 +1,24 @@
+{{ define "main" }}
+<section class="screenshots" id="screenshots" style="padding-top: 140px;">
+    <div class="container">
+        <div class="section-header">
+            <h1>{{ .Title }}</h1>
+            <p>Experience <strong>tududi's</strong> thoughtfully designed interface that adapts to your workflow. Dark and light themes, responsive design, and distraction-free focus on what matters most.</p>
+        </div>
+        <div class="screenshots-grid">
+            <div class="screenshot">
+                <img src="{{ "screenshots/all-light.png" | relURL }}" alt="Light Mode - Desktop">
+            </div>
+            <div class="screenshot">
+                <img src="{{ "screenshots/all-dark.png" | relURL }}" alt="Dark Mode - Desktop">
+            </div>
+            <div class="screenshot">
+                <img src="{{ "screenshots/mobile-all-light.png" | relURL }}" alt="Light Mode - Mobile">
+            </div>
+            <div class="screenshot">
+                <img src="{{ "screenshots/mobile-all-dark.png" | relURL }}" alt="Dark Mode - Mobile">
+            </div>
+        </div>
+    </div>
+</section>
+{{ end }}

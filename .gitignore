@@ -58,3 +58,7 @@ backend/tests/test-files/
 # Temporary files
 tmp/
 *.bak
+
+# Hugo
+site/resources/
+site/.hugo_build.lock

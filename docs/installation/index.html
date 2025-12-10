@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VC2N7ZBPEE"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-VC2N7ZBPEE');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Installation | tududi - Self-Hosted Task &amp; Project Management</title>
+    <meta name="description" content="Easy self-hosted setup with Docker - deploy tududi in minutes">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body data-theme="dark">
+    <header>
+    <div class="container">
+        <nav>
+            <a href="/" class="logo">
+                <img src="/public/wide-logo-dark.png" alt="tududi" class="logo-image logo-light">
+                <img src="/public/wide-logo-light.png" alt="tududi" class="logo-image logo-dark">
+            </a>
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links">
+                <li><a href="/features">Features</a></li>
+                <li><a href="/languages">Languages</a></li>
+                <li><a href="/screenshots">Screenshots</a></li>
+                <li><a href="/installation">Installation</a></li>
+                <li><a href="https://docs.tududi.com">Docs</a></li>
+                <li class="theme-switch">
+                    <span class="theme-switch-label"><i class="fas fa-moon"></i></span>
+                    <label class="switch">
+                        <input type="checkbox" id="theme-toggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </li>
+                <li><a href="https://github.com/chrisvel/tududi" class="cta-button">GitHub</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+    
+<section class="installation" id="installation" style="padding-top: 140px;">
+    <div class="container">
+        <div class="section-header">
+            <h1>Installation</h1>
+            <p>Deploy <strong>tududi</strong> in minutes with Docker. No complex configuration, no external dependencies - just pull, configure, and run. Your data stays completely under your control.</p>
+        </div>
+        <div class="installation-steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Pull the latest image</h3>
+                    <p>First, pull the latest Docker image:</p>
+                    <code>docker pull chrisvel/tududi:latest</code>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Configure Environment Variables</h3>
+                    <p>Set up the required environment variables for your installation:</p>
+                    <div style="background-color: var(--card-bg); padding: 20px; border-radius: 8px; margin: 15px 0; border-left: 4px solid var(--primary-color);">
+                        <h4 style="color: var(--text-color); margin-bottom: 10px; font-size: 1.1rem;">Required Variables:</h4>
+                        <ul style="color: var(--secondary-color); margin: 0; padding-left: 20px; line-height: 1.6;">
+                            <li><strong style="color: var(--text-color);">TUDUDI_USER_EMAIL</strong> - Initial admin user's email</li>
+                            <li><strong style="color: var(--text-color);">TUDUDI_USER_PASSWORD</strong> - Initial admin user's password</li>
+                            <li><strong style="color: var(--text-color);">TUDUDI_SESSION_SECRET</strong> - Session encryption key</li>
+                        </ul>
+                        <h4 style="color: var(--text-color); margin: 15px 0 10px 0; font-size: 1.1rem;">Optional Variables:</h4>
+                        <ul style="color: var(--secondary-color); margin: 0; padding-left: 20px; line-height: 1.6;">
+                            <li><strong style="color: var(--text-color);">TUDUDI_ALLOWED_ORIGINS</strong> - Controls CORS access</li>
+                        </ul>
+                    </div>
+                    <p>Generate a secure session secret with: <code style="background-color: var(--card-bg); padding: 4px 8px; border-radius: 4px; font-family: monospace;">openssl rand -hex 64</code></p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Run the Docker container</h3>
+                    <p>Launch the application with your configuration:</p>
+                    <code>docker run \
+  -e TUDUDI_USER_EMAIL=myemail@example.com \
+  -e TUDUDI_USER_PASSWORD=mysecurepassword \
+  -e TUDUDI_SESSION_SECRET=$(openssl rand -hex 64) \
+  -e TUDUDI_ALLOWED_ORIGINS=https://tududi,http://tududi:3002 \
+  -v ~/tududi_db:/app/backend/db \
+  -v ~/tududi_uploads:/app/backend/uploads \
+  -p 3002:3002 \
+  -d chrisvel/tududi:latest</code>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>Access the application</h3>
+                    <p>Navigate to <a href="http://localhost:3002" style="color: var(--primary-color);">http://localhost:3002</a> and login with your credentials.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+    <footer>
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>tududi</h3>
+                <p>Self-hosted task management with functional programming architecture, hierarchical organization, and multi-language support.</p>
+                <div class="social-icons">
+                    <a href="https://github.com/chrisvel/tududi"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h3>Links</h3>
+                <ul class="footer-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#languages">Languages</a></li>
+                    <li><a href="#screenshots">Screenshots</a></li>
+                    <li><a href="#installation">Installation</a></li>
+                    <li><a href="https://github.com/chrisvel/tududi">GitHub Repository</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Resources</h3>
+                <ul class="footer-links">
+                    <li><a href="https://docs.tududi.com"><i class="fas fa-book"></i> Documentation</a></li>
+                    <li><a href="https://github.com/users/chrisvel/projects/2">Roadmap</a></li>
+                    <li><a href="https://github.com/chrisvel/tududi/issues">Issues</a></li>
+                    <li><a href="https://github.com/chrisvel/tududi#-contributing">Contributing</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Community</h3>
+                <ul class="footer-links">
+                    <li><a href="https://discord.gg/fkbeJ9CmcH"><i class="fab fa-discord"></i> Discord Server</a></li>
+                    <li><a href="https://www.reddit.com/r/tududi/"><i class="fab fa-reddit"></i> r/tududi</a></li>
+                    <li><a href="mailto:info@tududi.com"><i class="fas fa-envelope"></i> info@tududi.com</a></li>
+                </ul>
+                <p style="font-size: 0.9rem; color: #b0b0b0; margin-top: 15px;">Join our community for support, discussions, and updates!</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 <strong>tududi</strong>. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+
+    <script src="/js/main.js"></script>
+</body>
+</html>

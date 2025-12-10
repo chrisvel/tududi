@@ -1,0 +1,28 @@
+<header>
+    <div class="container">
+        <nav>
+            <a href="/" class="logo">
+                <img src="{{ "public/wide-logo-dark.png" | relURL }}" alt="tududi" class="logo-image logo-light">
+                <img src="{{ "public/wide-logo-light.png" | relURL }}" alt="tududi" class="logo-image logo-dark">
+            </a>
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links">
+                <li><a href="{{ "features" | relURL }}">Features</a></li>
+                <li><a href="{{ "languages" | relURL }}">Languages</a></li>
+                <li><a href="{{ "screenshots" | relURL }}">Screenshots</a></li>
+                <li><a href="{{ "installation" | relURL }}">Installation</a></li>
+                <li><a href="https://docs.tududi.com">Docs</a></li>
+                <li class="theme-switch">
+                    <span class="theme-switch-label"><i class="fas fa-moon"></i></span>
+                    <label class="switch">
+                        <input type="checkbox" id="theme-toggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </li>
+                <li><a href="https://github.com/chrisvel/tududi" class="cta-button">GitHub</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
