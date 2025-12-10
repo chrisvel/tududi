@@ -1,8 +1,24 @@
 import { format, Locale } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
 import { enUS } from 'date-fns/locale/en-US';
 import { es } from 'date-fns/locale/es';
 import { el } from 'date-fns/locale/el';
 import i18n from '../i18n';
+
+let userTimezone: string | null = null;
+
+export const setUserTimezone = (timezone: string): void => {
+    userTimezone = timezone;
+};
+
+export const getUserTimezone = (): string => {
+    return userTimezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
+};
+
+export const convertToUserTimezone = (date: Date | number): Date => {
+    const timezone = getUserTimezone();
+    return toZonedTime(date, timezone);
+};
 
 /**
  * Maps i18next language codes to date-fns locale objects
@@ -158,14 +174,20 @@ export const formatTime = (date: Date | number): string => {
 
 /**
  * Formats a date to show date and time based on the current locale
+ * Converts to user's timezone before formatting
  * Example: "Jan 1, 2023 3:30 PM" (in English)
  *
- * @param date - The date to format
+ * @param date - The date to format (assumed to be UTC)
+ * @param useTimezone - Whether to convert to user timezone (default: true)
  * @returns The formatted date and time string
  */
-export const formatDateTime = (date: Date | number): string => {
+export const formatDateTime = (
+    date: Date | number,
+    useTimezone: boolean = true
+): string => {
+    const dateToFormat = useTimezone ? convertToUserTimezone(date) : date;
     return formatLocalizedDate(
-        date,
+        dateToFormat,
         getDateFormatPattern('dateTime', 'MMM d, yyyy h:mm a')
     );
 };

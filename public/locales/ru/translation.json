@@ -149,7 +149,8 @@
     "overdue": "Просрочено",
     "planned": "Запланировано",
     "open": "Открыть",
-    "completed": "Завершено"
+    "completed": "Завершено",
+    "noCompletedTasksToday": "Сегодня нет завершенных задач."
   },
   "timeline": {
     "activityTimeline": "Хронология активности",
@@ -308,7 +309,8 @@
       "security": "Безопасность",
       "productivity": "Продуктивность",
       "telegram": "Телеграм",
-      "ai": "Функции ИИ"
+      "ai": "Функции ИИ",
+      "notifications": "Настройки уведомлений"
     },
     "security": "Настройки безопасности",
     "changePassword": "Сменить пароль",
@@ -326,7 +328,6 @@
     "passwordChangeSuccess": "Пароль успешно изменен!",
     "changingPassword": "Изменение пароля...",
     "accountSettings": "Учетная запись и предпочтения",
-    "aiProductivityFeatures": "Искусственный интеллект и функции продуктивности",
     "botSetup": "Настройка бота",
     "passwordChangeNote": "Изменения пароля будут сохранены, когда вы нажмете \"Сохранить изменения\" внизу формы.",
     "passwordChangeOptional": "Оставьте поля пароля пустыми, чтобы обновить другие настройки без изменения пароля.",
@@ -351,7 +352,9 @@
     "avatarUploadSuccess": "Avatar uploaded successfully!",
     "avatarRemoveSuccess": "Avatar removed successfully!",
     "avatarUploadFailed": "Failed to upload avatar",
-    "avatarRemoveFailed": "Failed to remove avatar"
+    "avatarRemoveFailed": "Failed to remove avatar",
+    "notificationsDescription": "Выберите, как вы хотите получать уведомления о важных событиях.",
+    "aiFeatures": "Функции ИИ"
   },
   "productivity": {
     "stalledProjects": "Приостановленные проекты",
@@ -797,7 +800,9 @@
     "activity": "Активность",
     "lastUpdatedAt": "Последнее обновление в",
     "statusUpdated": "Статус успешно обновлён",
-    "statusUpdateError": "Не удалось обновить статус"
+    "statusUpdateError": "Не удалось обновить статус",
+    "updatedAt": "Обновлено в",
+    "upcoming": "предстоящие"
   },
   "projects": {
     "loading": "Загрузка проектов...",
@@ -833,7 +838,28 @@
       "active_desc": "Активная работа ведется"
     },
     "showMetrics": "Показать метрики",
-    "hideMetrics": "Скрыть метрики"
+    "hideMetrics": "Скрыть метрики",
+    "progress": "Прогресс",
+    "taskMomentum": "Импульс задач",
+    "activeTasks": "Активные задачи",
+    "dueSchedule": "График сроков",
+    "next14Days": "Следующие 14 дней",
+    "noUpcomingDue": "Нет сроков в ближайшие 14 дней.",
+    "peakDay": "Пик",
+    "none": "Нет",
+    "next3days": "Следующие 3 дня",
+    "nextWeek": "Следующие 7 дней",
+    "recentCompletion": "Недавнее завершение",
+    "last7And30": "Последние 7 и 30 дней",
+    "weeklyPace": "Недельный темп",
+    "prevWeekCompleted": "{{count}} предыдущая неделя",
+    "vsPrevWeek": "vs предыдущая неделя",
+    "monthlyCompletion": "Завершения за 30 дней",
+    "last30Days": "Последние 30 дней",
+    "nextUp": "Следующее лучшее действие",
+    "focusTask": "Наиболее важная задача",
+    "focusHint": "Переносит задачу в „Выполняется\" и „Сегодня\"",
+    "noNextAction": "Все выполнено - нет невыполненных задач."
   },
   "projectItem": {
     "edit": "Редактировать",
@@ -843,7 +869,15 @@
     "toggleDropdownMenu": "Переключить выпадающее меню",
     "projectInitials": "Инициалы проекта",
     "share": "Поделиться",
-    "sharedProject": "Поделено с командой"
+    "sharedProject": "Поделено с командой",
+    "noDueDate": "Нет срока",
+    "dueToday": "Срок сегодня",
+    "dueIn": "Срок через {{count}} {{unit}}",
+    "overdue": "Просрочено на {{count}} {{unit}}",
+    "day": "день",
+    "days": "дней",
+    "sharedUser": "Общий пользователь",
+    "moreSharedUsers": "+{{count}} пользователей"
   },
   "areas": {
     "title": "Области",
@@ -1265,5 +1299,46 @@
     "validationErrors": "Ошибки валидации:",
     "versionIncompatible": "Версия несовместима",
     "backupVersion": "Версия резервной копии"
+  },
+  "notifications": {
+    "table": {
+      "type": "Тип уведомления"
+    },
+    "channels": {
+      "inApp": "В приложении",
+      "email": "Электронная почта",
+      "push": "Push",
+      "telegram": "Telegram"
+    },
+    "types": {
+      "dueTasks": "Сроки задач",
+      "overdueTasks": "Просроченные задачи",
+      "deferUntil": "Отложить до",
+      "dueProjects": "Сроки проектов",
+      "overdueProjects": "Просроченные проекты"
+    },
+    "descriptions": {
+      "dueTasks": "Задачи, срок выполнения которых истекает в течение 24 часов",
+      "overdueTasks": "Задачи, срок выполнения которых истек",
+      "deferUntil": "Задачи, которые теперь доступны для работы",
+      "dueProjects": "Проекты, срок выполнения которых истекает в течение 24 часов",
+      "overdueProjects": "Проекты, срок выполнения которых истек"
+    },
+    "telegram": {
+      "notConfigured": {
+        "title": "Telegram не настроен:",
+        "message": "Чтобы получать уведомления в Telegram, пожалуйста, настройте своего Telegram-бота на вкладке Telegram."
+      }
+    },
+    "test": {
+      "title": "Тестовые уведомления",
+      "description": "Отправьте тестовое уведомление, чтобы увидеть, как оно отображается в приложении и на включенных каналах (Telegram и др.)",
+      "send": "Отправить тест",
+      "sending": "Отправка..."
+    },
+    "info": {
+      "title": "Примечание:",
+      "message": "Уведомления по электронной почте и Push скоро будут доступны. Уведомления в приложении и Telegram в настоящее время доступны."
+    }
   }
 }

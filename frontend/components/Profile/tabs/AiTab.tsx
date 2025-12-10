@@ -66,13 +66,10 @@ const AiTab: React.FC<AiTabProps> = ({ isActive, formData, onToggle }) => {
         <div>
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
                 <LightBulbIcon className="w-6 h-6 mr-3 text-blue-500" />
-                {t(
-                    'profile.aiProductivityFeatures',
-                    'AI & Productivity Features'
-                )}
+                {t('profile.aiFeatures', 'AI Features')}
             </h3>
 
-            <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div className="py-4 border-b border-gray-200 dark:border-gray-700">
                 <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3 flex items-center">
                     <BoltIcon className="w-5 h-5 mr-2 text-purple-500" />
                     {t('profile.taskIntelligence', 'Task Intelligence')}
@@ -99,7 +96,7 @@ const AiTab: React.FC<AiTabProps> = ({ isActive, formData, onToggle }) => {
                 />
             </div>
 
-            <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mt-4">
+            <div className="py-4 border-b border-gray-200 dark:border-gray-700">
                 <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3 flex items-center">
                     <ChevronRightIcon className="w-5 h-5 mr-2 text-green-500" />
                     {t(
@@ -133,7 +130,7 @@ const AiTab: React.FC<AiTabProps> = ({ isActive, formData, onToggle }) => {
                 />
             </div>
 
-            <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mt-4">
+            <div className="py-4 border-b border-gray-200 dark:border-gray-700">
                 <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3 flex items-center">
                     <ExclamationTriangleIcon className="w-5 h-5 mr-2 text-yellow-500" />
                     {t(
@@ -165,7 +162,7 @@ const AiTab: React.FC<AiTabProps> = ({ isActive, formData, onToggle }) => {
                 />
             </div>
 
-            <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mt-4">
+            <div className="py-4">
                 <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3 flex items-center">
                     <FaceSmileIcon className="w-5 h-5 mr-2 text-green-500" />
                     {t('profile.nextTaskSuggestion', 'Next Task Suggestion')}

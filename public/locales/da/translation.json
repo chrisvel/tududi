@@ -149,7 +149,8 @@
     "overdue": "Forsinket",
     "planned": "Planlagt",
     "open": "Åbn",
-    "completed": "Fuldført"
+    "completed": "Fuldført",
+    "noCompletedTasksToday": "Ingen fuldførte opgaver i dag."
   },
   "timeline": {
     "activityTimeline": "Aktivitets Tidslinje",
@@ -315,7 +316,8 @@
       "security": "Sikkerhed",
       "productivity": "Produktivitet",
       "telegram": "Telegram",
-      "ai": "AI-funktioner"
+      "ai": "AI-funktioner",
+      "notifications": "Notifikationsindstillinger"
     },
     "security": "Sikkerhedsindstillinger",
     "changePassword": "Skift adgangskode",
@@ -333,7 +335,6 @@
     "passwordChangeSuccess": "Adgangskoden blev ændret med succes!",
     "changingPassword": "Ændrer adgangskode...",
     "accountSettings": "Konto & Indstillinger",
-    "aiProductivityFeatures": "AI & Produktivitetsfunktioner",
     "botSetup": "Bot Opsætning",
     "passwordChangeNote": "Ændringer af adgangskode gemmes, når du klikker på \"Gem ændringer\" nederst i formularen.",
     "passwordChangeOptional": "Lad adgangskodefelterne stå tomme for at opdatere andre indstillinger uden at ændre din adgangskode.",
@@ -351,7 +352,9 @@
     "avatarUploadSuccess": "Avatar uploaded successfully!",
     "avatarRemoveSuccess": "Avatar removed successfully!",
     "avatarUploadFailed": "Failed to upload avatar",
-    "avatarRemoveFailed": "Failed to remove avatar"
+    "avatarRemoveFailed": "Failed to remove avatar",
+    "notificationsDescription": "Vælg hvordan du ønsker at blive underrettet om vigtige begivenheder.",
+    "aiFeatures": "AI-funktioner"
   },
   "productivity": {
     "stalledProjects": "Stagnerede Projekter",
@@ -797,7 +800,9 @@
     "activity": "Aktivitet",
     "lastUpdatedAt": "Sidst opdateret den",
     "statusUpdated": "Status opdateret med succes",
-    "statusUpdateError": "Fejl ved opdatering af status"
+    "statusUpdateError": "Fejl ved opdatering af status",
+    "updatedAt": "Opdateret den",
+    "upcoming": "kommende"
   },
   "projects": {
     "loading": "Indlæser projekter...",
@@ -833,7 +838,28 @@
       "active_desc": "Aktivt arbejde i gang"
     },
     "showMetrics": "Vis målinger",
-    "hideMetrics": "Skjul målinger"
+    "hideMetrics": "Skjul målinger",
+    "progress": "Fremgang",
+    "taskMomentum": "Opgavemomentum",
+    "activeTasks": "Aktive opgaver",
+    "dueSchedule": "Forfaldsoversigt",
+    "next14Days": "Næste 14 dage",
+    "noUpcomingDue": "Ingen frister de næste 14 dage.",
+    "peakDay": "Top",
+    "none": "Ingen",
+    "next3days": "Næste 3 dage",
+    "nextWeek": "Næste 7 dage",
+    "recentCompletion": "Seneste færdiggørelse",
+    "last7And30": "Sidste 7 og 30 dage",
+    "weeklyPace": "Ugentligt tempo",
+    "prevWeekCompleted": "{{count}} forrige uge",
+    "vsPrevWeek": "vs forrige uge",
+    "monthlyCompletion": "30-dages færdiggørelser",
+    "last30Days": "Sidste 30 dage",
+    "nextUp": "Næste bedste handling",
+    "focusTask": "Mest indflydelsesrige opgave",
+    "focusHint": "Flytter denne opgave til i gang og i dag",
+    "noNextAction": "Alt klart - ingen udestående opgaver."
   },
   "projectItem": {
     "edit": "Rediger",
@@ -843,7 +869,15 @@
     "toggleDropdownMenu": "Skift dropdown-menu",
     "projectInitials": "Projektinitialer",
     "share": "Del",
-    "sharedProject": "Delt med teamet"
+    "sharedProject": "Delt med teamet",
+    "noDueDate": "Ingen frist",
+    "dueToday": "Forfalder i dag",
+    "dueIn": "Forfalder om {{count}} {{unit}}",
+    "overdue": "Overskredet med {{count}} {{unit}}",
+    "day": "dag",
+    "days": "dage",
+    "sharedUser": "Delt bruger",
+    "moreSharedUsers": "+{{count}} flere brugere"
   },
   "areas": {
     "title": "Områder",
@@ -1265,5 +1299,46 @@
     "validationErrors": "Valideringsfejl:",
     "versionIncompatible": "Version inkompatibel",
     "backupVersion": "Backup version"
+  },
+  "notifications": {
+    "table": {
+      "type": "Notifikationstype"
+    },
+    "channels": {
+      "inApp": "I-app",
+      "email": "E-mail",
+      "push": "Push",
+      "telegram": "Telegram"
+    },
+    "types": {
+      "dueTasks": "Forfaldne opgaver",
+      "overdueTasks": "Overdue opgaver",
+      "deferUntil": "Udsæt indtil",
+      "dueProjects": "Forfaldne projekter",
+      "overdueProjects": "Overdue projekter"
+    },
+    "descriptions": {
+      "dueTasks": "Opgaver der forfalder inden for 24 timer",
+      "overdueTasks": "Opgaver der er overskredet deres forfaldsdato",
+      "deferUntil": "Opgaver der nu er tilgængelige for arbejde",
+      "dueProjects": "Projekter der forfalder inden for 24 timer",
+      "overdueProjects": "Projekter der er overskredet deres forfaldsdato"
+    },
+    "telegram": {
+      "notConfigured": {
+        "title": "Telegram ikke konfigureret:",
+        "message": "For at modtage Telegram-notifikationer, bedes du konfigurere din Telegram-bot i Telegram-fanen."
+      }
+    },
+    "test": {
+      "title": "Testnotifikationer",
+      "description": "Send en testnotifikation for at se, hvordan den vises i appen og på aktiverede kanaler (Telegram osv.)",
+      "send": "Send test",
+      "sending": "Sender..."
+    },
+    "info": {
+      "title": "Bemærk:",
+      "message": "E-mail og push-notifikationer kommer snart. Notifikationer i appen og Telegram er i øjeblikket tilgængelige."
+    }
   }
 }

@@ -177,7 +177,7 @@ router.get('/tasks', async (req, res) => {
             limit: limitParam,
             offset: offsetParam,
         } = req.query;
-        const { id: userId, timezone } = req.currentUser;
+        const { id: userId, timezone, language } = req.currentUser;
 
         await handleRecurringTasks(userId, type);
 
@@ -247,7 +247,8 @@ router.get('/tasks', async (req, res) => {
             groupBy,
             maxDays,
             order_by,
-            timezone
+            timezone,
+            language || 'en'
         );
 
         const serializationOptions =

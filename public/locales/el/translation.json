@@ -199,7 +199,8 @@
       "security": "Ασφάλεια",
       "productivity": "Παραγωγικότητα",
       "telegram": "Telegram",
-      "ai": "Χαρακτηριστικά A.I."
+      "ai": "Χαρακτηριστικά A.I.",
+      "notifications": "Ειδοποιήσεις"
     },
     "security": "Ρυθμίσεις Ασφάλειας",
     "changePassword": "Αλλαγή Κωδικού",
@@ -217,7 +218,6 @@
     "passwordChangeSuccess": "Ο κωδικός αλλάχτηκε επιτυχώς!",
     "changingPassword": "Αλλαγή κωδικού...",
     "accountSettings": "Λογαριασμός & Προτιμήσεις",
-    "aiProductivityFeatures": "Χαρακτηριστικά A.I. & Παραγωγικότητας",
     "botSetup": "Ρύθμιση Bot",
     "settings": "Ρυθμίσεις Προφίλ",
     "light": "Φωτεινό",
@@ -273,7 +273,9 @@
     "avatarUploadSuccess": "Η φωτογραφία ανέβηκε με επιτυχία!",
     "avatarRemoveSuccess": "Η φωτογραφία αφαιρέθηκε με επιτυχία!",
     "avatarUploadFailed": "Αποτυχία ανεβάσματος φωτογραφίας",
-    "avatarRemoveFailed": "Αποτυχία αφαίρεσης φωτογραφίας"
+    "avatarRemoveFailed": "Αποτυχία αφαίρεσης φωτογραφίας",
+    "notificationsDescription": "Επιλέξτε πώς θέλετε να ειδοποιείστε για σημαντικά γεγονότα.",
+    "aiFeatures": "Λειτουργίες AI"
   },
   "errors": {
     "required": "Αυτό το πεδίο είναι υποχρεωτικό",
@@ -362,7 +364,8 @@
     "overdue": "Εκπρόθεσμο",
     "planned": "Προγραμματισμένο",
     "open": "Άνοιγμα",
-    "completed": "Ολοκληρώθηκε"
+    "completed": "Ολοκληρώθηκε",
+    "noCompletedTasksToday": "Καμία ολοκληρωμένη εργασία σήμερα."
   },
   "timeline": {
     "activityTimeline": "Χρονοδιάγραμμα Δραστηριότητας",
@@ -442,7 +445,28 @@
       "active_desc": "Ενεργή εργασία που πραγματοποιείται"
     },
     "showMetrics": "Εμφάνιση μετρήσεων",
-    "hideMetrics": "Απόκρυψη μετρήσεων"
+    "hideMetrics": "Απόκρυψη μετρήσεων",
+    "progress": "Πρόοδος",
+    "taskMomentum": "Ορμή εργασιών",
+    "activeTasks": "Ενεργές εργασίες",
+    "dueSchedule": "Πρόγραμμα λήξεων",
+    "next14Days": "Επόμενες 14 ημέρες",
+    "noUpcomingDue": "Δεν υπάρχουν προθεσμίες τις επόμενες 14 ημέρες.",
+    "peakDay": "Κορυφή",
+    "none": "Κανένα",
+    "next3days": "Επόμενες 3 ημέρες",
+    "nextWeek": "Επόμενες 7 ημέρες",
+    "recentCompletion": "Πρόσφατη ολοκλήρωση",
+    "last7And30": "Τελευταίες 7 & 30 ημέρες",
+    "weeklyPace": "Εβδομαδιαίος ρυθμός",
+    "prevWeekCompleted": "{{count}} προηγούμενη εβδομάδα",
+    "vsPrevWeek": "vs προηγούμενη εβδομάδα",
+    "monthlyCompletion": "Ολοκληρώσεις 30 ημερών",
+    "last30Days": "Τελευταίες 30 ημέρες",
+    "nextUp": "Επόμενη καλύτερη ενέργεια",
+    "focusTask": "Πιο σημαντική εργασία",
+    "focusHint": "Μετακινεί αυτήν την εργασία σε εξέλιξη και σήμερα",
+    "noNextAction": "Όλα καθαρά—καμία εκκρεμής εργασία."
   },
   "notes": {
     "loading": "Φόρτωση σημειώσεων...",
@@ -463,7 +487,15 @@
     "toggleDropdownMenu": "Εναλλαγή αναπτυσσόμενου μενού",
     "projectInitials": "Αρχικά έργου",
     "share": "Κοινή χρήση",
-    "sharedProject": "Μοιράστηκε με την ομάδα"
+    "sharedProject": "Μοιράστηκε με την ομάδα",
+    "noDueDate": "Χωρίς προθεσμία",
+    "dueToday": "Λήγει σήμερα",
+    "dueIn": "Λήγει σε {{count}} {{unit}}",
+    "overdue": "Έληξε πριν {{count}} {{unit}}",
+    "day": "ημέρα",
+    "days": "ημέρες",
+    "sharedUser": "Κοινόχρηστος χρήστης",
+    "moreSharedUsers": "+{{count}} περισσότεροι χρήστες"
   },
   "sort": {
     "due_date": "Ημερομηνία Λήξης",
@@ -751,7 +783,9 @@
     "activity": "Δραστηριότητα",
     "lastUpdatedAt": "Τελευταία ενημέρωση στις",
     "statusUpdated": "Η κατάσταση ενημερώθηκε με επιτυχία",
-    "statusUpdateError": "Αποτυχία ενημέρωσης κατάστασης"
+    "statusUpdateError": "Αποτυχία ενημέρωσης κατάστασης",
+    "updatedAt": "Ενημερώθηκε στις",
+    "upcoming": "επερχόμενο"
   },
   "dateFormats": {
     "long": "EEEE, d MMMM yyyy",
@@ -1269,5 +1303,46 @@
     "validationErrors": "Σφάλματα επικύρωσης:",
     "versionIncompatible": "Μη συμβατή έκδοση",
     "backupVersion": "Έκδοση αντιγράφου ασφαλείας"
+  },
+  "notifications": {
+    "table": {
+      "type": "Τύπος Ειδοποίησης"
+    },
+    "channels": {
+      "inApp": "Εντός της εφαρμογής",
+      "email": "Email",
+      "push": "Push",
+      "telegram": "Telegram"
+    },
+    "types": {
+      "dueTasks": "Εργασίες που λήγουν",
+      "overdueTasks": "Εργασίες που έχουν καθυστερήσει",
+      "deferUntil": "Αναβολή έως",
+      "dueProjects": "Έργα που λήγουν",
+      "overdueProjects": "Έργα που έχουν καθυστερήσει"
+    },
+    "descriptions": {
+      "dueTasks": "Εργασίες που λήγουν εντός 24 ωρών",
+      "overdueTasks": "Εργασίες που έχουν περάσει την προθεσμία τους",
+      "deferUntil": "Εργασίες που είναι πλέον διαθέσιμες για εργασία",
+      "dueProjects": "Έργα που λήγουν εντός 24 ωρών",
+      "overdueProjects": "Έργα που έχουν περάσει την προθεσμία τους"
+    },
+    "telegram": {
+      "notConfigured": {
+        "title": "Telegram Μη Ρυθμισμένο:",
+        "message": "Για να λάβετε ειδοποιήσεις Telegram, παρακαλώ ρυθμίστε το bot σας στο Telegram στην καρτέλα Telegram."
+      }
+    },
+    "test": {
+      "title": "Δοκιμαστικές Ειδοποιήσεις",
+      "description": "Στείλτε μια δοκιμαστική ειδοποίηση για να δείτε πώς εμφανίζεται στην εφαρμογή και σε ενεργοποιημένα κανάλια (Telegram, κ.λπ.)",
+      "send": "Στείλτε Δοκιμή",
+      "sending": "Αποστολή..."
+    },
+    "info": {
+      "title": "Σημείωση:",
+      "message": "Οι ειδοποιήσεις μέσω Email και Push έρχονται σύντομα. Οι ειδοποιήσεις εντός της εφαρμογής και μέσω Telegram είναι διαθέσιμες αυτή τη στιγμή."
+    }
   }
 }

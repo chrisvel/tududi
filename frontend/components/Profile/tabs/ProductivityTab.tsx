@@ -25,7 +25,7 @@ const ProductivityTab: React.FC<ProductivityTabProps> = ({
             </h3>
 
             <div className="space-y-6">
-                <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <div className="flex items-center justify-between py-4 border-b border-gray-200 dark:border-gray-700">
                     <div>
                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                             {t(

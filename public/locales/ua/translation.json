@@ -149,7 +149,8 @@
     "overdue": "Прострочено",
     "planned": "Заплановано",
     "open": "Відкрити",
-    "completed": "Завершено"
+    "completed": "Завершено",
+    "noCompletedTasksToday": "Сьогодні немає завершених завдань."
   },
   "timeline": {
     "activityTimeline": "Хронологія Активності",
@@ -229,7 +230,28 @@
       "active_desc": "Активна робота триває"
     },
     "showMetrics": "Показати метрики",
-    "hideMetrics": "Сховати метрики"
+    "hideMetrics": "Сховати метрики",
+    "progress": "Прогрес",
+    "taskMomentum": "Імпульс завдань",
+    "activeTasks": "Активні завдання",
+    "dueSchedule": "Графік термінів",
+    "next14Days": "Наступні 14 днів",
+    "noUpcomingDue": "Немає термінів у найближчі 14 днів.",
+    "peakDay": "Пік",
+    "none": "Немає",
+    "next3days": "Наступні 3 дні",
+    "nextWeek": "Наступні 7 днів",
+    "recentCompletion": "Нещодавнє завершення",
+    "last7And30": "Останні 7 і 30 днів",
+    "weeklyPace": "Тижневий темп",
+    "prevWeekCompleted": "{{count}} попередній тиждень",
+    "vsPrevWeek": "vs попередній тиждень",
+    "monthlyCompletion": "Завершення за 30 днів",
+    "last30Days": "Останні 30 днів",
+    "nextUp": "Наступна найкраща дія",
+    "focusTask": "Найвпливовіше завдання",
+    "focusHint": "Переміщує це завдання до „Виконується\" та „Сьогодні\"",
+    "noNextAction": "Все готово - немає невиконаних завдань."
   },
   "projectItem": {
     "edit": "Редагувати",
@@ -239,7 +261,15 @@
     "toggleDropdownMenu": "Перемкнути випадаюче меню",
     "projectInitials": "Ініціали проекту",
     "share": "Поділитися",
-    "sharedProject": "Поділено з командою"
+    "sharedProject": "Поділено з командою",
+    "noDueDate": "Немає терміну",
+    "dueToday": "Термін сьогодні",
+    "dueIn": "Термін через {{count}} {{unit}}",
+    "overdue": "Прострочено на {{count}} {{unit}}",
+    "day": "день",
+    "days": "днів",
+    "sharedUser": "Спільний користувач",
+    "moreSharedUsers": "+{{count}} користувачів"
   },
   "forms": {
     "noteTitle": "Заголовок нотатки",
@@ -544,7 +574,8 @@
       "security": "Безпека",
       "productivity": "Продуктивність",
       "telegram": "Telegram",
-      "ai": "ШІ Функції"
+      "ai": "ШІ Функції",
+      "notifications": "Налаштування сповіщень"
     },
     "security": "Налаштування безпеки",
     "changePassword": "Змінити пароль",
@@ -562,7 +593,6 @@
     "passwordChangeSuccess": "Пароль успішно змінено!",
     "changingPassword": "Зміна паролю...",
     "accountSettings": "Обліковий запис та налаштування",
-    "aiProductivityFeatures": "ШІ та функції продуктивності",
     "botSetup": "Налаштування бота",
     "successMessage": "Профіль успішно оновлено!",
     "settings": "Налаштування профілю",
@@ -650,7 +680,9 @@
     "avatarUploadSuccess": "Avatar uploaded successfully!",
     "avatarRemoveSuccess": "Avatar removed successfully!",
     "avatarUploadFailed": "Failed to upload avatar",
-    "avatarRemoveFailed": "Failed to remove avatar"
+    "avatarRemoveFailed": "Failed to remove avatar",
+    "notificationsDescription": "Виберіть, як ви хочете отримувати сповіщення про важливі події.",
+    "aiFeatures": "Функції ШІ"
   },
   "task": {
     "suggestions": {
@@ -774,7 +806,9 @@
     "activity": "Активність",
     "lastUpdatedAt": "Останнє оновлення",
     "statusUpdated": "Статус успішно оновлено",
-    "statusUpdateError": "Не вдалося оновити статус"
+    "statusUpdateError": "Не вдалося оновити статус",
+    "updatedAt": "Оновлено о",
+    "upcoming": "майбутні"
   },
   "calendar": {
     "month": "Місяць",
@@ -1265,5 +1299,46 @@
     "validationErrors": "Помилки валідації:",
     "versionIncompatible": "Несумісна версія",
     "backupVersion": "Версія резервної копії"
+  },
+  "notifications": {
+    "table": {
+      "type": "Тип сповіщення"
+    },
+    "channels": {
+      "inApp": "В додатку",
+      "email": "Електронна пошта",
+      "push": "Push",
+      "telegram": "Telegram"
+    },
+    "types": {
+      "dueTasks": "Завдання, що підлягають виконанню",
+      "overdueTasks": "Прострочені завдання",
+      "deferUntil": "Відкласти до",
+      "dueProjects": "Проекти, що підлягають виконанню",
+      "overdueProjects": "Прострочені проекти"
+    },
+    "descriptions": {
+      "dueTasks": "Завдання, термін виконання яких спливає протягом 24 годин",
+      "overdueTasks": "Завдання, термін виконання яких минув",
+      "deferUntil": "Завдання, які тепер доступні для виконання",
+      "dueProjects": "Проекти, термін виконання яких спливає протягом 24 годин",
+      "overdueProjects": "Проекти, термін виконання яких минув"
+    },
+    "telegram": {
+      "notConfigured": {
+        "title": "Telegram не налаштовано:",
+        "message": "Щоб отримувати сповіщення в Telegram, будь ласка, налаштуйте свого Telegram бота у вкладці Telegram."
+      }
+    },
+    "test": {
+      "title": "Тестові сповіщення",
+      "description": "Надішліть тестове сповіщення, щоб побачити, як воно виглядає в додатку та на активованих каналах (Telegram тощо)",
+      "send": "Надіслати тест",
+      "sending": "Надсилається..."
+    },
+    "info": {
+      "title": "Примітка:",
+      "message": "Сповіщення електронною поштою та Push скоро з'являться. Сповіщення в додатку та Telegram наразі доступні."
+    }
   }
 }

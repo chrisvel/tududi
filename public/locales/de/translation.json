@@ -149,7 +149,8 @@
     "tasks": "Aufgaben",
     "showingItems": "{{current}} von {{total}} Aufgaben angezeigt",
     "open": "Öffnen",
-    "completed": "Abgeschlossen"
+    "completed": "Abgeschlossen",
+    "noCompletedTasksToday": "Keine abgeschlossenen Aufgaben heute."
   },
   "timeline": {
     "activityTimeline": "Aktivitätsverlauf",
@@ -488,7 +489,8 @@
       "security": "Sicherheit",
       "productivity": "Produktivität",
       "telegram": "Telegram",
-      "ai": "KI-Funktionen"
+      "ai": "KI-Funktionen",
+      "notifications": "Benachrichtigungseinstellungen"
     },
     "security": "Sicherheitseinstellungen",
     "changePassword": "Passwort ändern",
@@ -506,7 +508,6 @@
     "passwordChangeSuccess": "Passwort erfolgreich geändert!",
     "changingPassword": "Passwort wird geändert...",
     "accountSettings": "Konto & Einstellungen",
-    "aiProductivityFeatures": "KI & Produktivitätsfunktionen",
     "botSetup": "Bot-Einrichtung",
     "successMessage": "Profil erfolgreich aktualisiert!",
     "settings": "Profil Einstellungen",
@@ -594,7 +595,9 @@
     "avatarUploadSuccess": "Avatar uploaded successfully!",
     "avatarRemoveSuccess": "Avatar removed successfully!",
     "avatarUploadFailed": "Failed to upload avatar",
-    "avatarRemoveFailed": "Failed to remove avatar"
+    "avatarRemoveFailed": "Failed to remove avatar",
+    "notificationsDescription": "Wählen Sie aus, wie Sie über wichtige Ereignisse benachrichtigt werden möchten.",
+    "aiFeatures": "KI-Funktionen"
   },
   "nextTask": {
     "suggestion": "Da nichts in Bearbeitung ist, wie wäre es, mit diesem zu beginnen",
@@ -728,7 +731,9 @@
     "activity": "Aktivität",
     "lastUpdatedAt": "Zuletzt aktualisiert am",
     "statusUpdated": "Status erfolgreich aktualisiert",
-    "statusUpdateError": "Fehler beim Aktualisieren des Status"
+    "statusUpdateError": "Fehler beim Aktualisieren des Status",
+    "updatedAt": "Aktualisiert am",
+    "upcoming": "bevorstehend"
   },
   "calendar": {
     "month": "Monat",
@@ -925,7 +930,28 @@
       "active_desc": "Aktive Arbeit im Gange"
     },
     "showMetrics": "Metriken anzeigen",
-    "hideMetrics": "Metriken ausblenden"
+    "hideMetrics": "Metriken ausblenden",
+    "progress": "Fortschritt",
+    "taskMomentum": "Aufgabenmomentum",
+    "activeTasks": "Aktive Aufgaben",
+    "dueSchedule": "Fälligkeitsplan",
+    "next14Days": "Nächsten 14 Tage",
+    "noUpcomingDue": "Keine Fälligkeiten in den nächsten 14 Tagen.",
+    "peakDay": "Spitze",
+    "none": "Keine",
+    "next3days": "Nächsten 3 Tage",
+    "nextWeek": "Nächsten 7 Tage",
+    "recentCompletion": "Kürzliche Fertigstellung",
+    "last7And30": "Letzte 7 und 30 Tage",
+    "weeklyPace": "Wöchentliches Tempo",
+    "prevWeekCompleted": "{{count}} vorherige Woche",
+    "vsPrevWeek": "vs vorherige Woche",
+    "monthlyCompletion": "30-Tage-Fertigstellungen",
+    "last30Days": "Letzte 30 Tage",
+    "nextUp": "Nächste beste Aktion",
+    "focusTask": "Einflussreichste Aufgabe",
+    "focusHint": "Verschiebt diese Aufgabe zu „In Bearbeitung\" und „Heute\"",
+    "noNextAction": "Alles klar - keine ausstehenden Aufgaben."
   },
   "projectItem": {
     "edit": "Bearbeiten",
@@ -935,7 +961,15 @@
     "toggleDropdownMenu": "Dropdown-Menü umschalten",
     "projectInitials": "Projektinitialen",
     "share": "Teilen",
-    "sharedProject": "Mit dem Team geteilt"
+    "sharedProject": "Mit dem Team geteilt",
+    "noDueDate": "Kein Fälligkeitsdatum",
+    "dueToday": "Heute fällig",
+    "dueIn": "Fällig in {{count}} {{unit}}",
+    "overdue": "Überfällig seit {{count}} {{unit}}",
+    "day": "Tag",
+    "days": "Tage",
+    "sharedUser": "Geteilter Benutzer",
+    "moreSharedUsers": "+{{count}} weitere Benutzer"
   },
   "areas": {
     "title": "Bereiche",
@@ -1274,5 +1308,46 @@
     "validationErrors": "Validierungsfehler:",
     "versionIncompatible": "Version inkompatibel",
     "backupVersion": "Backup-Version"
+  },
+  "notifications": {
+    "table": {
+      "type": "Benachrichtigungstyp"
+    },
+    "channels": {
+      "inApp": "In-App",
+      "email": "E-Mail",
+      "push": "Push",
+      "telegram": "Telegram"
+    },
+    "types": {
+      "dueTasks": "Fällige Aufgaben",
+      "overdueTasks": "Überfällige Aufgaben",
+      "deferUntil": "Aufschieben bis",
+      "dueProjects": "Fällige Projekte",
+      "overdueProjects": "Überfällige Projekte"
+    },
+    "descriptions": {
+      "dueTasks": "Aufgaben, die innerhalb von 24 Stunden fällig sind",
+      "overdueTasks": "Aufgaben, deren Fälligkeitsdatum überschritten ist",
+      "deferUntil": "Aufgaben, die jetzt zur Bearbeitung verfügbar sind",
+      "dueProjects": "Projekte, die innerhalb von 24 Stunden fällig sind",
+      "overdueProjects": "Projekte, deren Fälligkeitsdatum überschritten ist"
+    },
+    "telegram": {
+      "notConfigured": {
+        "title": "Telegram nicht konfiguriert:",
+        "message": "Um Telegram-Benachrichtigungen zu erhalten, konfigurieren Sie bitte Ihren Telegram-Bot im Telegram-Tab."
+      }
+    },
+    "test": {
+      "title": "Testbenachrichtigungen",
+      "description": "Senden Sie eine Testbenachrichtigung, um zu sehen, wie sie in der App und auf aktivierten Kanälen (Telegram, usw.) erscheint.",
+      "send": "Test senden",
+      "sending": "Wird gesendet..."
+    },
+    "info": {
+      "title": "Hinweis:",
+      "message": "E-Mail- und Push-Benachrichtigungen kommen bald. In-App- und Telegram-Benachrichtigungen sind derzeit verfügbar."
+    }
   }
 }

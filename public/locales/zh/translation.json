@@ -149,7 +149,8 @@
     "overdue": "逾期",
     "planned": "计划中",
     "open": "打开",
-    "completed": "已完成"
+    "completed": "已完成",
+    "noCompletedTasksToday": "今天没有完成的任务。"
   },
   "timeline": {
     "activityTimeline": "活动时间线",
@@ -308,7 +309,8 @@
       "security": "安全",
       "productivity": "生产力",
       "telegram": "电报",
-      "ai": "人工智能功能"
+      "ai": "人工智能功能",
+      "notifications": "通知偏好设置"
     },
     "security": "安全设置",
     "changePassword": "更改密码",
@@ -326,7 +328,6 @@
     "passwordChangeSuccess": "密码更改成功！",
     "changingPassword": "正在更改密码...",
     "accountSettings": "账户与偏好设置",
-    "aiProductivityFeatures": "人工智能与生产力功能",
     "botSetup": "机器人设置",
     "passwordChangeNote": "密码更改将在您点击表单底部的“保存更改”时保存。",
     "passwordChangeOptional": "留空密码字段以更新其他设置，而不更改您的密码。",
@@ -351,7 +352,9 @@
     "avatarUploadSuccess": "Avatar uploaded successfully!",
     "avatarRemoveSuccess": "Avatar removed successfully!",
     "avatarUploadFailed": "Failed to upload avatar",
-    "avatarRemoveFailed": "Failed to remove avatar"
+    "avatarRemoveFailed": "Failed to remove avatar",
+    "notificationsDescription": "选择您希望如何接收重要事件的通知。",
+    "aiFeatures": "AI 功能"
   },
   "productivity": {
     "stalledProjects": "停滞项目",
@@ -797,7 +800,9 @@
     "activity": "活动",
     "lastUpdatedAt": "最后更新于",
     "statusUpdated": "状态更新成功",
-    "statusUpdateError": "更新状态失败"
+    "statusUpdateError": "更新状态失败",
+    "updatedAt": "更新时间",
+    "upcoming": "即将到来"
   },
   "projects": {
     "loading": "加载项目中...",
@@ -833,7 +838,28 @@
       "active_desc": "正在进行的工作"
     },
     "showMetrics": "显示指标",
-    "hideMetrics": "隐藏指标"
+    "hideMetrics": "隐藏指标",
+    "progress": "进度",
+    "taskMomentum": "任务动力",
+    "activeTasks": "活动任务",
+    "dueSchedule": "截止日程",
+    "next14Days": "接下来14天",
+    "noUpcomingDue": "接下来14天没有截止日期。",
+    "peakDay": "峰值",
+    "none": "无",
+    "next3days": "接下来3天",
+    "nextWeek": "接下来7天",
+    "recentCompletion": "最近完成",
+    "last7And30": "过去7天和30天",
+    "weeklyPace": "每周速度",
+    "prevWeekCompleted": "{{count}} 上周",
+    "vsPrevWeek": "vs 上周",
+    "monthlyCompletion": "30天完成",
+    "last30Days": "过去30天",
+    "nextUp": "下一个最佳行动",
+    "focusTask": "最具影响力的任务",
+    "focusHint": "将此任务移至进行中和今天",
+    "noNextAction": "一切正常——没有未完成的任务。"
   },
   "projectItem": {
     "edit": "编辑",
@@ -843,7 +869,15 @@
     "toggleDropdownMenu": "切换下拉菜单",
     "projectInitials": "项目首字母",
     "share": "分享",
-    "sharedProject": "与团队共享"
+    "sharedProject": "与团队共享",
+    "noDueDate": "无截止日期",
+    "dueToday": "今天到期",
+    "dueIn": "{{count}} {{unit}}后到期",
+    "overdue": "逾期 {{count}} {{unit}}",
+    "day": "天",
+    "days": "天",
+    "sharedUser": "共享用户",
+    "moreSharedUsers": "+{{count}}个用户"
   },
   "areas": {
     "title": "区域",
@@ -1265,5 +1299,46 @@
     "validationErrors": "验证错误：",
     "versionIncompatible": "版本不兼容",
     "backupVersion": "备份版本"
+  },
+  "notifications": {
+    "table": {
+      "type": "通知类型"
+    },
+    "channels": {
+      "inApp": "应用内",
+      "email": "电子邮件",
+      "push": "推送",
+      "telegram": "Telegram"
+    },
+    "types": {
+      "dueTasks": "到期任务",
+      "overdueTasks": "逾期任务",
+      "deferUntil": "推迟至",
+      "dueProjects": "到期项目",
+      "overdueProjects": "逾期项目"
+    },
+    "descriptions": {
+      "dueTasks": "在24小时内到期的任务",
+      "overdueTasks": "已过截止日期的任务",
+      "deferUntil": "现在可以开始处理的任务",
+      "dueProjects": "在24小时内到期的项目",
+      "overdueProjects": "已过截止日期的项目"
+    },
+    "telegram": {
+      "notConfigured": {
+        "title": "Telegram 未配置：",
+        "message": "要接收 Telegram 通知，请在 Telegram 选项卡中配置您的 Telegram 机器人。"
+      }
+    },
+    "test": {
+      "title": "测试通知",
+      "description": "发送测试通知以查看它在应用内和启用的频道（Telegram 等）中的显示效果",
+      "send": "发送测试",
+      "sending": "发送中..."
+    },
+    "info": {
+      "title": "注意：",
+      "message": "电子邮件和推送通知即将推出。应用内和 Telegram 通知目前可用。"
+    }
   }
 }

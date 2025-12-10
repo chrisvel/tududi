@@ -148,7 +148,8 @@
     "noProject": "No project",
     "unknownProject": "Unknown project",
     "tasks": "tasks",
-    "showingItems": "Showing {{current}} of {{total}} tasks"
+    "showingItems": "Showing {{current}} of {{total}} tasks",
+    "noCompletedTasksToday": "No completed tasks today."
   },
   "timeline": {
     "activityTimeline": "Activity Timeline",
@@ -315,11 +316,7 @@
     "skipNextAction": "Skip for now",
     "nextActionHint": "Think of the smallest, most concrete step you can take right now to move this project forward.",
     "tabs": {
-      "general": "General",
-      "security": "Security",
-      "productivity": "Productivity",
-      "telegram": "Telegram",
-      "ai": "AI Features"
+      "notifications": "Notification Preferences"
     },
     "security": "Security Settings",
     "changePassword": "Change Password",
@@ -337,7 +334,6 @@
     "passwordChangeSuccess": "Password changed successfully!",
     "changingPassword": "Changing password...",
     "accountSettings": "Account & Preferences",
-    "aiProductivityFeatures": "AI & Productivity Features",
     "botSetup": "Bot Setup",
     "passwordChangeNote": "Password changes will be saved when you click \"Save Changes\" at the bottom of the form.",
     "passwordChangeOptional": "Leave password fields empty to update other settings without changing your password.",
@@ -350,7 +346,9 @@
     "avatarUploadSuccess": "Avatar uploaded successfully!",
     "avatarRemoveSuccess": "Avatar removed successfully!",
     "avatarUploadFailed": "Failed to upload avatar",
-    "avatarRemoveFailed": "Failed to remove avatar"
+    "avatarRemoveFailed": "Failed to remove avatar",
+    "notificationsDescription": "Choose how you want to be notified about important events.",
+    "aiFeatures": "AI Features"
   },
   "productivity": {
     "stalledProjects": "Stalled Projects",
@@ -778,6 +776,7 @@
     "attachmentsComingSoon": "Attachments feature coming soon",
     "activity": "Activity",
     "lastUpdatedAt": "Last updated at",
+    "updatedAt": "Updated at",
     "status": {
       "notStarted": "Not started",
       "inProgress": "In progress",
@@ -791,7 +790,8 @@
     "deferUntil": "Defer Until",
     "noDeferUntil": "No defer until",
     "deferUntilUpdated": "Defer until updated successfully",
-    "deferUntilUpdateError": "Failed to update defer until"
+    "deferUntilUpdateError": "Failed to update defer until",
+    "upcoming": "upcoming"
   },
   "subtasks": {
     "placeholder": "Add a subtask..."
@@ -830,7 +830,28 @@
       "completed_desc": "Finished and done"
     },
     "showMetrics": "Show metrics",
-    "hideMetrics": "Hide metrics"
+    "hideMetrics": "Hide metrics",
+    "progress": "Progress",
+    "taskMomentum": "Task momentum",
+    "activeTasks": "Active tasks",
+    "dueSchedule": "Due schedule",
+    "next14Days": "Next 14 days",
+    "noUpcomingDue": "No due dates in the next 14 days.",
+    "peakDay": "Peak",
+    "none": "None",
+    "next3days": "Next 3 days",
+    "nextWeek": "Next 7 days",
+    "recentCompletion": "Recent completion",
+    "last7And30": "Last 7 & 30 days",
+    "weeklyPace": "Weekly pace",
+    "prevWeekCompleted": "{{count}} prior week",
+    "vsPrevWeek": "vs prev week",
+    "monthlyCompletion": "30-day completions",
+    "last30Days": "Last 30 days",
+    "nextUp": "Next best action",
+    "focusTask": "Most impactful task",
+    "focusHint": "Shifts this task to in progress and today",
+    "noNextAction": "All clear—no outstanding tasks."
   },
   "projectItem": {
     "edit": "Edit",
@@ -840,7 +861,15 @@
     "completion": "Completion",
     "completionPercentage": "{{percentage}}% complete",
     "toggleDropdownMenu": "Toggle dropdown menu",
-    "projectInitials": "Project initials"
+    "projectInitials": "Project initials",
+    "noDueDate": "No due date",
+    "dueToday": "Due today",
+    "dueIn": "Due in {{count}} {{unit}}",
+    "overdue": "Overdue {{count}} {{unit}} ago",
+    "day": "day",
+    "days": "days",
+    "sharedUser": "Shared user",
+    "moreSharedUsers": "+{{count}} more users"
   },
   "areas": {
     "title": "Areas",
@@ -1250,5 +1279,46 @@
     "validationErrors": "Validation errors:",
     "versionIncompatible": "Version Incompatible",
     "backupVersion": "Backup version"
+  },
+  "notifications": {
+    "table": {
+      "type": "Notification Type"
+    },
+    "channels": {
+      "inApp": "In-app",
+      "email": "Email",
+      "push": "Push",
+      "telegram": "Telegram"
+    },
+    "types": {
+      "dueTasks": "Due Tasks",
+      "overdueTasks": "Overdue Tasks",
+      "deferUntil": "Defer Until",
+      "dueProjects": "Due Projects",
+      "overdueProjects": "Overdue Projects"
+    },
+    "descriptions": {
+      "dueTasks": "Tasks that are due within 24 hours",
+      "overdueTasks": "Tasks that have passed their due date",
+      "deferUntil": "Tasks that are now available to work on",
+      "dueProjects": "Projects that are due within 24 hours",
+      "overdueProjects": "Projects that have passed their due date"
+    },
+    "telegram": {
+      "notConfigured": {
+        "title": "Telegram Not Configured:",
+        "message": "To receive Telegram notifications, please configure your Telegram bot in the Telegram tab."
+      }
+    },
+    "test": {
+      "title": "Test Notifications",
+      "description": "Send a test notification to see how it appears in-app and on enabled channels (Telegram, etc.)",
+      "send": "Send Test",
+      "sending": "Sending..."
+    },
+    "info": {
+      "title": "Note:",
+      "message": "Email and Push notifications are coming soon. In-app and Telegram notifications are currently available."
+    }
   }
 }

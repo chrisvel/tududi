@@ -149,7 +149,8 @@
     "tasks": "tâches",
     "showingItems": "Affichage de {{current}} sur {{total}} tâches",
     "open": "Ouvrir",
-    "completed": "Terminé"
+    "completed": "Terminé",
+    "noCompletedTasksToday": "Aucune tâche terminée aujourd'hui."
   },
   "timeline": {
     "activityTimeline": "Chronologie d'Activité",
@@ -308,7 +309,8 @@
       "security": "Sécurité",
       "productivity": "Productivité",
       "telegram": "Telegram",
-      "ai": "Fonctionnalités IA"
+      "ai": "Fonctionnalités IA",
+      "notifications": "Préférences de Notification"
     },
     "security": "Paramètres de sécurité",
     "changePassword": "Changer le mot de passe",
@@ -326,7 +328,6 @@
     "passwordChangeSuccess": "Mot de passe changé avec succès !",
     "changingPassword": "Changement de mot de passe...",
     "accountSettings": "Compte & Préférences",
-    "aiProductivityFeatures": "Fonctionnalités d'IA & de Productivité",
     "botSetup": "Configuration du Bot",
     "passwordChangeNote": "Les modifications de mot de passe seront enregistrées lorsque vous cliquerez sur \"Enregistrer les modifications\" en bas du formulaire.",
     "passwordChangeOptional": "Laissez les champs de mot de passe vides pour mettre à jour d'autres paramètres sans changer votre mot de passe.",
@@ -351,7 +352,9 @@
     "avatarUploadSuccess": "Avatar uploaded successfully!",
     "avatarRemoveSuccess": "Avatar removed successfully!",
     "avatarUploadFailed": "Failed to upload avatar",
-    "avatarRemoveFailed": "Failed to remove avatar"
+    "avatarRemoveFailed": "Failed to remove avatar",
+    "notificationsDescription": "Choisissez comment vous souhaitez être informé des événements importants.",
+    "aiFeatures": "Fonctionnalités d'IA"
   },
   "productivity": {
     "stalledProjects": "Projets Bloqués",
@@ -797,7 +800,9 @@
     "activity": "Activité",
     "lastUpdatedAt": "Dernière mise à jour à",
     "statusUpdated": "Statut mis à jour avec succès",
-    "statusUpdateError": "Échec de la mise à jour du statut"
+    "statusUpdateError": "Échec de la mise à jour du statut",
+    "updatedAt": "Mis à jour à",
+    "upcoming": "à venir"
   },
   "projects": {
     "loading": "Chargement des projets...",
@@ -833,7 +838,28 @@
       "active_desc": "Travail actif en cours"
     },
     "showMetrics": "Afficher les métriques",
-    "hideMetrics": "Masquer les métriques"
+    "hideMetrics": "Masquer les métriques",
+    "progress": "Progrès",
+    "taskMomentum": "Dynamique des tâches",
+    "activeTasks": "Tâches actives",
+    "dueSchedule": "Calendrier d'échéances",
+    "next14Days": "Prochains 14 jours",
+    "noUpcomingDue": "Aucune échéance dans les 14 prochains jours.",
+    "peakDay": "Pic",
+    "none": "Aucun",
+    "next3days": "Prochains 3 jours",
+    "nextWeek": "Prochains 7 jours",
+    "recentCompletion": "Achèvement récent",
+    "last7And30": "Derniers 7 & 30 jours",
+    "weeklyPace": "Rythme hebdomadaire",
+    "prevWeekCompleted": "{{count}} semaine précédente",
+    "vsPrevWeek": "vs semaine précédente",
+    "monthlyCompletion": "Achèvements sur 30 jours",
+    "last30Days": "Derniers 30 jours",
+    "nextUp": "Meilleure action suivante",
+    "focusTask": "Tâche la plus impactante",
+    "focusHint": "Déplace cette tâche vers en cours et aujourd'hui",
+    "noNextAction": "Tout est clair - aucune tâche en attente."
   },
   "projectItem": {
     "edit": "Modifier",
@@ -843,7 +869,15 @@
     "toggleDropdownMenu": "Basculer le menu déroulant",
     "projectInitials": "Initiales du projet",
     "share": "Partager",
-    "sharedProject": "Partagé avec l'équipe"
+    "sharedProject": "Partagé avec l'équipe",
+    "noDueDate": "Pas de date d'échéance",
+    "dueToday": "Échéance aujourd'hui",
+    "dueIn": "Échéance dans {{count}} {{unit}}",
+    "overdue": "En retard de {{count}} {{unit}}",
+    "day": "jour",
+    "days": "jours",
+    "sharedUser": "Utilisateur partagé",
+    "moreSharedUsers": "+{{count}} utilisateurs de plus"
   },
   "areas": {
     "title": "Zones",
@@ -1265,5 +1299,46 @@
     "validationErrors": "Erreurs de validation :",
     "versionIncompatible": "Version incompatible",
     "backupVersion": "Version de la sauvegarde"
+  },
+  "notifications": {
+    "table": {
+      "type": "Type de Notification"
+    },
+    "channels": {
+      "inApp": "Dans l'application",
+      "email": "Email",
+      "push": "Push",
+      "telegram": "Telegram"
+    },
+    "types": {
+      "dueTasks": "Tâches Échues",
+      "overdueTasks": "Tâches En Retard",
+      "deferUntil": "Différer Jusqu'à",
+      "dueProjects": "Projets Échus",
+      "overdueProjects": "Projets En Retard"
+    },
+    "descriptions": {
+      "dueTasks": "Tâches qui doivent être effectuées dans les 24 heures",
+      "overdueTasks": "Tâches dont la date limite est dépassée",
+      "deferUntil": "Tâches qui sont maintenant disponibles pour travailler",
+      "dueProjects": "Projets qui doivent être réalisés dans les 24 heures",
+      "overdueProjects": "Projets dont la date limite est dépassée"
+    },
+    "telegram": {
+      "notConfigured": {
+        "title": "Telegram Non Configuré :",
+        "message": "Pour recevoir des notifications Telegram, veuillez configurer votre bot Telegram dans l'onglet Telegram."
+      }
+    },
+    "test": {
+      "title": "Tester les Notifications",
+      "description": "Envoyer une notification de test pour voir comment elle apparaît dans l'application et sur les canaux activés (Telegram, etc.)",
+      "send": "Envoyer un test",
+      "sending": "Envoi en cours..."
+    },
+    "info": {
+      "title": "Remarque :",
+      "message": "Les notifications par e-mail et push arrivent bientôt. Les notifications dans l'application et sur Telegram sont actuellement disponibles."
+    }
   }
 }

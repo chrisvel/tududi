@@ -149,7 +149,8 @@
     "overdue": "Quá hạn",
     "planned": "Đã lên kế hoạch",
     "open": "Mở",
-    "completed": "Đã hoàn thành"
+    "completed": "Đã hoàn thành",
+    "noCompletedTasksToday": "Không có nhiệm vụ hoàn thành hôm nay."
   },
   "timeline": {
     "activityTimeline": "Dòng Thời Gian Hoạt Động",
@@ -308,7 +309,8 @@
       "security": "Bảo mật",
       "productivity": "Năng suất",
       "telegram": "Telegram",
-      "ai": "Tính năng AI"
+      "ai": "Tính năng AI",
+      "notifications": "Tùy Chọn Thông Báo"
     },
     "security": "Cài đặt bảo mật",
     "changePassword": "Đổi mật khẩu",
@@ -326,7 +328,6 @@
     "passwordChangeSuccess": "Đổi mật khẩu thành công!",
     "changingPassword": "Đang đổi mật khẩu...",
     "accountSettings": "Tài khoản & Tùy chọn",
-    "aiProductivityFeatures": "Tính năng AI & Năng suất",
     "botSetup": "Cài đặt Bot",
     "passwordChangeNote": "Các thay đổi mật khẩu sẽ được lưu khi bạn nhấn \"Lưu thay đổi\" ở dưới cùng của biểu mẫu.",
     "passwordChangeOptional": "Để trống các trường mật khẩu để cập nhật các cài đặt khác mà không thay đổi mật khẩu của bạn.",
@@ -351,7 +352,9 @@
     "avatarUploadSuccess": "Avatar uploaded successfully!",
     "avatarRemoveSuccess": "Avatar removed successfully!",
     "avatarUploadFailed": "Failed to upload avatar",
-    "avatarRemoveFailed": "Failed to remove avatar"
+    "avatarRemoveFailed": "Failed to remove avatar",
+    "notificationsDescription": "Chọn cách bạn muốn nhận thông báo về các sự kiện quan trọng.",
+    "aiFeatures": "Tính năng AI"
   },
   "productivity": {
     "stalledProjects": "Dự án Đang Tạm Dừng",
@@ -797,7 +800,9 @@
     "activity": "Hoạt động",
     "lastUpdatedAt": "Cập nhật lần cuối vào",
     "statusUpdated": "Cập nhật trạng thái thành công",
-    "statusUpdateError": "Cập nhật trạng thái thất bại"
+    "statusUpdateError": "Cập nhật trạng thái thất bại",
+    "updatedAt": "Cập nhật lúc",
+    "upcoming": "sắp tới"
   },
   "projects": {
     "loading": "Đang tải dự án...",
@@ -833,7 +838,28 @@
       "active_desc": "Công việc đang diễn ra"
     },
     "showMetrics": "Hiển thị số liệu",
-    "hideMetrics": "Ẩn số liệu"
+    "hideMetrics": "Ẩn số liệu",
+    "progress": "Tiến độ",
+    "taskMomentum": "Đà nhiệm vụ",
+    "activeTasks": "Nhiệm vụ đang hoạt động",
+    "dueSchedule": "Lịch hạn",
+    "next14Days": "14 ngày tới",
+    "noUpcomingDue": "Không có hạn trong 14 ngày tới.",
+    "peakDay": "Đỉnh",
+    "none": "Không có",
+    "next3days": "3 ngày tới",
+    "nextWeek": "7 ngày tới",
+    "recentCompletion": "Hoàn thành gần đây",
+    "last7And30": "7 & 30 ngày qua",
+    "weeklyPace": "Tốc độ hàng tuần",
+    "prevWeekCompleted": "{{count}} tuần trước",
+    "vsPrevWeek": "vs tuần trước",
+    "monthlyCompletion": "Hoàn thành trong 30 ngày",
+    "last30Days": "30 ngày qua",
+    "nextUp": "Hành động tốt nhất tiếp theo",
+    "focusTask": "Nhiệm vụ có tác động lớn nhất",
+    "focusHint": "Chuyển nhiệm vụ này sang đang thực hiện và hôm nay",
+    "noNextAction": "Tất cả rõ ràng—không có nhiệm vụ nào chưa hoàn thành."
   },
   "projectItem": {
     "edit": "Chỉnh sửa",
@@ -843,7 +869,15 @@
     "toggleDropdownMenu": "Chuyển đổi menu thả xuống",
     "projectInitials": "Chữ cái đầu của dự án",
     "share": "Chia sẻ",
-    "sharedProject": "Đã chia sẻ với nhóm"
+    "sharedProject": "Đã chia sẻ với nhóm",
+    "noDueDate": "Không có hạn",
+    "dueToday": "Hạn hôm nay",
+    "dueIn": "Hạn trong {{count}} {{unit}}",
+    "overdue": "Quá hạn {{count}} {{unit}}",
+    "day": "ngày",
+    "days": "ngày",
+    "sharedUser": "Người dùng chia sẻ",
+    "moreSharedUsers": "+{{count}} người dùng khác"
   },
   "areas": {
     "title": "Khu vực",
@@ -1265,5 +1299,46 @@
     "validationErrors": "Lỗi xác thực:",
     "versionIncompatible": "Phiên bản không tương thích",
     "backupVersion": "Phiên bản bản sao lưu"
+  },
+  "notifications": {
+    "table": {
+      "type": "Loại Thông Báo"
+    },
+    "channels": {
+      "inApp": "Trong Ứng Dụng",
+      "email": "Email",
+      "push": "Thông Báo Đẩy",
+      "telegram": "Telegram"
+    },
+    "types": {
+      "dueTasks": "Công Việc Đến Hạn",
+      "overdueTasks": "Công Việc Quá Hạn",
+      "deferUntil": "Hoãn Đến",
+      "dueProjects": "Dự Án Đến Hạn",
+      "overdueProjects": "Dự Án Quá Hạn"
+    },
+    "descriptions": {
+      "dueTasks": "Công việc đến hạn trong vòng 24 giờ",
+      "overdueTasks": "Công việc đã qua hạn",
+      "deferUntil": "Công việc hiện có sẵn để làm",
+      "dueProjects": "Dự án đến hạn trong vòng 24 giờ",
+      "overdueProjects": "Dự án đã qua hạn"
+    },
+    "telegram": {
+      "notConfigured": {
+        "title": "Telegram Chưa Được Cấu Hình:",
+        "message": "Để nhận thông báo Telegram, vui lòng cấu hình bot Telegram của bạn trong tab Telegram."
+      }
+    },
+    "test": {
+      "title": "Thông Báo Kiểm Tra",
+      "description": "Gửi một thông báo thử nghiệm để xem nó xuất hiện trong ứng dụng và trên các kênh đã bật (Telegram, v.v.)",
+      "send": "Gửi Thử",
+      "sending": "Đang gửi..."
+    },
+    "info": {
+      "title": "Lưu ý:",
+      "message": "Thông báo Email và Push sẽ sớm có. Thông báo trong ứng dụng và Telegram hiện đang có sẵn."
+    }
   }
 }

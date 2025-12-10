@@ -52,7 +52,7 @@ const TelegramTab: React.FC<TelegramTabProps> = ({
                 {t('profile.telegramIntegration', 'Telegram Integration')}
             </h3>
 
-            <div className="mb-8 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div className="mb-8 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
                 <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3 flex items-center">
                     <CogIcon className="w-5 h-5 mr-2 text-blue-500" />
                     {t('profile.botSetup', 'Bot Setup')}
@@ -319,7 +319,7 @@ const TelegramTab: React.FC<TelegramTabProps> = ({
                 </div>
             </div>
 
-            <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
                 <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3 flex items-center">
                     <ClipboardDocumentListIcon className="w-5 h-5 mr-2 text-green-500" />
                     {t(

@@ -149,7 +149,8 @@
     "overdue": "Te laat",
     "planned": "Gepland",
     "open": "Open",
-    "completed": "Voltooid"
+    "completed": "Voltooid",
+    "noCompletedTasksToday": "Geen voltooide taken vandaag."
   },
   "timeline": {
     "activityTimeline": "Activiteit Tijdlijn",
@@ -308,7 +309,8 @@
       "security": "Beveiliging",
       "productivity": "Productiviteit",
       "telegram": "Telegram",
-      "ai": "AI-functies"
+      "ai": "AI-functies",
+      "notifications": "Meldingsvoorkeuren"
     },
     "security": "Beveiligingsinstellingen",
     "changePassword": "Wachtwoord wijzigen",
@@ -326,7 +328,6 @@
     "passwordChangeSuccess": "Wachtwoord succesvol gewijzigd!",
     "changingPassword": "Wachtwoord aan het wijzigen...",
     "accountSettings": "Account & Voorkeuren",
-    "aiProductivityFeatures": "AI & Productiviteitsfuncties",
     "botSetup": "Bot Instellingen",
     "passwordChangeNote": "Wachtwoordwijzigingen worden opgeslagen wanneer je op \"Wijzigingen Opslaan\" onderaan het formulier klikt.",
     "passwordChangeOptional": "Laat de wachtwoordvelden leeg om andere instellingen bij te werken zonder je wachtwoord te wijzigen.",
@@ -351,7 +352,9 @@
     "avatarUploadSuccess": "Avatar uploaded successfully!",
     "avatarRemoveSuccess": "Avatar removed successfully!",
     "avatarUploadFailed": "Failed to upload avatar",
-    "avatarRemoveFailed": "Failed to remove avatar"
+    "avatarRemoveFailed": "Failed to remove avatar",
+    "notificationsDescription": "Kies hoe u op de hoogte wilt worden gesteld van belangrijke gebeurtenissen.",
+    "aiFeatures": "AI-functies"
   },
   "productivity": {
     "stalledProjects": "Stagnerende Projecten",
@@ -797,7 +800,9 @@
     "activity": "Activiteit",
     "lastUpdatedAt": "Laatst bijgewerkt op",
     "statusUpdated": "Status succesvol bijgewerkt",
-    "statusUpdateError": "Status bijwerken mislukt"
+    "statusUpdateError": "Status bijwerken mislukt",
+    "updatedAt": "Bijgewerkt op",
+    "upcoming": "komend"
   },
   "projects": {
     "loading": "Projecten laden...",
@@ -833,7 +838,28 @@
       "active_desc": "Actief werk aan de gang"
     },
     "showMetrics": "Toon statistieken",
-    "hideMetrics": "Verberg statistieken"
+    "hideMetrics": "Verberg statistieken",
+    "progress": "Voortgang",
+    "taskMomentum": "Taakmomentum",
+    "activeTasks": "Actieve taken",
+    "dueSchedule": "Deadlineschema",
+    "next14Days": "Komende 14 dagen",
+    "noUpcomingDue": "Geen deadlines in de komende 14 dagen.",
+    "peakDay": "Piek",
+    "none": "Geen",
+    "next3days": "Komende 3 dagen",
+    "nextWeek": "Komende 7 dagen",
+    "recentCompletion": "Recente voltooiing",
+    "last7And30": "Laatste 7 en 30 dagen",
+    "weeklyPace": "Wekelijks tempo",
+    "prevWeekCompleted": "{{count}} vorige week",
+    "vsPrevWeek": "vs vorige week",
+    "monthlyCompletion": "30-daagse voltooiingen",
+    "last30Days": "Laatste 30 dagen",
+    "nextUp": "Volgende beste actie",
+    "focusTask": "Meest impactvolle taak",
+    "focusHint": "Verplaatst deze taak naar lopend en vandaag",
+    "noNextAction": "Alles klaar - geen openstaande taken."
   },
   "projectItem": {
     "edit": "Bewerken",
@@ -843,7 +869,15 @@
     "toggleDropdownMenu": "Schakel dropdownmenu in",
     "projectInitials": "Projectinitialen",
     "share": "Delen",
-    "sharedProject": "Gedeeld met team"
+    "sharedProject": "Gedeeld met team",
+    "noDueDate": "Geen deadline",
+    "dueToday": "Vandaag verlopen",
+    "dueIn": "Verloopt over {{count}} {{unit}}",
+    "overdue": "{{count}} {{unit}} te laat",
+    "day": "dag",
+    "days": "dagen",
+    "sharedUser": "Gedeelde gebruiker",
+    "moreSharedUsers": "+{{count}} meer gebruikers"
   },
   "areas": {
     "title": "Gebieden",
@@ -1265,5 +1299,46 @@
     "validationErrors": "Validatiefouten:",
     "versionIncompatible": "Versie incompatibel",
     "backupVersion": "Backupversie"
+  },
+  "notifications": {
+    "table": {
+      "type": "Meldingstype"
+    },
+    "channels": {
+      "inApp": "In-app",
+      "email": "E-mail",
+      "push": "Push",
+      "telegram": "Telegram"
+    },
+    "types": {
+      "dueTasks": "Vervaldagen Taken",
+      "overdueTasks": "Te Laat Taken",
+      "deferUntil": "Uitstellen Tot",
+      "dueProjects": "Vervaldagen Projecten",
+      "overdueProjects": "Te Laat Projecten"
+    },
+    "descriptions": {
+      "dueTasks": "Taken die binnen 24 uur vervallen",
+      "overdueTasks": "Taken die hun vervaldatum hebben overschreden",
+      "deferUntil": "Taken die nu beschikbaar zijn om aan te werken",
+      "dueProjects": "Projecten die binnen 24 uur vervallen",
+      "overdueProjects": "Projecten die hun vervaldatum hebben overschreden"
+    },
+    "telegram": {
+      "notConfigured": {
+        "title": "Telegram Niet Geconfigureerd:",
+        "message": "Om Telegram-meldingen te ontvangen, configureer uw Telegram-bot in het Telegram-tabblad."
+      }
+    },
+    "test": {
+      "title": "Testmeldingen",
+      "description": "Stuur een testmelding om te zien hoe deze in de app en op ingeschakelde kanalen (Telegram, enz.) verschijnt",
+      "send": "Verzend Test",
+      "sending": "Verzenden..."
+    },
+    "info": {
+      "title": "Opmerking:",
+      "message": "E-mail- en pushmeldingen komen binnenkort. In-app en Telegram-meldingen zijn momenteel beschikbaar."
+    }
   }
 }

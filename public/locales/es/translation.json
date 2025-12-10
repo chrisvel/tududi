@@ -162,7 +162,8 @@
       "security": "Seguridad",
       "productivity": "Productividad",
       "telegram": "Telegram",
-      "ai": "Funciones IA"
+      "ai": "Funciones IA",
+      "notifications": "Preferencias de Notificación"
     },
     "security": "Configuración de Seguridad",
     "changePassword": "Cambiar Contraseña",
@@ -180,7 +181,6 @@
     "passwordChangeSuccess": "¡Contraseña cambiada exitosamente!",
     "changingPassword": "Cambiando contraseña...",
     "accountSettings": "Cuenta y Preferencias",
-    "aiProductivityFeatures": "Funciones de IA y Productividad",
     "botSetup": "Configuración del Bot",
     "pollingNote": "El sondeo verifica periódicamente nuevos mensajes de Telegram y los agrega a tu bandeja de entrada.",
     "pollingDescription": "El sondeo verifica periódicamente nuevos mensajes de Telegram y los agrega a tu bandeja de entrada.",
@@ -273,7 +273,9 @@
     "avatarUploadSuccess": "Avatar uploaded successfully!",
     "avatarRemoveSuccess": "Avatar removed successfully!",
     "avatarUploadFailed": "Failed to upload avatar",
-    "avatarRemoveFailed": "Failed to remove avatar"
+    "avatarRemoveFailed": "Failed to remove avatar",
+    "notificationsDescription": "Elige cómo deseas ser notificado sobre eventos importantes.",
+    "aiFeatures": "Funciones de IA"
   },
   "errors": {
     "required": "Este campo es obligatorio",
@@ -362,7 +364,8 @@
     "tasks": "tareas",
     "showingItems": "Mostrando {{current}} de {{total}} tareas",
     "open": "Abrir",
-    "completed": "Completado"
+    "completed": "Completado",
+    "noCompletedTasksToday": "No hay tareas completadas hoy."
   },
   "timeline": {
     "activityTimeline": "Línea de Tiempo de Actividad",
@@ -442,7 +445,28 @@
       "active_desc": "Trabajo activo en curso"
     },
     "showMetrics": "Mostrar métricas",
-    "hideMetrics": "Ocultar métricas"
+    "hideMetrics": "Ocultar métricas",
+    "progress": "Progreso",
+    "taskMomentum": "Impulso de tareas",
+    "activeTasks": "Tareas activas",
+    "dueSchedule": "Cronograma de vencimientos",
+    "next14Days": "Próximos 14 días",
+    "noUpcomingDue": "No hay vencimientos en los próximos 14 días.",
+    "peakDay": "Pico",
+    "none": "Ninguno",
+    "next3days": "Próximos 3 días",
+    "nextWeek": "Próximos 7 días",
+    "recentCompletion": "Finalización reciente",
+    "last7And30": "Últimos 7 y 30 días",
+    "weeklyPace": "Ritmo semanal",
+    "prevWeekCompleted": "{{count}} semana anterior",
+    "vsPrevWeek": "vs semana anterior",
+    "monthlyCompletion": "Finalizaciones de 30 días",
+    "last30Days": "Últimos 30 días",
+    "nextUp": "Siguiente mejor acción",
+    "focusTask": "Tarea más impactante",
+    "focusHint": "Mueve esta tarea a en progreso y hoy",
+    "noNextAction": "Todo despejado: no hay tareas pendientes."
   },
   "projectItem": {
     "edit": "Editar",
@@ -452,7 +476,15 @@
     "toggleDropdownMenu": "Alternar menú desplegable",
     "projectInitials": "Iniciales del proyecto",
     "share": "Compartir",
-    "sharedProject": "Compartido con el equipo"
+    "sharedProject": "Compartido con el equipo",
+    "noDueDate": "Sin fecha de vencimiento",
+    "dueToday": "Vence hoy",
+    "dueIn": "Vence en {{count}} {{unit}}",
+    "overdue": "Vencido hace {{count}} {{unit}}",
+    "day": "día",
+    "days": "días",
+    "sharedUser": "Usuario compartido",
+    "moreSharedUsers": "+{{count}} usuarios más"
   },
   "sort": {
     "due_date": "Fecha de Vencimiento",
@@ -760,7 +792,9 @@
     "activity": "Actividad",
     "lastUpdatedAt": "Última actualización en",
     "statusUpdated": "Estado actualizado con éxito",
-    "statusUpdateError": "Error al actualizar el estado"
+    "statusUpdateError": "Error al actualizar el estado",
+    "updatedAt": "Actualizado en",
+    "upcoming": "próximo"
   },
   "dateIndicators": {
     "today": "HOY",
@@ -1266,5 +1300,46 @@
     "size": "Tamaño",
     "contents": "Contenido",
     "actions": "Acciones"
+  },
+  "notifications": {
+    "table": {
+      "type": "Tipo de Notificación"
+    },
+    "channels": {
+      "inApp": "En la aplicación",
+      "email": "Correo Electrónico",
+      "push": "Push",
+      "telegram": "Telegram"
+    },
+    "types": {
+      "dueTasks": "Tareas Vencidas",
+      "overdueTasks": "Tareas Atrasadas",
+      "deferUntil": "Aplazar Hasta",
+      "dueProjects": "Proyectos Vencidos",
+      "overdueProjects": "Proyectos Atrasados"
+    },
+    "descriptions": {
+      "dueTasks": "Tareas que vencen en 24 horas",
+      "overdueTasks": "Tareas que han pasado su fecha de vencimiento",
+      "deferUntil": "Tareas que ahora están disponibles para trabajar",
+      "dueProjects": "Proyectos que vencen en 24 horas",
+      "overdueProjects": "Proyectos que han pasado su fecha de vencimiento"
+    },
+    "telegram": {
+      "notConfigured": {
+        "title": "Telegram No Configurado:",
+        "message": "Para recibir notificaciones de Telegram, por favor configura tu bot de Telegram en la pestaña de Telegram."
+      }
+    },
+    "test": {
+      "title": "Notificaciones de Prueba",
+      "description": "Envía una notificación de prueba para ver cómo aparece en la aplicación y en los canales habilitados (Telegram, etc.)",
+      "send": "Enviar prueba",
+      "sending": "Enviando..."
+    },
+    "info": {
+      "title": "Nota:",
+      "message": "Las notificaciones por correo electrónico y Push llegarán pronto. Las notificaciones en la aplicación y de Telegram están disponibles actualmente."
+    }
   }
 }

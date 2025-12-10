@@ -29,6 +29,7 @@ interface CalendarMonthViewProps {
     events: CalendarEvent[];
     onDateClick?: (date: Date) => void;
     onEventClick?: (event: CalendarEvent) => void;
+    onEventDrop?: (eventId: string, newDate: Date) => void;
 }
 
 const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
@@ -36,9 +37,11 @@ const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
     events,
     onDateClick,
     onEventClick,
+    onEventDrop,
 }) => {
     const { t } = useTranslation();
     const [firstDayOfWeek, setFirstDayOfWeek] = useState(1); // Default to Monday
+    const [draggedEventId, setDraggedEventId] = useState<string | null>(null);
 
     // Load first day of week setting
     useEffect(() => {
@@ -104,14 +107,41 @@ const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
         }
     };
 
+    const handleDragStart = (event: CalendarEvent, e: React.DragEvent) => {
+        e.stopPropagation();
+        setDraggedEventId(event.id);
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', event.id);
+    };
+
+    const handleDragEnd = () => {
+        setDraggedEventId(null);
+    };
+
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+    };
+
+    const handleDrop = (day: Date, e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const eventId = e.dataTransfer.getData('text/plain');
+        if (eventId && onEventDrop) {
+            onEventDrop(eventId, day);
+        }
+        setDraggedEventId(null);
+    };
+
     return (
-        <div className="h-full bg-white dark:bg-gray-900 rounded-lg shadow overflow-hidden flex flex-col">
+        <div className="h-full bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 rounded-xl shadow-lg overflow-hidden flex flex-col border border-gray-200 dark:border-gray-700">
             {/* Week days header */}
-            <div className="grid grid-cols-7 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+            <div className="grid grid-cols-7 border-b-2 border-gray-200 dark:border-gray-700 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-750">
                 {weekDays.map((day) => (
                     <div
                         key={day}
-                        className="p-3 text-center text-sm font-medium text-gray-500 dark:text-gray-400"
+                        className="py-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400"
                     >
                         {day}
                     </div>
@@ -119,7 +149,7 @@ const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
             </div>
 
             {/* Calendar grid */}
-            <div className="grid grid-cols-7 flex-1 min-h-0 auto-rows-fr">
+            <div className="grid grid-cols-7 flex-1 min-h-0 auto-rows-fr divide-x divide-gray-200 dark:divide-gray-700">
                 {days.map((day) => {
                     const dayEvents = events.filter(
                         (event) =>
@@ -134,52 +164,65 @@ const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
                         <div
                             key={day.toString()}
                             onClick={() => handleDateClick(day)}
-                            className={`p-2 border-r border-b border-gray-100 dark:border-gray-800 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 flex flex-col ${
+                            onDragOver={handleDragOver}
+                            onDrop={(e) => handleDrop(day, e)}
+                            className={`p-2.5 border-b border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-200 flex flex-col min-h-[100px] ${
                                 !isCurrentMonth
-                                    ? 'bg-gray-50 dark:bg-gray-800'
-                                    : 'bg-white dark:bg-gray-900'
-                            } ${isTodayDate ? 'bg-blue-50 dark:bg-blue-900/20 ring-2 ring-blue-300 dark:ring-blue-600' : ''}`}
+                                    ? 'bg-gray-100/50 dark:bg-gray-800/30'
+                                    : 'bg-white dark:bg-gray-900 hover:bg-blue-50/50 dark:hover:bg-blue-900/10'
+                            } ${isTodayDate ? 'bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-900/30 dark:to-blue-800/20 ring-2 ring-inset ring-blue-400 dark:ring-blue-500' : ''}`}
                         >
-                            <div
-                                className={`text-sm mb-2 ${
-                                    !isCurrentMonth
-                                        ? 'text-gray-400 dark:text-gray-600'
-                                        : 'text-gray-900 dark:text-gray-100'
-                                } ${isTodayDate ? 'font-bold text-blue-600 dark:text-blue-400' : ''}`}
-                            >
-                                {isTodayDate && (
-                                    <span className="inline-flex items-center justify-center w-6 h-6 bg-blue-600 text-white text-xs font-bold rounded-full">
+                            <div className="flex items-start justify-between mb-1.5">
+                                {isTodayDate ? (
+                                    <span className="inline-flex items-center justify-center w-7 h-7 bg-gradient-to-br from-blue-600 to-blue-700 text-white text-sm font-bold rounded-full shadow-md">
+                                        {format(day, 'd')}
+                                    </span>
+                                ) : (
+                                    <span
+                                        className={`text-sm font-medium ${
+                                            !isCurrentMonth
+                                                ? 'text-gray-400 dark:text-gray-600'
+                                                : 'text-gray-700 dark:text-gray-300'
+                                        }`}
+                                    >
                                         {format(day, 'd')}
                                     </span>
                                 )}
-                                {!isTodayDate && format(day, 'd')}
                             </div>
 
                             {/* Events */}
-                            <div className="space-y-1">
+                            <div className="space-y-1 overflow-hidden flex-1">
                                 {dayEvents.slice(0, 3).map((event) => (
                                     <div
                                         key={event.id}
+                                        draggable={event.type === 'task'}
+                                        onDragStart={(e) =>
+                                            handleDragStart(event, e)
+                                        }
+                                        onDragEnd={handleDragEnd}
                                         onClick={(e) =>
                                             handleEventClick(event, e)
                                         }
-                                        className={`text-xs p-1 rounded text-white truncate cursor-pointer hover:opacity-80 transition-opacity ${
+                                        className={`text-xs px-2 py-1.5 rounded-md text-white truncate transition-all duration-200 font-medium ${
                                             event.type === 'task'
-                                                ? 'border-l-2 border-l-white/50'
-                                                : ''
-                                        }`}
+                                                ? 'border-l-3 border-l-white/60 cursor-move hover:scale-[1.02] hover:shadow-md'
+                                                : 'cursor-pointer'
+                                        } ${draggedEventId === event.id ? 'opacity-50' : ''}`}
                                         style={{
                                             backgroundColor:
                                                 event.color || '#3b82f6',
+                                            boxShadow:
+                                                '0 1px 3px rgba(0,0,0,0.1)',
                                         }}
-                                        title={`${event.type === 'task' ? '📋 ' : ''}${event.title}`}
+                                        title={event.title}
                                     >
-                                        {event.type === 'task' && '📋 '}
-                                        {event.title}
+                                        <span className="truncate">
+                                            {event.title}
+                                        </span>
                                     </div>
                                 ))}
                                 {dayEvents.length > 3 && (
-                                    <div className="text-xs text-gray-500 dark:text-gray-400 px-1">
+                                    <div className="text-xs text-gray-600 dark:text-gray-400 px-1.5 py-0.5 font-medium bg-gray-100 dark:bg-gray-800 rounded-md inline-block">
                                         +{dayEvents.length - 3} more
                                     </div>
                                 )}

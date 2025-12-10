@@ -149,7 +149,8 @@
     "overdue": "Erääntynyt",
     "planned": "Suunniteltu",
     "open": "Avaa",
-    "completed": "Valmis"
+    "completed": "Valmis",
+    "noCompletedTasksToday": "Ei suoritettuja tehtäviä tänään."
   },
   "timeline": {
     "activityTimeline": "Toiminta-aikajana",
@@ -315,7 +316,8 @@
       "security": "Turvallisuus",
       "productivity": "Tuottavuus",
       "telegram": "Telegram",
-      "ai": "AI-ominaisuudet"
+      "ai": "AI-ominaisuudet",
+      "notifications": "Ilmoitusasetukset"
     },
     "security": "Turvallisuusasetukset",
     "changePassword": "Vaihda salasana",
@@ -333,7 +335,6 @@
     "passwordChangeSuccess": "Salasana vaihdettu onnistuneesti!",
     "changingPassword": "Salasanan vaihtaminen...",
     "accountSettings": "Tili & Asetukset",
-    "aiProductivityFeatures": "AI & Tuottavuusominaisuudet",
     "botSetup": "Botti-asetukset",
     "passwordChangeNote": "Salasanan muutokset tallennetaan, kun napsautat \"Tallenna muutokset\" lomakkeen alareunassa.",
     "passwordChangeOptional": "Jätä salasanakentät tyhjiksi päivittääksesi muita asetuksia ilman salasanan vaihtamista.",
@@ -351,7 +352,9 @@
     "avatarUploadSuccess": "Avatar uploaded successfully!",
     "avatarRemoveSuccess": "Avatar removed successfully!",
     "avatarUploadFailed": "Failed to upload avatar",
-    "avatarRemoveFailed": "Failed to remove avatar"
+    "avatarRemoveFailed": "Failed to remove avatar",
+    "notificationsDescription": "Valitse, miten haluat saada ilmoituksia tärkeistä tapahtumista.",
+    "aiFeatures": "AI-ominaisuudet"
   },
   "productivity": {
     "stalledProjects": "Jumiutuneet projektit",
@@ -797,7 +800,9 @@
     "activity": "Toiminta",
     "lastUpdatedAt": "Viimeksi päivitetty",
     "statusUpdated": "Tila päivitetty onnistuneesti",
-    "statusUpdateError": "Tilapäivitys epäonnistui"
+    "statusUpdateError": "Tilapäivitys epäonnistui",
+    "updatedAt": "Päivitetty",
+    "upcoming": "tulossa"
   },
   "projects": {
     "loading": "Ladataan projekteja...",
@@ -833,7 +838,28 @@
       "active_desc": "Aktiivista työtä tapahtuu"
     },
     "showMetrics": "Näytä mittarit",
-    "hideMetrics": "Piilota mittarit"
+    "hideMetrics": "Piilota mittarit",
+    "progress": "Edistyminen",
+    "taskMomentum": "Tehtävien vauhti",
+    "activeTasks": "Aktiiviset tehtävät",
+    "dueSchedule": "Eräpäiväaikataulu",
+    "next14Days": "Seuraavat 14 päivää",
+    "noUpcomingDue": "Ei määräaikoja seuraavan 14 päivän aikana.",
+    "peakDay": "Huippu",
+    "none": "Ei mitään",
+    "next3days": "Seuraavat 3 päivää",
+    "nextWeek": "Seuraavat 7 päivää",
+    "recentCompletion": "Viimeaikaiset suoritukset",
+    "last7And30": "Viimeiset 7 ja 30 päivää",
+    "weeklyPace": "Viikkovauhti",
+    "prevWeekCompleted": "{{count}} edellinen viikko",
+    "vsPrevWeek": "vs edellinen viikko",
+    "monthlyCompletion": "30 päivän suoritukset",
+    "last30Days": "Viimeiset 30 päivää",
+    "nextUp": "Seuraava paras toiminto",
+    "focusTask": "Vaikuttavin tehtävä",
+    "focusHint": "Siirtää tehtävän tilaan käynnissä ja tänään",
+    "noNextAction": "Kaikki kunnossa - ei avoimia tehtäviä."
   },
   "projectItem": {
     "edit": "Muokkaa",
@@ -843,7 +869,15 @@
     "toggleDropdownMenu": "Vaihda avattavaa valikkoa",
     "projectInitials": "Projektin lyhenteet",
     "share": "Jaa",
-    "sharedProject": "Jaettu tiimille"
+    "sharedProject": "Jaettu tiimille",
+    "noDueDate": "Ei määräaikaa",
+    "dueToday": "Erääntyy tänään",
+    "dueIn": "Erääntyy {{count}} {{unit}} kuluttua",
+    "overdue": "Myöhässä {{count}} {{unit}}",
+    "day": "päivä",
+    "days": "päivää",
+    "sharedUser": "Jaettu käyttäjä",
+    "moreSharedUsers": "+{{count}} lisää käyttäjää"
   },
   "areas": {
     "title": "Alueet",
@@ -1265,5 +1299,46 @@
     "validationErrors": "Validointivirheet:",
     "versionIncompatible": "Versio yhteensopimaton",
     "backupVersion": "Varmuuskopion versio"
+  },
+  "notifications": {
+    "table": {
+      "type": "Ilmoituksen tyyppi"
+    },
+    "channels": {
+      "inApp": "Sovelluksessa",
+      "email": "Sähköposti",
+      "push": "Push",
+      "telegram": "Telegram"
+    },
+    "types": {
+      "dueTasks": "Erääntyneet tehtävät",
+      "overdueTasks": "Myöhästyneet tehtävät",
+      "deferUntil": "Viivästytä kunnes",
+      "dueProjects": "Erääntyneet projektit",
+      "overdueProjects": "Myöhästyneet projektit"
+    },
+    "descriptions": {
+      "dueTasks": "Tehtävät, jotka erääntyvät 24 tunnin sisällä",
+      "overdueTasks": "Tehtävät, joiden eräpäivä on mennyt",
+      "deferUntil": "Tehtävät, jotka ovat nyt saatavilla työstettäväksi",
+      "dueProjects": "Projektit, jotka erääntyvät 24 tunnin sisällä",
+      "overdueProjects": "Projektit, joiden eräpäivä on mennyt"
+    },
+    "telegram": {
+      "notConfigured": {
+        "title": "Telegram ei ole konfiguroitu:",
+        "message": "Saadaksesi Telegram-ilmoituksia, konfiguroi Telegram-bottisi Telegram-välilehdellä."
+      }
+    },
+    "test": {
+      "title": "Testi-ilmoitukset",
+      "description": "Lähetä testiviesti nähdäksesi, miltä se näyttää sovelluksessa ja käytössä olevilla kanavilla (Telegram, jne.)",
+      "send": "Lähetä testi",
+      "sending": "Lähetetään..."
+    },
+    "info": {
+      "title": "Huom:",
+      "message": "Sähköposti- ja Push-ilmoitukset ovat tulossa pian. Sovelluksen sisäiset ja Telegram-ilmoitukset ovat tällä hetkellä saatavilla."
+    }
   }
 }
