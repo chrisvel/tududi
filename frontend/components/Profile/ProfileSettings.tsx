@@ -90,6 +90,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             'ai',
             'notifications',
             'keyboard-shortcuts',
+            'integrations',
         ];
         return section && validTabs.includes(section) ? section : 'general';
     }, [location.search]);
