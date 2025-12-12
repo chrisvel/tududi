@@ -12,7 +12,6 @@ import {
     ChevronDownIcon,
     PlayIcon,
     PauseCircleIcon,
-    PlayCircleIcon,
     CheckIcon,
 } from '@heroicons/react/24/outline';
 import { TagIcon, FolderIcon, FireIcon } from '@heroicons/react/24/solid';
@@ -255,7 +254,20 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
         ? 'hover:bg-blue-50 dark:hover:bg-blue-900/40'
         : 'hover:bg-gray-50 dark:hover:bg-gray-800';
 
-    const completionButtonMainClasses = `inline-flex items-center gap-2 text-sm font-medium transition ${completionButtonTextClass} ${completionButtonHoverClass} focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500`;
+    // Highlighted background for the active status button part
+    const completionButtonMainBgClass = isTaskCompleted
+        ? 'bg-green-100 dark:bg-green-900/50'
+        : isTaskInProgress
+        ? 'bg-blue-100 dark:bg-blue-900/50'
+        : 'bg-gray-200 dark:bg-gray-700';
+
+    const completionButtonMainTextClass = isTaskCompleted
+        ? 'text-green-900 dark:text-green-100 font-semibold'
+        : isTaskInProgress
+        ? 'text-blue-900 dark:text-blue-100 font-semibold'
+        : 'text-gray-900 dark:text-gray-100 font-semibold';
+
+    const completionButtonMainClasses = `inline-flex items-center gap-2 text-sm transition ${completionButtonMainTextClass} ${completionButtonMainBgClass} ${completionButtonHoverClass} focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500`;
 
     const completionButtonChevronClasses = `inline-flex items-center justify-center transition ${completionButtonTextClass} ${completionButtonHoverClass} focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500`;
 
@@ -744,7 +756,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                 className={`${completionButtonChevronClasses} px-2 border-l ${completionButtonBorderClass}`}
                                                 title={t('tasks.setInProgress', 'Set in progress')}
                                             >
-                                                <PlayCircleIcon className="h-4 w-4" />
+                                                <PlayIcon className="h-4 w-4" />
                                             </button>
                                         )}
                                         {isTaskInProgress && (
@@ -802,11 +814,11 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                 }}
                                                 className={`w-full px-3 py-2 text-left text-sm rounded-t-lg flex items-center gap-2 ${
                                                     task.status === 'not_started' || task.status === 0
-                                                        ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-medium'
+                                                        ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-semibold border-l-2 border-gray-500 dark:border-gray-400'
                                                         : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
                                                 }`}
                                             >
-                                                <PauseCircleIcon className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                                                <PauseCircleIcon className={`h-4 w-4 ${task.status === 'not_started' || task.status === 0 ? 'text-gray-600 dark:text-gray-300' : 'text-gray-500 dark:text-gray-400'}`} />
                                                 <span className="flex-1">{t('task.status.notStarted', 'Not started')}</span>
                                             </button>
                                             <button
@@ -826,11 +838,11 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                 }}
                                                 className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 ${
                                                     task.status === 'in_progress' || task.status === 1
-                                                        ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-medium'
+                                                        ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-900 dark:text-blue-100 font-semibold border-l-2 border-blue-500 dark:border-blue-400'
                                                         : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
                                                 }`}
                                             >
-                                                <PlayCircleIcon className="h-4 w-4 text-blue-500 dark:text-blue-400" />
+                                                <PlayIcon className={`h-4 w-4 ${task.status === 'in_progress' || task.status === 1 ? 'text-blue-600 dark:text-blue-300' : 'text-blue-500 dark:text-blue-400'}`} />
                                                 <span className="flex-1">{t('task.status.inProgress', 'In progress')}</span>
                                             </button>
                                             <button
@@ -851,12 +863,12 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                 }}
                                                 className={`w-full px-3 py-2 text-left text-sm rounded-b-lg flex items-center gap-2 ${
                                                     task.status === 'done' || task.status === 2
-                                                        ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-medium'
+                                                        ? 'bg-green-100 dark:bg-green-900/50 text-green-900 dark:text-green-100 font-semibold border-l-2 border-green-500 dark:border-green-400'
                                                         : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
                                                 }`}
                                                 disabled={isCompletingTask}
                                             >
-                                                <CheckIcon className="h-4 w-4 text-green-500 dark:text-green-400" />
+                                                <CheckIcon className={`h-4 w-4 ${task.status === 'done' || task.status === 2 ? 'text-green-600 dark:text-green-300' : 'text-green-500 dark:text-green-400'}`} />
                                                 <span className="flex-1">{t('task.status.setAsDone', 'Set as done')}</span>
                                             </button>
                                         </div>
@@ -1005,35 +1017,31 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 
                         {onToggleCompletion && (
                             <div
-                                className={`mt-3 relative transition-opacity duration-200 ${
-                                    task.habit_mode
-                                        ? 'opacity-0 group-hover:opacity-100'
-                                        : isTaskInProgress
-                                        ? 'opacity-100'
-                                        : 'opacity-0 group-hover:opacity-100'
-                                }`}
+                                className="mt-2 relative"
                                 ref={mobileCompletionMenuRef}
                             >
                                 <div
-                                    className={`inline-flex w-full items-stretch rounded-full border ${completionButtonBorderClass} overflow-hidden`}
+                                    className={`inline-flex items-stretch rounded-full border ${completionButtonBorderClass} overflow-hidden text-xs`}
                                 >
                                     <button
                                         type="button"
                                         onClick={(isTaskInProgress || !isTaskCompleted && (task.status === 'not_started' || task.status === 0)) ? (e) => { e.preventDefault(); e.stopPropagation(); } : handleCompletionClick}
-                                        className={`${completionButtonMainClasses} px-4 py-2 justify-center flex-1`}
+                                        className={`${completionButtonMainClasses} px-2 py-1`}
                                     >
-                                        <CompletionIcon className="h-4 w-4" />
-                                        {isTaskCompleted
-                                            ? t('tasks.done', 'Done')
-                                            : isTaskInProgress
-                                            ? t(
-                                                  'tasks.inProgress',
-                                                  'In Progress'
-                                              )
-                                            : t(
-                                                  'tasks.notStarted',
-                                                  'Not Started'
-                                              )}
+                                        <CompletionIcon className="h-3.5 w-3.5" />
+                                        <span className="ml-1">
+                                            {isTaskCompleted
+                                                ? t('tasks.done', 'Done')
+                                                : isTaskInProgress
+                                                ? t(
+                                                      'tasks.inProgress',
+                                                      'In Progress'
+                                                  )
+                                                : t(
+                                                      'tasks.notStarted',
+                                                      'Not Started'
+                                                  )}
+                                        </span>
                                     </button>
                                     {!isTaskCompleted && (task.status === 'not_started' || task.status === 0) && (
                                         <button
@@ -1050,10 +1058,10 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                     await onTaskUpdate(updatedTask);
                                                 }
                                             }}
-                                            className={`${completionButtonChevronClasses} px-3 border-l ${completionButtonBorderClass}`}
+                                            className={`${completionButtonChevronClasses} px-2 border-l ${completionButtonBorderClass}`}
                                             title={t('tasks.setInProgress', 'Set in progress')}
                                         >
-                                            <PlayCircleIcon className="h-4 w-4" />
+                                            <PlayIcon className="h-3.5 w-3.5" />
                                         </button>
                                     )}
                                     {isTaskInProgress && (
@@ -1064,11 +1072,11 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                 e.stopPropagation();
                                                 handleCompletionClick(e);
                                             }}
-                                            className={`${isCompletingTask ? 'bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400' : completionButtonChevronClasses} px-3 border-l ${completionButtonBorderClass} transition-all duration-300`}
+                                            className={`${isCompletingTask ? 'bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400' : completionButtonChevronClasses} px-2 border-l ${completionButtonBorderClass} transition-all duration-300`}
                                             title={t('tasks.markAsDone', 'Mark as done')}
                                             disabled={isCompletingTask}
                                         >
-                                            <CheckIcon className={`h-4 w-4 transition-all duration-300 ${isCompletingTask ? 'scale-125 text-green-600 dark:text-green-400' : ''}`} />
+                                            <CheckIcon className={`h-3.5 w-3.5 transition-all duration-300 ${isCompletingTask ? 'scale-125 text-green-600 dark:text-green-400' : ''}`} />
                                         </button>
                                     )}
                                     <button
@@ -1082,13 +1090,13 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                     : 'mobile'
                                             );
                                         }}
-                                        className={`${completionButtonChevronClasses} px-3 border-l ${completionButtonBorderClass}`}
+                                        className={`${completionButtonChevronClasses} px-2 border-l ${completionButtonBorderClass}`}
                                         aria-haspopup="menu"
                                         aria-expanded={
                                             completionMenuOpen === 'mobile'
                                         }
                                     >
-                                        <ChevronDownIcon className="h-4 w-4" />
+                                        <ChevronDownIcon className="h-3.5 w-3.5" />
                                     </button>
                                 </div>
                                 {completionMenuOpen === 'mobile' && (
@@ -1109,11 +1117,11 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                             }}
                                             className={`w-full px-3 py-2 text-left text-sm rounded-t-lg flex items-center gap-2 ${
                                                 task.status === 'not_started' || task.status === 0
-                                                    ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-medium'
+                                                    ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-semibold border-l-2 border-gray-500 dark:border-gray-400'
                                                     : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
                                             }`}
                                         >
-                                            <PauseCircleIcon className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                                            <PauseCircleIcon className={`h-4 w-4 ${task.status === 'not_started' || task.status === 0 ? 'text-gray-600 dark:text-gray-300' : 'text-gray-500 dark:text-gray-400'}`} />
                                             <span className="flex-1">{t('task.status.notStarted', 'Not started')}</span>
                                         </button>
                                         <button
@@ -1133,11 +1141,11 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                             }}
                                             className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 ${
                                                 task.status === 'in_progress' || task.status === 1
-                                                    ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-medium'
+                                                    ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-900 dark:text-blue-100 font-semibold border-l-2 border-blue-500 dark:border-blue-400'
                                                     : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
                                             }`}
                                         >
-                                            <PlayCircleIcon className="h-4 w-4 text-blue-500 dark:text-blue-400" />
+                                            <PlayIcon className={`h-4 w-4 ${task.status === 'in_progress' || task.status === 1 ? 'text-blue-600 dark:text-blue-300' : 'text-blue-500 dark:text-blue-400'}`} />
                                             <span className="flex-1">{t('task.status.inProgress', 'In progress')}</span>
                                         </button>
                                         <button
@@ -1158,12 +1166,12 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                             }}
                                             className={`w-full px-3 py-2 text-left text-sm rounded-b-lg flex items-center gap-2 ${
                                                 task.status === 'done' || task.status === 2
-                                                    ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-medium'
+                                                    ? 'bg-green-100 dark:bg-green-900/50 text-green-900 dark:text-green-100 font-semibold border-l-2 border-green-500 dark:border-green-400'
                                                     : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
                                             }`}
                                             disabled={isCompletingTask}
                                         >
-                                            <CheckIcon className="h-4 w-4 text-green-500 dark:text-green-400" />
+                                            <CheckIcon className={`h-4 w-4 ${task.status === 'done' || task.status === 2 ? 'text-green-600 dark:text-green-300' : 'text-green-500 dark:text-green-400'}`} />
                                             <span className="flex-1">{t('task.status.setAsDone', 'Set as done')}</span>
                                         </button>
                                     </div>
