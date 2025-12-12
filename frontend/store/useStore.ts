@@ -108,6 +108,17 @@ interface ModalStore {
     isTaskModalOpen: (taskId: number) => boolean;
 }
 
+interface HabitsStore {
+    habits: Task[];
+    isLoading: boolean;
+    isError: boolean;
+    setHabits: (habits: Task[]) => void;
+    setLoading: (isLoading: boolean) => void;
+    setError: (isError: boolean) => void;
+    loadHabits: () => Promise<void>;
+    logCompletion: (habitUid: string, completedAt?: Date) => Promise<void>;
+}
+
 interface StoreState {
     notesStore: NotesStore;
     areasStore: AreasStore;
@@ -116,6 +127,7 @@ interface StoreState {
     tasksStore: TasksStore;
     inboxStore: InboxStore;
     modalStore: ModalStore;
+    habitsStore: HabitsStore;
 }
 
 export const useStore = create<StoreState>((set: any) => ({
@@ -706,6 +718,67 @@ export const useStore = create<StoreState>((set: any) => ({
         isTaskModalOpen: (taskId: number) => {
             const state = useStore.getState();
             return state.modalStore.openTaskModalId === taskId;
+        },
+    },
+    habitsStore: {
+        habits: [],
+        isLoading: false,
+        isError: false,
+        setHabits: (habits) =>
+            set((state) => ({ habitsStore: { ...state.habitsStore, habits } })),
+        setLoading: (isLoading) =>
+            set((state) => ({
+                habitsStore: { ...state.habitsStore, isLoading },
+            })),
+        setError: (isError) =>
+            set((state) => ({ habitsStore: { ...state.habitsStore, isError } })),
+        loadHabits: async () => {
+            const { fetchHabits } = await import('../utils/habitsService');
+            set((state) => ({
+                habitsStore: {
+                    ...state.habitsStore,
+                    isLoading: true,
+                    isError: false,
+                },
+            }));
+            try {
+                const habits = await fetchHabits();
+                set((state) => ({
+                    habitsStore: {
+                        ...state.habitsStore,
+                        habits,
+                        isLoading: false,
+                    },
+                }));
+            } catch (error) {
+                console.error('Failed to load habits:', error);
+                set((state) => ({
+                    habitsStore: {
+                        ...state.habitsStore,
+                        isError: true,
+                        isLoading: false,
+                    },
+                }));
+            }
+        },
+        logCompletion: async (habitUid, completedAt) => {
+            const { logHabitCompletion } = await import(
+                '../utils/habitsService'
+            );
+            try {
+                const updated = await logHabitCompletion(habitUid, completedAt);
+                set((state) => ({
+                    habitsStore: {
+                        ...state.habitsStore,
+                        habits: state.habitsStore.habits.map((h) =>
+                            h.uid === habitUid ? { ...h, ...updated.task } : h
+                        ),
+                    },
+                }));
+            } catch (error) {
+                console.error('Failed to log completion:', error);
+                throw error;
+            }
         },
     },
 }));

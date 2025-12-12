@@ -162,6 +162,48 @@ module.exports = (sequelize) => {
                 type: DataTypes.DATE,
                 allowNull: true,
             },
+            habit_mode: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: false,
+            },
+            habit_target_count: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+            },
+            habit_frequency_period: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
+            habit_streak_mode: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                defaultValue: 'calendar',
+            },
+            habit_flexibility_mode: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                defaultValue: 'flexible',
+            },
+            habit_current_streak: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                defaultValue: 0,
+            },
+            habit_best_streak: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                defaultValue: 0,
+            },
+            habit_total_completions: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                defaultValue: 0,
+            },
+            habit_last_completion_at: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
         },
         {
             tableName: 'tasks',
@@ -229,6 +271,22 @@ module.exports = (sequelize) => {
         MONTHLY: 'monthly',
         MONTHLY_WEEKDAY: 'monthly_weekday',
         MONTHLY_LAST_DAY: 'monthly_last_day',
+    };
+
+    Task.HABIT_FREQUENCY_PERIOD = {
+        DAILY: 'daily',
+        WEEKLY: 'weekly',
+        MONTHLY: 'monthly',
+    };
+
+    Task.HABIT_STREAK_MODE = {
+        CALENDAR: 'calendar',
+        SCHEDULED: 'scheduled',
+    };
+
+    Task.HABIT_FLEXIBILITY_MODE = {
+        STRICT: 'strict',
+        FLEXIBLE: 'flexible',
     };
 
     const getPriorityName = (priorityValue) => {

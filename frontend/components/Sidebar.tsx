@@ -7,6 +7,7 @@ import SidebarAreas from './Sidebar/SidebarAreas';
 import SidebarFooter from './Sidebar/SidebarFooter';
 import SidebarNav from './Sidebar/SidebarNav';
 import SidebarNotes from './Sidebar/SidebarNotes';
+import SidebarHabits from './Sidebar/SidebarHabits';
 import SidebarProjects from './Sidebar/SidebarProjects';
 import SidebarTags from './Sidebar/SidebarTags';
 import SidebarViews from './Sidebar/SidebarViews';
@@ -86,6 +87,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                             handleNavClick={handleNavClick}
                             openNoteModal={openNoteModal}
                             notes={notes}
+                            location={location}
+                            isDarkMode={isDarkMode}
+                        />
+                        <SidebarHabits
+                            handleNavClick={handleNavClick}
                             location={location}
                             isDarkMode={isDarkMode}
                         />

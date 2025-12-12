@@ -249,7 +249,11 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
     const handleTaskClick = () => {
         if (task.uid) {
-            navigate(`/task/${task.uid}`);
+            if (task.habit_mode) {
+                navigate(`/habit/${task.uid}`);
+            } else {
+                navigate(`/task/${task.uid}`);
+            }
         }
     };
 

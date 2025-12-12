@@ -10,7 +10,7 @@ import {
     TrashIcon,
     EllipsisVerticalIcon,
 } from '@heroicons/react/24/outline';
-import { TagIcon, FolderIcon } from '@heroicons/react/24/solid';
+import { TagIcon, FolderIcon, FireIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
 import TaskPriorityIcon from './TaskPriorityIcon';
 import { Project } from '../../entities/Project';
@@ -219,7 +219,10 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                             <div className="w-full">
                                 {/* Full width title that wraps */}
                                 <div className="w-full mb-0.5">
-                                    <span className="text-sm font-medium text-gray-900 dark:text-gray-300 break-words tracking-tight">
+                                    <span className="text-sm font-medium text-gray-900 dark:text-gray-300 break-words tracking-tight inline-flex items-center gap-1.5">
+                                        {task.habit_mode && (
+                                            <FireIcon className="h-4 w-4 text-orange-500 flex-shrink-0" title="Habit" />
+                                        )}
                                         {task.original_name || task.name}
                                     </span>
                                 </div>
@@ -305,7 +308,10 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                 )}
                             </div>
                         ) : (
-                            <div className="flex items-center">
+                            <div className="flex items-center gap-1.5">
+                                {task.habit_mode && (
+                                    <FireIcon className="h-4 w-4 text-orange-500 flex-shrink-0" title="Habit" />
+                                )}
                                 <span className="text-md font-medium text-gray-900 dark:text-gray-300">
                                     {task.original_name || task.name}
                                 </span>
@@ -427,7 +433,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         )}
                     </div>
                 </div>
-                {!isUpcomingView && (
+                {!isUpcomingView && !task.habit_mode && (
                     <div className="flex items-center justify-start md:justify-end space-x-1">
                         {/* Button Group - All buttons together */}
                         <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
@@ -582,7 +588,10 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                     <div className="ml-3 flex-1 min-w-0">
                         {/* Task Title */}
                         <div className="font-medium text-md text-gray-900 dark:text-gray-300">
-                            <span className="break-words">
+                            <span className="break-words inline-flex items-center gap-1.5">
+                                {task.habit_mode && (
+                                    <FireIcon className="h-4 w-4 text-orange-500 flex-shrink-0" title="Habit" />
+                                )}
                                 {task.original_name || task.name}
                             </span>
                         </div>
@@ -699,30 +708,31 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                     </div>
 
                     {/* Mobile 3-dot dropdown menu */}
-                    <div className="flex items-center ml-2 relative">
-                        <button
-                            ref={buttonRef}
-                            type="button"
-                            data-dropdown-button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                const newOpenState = !isDropdownOpen;
+                    {!task.habit_mode && (
+                        <div className="flex items-center ml-2 relative">
+                            <button
+                                ref={buttonRef}
+                                type="button"
+                                data-dropdown-button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    const newOpenState = !isDropdownOpen;
 
-                                // Close other dropdowns when opening this one
-                                if (newOpenState) {
-                                    document.dispatchEvent(
-                                        new CustomEvent('closeOtherDropdowns', {
-                                            detail: { dropdownId },
-                                        })
-                                    );
-                                }
+                                    // Close other dropdowns when opening this one
+                                    if (newOpenState) {
+                                        document.dispatchEvent(
+                                            new CustomEvent('closeOtherDropdowns', {
+                                                detail: { dropdownId },
+                                            })
+                                        );
+                                    }
 
-                                setIsDropdownOpen(newOpenState);
-                            }}
-                            className="flex items-center justify-center w-8 h-8 rounded-full transition-all duration-200 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
-                        >
-                            <EllipsisVerticalIcon className="h-5 w-5" />
-                        </button>
+                                    setIsDropdownOpen(newOpenState);
+                                }}
+                                className="flex items-center justify-center w-8 h-8 rounded-full transition-all duration-200 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                            >
+                                <EllipsisVerticalIcon className="h-5 w-5" />
+                            </button>
 
                         {/* Dropdown Menu - Positioned Relatively */}
                         {isDropdownOpen && (
@@ -866,7 +876,8 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                 </div>
                             </div>
                         )}
-                    </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
