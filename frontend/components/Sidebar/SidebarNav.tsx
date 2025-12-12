@@ -30,6 +30,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
     const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({
         backups: false,
         calendar: false,
+        habits: false,
     });
 
     const inboxItemsCount = store.inboxStore.pagination.total;

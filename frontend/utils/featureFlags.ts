@@ -3,6 +3,7 @@ import { getApiPath } from '../config/paths';
 export interface FeatureFlags {
     backups: boolean;
     calendar: boolean;
+    habits: boolean;
 }
 
 let cachedFeatureFlags: FeatureFlags | null = null;
@@ -22,17 +23,27 @@ export const getFeatureFlags = async (): Promise<FeatureFlags> => {
             return {
                 backups: false,
                 calendar: false,
+                habits: false,
             };
         }
 
         const data = await response.json();
-        cachedFeatureFlags = data.featureFlags;
+        const defaultFlags: FeatureFlags = {
+            backups: false,
+            calendar: false,
+            habits: false,
+        };
+        cachedFeatureFlags = {
+            ...defaultFlags,
+            ...data.featureFlags,
+        };
         return cachedFeatureFlags;
     } catch (error) {
         console.error('Error fetching feature flags:', error);
         return {
             backups: false,
             calendar: false,
+            habits: false,
         };
     }
 };

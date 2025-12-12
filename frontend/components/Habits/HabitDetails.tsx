@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Task } from '../../entities/Task';
 import {
@@ -54,6 +54,84 @@ const HabitDetails: React.FC = () => {
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
+    };
+
+    const completionCountMap = useMemo(() => {
+        const map = new Map<string, number>();
+        completions.forEach((completion) => {
+            const key = formatDateKey(new Date(completion.completed_at));
+            map.set(key, (map.get(key) || 0) + 1);
+        });
+        return map;
+    }, [completions]);
+
+    const baseChartData = useMemo(() => {
+        const days = 14;
+        const data: { date: string; count: number }[] = [];
+        for (let i = days - 1; i >= 0; i--) {
+            const date = new Date();
+            date.setDate(date.getDate() - i);
+            const key = formatDateKey(date);
+            data.push({
+                date: key,
+                count: completionCountMap.get(key) || 0,
+            });
+        }
+        return data;
+    }, [completionCountMap]);
+
+    const chartSeries = useMemo(() => {
+        const currentStreakData = baseChartData.map(({ date, count }) => ({
+            date,
+            value: count > 0 ? 1 : 0,
+        }));
+
+        let runningStreak = 0;
+        const streakProgressData = baseChartData.map(({ date, count }) => {
+            runningStreak = count > 0 ? runningStreak + 1 : 0;
+            return { date, value: runningStreak };
+        });
+
+        let runningBest = 0;
+        const bestStreakData = streakProgressData.map(({ date, value }) => {
+            runningBest = Math.max(runningBest, value);
+            return { date, value: runningBest };
+        });
+
+        let cumulativeTotal = 0;
+        const totalCompletionsData = baseChartData.map(({ date, count }) => {
+            cumulativeTotal += count;
+            return { date, value: cumulativeTotal };
+        });
+
+        return {
+            current: currentStreakData,
+            best: bestStreakData,
+            total: totalCompletionsData,
+        };
+    }, [baseChartData]);
+
+    const renderMiniChart = (data: { date: string; value: number }[], colorClass: string) => {
+        const maxValue = Math.max(...data.map((d) => d.value), 1);
+        return (
+            <div className="mt-4 h-16 flex items-end gap-1">
+                {data.map(({ date, value }) => {
+                    const heightPercent = (value / maxValue) * 100;
+                    const normalizedHeight = Math.max(6, heightPercent);
+                    return (
+                        <div
+                            key={date}
+                            className={`flex-1 rounded-t ${colorClass}`}
+                            style={{
+                                height: `${normalizedHeight}%`,
+                                opacity: value > 0 ? 1 : 0.25,
+                            }}
+                            title={`${date}: ${value}`}
+                        ></div>
+                    );
+                })}
+            </div>
+        );
     };
 
     useEffect(() => {
@@ -386,7 +464,7 @@ const HabitDetails: React.FC = () => {
 
         const dayLabels = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
         const calendarDays = [];
-        let currentDate = new Date(firstDay);
+        const currentDate = new Date(firstDay);
 
         while (currentDate <= lastDay) {
             const dateStr = formatDateKey(currentDate);
@@ -678,6 +756,7 @@ const HabitDetails: React.FC = () => {
                         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                             {t('habits.days', 'days')}
                         </p>
+                        {renderMiniChart(chartSeries.current, 'bg-green-500')}
                     </div>
 
                     {/* Best Streak */}
@@ -691,6 +770,7 @@ const HabitDetails: React.FC = () => {
                         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                             {t('habits.days', 'days')}
                         </p>
+                        {renderMiniChart(chartSeries.best, 'bg-blue-500')}
                     </div>
 
                     {/* Total Completions */}
@@ -704,6 +784,7 @@ const HabitDetails: React.FC = () => {
                         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                             {t('habits.times', 'times')}
                         </p>
+                        {renderMiniChart(chartSeries.total, 'bg-purple-500')}
                     </div>
                 </div>
             </div>

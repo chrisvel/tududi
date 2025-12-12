@@ -117,6 +117,7 @@ interface HabitsStore {
     setError: (isError: boolean) => void;
     loadHabits: () => Promise<void>;
     logCompletion: (habitUid: string, completedAt?: Date) => Promise<void>;
+    removeTodayCompletion: (habitUid: string) => Promise<void>;
 }
 
 interface StoreState {
@@ -777,6 +778,50 @@ export const useStore = create<StoreState>((set: any) => ({
                 }));
             } catch (error) {
                 console.error('Failed to log completion:', error);
+                throw error;
+            }
+        },
+        removeTodayCompletion: async (habitUid) => {
+            const {
+                fetchHabitCompletions,
+                deleteHabitCompletion,
+            } = await import('../utils/habitsService');
+            try {
+                const startDate = new Date();
+                startDate.setHours(0, 0, 0, 0);
+                const endDate = new Date();
+                endDate.setHours(23, 59, 59, 999);
+                const completions = await fetchHabitCompletions(
+                    habitUid,
+                    startDate,
+                    endDate
+                );
+                const today = new Date();
+                const targetCompletion = completions.find((completion) => {
+                    const completionDate = new Date(completion.completed_at);
+                    return (
+                        completionDate.getFullYear() === today.getFullYear() &&
+                        completionDate.getMonth() === today.getMonth() &&
+                        completionDate.getDate() === today.getDate()
+                    );
+                });
+                if (!targetCompletion) {
+                    return;
+                }
+                const result = await deleteHabitCompletion(
+                    habitUid,
+                    targetCompletion.id
+                );
+                set((state) => ({
+                    habitsStore: {
+                        ...state.habitsStore,
+                        habits: state.habitsStore.habits.map((h) =>
+                            h.uid === habitUid ? { ...h, ...result.task } : h
+                        ),
+                    },
+                }));
+            } catch (error) {
+                console.error('Failed to remove habit completion:', error);
                 throw error;
             }
         },

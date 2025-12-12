@@ -42,6 +42,7 @@ const Navbar: React.FC<NavbarProps> = ({
     const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({
         backups: false,
         calendar: false,
+        habits: false,
     });
     const dropdownRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();

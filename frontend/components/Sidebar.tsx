@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Area } from '../entities/Area';
 import { Note } from '../entities/Note';
@@ -11,6 +11,7 @@ import SidebarHabits from './Sidebar/SidebarHabits';
 import SidebarProjects from './Sidebar/SidebarProjects';
 import SidebarTags from './Sidebar/SidebarTags';
 import SidebarViews from './Sidebar/SidebarViews';
+import { getFeatureFlags, FeatureFlags } from '../utils/featureFlags';
 
 interface SidebarProps {
     isSidebarOpen: boolean;
@@ -47,6 +48,11 @@ const Sidebar: React.FC<SidebarProps> = ({
     const location = useLocation();
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({
+        backups: false,
+        calendar: false,
+        habits: false,
+    });
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
@@ -58,6 +64,15 @@ const Sidebar: React.FC<SidebarProps> = ({
             setIsSidebarOpen(false);
         }
     };
+
+    useEffect(() => {
+        const fetchFlags = async () => {
+            const flags = await getFeatureFlags();
+            setFeatureFlags(flags);
+        };
+
+        fetchFlags();
+    }, []);
 
     return (
         <div
@@ -90,11 +105,13 @@ const Sidebar: React.FC<SidebarProps> = ({
                             location={location}
                             isDarkMode={isDarkMode}
                         />
-                        <SidebarHabits
-                            handleNavClick={handleNavClick}
-                            location={location}
-                            isDarkMode={isDarkMode}
-                        />
+                        {featureFlags.habits && (
+                            <SidebarHabits
+                                handleNavClick={handleNavClick}
+                                location={location}
+                                isDarkMode={isDarkMode}
+                            />
+                        )}
                         <SidebarAreas
                             handleNavClick={handleNavClick}
                             areas={areas}
