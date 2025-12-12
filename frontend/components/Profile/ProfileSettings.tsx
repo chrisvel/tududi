@@ -213,7 +213,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
     }, [showErrorToast]);
 
     useEffect(() => {
-        if (activeTab === 'apiKeys' && !apiKeysLoaded) {
+        if (activeTab === 'api-keys' && !apiKeysLoaded) {
             loadApiKeys();
         }
     }, [activeTab, apiKeysLoaded, loadApiKeys]);
