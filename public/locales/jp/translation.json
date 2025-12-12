@@ -150,7 +150,8 @@
     "planned": "計画中",
     "open": "開く",
     "completed": "完了",
-    "noCompletedTasksToday": "本日完了したタスクはありません。"
+    "noCompletedTasksToday": "本日完了したタスクはありません。",
+    "markAsDone": "Mark as done"
   },
   "timeline": {
     "activityTimeline": "アクティビティタイムライン",

@@ -150,7 +150,8 @@
     "planned": "Заплановано",
     "open": "Відкрити",
     "completed": "Завершено",
-    "noCompletedTasksToday": "Сьогодні немає завершених завдань."
+    "noCompletedTasksToday": "Сьогодні немає завершених завдань.",
+    "markAsDone": "Mark as done"
   },
   "timeline": {
     "activityTimeline": "Хронологія Активності",

@@ -150,7 +150,8 @@
     "planned": "Planlagt",
     "open": "Åpne",
     "completed": "Fullført",
-    "noCompletedTasksToday": "Ingen fullførte oppgaver i dag."
+    "noCompletedTasksToday": "Ingen fullførte oppgaver i dag.",
+    "markAsDone": "Mark as done"
   },
   "timeline": {
     "activityTimeline": "Aktivitetslinje",

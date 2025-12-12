@@ -150,7 +150,8 @@
     "planned": "계획됨",
     "open": "열기",
     "completed": "완료됨",
-    "noCompletedTasksToday": "오늘 완료된 작업이 없습니다."
+    "noCompletedTasksToday": "오늘 완료된 작업이 없습니다.",
+    "markAsDone": "Mark as done"
   },
   "timeline": {
     "activityTimeline": "활동 타임라인",

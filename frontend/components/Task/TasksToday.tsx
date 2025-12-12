@@ -386,7 +386,7 @@ const TasksToday: React.FC = () => {
                             return (
                                 <div
                                     key={habitKey}
-                                    className="flex items-center justify-between px-4 py-3 gap-3"
+                                    className="group flex items-center justify-between px-4 py-3 gap-3"
                                 >
                                     <button
                                         type="button"
@@ -408,31 +408,25 @@ const TasksToday: React.FC = () => {
                                             )}
                                         </p>
                                     </button>
-                                    <button
-                                        onClick={() => handleHabitToggle(habit)}
-                                        disabled={isProcessing}
-                                        className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm font-medium transition ${
-                                            variant === 'planned'
-                                                ? 'border-green-200 text-green-600 hover:bg-green-50 dark:border-green-900 dark:text-green-400 dark:hover:bg-green-900/40'
-                                                : 'border-yellow-200 text-yellow-600 hover:bg-yellow-50 dark:border-yellow-900 dark:text-yellow-400 dark:hover:bg-yellow-900/40'
-                                        } ${
-                                            isProcessing
-                                                ? 'opacity-60 cursor-not-allowed'
-                                                : ''
-                                        }`}
-                                    >
-                                        {variant === 'planned' ? (
-                                            <>
-                                                <CheckCircleIcon className="h-4 w-4" />
-                                                {t('habits.complete', 'Complete')}
-                                            </>
-                                        ) : (
-                                            <>
-                                                <ArrowPathIcon className="h-4 w-4" />
-                                                {t('common.undo', 'Undo')}
-                                            </>
-                                        )}
-                                    </button>
+                                    <div className="flex items-center gap-2 opacity-0 group hover:opacity-100 transition-opacity duration-200">
+                                        <button
+                                            onClick={() => handleHabitToggle(habit)}
+                                            disabled={isProcessing}
+                                            className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm font-medium transition ${
+                                                variant === 'planned'
+                                                    ? 'border-green-200 text-green-600 hover:bg-green-50 dark:border-green-900 dark:text-green-400 dark:hover:bg-green-900/40'
+                                                    : 'border-yellow-200 text-yellow-600 hover:bg-yellow-50 dark:border-yellow-900 dark:text-yellow-400 dark:hover:bg-yellow-900/40'
+                                            } ${
+                                                isProcessing
+                                                    ? 'opacity-60 cursor-not-allowed'
+                                                    : ''
+                                            }`}
+                                        >
+                                            {variant === 'planned'
+                                                ? t('habits.complete', 'Complete')
+                                                : t('common.undo', 'Undo')}
+                                        </button>
+                                    </div>
                                 </div>
                             );
                         })}

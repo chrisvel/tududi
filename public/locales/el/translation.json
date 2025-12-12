@@ -365,7 +365,8 @@
     "planned": "Προγραμματισμένο",
     "open": "Άνοιγμα",
     "completed": "Ολοκληρώθηκε",
-    "noCompletedTasksToday": "Καμία ολοκληρωμένη εργασία σήμερα."
+    "noCompletedTasksToday": "Καμία ολοκληρωμένη εργασία σήμερα.",
+    "markAsDone": "Mark as done"
   },
   "timeline": {
     "activityTimeline": "Χρονοδιάγραμμα Δραστηριότητας",

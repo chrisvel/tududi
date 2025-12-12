@@ -150,7 +150,8 @@
     "planned": "Direncanakan",
     "open": "Buka",
     "completed": "Selesai",
-    "noCompletedTasksToday": "Tidak ada tugas yang diselesaikan hari ini."
+    "noCompletedTasksToday": "Tidak ada tugas yang diselesaikan hari ini.",
+    "markAsDone": "Mark as done"
   },
   "timeline": {
     "activityTimeline": "Garis Waktu Aktivitas",

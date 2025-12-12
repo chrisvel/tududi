@@ -61,10 +61,10 @@ const TaskSubtasksCard: React.FC<TaskSubtasksCardProps> = ({
                     {subtasks.map((subtask: Task) => (
                         <div
                             key={subtask.id}
-                            className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 transition-all duration-200 ${
+                            className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 border transition-all duration-200 ${
                                 subtask.status === 'in_progress' ||
                                 subtask.status === 1
-                                    ? 'border-green-400/60 dark:border-green-500/60'
+                                    ? 'border-blue-500/60 dark:border-blue-600/60'
                                     : 'border-gray-50 dark:border-gray-800'
                             }`}
                         >

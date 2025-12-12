@@ -150,7 +150,8 @@
     "planned": "Planificat",
     "open": "Deschide",
     "completed": "Finalizat",
-    "noCompletedTasksToday": "Nicio sarcină finalizată astăzi."
+    "noCompletedTasksToday": "Nicio sarcină finalizată astăzi.",
+    "markAsDone": "Mark as done"
   },
   "timeline": {
     "activityTimeline": "Cronologia activităților",

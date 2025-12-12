@@ -150,7 +150,8 @@
     "planned": "Planerad",
     "open": "Öppna",
     "completed": "Avslutad",
-    "noCompletedTasksToday": "Inga slutförda uppgifter idag."
+    "noCompletedTasksToday": "Inga slutförda uppgifter idag.",
+    "markAsDone": "Mark as done"
   },
   "timeline": {
     "activityTimeline": "Aktivitetslinje",
