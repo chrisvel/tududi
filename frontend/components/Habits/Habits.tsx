@@ -1,9 +1,8 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../store/useStore';
 import { Task } from '../../entities/Task';
 import HabitCard from './HabitCard';
-import HabitModal from './HabitModal';
 import { PlusIcon, FireIcon, CheckCircleIcon, ChartBarIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 
@@ -13,16 +12,13 @@ const Habits: React.FC = () => {
     const { habits, isLoading, loadHabits, logCompletion } = useStore(
         (state) => state.habitsStore
     );
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedHabit, setSelectedHabit] = useState<Task | null>(null);
 
     useEffect(() => {
         loadHabits();
     }, [loadHabits]);
 
     const handleCreateHabit = () => {
-        setSelectedHabit(null);
-        setIsModalOpen(true);
+        navigate('/habit/new');
     };
 
     const handleViewHabit = (habit: Task) => {
@@ -179,15 +175,6 @@ const Habits: React.FC = () => {
                         </div>
                     </div>
                 </>
-            )}
-
-            {isModalOpen && (
-                <HabitModal
-                    isOpen={isModalOpen}
-                    onClose={() => setIsModalOpen(false)}
-                    habit={selectedHabit}
-                    onSave={loadHabits}
-                />
             )}
         </div>
     );

@@ -7,9 +7,11 @@ import {
     deleteHabitCompletion,
     logHabitCompletion,
     updateHabit,
+    createHabit,
+    deleteHabit,
     HabitCompletion,
 } from '../../utils/habitsService';
-import { FireIcon, ArrowLeftIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import { FireIcon, ArrowLeftIcon, CheckCircleIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 
 const mapHabitToEditableValues = (task: Task) => ({
@@ -137,6 +139,11 @@ const HabitDetails: React.FC = () => {
     useEffect(() => {
         loadHabit();
         loadCompletions();
+
+        // Auto-start editing name for new habits
+        if (isNewHabit) {
+            setEditingField('name');
+        }
     }, [uid]);
 
     useEffect(() => {
@@ -157,16 +164,36 @@ const HabitDetails: React.FC = () => {
         }
     }, [editingField]);
 
+    const isNewHabit = uid === 'new';
+
     const loadHabit = async () => {
         try {
             setLoading(true);
-            const habits = await fetchHabits();
-            const foundHabit = habits.find((h) => h.uid === uid);
-            if (foundHabit) {
-                setHabit(foundHabit);
-                setEditableValues(mapHabitToEditableValues(foundHabit));
+
+            if (isNewHabit) {
+                // Initialize new habit with default values
+                const newHabit: Partial<Task> = {
+                    name: '',
+                    habit_mode: true,
+                    habit_target_count: 1,
+                    habit_frequency_period: 'daily',
+                    habit_streak_mode: 'calendar',
+                    habit_flexibility_mode: 'flexible',
+                    habit_current_streak: 0,
+                    habit_best_streak: 0,
+                    habit_total_completions: 0,
+                };
+                setHabit(newHabit as Task);
+                setEditableValues(mapHabitToEditableValues(newHabit as Task));
             } else {
-                navigate('/habits');
+                const habits = await fetchHabits();
+                const foundHabit = habits.find((h) => h.uid === uid);
+                if (foundHabit) {
+                    setHabit(foundHabit);
+                    setEditableValues(mapHabitToEditableValues(foundHabit));
+                } else {
+                    navigate('/habits');
+                }
             }
         } catch (error) {
             console.error('Failed to load habit:', error);
@@ -176,7 +203,7 @@ const HabitDetails: React.FC = () => {
     };
 
     const loadCompletions = async () => {
-        if (!uid) return [];
+        if (!uid || isNewHabit) return [];
         try {
             const startDate = new Date();
             startDate.setHours(0, 0, 0, 0);
@@ -198,8 +225,56 @@ const HabitDetails: React.FC = () => {
         await handleToggleDay(new Date());
     };
 
+    const handleSaveNewHabit = async () => {
+        if (!editableValues.name?.trim()) {
+            alert(t('habits.nameRequired', 'Please enter a habit name'));
+            return;
+        }
+
+        try {
+            const habitData: Partial<Task> = {
+                name: editableValues.name.trim(),
+                habit_mode: true,
+                habit_target_count: editableValues.habit_target_count,
+                habit_frequency_period: editableValues.habit_frequency_period,
+                habit_streak_mode: editableValues.habit_streak_mode,
+                habit_flexibility_mode: editableValues.habit_flexibility_mode,
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+                today: true,
+            };
+
+            const created = await createHabit(habitData);
+            navigate(`/habit/${created.uid}`);
+        } catch (error) {
+            console.error('Failed to create habit:', error);
+            alert(t('habits.createError', 'Failed to create habit'));
+        }
+    };
+
+    const handleDeleteHabit = async () => {
+        if (!habit?.uid) return;
+        if (!confirm(t('habits.confirmDelete', 'Are you sure you want to delete this habit?'))) {
+            return;
+        }
+
+        try {
+            await deleteHabit(habit.uid);
+            navigate('/habits');
+        } catch (error) {
+            console.error('Failed to delete habit:', error);
+            alert(t('habits.deleteError', 'Failed to delete habit'));
+        }
+    };
+
     const saveField = useCallback(
         async (field: EditableField) => {
+            if (isNewHabit) {
+                // For new habits, just update local state
+                setEditingField(null);
+                return;
+            }
+
             if (!habit?.uid) {
                 setEditingField(null);
                 return;
@@ -292,7 +367,7 @@ const HabitDetails: React.FC = () => {
                 setEditingField((prev) => (prev === field ? null : prev));
             }
         },
-        [habit, editableValues]
+        [habit, editableValues, isNewHabit]
     );
 
     const handleCancelField = (field: EditableField) => {
@@ -566,6 +641,7 @@ const HabitDetails: React.FC = () => {
                                     }
                                     onKeyDown={(e) => handleFieldKeyDown(e, 'name')}
                                     className="w-full bg-transparent border-b border-gray-300 dark:border-gray-700 text-3xl font-bold text-gray-900 dark:text-white focus:outline-none"
+                                    placeholder={t('habits.namePlaceholder', 'Enter habit name...')}
                                 />
                             ) : (
                                 <button
@@ -578,13 +654,33 @@ const HabitDetails: React.FC = () => {
                             )}
                         </div>
                     </div>
-                    <button
-                        onClick={handleComplete}
-                        className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
-                    >
-                        <CheckCircleIcon className="h-5 w-5" />
-                        {t('habits.complete', 'Complete')}
-                    </button>
+                    <div className="flex gap-2">
+                        {isNewHabit ? (
+                            <button
+                                onClick={handleSaveNewHabit}
+                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                            >
+                                {t('common.save', 'Save')}
+                            </button>
+                        ) : (
+                            <>
+                                <button
+                                    onClick={handleDeleteHabit}
+                                    className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+                                >
+                                    <TrashIcon className="h-5 w-5" />
+                                    {t('common.delete', 'Delete')}
+                                </button>
+                                <button
+                                    onClick={handleComplete}
+                                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                                >
+                                    <CheckCircleIcon className="h-5 w-5" />
+                                    {t('habits.complete', 'Complete')}
+                                </button>
+                            </>
+                        )}
+                    </div>
                 </div>
             </div>
 
@@ -740,7 +836,8 @@ const HabitDetails: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Stats Grid */}
+                {/* Stats Grid - Only show for existing habits */}
+                {!isNewHabit && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:flex-1">
                     {/* Current Streak */}
                     <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
@@ -787,9 +884,11 @@ const HabitDetails: React.FC = () => {
                         {renderMiniChart(chartSeries.total, 'bg-purple-500')}
                     </div>
                 </div>
+                )}
             </div>
 
-            {/* Calendar History - Last 90 Days */}
+            {/* Calendar History - Last 90 Days - Only show for existing habits */}
+            {!isNewHabit && (
             <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-6 mb-8">
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                     {t('habits.history', 'Last 90 Days')}
@@ -822,6 +921,7 @@ const HabitDetails: React.FC = () => {
                     </div>
                 </div>
             </div>
+            )}
 
         </div>
     );
