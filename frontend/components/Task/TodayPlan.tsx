@@ -41,7 +41,8 @@ const TodayPlan: React.FC<TodayPlanProps> = ({
         );
 
         // Sort each group using multi-criteria sorting
-        const sortedInProgress = sortTasksByPriorityDueDateProject(inProgressTasks);
+        const sortedInProgress =
+            sortTasksByPriorityDueDateProject(inProgressTasks);
         const sortedOthers = sortTasksByPriorityDueDateProject(otherTasks);
 
         // Return in-progress tasks first, followed by others

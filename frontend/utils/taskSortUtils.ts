@@ -46,12 +46,8 @@ export const sortTasksByPriorityDueDateProject = (
         }
 
         // 2. Due date (earlier first, null/undefined last)
-        const aDueDate = a.due_date
-            ? new Date(a.due_date).getTime()
-            : Infinity;
-        const bDueDate = b.due_date
-            ? new Date(b.due_date).getTime()
-            : Infinity;
+        const aDueDate = a.due_date ? new Date(a.due_date).getTime() : Infinity;
+        const bDueDate = b.due_date ? new Date(b.due_date).getTime() : Infinity;
         if (aDueDate !== bDueDate) {
             return aDueDate - bDueDate;
         }

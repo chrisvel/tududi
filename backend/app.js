@@ -185,7 +185,7 @@ const registerApiRoutes = (basePath) => {
     app.use(basePath, require('./routes/quotes'));
     app.use(basePath, require('./routes/task-events'));
     app.use(basePath, require('./routes/task-attachments'));
-    app.use(basePath, require('./routes/backup'));
+    app.use(`${basePath}/backup`, require('./routes/backup'));
     app.use(`${basePath}/search`, require('./routes/search'));
     app.use(`${basePath}/views`, require('./routes/views'));
     app.use(`${basePath}/notifications`, require('./routes/notifications'));

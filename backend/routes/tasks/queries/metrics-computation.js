@@ -43,7 +43,8 @@ const getPriorityValue = (priority) => {
 
 const multiCriteriaTaskSort = (a, b) => {
     // 1. Priority
-    const priorityDiff = getPriorityValue(b.priority) - getPriorityValue(a.priority);
+    const priorityDiff =
+        getPriorityValue(b.priority) - getPriorityValue(a.priority);
     if (priorityDiff !== 0) {
         return priorityDiff;
     }
