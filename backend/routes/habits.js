@@ -77,7 +77,9 @@ router.get('/:uid/completions', requireAuth, async (req, res) => {
         }
 
         const { start_date, end_date } = req.query;
-        const startDate = start_date ? new Date(start_date) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+        const startDate = start_date
+            ? new Date(start_date)
+            : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
         const endDate = end_date ? new Date(end_date) : new Date();
 
         const completions = await RecurringCompletion.findAll({
@@ -99,39 +101,43 @@ router.get('/:uid/completions', requireAuth, async (req, res) => {
 });
 
 // DELETE /api/habits/:uid/completions/:completionId - Delete a specific completion
-router.delete('/:uid/completions/:completionId', requireAuth, async (req, res) => {
-    try {
-        const habit = await Task.findOne({
-            where: { uid: req.params.uid, user_id: req.currentUser.id },
-        });
+router.delete(
+    '/:uid/completions/:completionId',
+    requireAuth,
+    async (req, res) => {
+        try {
+            const habit = await Task.findOne({
+                where: { uid: req.params.uid, user_id: req.currentUser.id },
+            });
 
-        if (!habit || !habit.habit_mode) {
-            return res.status(404).json({ error: 'Habit not found' });
+            if (!habit || !habit.habit_mode) {
+                return res.status(404).json({ error: 'Habit not found' });
+            }
+
+            const completion = await RecurringCompletion.findOne({
+                where: {
+                    id: req.params.completionId,
+                    task_id: habit.id,
+                },
+            });
+
+            if (!completion) {
+                return res.status(404).json({ error: 'Completion not found' });
+            }
+
+            await completion.destroy();
+
+            // Recalculate streaks after deletion
+            const updates = await habitService.recalculateStreaks(habit);
+            await habit.update(updates);
+
+            res.json({ message: 'Completion deleted', task: habit });
+        } catch (error) {
+            console.error('Error deleting completion:', error);
+            res.status(500).json({ error: 'Failed to delete completion' });
         }
-
-        const completion = await RecurringCompletion.findOne({
-            where: {
-                id: req.params.completionId,
-                task_id: habit.id,
-            },
-        });
-
-        if (!completion) {
-            return res.status(404).json({ error: 'Completion not found' });
-        }
-
-        await completion.destroy();
-
-        // Recalculate streaks after deletion
-        const updates = await habitService.recalculateStreaks(habit);
-        await habit.update(updates);
-
-        res.json({ message: 'Completion deleted', task: habit });
-    } catch (error) {
-        console.error('Error deleting completion:', error);
-        res.status(500).json({ error: 'Failed to delete completion' });
     }
-});
+);
 
 // GET /api/habits/:uid/stats - Get habit statistics
 router.get('/:uid/stats', requireAuth, async (req, res) => {
@@ -145,10 +151,16 @@ router.get('/:uid/stats', requireAuth, async (req, res) => {
         }
 
         const { start_date, end_date } = req.query;
-        const startDate = start_date ? new Date(start_date) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+        const startDate = start_date
+            ? new Date(start_date)
+            : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
         const endDate = end_date ? new Date(end_date) : new Date();
 
-        const stats = await habitService.getHabitStats(habit, startDate, endDate);
+        const stats = await habitService.getHabitStats(
+            habit,
+            startDate,
+            endDate
+        );
         res.json(stats);
     } catch (error) {
         console.error('Error fetching stats:', error);

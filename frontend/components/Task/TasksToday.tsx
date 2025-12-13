@@ -298,7 +298,8 @@ const TasksToday: React.FC = () => {
     const plannedHabits = useMemo(
         () =>
             todayHabits.filter(
-                (habit) => !isHabitArchived(habit) && !isHabitCompletedToday(habit)
+                (habit) =>
+                    !isHabitArchived(habit) && !isHabitCompletedToday(habit)
             ),
         [todayHabits, isHabitCompletedToday]
     );
@@ -306,7 +307,8 @@ const TasksToday: React.FC = () => {
     const completedHabits = useMemo(
         () =>
             todayHabits.filter(
-                (habit) => !isHabitArchived(habit) && isHabitCompletedToday(habit)
+                (habit) =>
+                    !isHabitArchived(habit) && isHabitCompletedToday(habit)
             ),
         [todayHabits, isHabitCompletedToday]
     );
@@ -362,10 +364,7 @@ const TasksToday: React.FC = () => {
             if (habitsList.length === 0) return null;
             const heading =
                 variant === 'planned'
-                    ? t(
-                          'habits.plannedToday',
-                          'Habits planned for today'
-                      )
+                    ? t('habits.plannedToday', 'Habits planned for today')
                     : t(
                           'habits.completedHabitsToday',
                           'Habits completed today'
@@ -390,7 +389,9 @@ const TasksToday: React.FC = () => {
                                 >
                                     <button
                                         type="button"
-                                        onClick={() => handleHabitDetails(habit)}
+                                        onClick={() =>
+                                            handleHabitDetails(habit)
+                                        }
                                         className="flex-1 min-w-0 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded"
                                     >
                                         <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
@@ -410,7 +411,9 @@ const TasksToday: React.FC = () => {
                                     </button>
                                     <div className="flex items-center gap-2 opacity-0 group hover:opacity-100 transition-opacity duration-200">
                                         <button
-                                            onClick={() => handleHabitToggle(habit)}
+                                            onClick={() =>
+                                                handleHabitToggle(habit)
+                                            }
                                             disabled={isProcessing}
                                             className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm font-medium transition ${
                                                 variant === 'planned'
@@ -423,7 +426,10 @@ const TasksToday: React.FC = () => {
                                             }`}
                                         >
                                             {variant === 'planned'
-                                                ? t('habits.complete', 'Complete')
+                                                ? t(
+                                                      'habits.complete',
+                                                      'Complete'
+                                                  )
                                                 : t('common.undo', 'Undo')}
                                         </button>
                                     </div>
@@ -434,7 +440,13 @@ const TasksToday: React.FC = () => {
                 </div>
             );
         },
-        [getHabitPeriodLabel, habitActionUid, handleHabitDetails, handleHabitToggle, t]
+        [
+            getHabitPeriodLabel,
+            habitActionUid,
+            handleHabitDetails,
+            handleHabitToggle,
+            t,
+        ]
     );
 
     // Load data once on component mount
@@ -1702,7 +1714,8 @@ const TasksToday: React.FC = () => {
                                                 'tasks.showingItems',
                                                 'Showing {{current}} of {{total}} tasks',
                                                 {
-                                                    current: plannedTasks.length,
+                                                    current:
+                                                        plannedTasks.length,
                                                     total: pagination.total,
                                                 }
                                             )}
@@ -1903,8 +1916,7 @@ const TasksToday: React.FC = () => {
                                                 <button
                                                     onClick={() =>
                                                         setCompletedTodayDisplayLimit(
-                                                            (prev) =>
-                                                                prev + 20
+                                                            (prev) => prev + 20
                                                         )
                                                     }
                                                     className="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"

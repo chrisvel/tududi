@@ -63,13 +63,15 @@ class HabitService {
 
         const updates = {
             habit_total_completions: completions.length,
-            habit_last_completion_at: completions.length > 0 ? completions[0].completed_at : null,
+            habit_last_completion_at:
+                completions.length > 0 ? completions[0].completed_at : null,
         };
 
         // Calculate current streak
-        updates.habit_current_streak = completions.length > 0
-            ? this.calculateCalendarStreak(completions, new Date())
-            : 0;
+        updates.habit_current_streak =
+            completions.length > 0
+                ? this.calculateCalendarStreak(completions, new Date())
+                : 0;
 
         // Calculate best streak (need to check all possible streaks)
         updates.habit_best_streak = this.calculateBestStreak(completions);
@@ -139,11 +141,7 @@ class HabitService {
         if (task.habit_streak_mode === 'calendar') {
             return this.calculateCalendarStreak(completions, asOfDate);
         } else {
-            return this.calculateScheduledStreak(
-                task,
-                completions,
-                asOfDate
-            );
+            return this.calculateScheduledStreak(task, completions, asOfDate);
         }
     }
 
@@ -211,11 +209,7 @@ class HabitService {
         // Calculate completion rate if target is set
         let completionRate = null;
         if (task.habit_target_count && task.habit_frequency_period) {
-            const target = this.calculatePeriodTarget(
-                task,
-                startDate,
-                endDate
-            );
+            const target = this.calculatePeriodTarget(task, startDate, endDate);
             completionRate = target > 0 ? (totalCompletions / target) * 100 : 0;
         }
 
@@ -264,7 +258,10 @@ class HabitService {
             // Strict: check if today matches recurrence pattern
             // Leverage existing recurringTaskService logic
             const { calculateNextDueDate } = require('./recurringTaskService');
-            const nextDue = calculateNextDueDate(task, task.habit_last_completion_at || task.created_at);
+            const nextDue = calculateNextDueDate(
+                task,
+                task.habit_last_completion_at || task.created_at
+            );
 
             if (!nextDue) return false;
 

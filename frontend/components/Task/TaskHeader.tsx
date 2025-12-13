@@ -227,8 +227,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
         task.status === 'archived' ||
         task.status === 3;
 
-    const isTaskInProgress =
-        task.status === 'in_progress' || task.status === 1;
+    const isTaskInProgress = task.status === 'in_progress' || task.status === 1;
 
     const canToggleProgressState =
         task.status === 'not_started' ||
@@ -239,33 +238,33 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
     const completionButtonBorderClass = isTaskCompleted
         ? 'border-green-200 dark:border-green-900'
         : isTaskInProgress
-        ? 'border-blue-200 dark:border-blue-900'
-        : 'border-gray-200 dark:border-gray-700';
+          ? 'border-blue-200 dark:border-blue-900'
+          : 'border-gray-200 dark:border-gray-700';
 
     const completionButtonTextClass = isTaskCompleted
         ? 'text-green-600 dark:text-green-400'
         : isTaskInProgress
-        ? 'text-blue-600 dark:text-blue-400'
-        : 'text-gray-600 dark:text-gray-400';
+          ? 'text-blue-600 dark:text-blue-400'
+          : 'text-gray-600 dark:text-gray-400';
 
     const completionButtonHoverClass = isTaskCompleted
         ? 'hover:bg-green-50 dark:hover:bg-green-900/40'
         : isTaskInProgress
-        ? 'hover:bg-blue-50 dark:hover:bg-blue-900/40'
-        : 'hover:bg-gray-50 dark:hover:bg-gray-800';
+          ? 'hover:bg-blue-50 dark:hover:bg-blue-900/40'
+          : 'hover:bg-gray-50 dark:hover:bg-gray-800';
 
     // Highlighted background for the active status button part
     const completionButtonMainBgClass = isTaskCompleted
         ? 'bg-green-100 dark:bg-green-900/50'
         : isTaskInProgress
-        ? 'bg-blue-100 dark:bg-blue-900/50'
-        : 'bg-gray-200 dark:bg-gray-700';
+          ? 'bg-blue-100 dark:bg-blue-900/50'
+          : 'bg-gray-200 dark:bg-gray-700';
 
     const completionButtonMainTextClass = isTaskCompleted
         ? 'text-green-900 dark:text-green-100 font-semibold'
         : isTaskInProgress
-        ? 'text-blue-900 dark:text-blue-100 font-semibold'
-        : 'text-gray-900 dark:text-gray-100 font-semibold';
+          ? 'text-blue-900 dark:text-blue-100 font-semibold'
+          : 'text-gray-900 dark:text-gray-100 font-semibold';
 
     const completionButtonMainClasses = `inline-flex items-center gap-2 text-sm transition ${completionButtonMainTextClass} ${completionButtonMainBgClass} ${completionButtonHoverClass} focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500`;
 
@@ -274,8 +273,8 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
     const CompletionIcon = isTaskCompleted
         ? CheckIcon
         : isTaskInProgress
-        ? PlayIcon
-        : CheckIcon;
+          ? PlayIcon
+          : CheckIcon;
 
     const handleCompletionClick = async (e: React.MouseEvent) => {
         e.preventDefault();
@@ -287,7 +286,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
             if (!isTaskCompleted) {
                 setIsCompletingTask(true);
                 // Wait for green animation to complete (1200ms)
-                await new Promise(resolve => setTimeout(resolve, 1200));
+                await new Promise((resolve) => setTimeout(resolve, 1200));
             }
 
             onToggleCompletion();
@@ -335,7 +334,10 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                 <div className="w-full mb-0.5">
                                     <span className="text-sm font-medium text-gray-900 dark:text-gray-300 break-words tracking-tight inline-flex items-center gap-1.5">
                                         {task.habit_mode && (
-                                            <FireIcon className="h-4 w-4 text-orange-500 flex-shrink-0" title="Habit" />
+                                            <FireIcon
+                                                className="h-4 w-4 text-orange-500 flex-shrink-0"
+                                                title="Habit"
+                                            />
                                         )}
                                         {task.original_name || task.name}
                                     </span>
@@ -424,7 +426,10 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         ) : (
                             <div className="flex items-center gap-1.5">
                                 {task.habit_mode && (
-                                    <FireIcon className="h-4 w-4 text-orange-500 flex-shrink-0" title="Habit" />
+                                    <FireIcon
+                                        className="h-4 w-4 text-orange-500 flex-shrink-0"
+                                        title="Habit"
+                                    />
                                 )}
                                 <span className="text-md font-medium text-gray-900 dark:text-gray-300">
                                     {task.original_name || task.name}
@@ -632,21 +637,30 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                             type="button"
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                const newOpenState = !isDropdownOpen;
+                                                const newOpenState =
+                                                    !isDropdownOpen;
 
                                                 // Close other dropdowns when opening this one
                                                 if (newOpenState) {
                                                     document.dispatchEvent(
-                                                        new CustomEvent('closeOtherDropdowns', {
-                                                            detail: { dropdownId },
-                                                        })
+                                                        new CustomEvent(
+                                                            'closeOtherDropdowns',
+                                                            {
+                                                                detail: {
+                                                                    dropdownId,
+                                                                },
+                                                            }
+                                                        )
                                                     );
                                                 }
 
                                                 setIsDropdownOpen(newOpenState);
                                             }}
                                             className="flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
-                                            title={t('common.more', 'More options')}
+                                            title={t(
+                                                'common.more',
+                                                'More options'
+                                            )}
                                         >
                                             <EllipsisVerticalIcon className="h-4 w-4" />
                                         </button>
@@ -656,7 +670,9 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                             <div
                                                 data-dropdown-id={dropdownId}
                                                 className="absolute right-0 top-full mt-1 w-40 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-[9999]"
-                                                onClick={(e) => e.stopPropagation()}
+                                                onClick={(e) =>
+                                                    e.stopPropagation()
+                                                }
                                             >
                                                 <div className="py-1">
                                                     {/* Edit Button */}
@@ -666,13 +682,18 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
                                                                 onEdit(e);
-                                                                setIsDropdownOpen(false);
+                                                                setIsDropdownOpen(
+                                                                    false
+                                                                );
                                                             }}
                                                             className="w-full px-4 py-2 text-sm text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
                                                             data-testid={`task-edit-desktop-${task.id}`}
                                                         >
                                                             <PencilIcon className="h-4 w-4" />
-                                                            {t('tasks.edit', 'Edit task')}
+                                                            {t(
+                                                                'tasks.edit',
+                                                                'Edit task'
+                                                            )}
                                                         </button>
                                                     )}
 
@@ -683,13 +704,18 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
                                                                 onDelete(e);
-                                                                setIsDropdownOpen(false);
+                                                                setIsDropdownOpen(
+                                                                    false
+                                                                );
                                                             }}
                                                             className="w-full px-4 py-2 text-sm text-left text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
                                                             data-testid={`task-delete-desktop-${task.id}`}
                                                         >
                                                             <TrashIcon className="h-4 w-4" />
-                                                            {t('tasks.delete', 'Delete task')}
+                                                            {t(
+                                                                'tasks.delete',
+                                                                'Delete task'
+                                                            )}
                                                         </button>
                                                     )}
                                                 </div>
@@ -705,8 +731,8 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                         task.habit_mode
                                             ? 'opacity-0 group-hover:opacity-100'
                                             : isTaskInProgress
-                                            ? 'opacity-100'
-                                            : 'opacity-0 group-hover:opacity-100'
+                                              ? 'opacity-100'
+                                              : 'opacity-0 group-hover:opacity-100'
                                     }`}
                                     ref={desktopCompletionMenuRef}
                                 >
@@ -715,50 +741,78 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                     >
                                         <button
                                             type="button"
-                                            onClick={(isTaskInProgress || !isTaskCompleted && (task.status === 'not_started' || task.status === 0)) ? (e) => { e.preventDefault(); e.stopPropagation(); } : handleCompletionClick}
+                                            onClick={
+                                                isTaskInProgress ||
+                                                (!isTaskCompleted &&
+                                                    (task.status ===
+                                                        'not_started' ||
+                                                        task.status === 0))
+                                                    ? (e) => {
+                                                          e.preventDefault();
+                                                          e.stopPropagation();
+                                                      }
+                                                    : handleCompletionClick
+                                            }
                                             className={`${completionButtonMainClasses} px-3 py-1`}
                                             title={
                                                 isTaskCompleted
                                                     ? t('common.undo', 'Undo')
                                                     : isTaskInProgress
-                                                    ? t('tasks.inProgress', 'In Progress')
-                                                    : t('tasks.notStarted', 'Not Started')
+                                                      ? t(
+                                                            'tasks.inProgress',
+                                                            'In Progress'
+                                                        )
+                                                      : t(
+                                                            'tasks.notStarted',
+                                                            'Not Started'
+                                                        )
                                             }
                                         >
                                             <CompletionIcon className="h-4 w-4" />
                                             {isTaskCompleted
                                                 ? t('tasks.done', 'Done')
                                                 : isTaskInProgress
-                                                ? t(
-                                                      'tasks.inProgress',
-                                                      'In Progress'
-                                                  )
-                                                : t(
-                                                      'tasks.notStarted',
-                                                      'Not Started'
-                                                  )}
+                                                  ? t(
+                                                        'tasks.inProgress',
+                                                        'In Progress'
+                                                    )
+                                                  : t(
+                                                        'tasks.notStarted',
+                                                        'Not Started'
+                                                    )}
                                         </button>
-                                        {!isTaskCompleted && (task.status === 'not_started' || task.status === 0) && (
-                                            <button
-                                                type="button"
-                                                onClick={async (e) => {
-                                                    e.preventDefault();
-                                                    e.stopPropagation();
-                                                    if (onTaskUpdate && task.id) {
-                                                        const updatedTask = {
-                                                            ...task,
-                                                            status: 'in_progress' as StatusType,
-                                                            today: true,
-                                                        };
-                                                        await onTaskUpdate(updatedTask);
-                                                    }
-                                                }}
-                                                className={`${completionButtonChevronClasses} px-2 border-l ${completionButtonBorderClass}`}
-                                                title={t('tasks.setInProgress', 'Set in progress')}
-                                            >
-                                                <PlayIcon className="h-4 w-4" />
-                                            </button>
-                                        )}
+                                        {!isTaskCompleted &&
+                                            (task.status === 'not_started' ||
+                                                task.status === 0) && (
+                                                <button
+                                                    type="button"
+                                                    onClick={async (e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        if (
+                                                            onTaskUpdate &&
+                                                            task.id
+                                                        ) {
+                                                            const updatedTask =
+                                                                {
+                                                                    ...task,
+                                                                    status: 'in_progress' as StatusType,
+                                                                    today: true,
+                                                                };
+                                                            await onTaskUpdate(
+                                                                updatedTask
+                                                            );
+                                                        }
+                                                    }}
+                                                    className={`${completionButtonChevronClasses} px-2 border-l ${completionButtonBorderClass}`}
+                                                    title={t(
+                                                        'tasks.setInProgress',
+                                                        'Set in progress'
+                                                    )}
+                                                >
+                                                    <PlayIcon className="h-4 w-4" />
+                                                </button>
+                                            )}
                                         {isTaskInProgress && (
                                             <button
                                                 type="button"
@@ -768,10 +822,15 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                     handleCompletionClick(e);
                                                 }}
                                                 className={`${isCompletingTask ? 'bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400' : completionButtonChevronClasses} px-2 border-l ${completionButtonBorderClass} transition-all duration-300`}
-                                                title={t('tasks.markAsDone', 'Mark as done')}
+                                                title={t(
+                                                    'tasks.markAsDone',
+                                                    'Mark as done'
+                                                )}
                                                 disabled={isCompletingTask}
                                             >
-                                                <CheckIcon className={`h-4 w-4 transition-all duration-300 ${isCompletingTask ? 'scale-125 text-green-600 dark:text-green-400' : ''}`} />
+                                                <CheckIcon
+                                                    className={`h-4 w-4 transition-all duration-300 ${isCompletingTask ? 'scale-125 text-green-600 dark:text-green-400' : ''}`}
+                                                />
                                             </button>
                                         )}
                                         <button
@@ -779,18 +838,16 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();
-                                                setCompletionMenuOpen(
-                                                    (prev) =>
-                                                        prev === 'desktop'
-                                                            ? null
-                                                            : 'desktop'
+                                                setCompletionMenuOpen((prev) =>
+                                                    prev === 'desktop'
+                                                        ? null
+                                                        : 'desktop'
                                                 );
                                             }}
                                             className={`${completionButtonChevronClasses} px-2 border-l ${completionButtonBorderClass}`}
                                             aria-haspopup="menu"
                                             aria-expanded={
-                                                completionMenuOpen ===
-                                                'desktop'
+                                                completionMenuOpen === 'desktop'
                                             }
                                         >
                                             <ChevronDownIcon className="h-4 w-4" />
@@ -804,22 +861,36 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                     e.preventDefault();
                                                     e.stopPropagation();
                                                     setCompletionMenuOpen(null);
-                                                    if (onTaskUpdate && task.id) {
+                                                    if (
+                                                        onTaskUpdate &&
+                                                        task.id
+                                                    ) {
                                                         const updatedTask = {
                                                             ...task,
                                                             status: 'not_started' as StatusType,
                                                         };
-                                                        await onTaskUpdate(updatedTask);
+                                                        await onTaskUpdate(
+                                                            updatedTask
+                                                        );
                                                     }
                                                 }}
                                                 className={`w-full px-3 py-2 text-left text-sm rounded-t-lg flex items-center gap-2 ${
-                                                    task.status === 'not_started' || task.status === 0
+                                                    task.status ===
+                                                        'not_started' ||
+                                                    task.status === 0
                                                         ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-semibold border-l-2 border-gray-500 dark:border-gray-400'
                                                         : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
                                                 }`}
                                             >
-                                                <PauseCircleIcon className={`h-4 w-4 ${task.status === 'not_started' || task.status === 0 ? 'text-gray-600 dark:text-gray-300' : 'text-gray-500 dark:text-gray-400'}`} />
-                                                <span className="flex-1">{t('task.status.notStarted', 'Not started')}</span>
+                                                <PauseCircleIcon
+                                                    className={`h-4 w-4 ${task.status === 'not_started' || task.status === 0 ? 'text-gray-600 dark:text-gray-300' : 'text-gray-500 dark:text-gray-400'}`}
+                                                />
+                                                <span className="flex-1">
+                                                    {t(
+                                                        'task.status.notStarted',
+                                                        'Not started'
+                                                    )}
+                                                </span>
                                             </button>
                                             <button
                                                 type="button"
@@ -827,23 +898,37 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                     e.preventDefault();
                                                     e.stopPropagation();
                                                     setCompletionMenuOpen(null);
-                                                    if (onTaskUpdate && task.id) {
+                                                    if (
+                                                        onTaskUpdate &&
+                                                        task.id
+                                                    ) {
                                                         const updatedTask = {
                                                             ...task,
                                                             status: 'in_progress' as StatusType,
                                                             today: true, // Add to today when setting in progress
                                                         };
-                                                        await onTaskUpdate(updatedTask);
+                                                        await onTaskUpdate(
+                                                            updatedTask
+                                                        );
                                                     }
                                                 }}
                                                 className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 ${
-                                                    task.status === 'in_progress' || task.status === 1
+                                                    task.status ===
+                                                        'in_progress' ||
+                                                    task.status === 1
                                                         ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-900 dark:text-blue-100 font-semibold border-l-2 border-blue-500 dark:border-blue-400'
                                                         : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
                                                 }`}
                                             >
-                                                <PlayIcon className={`h-4 w-4 ${task.status === 'in_progress' || task.status === 1 ? 'text-blue-600 dark:text-blue-300' : 'text-blue-500 dark:text-blue-400'}`} />
-                                                <span className="flex-1">{t('task.status.inProgress', 'In progress')}</span>
+                                                <PlayIcon
+                                                    className={`h-4 w-4 ${task.status === 'in_progress' || task.status === 1 ? 'text-blue-600 dark:text-blue-300' : 'text-blue-500 dark:text-blue-400'}`}
+                                                />
+                                                <span className="flex-1">
+                                                    {t(
+                                                        'task.status.inProgress',
+                                                        'In progress'
+                                                    )}
+                                                </span>
                                             </button>
                                             <button
                                                 type="button"
@@ -853,23 +938,41 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                     setCompletionMenuOpen(null);
                                                     if (onToggleCompletion) {
                                                         // Add animation delay
-                                                        setIsCompletingTask(true);
-                                                        await new Promise(resolve => setTimeout(resolve, 1200));
+                                                        setIsCompletingTask(
+                                                            true
+                                                        );
+                                                        await new Promise(
+                                                            (resolve) =>
+                                                                setTimeout(
+                                                                    resolve,
+                                                                    1200
+                                                                )
+                                                        );
                                                         onToggleCompletion();
                                                         setTimeout(() => {
-                                                            setIsCompletingTask(false);
+                                                            setIsCompletingTask(
+                                                                false
+                                                            );
                                                         }, 100);
                                                     }
                                                 }}
                                                 className={`w-full px-3 py-2 text-left text-sm rounded-b-lg flex items-center gap-2 ${
-                                                    task.status === 'done' || task.status === 2
+                                                    task.status === 'done' ||
+                                                    task.status === 2
                                                         ? 'bg-green-100 dark:bg-green-900/50 text-green-900 dark:text-green-100 font-semibold border-l-2 border-green-500 dark:border-green-400'
                                                         : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
                                                 }`}
                                                 disabled={isCompletingTask}
                                             >
-                                                <CheckIcon className={`h-4 w-4 ${task.status === 'done' || task.status === 2 ? 'text-green-600 dark:text-green-300' : 'text-green-500 dark:text-green-400'}`} />
-                                                <span className="flex-1">{t('task.status.setAsDone', 'Set as done')}</span>
+                                                <CheckIcon
+                                                    className={`h-4 w-4 ${task.status === 'done' || task.status === 2 ? 'text-green-600 dark:text-green-300' : 'text-green-500 dark:text-green-400'}`}
+                                                />
+                                                <span className="flex-1">
+                                                    {t(
+                                                        'task.status.setAsDone',
+                                                        'Set as done'
+                                                    )}
+                                                </span>
                                             </button>
                                         </div>
                                     )}
@@ -899,7 +1002,10 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         <div className="font-medium text-md text-gray-900 dark:text-gray-300">
                             <span className="break-words inline-flex items-center gap-1.5">
                                 {task.habit_mode && (
-                                    <FireIcon className="h-4 w-4 text-orange-500 flex-shrink-0" title="Habit" />
+                                    <FireIcon
+                                        className="h-4 w-4 text-orange-500 flex-shrink-0"
+                                        title="Habit"
+                                    />
                                 )}
                                 {task.original_name || task.name}
                             </span>
@@ -1025,7 +1131,18 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                 >
                                     <button
                                         type="button"
-                                        onClick={(isTaskInProgress || !isTaskCompleted && (task.status === 'not_started' || task.status === 0)) ? (e) => { e.preventDefault(); e.stopPropagation(); } : handleCompletionClick}
+                                        onClick={
+                                            isTaskInProgress ||
+                                            (!isTaskCompleted &&
+                                                (task.status ===
+                                                    'not_started' ||
+                                                    task.status === 0))
+                                                ? (e) => {
+                                                      e.preventDefault();
+                                                      e.stopPropagation();
+                                                  }
+                                                : handleCompletionClick
+                                        }
                                         className={`${completionButtonMainClasses} px-2 py-1`}
                                     >
                                         <CompletionIcon className="h-3.5 w-3.5" />
@@ -1033,37 +1150,47 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                             {isTaskCompleted
                                                 ? t('tasks.done', 'Done')
                                                 : isTaskInProgress
-                                                ? t(
-                                                      'tasks.inProgress',
-                                                      'In Progress'
-                                                  )
-                                                : t(
-                                                      'tasks.notStarted',
-                                                      'Not Started'
-                                                  )}
+                                                  ? t(
+                                                        'tasks.inProgress',
+                                                        'In Progress'
+                                                    )
+                                                  : t(
+                                                        'tasks.notStarted',
+                                                        'Not Started'
+                                                    )}
                                         </span>
                                     </button>
-                                    {!isTaskCompleted && (task.status === 'not_started' || task.status === 0) && (
-                                        <button
-                                            type="button"
-                                            onClick={async (e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                if (onTaskUpdate && task.id) {
-                                                    const updatedTask = {
-                                                        ...task,
-                                                        status: 'in_progress' as StatusType,
-                                                        today: true,
-                                                    };
-                                                    await onTaskUpdate(updatedTask);
-                                                }
-                                            }}
-                                            className={`${completionButtonChevronClasses} px-2 border-l ${completionButtonBorderClass}`}
-                                            title={t('tasks.setInProgress', 'Set in progress')}
-                                        >
-                                            <PlayIcon className="h-3.5 w-3.5" />
-                                        </button>
-                                    )}
+                                    {!isTaskCompleted &&
+                                        (task.status === 'not_started' ||
+                                            task.status === 0) && (
+                                            <button
+                                                type="button"
+                                                onClick={async (e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    if (
+                                                        onTaskUpdate &&
+                                                        task.id
+                                                    ) {
+                                                        const updatedTask = {
+                                                            ...task,
+                                                            status: 'in_progress' as StatusType,
+                                                            today: true,
+                                                        };
+                                                        await onTaskUpdate(
+                                                            updatedTask
+                                                        );
+                                                    }
+                                                }}
+                                                className={`${completionButtonChevronClasses} px-2 border-l ${completionButtonBorderClass}`}
+                                                title={t(
+                                                    'tasks.setInProgress',
+                                                    'Set in progress'
+                                                )}
+                                            >
+                                                <PlayIcon className="h-3.5 w-3.5" />
+                                            </button>
+                                        )}
                                     {isTaskInProgress && (
                                         <button
                                             type="button"
@@ -1073,10 +1200,15 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                 handleCompletionClick(e);
                                             }}
                                             className={`${isCompletingTask ? 'bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400' : completionButtonChevronClasses} px-2 border-l ${completionButtonBorderClass} transition-all duration-300`}
-                                            title={t('tasks.markAsDone', 'Mark as done')}
+                                            title={t(
+                                                'tasks.markAsDone',
+                                                'Mark as done'
+                                            )}
                                             disabled={isCompletingTask}
                                         >
-                                            <CheckIcon className={`h-3.5 w-3.5 transition-all duration-300 ${isCompletingTask ? 'scale-125 text-green-600 dark:text-green-400' : ''}`} />
+                                            <CheckIcon
+                                                className={`h-3.5 w-3.5 transition-all duration-300 ${isCompletingTask ? 'scale-125 text-green-600 dark:text-green-400' : ''}`}
+                                            />
                                         </button>
                                     )}
                                     <button
@@ -1112,17 +1244,27 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                         ...task,
                                                         status: 'not_started' as StatusType,
                                                     };
-                                                    await onTaskUpdate(updatedTask);
+                                                    await onTaskUpdate(
+                                                        updatedTask
+                                                    );
                                                 }
                                             }}
                                             className={`w-full px-3 py-2 text-left text-sm rounded-t-lg flex items-center gap-2 ${
-                                                task.status === 'not_started' || task.status === 0
+                                                task.status === 'not_started' ||
+                                                task.status === 0
                                                     ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-semibold border-l-2 border-gray-500 dark:border-gray-400'
                                                     : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
                                             }`}
                                         >
-                                            <PauseCircleIcon className={`h-4 w-4 ${task.status === 'not_started' || task.status === 0 ? 'text-gray-600 dark:text-gray-300' : 'text-gray-500 dark:text-gray-400'}`} />
-                                            <span className="flex-1">{t('task.status.notStarted', 'Not started')}</span>
+                                            <PauseCircleIcon
+                                                className={`h-4 w-4 ${task.status === 'not_started' || task.status === 0 ? 'text-gray-600 dark:text-gray-300' : 'text-gray-500 dark:text-gray-400'}`}
+                                            />
+                                            <span className="flex-1">
+                                                {t(
+                                                    'task.status.notStarted',
+                                                    'Not started'
+                                                )}
+                                            </span>
                                         </button>
                                         <button
                                             type="button"
@@ -1136,17 +1278,27 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                         status: 'in_progress' as StatusType,
                                                         today: true, // Add to today when setting in progress
                                                     };
-                                                    await onTaskUpdate(updatedTask);
+                                                    await onTaskUpdate(
+                                                        updatedTask
+                                                    );
                                                 }
                                             }}
                                             className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 ${
-                                                task.status === 'in_progress' || task.status === 1
+                                                task.status === 'in_progress' ||
+                                                task.status === 1
                                                     ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-900 dark:text-blue-100 font-semibold border-l-2 border-blue-500 dark:border-blue-400'
                                                     : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
                                             }`}
                                         >
-                                            <PlayIcon className={`h-4 w-4 ${task.status === 'in_progress' || task.status === 1 ? 'text-blue-600 dark:text-blue-300' : 'text-blue-500 dark:text-blue-400'}`} />
-                                            <span className="flex-1">{t('task.status.inProgress', 'In progress')}</span>
+                                            <PlayIcon
+                                                className={`h-4 w-4 ${task.status === 'in_progress' || task.status === 1 ? 'text-blue-600 dark:text-blue-300' : 'text-blue-500 dark:text-blue-400'}`}
+                                            />
+                                            <span className="flex-1">
+                                                {t(
+                                                    'task.status.inProgress',
+                                                    'In progress'
+                                                )}
+                                            </span>
                                         </button>
                                         <button
                                             type="button"
@@ -1157,22 +1309,38 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                 if (onToggleCompletion) {
                                                     // Add animation delay
                                                     setIsCompletingTask(true);
-                                                    await new Promise(resolve => setTimeout(resolve, 1200));
+                                                    await new Promise(
+                                                        (resolve) =>
+                                                            setTimeout(
+                                                                resolve,
+                                                                1200
+                                                            )
+                                                    );
                                                     onToggleCompletion();
                                                     setTimeout(() => {
-                                                        setIsCompletingTask(false);
+                                                        setIsCompletingTask(
+                                                            false
+                                                        );
                                                     }, 100);
                                                 }
                                             }}
                                             className={`w-full px-3 py-2 text-left text-sm rounded-b-lg flex items-center gap-2 ${
-                                                task.status === 'done' || task.status === 2
+                                                task.status === 'done' ||
+                                                task.status === 2
                                                     ? 'bg-green-100 dark:bg-green-900/50 text-green-900 dark:text-green-100 font-semibold border-l-2 border-green-500 dark:border-green-400'
                                                     : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
                                             }`}
                                             disabled={isCompletingTask}
                                         >
-                                            <CheckIcon className={`h-4 w-4 ${task.status === 'done' || task.status === 2 ? 'text-green-600 dark:text-green-300' : 'text-green-500 dark:text-green-400'}`} />
-                                            <span className="flex-1">{t('task.status.setAsDone', 'Set as done')}</span>
+                                            <CheckIcon
+                                                className={`h-4 w-4 ${task.status === 'done' || task.status === 2 ? 'text-green-600 dark:text-green-300' : 'text-green-500 dark:text-green-400'}`}
+                                            />
+                                            <span className="flex-1">
+                                                {t(
+                                                    'task.status.setAsDone',
+                                                    'Set as done'
+                                                )}
+                                            </span>
                                         </button>
                                     </div>
                                 )}
@@ -1194,9 +1362,12 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                     // Close other dropdowns when opening this one
                                     if (newOpenState) {
                                         document.dispatchEvent(
-                                            new CustomEvent('closeOtherDropdowns', {
-                                                detail: { dropdownId },
-                                            })
+                                            new CustomEvent(
+                                                'closeOtherDropdowns',
+                                                {
+                                                    detail: { dropdownId },
+                                                }
+                                            )
                                         );
                                     }
 
@@ -1207,121 +1378,126 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                 <EllipsisVerticalIcon className="h-5 w-5" />
                             </button>
 
-                        {/* Dropdown Menu - Positioned Relatively */}
-                        {isDropdownOpen && (
-                            <div
-                                data-dropdown-id={dropdownId}
-                                className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-[9999] transform-gpu"
-                                style={{
-                                    // Prevent dropdown from being cut off at the bottom of viewport
-                                    transform:
-                                        buttonRef.current &&
-                                        buttonRef.current.getBoundingClientRect()
-                                            .bottom +
-                                            200 >
-                                            window.innerHeight
-                                            ? 'translateY(-100%) translateY(-8px)'
-                                            : 'none',
-                                }}
-                                onClick={(e) => e.stopPropagation()}
-                            >
-                                <div className="py-1">
-                                    {/* Today Plan Controls */}
-                                    {onToggleToday && (
-                                        <button
-                                            type="button"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleTodayToggle(e);
-                                                setIsDropdownOpen(false);
-                                            }}
-                                            className="w-full px-4 py-2 text-sm text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex justify-between items-center"
-                                        >
-                                            <span>
-                                                {task.today
-                                                    ? t(
-                                                          'tasks.removeFromToday',
-                                                          'Remove from today plan'
-                                                      )
-                                                    : t(
-                                                          'tasks.addToToday',
-                                                          'Add to today plan'
-                                                      )}
-                                            </span>
-                                            {Number(task.today_move_count) >
-                                                1 && (
-                                                <span className="text-xs bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded">
-                                                    {Number(
-                                                        task.today_move_count
-                                                    )}
-                                                </span>
-                                            )}
-                                        </button>
-                                    )}
-
-                                    {/* Show Subtasks Controls */}
-                                    {hasSubtasks &&
-                                        !(
-                                            task.status === 'archived' ||
-                                            task.status === 3
-                                        ) && (
+                            {/* Dropdown Menu - Positioned Relatively */}
+                            {isDropdownOpen && (
+                                <div
+                                    data-dropdown-id={dropdownId}
+                                    className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-[9999] transform-gpu"
+                                    style={{
+                                        // Prevent dropdown from being cut off at the bottom of viewport
+                                        transform:
+                                            buttonRef.current &&
+                                            buttonRef.current.getBoundingClientRect()
+                                                .bottom +
+                                                200 >
+                                                window.innerHeight
+                                                ? 'translateY(-100%) translateY(-8px)'
+                                                : 'none',
+                                    }}
+                                    onClick={(e) => e.stopPropagation()}
+                                >
+                                    <div className="py-1">
+                                        {/* Today Plan Controls */}
+                                        {onToggleToday && (
                                             <button
                                                 type="button"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    if (onSubtasksToggle) {
-                                                        onSubtasksToggle(e);
-                                                    }
+                                                    handleTodayToggle(e);
                                                     setIsDropdownOpen(false);
                                                 }}
-                                                className="w-full px-4 py-2 text-sm text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                                className="w-full px-4 py-2 text-sm text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex justify-between items-center"
                                             >
-                                                {showSubtasks
-                                                    ? t(
-                                                          'tasks.hideSubtasks',
-                                                          'Hide subtasks'
-                                                      )
-                                                    : t(
-                                                          'tasks.showSubtasks',
-                                                          'Show subtasks'
-                                                      )}
+                                                <span>
+                                                    {task.today
+                                                        ? t(
+                                                              'tasks.removeFromToday',
+                                                              'Remove from today plan'
+                                                          )
+                                                        : t(
+                                                              'tasks.addToToday',
+                                                              'Add to today plan'
+                                                          )}
+                                                </span>
+                                                {Number(task.today_move_count) >
+                                                    1 && (
+                                                    <span className="text-xs bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded">
+                                                        {Number(
+                                                            task.today_move_count
+                                                        )}
+                                                    </span>
+                                                )}
                                             </button>
                                         )}
 
-                                    {/* Edit Button */}
-                                    {onEdit && (
-                                        <button
-                                            type="button"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                onEdit(e);
-                                                setIsDropdownOpen(false);
-                                            }}
-                                            className="w-full px-4 py-2 text-sm text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                            data-testid={`task-edit-mobile-${task.id}`}
-                                        >
-                                            {t('tasks.edit', 'Edit task')}
-                                        </button>
-                                    )}
+                                        {/* Show Subtasks Controls */}
+                                        {hasSubtasks &&
+                                            !(
+                                                task.status === 'archived' ||
+                                                task.status === 3
+                                            ) && (
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        if (onSubtasksToggle) {
+                                                            onSubtasksToggle(e);
+                                                        }
+                                                        setIsDropdownOpen(
+                                                            false
+                                                        );
+                                                    }}
+                                                    className="w-full px-4 py-2 text-sm text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                                >
+                                                    {showSubtasks
+                                                        ? t(
+                                                              'tasks.hideSubtasks',
+                                                              'Hide subtasks'
+                                                          )
+                                                        : t(
+                                                              'tasks.showSubtasks',
+                                                              'Show subtasks'
+                                                          )}
+                                                </button>
+                                            )}
 
-                                    {/* Delete Button */}
-                                    {onDelete && (
-                                        <button
-                                            type="button"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                onDelete(e);
-                                                setIsDropdownOpen(false);
-                                            }}
-                                            className="w-full px-4 py-2 text-sm text-left text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
-                                            data-testid={`task-delete-mobile-${task.id}`}
-                                        >
-                                            {t('tasks.delete', 'Delete task')}
-                                        </button>
-                                    )}
+                                        {/* Edit Button */}
+                                        {onEdit && (
+                                            <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    onEdit(e);
+                                                    setIsDropdownOpen(false);
+                                                }}
+                                                className="w-full px-4 py-2 text-sm text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                                data-testid={`task-edit-mobile-${task.id}`}
+                                            >
+                                                {t('tasks.edit', 'Edit task')}
+                                            </button>
+                                        )}
+
+                                        {/* Delete Button */}
+                                        {onDelete && (
+                                            <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    onDelete(e);
+                                                    setIsDropdownOpen(false);
+                                                }}
+                                                className="w-full px-4 py-2 text-sm text-left text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                                data-testid={`task-delete-mobile-${task.id}`}
+                                            >
+                                                {t(
+                                                    'tasks.delete',
+                                                    'Delete task'
+                                                )}
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
                         </div>
                     )}
                 </div>

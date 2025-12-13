@@ -732,7 +732,9 @@ export const useStore = create<StoreState>((set: any) => ({
                 habitsStore: { ...state.habitsStore, isLoading },
             })),
         setError: (isError) =>
-            set((state) => ({ habitsStore: { ...state.habitsStore, isError } })),
+            set((state) => ({
+                habitsStore: { ...state.habitsStore, isError },
+            })),
         loadHabits: async () => {
             const { fetchHabits } = await import('../utils/habitsService');
             set((state) => ({
@@ -782,10 +784,8 @@ export const useStore = create<StoreState>((set: any) => ({
             }
         },
         removeTodayCompletion: async (habitUid) => {
-            const {
-                fetchHabitCompletions,
-                deleteHabitCompletion,
-            } = await import('../utils/habitsService');
+            const { fetchHabitCompletions, deleteHabitCompletion } =
+                await import('../utils/habitsService');
             try {
                 const startDate = new Date();
                 startDate.setHours(0, 0, 0, 0);

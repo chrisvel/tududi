@@ -32,10 +32,7 @@ export async function createHabit(habitData: Partial<Task>): Promise<Task> {
     return data.habit;
 }
 
-export async function logHabitCompletion(
-    habitUid: string,
-    completedAt?: Date
-) {
+export async function logHabitCompletion(habitUid: string, completedAt?: Date) {
     const response = await fetch(getApiPath(`habits/${habitUid}/complete`), {
         method: 'POST',
         credentials: 'include',

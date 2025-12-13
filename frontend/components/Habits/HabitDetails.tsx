@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import React, {
+    useEffect,
+    useRef,
+    useState,
+    useCallback,
+    useMemo,
+} from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Task } from '../../entities/Task';
 import {
@@ -11,15 +17,24 @@ import {
     deleteHabit,
     HabitCompletion,
 } from '../../utils/habitsService';
-import { FireIcon, ArrowLeftIcon, CheckCircleIcon, TrashIcon } from '@heroicons/react/24/outline';
+import {
+    FireIcon,
+    ArrowLeftIcon,
+    CheckCircleIcon,
+    TrashIcon,
+} from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 
 const mapHabitToEditableValues = (task: Task) => ({
     name: task.name || '',
     habit_target_count: task.habit_target_count || 1,
-    habit_frequency_period: (task.habit_frequency_period as 'daily' | 'weekly' | 'monthly') || 'daily',
-    habit_flexibility_mode: (task.habit_flexibility_mode as 'flexible' | 'strict') || 'flexible',
-    habit_streak_mode: (task.habit_streak_mode as 'calendar' | 'scheduled') || 'calendar',
+    habit_frequency_period:
+        (task.habit_frequency_period as 'daily' | 'weekly' | 'monthly') ||
+        'daily',
+    habit_flexibility_mode:
+        (task.habit_flexibility_mode as 'flexible' | 'strict') || 'flexible',
+    habit_streak_mode:
+        (task.habit_streak_mode as 'calendar' | 'scheduled') || 'calendar',
 });
 
 const HabitDetails: React.FC = () => {
@@ -38,7 +53,9 @@ const HabitDetails: React.FC = () => {
         habit_flexibility_mode: 'flexible' as 'flexible' | 'strict',
         habit_streak_mode: 'calendar' as 'calendar' | 'scheduled',
     });
-    const [editingField, setEditingField] = useState<EditableField | null>(null);
+    const [editingField, setEditingField] = useState<EditableField | null>(
+        null
+    );
     const [savingField, setSavingField] = useState<EditableField | null>(null);
     const HISTORY_DAYS = 90;
     const DAYS_PER_CALENDAR = 30;
@@ -113,7 +130,10 @@ const HabitDetails: React.FC = () => {
         };
     }, [baseChartData]);
 
-    const renderMiniChart = (data: { date: string; value: number }[], colorClass: string) => {
+    const renderMiniChart = (
+        data: { date: string; value: number }[],
+        colorClass: string
+    ) => {
         const maxValue = Math.max(...data.map((d) => d.value), 1);
         return (
             <div className="mt-4 h-16 flex items-end gap-1">
@@ -154,10 +174,16 @@ const HabitDetails: React.FC = () => {
         if (editingField === 'name' && titleInputRef.current) {
             titleInputRef.current.focus();
             titleInputRef.current.select();
-        } else if (editingField === 'targetFrequency' && targetCountInputRef.current) {
+        } else if (
+            editingField === 'targetFrequency' &&
+            targetCountInputRef.current
+        ) {
             targetCountInputRef.current.focus();
             targetCountInputRef.current.select();
-        } else if (editingField === 'flexibility' && flexibilitySelectRef.current) {
+        } else if (
+            editingField === 'flexibility' &&
+            flexibilitySelectRef.current
+        ) {
             flexibilitySelectRef.current.focus();
         } else if (editingField === 'streak' && streakSelectRef.current) {
             streakSelectRef.current.focus();
@@ -254,7 +280,14 @@ const HabitDetails: React.FC = () => {
 
     const handleDeleteHabit = async () => {
         if (!habit?.uid) return;
-        if (!confirm(t('habits.confirmDelete', 'Are you sure you want to delete this habit?'))) {
+        if (
+            !confirm(
+                t(
+                    'habits.confirmDelete',
+                    'Are you sure you want to delete this habit?'
+                )
+            )
+        ) {
             return;
         }
 
@@ -301,11 +334,18 @@ const HabitDetails: React.FC = () => {
                     break;
                 }
                 case 'targetFrequency': {
-                    const count = Math.max(1, editableValues.habit_target_count || 1);
-                    const period = editableValues.habit_frequency_period || 'daily';
+                    const count = Math.max(
+                        1,
+                        editableValues.habit_target_count || 1
+                    );
+                    const period =
+                        editableValues.habit_frequency_period || 'daily';
                     const currentCount = habit.habit_target_count || 1;
                     const currentPeriod =
-                        (habit.habit_frequency_period as 'daily' | 'weekly' | 'monthly') || 'daily';
+                        (habit.habit_frequency_period as
+                            | 'daily'
+                            | 'weekly'
+                            | 'monthly') || 'daily';
                     if (count === currentCount && period === currentPeriod) {
                         setEditableValues((prev) => ({
                             ...prev,
@@ -322,9 +362,12 @@ const HabitDetails: React.FC = () => {
                     break;
                 }
                 case 'flexibility': {
-                    const newValue = editableValues.habit_flexibility_mode || 'flexible';
+                    const newValue =
+                        editableValues.habit_flexibility_mode || 'flexible';
                     const currentValue =
-                        (habit.habit_flexibility_mode as 'flexible' | 'strict') || 'flexible';
+                        (habit.habit_flexibility_mode as
+                            | 'flexible'
+                            | 'strict') || 'flexible';
                     if (newValue === currentValue) {
                         setEditingField(null);
                         return;
@@ -333,9 +376,11 @@ const HabitDetails: React.FC = () => {
                     break;
                 }
                 case 'streak': {
-                    const newValue = editableValues.habit_streak_mode || 'calendar';
+                    const newValue =
+                        editableValues.habit_streak_mode || 'calendar';
                     const currentValue =
-                        (habit.habit_streak_mode as 'calendar' | 'scheduled') || 'calendar';
+                        (habit.habit_streak_mode as 'calendar' | 'scheduled') ||
+                        'calendar';
                     if (newValue === currentValue) {
                         setEditingField(null);
                         return;
@@ -443,7 +488,10 @@ const HabitDetails: React.FC = () => {
                     currentElement = null;
             }
 
-            if (currentElement && currentElement.contains(event.target as Node)) {
+            if (
+                currentElement &&
+                currentElement.contains(event.target as Node)
+            ) {
                 return;
             }
             saveField(editingField);
@@ -467,13 +515,20 @@ const HabitDetails: React.FC = () => {
         try {
             if (existingCompletion) {
                 // Optimistic update - remove from UI immediately
-                setCompletions((prev) => prev.filter((c) => c.id !== existingCompletion.id));
+                setCompletions((prev) =>
+                    prev.filter((c) => c.id !== existingCompletion.id)
+                );
 
                 // Uncomplete - delete the completion
-                const result = await deleteHabitCompletion(habit.uid, existingCompletion.id);
+                const result = await deleteHabitCompletion(
+                    habit.uid,
+                    existingCompletion.id
+                );
                 setHabit(result.task);
                 setEditableValues((prev) =>
-                    editingFieldRef.current ? prev : mapHabitToEditableValues(result.task)
+                    editingFieldRef.current
+                        ? prev
+                        : mapHabitToEditableValues(result.task)
                 );
             } else {
                 // Complete - add the completion
@@ -493,15 +548,22 @@ const HabitDetails: React.FC = () => {
                 };
                 setCompletions((prev) => [...prev, tempCompletion]);
 
-                const result = await logHabitCompletion(habit.uid, completionDate);
+                const result = await logHabitCompletion(
+                    habit.uid,
+                    completionDate
+                );
                 setHabit(result.task);
                 setEditableValues((prev) =>
-                    editingFieldRef.current ? prev : mapHabitToEditableValues(result.task)
+                    editingFieldRef.current
+                        ? prev
+                        : mapHabitToEditableValues(result.task)
                 );
 
                 setCompletions((prev) => {
                     const filtered = prev.filter(
-                        (c) => formatDateKey(new Date(c.completed_at)) !== completionKey
+                        (c) =>
+                            formatDateKey(new Date(c.completed_at)) !==
+                            completionKey
                     );
                     return [...filtered, result.completion];
                 });
@@ -515,17 +577,20 @@ const HabitDetails: React.FC = () => {
     };
 
     const today = new Date();
-    const calendarRanges = Array.from({ length: Math.ceil(HISTORY_DAYS / DAYS_PER_CALENDAR) }, (_, idx) => {
-        const rangeEnd = new Date(today);
-        rangeEnd.setDate(rangeEnd.getDate() - idx * DAYS_PER_CALENDAR);
-        const rangeStart = new Date(rangeEnd);
-        rangeStart.setDate(rangeEnd.getDate() - (DAYS_PER_CALENDAR - 1));
-        const monthLabel = rangeEnd.toLocaleString(undefined, {
-            month: 'long',
-            year: 'numeric',
-        });
-        return { rangeStart, rangeEnd, monthLabel };
-    });
+    const calendarRanges = Array.from(
+        { length: Math.ceil(HISTORY_DAYS / DAYS_PER_CALENDAR) },
+        (_, idx) => {
+            const rangeEnd = new Date(today);
+            rangeEnd.setDate(rangeEnd.getDate() - idx * DAYS_PER_CALENDAR);
+            const rangeStart = new Date(rangeEnd);
+            rangeStart.setDate(rangeEnd.getDate() - (DAYS_PER_CALENDAR - 1));
+            const monthLabel = rangeEnd.toLocaleString(undefined, {
+                month: 'long',
+                year: 'numeric',
+            });
+            return { rangeStart, rangeEnd, monthLabel };
+        }
+    );
 
     const renderCalendar = (rangeStart: Date, rangeEnd: Date) => {
         const normalizedStart = new Date(rangeStart);
@@ -623,307 +688,436 @@ const HabitDetails: React.FC = () => {
                         {t('common.back', 'Back to Habits')}
                     </button>
 
-                <div className="flex items-start justify-between flex-wrap gap-4">
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <FireIcon className="h-8 w-8 text-orange-500 flex-shrink-0" />
-                        <div className="flex-1 min-w-0">
-                            {editingField === 'name' ? (
-                                <input
-                                    ref={(el) => {
-                                        titleInputRef.current = el;
-                                    }}
-                                    type="text"
-                                    value={editableValues.name}
-                                    onChange={(e) =>
-                                        setEditableValues((prev) => ({
-                                            ...prev,
-                                            name: e.target.value,
-                                        }))
-                                    }
-                                    onKeyDown={(e) => handleFieldKeyDown(e, 'name')}
-                                    className="w-full bg-transparent border-b border-gray-300 dark:border-gray-700 text-3xl font-bold text-gray-900 dark:text-white focus:outline-none"
-                                    placeholder={t('habits.namePlaceholder', 'Enter habit name...')}
-                                />
-                            ) : (
-                                <button
-                                    type="button"
-                                    className="text-left text-3xl font-bold text-gray-900 dark:text-white break-words focus:outline-none cursor-text hover:text-gray-700 dark:hover:text-gray-300"
-                                    onClick={() => startEditingField('name')}
-                                >
-                                    {editableValues.name || t('habits.untitledHabit', 'Untitled Habit')}
-                                </button>
-                            )}
-                        </div>
-                    </div>
-                    <div className="flex gap-2">
-                        {isNewHabit ? (
-                            <button
-                                onClick={handleSaveNewHabit}
-                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-                            >
-                                {t('common.save', 'Save')}
-                            </button>
-                        ) : (
-                            <>
-                                <button
-                                    onClick={handleDeleteHabit}
-                                    className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
-                                >
-                                    <TrashIcon className="h-5 w-5" />
-                                    {t('common.delete', 'Delete')}
-                                </button>
-                                <button
-                                    onClick={handleComplete}
-                                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
-                                >
-                                    <CheckCircleIcon className="h-5 w-5" />
-                                    {t('habits.complete', 'Complete')}
-                                </button>
-                            </>
-                        )}
-                    </div>
-                </div>
-            </div>
-
-            <div className="flex flex-col lg:flex-row gap-6 mb-8">
-                {/* Details */}
-                <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-6 lg:w-1/3">
-                    <div className="mb-4">
-                        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                            {t('habits.details', 'Details')}
-                        </h2>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                            {t('habits.inlineEditHint', 'Click a value to edit. Press Enter or click outside to save.')}
-                        </p>
-                    </div>
-                    <div className="space-y-4">
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                            <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                                {t('habits.targetFrequency', 'Target Frequency')}
-                            </span>
-                            {editingField === 'targetFrequency' ? (
-                                <div
-                                    ref={targetFrequencyContainerRef}
-                                    className="flex flex-col sm:flex-row items-center gap-2 sm:justify-end w-full sm:w-auto"
-                                >
+                    <div className="flex items-start justify-between flex-wrap gap-4">
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                            <FireIcon className="h-8 w-8 text-orange-500 flex-shrink-0" />
+                            <div className="flex-1 min-w-0">
+                                {editingField === 'name' ? (
                                     <input
-                                        ref={targetCountInputRef}
-                                        type="number"
-                                        min={1}
-                                        value={editableValues.habit_target_count}
+                                        ref={(el) => {
+                                            titleInputRef.current = el;
+                                        }}
+                                        type="text"
+                                        value={editableValues.name}
                                         onChange={(e) =>
                                             setEditableValues((prev) => ({
                                                 ...prev,
-                                                habit_target_count: Math.max(
-                                                    1,
-                                                    parseInt(e.target.value, 10) || 1
-                                                ),
+                                                name: e.target.value,
                                             }))
                                         }
-                                        onKeyDown={(e) => handleFieldKeyDown(e, 'targetFrequency')}
-                                        className="w-full sm:w-20 px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                                        onKeyDown={(e) =>
+                                            handleFieldKeyDown(e, 'name')
+                                        }
+                                        className="w-full bg-transparent border-b border-gray-300 dark:border-gray-700 text-3xl font-bold text-gray-900 dark:text-white focus:outline-none"
+                                        placeholder={t(
+                                            'habits.namePlaceholder',
+                                            'Enter habit name...'
+                                        )}
                                     />
-                                    <span className="text-sm text-gray-600 dark:text-gray-400">
-                                        {t('habits.timesPer', 'times per')}
-                                    </span>
-                                    <select
-                                        value={editableValues.habit_frequency_period}
-                                        onChange={(e) =>
-                                            setEditableValues((prev) => ({
-                                                ...prev,
-                                                habit_frequency_period: e.target.value as
-                                                    | 'daily'
-                                                    | 'weekly'
-                                                    | 'monthly',
-                                            }))
+                                ) : (
+                                    <button
+                                        type="button"
+                                        className="text-left text-3xl font-bold text-gray-900 dark:text-white break-words focus:outline-none cursor-text hover:text-gray-700 dark:hover:text-gray-300"
+                                        onClick={() =>
+                                            startEditingField('name')
                                         }
-                                        onKeyDown={(e) => handleFieldKeyDown(e, 'targetFrequency')}
-                                        className="w-full sm:w-32 px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                                     >
-                                        <option value="daily">{t('habits.day', 'Day')}</option>
-                                        <option value="weekly">{t('habits.week', 'Week')}</option>
-                                        <option value="monthly">{t('habits.month', 'Month')}</option>
-                                    </select>
-                                </div>
-                            ) : (
-                                <button
-                                    type="button"
-                                    className="text-right text-gray-900 dark:text-white font-medium focus:outline-none cursor-text"
-                                    onClick={() => startEditingField('targetFrequency')}
-                                >
-                                    {editableValues.habit_target_count}x per{' '}
-                                    {editableValues.habit_frequency_period === 'daily'
-                                        ? t('habits.day', 'Day')
-                                        : editableValues.habit_frequency_period === 'weekly'
-                                        ? t('habits.week', 'Week')
-                                        : t('habits.month', 'Month')}
-                                </button>
-                            )}
+                                        {editableValues.name ||
+                                            t(
+                                                'habits.untitledHabit',
+                                                'Untitled Habit'
+                                            )}
+                                    </button>
+                                )}
+                            </div>
                         </div>
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                            <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                                {t('habits.scheduling', 'Scheduling')}
-                            </span>
-                            {editingField === 'flexibility' ? (
-                                <div ref={flexibilityContainerRef} className="w-full sm:w-auto">
-                                    <select
-                                        ref={flexibilitySelectRef}
-                                        value={editableValues.habit_flexibility_mode}
-                                        onChange={(e) =>
-                                            setEditableValues((prev) => ({
-                                                ...prev,
-                                                habit_flexibility_mode: e.target.value as 'flexible' | 'strict',
-                                            }))
-                                        }
-                                        onKeyDown={(e) => handleFieldKeyDown(e, 'flexibility')}
-                                        className="w-full px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-white capitalize"
-                                    >
-                                        <option value="flexible">
-                                            {t('habits.flexible', 'Flexible (anytime)')}
-                                        </option>
-                                        <option value="strict">{t('habits.strict', 'Strict')}</option>
-                                    </select>
-                                </div>
-                            ) : (
+                        <div className="flex gap-2">
+                            {isNewHabit ? (
                                 <button
-                                    type="button"
-                                    className="text-right text-gray-900 dark:text-white font-medium focus:outline-none cursor-text capitalize"
-                                    onClick={() => startEditingField('flexibility')}
+                                    onClick={handleSaveNewHabit}
+                                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
                                 >
-                                    {editableValues.habit_flexibility_mode === 'flexible'
-                                        ? t('habits.flexible', 'Flexible (anytime)')
-                                        : t('habits.strict', 'Strict')}
+                                    {t('common.save', 'Save')}
                                 </button>
-                            )}
-                        </div>
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                            <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                                {t('habits.streakCalc', 'Streak Calculation')}
-                            </span>
-                            {editingField === 'streak' ? (
-                                <div ref={streakContainerRef} className="w-full sm:w-auto">
-                                    <select
-                                        ref={streakSelectRef}
-                                        value={editableValues.habit_streak_mode}
-                                        onChange={(e) =>
-                                            setEditableValues((prev) => ({
-                                                ...prev,
-                                                habit_streak_mode: e.target.value as 'calendar' | 'scheduled',
-                                            }))
-                                        }
-                                        onKeyDown={(e) => handleFieldKeyDown(e, 'streak')}
-                                        className="w-full px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-white capitalize"
-                                    >
-                                        <option value="calendar">
-                                            {t('habits.calendarDays', 'Calendar days')}
-                                        </option>
-                                        <option value="scheduled">
-                                            {t('habits.scheduledPeriods', 'Scheduled periods')}
-                                        </option>
-                                    </select>
-                                </div>
                             ) : (
-                                <button
-                                    type="button"
-                                    className="text-right text-gray-900 dark:text-white font-medium focus:outline-none cursor-text capitalize"
-                                    onClick={() => startEditingField('streak')}
-                                >
-                                    {editableValues.habit_streak_mode === 'calendar'
-                                        ? t('habits.calendarDays', 'Calendar days')
-                                        : t('habits.scheduledPeriods', 'Scheduled periods')}
-                                </button>
+                                <>
+                                    <button
+                                        onClick={handleDeleteHabit}
+                                        className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+                                    >
+                                        <TrashIcon className="h-5 w-5" />
+                                        {t('common.delete', 'Delete')}
+                                    </button>
+                                    <button
+                                        onClick={handleComplete}
+                                        className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                                    >
+                                        <CheckCircleIcon className="h-5 w-5" />
+                                        {t('habits.complete', 'Complete')}
+                                    </button>
+                                </>
                             )}
                         </div>
                     </div>
                 </div>
 
-                {/* Stats Grid - Only show for existing habits */}
-                {!isNewHabit && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:flex-1">
-                    {/* Current Streak */}
-                    <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
-                        <div className="flex items-center gap-2 mb-2">
-                            <FireIcon className="h-6 w-6 text-orange-500" />
-                            <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                                {t('habits.currentStreak', 'Current Streak')}
-                            </h3>
-                        </div>
-                        <p className="text-4xl font-bold text-gray-900 dark:text-white">
-                            {habit.habit_current_streak || 0}
-                        </p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                            {t('habits.days', 'days')}
-                        </p>
-                        {renderMiniChart(chartSeries.current, 'bg-green-500')}
-                    </div>
-
-                    {/* Best Streak */}
-                    <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
-                        <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-                            {t('habits.bestStreak', 'Best Streak')}
-                        </h3>
-                        <p className="text-4xl font-bold text-gray-900 dark:text-white">
-                            {habit.habit_best_streak || 0}
-                        </p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                            {t('habits.days', 'days')}
-                        </p>
-                        {renderMiniChart(chartSeries.best, 'bg-blue-500')}
-                    </div>
-
-                    {/* Total Completions */}
-                    <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
-                        <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-                            {t('habits.totalCompletions', 'Total Completions')}
-                        </h3>
-                        <p className="text-4xl font-bold text-gray-900 dark:text-white">
-                            {habit.habit_total_completions || 0}
-                        </p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                            {t('habits.times', 'times')}
-                        </p>
-                        {renderMiniChart(chartSeries.total, 'bg-purple-500')}
-                    </div>
-                </div>
-                )}
-            </div>
-
-            {/* Calendar History - Last 90 Days - Only show for existing habits */}
-            {!isNewHabit && (
-            <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-6 mb-8">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-                    {t('habits.history', 'Last 90 Days')}
-                </h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                    {t('habits.clickToToggle', 'Click on a day to mark as complete or undo')}
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {orderedCalendarRanges.map(({ rangeStart, rangeEnd, monthLabel }, idx) => (
-                        <div key={`calendar-${idx}`} className="space-y-2">
-                            <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
-                                {monthLabel}
+                <div className="flex flex-col lg:flex-row gap-6 mb-8">
+                    {/* Details */}
+                    <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-6 lg:w-1/3">
+                        <div className="mb-4">
+                            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                                {t('habits.details', 'Details')}
+                            </h2>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                                {t(
+                                    'habits.inlineEditHint',
+                                    'Click a value to edit. Press Enter or click outside to save.'
+                                )}
                             </p>
-                            <div className="w-full">{renderCalendar(rangeStart, rangeEnd)}</div>
                         </div>
-                    ))}
-                </div>
-                <div className="mt-2 flex items-center gap-3 text-[10px] text-gray-600 dark:text-gray-400">
-                    <div className="flex items-center gap-1">
-                        <div className="w-2.5 h-2.5 rounded-sm bg-green-500"></div>
-                        <span>{t('habits.completed', 'Completed')}</span>
+                        <div className="space-y-4">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                                    {t(
+                                        'habits.targetFrequency',
+                                        'Target Frequency'
+                                    )}
+                                </span>
+                                {editingField === 'targetFrequency' ? (
+                                    <div
+                                        ref={targetFrequencyContainerRef}
+                                        className="flex flex-col sm:flex-row items-center gap-2 sm:justify-end w-full sm:w-auto"
+                                    >
+                                        <input
+                                            ref={targetCountInputRef}
+                                            type="number"
+                                            min={1}
+                                            value={
+                                                editableValues.habit_target_count
+                                            }
+                                            onChange={(e) =>
+                                                setEditableValues((prev) => ({
+                                                    ...prev,
+                                                    habit_target_count:
+                                                        Math.max(
+                                                            1,
+                                                            parseInt(
+                                                                e.target.value,
+                                                                10
+                                                            ) || 1
+                                                        ),
+                                                }))
+                                            }
+                                            onKeyDown={(e) =>
+                                                handleFieldKeyDown(
+                                                    e,
+                                                    'targetFrequency'
+                                                )
+                                            }
+                                            className="w-full sm:w-20 px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                                        />
+                                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                                            {t('habits.timesPer', 'times per')}
+                                        </span>
+                                        <select
+                                            value={
+                                                editableValues.habit_frequency_period
+                                            }
+                                            onChange={(e) =>
+                                                setEditableValues((prev) => ({
+                                                    ...prev,
+                                                    habit_frequency_period: e
+                                                        .target.value as
+                                                        | 'daily'
+                                                        | 'weekly'
+                                                        | 'monthly',
+                                                }))
+                                            }
+                                            onKeyDown={(e) =>
+                                                handleFieldKeyDown(
+                                                    e,
+                                                    'targetFrequency'
+                                                )
+                                            }
+                                            className="w-full sm:w-32 px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                                        >
+                                            <option value="daily">
+                                                {t('habits.day', 'Day')}
+                                            </option>
+                                            <option value="weekly">
+                                                {t('habits.week', 'Week')}
+                                            </option>
+                                            <option value="monthly">
+                                                {t('habits.month', 'Month')}
+                                            </option>
+                                        </select>
+                                    </div>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        className="text-right text-gray-900 dark:text-white font-medium focus:outline-none cursor-text"
+                                        onClick={() =>
+                                            startEditingField('targetFrequency')
+                                        }
+                                    >
+                                        {editableValues.habit_target_count}x per{' '}
+                                        {editableValues.habit_frequency_period ===
+                                        'daily'
+                                            ? t('habits.day', 'Day')
+                                            : editableValues.habit_frequency_period ===
+                                                'weekly'
+                                              ? t('habits.week', 'Week')
+                                              : t('habits.month', 'Month')}
+                                    </button>
+                                )}
+                            </div>
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                                    {t('habits.scheduling', 'Scheduling')}
+                                </span>
+                                {editingField === 'flexibility' ? (
+                                    <div
+                                        ref={flexibilityContainerRef}
+                                        className="w-full sm:w-auto"
+                                    >
+                                        <select
+                                            ref={flexibilitySelectRef}
+                                            value={
+                                                editableValues.habit_flexibility_mode
+                                            }
+                                            onChange={(e) =>
+                                                setEditableValues((prev) => ({
+                                                    ...prev,
+                                                    habit_flexibility_mode: e
+                                                        .target.value as
+                                                        | 'flexible'
+                                                        | 'strict',
+                                                }))
+                                            }
+                                            onKeyDown={(e) =>
+                                                handleFieldKeyDown(
+                                                    e,
+                                                    'flexibility'
+                                                )
+                                            }
+                                            className="w-full px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-white capitalize"
+                                        >
+                                            <option value="flexible">
+                                                {t(
+                                                    'habits.flexible',
+                                                    'Flexible (anytime)'
+                                                )}
+                                            </option>
+                                            <option value="strict">
+                                                {t('habits.strict', 'Strict')}
+                                            </option>
+                                        </select>
+                                    </div>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        className="text-right text-gray-900 dark:text-white font-medium focus:outline-none cursor-text capitalize"
+                                        onClick={() =>
+                                            startEditingField('flexibility')
+                                        }
+                                    >
+                                        {editableValues.habit_flexibility_mode ===
+                                        'flexible'
+                                            ? t(
+                                                  'habits.flexible',
+                                                  'Flexible (anytime)'
+                                              )
+                                            : t('habits.strict', 'Strict')}
+                                    </button>
+                                )}
+                            </div>
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                                    {t(
+                                        'habits.streakCalc',
+                                        'Streak Calculation'
+                                    )}
+                                </span>
+                                {editingField === 'streak' ? (
+                                    <div
+                                        ref={streakContainerRef}
+                                        className="w-full sm:w-auto"
+                                    >
+                                        <select
+                                            ref={streakSelectRef}
+                                            value={
+                                                editableValues.habit_streak_mode
+                                            }
+                                            onChange={(e) =>
+                                                setEditableValues((prev) => ({
+                                                    ...prev,
+                                                    habit_streak_mode: e.target
+                                                        .value as
+                                                        | 'calendar'
+                                                        | 'scheduled',
+                                                }))
+                                            }
+                                            onKeyDown={(e) =>
+                                                handleFieldKeyDown(e, 'streak')
+                                            }
+                                            className="w-full px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-white capitalize"
+                                        >
+                                            <option value="calendar">
+                                                {t(
+                                                    'habits.calendarDays',
+                                                    'Calendar days'
+                                                )}
+                                            </option>
+                                            <option value="scheduled">
+                                                {t(
+                                                    'habits.scheduledPeriods',
+                                                    'Scheduled periods'
+                                                )}
+                                            </option>
+                                        </select>
+                                    </div>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        className="text-right text-gray-900 dark:text-white font-medium focus:outline-none cursor-text capitalize"
+                                        onClick={() =>
+                                            startEditingField('streak')
+                                        }
+                                    >
+                                        {editableValues.habit_streak_mode ===
+                                        'calendar'
+                                            ? t(
+                                                  'habits.calendarDays',
+                                                  'Calendar days'
+                                              )
+                                            : t(
+                                                  'habits.scheduledPeriods',
+                                                  'Scheduled periods'
+                                              )}
+                                    </button>
+                                )}
+                            </div>
+                        </div>
                     </div>
-                    <div className="flex items-center gap-1">
-                        <div className="w-2.5 h-2.5 rounded-sm bg-gray-200 dark:bg-gray-800"></div>
-                        <span>{t('habits.notCompleted', 'Not completed')}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                        <div className="w-2.5 h-2.5 rounded-sm ring-1 ring-blue-500 bg-gray-200 dark:bg-gray-800"></div>
-                        <span>{t('habits.today', 'Today')}</span>
-                    </div>
-                </div>
-            </div>
-            )}
 
+                    {/* Stats Grid - Only show for existing habits */}
+                    {!isNewHabit && (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:flex-1">
+                            {/* Current Streak */}
+                            <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <FireIcon className="h-6 w-6 text-orange-500" />
+                                    <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                                        {t(
+                                            'habits.currentStreak',
+                                            'Current Streak'
+                                        )}
+                                    </h3>
+                                </div>
+                                <p className="text-4xl font-bold text-gray-900 dark:text-white">
+                                    {habit.habit_current_streak || 0}
+                                </p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                    {t('habits.days', 'days')}
+                                </p>
+                                {renderMiniChart(
+                                    chartSeries.current,
+                                    'bg-green-500'
+                                )}
+                            </div>
+
+                            {/* Best Streak */}
+                            <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
+                                <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+                                    {t('habits.bestStreak', 'Best Streak')}
+                                </h3>
+                                <p className="text-4xl font-bold text-gray-900 dark:text-white">
+                                    {habit.habit_best_streak || 0}
+                                </p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                    {t('habits.days', 'days')}
+                                </p>
+                                {renderMiniChart(
+                                    chartSeries.best,
+                                    'bg-blue-500'
+                                )}
+                            </div>
+
+                            {/* Total Completions */}
+                            <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
+                                <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+                                    {t(
+                                        'habits.totalCompletions',
+                                        'Total Completions'
+                                    )}
+                                </h3>
+                                <p className="text-4xl font-bold text-gray-900 dark:text-white">
+                                    {habit.habit_total_completions || 0}
+                                </p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                    {t('habits.times', 'times')}
+                                </p>
+                                {renderMiniChart(
+                                    chartSeries.total,
+                                    'bg-purple-500'
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                {/* Calendar History - Last 90 Days - Only show for existing habits */}
+                {!isNewHabit && (
+                    <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-6 mb-8">
+                        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                            {t('habits.history', 'Last 90 Days')}
+                        </h2>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                            {t(
+                                'habits.clickToToggle',
+                                'Click on a day to mark as complete or undo'
+                            )}
+                        </p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {orderedCalendarRanges.map(
+                                ({ rangeStart, rangeEnd, monthLabel }, idx) => (
+                                    <div
+                                        key={`calendar-${idx}`}
+                                        className="space-y-2"
+                                    >
+                                        <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+                                            {monthLabel}
+                                        </p>
+                                        <div className="w-full">
+                                            {renderCalendar(
+                                                rangeStart,
+                                                rangeEnd
+                                            )}
+                                        </div>
+                                    </div>
+                                )
+                            )}
+                        </div>
+                        <div className="mt-2 flex items-center gap-3 text-[10px] text-gray-600 dark:text-gray-400">
+                            <div className="flex items-center gap-1">
+                                <div className="w-2.5 h-2.5 rounded-sm bg-green-500"></div>
+                                <span>
+                                    {t('habits.completed', 'Completed')}
+                                </span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                                <div className="w-2.5 h-2.5 rounded-sm bg-gray-200 dark:bg-gray-800"></div>
+                                <span>
+                                    {t('habits.notCompleted', 'Not completed')}
+                                </span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                                <div className="w-2.5 h-2.5 rounded-sm ring-1 ring-blue-500 bg-gray-200 dark:bg-gray-800"></div>
+                                <span>{t('habits.today', 'Today')}</span>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

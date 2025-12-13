@@ -168,10 +168,7 @@ const HabitModal: React.FC<HabitModalProps> = ({
                             {t('habits.flexible', 'Flexible (anytime)')}
                         </option>
                         <option value="strict">
-                            {t(
-                                'habits.strict',
-                                'Strict (specific schedule)'
-                            )}
+                            {t('habits.strict', 'Strict (specific schedule)')}
                         </option>
                     </select>
                 </div>

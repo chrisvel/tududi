@@ -226,7 +226,10 @@ const App: React.FC = () => {
                             />
                             <Route path="/inbox" element={<InboxItems />} />
                             <Route path="/habits" element={<Habits />} />
-                            <Route path="/habit/:uid" element={<HabitDetails />} />
+                            <Route
+                                path="/habit/:uid"
+                                element={<HabitDetails />}
+                            />
                             <Route path="/projects" element={<Projects />} />
                             <Route
                                 path="/project/:uidSlug"
