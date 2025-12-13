@@ -150,7 +150,8 @@
     "planned": "مخطط",
     "open": "فتح",
     "completed": "مكتمل",
-    "noCompletedTasksToday": "لا توجد مهام مكتملة اليوم."
+    "noCompletedTasksToday": "لا توجد مهام مكتملة اليوم.",
+    "markAsDone": "Mark as done"
   },
   "timeline": {
     "activityTimeline": "جدول الأنشطة",

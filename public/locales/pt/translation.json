@@ -150,7 +150,8 @@
     "planned": "Planejado",
     "open": "Abrir",
     "completed": "Concluído",
-    "noCompletedTasksToday": "Nenhuma tarefa concluída hoje."
+    "noCompletedTasksToday": "Nenhuma tarefa concluída hoje.",
+    "markAsDone": "Mark as done"
   },
   "timeline": {
     "activityTimeline": "Linha do Tempo de Atividades",

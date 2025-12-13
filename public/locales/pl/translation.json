@@ -150,7 +150,8 @@
     "planned": "Zaplanowane",
     "open": "Otwórz",
     "completed": "Zakończone",
-    "noCompletedTasksToday": "Brak ukończonych zadań dzisiaj."
+    "noCompletedTasksToday": "Brak ukończonych zadań dzisiaj.",
+    "markAsDone": "Mark as done"
   },
   "timeline": {
     "activityTimeline": "Oś czasu aktywności",

@@ -150,7 +150,8 @@
     "planned": "Đã lên kế hoạch",
     "open": "Mở",
     "completed": "Đã hoàn thành",
-    "noCompletedTasksToday": "Không có nhiệm vụ hoàn thành hôm nay."
+    "noCompletedTasksToday": "Không có nhiệm vụ hoàn thành hôm nay.",
+    "markAsDone": "Mark as done"
   },
   "timeline": {
     "activityTimeline": "Dòng Thời Gian Hoạt Động",

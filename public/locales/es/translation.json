@@ -365,7 +365,8 @@
     "showingItems": "Mostrando {{current}} de {{total}} tareas",
     "open": "Abrir",
     "completed": "Completado",
-    "noCompletedTasksToday": "No hay tareas completadas hoy."
+    "noCompletedTasksToday": "No hay tareas completadas hoy.",
+    "markAsDone": "Mark as done"
   },
   "timeline": {
     "activityTimeline": "Línea de Tiempo de Actividad",

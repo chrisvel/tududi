@@ -150,7 +150,8 @@
     "showingItems": "{{current}} von {{total}} Aufgaben angezeigt",
     "open": "Öffnen",
     "completed": "Abgeschlossen",
-    "noCompletedTasksToday": "Keine abgeschlossenen Aufgaben heute."
+    "noCompletedTasksToday": "Keine abgeschlossenen Aufgaben heute.",
+    "markAsDone": "Mark as done"
   },
   "timeline": {
     "activityTimeline": "Aktivitätsverlauf",

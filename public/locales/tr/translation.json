@@ -150,7 +150,8 @@
     "planned": "Planlanmış",
     "open": "Aç",
     "completed": "Tamamlandı",
-    "noCompletedTasksToday": "Bugün tamamlanan görev yok."
+    "noCompletedTasksToday": "Bugün tamamlanan görev yok.",
+    "markAsDone": "Mark as done"
   },
   "timeline": {
     "activityTimeline": "Etkinlik Zaman Çizelgesi",

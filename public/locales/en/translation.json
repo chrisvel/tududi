@@ -103,7 +103,9 @@
     "today": "Today",
     "total": "Total",
     "backlog": "Backlog",
+    "notStarted": "Not Started",
     "inProgress": "In Progress",
+    "done": "Done",
     "overdue": "Overdue",
     "planned": "Planned",
     "dueToday": "Due Today",
@@ -149,7 +151,8 @@
     "unknownProject": "Unknown project",
     "tasks": "tasks",
     "showingItems": "Showing {{current}} of {{total}} tasks",
-    "noCompletedTasksToday": "No completed tasks today."
+    "noCompletedTasksToday": "No completed tasks today.",
+    "markAsDone": "Mark as done"
   },
   "timeline": {
     "activityTimeline": "Activity Timeline",

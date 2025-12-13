@@ -150,7 +150,8 @@
     "planned": "Gepland",
     "open": "Open",
     "completed": "Voltooid",
-    "noCompletedTasksToday": "Geen voltooide taken vandaag."
+    "noCompletedTasksToday": "Geen voltooide taken vandaag.",
+    "markAsDone": "Mark as done"
   },
   "timeline": {
     "activityTimeline": "Activiteit Tijdlijn",

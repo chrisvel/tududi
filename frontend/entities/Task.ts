@@ -37,6 +37,16 @@ export interface Task {
     Subtasks?: Task[]; // Handle API response case sensitivity (temporary)
     parent_child_logic_executed?: boolean; // Flag indicating if parent-child logic was executed during toggle
     attachments?: Attachment[];
+    // Habit fields
+    habit_mode?: boolean;
+    habit_target_count?: number;
+    habit_frequency_period?: 'daily' | 'weekly' | 'monthly';
+    habit_streak_mode?: 'calendar' | 'scheduled';
+    habit_flexibility_mode?: 'strict' | 'flexible';
+    habit_current_streak?: number;
+    habit_best_streak?: number;
+    habit_total_completions?: number;
+    habit_last_completion_at?: string;
 }
 
 export type StatusType =

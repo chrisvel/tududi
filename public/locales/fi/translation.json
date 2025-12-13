@@ -150,7 +150,8 @@
     "planned": "Suunniteltu",
     "open": "Avaa",
     "completed": "Valmis",
-    "noCompletedTasksToday": "Ei suoritettuja tehtäviä tänään."
+    "noCompletedTasksToday": "Ei suoritettuja tehtäviä tänään.",
+    "markAsDone": "Mark as done"
   },
   "timeline": {
     "activityTimeline": "Toiminta-aikajana",

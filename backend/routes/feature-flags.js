@@ -6,6 +6,7 @@ router.get('/feature-flags', (req, res) => {
         const featureFlags = {
             backups: process.env.FF_ENABLE_BACKUPS === 'true',
             calendar: process.env.FF_ENABLE_CALENDAR === 'true',
+            habits: process.env.FF_ENABLE_HABITS === 'true',
         };
 
         res.json({ featureFlags });

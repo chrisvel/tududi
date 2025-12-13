@@ -150,7 +150,8 @@
     "planned": "Načrtovano",
     "open": "Odpri",
     "completed": "Dokončano",
-    "noCompletedTasksToday": "Danes ni zaključenih nalog."
+    "noCompletedTasksToday": "Danes ni zaključenih nalog.",
+    "markAsDone": "Mark as done"
   },
   "timeline": {
     "activityTimeline": "Časovnica aktivnosti",

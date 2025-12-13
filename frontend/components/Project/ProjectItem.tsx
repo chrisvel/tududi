@@ -286,9 +286,8 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                     className="w-full h-full object-cover"
                                 />
                             ) : (
-                                <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 dark:from-blue-600 dark:to-purple-700"></div>
+                                <div className="w-full h-full bg-gray-200 dark:bg-gray-700"></div>
                             )}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                             <div className="absolute top-2 right-2 z-20 flex items-center space-x-2">
                                 {project.is_shared && (
                                     <ShareIcon

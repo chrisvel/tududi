@@ -45,7 +45,7 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
                             className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 cursor-pointer transition-all duration-200 ${
                                 subtask.status === 'in_progress' ||
                                 subtask.status === 1
-                                    ? 'border-2 border-green-400/60 dark:border-green-500/60'
+                                    ? 'border border-blue-500/60 dark:border-blue-600/60'
                                     : ''
                             }`}
                             onClick={(e) => {
@@ -249,7 +249,11 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
     const handleTaskClick = () => {
         if (task.uid) {
-            navigate(`/task/${task.uid}`);
+            if (task.habit_mode) {
+                navigate(`/habit/${task.uid}`);
+            } else {
+                navigate(`/task/${task.uid}`);
+            }
         }
     };
 
@@ -441,12 +445,37 @@ const TaskItem: React.FC<TaskItemProps> = ({
     // Check if task is overdue (created yesterday or earlier and not completed)
     const isOverdue = isTaskOverdue(task);
 
+    const getPriorityBorderClass = () => {
+        let priority = task.priority;
+        if (typeof priority === 'number') {
+            const priorityNames: Array<'low' | 'medium' | 'high'> = [
+                'low',
+                'medium',
+                'high',
+            ];
+            priority = priorityNames[priority] || undefined;
+        }
+
+        switch (priority) {
+            case 'high':
+                return 'border-l-4 border-l-red-500';
+            case 'medium':
+                return 'border-l-4 border-l-yellow-400';
+            case 'low':
+                return 'border-l-4 border-l-blue-400';
+            default:
+                return 'border-l-4 border-l-transparent';
+        }
+    };
+
+    const priorityBorderClass = getPriorityBorderClass();
+
     return (
         <>
             <div
-                className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 relative overflow-visible transition-opacity duration-300 ease-in-out ${
+                className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 relative overflow-visible transition-opacity duration-300 ease-in-out ${priorityBorderClass} ${
                     isInProgress
-                        ? 'border-2 border-green-400/60 dark:border-green-500/60'
+                        ? 'ring-1 ring-blue-500/60 dark:ring-blue-600/60'
                         : ''
                 } ${isAnimatingOut ? 'opacity-0' : 'opacity-100'}`}
             >

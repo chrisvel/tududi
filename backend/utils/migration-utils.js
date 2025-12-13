@@ -133,6 +133,11 @@ async function safeRemoveColumn(queryInterface, tableName, columnName) {
                     'PRAGMA foreign_keys = OFF;'
                 );
 
+                // Drop the _new table if it exists from a previous failed migration
+                await queryInterface.sequelize.query(
+                    `DROP TABLE IF EXISTS ${tableName}_new;`
+                );
+
                 await queryInterface.sequelize.query(
                     `CREATE TABLE ${tableName}_new (${columnDefs});`
                 );
@@ -284,20 +289,40 @@ async function safeChangeColumn(
         const dialect = queryInterface.sequelize.getDialect();
 
         if (dialect === 'sqlite') {
+            // Get indexes to determine which columns are actually individually unique
+            const indexes = await queryInterface.showIndex(tableName);
+            const individuallyUniqueColumns = new Set();
+
+            indexes.forEach((index) => {
+                if (index.unique && index.fields.length === 1) {
+                    individuallyUniqueColumns.add(index.fields[0].attribute);
+                }
+            });
+
             const columns = Object.keys(tableInfo);
             const columnDefs = columns
-                .map((col) =>
-                    buildDefinitionFromInfo(
+                .map((col) => {
+                    const info = { ...tableInfo[col] };
+                    // Override the unique flag with actual index data
+                    if (!individuallyUniqueColumns.has(col)) {
+                        info.unique = false;
+                    }
+                    return buildDefinitionFromInfo(
                         col,
-                        tableInfo[col],
+                        info,
                         col === columnName ? columnDefinition : null
-                    )
-                )
+                    );
+                })
                 .join(', ');
 
             const columnList = columns.map((col) => `\`${col}\``).join(', ');
 
             await queryInterface.sequelize.query('PRAGMA foreign_keys = OFF;');
+
+            // Drop the _new table if it exists from a previous failed migration
+            await queryInterface.sequelize.query(
+                `DROP TABLE IF EXISTS ${tableName}_new;`
+            );
 
             await queryInterface.sequelize.query(
                 `CREATE TABLE ${tableName}_new (${columnDefs});`

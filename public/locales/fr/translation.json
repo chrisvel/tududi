@@ -150,7 +150,8 @@
     "showingItems": "Affichage de {{current}} sur {{total}} tâches",
     "open": "Ouvrir",
     "completed": "Terminé",
-    "noCompletedTasksToday": "Aucune tâche terminée aujourd'hui."
+    "noCompletedTasksToday": "Aucune tâche terminée aujourd'hui.",
+    "markAsDone": "Mark as done"
   },
   "timeline": {
     "activityTimeline": "Chronologie d'Activité",

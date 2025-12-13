@@ -24,6 +24,8 @@ import TasksToday from './components/Task/TasksToday';
 import TaskDetails from './components/Task/TaskDetails';
 import LoadingScreen from './components/Shared/LoadingScreen';
 import InboxItems from './components/Inbox/InboxItems';
+import Habits from './components/Habits/Habits';
+import HabitDetails from './components/Habits/HabitDetails';
 import { setCurrentUser as setUserInStorage } from './utils/userUtils';
 import { getApiPath, getLocalesPath } from './config/paths';
 // Lazy load Tasks component to prevent issues with tags loading
@@ -223,6 +225,11 @@ const App: React.FC = () => {
                                 }
                             />
                             <Route path="/inbox" element={<InboxItems />} />
+                            <Route path="/habits" element={<Habits />} />
+                            <Route
+                                path="/habit/:uid"
+                                element={<HabitDetails />}
+                            />
                             <Route path="/projects" element={<Projects />} />
                             <Route
                                 path="/project/:uidSlug"

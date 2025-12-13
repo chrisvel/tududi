@@ -1,7 +1,11 @@
 'use strict';
 
 const { uid } = require('../utils/uid');
-const { safeAddColumns, safeAddIndex } = require('../utils/migration-utils');
+const {
+    safeAddColumns,
+    safeAddIndex,
+    safeChangeColumn,
+} = require('../utils/migration-utils');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -53,7 +57,7 @@ module.exports = {
                 }
 
                 // Make uid column not null and unique
-                await queryInterface.changeColumn(table.name, 'uid', {
+                await safeChangeColumn(queryInterface, table.name, 'uid', {
                     type: Sequelize.STRING,
                     allowNull: false,
                     unique: true,

@@ -171,6 +171,7 @@ const registerApiRoutes = (basePath) => {
 
     app.use(basePath, requireAuth);
     app.use(basePath, require('./routes/tasks'));
+    app.use(`${basePath}/habits`, require('./routes/habits'));
     app.use(basePath, require('./routes/projects'));
     app.use(basePath, require('./routes/admin'));
     app.use(basePath, require('./routes/shares'));

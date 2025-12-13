@@ -150,7 +150,8 @@
     "planned": "计划中",
     "open": "打开",
     "completed": "已完成",
-    "noCompletedTasksToday": "今天没有完成的任务。"
+    "noCompletedTasksToday": "今天没有完成的任务。",
+    "markAsDone": "Mark as done"
   },
   "timeline": {
     "activityTimeline": "活动时间线",

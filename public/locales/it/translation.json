@@ -150,7 +150,8 @@
     "planned": "Pianificato",
     "open": "Apri",
     "completed": "Completato",
-    "noCompletedTasksToday": "Nessuna attività completata oggi."
+    "noCompletedTasksToday": "Nessuna attività completata oggi.",
+    "markAsDone": "Mark as done"
   },
   "timeline": {
     "activityTimeline": "Timeline delle Attività",
