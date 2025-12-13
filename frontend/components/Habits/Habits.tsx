@@ -63,19 +63,20 @@ const Habits: React.FC = () => {
     }
 
     return (
-        <div className="max-w-6xl mx-auto p-6">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold dark:text-white">
-                    {t('habits.title', 'Habits')}
-                </h1>
-                <button
-                    onClick={handleCreateHabit}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-                >
-                    <PlusIcon className="w-5 h-5" />
-                    {t('habits.new', 'New Habit')}
-                </button>
-            </div>
+        <div className="w-full pt-4 pb-8 px-2 sm:px-4 lg:px-6">
+            <div className="w-full">
+                <div className="flex items-center justify-between gap-2 mb-8">
+                    <h2 className="text-2xl font-light dark:text-white">
+                        {t('habits.title', 'Habits')}
+                    </h2>
+                    <button
+                        onClick={handleCreateHabit}
+                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                    >
+                        <PlusIcon className="w-5 h-5" />
+                        {t('habits.new', 'New Habit')}
+                    </button>
+                </div>
 
             {habits.length === 0 ? (
                 <div className="text-center py-12 text-gray-500 dark:text-gray-400">
@@ -176,6 +177,7 @@ const Habits: React.FC = () => {
                     </div>
                 </>
             )}
+            </div>
         </div>
     );
 };

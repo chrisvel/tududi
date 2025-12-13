@@ -1,17 +1,19 @@
 import React from 'react';
 import { Location } from 'react-router-dom';
-import { FireIcon } from '@heroicons/react/24/outline';
+import { FireIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 
 interface SidebarHabitsProps {
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
     location: Location;
     isDarkMode: boolean;
+    openNewHabit: () => void;
 }
 
 const SidebarHabits: React.FC<SidebarHabitsProps> = ({
     handleNavClick,
     location,
+    openNewHabit,
 }) => {
     const { t } = useTranslation();
     const isActiveHabit = (path: string) => {
@@ -39,6 +41,17 @@ const SidebarHabits: React.FC<SidebarHabitsProps> = ({
                         <FireIcon className="h-5 w-5 mr-2" />
                         {t('sidebar.habits', 'HABITS')}
                     </span>
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            openNewHabit();
+                        }}
+                        className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none"
+                        aria-label="Add Habit"
+                        title="Add Habit"
+                    >
+                        <PlusCircleIcon className="h-5 w-5" />
+                    </button>
                 </li>
             </ul>
         </>

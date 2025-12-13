@@ -611,16 +611,17 @@ const HabitDetails: React.FC = () => {
     }
 
     return (
-        <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">
-            {/* Header */}
-            <div className="mb-6">
-                <button
-                    onClick={() => navigate('/habits')}
-                    className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-4"
-                >
-                    <ArrowLeftIcon className="h-5 w-5" />
-                    {t('common.back', 'Back to Habits')}
-                </button>
+        <div className="w-full pb-12">
+            <div className="w-full px-4 sm:px-6 lg:px-10">
+                {/* Header */}
+                <div className="mb-6">
+                    <button
+                        onClick={() => navigate('/habits')}
+                        className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-4"
+                    >
+                        <ArrowLeftIcon className="h-5 w-5" />
+                        {t('common.back', 'Back to Habits')}
+                    </button>
 
                 <div className="flex items-start justify-between flex-wrap gap-4">
                     <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -923,6 +924,7 @@ const HabitDetails: React.FC = () => {
             </div>
             )}
 
+            </div>
         </div>
     );
 };

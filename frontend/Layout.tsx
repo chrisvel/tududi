@@ -28,7 +28,7 @@ import {
 } from './utils/projectsService';
 import { createTask, updateTask } from './utils/tasksService';
 import { isAuthError } from './utils/authUtils';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 interface LayoutProps {
     currentUser: User;
@@ -47,6 +47,7 @@ const Layout: React.FC<LayoutProps> = ({
 }) => {
     const { t } = useTranslation();
     const { showSuccessToast } = useToast();
+    const navigate = useNavigate();
     const location = useLocation();
     const isUpcomingView = location.pathname === '/upcoming';
     const [isSidebarOpen, setIsSidebarOpen] = useState(
@@ -145,6 +146,10 @@ const Layout: React.FC<LayoutProps> = ({
 
     const closeProjectModal = () => {
         setIsProjectModalOpen(false);
+    };
+
+    const openNewHabit = () => {
+        navigate('/habit/new');
     };
 
     const openAreaModal = (area: Area | null = null) => {
@@ -375,6 +380,7 @@ const Layout: React.FC<LayoutProps> = ({
                     openNoteModal={openNoteModal}
                     openAreaModal={openAreaModal}
                     openTagModal={openTagModal}
+                    openNewHabit={openNewHabit}
                     notes={notes}
                     areas={areas}
                     tags={tags}
@@ -412,6 +418,7 @@ const Layout: React.FC<LayoutProps> = ({
                     openNoteModal={openNoteModal}
                     openAreaModal={openAreaModal}
                     openTagModal={openTagModal}
+                    openNewHabit={openNewHabit}
                     notes={notes}
                     areas={areas}
                     tags={tags}
@@ -449,6 +456,7 @@ const Layout: React.FC<LayoutProps> = ({
                     openNoteModal={openNoteModal}
                     openAreaModal={openAreaModal}
                     openTagModal={openTagModal}
+                    openNewHabit={openNewHabit}
                     notes={notes}
                     areas={areas}
                     tags={tags}

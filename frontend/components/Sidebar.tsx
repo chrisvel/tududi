@@ -24,6 +24,7 @@ interface SidebarProps {
     openNoteModal: (note: Note | null) => void;
     openAreaModal: (area: Area | null) => void;
     openTagModal: (tag: Tag | null) => void;
+    openNewHabit: () => void;
     notes: Note[];
     areas: Area[];
     tags: Tag[];
@@ -40,6 +41,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     openNoteModal,
     openAreaModal,
     openTagModal,
+    openNewHabit,
     notes,
     areas,
     tags,
@@ -110,6 +112,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                                 handleNavClick={handleNavClick}
                                 location={location}
                                 isDarkMode={isDarkMode}
+                                openNewHabit={openNewHabit}
                             />
                         )}
                         <SidebarAreas
