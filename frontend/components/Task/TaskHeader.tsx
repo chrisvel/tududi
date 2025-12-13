@@ -155,6 +155,26 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
         });
     };
 
+    const formatDeferUntil = (deferUntil: string): string | null => {
+        const date = new Date(deferUntil);
+        if (Number.isNaN(date.getTime())) {
+            return null;
+        }
+
+        const datePart = date.toLocaleDateString(undefined, {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+        });
+
+        const timePart = date.toLocaleTimeString(undefined, {
+            hour: 'numeric',
+            minute: '2-digit',
+        });
+
+        return `${datePart} • ${timePart}`;
+    };
+
     const formatRecurrence = (recurrenceType: string) => {
         switch (recurrenceType) {
             case 'daily':
@@ -183,13 +203,18 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
         }
     };
 
-    // Check if task has metadata (project, tags, due_date, recurrence_type, or recurring_parent_id)
+    const formattedDeferUntil = task.defer_until
+        ? formatDeferUntil(task.defer_until)
+        : null;
+
+    // Check if task has metadata (project, tags, due_date, recurrence_type, recurring_parent_id, or defer_until)
     const hasMetadata =
         (project && !hideProjectName) ||
         (task.tags && task.tags.length > 0) ||
         task.due_date ||
         (task.recurrence_type && task.recurrence_type !== 'none') ||
-        task.recurring_parent_id;
+        task.recurring_parent_id ||
+        !!formattedDeferUntil;
 
     const isTaskCompleted =
         task.status === 'done' ||
@@ -510,6 +535,12 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                 'Recurring task instance'
                                             )}
                                         </span>
+                                    </div>
+                                )}
+                                {formattedDeferUntil && (
+                                    <div className="flex items-center">
+                                        <CalendarDaysIcon className="h-3 w-3 mr-1" />
+                                        <span>{formattedDeferUntil}</span>
                                     </div>
                                 )}
                             </div>
@@ -1081,6 +1112,12 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                             'Recurring task instance'
                                         )}
                                     </span>
+                                </div>
+                            )}
+                            {formattedDeferUntil && (
+                                <div className="flex items-center whitespace-nowrap">
+                                    <CalendarDaysIcon className="h-3 w-3 mr-1" />
+                                    <span>{formattedDeferUntil}</span>
                                 </div>
                             )}
                         </div>

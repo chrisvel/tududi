@@ -4,6 +4,7 @@ import { CalendarDaysIcon } from '@heroicons/react/24/outline';
 import TaskList from './TaskList';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
+import { sortTasksByPriorityDueDateProject } from '../../utils/taskSortUtils';
 
 interface TodayPlanProps {
     todayPlanTasks: Task[] | undefined;
@@ -27,79 +28,24 @@ const TodayPlan: React.FC<TodayPlanProps> = ({
     // Handle undefined or null todayPlanTasks
     const safeTodayPlanTasks = todayPlanTasks || [];
 
-    // Sort tasks to move in-progress tasks to the top
+    // Sort tasks to move in-progress tasks to the top, then apply multi-criteria sorting
     const sortedTasks = React.useMemo(() => {
         if (safeTodayPlanTasks.length === 0) return [];
 
-        return [...safeTodayPlanTasks].sort((a, b) => {
-            const aInProgress = a.status === 'in_progress' || a.status === 1;
-            const bInProgress = b.status === 'in_progress' || b.status === 1;
+        // Separate in-progress and non-in-progress tasks
+        const inProgressTasks = safeTodayPlanTasks.filter(
+            (task) => task.status === 'in_progress' || task.status === 1
+        );
+        const otherTasks = safeTodayPlanTasks.filter(
+            (task) => task.status !== 'in_progress' && task.status !== 1
+        );
 
-            // If both are in progress, sort by multi-criteria
-            if (aInProgress && bInProgress) {
-                // 1. Priority (High → Medium → Low → None)
-                const priorityOrder = { high: 3, medium: 2, low: 1 };
-                const aPriority =
-                    priorityOrder[a.priority as keyof typeof priorityOrder] ||
-                    0;
-                const bPriority =
-                    priorityOrder[b.priority as keyof typeof priorityOrder] ||
-                    0;
-                if (aPriority !== bPriority) {
-                    return bPriority - aPriority; // Higher priority first
-                }
+        // Sort each group using multi-criteria sorting
+        const sortedInProgress = sortTasksByPriorityDueDateProject(inProgressTasks);
+        const sortedOthers = sortTasksByPriorityDueDateProject(otherTasks);
 
-                // 2. Due date (earlier first, null/undefined last)
-                const aDueDate = a.due_date
-                    ? new Date(a.due_date).getTime()
-                    : Infinity;
-                const bDueDate = b.due_date
-                    ? new Date(b.due_date).getTime()
-                    : Infinity;
-                if (aDueDate !== bDueDate) {
-                    return aDueDate - bDueDate;
-                }
-
-                // 3. Project (tasks with same priority and due date grouped by project)
-                const aProject = a.project_id || '';
-                const bProject = b.project_id || '';
-                return aProject.toString().localeCompare(bProject.toString());
-            }
-
-            // If both are not in progress, sort by multi-criteria
-            if (!aInProgress && !bInProgress) {
-                // 1. Priority (High → Medium → Low → None)
-                const priorityOrder = { high: 3, medium: 2, low: 1 };
-                const aPriority =
-                    priorityOrder[a.priority as keyof typeof priorityOrder] ||
-                    0;
-                const bPriority =
-                    priorityOrder[b.priority as keyof typeof priorityOrder] ||
-                    0;
-                if (aPriority !== bPriority) {
-                    return bPriority - aPriority; // Higher priority first
-                }
-
-                // 2. Due date (earlier first, null/undefined last)
-                const aDueDate = a.due_date
-                    ? new Date(a.due_date).getTime()
-                    : Infinity;
-                const bDueDate = b.due_date
-                    ? new Date(b.due_date).getTime()
-                    : Infinity;
-                if (aDueDate !== bDueDate) {
-                    return aDueDate - bDueDate;
-                }
-
-                // 3. Project (tasks with same priority and due date grouped by project)
-                const aProject = a.project_id || '';
-                const bProject = b.project_id || '';
-                return aProject.toString().localeCompare(bProject.toString());
-            }
-
-            // Put in-progress tasks first
-            return aInProgress ? -1 : 1;
-        });
+        // Return in-progress tasks first, followed by others
+        return [...sortedInProgress, ...sortedOthers];
     }, [safeTodayPlanTasks]);
 
     if (sortedTasks.length === 0) {

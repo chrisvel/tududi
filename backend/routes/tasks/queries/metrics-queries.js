@@ -177,15 +177,16 @@ async function fetchSomedayTaskIds(userId) {
 async function fetchNonProjectTasks(
     visibleTasksWhere,
     excludedTaskIds,
-    somedayTaskIds
+    somedayTaskIds,
+    limit = null
 ) {
-    return await Task.findAll({
+    const exclusionIds = [...excludedTaskIds, ...somedayTaskIds];
+    const queryOptions = {
         where: {
             ...visibleTasksWhere,
             status: {
                 [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.WAITING],
             },
-            id: { [Op.notIn]: [...excludedTaskIds, ...somedayTaskIds] },
             [Op.or]: [{ project_id: null }, { project_id: '' }],
             parent_task_id: null,
             recurring_parent_id: null,
@@ -196,22 +197,32 @@ async function fetchNonProjectTasks(
             ['due_date', 'ASC'],
             ['project_id', 'ASC'],
         ],
-        limit: 6,
-    });
+    };
+
+    if (exclusionIds.length > 0) {
+        queryOptions.where.id = { [Op.notIn]: exclusionIds };
+    }
+
+    if (limit && Number.isInteger(limit)) {
+        queryOptions.limit = limit;
+    }
+
+    return await Task.findAll(queryOptions);
 }
 
 async function fetchProjectTasks(
     visibleTasksWhere,
     excludedTaskIds,
-    somedayTaskIds
+    somedayTaskIds,
+    limit = null
 ) {
-    return await Task.findAll({
+    const exclusionIds = [...excludedTaskIds, ...somedayTaskIds];
+    const queryOptions = {
         where: {
             ...visibleTasksWhere,
             status: {
                 [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.WAITING],
             },
-            id: { [Op.notIn]: [...excludedTaskIds, ...somedayTaskIds] },
             project_id: { [Op.not]: null, [Op.ne]: '' },
             parent_task_id: null,
             recurring_parent_id: null,
@@ -222,25 +233,34 @@ async function fetchProjectTasks(
             ['due_date', 'ASC'],
             ['project_id', 'ASC'],
         ],
-        limit: 6,
-    });
+    };
+
+    if (exclusionIds.length > 0) {
+        queryOptions.where.id = { [Op.notIn]: exclusionIds };
+    }
+
+    if (limit && Number.isInteger(limit)) {
+        queryOptions.limit = limit;
+    }
+
+    return await Task.findAll(queryOptions);
 }
 
 async function fetchSomedayFallbackTasks(
     userId,
     usedTaskIds,
     somedayTaskIds,
-    limit
+    limit = null
 ) {
-    return await Task.findAll({
+    if (somedayTaskIds.length === 0) {
+        return [];
+    }
+
+    const queryOptions = {
         where: {
             user_id: userId,
             status: {
                 [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.WAITING],
-            },
-            id: {
-                [Op.notIn]: usedTaskIds,
-                [Op.in]: somedayTaskIds,
             },
             parent_task_id: null,
             recurring_parent_id: null,
@@ -251,8 +271,24 @@ async function fetchSomedayFallbackTasks(
             ['due_date', 'ASC'],
             ['project_id', 'ASC'],
         ],
-        limit: limit,
-    });
+    };
+
+    if (usedTaskIds.length > 0) {
+        queryOptions.where.id = {
+            [Op.notIn]: usedTaskIds,
+            [Op.in]: somedayTaskIds,
+        };
+    } else {
+        queryOptions.where.id = {
+            [Op.in]: somedayTaskIds,
+        };
+    }
+
+    if (limit && Number.isInteger(limit)) {
+        queryOptions.limit = limit;
+    }
+
+    return await Task.findAll(queryOptions);
 }
 
 async function fetchTasksCompletedToday(userId, userTimezone) {
