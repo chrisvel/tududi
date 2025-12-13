@@ -77,7 +77,7 @@ const upload = multer({
         }
     },
 });
-router.post('/backup/export', async (req, res) => {
+router.post('/export', async (req, res) => {
     try {
         const userId = getAuthenticatedUserId(req);
         if (!userId) {
@@ -106,7 +106,7 @@ router.post('/backup/export', async (req, res) => {
     }
 });
 
-router.post('/backup/import', upload.single('backup'), async (req, res) => {
+router.post('/import', upload.single('backup'), async (req, res) => {
     try {
         const userId = getAuthenticatedUserId(req);
         if (!userId) {
@@ -167,7 +167,7 @@ router.post('/backup/import', upload.single('backup'), async (req, res) => {
     }
 });
 
-router.post('/backup/validate', upload.single('backup'), async (req, res) => {
+router.post('/validate', upload.single('backup'), async (req, res) => {
     try {
         const userId = getAuthenticatedUserId(req);
         if (!userId) {
@@ -238,7 +238,7 @@ router.post('/backup/validate', upload.single('backup'), async (req, res) => {
     }
 });
 
-router.get('/backup/list', async (req, res) => {
+router.get('/list', async (req, res) => {
     try {
         const userId = getAuthenticatedUserId(req);
         if (!userId) {
@@ -260,7 +260,7 @@ router.get('/backup/list', async (req, res) => {
     }
 });
 
-router.get('/backup/:uid/download', async (req, res) => {
+router.get('/:uid/download', async (req, res) => {
     try {
         const userId = getAuthenticatedUserId(req);
         if (!userId) {
@@ -301,7 +301,7 @@ router.get('/backup/:uid/download', async (req, res) => {
     }
 });
 
-router.post('/backup/:uid/restore', async (req, res) => {
+router.post('/:uid/restore', async (req, res) => {
     try {
         const userId = getAuthenticatedUserId(req);
         if (!userId) {
@@ -338,7 +338,7 @@ router.post('/backup/:uid/restore', async (req, res) => {
     }
 });
 
-router.delete('/backup/:uid', async (req, res) => {
+router.delete('/:uid', async (req, res) => {
     try {
         const userId = getAuthenticatedUserId(req);
         if (!userId) {

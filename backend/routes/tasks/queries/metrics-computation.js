@@ -16,6 +16,61 @@ const {
     fetchTasksCompletedToday,
 } = require('./metrics-queries');
 
+const MAX_SUGGESTED_TASKS = 10;
+
+const getPriorityValue = (priority) => {
+    const priorityOrder = {
+        high: 3,
+        medium: 2,
+        low: 1,
+    };
+
+    if (priority === null || priority === undefined) {
+        return 0;
+    }
+
+    if (typeof priority === 'number') {
+        // Normalize numeric priority (assuming 2=high,1=medium,0=low)
+        if (priority >= 2) return priorityOrder.high;
+        if (priority === 1) return priorityOrder.medium;
+        if (priority === 0) return priorityOrder.low;
+        return 0;
+    }
+
+    const normalized = String(priority).toLowerCase();
+    return priorityOrder[normalized] || 0;
+};
+
+const multiCriteriaTaskSort = (a, b) => {
+    // 1. Priority
+    const priorityDiff =
+        getPriorityValue(b.priority) - getPriorityValue(a.priority);
+    if (priorityDiff !== 0) {
+        return priorityDiff;
+    }
+
+    // 2. Due date (earlier first, null/undefined last)
+    const getDueDateValue = (task) => {
+        if (!task.due_date) return Infinity;
+        const due =
+            task.due_date instanceof Date
+                ? task.due_date
+                : new Date(task.due_date);
+        const time = due.getTime();
+        return Number.isNaN(time) ? Infinity : time;
+    };
+
+    const dueDiff = getDueDateValue(a) - getDueDateValue(b);
+    if (dueDiff !== 0) {
+        return dueDiff;
+    }
+
+    // 3. Project (group similar project tasks)
+    const projectA = (a.project_id || '').toString();
+    const projectB = (b.project_id || '').toString();
+    return projectA.localeCompare(projectB);
+};
+
 async function computeSuggestedTasks(
     visibleTasksWhere,
     userId,
@@ -60,14 +115,23 @@ async function computeSuggestedTasks(
         const somedayFallbackTasks = await fetchSomedayFallbackTasks(
             userId,
             usedTaskIds,
-            somedayTaskIds,
-            12 - combinedTasks.length
+            somedayTaskIds
         );
 
         combinedTasks = [...combinedTasks, ...somedayFallbackTasks];
     }
 
-    return combinedTasks;
+    const now = Date.now();
+    const filteredTasks = combinedTasks.filter((task) => {
+        if (!task.defer_until) return true;
+        const deferUntil = new Date(task.defer_until).getTime();
+        if (Number.isNaN(deferUntil)) return true;
+        return deferUntil <= now;
+    });
+
+    filteredTasks.sort(multiCriteriaTaskSort);
+
+    return filteredTasks.slice(0, MAX_SUGGESTED_TASKS);
 }
 
 async function computeWeeklyCompletions(userId, userTimezone) {
