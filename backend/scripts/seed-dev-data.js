@@ -1,12 +1,19 @@
 #!/usr/bin/env node
 
-const path = require('path');
-const { seedDatabase } = require('../seeders/dev-seeder');
-const { setConfig, getConfig } = require('../config/config');
+const { seedDatabase } = require('../seeders');
+const { getConfig } = require('../config/config');
 const config = getConfig();
 
 console.log('🌱 Starting development data seeding...');
 console.log(`📁 Database: ${config.dbFile}`);
 console.log(`🌍 Environment: ${config.environment}`);
 
-seedDatabase();
+(async () => {
+    try {
+        await seedDatabase();
+        process.exit(0);
+    } catch (error) {
+        console.error('❌ Seeding failed:', error.message);
+        process.exit(1);
+    }
+})();
