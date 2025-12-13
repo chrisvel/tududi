@@ -8,7 +8,6 @@ import {
     PencilIcon,
     TrashIcon,
     EllipsisVerticalIcon,
-    CheckCircleIcon,
     ChevronDownIcon,
     PlayIcon,
     PauseCircleIcon,
@@ -184,35 +183,6 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
         }
     };
 
-    const handlePlayToggle = async (e: React.MouseEvent) => {
-        e.stopPropagation(); // Prevent opening task modal
-        if (
-            task.id &&
-            (task.status === 'not_started' ||
-                task.status === 'in_progress' ||
-                task.status === 0 ||
-                task.status === 1) &&
-            onTaskUpdate
-        ) {
-            try {
-                setCompletionMenuOpen(null);
-                const isCurrentlyInProgress =
-                    task.status === 'in_progress' || task.status === 1;
-                const updatedTask = {
-                    ...task,
-                    status: (isCurrentlyInProgress
-                        ? 'not_started'
-                        : 'in_progress') as StatusType,
-                    // Automatically add to today plan when setting to in_progress
-                    today: isCurrentlyInProgress ? task.today : true,
-                };
-                await onTaskUpdate(updatedTask);
-            } catch (error) {
-                console.error('Failed to toggle in progress status:', error);
-            }
-        }
-    };
-
     // Check if task has metadata (project, tags, due_date, recurrence_type, or recurring_parent_id)
     const hasMetadata =
         (project && !hideProjectName) ||
@@ -228,12 +198,6 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
         task.status === 3;
 
     const isTaskInProgress = task.status === 'in_progress' || task.status === 1;
-
-    const canToggleProgressState =
-        task.status === 'not_started' ||
-        task.status === 'in_progress' ||
-        task.status === 0 ||
-        task.status === 1;
 
     const completionButtonBorderClass = isTaskCompleted
         ? 'border-green-200 dark:border-green-900'
