@@ -40,7 +40,11 @@ async function fetchTasksInProgress(visibleTasksWhere) {
             recurring_parent_id: null,
         },
         include: getTaskIncludeConfig(),
-        order: [['priority', 'DESC']],
+        order: [
+            ['priority', 'DESC'],
+            ['due_date', 'ASC'],
+            ['project_id', 'ASC'],
+        ],
     });
 }
 
@@ -67,7 +71,8 @@ async function fetchTodayPlanTasks(visibleTasksWhere) {
         include: getTaskIncludeConfig(),
         order: [
             ['priority', 'DESC'],
-            ['created_at', 'ASC'],
+            ['due_date', 'ASC'],
+            ['project_id', 'ASC'],
         ],
     });
 }
