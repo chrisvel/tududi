@@ -946,13 +946,13 @@
     "parentEditWarning": "⚠️ Du redigerer innstillingene for gjentakelse av den overordnede oppgaven. Endringer vil påvirke alle fremtidige instanser av denne gjentakende oppgaven."
   },
   "weekdays": {
-    "sunday": "Søndag",
-    "monday": "Mandag",
-    "tuesday": "Tirsdag",
-    "wednesday": "Onsdag",
-    "thursday": "Torsdag",
-    "friday": "Fredag",
-    "saturday": "Lørdag"
+    "sunday": "Søn",
+    "monday": "Man",
+    "tuesday": "Tir",
+    "wednesday": "Ons",
+    "thursday": "Tor",
+    "friday": "Fre",
+    "saturday": "Lør"
   },
   "pomodoro": {
     "play": "Spill",

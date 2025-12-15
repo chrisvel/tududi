@@ -946,13 +946,13 @@
     "parentEditWarning": "⚠️ Ana görevin tekrar ayarlarını düzenliyorsunuz. Değişiklikler, bu tekrarlayan görevin tüm gelecekteki örneklerini etkileyecektir."
   },
   "weekdays": {
-    "sunday": "Pazar",
-    "monday": "Pazartesi",
-    "tuesday": "Salı",
-    "wednesday": "Çarşamba",
-    "thursday": "Perşembe",
-    "friday": "Cuma",
-    "saturday": "Cumartesi"
+    "sunday": "Paz",
+    "monday": "Pzt",
+    "tuesday": "Sal",
+    "wednesday": "Çar",
+    "thursday": "Per",
+    "friday": "Cum",
+    "saturday": "Cmt"
   },
   "pomodoro": {
     "play": "Oynat",

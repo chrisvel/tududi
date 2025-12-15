@@ -946,13 +946,13 @@
     "parentEditWarning": "⚠️ Vous modifiez les paramètres de récurrence de la tâche parente. Les modifications affecteront toutes les instances futures de cette tâche récurrente."
   },
   "weekdays": {
-    "sunday": "Dimanche",
-    "monday": "Lundi",
-    "tuesday": "Mardi",
-    "wednesday": "Mercredi",
-    "thursday": "Jeudi",
-    "friday": "Vendredi",
-    "saturday": "Samedi"
+    "sunday": "Dim",
+    "monday": "Lun",
+    "tuesday": "Mar",
+    "wednesday": "Mer",
+    "thursday": "Jeu",
+    "friday": "Ven",
+    "saturday": "Sam"
   },
   "pomodoro": {
     "play": "Jouer",

@@ -946,13 +946,13 @@
     "parentEditWarning": "⚠️ Anda sedang mengedit pengaturan pengulangan tugas induk. Perubahan akan mempengaruhi semua instance masa depan dari tugas berulang ini."
   },
   "weekdays": {
-    "sunday": "Minggu",
-    "monday": "Senin",
-    "tuesday": "Selasa",
-    "wednesday": "Rabu",
-    "thursday": "Kamis",
-    "friday": "Jumat",
-    "saturday": "Sabtu"
+    "sunday": "Min",
+    "monday": "Sen",
+    "tuesday": "Sel",
+    "wednesday": "Rab",
+    "thursday": "Kam",
+    "friday": "Jum",
+    "saturday": "Sab"
   },
   "pomodoro": {
     "play": "Main",

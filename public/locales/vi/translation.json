@@ -946,13 +946,13 @@
     "parentEditWarning": "⚠️ Bạn đang chỉnh sửa cài đặt lặp lại của tác vụ cha. Những thay đổi sẽ ảnh hưởng đến tất cả các phiên bản tương lai của tác vụ lặp lại này."
   },
   "weekdays": {
-    "sunday": "Chủ nhật",
-    "monday": "Thứ hai",
-    "tuesday": "Thứ ba",
-    "wednesday": "Thứ tư",
-    "thursday": "Thứ năm",
-    "friday": "Thứ sáu",
-    "saturday": "Thứ Bảy"
+    "sunday": "CN",
+    "monday": "T2",
+    "tuesday": "T3",
+    "wednesday": "T4",
+    "thursday": "T5",
+    "friday": "T6",
+    "saturday": "T7"
   },
   "pomodoro": {
     "play": "Chơi",

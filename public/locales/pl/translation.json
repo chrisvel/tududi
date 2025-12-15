@@ -946,13 +946,13 @@
     "parentEditWarning": "⚠️ Edytujesz ustawienia cyklu zadania rodzica. Zmiany wpłyną na wszystkie przyszłe instancje tego zadania cyklicznego."
   },
   "weekdays": {
-    "sunday": "Niedziela",
-    "monday": "Poniedziałek",
-    "tuesday": "Wtorek",
-    "wednesday": "Środa",
-    "thursday": "Czwartek",
-    "friday": "Piątek",
-    "saturday": "Sobota"
+    "sunday": "Nie",
+    "monday": "Pon",
+    "tuesday": "Wto",
+    "wednesday": "Śro",
+    "thursday": "Czw",
+    "friday": "Pią",
+    "saturday": "Sob"
   },
   "pomodoro": {
     "play": "Odtwórz",

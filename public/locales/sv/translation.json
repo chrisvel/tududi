@@ -946,13 +946,13 @@
     "parentEditWarning": "⚠️ Du ändrar föräldrauppgiftens återkommande inställningar. Ändringarna kommer att påverka alla framtida instanser av denna återkommande uppgift."
   },
   "weekdays": {
-    "sunday": "Söndag",
-    "monday": "Måndag",
-    "tuesday": "Tisdag",
-    "wednesday": "Onsdag",
-    "thursday": "Torsdag",
-    "friday": "Fredag",
-    "saturday": "Lördag"
+    "sunday": "Sön",
+    "monday": "Mån",
+    "tuesday": "Tis",
+    "wednesday": "Ons",
+    "thursday": "Tor",
+    "friday": "Fre",
+    "saturday": "Lör"
   },
   "pomodoro": {
     "play": "Starta",

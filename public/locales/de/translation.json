@@ -382,13 +382,13 @@
     "parentEditWarning": "⚠️ Sie bearbeiten die Wiederholungseinstellungen der übergeordneten Aufgabe. Änderungen wirken sich auf alle zukünftigen Instanzen dieser wiederkehrenden Aufgabe aus."
   },
   "weekdays": {
-    "sunday": "Sonntag",
-    "monday": "Montag",
-    "tuesday": "Dienstag",
-    "wednesday": "Mittwoch",
-    "thursday": "Donnerstag",
-    "friday": "Freitag",
-    "saturday": "Samstag"
+    "sunday": "So",
+    "monday": "Mo",
+    "tuesday": "Di",
+    "wednesday": "Mi",
+    "thursday": "Do",
+    "friday": "Fr",
+    "saturday": "Sa"
   },
   "inbox": {
     "title": "Posteingang",
