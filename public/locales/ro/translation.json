@@ -946,13 +946,13 @@
     "parentEditWarning": "⚠️ Editezi setările de recurență ale sarcinii părinte. Modificările vor afecta toate instanțele viitoare ale acestei sarcini recurente."
   },
   "weekdays": {
-    "sunday": "Duminică",
-    "monday": "Luni",
-    "tuesday": "Marți",
-    "wednesday": "Miercuri",
+    "sunday": "Dum",
+    "monday": "Lun",
+    "tuesday": "Mar",
+    "wednesday": "Mie",
     "thursday": "Joi",
-    "friday": "Vineri",
-    "saturday": "Sâmbătă"
+    "friday": "Vin",
+    "saturday": "Sâm"
   },
   "pomodoro": {
     "play": "Joacă",

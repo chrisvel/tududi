@@ -946,13 +946,13 @@
     "parentEditWarning": "⚠️ Olet muokkaamassa vanhemman tehtävän toistuvia asetuksia. Muutokset vaikuttavat kaikkiin tuleviin ilmentymiin tästä toistuvasta tehtävästä."
   },
   "weekdays": {
-    "sunday": "Sunnuntai",
-    "monday": "Maanantai",
-    "tuesday": "Tiistai",
-    "wednesday": "Keskiviikko",
-    "thursday": "Torstai",
-    "friday": "Perjantai",
-    "saturday": "Lauantai"
+    "sunday": "Su",
+    "monday": "Ma",
+    "tuesday": "Ti",
+    "wednesday": "Ke",
+    "thursday": "To",
+    "friday": "Pe",
+    "saturday": "La"
   },
   "pomodoro": {
     "play": "Toista",

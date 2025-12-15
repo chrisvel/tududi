@@ -946,13 +946,13 @@
     "parentEditWarning": "⚠️ أنت تقوم بتعديل إعدادات تكرار المهمة الأصلية. ستؤثر التغييرات على جميع النسخ المستقبلية من هذه المهمة المتكررة."
   },
   "weekdays": {
-    "sunday": "الأحد",
-    "monday": "الإثنين",
-    "tuesday": "الثلاثاء",
-    "wednesday": "الأربعاء",
-    "thursday": "الخميس",
-    "friday": "الجمعة",
-    "saturday": "السبت"
+    "sunday": "أحد",
+    "monday": "إثن",
+    "tuesday": "ثلا",
+    "wednesday": "أرب",
+    "thursday": "خمي",
+    "friday": "جمع",
+    "saturday": "سبت"
   },
   "pomodoro": {
     "play": "تشغيل",

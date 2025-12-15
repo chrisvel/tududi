@@ -946,13 +946,13 @@
     "parentEditWarning": "⚠️ Stai modificando le impostazioni di ricorrenza del compito genitore. Le modifiche influenzeranno tutte le future istanze di questo compito ricorrente."
   },
   "weekdays": {
-    "sunday": "Domenica",
-    "monday": "Lunedì",
-    "tuesday": "Martedì",
-    "wednesday": "Mercoledì",
-    "thursday": "Giovedì",
-    "friday": "Venerdì",
-    "saturday": "Sabato"
+    "sunday": "Dom",
+    "monday": "Lun",
+    "tuesday": "Mar",
+    "wednesday": "Mer",
+    "thursday": "Gio",
+    "friday": "Ven",
+    "saturday": "Sab"
   },
   "pomodoro": {
     "play": "Riproduci",

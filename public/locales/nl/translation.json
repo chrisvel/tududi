@@ -946,13 +946,13 @@
     "parentEditWarning": "⚠️ U bewerkt de terugkerende instellingen van de oudertaak. Wijzigingen hebben invloed op alle toekomstige instanties van deze terugkerende taak."
   },
   "weekdays": {
-    "sunday": "Zondag",
-    "monday": "Maandag",
-    "tuesday": "Dinsdag",
-    "wednesday": "Woensdag",
-    "thursday": "Donderdag",
-    "friday": "Vrijdag",
-    "saturday": "Zaterdag"
+    "sunday": "Zo",
+    "monday": "Ma",
+    "tuesday": "Di",
+    "wednesday": "Wo",
+    "thursday": "Do",
+    "friday": "Vr",
+    "saturday": "Za"
   },
   "pomodoro": {
     "play": "Afspelen",
