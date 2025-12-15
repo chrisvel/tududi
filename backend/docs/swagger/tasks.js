@@ -44,6 +44,16 @@
  *           type: string
  *           example: "created_at:desc"
  *         description: Sort order (field:direction)
+ *       - in: query
+ *         name: assigned_to_me
+ *         schema:
+ *           type: boolean
+ *         description: If true, only return tasks assigned to the authenticated user
+ *       - in: query
+ *         name: assigned_by_me
+ *         schema:
+ *           type: boolean
+ *         description: If true, only return tasks created by the authenticated user that are assigned to someone else
  *     responses:
  *       200:
  *         description: List of tasks (use /api/tasks/metrics for dashboard statistics)
@@ -425,4 +435,82 @@
  *                   type: integer
  *       401:
  *         description: Unauthorized
+ */
+
+/**
+ * @swagger
+ * /api/task/{uid}/assign:
+ *   post:
+ *     summary: Assign a task to a user
+ *     tags: [Tasks]
+ *     security:
+ *       - cookieAuth: []
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: uid
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Task UID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - assigned_to_user_id
+ *             properties:
+ *               assigned_to_user_id:
+ *                 type: integer
+ *                 description: ID of the user to assign the task to
+ *     responses:
+ *       200:
+ *         description: Task assigned successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Task'
+ *       400:
+ *         description: Bad request (e.g., missing assigned_to_user_id or invalid user)
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - not authorized to assign this task
+ *       404:
+ *         description: Task not found
+ */
+
+/**
+ * @swagger
+ * /api/task/{uid}/unassign:
+ *   post:
+ *     summary: Remove assignment from a task
+ *     tags: [Tasks]
+ *     security:
+ *       - cookieAuth: []
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: uid
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Task UID
+ *     responses:
+ *       200:
+ *         description: Task unassigned successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Task'
+ *       400:
+ *         description: Bad request (e.g., task is not assigned)
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - not authorized to unassign this task
+ *       404:
+ *         description: Task not found
  */

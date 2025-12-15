@@ -79,7 +79,7 @@ const upload = multer({
 router.get('/users', async (req, res) => {
     try {
         const users = await User.findAll({
-            attributes: ['id', 'email', 'name', 'surname'],
+            attributes: ['id', 'uid', 'email', 'name', 'surname', 'avatar_image'],
             order: [['email', 'ASC']],
         });
 
@@ -91,9 +91,11 @@ router.get('/users', async (req, res) => {
 
         const result = users.map((u) => ({
             id: u.id,
+            uid: u.uid,
             email: u.email,
             name: u.name,
             surname: u.surname,
+            avatar_image: u.avatar_image,
             role: userIdToRole.get(u.id) ? 'admin' : 'user',
         }));
 

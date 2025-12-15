@@ -31,6 +31,8 @@ module.exports = (sequelize) => {
                     isIn: [
                         [
                             'task_assigned',
+                            'task_unassigned',
+                            'assigned_task_completed',
                             'task_completed',
                             'task_due_soon',
                             'task_overdue',

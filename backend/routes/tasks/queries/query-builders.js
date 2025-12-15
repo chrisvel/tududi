@@ -1,4 +1,4 @@
-const { Task, Tag, Project, sequelize } = require('../../../models');
+const { Task, Tag, Project, User, sequelize } = require('../../../models');
 const { Op, QueryTypes } = require('sequelize');
 const permissionsService = require('../../../services/permissionsService');
 const {
@@ -84,6 +84,12 @@ async function filterTasksByParams(
         {
             model: Project,
             attributes: ['id', 'name', 'state', 'uid'],
+            required: false,
+        },
+        {
+            model: User,
+            as: 'AssignedTo',
+            attributes: ['id', 'uid', 'email', 'name', 'surname', 'avatar_image'],
             required: false,
         },
         {
@@ -283,6 +289,15 @@ async function filterTasksByParams(
         whereClause.priority = Task.getPriorityValue(params.priority);
     }
 
+    if (params.assigned_to_me === 'true' || params.assigned_to_me === true) {
+        whereClause.assigned_to_user_id = userId;
+    }
+
+    if (params.assigned_by_me === 'true' || params.assigned_by_me === true) {
+        whereClause.user_id = userId;
+        whereClause.assigned_to_user_id = { [Op.ne]: null };
+    }
+
     let orderClause = [['created_at', 'DESC']];
 
     if (params.type === 'inbox') {
@@ -369,6 +384,12 @@ function getTaskIncludeConfig() {
         {
             model: Project,
             attributes: ['id', 'name', 'state', 'uid'],
+            required: false,
+        },
+        {
+            model: User,
+            as: 'AssignedTo',
+            attributes: ['id', 'uid', 'email', 'name', 'surname', 'avatar_image'],
             required: false,
         },
         {

@@ -23,6 +23,9 @@ const NOTIFICATION_TYPE_MAPPING = {
     task_overdue: 'overdueTasks',
     project_due_soon: 'dueProjects',
     project_overdue: 'overdueProjects',
+    task_assigned: 'taskAssigned',
+    task_unassigned: 'taskUnassigned',
+    assigned_task_completed: 'assignedTaskCompleted',
 };
 
 /**

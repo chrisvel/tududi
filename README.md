@@ -1,19 +1,3 @@
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="public/wide-logo-light.png">
-    <source media="(prefers-color-scheme: light)" srcset="public/wide-logo-dark.png">
-    <img src="public/wide-logo-light.png" alt="tududi" width="400">
-  </picture>
-</p>
-
-<p align="center">
-  <h2 align="center">Productivity made simple</p></h2>
-  <p align="center">Organize your life and projects with a clear, hierarchical structure,<br>
-  smart recurring tasks, and seamless Telegram integration.<br>
-  Get focused, stay productive, and keep your data private.
-  </p>
-</p>
-
 ![Light Mode Screenshot](screenshots/all-light.png)
 
 More screenshots are [available here](#screenshots).

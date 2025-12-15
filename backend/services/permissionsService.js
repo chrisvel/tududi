@@ -141,6 +141,7 @@ async function ownershipOrPermissionWhere(resourceType, userId, cache = null) {
 
         const conditions = [
             { user_id: userId }, // Items owned by user
+            { assigned_to_user_id: userId }, // Items assigned to user
         ];
 
         if (sharedUids.length > 0) {
