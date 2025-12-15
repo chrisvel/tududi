@@ -446,6 +446,16 @@ const TaskItem: React.FC<TaskItemProps> = ({
     const isOverdue = isTaskOverdue(task);
 
     const getPriorityBorderClass = () => {
+        // Show green border for completed tasks
+        if (
+            task.status === 'done' ||
+            task.status === 2 ||
+            task.status === 'archived' ||
+            task.status === 3
+        ) {
+            return 'border-l-4 border-l-green-500';
+        }
+
         let priority = task.priority;
         if (typeof priority === 'number') {
             const priorityNames: Array<'low' | 'medium' | 'high'> = [

@@ -552,7 +552,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         <div className="flex items-center gap-2 ml-auto">
                             <div className="hidden group-hover:flex items-center space-x-1 transition-opacity duration-200 opacity-0 group-hover:opacity-100">
                                 {/* Today Plan Controls */}
-                                {onToggleToday && (
+                                {onToggleToday && !isTaskCompleted && (
                                     <button
                                         type="button"
                                         onClick={handleTodayToggle}
@@ -1399,7 +1399,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                 >
                                     <div className="py-1">
                                         {/* Today Plan Controls */}
-                                        {onToggleToday && (
+                                        {onToggleToday && !isTaskCompleted && (
                                             <button
                                                 type="button"
                                                 onClick={(e) => {
