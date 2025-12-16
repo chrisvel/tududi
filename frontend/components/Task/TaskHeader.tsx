@@ -12,6 +12,7 @@ import {
     PlayIcon,
     PauseCircleIcon,
     CheckIcon,
+    UserCircleIcon,
 } from '@heroicons/react/24/outline';
 import { TagIcon, FolderIcon, FireIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
@@ -19,6 +20,7 @@ import TaskPriorityIcon from './TaskPriorityIcon';
 import { Project } from '../../entities/Project';
 import { Task, StatusType } from '../../entities/Task';
 import { fetchSubtasks } from '../../utils/tasksService';
+import { getApiPath } from '../../config/paths';
 
 interface TaskHeaderProps {
     task: Task;
@@ -192,6 +194,14 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
         }
     };
 
+    const getAssigneeDisplayName = () => {
+        if (!task.AssignedTo) return '';
+        if (task.AssignedTo.name || task.AssignedTo.surname) {
+            return `${task.AssignedTo.name || ''} ${task.AssignedTo.surname || ''}`.trim();
+        }
+        return task.AssignedTo.email;
+    };
+
     const handleTodayToggle = async (e: React.MouseEvent) => {
         e.stopPropagation(); // Prevent opening task modal
         if (onToggleToday && task.id) {
@@ -207,14 +217,15 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
         ? formatDeferUntil(task.defer_until)
         : null;
 
-    // Check if task has metadata (project, tags, due_date, recurrence_type, recurring_parent_id, or defer_until)
+    // Check if task has metadata (project, tags, due_date, recurrence_type, recurring_parent_id, defer_until, or assignee)
     const hasMetadata =
         (project && !hideProjectName) ||
         (task.tags && task.tags.length > 0) ||
         task.due_date ||
         (task.recurrence_type && task.recurrence_type !== 'none') ||
         task.recurring_parent_id ||
-        !!formattedDeferUntil;
+        !!formattedDeferUntil ||
+        task.AssignedTo;
 
     const isTaskCompleted =
         task.status === 'done' ||
@@ -541,6 +552,23 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                     <div className="flex items-center">
                                         <CalendarDaysIcon className="h-3 w-3 mr-1" />
                                         <span>{formattedDeferUntil}</span>
+                                    </div>
+                                )}
+                                {task.AssignedTo && (
+                                    <div className="flex items-center">
+                                        {task.AssignedTo.avatar_image ? (
+                                            <img
+                                                src={getApiPath(task.AssignedTo.avatar_image)}
+                                                alt={getAssigneeDisplayName()}
+                                                className="h-4 w-4 rounded-full mr-1"
+                                            />
+                                        ) : (
+                                            <div className="h-4 w-4 rounded-full bg-blue-500 dark:bg-blue-600 flex items-center justify-center text-white text-[10px] mr-1 flex-shrink-0">
+                                                {(task.AssignedTo.name?.[0] || task.AssignedTo.email[0]).toUpperCase()}
+                                            </div>
+                                        )}
+                                        <UserCircleIcon className="h-3 w-3 mr-1" />
+                                        <span>{getAssigneeDisplayName()}</span>
                                     </div>
                                 )}
                             </div>
@@ -1118,6 +1146,23 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                 <div className="flex items-center whitespace-nowrap">
                                     <CalendarDaysIcon className="h-3 w-3 mr-1" />
                                     <span>{formattedDeferUntil}</span>
+                                </div>
+                            )}
+                            {task.AssignedTo && (
+                                <div className="flex items-center">
+                                    {task.AssignedTo.avatar_image ? (
+                                        <img
+                                            src={getApiPath(task.AssignedTo.avatar_image)}
+                                            alt={getAssigneeDisplayName()}
+                                            className="h-4 w-4 rounded-full mr-1"
+                                        />
+                                    ) : (
+                                        <div className="h-4 w-4 rounded-full bg-blue-500 dark:bg-blue-600 flex items-center justify-center text-white text-[10px] mr-1 flex-shrink-0">
+                                            {(task.AssignedTo.name?.[0] || task.AssignedTo.email[0]).toUpperCase()}
+                                        </div>
+                                    )}
+                                    <UserCircleIcon className="h-3 w-3 mr-1" />
+                                    <span>{getAssigneeDisplayName()}</span>
                                 </div>
                             )}
                         </div>
