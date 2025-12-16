@@ -31,6 +31,7 @@ import {
     TaskDueDateCard,
     TaskDeferUntilCard,
     TaskAttachmentsCard,
+    TaskAssignmentCard,
 } from './TaskDetails/';
 import { isTaskOverdue, isTaskPastDue } from '../../utils/dateUtils';
 
@@ -730,6 +731,40 @@ const TaskDetails: React.FC = () => {
         }
     };
 
+    const handleAssignTask = async (userId: number) => {
+        if (!task?.uid) return;
+
+        try {
+            await tasksStore.assignTask(task.uid, userId);
+            showSuccessToast(
+                t('task.assignedSuccess', 'Task assigned successfully')
+            );
+            setTimelineRefreshKey((prev) => prev + 1);
+        } catch (error) {
+            console.error('Error assigning task:', error);
+            showErrorToast(
+                t('task.assignedError', 'Failed to assign task')
+            );
+        }
+    };
+
+    const handleUnassignTask = async () => {
+        if (!task?.uid) return;
+
+        try {
+            await tasksStore.unassignTask(task.uid);
+            showSuccessToast(
+                t('task.unassignedSuccess', 'Task unassigned successfully')
+            );
+            setTimelineRefreshKey((prev) => prev + 1);
+        } catch (error) {
+            console.error('Error unassigning task:', error);
+            showErrorToast(
+                t('task.unassignedError', 'Failed to unassign task')
+            );
+        }
+    };
+
     const handleEdit = (e?: React.MouseEvent) => {
         if (e) {
             e.preventDefault();
@@ -1285,6 +1320,12 @@ const TaskDetails: React.FC = () => {
                                     onUpdate={handleTagsUpdate}
                                     onLoadTags={() => tagsStore.loadTags()}
                                     getTagLink={getTagLink}
+                                />
+
+                                <TaskAssignmentCard
+                                    task={task}
+                                    onAssign={handleAssignTask}
+                                    onUnassign={handleUnassignTask}
                                 />
 
                                 <TaskDueDateCard

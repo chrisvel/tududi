@@ -129,6 +129,14 @@ module.exports = (sequelize) => {
                     key: 'id',
                 },
             },
+            assigned_to_user_id: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                references: {
+                    model: 'users',
+                    key: 'id',
+                },
+            },
             project_id: {
                 type: DataTypes.INTEGER,
                 allowNull: true,
@@ -212,6 +220,9 @@ module.exports = (sequelize) => {
                     fields: ['user_id'],
                 },
                 {
+                    fields: ['assigned_to_user_id'],
+                },
+                {
                     fields: ['project_id'],
                 },
                 {
@@ -229,6 +240,16 @@ module.exports = (sequelize) => {
     );
 
     Task.associate = function (models) {
+        Task.belongsTo(models.User, {
+            as: 'Owner',
+            foreignKey: 'user_id',
+        });
+
+        Task.belongsTo(models.User, {
+            as: 'AssignedTo',
+            foreignKey: 'assigned_to_user_id',
+        });
+
         Task.belongsTo(models.Task, {
             as: 'RecurringParent',
             foreignKey: 'recurring_parent_id',

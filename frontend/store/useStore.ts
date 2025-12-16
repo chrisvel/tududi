@@ -5,6 +5,7 @@ import { Note } from '../entities/Note';
 import { Task } from '../entities/Task';
 import { Tag } from '../entities/Tag';
 import { InboxItem } from '../entities/InboxItem';
+import { getApiPath } from '../config/paths';
 
 interface NotesStore {
     notes: Note[];
@@ -72,6 +73,8 @@ interface TasksStore {
     addTask: (task: Task) => void;
     removeTask: (taskId: number) => void;
     updateTaskInStore: (updatedTask: Task) => void;
+    assignTask: (taskUid: string, userId: number) => Promise<Task>;
+    unassignTask: (taskUid: string) => Promise<Task>;
 }
 
 interface InboxStore {
@@ -604,6 +607,70 @@ export const useStore = create<StoreState>((set: any) => ({
                     ),
                 },
             })),
+        assignTask: async (taskUid, userId) => {
+            try {
+                const response = await fetch(
+                    getApiPath(`task/${taskUid}/assign`),
+                    {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ assigned_to_user_id: userId }),
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error('Failed to assign task');
+                }
+
+                const updatedTask = await response.json();
+
+                set((state) => ({
+                    tasksStore: {
+                        ...state.tasksStore,
+                        tasks: state.tasksStore.tasks.map((t) =>
+                            t.uid === taskUid ? updatedTask : t
+                        ),
+                    },
+                }));
+
+                return updatedTask;
+            } catch (error) {
+                console.error('Error assigning task:', error);
+                throw error;
+            }
+        },
+        unassignTask: async (taskUid) => {
+            try {
+                const response = await fetch(
+                    getApiPath(`task/${taskUid}/unassign`),
+                    {
+                        method: 'POST',
+                        credentials: 'include',
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error('Failed to unassign task');
+                }
+
+                const updatedTask = await response.json();
+
+                set((state) => ({
+                    tasksStore: {
+                        ...state.tasksStore,
+                        tasks: state.tasksStore.tasks.map((t) =>
+                            t.uid === taskUid ? updatedTask : t
+                        ),
+                    },
+                }));
+
+                return updatedTask;
+            } catch (error) {
+                console.error('Error unassigning task:', error);
+                throw error;
+            }
+        },
     },
     inboxStore: {
         inboxItems: [],

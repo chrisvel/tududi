@@ -210,6 +210,24 @@ module.exports = (sequelize) => {
                         push: false,
                         telegram: false,
                     },
+                    taskAssigned: {
+                        inApp: true,
+                        email: false,
+                        push: false,
+                        telegram: false,
+                    },
+                    taskUnassigned: {
+                        inApp: true,
+                        email: false,
+                        push: false,
+                        telegram: false,
+                    },
+                    assignedTaskCompleted: {
+                        inApp: true,
+                        email: false,
+                        push: false,
+                        telegram: false,
+                    },
                 },
             },
             email_verified: {

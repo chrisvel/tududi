@@ -47,6 +47,16 @@ export interface Task {
     habit_best_streak?: number;
     habit_total_completions?: number;
     habit_last_completion_at?: string;
+    // Assignment fields
+    assigned_to_user_id?: number;
+    AssignedTo?: {
+        id: number;
+        uid: string;
+        email: string;
+        name?: string;
+        surname?: string;
+        avatar_image?: string;
+    };
 }
 
 export type StatusType =

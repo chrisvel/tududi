@@ -21,6 +21,11 @@ const {
 } = require('../../services/recurringTaskService');
 const { logError } = require('../../services/logService');
 const { logEvent } = require('../../services/taskEventService');
+const {
+    notifyTaskCompletion,
+    assignTask,
+    unassignTask,
+} = require('../../services/taskAssignmentService');
 
 const { serializeTask, serializeTasks } = require('./core/serializers');
 const { updateTaskTags } = require('./operations/tags');
@@ -681,6 +686,45 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
             );
         }
 
+        // Notify owner when assigned task is completed
+        if (
+            status !== undefined &&
+            taskAttributes.status === Task.STATUS.DONE &&
+            task.assigned_to_user_id &&
+            task.assigned_to_user_id !== task.user_id
+        ) {
+            try {
+                const { User } = require('../../models');
+                const assignee = await User.findByPk(task.assigned_to_user_id, {
+                    attributes: [
+                        'id',
+                        'uid',
+                        'email',
+                        'name',
+                        'surname',
+                    ],
+                });
+                const owner = await User.findByPk(task.user_id, {
+                    attributes: [
+                        'id',
+                        'uid',
+                        'email',
+                        'name',
+                        'surname',
+                        'notification_preferences',
+                    ],
+                });
+                if (assignee && owner) {
+                    await notifyTaskCompletion(task, assignee, owner);
+                }
+            } catch (notifError) {
+                logError(
+                    'Error sending assignment completion notification:',
+                    notifError
+                );
+            }
+        }
+
         if (recurringCompletionPayload) {
             await RecurringCompletion.create(recurringCompletionPayload);
             try {
@@ -884,5 +928,82 @@ router.get('/task/:id/next-iterations', async (req, res) => {
         res.status(500).json({ error: 'Failed to get next iterations' });
     }
 });
+
+// Assign task to user
+router.post('/task/:uid/assign', requireTaskWriteAccess, async (req, res) => {
+    try {
+        const { assigned_to_user_id } = req.body;
+
+        if (!assigned_to_user_id) {
+            return res
+                .status(400)
+                .json({ error: 'assigned_to_user_id is required' });
+        }
+
+        const task = await taskRepository.findByUid(req.params.uid);
+        if (!task) {
+            return res.status(404).json({ error: 'Task not found' });
+        }
+
+        const updatedTask = await assignTask(
+            task.id,
+            assigned_to_user_id,
+            req.currentUser.id
+        );
+
+        const serialized = await serializeTask(
+            updatedTask,
+            req.currentUser.timezone
+        );
+        res.json(serialized);
+    } catch (error) {
+        logError('Error assigning task:', error);
+
+        if (error.message === 'Assignee user not found') {
+            return res.status(400).json({ error: error.message });
+        }
+        if (error.message === 'Not authorized to assign this task') {
+            return res.status(403).json({ error: error.message });
+        }
+
+        res.status(500).json({ error: 'Failed to assign task' });
+    }
+});
+
+// Unassign task
+router.post(
+    '/task/:uid/unassign',
+    requireTaskWriteAccess,
+    async (req, res) => {
+        try {
+            const task = await taskRepository.findByUid(req.params.uid);
+            if (!task) {
+                return res.status(404).json({ error: 'Task not found' });
+            }
+
+            const updatedTask = await unassignTask(
+                task.id,
+                req.currentUser.id
+            );
+
+            const serialized = await serializeTask(
+                updatedTask,
+                req.currentUser.timezone
+            );
+            res.json(serialized);
+        } catch (error) {
+            logError('Error unassigning task:', error);
+
+            if (
+                error.message === 'Not authorized to unassign this task' ||
+                error.message === 'Task is not assigned'
+            ) {
+                return res.status(400).json({ error: error.message });
+            }
+
+            res.status(500).json({ error: 'Failed to unassign task' });
+        }
+    }
+);
 
 module.exports = router;
