@@ -24,6 +24,7 @@ async function checkDeferredTasks() {
             include: [
                 {
                     model: User,
+                    as: 'Owner',
                     attributes: [
                         'id',
                         'email',
@@ -47,7 +48,7 @@ async function checkDeferredTasks() {
 
         for (const task of deferredTasks) {
             try {
-                if (!shouldSendInAppNotification(task.User, 'deferUntil')) {
+                if (!shouldSendInAppNotification(task.Owner, 'deferUntil')) {
                     continue;
                 }
 
@@ -72,7 +73,7 @@ async function checkDeferredTasks() {
                 }
 
                 const sources = [];
-                if (shouldSendTelegramNotification(task.User, 'deferUntil')) {
+                if (shouldSendTelegramNotification(task.Owner, 'deferUntil')) {
                     sources.push('telegram');
                 }
 

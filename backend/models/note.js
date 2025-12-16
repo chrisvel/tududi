@@ -32,6 +32,14 @@ module.exports = (sequelize) => {
                     key: 'id',
                 },
             },
+            assigned_to_user_id: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                references: {
+                    model: 'users',
+                    key: 'id',
+                },
+            },
             project_id: {
                 type: DataTypes.INTEGER,
                 allowNull: true,
@@ -53,6 +61,9 @@ module.exports = (sequelize) => {
             indexes: [
                 {
                     fields: ['user_id'],
+                },
+                {
+                    fields: ['assigned_to_user_id'],
                 },
                 {
                     fields: ['project_id'],
