@@ -65,7 +65,9 @@ async function checkDueTasks() {
                 const level = isOverdue ? 'error' : 'warning';
 
                 // Check if user wants this notification
-                if (!shouldSendInAppNotification(task.Owner, notificationType)) {
+                if (
+                    !shouldSendInAppNotification(task.Owner, notificationType)
+                ) {
                     continue;
                 }
 
