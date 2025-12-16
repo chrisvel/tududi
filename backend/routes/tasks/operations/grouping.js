@@ -167,7 +167,8 @@ async function groupTasksByDay(
     userTimezone,
     maxDays = 14,
     orderBy = 'created_at:desc',
-    language = 'en'
+    language = 'en',
+    userId = null
 ) {
     const safeTimezone = getSafeTimezone(userTimezone);
     const now = moment.tz(safeTimezone);
@@ -189,13 +190,13 @@ async function groupTasksByDay(
             language
         );
         const tasksForDate = tasksByDate.get(dateKey);
-        sortTasksByOrder(tasksForDate, orderBy, safeTimezone);
+        sortTasksByOrder(tasksForDate, orderBy, safeTimezone, userId);
         groupedTasks[groupName] = tasksForDate;
     });
 
     if (tasksByDate.has('no-date')) {
         const noDateTasks = tasksByDate.get('no-date');
-        sortTasksByOrder(noDateTasks, orderBy, safeTimezone);
+        sortTasksByOrder(noDateTasks, orderBy, safeTimezone, userId);
         // Use translated "No Due Date"
         const translations = {
             noDueDate: {

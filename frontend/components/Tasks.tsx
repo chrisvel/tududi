@@ -524,6 +524,7 @@ const Tasks: React.FC = () => {
         { value: 'name:asc', label: t('sort.name', 'Name') },
         { value: 'priority:desc', label: t('sort.priority', 'Priority') },
         { value: 'status:desc', label: t('sort.status', 'Status') },
+        { value: 'assigned:asc', label: t('sort.assigned', 'Assigned') },
         { value: 'created_at:desc', label: t('sort.created_at', 'Created At') },
     ];
 

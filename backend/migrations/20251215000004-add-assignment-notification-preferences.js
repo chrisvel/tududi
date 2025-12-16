@@ -11,7 +11,9 @@ module.exports = {
         for (const user of users) {
             let prefs;
             try {
-                prefs = user.notification_preferences ? JSON.parse(user.notification_preferences) : {};
+                prefs = user.notification_preferences
+                    ? JSON.parse(user.notification_preferences)
+                    : {};
             } catch (e) {
                 prefs = {};
             }

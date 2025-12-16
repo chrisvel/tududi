@@ -77,6 +77,8 @@ const {
     requireTaskWriteAccess,
 } = require('./middleware/access');
 
+const { sortTasksByOrder } = require('./operations/sorting');
+
 if (process.env.NODE_ENV === 'development') {
     enableQueryLogging();
 }
@@ -188,6 +190,12 @@ router.get('/tasks', async (req, res) => {
 
         let tasks = await filterTasksByParams(req.query, userId, timezone);
 
+        // Apply client-side sorting for 'assigned' field
+        if (order_by && order_by.startsWith('assigned')) {
+            const safeTimezone = getSafeTimezone(timezone);
+            sortTasksByOrder(tasks, order_by, safeTimezone, userId);
+        }
+
         if (type === 'upcoming' && groupBy === 'day') {
             console.log('[DEBUG] Expanding recurring tasks for /upcoming');
             console.log('[DEBUG] Total tasks before expansion:', tasks.length);
@@ -253,7 +261,8 @@ router.get('/tasks', async (req, res) => {
             maxDays,
             order_by,
             timezone,
-            language || 'en'
+            language || 'en',
+            userId
         );
 
         const serializationOptions =
@@ -696,13 +705,7 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
             try {
                 const { User } = require('../../models');
                 const assignee = await User.findByPk(task.assigned_to_user_id, {
-                    attributes: [
-                        'id',
-                        'uid',
-                        'email',
-                        'name',
-                        'surname',
-                    ],
+                    attributes: ['id', 'uid', 'email', 'name', 'surname'],
                 });
                 const owner = await User.findByPk(task.user_id, {
                     attributes: [
@@ -971,39 +974,32 @@ router.post('/task/:uid/assign', requireTaskWriteAccess, async (req, res) => {
 });
 
 // Unassign task
-router.post(
-    '/task/:uid/unassign',
-    requireTaskWriteAccess,
-    async (req, res) => {
-        try {
-            const task = await taskRepository.findByUid(req.params.uid);
-            if (!task) {
-                return res.status(404).json({ error: 'Task not found' });
-            }
-
-            const updatedTask = await unassignTask(
-                task.id,
-                req.currentUser.id
-            );
-
-            const serialized = await serializeTask(
-                updatedTask,
-                req.currentUser.timezone
-            );
-            res.json(serialized);
-        } catch (error) {
-            logError('Error unassigning task:', error);
-
-            if (
-                error.message === 'Not authorized to unassign this task' ||
-                error.message === 'Task is not assigned'
-            ) {
-                return res.status(400).json({ error: error.message });
-            }
-
-            res.status(500).json({ error: 'Failed to unassign task' });
+router.post('/task/:uid/unassign', requireTaskWriteAccess, async (req, res) => {
+    try {
+        const task = await taskRepository.findByUid(req.params.uid);
+        if (!task) {
+            return res.status(404).json({ error: 'Task not found' });
         }
+
+        const updatedTask = await unassignTask(task.id, req.currentUser.id);
+
+        const serialized = await serializeTask(
+            updatedTask,
+            req.currentUser.timezone
+        );
+        res.json(serialized);
+    } catch (error) {
+        logError('Error unassigning task:', error);
+
+        if (
+            error.message === 'Not authorized to unassign this task' ||
+            error.message === 'Task is not assigned'
+        ) {
+            return res.status(400).json({ error: error.message });
+        }
+
+        res.status(500).json({ error: 'Failed to unassign task' });
     }
-);
+});
 
 module.exports = router;

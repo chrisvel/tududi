@@ -79,7 +79,14 @@ const upload = multer({
 router.get('/users', async (req, res) => {
     try {
         const users = await User.findAll({
-            attributes: ['id', 'uid', 'email', 'name', 'surname', 'avatar_image'],
+            attributes: [
+                'id',
+                'uid',
+                'email',
+                'name',
+                'surname',
+                'avatar_image',
+            ],
             order: [['email', 'ASC']],
         });
 

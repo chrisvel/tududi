@@ -13,7 +13,8 @@ async function buildGroupedTasks(
     maxDays,
     orderBy,
     timezone,
-    language = 'en'
+    language = 'en',
+    userId = null
 ) {
     if (queryType !== 'upcoming' || groupBy !== 'day') {
         return null;
@@ -27,7 +28,8 @@ async function buildGroupedTasks(
         timezone,
         days,
         dayGroupingOrderBy,
-        language
+        language,
+        userId
     );
 }
 

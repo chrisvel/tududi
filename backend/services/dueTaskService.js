@@ -34,6 +34,7 @@ async function checkDueTasks() {
             include: [
                 {
                     model: User,
+                    as: 'Owner',
                     attributes: [
                         'id',
                         'email',
@@ -64,7 +65,7 @@ async function checkDueTasks() {
                 const level = isOverdue ? 'error' : 'warning';
 
                 // Check if user wants this notification
-                if (!shouldSendInAppNotification(task.User, notificationType)) {
+                if (!shouldSendInAppNotification(task.Owner, notificationType)) {
                     continue;
                 }
 
@@ -104,7 +105,7 @@ async function checkDueTasks() {
                 // Build sources array based on user preferences
                 const sources = [];
                 if (
-                    shouldSendTelegramNotification(task.User, notificationType)
+                    shouldSendTelegramNotification(task.Owner, notificationType)
                 ) {
                     sources.push('telegram');
                 }
