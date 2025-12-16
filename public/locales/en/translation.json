@@ -138,9 +138,13 @@
     "descending": "Descending",
     "groupBy": "Group by",
     "groupByProject": "Project",
+    "groupByAssignee": "Assignee",
     "grouping": {
       "none": "None"
     },
+    "unassigned": "Unassigned",
+    "assignedToMe": "Assigned to me",
+    "assignedToOthers": "Assigned to others",
     "show": "Show",
     "open": "Open",
     "all": "All",

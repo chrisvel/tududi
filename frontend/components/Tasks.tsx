@@ -25,6 +25,7 @@ import {
     CheckIcon,
 } from '@heroicons/react/24/outline';
 import { getApiPath } from '../config/paths';
+import { getCurrentUser } from '../utils/userUtils';
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
@@ -57,7 +58,8 @@ const Tasks: React.FC = () => {
     const [isSearchExpanded, setIsSearchExpanded] = useState(false);
     const [showCompleted, setShowCompleted] = useState(false);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-    const [groupBy, setGroupBy] = useState<'none' | 'project'>('none');
+    const [groupBy, setGroupBy] = useState<'none' | 'project' | 'assignee'>('none');
+    const [currentUserId, setCurrentUserId] = useState<number | null>(null);
 
     const [offset, setOffset] = useState(0);
     const [hasMore, setHasMore] = useState(false);
@@ -137,7 +139,7 @@ const Tasks: React.FC = () => {
             localStorage.getItem('order_by') || 'created_at:desc';
         setOrderBy(savedOrderBy);
         const savedGroupBy =
-            (localStorage.getItem('tasks_group_by') as 'none' | 'project') ||
+            (localStorage.getItem('tasks_group_by') as 'none' | 'project' | 'assignee') ||
             'none';
         setGroupBy(savedGroupBy);
 
@@ -279,7 +281,7 @@ const Tasks: React.FC = () => {
         if (!hasMore && !all) return;
         setIsLoadingMore(true);
         const shouldDisablePagination =
-            !isUpcomingView && groupBy === 'project';
+            !isUpcomingView && (groupBy === 'project' || groupBy === 'assignee');
         if (all || shouldDisablePagination) {
             const newLimit = totalCount > 0 ? totalCount : 10000;
             await fetchData(true, {
@@ -299,7 +301,7 @@ const Tasks: React.FC = () => {
     };
 
     useEffect(() => {
-        const shouldDisablePagination = isUpcomingView || groupBy === 'project';
+        const shouldDisablePagination = isUpcomingView || groupBy === 'project' || groupBy === 'assignee';
         fetchData(
             true,
             shouldDisablePagination
@@ -312,6 +314,34 @@ const Tasks: React.FC = () => {
                 : undefined
         );
     }, [location, isSidebarOpen, isMobile, groupBy, isUpcomingView]);
+
+    useEffect(() => {
+        const fetchCurrentUserId = async () => {
+            const currentUser = getCurrentUser();
+            if (!currentUser) {
+                setCurrentUserId(null);
+                return;
+            }
+
+            try {
+                const response = await fetch(getApiPath('users'), {
+                    credentials: 'include',
+                });
+                if (response.ok) {
+                    const users = await response.json();
+                    const currentUserData = users.find(
+                        (u: any) => u.uid === currentUser.uid
+                    );
+                    setCurrentUserId(currentUserData?.id || null);
+                }
+            } catch (error) {
+                console.error('Error fetching current user ID:', error);
+                setCurrentUserId(null);
+            }
+        };
+
+        fetchCurrentUserId();
+    }, []);
 
     useEffect(() => {
         const handleResize = () => {
@@ -524,8 +554,8 @@ const Tasks: React.FC = () => {
         { value: 'name:asc', label: t('sort.name', 'Name') },
         { value: 'priority:desc', label: t('sort.priority', 'Priority') },
         { value: 'status:desc', label: t('sort.status', 'Status') },
-        { value: 'assigned:asc', label: t('sort.assigned', 'Assigned') },
         { value: 'created_at:desc', label: t('sort.created_at', 'Created At') },
+        { value: 'assigned:asc', label: t('sort.assigned', 'Assignee') },
     ];
 
     const description = getDescription(query, projects, t, location.pathname);
@@ -637,7 +667,7 @@ const Tasks: React.FC = () => {
                                                 {t('tasks.groupBy', 'Group by')}
                                             </div>
                                             <div className="py-1">
-                                                {['none', 'project'].map(
+                                                {['none', 'project', 'assignee'].map(
                                                     (val) => (
                                                         <button
                                                             key={val}
@@ -646,6 +676,7 @@ const Tasks: React.FC = () => {
                                                                     val as
                                                                         | 'none'
                                                                         | 'project'
+                                                                        | 'assignee'
                                                                 );
                                                                 localStorage.setItem(
                                                                     'tasks_group_by',
@@ -665,10 +696,15 @@ const Tasks: React.FC = () => {
                                                                           'tasks.groupByProject',
                                                                           'Project'
                                                                       )
-                                                                    : t(
-                                                                          'tasks.grouping.none',
-                                                                          'None'
-                                                                      )}
+                                                                    : val === 'assignee'
+                                                                      ? t(
+                                                                            'tasks.groupByAssignee',
+                                                                            'Assignee'
+                                                                        )
+                                                                      : t(
+                                                                            'tasks.grouping.none',
+                                                                            'None'
+                                                                        )}
                                                             </span>
                                                             {groupBy ===
                                                                 val && (
@@ -953,6 +989,24 @@ const Tasks: React.FC = () => {
                                         tasks={displayTasks}
                                         groupedTasks={null}
                                         groupBy="project"
+                                        onTaskCreate={handleTaskCreate}
+                                        onTaskUpdate={handleTaskUpdate}
+                                        onTaskCompletionToggle={
+                                            handleTaskCompletionToggle
+                                        }
+                                        onTaskDelete={handleTaskDelete}
+                                        projects={projects}
+                                        hideProjectName={false}
+                                        onToggleToday={handleToggleToday}
+                                        showCompletedTasks={showCompleted}
+                                        searchQuery={taskSearchQuery}
+                                    />
+                                ) : groupBy === 'assignee' ? (
+                                    <GroupedTaskList
+                                        tasks={displayTasks}
+                                        groupedTasks={null}
+                                        groupBy="assignee"
+                                        currentUserId={currentUserId}
                                         onTaskCreate={handleTaskCreate}
                                         onTaskUpdate={handleTaskUpdate}
                                         onTaskCompletionToggle={
