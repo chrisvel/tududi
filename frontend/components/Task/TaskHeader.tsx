@@ -306,8 +306,8 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
             }}
         >
             {/* Full view (md and larger) */}
-            <div className="hidden md:flex flex-col md:flex-row md:items-center md:justify-between">
-                <div className="flex items-center space-x-3 mb-2 md:mb-0 w-full">
+            <div className="hidden md:flex flex-col md:flex-row md:items-center md:gap-4">
+                <div className="flex items-center space-x-3 mb-2 md:mb-0 flex-1 min-w-0">
                     <div className="hidden">
                         <TaskPriorityIcon
                             priority={task.priority}
@@ -413,14 +413,14 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                 )}
                             </div>
                         ) : (
-                            <div className="flex items-center gap-1.5">
+                            <div className="flex items-center gap-1.5 flex-1 min-w-0">
                                 {task.habit_mode && (
                                     <FireIcon
                                         className="h-4 w-4 text-orange-500 flex-shrink-0"
                                         title="Habit"
                                     />
                                 )}
-                                <span className="text-md font-medium text-gray-900 dark:text-gray-300">
+                                <span className="text-md font-medium text-gray-900 dark:text-gray-300 break-words">
                                     {task.original_name || task.name}
                                 </span>
                             </div>
@@ -548,9 +548,9 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                     </div>
                 </div>
                 {!isUpcomingView && !task.habit_mode && (
-                    <div className="flex items-center w-full">
-                        <div className="flex items-center gap-2 ml-auto">
-                            <div className="hidden group-hover:flex items-center space-x-1 transition-opacity duration-200 opacity-0 group-hover:opacity-100">
+                    <div className="flex items-center flex-shrink-0">
+                        <div className="flex items-center gap-2">
+                            <div className="flex items-center space-x-1 transition-opacity duration-200 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto">
                                 {/* Today Plan Controls */}
                                 {onToggleToday && !isTaskCompleted && (
                                     <button
@@ -724,10 +724,10 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                 <div
                                     className={`relative transition-opacity duration-200 ${
                                         task.habit_mode
-                                            ? 'opacity-0 group-hover:opacity-100'
+                                            ? 'opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto'
                                             : isTaskInProgress
-                                              ? 'opacity-100'
-                                              : 'opacity-0 group-hover:opacity-100'
+                                              ? 'opacity-100 pointer-events-auto'
+                                              : 'opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto'
                                     }`}
                                     ref={desktopCompletionMenuRef}
                                 >
