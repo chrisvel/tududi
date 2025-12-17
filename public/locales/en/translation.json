@@ -139,6 +139,7 @@
     "descending": "Descending",
     "groupBy": "Group by",
     "groupByProject": "Project",
+    "groupByStatus": "Status",
     "groupByAssignee": "Assignee",
     "grouping": {
       "none": "None"
@@ -693,6 +694,13 @@
       "priority": "Priority",
       "dueDate": "Due Date",
       "note": "Note"
+    },
+    "status": {
+      "notStarted": "Not Started",
+      "inProgress": "In Progress",
+      "waiting": "Waiting",
+      "done": "Done",
+      "archived": "Archived"
     },
     "create": "Create",
     "addTaskName": "Add task name",

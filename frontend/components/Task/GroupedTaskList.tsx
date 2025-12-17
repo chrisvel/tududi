@@ -13,7 +13,7 @@ import { GroupedTasks } from '../../utils/tasksService';
 interface GroupedTaskListProps {
     tasks: Task[];
     groupedTasks?: GroupedTasks | null;
-    groupBy?: 'none' | 'project' | 'assignee';
+    groupBy?: 'none' | 'project' | 'assignee' | 'status';
     currentUserId?: number | null;
     onTaskUpdate: (task: Task) => Promise<void>;
     onTaskCompletionToggle?: (task: Task) => void;
@@ -41,6 +41,13 @@ interface ProjectGroup {
 
 interface AssigneeGroup {
     key: 'unassigned' | 'assigned_to_me' | 'assigned_to_others';
+    label: string;
+    tasks: Task[];
+    order: number;
+}
+
+interface StatusGroup {
+    key: 'not_started' | 'in_progress' | 'waiting' | 'done' | 'archived';
     label: string;
     tasks: Task[];
     order: number;
@@ -346,6 +353,107 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
         return groups;
     }, [groupBy, tasks, showCompletedTasks, searchQuery, currentUserId, t]);
 
+    // Group tasks by status when requested
+    const groupedByStatus = useMemo(() => {
+        if (groupBy !== 'status') return null;
+
+        // Apply completion filter
+        const filtered = showCompletedTasks
+            ? tasks
+            : tasks.filter((task) => {
+                  const isCompleted =
+                      task.status === 'done' ||
+                      task.status === 'archived' ||
+                      task.status === 2 ||
+                      task.status === 3;
+                  return !isCompleted;
+              });
+
+        // Apply search filter
+        const filteredBySearch = searchQuery?.trim()
+            ? filtered.filter(
+                  (task) =>
+                      (task.name || '')
+                          .toLowerCase()
+                          .includes(searchQuery.toLowerCase()) ||
+                      (task.note || '')
+                          .toLowerCase()
+                          .includes(searchQuery.toLowerCase())
+              )
+            : filtered;
+
+        // Categorize tasks into 5 status groups
+        const notStartedTasks: Task[] = [];
+        const inProgressTasks: Task[] = [];
+        const waitingTasks: Task[] = [];
+        const doneTasks: Task[] = [];
+        const archivedTasks: Task[] = [];
+
+        filteredBySearch.forEach((task) => {
+            if (task.status === 'not_started' || task.status === 0) {
+                notStartedTasks.push(task);
+            } else if (task.status === 'in_progress' || task.status === 1) {
+                inProgressTasks.push(task);
+            } else if (task.status === 'waiting' || task.status === 4) {
+                waitingTasks.push(task);
+            } else if (task.status === 'done' || task.status === 2) {
+                doneTasks.push(task);
+            } else if (task.status === 'archived' || task.status === 3) {
+                archivedTasks.push(task);
+            }
+        });
+
+        // Build groups array (only include non-empty groups)
+        const groups: StatusGroup[] = [];
+
+        if (inProgressTasks.length > 0) {
+            groups.push({
+                key: 'in_progress',
+                label: t('task.status.inProgress', 'In Progress'),
+                tasks: inProgressTasks,
+                order: 0,
+            });
+        }
+
+        if (notStartedTasks.length > 0) {
+            groups.push({
+                key: 'not_started',
+                label: t('task.status.notStarted', 'Not Started'),
+                tasks: notStartedTasks,
+                order: 1,
+            });
+        }
+
+        if (waitingTasks.length > 0) {
+            groups.push({
+                key: 'waiting',
+                label: t('task.status.waiting', 'Waiting'),
+                tasks: waitingTasks,
+                order: 2,
+            });
+        }
+
+        if (doneTasks.length > 0) {
+            groups.push({
+                key: 'done',
+                label: t('task.status.done', 'Done'),
+                tasks: doneTasks,
+                order: 3,
+            });
+        }
+
+        if (archivedTasks.length > 0) {
+            groups.push({
+                key: 'archived',
+                label: t('task.status.archived', 'Archived'),
+                tasks: archivedTasks,
+                order: 4,
+            });
+        }
+
+        return groups;
+    }, [groupBy, tasks, showCompletedTasks, searchQuery, t]);
+
     const toggleRecurringGroup = (templateId: number) => {
         setExpandedRecurringGroups((prev) => {
             const newSet = new Set(prev);
@@ -545,6 +653,43 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
                           );
                       }
                   )
+                : groupBy === 'status' && groupedByStatus
+                  ? groupedByStatus.map(
+                        ({ key, label, tasks: statusTasks }, index) => {
+                            return (
+                                <div
+                                    key={key}
+                                    className={`space-y-1.5 pb-4 mb-2 border-b border-gray-200/50 dark:border-gray-800/60 last:border-b-0 ${index > 0 ? 'pt-4' : ''}`}
+                                >
+                                    <div className="flex items-center justify-between px-1 text-base font-semibold text-gray-900 dark:text-gray-100">
+                                        <span className="truncate">{label}</span>
+                                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                                            {statusTasks.length}{' '}
+                                            {t('tasks.tasks', 'tasks')}
+                                        </span>
+                                    </div>
+                                    {statusTasks.map((task) => (
+                                        <div
+                                            key={task.id}
+                                            className="task-item-wrapper transition-all duration-200 ease-in-out"
+                                        >
+                                            <TaskItem
+                                                task={task}
+                                                onTaskUpdate={onTaskUpdate}
+                                                onTaskCompletionToggle={
+                                                    onTaskCompletionToggle
+                                                }
+                                                onTaskDelete={onTaskDelete}
+                                                projects={projects}
+                                                hideProjectName={hideProjectName}
+                                                onToggleToday={onToggleToday}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            );
+                        }
+                    )
                 : groupBy === 'assignee' && groupedByAssignee
                   ? groupedByAssignee.map(
                         ({ key, label, tasks: assigneeTasks }, index) => {
@@ -720,7 +865,8 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
 
             {standaloneTask.length === 0 &&
                 recurringGroups.length === 0 &&
-                (!groupedByAssignee || groupedByAssignee.length === 0) && (
+                (!groupedByAssignee || groupedByAssignee.length === 0) &&
+                (!groupedByStatus || groupedByStatus.length === 0) && (
                 <div className="flex justify-center items-center mt-4">
                     <div className="w-full max-w bg-black/2 dark:bg-gray-900/25 rounded-l px-10 py-24 flex flex-col items-center opacity-95">
                         <svg

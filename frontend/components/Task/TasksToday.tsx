@@ -3,8 +3,9 @@ import { format } from 'date-fns';
 import { el, enUS, es, ja, uk, de } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { getLocalesPath, getApiPath } from '../../config/paths';
+import { getCurrentUser } from '../../utils/userUtils';
 import { sortTasksByPriorityDueDateProject } from '../../utils/taskSortUtils';
 import {
     ClipboardDocumentListIcon,
@@ -36,6 +37,7 @@ import ProductivityAssistant from '../Productivity/ProductivityAssistant';
 import NextTaskSuggestion from './NextTaskSuggestion';
 import WeeklyCompletionChart from './WeeklyCompletionChart';
 import TodaySettingsDropdown from './TodaySettingsDropdown';
+import MultiSelectUserDropdown from '../Shared/MultiSelectUserDropdown';
 
 const filterNonHabitTasks = (tasks: Task[] = []) =>
     tasks.filter((task) => !task.habit_mode);
@@ -59,6 +61,7 @@ const getLocale = (language: string) => {
 const TasksToday: React.FC = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const location = useLocation();
 
     // Get tasks from store at the top level to avoid conditional hook usage
     const storeTasks = useStore((state) => state.tasksStore.tasks);
@@ -121,6 +124,11 @@ const TasksToday: React.FC = () => {
         return stored === 'true';
     });
     const [isSettingsLoaded, setIsSettingsLoaded] = useState(false);
+
+    // Assignee filter state
+    const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+    const [selectedAssigneeIds, setSelectedAssigneeIds] = useState<number[]>([]);
+    const [includeUnassignedFilter, setIncludeUnassignedFilter] = useState(false);
 
     // Metrics from the API (counts) + task arrays stored locally
     const [metrics, setMetrics] = useState<
@@ -264,6 +272,50 @@ const TasksToday: React.FC = () => {
     // Function to handle next task suggestion dismissal
     const handleCloseNextTaskSuggestion = () => {
         setShowNextTaskSuggestion(false);
+    };
+
+    // Handle assignee filter changes
+    const handleAssigneeFilterChange = (
+        userIds: number[],
+        includeUnassigned: boolean
+    ) => {
+        const params = new URLSearchParams(location.search);
+
+        if (userIds.length === 0 && !includeUnassigned) {
+            params.delete('assignee');
+        } else {
+            const values: string[] = [...userIds.map((id) => id.toString())];
+            if (includeUnassigned) values.push('unassigned');
+            params.set('assignee', values.join(','));
+        }
+
+        navigate(
+            {
+                pathname: location.pathname,
+                search: `?${params.toString()}`,
+            },
+            { replace: true }
+        );
+    };
+
+    // Filter tasks by assignee
+    const filterTasksByAssignee = (tasks: Task[]): Task[] => {
+        if (selectedAssigneeIds.length === 0 && !includeUnassignedFilter) {
+            return tasks;
+        }
+
+        return tasks.filter((task: Task) => {
+            if (
+                task.assigned_to_user_id &&
+                selectedAssigneeIds.includes(task.assigned_to_user_id)
+            ) {
+                return true;
+            }
+            if (includeUnassignedFilter && !task.assigned_to_user_id) {
+                return true;
+            }
+            return false;
+        });
     };
 
     // Toggle functions for collapsible sections
@@ -471,6 +523,57 @@ const TasksToday: React.FC = () => {
     useEffect(() => {
         loadHabitsStore();
     }, [loadHabitsStore]);
+
+    // Fetch current user ID for the assignee filter
+    useEffect(() => {
+        const fetchCurrentUserId = async () => {
+            const currentUser = getCurrentUser();
+            if (!currentUser) {
+                setCurrentUserId(null);
+                return;
+            }
+
+            try {
+                const response = await fetch(getApiPath('users'), { credentials: 'include' });
+                if (response.ok) {
+                    const users = await response.json();
+                    const currentUserData = users.find((u: any) => u.uid === currentUser.uid);
+                    setCurrentUserId(currentUserData?.id || null);
+                }
+            } catch (error) {
+                console.error('Error fetching current user ID:', error);
+                setCurrentUserId(null);
+            }
+        };
+
+        fetchCurrentUserId();
+    }, []);
+
+    // Parse assignee filter from URL parameters
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const assigneeParam = params.get('assignee');
+        if (assigneeParam) {
+            const parts = assigneeParam.split(',');
+            const ids: number[] = [];
+            let hasUnassigned = false;
+
+            parts.forEach((part) => {
+                if (part === 'unassigned') {
+                    hasUnassigned = true;
+                } else {
+                    const id = parseInt(part, 10);
+                    if (!isNaN(id)) ids.push(id);
+                }
+            });
+
+            setSelectedAssigneeIds(ids);
+            setIncludeUnassignedFilter(hasUnassigned);
+        } else {
+            setSelectedAssigneeIds([]);
+            setIncludeUnassignedFilter(false);
+        }
+    }, [location.search]);
 
     useEffect(() => {
         isMounted.current = true;
@@ -1194,6 +1297,23 @@ const TasksToday: React.FC = () => {
     const totalCompletedItems =
         completedTasksList.length + completedHabits.length;
 
+    // Apply assignee filter to all task sections
+    const overdueTasksFiltered = filterTasksByAssignee(sortedOverdueTasks);
+    const dueTodayTasksFiltered = filterTasksByAssignee(sortedDueTodayTasks);
+    const todayPlanTasksFiltered = filterTasksByAssignee(plannedTasks);
+    const suggestedTasksFiltered = filterTasksByAssignee(sortedSuggestedTasks);
+    const completedTasksFiltered = filterTasksByAssignee(completedTasksList);
+    const plannedHabitsFiltered = filterTasksByAssignee(plannedHabits);
+    const completedHabitsFiltered = filterTasksByAssignee(completedHabits);
+
+    // Calculate filtered counts
+    const totalOverdueFiltered = overdueTasksFiltered.length;
+    const totalDueTodayFiltered = dueTodayTasksFiltered.length;
+    const totalSuggestedFiltered = suggestedTasksFiltered.length;
+    const totalCompletedTodayFiltered = completedTasksFiltered.length;
+    const totalPlannedItemsFiltered = todayPlanTasksFiltered.length + plannedHabitsFiltered.length;
+    const totalCompletedItemsFiltered = completedTasksFiltered.length + completedHabitsFiltered.length;
+
     // Handle settings change
     const handleSettingsChange = (newSettings: typeof todaySettings) => {
         setTodaySettings(newSettings);
@@ -1298,6 +1418,17 @@ const TasksToday: React.FC = () => {
                             )}
                         </div>
                     </div>
+                </div>
+
+                {/* Assignee Filter */}
+                <div className="mb-6">
+                    <MultiSelectUserDropdown
+                        selectedUserIds={selectedAssigneeIds}
+                        includeUnassigned={includeUnassignedFilter}
+                        onChange={handleAssigneeFilterChange}
+                        currentUserId={currentUserId}
+                        className="max-w-xs"
+                    />
                 </div>
 
                 {/* Metrics Section - Always reserve space to prevent layout shift */}
@@ -1534,7 +1665,7 @@ const TasksToday: React.FC = () => {
                 {/* Overdue Tasks - Displayed first */}
                 {isSettingsLoaded &&
                     todaySettings.showDueToday &&
-                    sortedOverdueTasks.length > 0 && (
+                    overdueTasksFiltered.length > 0 && (
                         <div className="mb-6" data-testid="overdue-section">
                             <div
                                 className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
@@ -1546,7 +1677,7 @@ const TasksToday: React.FC = () => {
                                 </h3>
                                 <div className="flex items-center">
                                     <span className="text-sm text-gray-500 mr-2">
-                                        {sortedOverdueTasks.length}
+                                        {totalOverdueFiltered}
                                     </span>
                                     {isOverdueCollapsed ? (
                                         <ChevronRightIcon className="h-5 w-5 text-gray-500" />
@@ -1558,7 +1689,7 @@ const TasksToday: React.FC = () => {
                             {!isOverdueCollapsed && (
                                 <>
                                     <TaskList
-                                        tasks={sortedOverdueTasks.slice(
+                                        tasks={overdueTasksFiltered.slice(
                                             0,
                                             overdueDisplayLimit
                                         )}
@@ -1573,7 +1704,7 @@ const TasksToday: React.FC = () => {
 
                                     {/* Load More Buttons for Overdue Tasks */}
                                     {overdueDisplayLimit <
-                                        sortedOverdueTasks.length && (
+                                        overdueTasksFiltered.length && (
                                         <div className="flex justify-center pt-4 pb-2 gap-3">
                                             <button
                                                 onClick={() =>
@@ -1592,7 +1723,7 @@ const TasksToday: React.FC = () => {
                                             <button
                                                 onClick={() =>
                                                     setOverdueDisplayLimit(
-                                                        sortedOverdueTasks.length
+                                                        overdueTasksFiltered.length
                                                     )
                                                 }
                                                 className="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
@@ -1613,9 +1744,9 @@ const TasksToday: React.FC = () => {
                                             {
                                                 current: Math.min(
                                                     overdueDisplayLimit,
-                                                    sortedOverdueTasks.length
+                                                    overdueTasksFiltered.length
                                                 ),
-                                                total: sortedOverdueTasks.length,
+                                                total: totalOverdueFiltered,
                                             }
                                         )}
                                     </div>
@@ -1625,7 +1756,7 @@ const TasksToday: React.FC = () => {
                     )}
 
                 {/* Today Plan */}
-                {totalPlannedItems > 0 && (
+                {totalPlannedItemsFiltered > 0 && (
                     <div className="mb-6" data-testid="planned-section">
                         <div
                             className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
@@ -1637,7 +1768,7 @@ const TasksToday: React.FC = () => {
                             </h3>
                             <div className="flex items-center">
                                 <span className="text-sm text-gray-500 mr-2">
-                                    {totalPlannedItems}
+                                    {totalPlannedItemsFiltered}
                                 </span>
                                 {isTodayPlanCollapsed ? (
                                     <ChevronRightIcon className="h-5 w-5 text-gray-500" />
@@ -1648,11 +1779,11 @@ const TasksToday: React.FC = () => {
                         </div>
                         {!isTodayPlanCollapsed && (
                             <>
-                                {renderHabitList(plannedHabits, 'planned')}
-                                {plannedTasks.length > 0 && (
+                                {renderHabitList(plannedHabitsFiltered, 'planned')}
+                                {todayPlanTasksFiltered.length > 0 && (
                                     <>
                                         <TodayPlan
-                                            todayPlanTasks={plannedTasks}
+                                            todayPlanTasks={todayPlanTasksFiltered}
                                             projects={localProjects}
                                             onTaskUpdate={handleTaskUpdate}
                                             onTaskDelete={handleTaskDelete}
@@ -1731,7 +1862,7 @@ const TasksToday: React.FC = () => {
                                                 'Showing {{current}} of {{total}} tasks',
                                                 {
                                                     current:
-                                                        plannedTasks.length,
+                                                        todayPlanTasksFiltered.length,
                                                     total: pagination.total,
                                                 }
                                             )}
@@ -1746,7 +1877,7 @@ const TasksToday: React.FC = () => {
                 {/* Due Today Tasks */}
                 {isSettingsLoaded &&
                     todaySettings.showDueToday &&
-                    sortedDueTodayTasks.length > 0 && (
+                    dueTodayTasksFiltered.length > 0 && (
                         <div className="mb-6" data-testid="due-today-section">
                             <div
                                 className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
@@ -1758,7 +1889,7 @@ const TasksToday: React.FC = () => {
                                 </h3>
                                 <div className="flex items-center">
                                     <span className="text-sm text-gray-500 mr-2">
-                                        {sortedDueTodayTasks.length}
+                                        {totalDueTodayFiltered}
                                     </span>
                                     {isDueTodayCollapsed ? (
                                         <ChevronRightIcon className="h-5 w-5 text-gray-500" />
@@ -1770,7 +1901,7 @@ const TasksToday: React.FC = () => {
                             {!isDueTodayCollapsed && (
                                 <>
                                     <TaskList
-                                        tasks={sortedDueTodayTasks.slice(
+                                        tasks={dueTodayTasksFiltered.slice(
                                             0,
                                             dueTodayDisplayLimit
                                         )}
@@ -1785,7 +1916,7 @@ const TasksToday: React.FC = () => {
 
                                     {/* Load More Buttons for Due Today Tasks */}
                                     {dueTodayDisplayLimit <
-                                        sortedDueTodayTasks.length && (
+                                        dueTodayTasksFiltered.length && (
                                         <div className="flex justify-center pt-4 pb-2 gap-3">
                                             <button
                                                 onClick={() =>
@@ -1804,7 +1935,7 @@ const TasksToday: React.FC = () => {
                                             <button
                                                 onClick={() =>
                                                     setDueTodayDisplayLimit(
-                                                        sortedDueTodayTasks.length
+                                                        dueTodayTasksFiltered.length
                                                     )
                                                 }
                                                 className="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
@@ -1825,9 +1956,9 @@ const TasksToday: React.FC = () => {
                                             {
                                                 current: Math.min(
                                                     dueTodayDisplayLimit,
-                                                    sortedDueTodayTasks.length
+                                                    dueTodayTasksFiltered.length
                                                 ),
-                                                total: sortedDueTodayTasks.length,
+                                                total: totalDueTodayFiltered,
                                             }
                                         )}
                                     </div>
@@ -1846,7 +1977,7 @@ const TasksToday: React.FC = () => {
                         <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 h-20"></div>
                     </div>
                 ) : todaySettings.showSuggestions &&
-                  sortedSuggestedTasks.length > 0 ? (
+                  suggestedTasksFiltered.length > 0 ? (
                     <div className="mt-2 mb-6">
                         <div
                             className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
@@ -1857,7 +1988,7 @@ const TasksToday: React.FC = () => {
                             </h3>
                             <div className="flex items-center">
                                 <span className="text-sm text-gray-500 mr-2">
-                                    {sortedSuggestedTasks.length}
+                                    {totalSuggestedFiltered}
                                 </span>
                                 {isSuggestedCollapsed ? (
                                     <ChevronRightIcon className="h-5 w-5 text-gray-500" />
@@ -1869,7 +2000,7 @@ const TasksToday: React.FC = () => {
                         {!isSuggestedCollapsed && (
                             <>
                                 <TaskList
-                                    tasks={sortedSuggestedTasks.slice(
+                                    tasks={suggestedTasksFiltered.slice(
                                         0,
                                         suggestedDisplayLimit
                                     )}
@@ -1883,7 +2014,7 @@ const TasksToday: React.FC = () => {
                                 />
 
                                 {suggestedDisplayLimit <
-                                    sortedSuggestedTasks.length && (
+                                    suggestedTasksFiltered.length && (
                                     <div className="flex justify-center pt-4 pb-2 gap-3">
                                         <button
                                             onClick={() =>
@@ -1899,7 +2030,7 @@ const TasksToday: React.FC = () => {
                                         <button
                                             onClick={() =>
                                                 setSuggestedDisplayLimit(
-                                                    sortedSuggestedTasks.length
+                                                    suggestedTasksFiltered.length
                                                 )
                                             }
                                             className="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
@@ -1916,9 +2047,9 @@ const TasksToday: React.FC = () => {
                                         {
                                             current: Math.min(
                                                 suggestedDisplayLimit,
-                                                sortedSuggestedTasks.length
+                                                suggestedTasksFiltered.length
                                             ),
-                                            total: sortedSuggestedTasks.length,
+                                            total: totalSuggestedFiltered,
                                         }
                                     )}
                                 </div>
@@ -1936,13 +2067,13 @@ const TasksToday: React.FC = () => {
                             data-testid="completed-section-header"
                         >
                             <h3
-                                className={`text-sm font-medium uppercase ${totalCompletedItems > 0 ? 'text-green-600 dark:text-green-400' : ''}`}
+                                className={`text-sm font-medium uppercase ${totalCompletedItemsFiltered > 0 ? 'text-green-600 dark:text-green-400' : ''}`}
                             >
                                 {t('tasks.completedToday')}
                             </h3>
                             <div className="flex items-center">
                                 <span className="text-sm text-gray-500 mr-2">
-                                    {totalCompletedItems}
+                                    {totalCompletedItemsFiltered}
                                 </span>
                                 {isCompletedCollapsed ? (
                                     <ChevronRightIcon className="h-5 w-5 text-gray-500" />
@@ -1953,11 +2084,11 @@ const TasksToday: React.FC = () => {
                         </div>
                         {!isCompletedCollapsed && (
                             <>
-                                {renderHabitList(completedHabits, 'completed')}
-                                {completedTasksList.length > 0 && (
+                                {renderHabitList(completedHabitsFiltered, 'completed')}
+                                {completedTasksFiltered.length > 0 && (
                                     <>
                                         <TaskList
-                                            tasks={completedTasksList.slice(
+                                            tasks={completedTasksFiltered.slice(
                                                 0,
                                                 completedTodayDisplayLimit
                                             )}
@@ -1970,7 +2101,7 @@ const TasksToday: React.FC = () => {
 
                                         {/* Load More Buttons for Completed Today Tasks */}
                                         {completedTodayDisplayLimit <
-                                            completedTasksList.length && (
+                                            completedTasksFiltered.length && (
                                             <div className="flex justify-center pt-4 pb-2 gap-3">
                                                 <button
                                                     onClick={() =>
@@ -1989,7 +2120,7 @@ const TasksToday: React.FC = () => {
                                                 <button
                                                     onClick={() =>
                                                         setCompletedTodayDisplayLimit(
-                                                            completedTasksList.length
+                                                            completedTasksFiltered.length
                                                         )
                                                     }
                                                     className="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
@@ -2010,16 +2141,16 @@ const TasksToday: React.FC = () => {
                                                 {
                                                     current: Math.min(
                                                         completedTodayDisplayLimit,
-                                                        completedTasksList.length
+                                                        completedTasksFiltered.length
                                                     ),
-                                                    total: completedTasksList.length,
+                                                    total: totalCompletedTodayFiltered,
                                                 }
                                             )}
                                         </div>
                                     </>
                                 )}
-                                {completedTasksList.length === 0 &&
-                                    completedHabits.length === 0 && (
+                                {completedTasksFiltered.length === 0 &&
+                                    completedHabitsFiltered.length === 0 && (
                                         <p className="text-gray-500 dark:text-gray-400 text-center mt-4">
                                             {t(
                                                 'tasks.noCompletedTasksToday',

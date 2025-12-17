@@ -567,7 +567,6 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                 {(task.AssignedTo.name?.[0] || task.AssignedTo.email[0]).toUpperCase()}
                                             </div>
                                         )}
-                                        <UserCircleIcon className="h-3 w-3 mr-1" />
                                         <span>{getAssigneeDisplayName()}</span>
                                     </div>
                                 )}
