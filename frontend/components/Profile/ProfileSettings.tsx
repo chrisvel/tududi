@@ -16,6 +16,7 @@ import {
     KeyIcon,
     CheckIcon,
     BellIcon,
+    CalendarIcon,
 } from '@heroicons/react/24/outline';
 import TelegramIcon from '../Icons/TelegramIcon';
 import { useToast } from '../Shared/ToastContext';
@@ -42,6 +43,7 @@ import ProductivityTab from './tabs/ProductivityTab';
 import TelegramTab from './tabs/TelegramTab';
 import AiTab from './tabs/AiTab';
 import NotificationsTab from './tabs/NotificationsTab';
+import CalendarTab from './tabs/CalendarTab';
 import type {
     ProfileSettingsProps,
     Profile,
@@ -81,6 +83,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             'security',
             'api-keys',
             'productivity',
+            'calendar',
             'telegram',
             'ai',
             'notifications',
@@ -116,6 +119,8 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         next_task_suggestion_enabled: true,
         pomodoro_enabled: true,
         notification_preferences: null,
+        calendar_enabled: false,
+        ical_feed_enabled: false,
         currentPassword: '',
         newPassword: '',
         confirmPassword: '',
@@ -144,6 +149,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
     const [deleteInFlightId, setDeleteInFlightId] = useState<number | null>(
         null
     );
+    
+    // Calendar state
+    const [calendarFeedUrl, setCalendarFeedUrl] = useState<string | null>(null);
+    const [isRegeneratingCalendarToken, setIsRegeneratingCalendarToken] = useState(false);
+    
     // Update URL query parameter when tab changes (not on mount)
     const isInitialMount = React.useRef(true);
     useEffect(() => {
@@ -217,6 +227,28 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             loadApiKeys();
         }
     }, [activeTab, apiKeysLoaded, loadApiKeys]);
+
+    // Fetch calendar feed URL when iCal feed is enabled
+    const fetchCalendarFeedUrl = useCallback(async () => {
+        try {
+            const response = await fetch(getApiPath('calendar/feed-url'));
+            if (response.ok) {
+                const data = await response.json();
+                setCalendarFeedUrl(data.feed_url || null);
+            }
+        } catch (error) {
+            console.error('Failed to fetch calendar feed URL:', error);
+        }
+    }, []);
+
+    // Fetch feed URL when ical_feed_enabled changes to true or on initial load if enabled
+    useEffect(() => {
+        if (formData.ical_feed_enabled) {
+            fetchCalendarFeedUrl();
+        } else {
+            setCalendarFeedUrl(null);
+        }
+    }, [formData.ical_feed_enabled, fetchCalendarFeedUrl]);
 
     const validatePasswordForm = (): {
         valid: boolean;
@@ -456,6 +488,91 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         return parsed.toLocaleString();
     };
 
+    // Calendar handlers
+    const handleToggleCalendarEnabled = () => {
+        setFormData((prev) => ({
+            ...prev,
+            calendar_enabled: !prev.calendar_enabled,
+        }));
+    };
+
+    const handleToggleIcalFeedEnabled = async () => {
+        const newValue = !formData.ical_feed_enabled;
+        
+        if (newValue) {
+            // Enabling: Generate token via API
+            try {
+                const response = await fetch(getApiPath('calendar/generate-token'), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.error || 'Failed to generate calendar token');
+                }
+                
+                const data = await response.json();
+                setCalendarFeedUrl(data.feed_url);
+                setFormData((prev) => ({
+                    ...prev,
+                    ical_feed_enabled: true,
+                }));
+                showSuccessToast(t('profile.icalFeedEnabled', 'iCal feed enabled successfully.'));
+            } catch (error) {
+                showErrorToast((error as Error).message);
+            }
+        } else {
+            // Disabling: Revoke token via API
+            try {
+                const response = await fetch(getApiPath('calendar/token'), {
+                    method: 'DELETE',
+                });
+                
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.error || 'Failed to disable calendar feed');
+                }
+                
+                setCalendarFeedUrl(null);
+                setFormData((prev) => ({
+                    ...prev,
+                    ical_feed_enabled: false,
+                }));
+                showSuccessToast(t('profile.icalFeedDisabled', 'iCal feed disabled.'));
+            } catch (error) {
+                showErrorToast((error as Error).message);
+            }
+        }
+    };
+
+    const handleRegenerateCalendarToken = async () => {
+        setIsRegeneratingCalendarToken(true);
+        try {
+            const response = await fetch(getApiPath('calendar/generate-token'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || 'Failed to regenerate calendar token');
+            }
+            
+            const data = await response.json();
+            setCalendarFeedUrl(data.feed_url);
+            showSuccessToast(t('profile.calendarTokenRegenerated', 'Calendar URL regenerated. Update your calendar subscriptions.'));
+        } catch (error) {
+            showErrorToast((error as Error).message);
+        } finally {
+            setIsRegeneratingCalendarToken(false);
+        }
+    };
+
     useEffect(() => {
         const fetchProfile = async () => {
             try {
@@ -512,6 +629,14 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                             : true,
                     notification_preferences:
                         data.notification_preferences || null,
+                    calendar_enabled:
+                        data.calendar_enabled !== undefined
+                            ? data.calendar_enabled
+                            : false,
+                    ical_feed_enabled:
+                        data.ical_feed_enabled !== undefined
+                            ? data.ical_feed_enabled
+                            : false,
                 });
 
                 if (data.telegram_bot_token) {
@@ -1021,6 +1146,18 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                         : prev.pomodoro_enabled !== undefined
                           ? prev.pomodoro_enabled
                           : true,
+                calendar_enabled:
+                    updatedProfile.calendar_enabled !== undefined
+                        ? updatedProfile.calendar_enabled
+                        : prev.calendar_enabled !== undefined
+                          ? prev.calendar_enabled
+                          : false,
+                ical_feed_enabled:
+                    updatedProfile.ical_feed_enabled !== undefined
+                        ? updatedProfile.ical_feed_enabled
+                        : prev.ical_feed_enabled !== undefined
+                          ? prev.ical_feed_enabled
+                          : false,
             }));
 
             if (
@@ -1038,6 +1175,15 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 window.dispatchEvent(
                     new CustomEvent('pomodoroSettingChanged', {
                         detail: { enabled: updatedProfile.pomodoro_enabled },
+                    })
+                );
+            }
+
+            // Dispatch calendar setting change event
+            if (updatedProfile.calendar_enabled !== undefined) {
+                window.dispatchEvent(
+                    new CustomEvent('calendarSettingChanged', {
+                        detail: { enabled: updatedProfile.calendar_enabled },
                     })
                 );
             }
@@ -1099,6 +1245,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             id: 'productivity',
             name: t('profile.tabs.productivity', 'Productivity'),
             icon: <ClockIcon className="w-5 h-5" />,
+        },
+        {
+            id: 'calendar',
+            name: t('profile.tabs.calendar', 'Calendar'),
+            icon: <CalendarIcon className="w-5 h-5" />,
         },
         {
             id: 'notifications',
@@ -1240,6 +1391,16 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                                 !prev.pomodoro_enabled,
                                         }))
                                     }
+                                />
+
+                                <CalendarTab
+                                    isActive={activeTab === 'calendar'}
+                                    formData={formData}
+                                    calendarFeedUrl={calendarFeedUrl}
+                                    onToggleCalendarEnabled={handleToggleCalendarEnabled}
+                                    onToggleIcalFeedEnabled={handleToggleIcalFeedEnabled}
+                                    onRegenerateToken={handleRegenerateCalendarToken}
+                                    isRegenerating={isRegeneratingCalendarToken}
                                 />
 
                                 <NotificationsTab
