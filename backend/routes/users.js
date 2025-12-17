@@ -130,6 +130,8 @@ router.get('/profile', async (req, res) => {
                 'productivity_assistant_enabled',
                 'next_task_suggestion_enabled',
                 'notification_preferences',
+                'calendar_enabled',
+                'ical_feed_enabled',
             ],
         });
 
@@ -188,6 +190,7 @@ router.patch('/profile', async (req, res) => {
             pomodoro_enabled,
             ui_settings,
             notification_preferences,
+            calendar_enabled,
             currentPassword,
             newPassword,
         } = req.body;
@@ -227,6 +230,9 @@ router.patch('/profile', async (req, res) => {
         if (ui_settings !== undefined) allowedUpdates.ui_settings = ui_settings;
         if (notification_preferences !== undefined)
             allowedUpdates.notification_preferences = notification_preferences;
+        if (calendar_enabled !== undefined)
+            allowedUpdates.calendar_enabled = calendar_enabled;
+        // Note: ical_feed_enabled is managed by calendar-feed.js routes, not here
 
         // Validate first_day_of_week if provided
         if (first_day_of_week !== undefined) {
@@ -292,6 +298,8 @@ router.patch('/profile', async (req, res) => {
                 'next_task_suggestion_enabled',
                 'pomodoro_enabled',
                 'notification_preferences',
+                'calendar_enabled',
+                'ical_feed_enabled',
             ],
         });
 
