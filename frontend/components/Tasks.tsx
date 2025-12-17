@@ -17,6 +17,7 @@ import { useStore } from '../store/useStore';
 import { useToast } from './Shared/ToastContext';
 import { SortOption } from './Shared/SortFilterButton';
 import IconSortDropdown from './Shared/IconSortDropdown';
+import MultiSelectUserDropdown from './Shared/MultiSelectUserDropdown';
 import { TagIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import {
     QueueListIcon,
@@ -60,6 +61,8 @@ const Tasks: React.FC = () => {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     const [groupBy, setGroupBy] = useState<'none' | 'project' | 'assignee'>('none');
     const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+    const [selectedAssigneeIds, setSelectedAssigneeIds] = useState<number[]>([]);
+    const [includeUnassignedFilter, setIncludeUnassignedFilter] = useState(false);
 
     const [offset, setOffset] = useState(0);
     const [hasMore, setHasMore] = useState(false);
@@ -111,6 +114,22 @@ const Tasks: React.FC = () => {
             });
         }
 
+        // Add assignee filtering
+        if (selectedAssigneeIds.length > 0 || includeUnassignedFilter) {
+            filteredTasks = filteredTasks.filter((task: Task) => {
+                if (
+                    task.assigned_to_user_id &&
+                    selectedAssigneeIds.includes(task.assigned_to_user_id)
+                ) {
+                    return true;
+                }
+                if (includeUnassignedFilter && !task.assigned_to_user_id) {
+                    return true;
+                }
+                return false;
+            });
+        }
+
         if (taskSearchQuery.trim() && !isUpcomingView) {
             const queryLower = taskSearchQuery.toLowerCase();
             filteredTasks = filteredTasks.filter(
@@ -122,7 +141,7 @@ const Tasks: React.FC = () => {
         }
 
         return filteredTasks;
-    }, [tasks, showCompleted, status, taskSearchQuery, isUpcomingView]);
+    }, [tasks, showCompleted, status, taskSearchQuery, isUpcomingView, selectedAssigneeIds, includeUnassignedFilter]);
 
     if (location.pathname === '/upcoming' && !query.get('type')) {
         query.set('type', 'upcoming');
@@ -162,6 +181,30 @@ const Tasks: React.FC = () => {
             setIsSearchExpanded(false);
         }
     }, [isUpcomingView]);
+
+    useEffect(() => {
+        const assigneeParam = query.get('assignee');
+        if (assigneeParam) {
+            const parts = assigneeParam.split(',');
+            const ids: number[] = [];
+            let hasUnassigned = false;
+
+            parts.forEach((part) => {
+                if (part === 'unassigned') {
+                    hasUnassigned = true;
+                } else {
+                    const id = parseInt(part, 10);
+                    if (!isNaN(id)) ids.push(id);
+                }
+            });
+
+            setSelectedAssigneeIds(ids);
+            setIncludeUnassignedFilter(hasUnassigned);
+        } else {
+            setSelectedAssigneeIds([]);
+            setIncludeUnassignedFilter(false);
+        }
+    }, [location.search]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -547,6 +590,29 @@ const Tasks: React.FC = () => {
             { replace: true }
         );
         setDropdownOpen(false);
+    };
+
+    const handleAssigneeFilterChange = (
+        userIds: number[],
+        includeUnassigned: boolean
+    ) => {
+        const params = new URLSearchParams(location.search);
+
+        if (userIds.length === 0 && !includeUnassigned) {
+            params.delete('assignee');
+        } else {
+            const values: string[] = [...userIds.map((id) => id.toString())];
+            if (includeUnassigned) values.push('unassigned');
+            params.set('assignee', values.join(','));
+        }
+
+        navigate(
+            {
+                pathname: location.pathname,
+                search: `?${params.toString()}`,
+            },
+            { replace: true }
+        );
     };
 
     const sortOptions: SortOption[] = [
@@ -959,6 +1025,19 @@ const Tasks: React.FC = () => {
                                             status: 'not_started',
                                         })
                                     }
+                                />
+                            </div>
+                        )}
+
+                        {/* Assignee Filter */}
+                        {!isUpcomingView && (
+                            <div className="mb-4">
+                                <MultiSelectUserDropdown
+                                    selectedUserIds={selectedAssigneeIds}
+                                    includeUnassigned={includeUnassignedFilter}
+                                    onChange={handleAssigneeFilterChange}
+                                    currentUserId={currentUserId}
+                                    className="max-w-xs"
                                 />
                             </div>
                         )}
