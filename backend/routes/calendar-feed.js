@@ -20,7 +20,7 @@ const { Op } = require('sequelize');
 /**
  * Escape special characters in iCalendar text fields
  * Per RFC 5545: backslash, semicolon, and comma must be escaped
- * Newlines become literal \n
+ * Newlines become literal \n (the two characters, not a newline)
  */
 function escapeICalText(text) {
     if (!text) return '';
@@ -28,6 +28,8 @@ function escapeICalText(text) {
         .replace(/\\/g, '\\\\')
         .replace(/;/g, '\\;')
         .replace(/,/g, '\\,')
+        .replace(/\r\n/g, '\\n')
+        .replace(/\r/g, '\\n')
         .replace(/\n/g, '\\n');
 }
 
@@ -132,25 +134,6 @@ function buildRRule(task) {
 }
 
 /**
- * Map tududi task status to a display string
- */
-function getStatusText(status) {
-    switch (status) {
-        case 0:
-        case 'not_started':
-            return 'Not Started';
-        case 1:
-        case 'in_progress':
-            return 'In Progress';
-        case 2:
-        case 'done':
-            return 'Completed';
-        default:
-            return '';
-    }
-}
-
-/**
  * Generate a single VEVENT component for a task
  */
 function generateVEvent(task, hostname) {
@@ -181,50 +164,29 @@ function generateVEvent(task, hostname) {
     // Task name as summary
     lines.push(`SUMMARY:${escapeICalText(task.name)}`);
 
-    // Build description with task details
+    // Build description: Project first, then description, then note
+    // Only include fields that have content
     const descParts = [];
-    if (task.description) {
-        descParts.push(task.description);
-    }
-
-    // Add project name if available
+    
+    // Project name first (if available)
     if (task.Project && task.Project.name) {
         descParts.push(`Project: ${task.Project.name}`);
     }
 
-    // Add status
-    const statusText = getStatusText(task.status);
-    if (statusText) {
-        descParts.push(`Status: ${statusText}`);
+    // Task description (the main text field in tududi UI)
+    if (task.description && task.description.trim()) {
+        descParts.push(task.description.trim());
     }
 
-    // Add priority if set
-    if (task.priority !== null && task.priority !== undefined) {
-        const priorityMap = { 0: 'None', 1: 'Low', 2: 'Medium', 3: 'High' };
-        const priorityText = priorityMap[task.priority] || '';
-        if (priorityText) {
-            descParts.push(`Priority: ${priorityText}`);
-        }
+    // Note field (if it exists and has content)
+    if (task.note && task.note.trim()) {
+        descParts.push(task.note.trim());
     }
 
     if (descParts.length > 0) {
-        lines.push(`DESCRIPTION:${escapeICalText(descParts.join('\\n'))}`);
-    }
-
-    // Add categories based on tags
-    if (task.Tags && task.Tags.length > 0) {
-        const tagNames = task.Tags.map((t) => t.name).join(',');
-        lines.push(`CATEGORIES:${escapeICalText(tagNames)}`);
-    }
-
-    // Map task status to VTODO-like status for visual indication
-    // Note: VEVENT doesn't have STATUS=COMPLETED, but we can use TRANSP
-    if (task.status === 2 || task.status === 'done') {
-        lines.push('STATUS:CANCELLED'); // Shows as struck through in some calendars
-        lines.push('TRANSP:TRANSPARENT');
-    } else {
-        lines.push('STATUS:CONFIRMED');
-        lines.push('TRANSP:OPAQUE');
+        // Join with double newline for visual separation
+        const descriptionText = descParts.join('\n\n');
+        lines.push(`DESCRIPTION:${escapeICalText(descriptionText)}`);
     }
 
     // Add recurrence rule if task is recurring
@@ -338,11 +300,6 @@ router.get('/calendar/feed.ics', async (req, res) => {
                     model: Project,
                     as: 'Project',
                     attributes: ['id', 'name'],
-                },
-                {
-                    association: 'Tags',
-                    attributes: ['id', 'name'],
-                    through: { attributes: [] },
                 },
             ],
             order: [['due_date', 'ASC']],
