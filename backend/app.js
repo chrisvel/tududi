@@ -169,6 +169,10 @@ const registerApiRoutes = (basePath) => {
     app.use(basePath, require('./routes/auth'));
     app.use(basePath, require('./routes/feature-flags'));
 
+    // Calendar feed route - has its own token-based auth via query parameter
+    // Must be registered BEFORE requireAuth middleware
+    app.use(basePath, require('./routes/calendar-feed'));
+
     app.use(basePath, requireAuth);
     app.use(basePath, require('./routes/tasks'));
     app.use(`${basePath}/habits`, require('./routes/habits'));
