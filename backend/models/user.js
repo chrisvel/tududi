@@ -225,6 +225,24 @@ module.exports = (sequelize) => {
                 type: DataTypes.DATE,
                 allowNull: true,
             },
+            // Calendar settings
+            calendar_enabled: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: false,
+                comment: 'Show/hide Calendar section in main navigation',
+            },
+            ical_feed_enabled: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: false,
+                comment: 'Enable iCal calendar feed for external subscriptions',
+            },
+            ical_feed_token: {
+                type: DataTypes.STRING,
+                allowNull: true,
+                comment: 'Dedicated token for iCal feed authentication',
+            },
         },
         {
             tableName: 'users',
