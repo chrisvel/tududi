@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Location } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -11,7 +11,7 @@ import {
 import { PlusCircleIcon } from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
 import { loadInboxItemsToStore } from '../../utils/inboxService';
-import { getFeatureFlags, FeatureFlags } from '../../utils/featureFlags';
+import { getFeatureFlags, clearFeatureFlagsCache, FeatureFlags } from '../../utils/featureFlags';
 
 interface SidebarNavProps {
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
@@ -35,6 +35,12 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
 
     const inboxItemsCount = store.inboxStore.pagination.total;
 
+    const refreshFeatureFlags = useCallback(async () => {
+        clearFeatureFlagsCache();
+        const flags = await getFeatureFlags();
+        setFeatureFlags(flags);
+    }, []);
+
     useEffect(() => {
         loadInboxItemsToStore(false).catch(console.error);
 
@@ -44,6 +50,19 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
         };
         fetchFlags();
     }, []);
+
+    // Listen for calendar setting changes to refresh feature flags
+    useEffect(() => {
+        const handleCalendarSettingChange = () => {
+            refreshFeatureFlags();
+        };
+
+        window.addEventListener('calendarSettingChanged', handleCalendarSettingChange);
+
+        return () => {
+            window.removeEventListener('calendarSettingChanged', handleCalendarSettingChange);
+        };
+    }, [refreshFeatureFlags]);
 
     const allNavLinks = [
         {
