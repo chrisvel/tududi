@@ -1030,17 +1030,15 @@ const Tasks: React.FC = () => {
                         )}
 
                         {/* Assignee Filter */}
-                        {!isUpcomingView && (
-                            <div className="mb-4">
-                                <MultiSelectUserDropdown
-                                    selectedUserIds={selectedAssigneeIds}
-                                    includeUnassigned={includeUnassignedFilter}
-                                    onChange={handleAssigneeFilterChange}
-                                    currentUserId={currentUserId}
-                                    className="max-w-xs"
-                                />
-                            </div>
-                        )}
+                        <div className="mb-4">
+                            <MultiSelectUserDropdown
+                                selectedUserIds={selectedAssigneeIds}
+                                includeUnassigned={includeUnassignedFilter}
+                                onChange={handleAssigneeFilterChange}
+                                currentUserId={currentUserId}
+                                className="max-w-xs"
+                            />
+                        </div>
 
                         {displayTasks.length > 0 ||
                         (groupedTasks &&
