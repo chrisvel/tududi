@@ -5,17 +5,24 @@
  * This allows users to subscribe to their tududi calendar in
  * external calendar apps like Apple Calendar, Google Calendar, etc.
  *
- * Authentication: API token passed as query parameter (?token=...)
+ * Authentication: Dedicated ical_feed_token passed as query parameter (?token=...)
  * This is standard for calendar subscription URLs since calendar
  * apps cannot send Bearer tokens in headers.
  */
 
 const express = require('express');
 const router = express.Router();
-const { Task, Project } = require('../models');
-const { findValidTokenByValue } = require('../services/apiTokenService');
-const { User } = require('../models');
+const crypto = require('crypto');
+const { Task, Project, User } = require('../models');
 const { Op } = require('sequelize');
+
+/**
+ * Generate a secure random token for iCal feed
+ * Format: ical_xxxxx (32 random hex characters)
+ */
+function generateIcalToken() {
+    return 'ical_' + crypto.randomBytes(16).toString('hex');
+}
 
 /**
  * Escape special characters in iCalendar text fields
@@ -232,12 +239,12 @@ function generateICalendar(tasks, calendarName, hostname) {
  * Returns an iCalendar feed of all tasks with due dates.
  *
  * Query Parameters:
- *   - token (required): API token for authentication
+ *   - token (required): iCal feed token for authentication
  *   - completed: Include completed tasks (default: false)
  *   - project: Filter by project ID
  *
  * Example URL for Apple Calendar subscription:
- *   https://your-tududi.com/api/calendar/feed.ics?token=tt_xxxxx
+ *   https://your-tududi.com/api/calendar/feed.ics?token=ical_xxxxx
  */
 router.get('/calendar/feed.ics', async (req, res) => {
     try {
@@ -247,21 +254,21 @@ router.get('/calendar/feed.ics', async (req, res) => {
         if (!token) {
             return res.status(401).json({
                 error: 'Authentication required',
-                message: 'Please provide an API token using the ?token= parameter',
+                message: 'Please provide a calendar feed token using the ?token= parameter',
             });
         }
 
-        const apiToken = await findValidTokenByValue(token);
-        if (!apiToken) {
-            return res.status(401).json({
-                error: 'Invalid or expired API token',
-            });
-        }
+        // Find user by ical_feed_token
+        const user = await User.findOne({
+            where: {
+                ical_feed_token: token,
+                ical_feed_enabled: true,
+            },
+        });
 
-        const user = await User.findByPk(apiToken.user_id);
         if (!user) {
             return res.status(401).json({
-                error: 'User not found',
+                error: 'Invalid or disabled calendar feed token',
             });
         }
 
@@ -334,55 +341,132 @@ router.get('/calendar/feed.ics', async (req, res) => {
 });
 
 /**
- * GET /api/calendar/feed-url
+ * POST /api/calendar/generate-token
  *
- * Returns the subscription URL for the authenticated user.
- * Requires standard Bearer token authentication.
- * This endpoint helps users get their personalized feed URL.
+ * Generates a new iCal feed token for the authenticated user.
+ * Requires standard session/Bearer token authentication.
+ * If user already has a token, this regenerates it (invalidating the old one).
  */
-router.get('/calendar/feed-url', async (req, res) => {
+router.post('/calendar/generate-token', async (req, res) => {
     try {
-        // This endpoint requires the user to be authenticated via session or Bearer token
-        // The requireAuth middleware should be applied before this route
         if (!req.currentUser) {
             return res.status(401).json({
                 error: 'Authentication required',
             });
         }
 
-        // User needs to have an API token to use the feed
-        // We don't generate one automatically - they should create one in settings
-        const { ApiToken } = require('../models');
-        const tokens = await ApiToken.findAll({
-            where: {
-                user_id: req.currentUser.id,
-                revoked_at: null,
-            },
-            order: [['created_at', 'DESC']],
+        const user = await User.findByPk(req.currentUser.id);
+        if (!user) {
+            return res.status(404).json({
+                error: 'User not found',
+            });
+        }
+
+        // Generate new token
+        const newToken = generateIcalToken();
+        
+        // Update user with new token and enable feed
+        await user.update({
+            ical_feed_token: newToken,
+            ical_feed_enabled: true,
         });
+
+        // Build the feed URL
+        const protocol = req.protocol;
+        const host = req.get('host');
+        const feedUrl = `${protocol}://${host}/api/calendar/feed.ics?token=${newToken}`;
+
+        res.json({
+            success: true,
+            message: 'Calendar feed token generated successfully',
+            ical_feed_token: newToken,
+            feed_url: feedUrl,
+        });
+    } catch (error) {
+        console.error('Error generating iCal token:', error);
+        res.status(500).json({
+            error: 'Internal server error',
+        });
+    }
+});
+
+/**
+ * DELETE /api/calendar/token
+ *
+ * Revokes the iCal feed token and disables the feed.
+ * Requires standard session/Bearer token authentication.
+ */
+router.delete('/calendar/token', async (req, res) => {
+    try {
+        if (!req.currentUser) {
+            return res.status(401).json({
+                error: 'Authentication required',
+            });
+        }
+
+        const user = await User.findByPk(req.currentUser.id);
+        if (!user) {
+            return res.status(404).json({
+                error: 'User not found',
+            });
+        }
+
+        // Clear token and disable feed
+        await user.update({
+            ical_feed_token: null,
+            ical_feed_enabled: false,
+        });
+
+        res.json({
+            success: true,
+            message: 'Calendar feed disabled and token revoked',
+        });
+    } catch (error) {
+        console.error('Error revoking iCal token:', error);
+        res.status(500).json({
+            error: 'Internal server error',
+        });
+    }
+});
+
+/**
+ * GET /api/calendar/feed-url
+ *
+ * Returns the subscription URL for the authenticated user.
+ * Requires standard session/Bearer token authentication.
+ */
+router.get('/calendar/feed-url', async (req, res) => {
+    try {
+        if (!req.currentUser) {
+            return res.status(401).json({
+                error: 'Authentication required',
+            });
+        }
+
+        const user = await User.findByPk(req.currentUser.id);
+        if (!user) {
+            return res.status(404).json({
+                error: 'User not found',
+            });
+        }
 
         const protocol = req.protocol;
         const host = req.get('host');
         const baseUrl = `${protocol}://${host}`;
 
-        if (tokens.length === 0) {
+        if (!user.ical_feed_token || !user.ical_feed_enabled) {
             return res.json({
+                enabled: false,
                 hasToken: false,
-                message: 'You need to create an API token first to use the calendar feed.',
-                instructions: 'Go to Settings > API Tokens to create a new token.',
-                baseUrl: `${baseUrl}/api/calendar/feed.ics`,
+                message: 'iCal feed is not enabled. Enable it in Calendar settings to get your feed URL.',
             });
         }
 
-        // Return the feed URL with their most recent valid token prefix
-        // We don't return the full token for security - they need to know it
         res.json({
+            enabled: true,
             hasToken: true,
-            message: 'Add this URL to your calendar app as a subscription.',
-            feedUrl: `${baseUrl}/api/calendar/feed.ics?token=YOUR_API_TOKEN`,
-            tokenHint: `Your most recent token starts with: ${tokens[0].token_prefix}...`,
+            feed_url: `${baseUrl}/api/calendar/feed.ics?token=${user.ical_feed_token}`,
             parameters: {
-                token: 'Your API token (required)',
                 completed: 'Set to "true" to include completed tasks',
                 project: 'Filter by project ID',
             },
