@@ -102,7 +102,8 @@ const options = {
                         assigned_to_user_id: {
                             type: 'integer',
                             nullable: true,
-                            description: 'ID of the user the task is assigned to (null if unassigned)',
+                            description:
+                                'ID of the user the task is assigned to (null if unassigned)',
                         },
                         recurring_pattern: {
                             type: 'string',

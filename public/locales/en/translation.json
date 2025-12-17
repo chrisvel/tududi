@@ -7,6 +7,7 @@
     "create": "Create",
     "submit": "Submit",
     "close": "Close",
+    "clear": "Clear",
     "back": "Back",
     "next": "Next",
     "loading": "Loading...",
@@ -138,9 +139,14 @@
     "descending": "Descending",
     "groupBy": "Group by",
     "groupByProject": "Project",
+    "groupByStatus": "Status",
+    "groupByAssignee": "Assignee",
     "grouping": {
       "none": "None"
     },
+    "unassigned": "Unassigned",
+    "assignedToMe": "Assigned to me",
+    "assignedToOthers": "Assigned to others",
     "show": "Show",
     "open": "Open",
     "all": "All",
@@ -472,7 +478,15 @@
         "short": "Try to be more specific about what needs to be done",
         "noVerb": "What specific action do you need to take? Try starting with a verb.",
         "vague": "Try starting with an action verb like \"Call\", \"Write\", \"Schedule\", or \"Research\""
-      }
+      },
+      "allAssignees": "All Assignees",
+      "assigneeCount": "{{count}} Assignee",
+      "assigneeCount_plural": "{{count}} Assignees",
+      "youLabel": "You",
+      "unassigned": "Unassigned",
+      "searchUsers": "Search users...",
+      "loadingUsers": "Loading users...",
+      "noUsersFound": "No users found"
     },
     "noteTitle": "Note Title",
     "noteContent": "Note Content",
@@ -680,6 +694,13 @@
       "priority": "Priority",
       "dueDate": "Due Date",
       "note": "Note"
+    },
+    "status": {
+      "notStarted": "Not Started",
+      "inProgress": "In Progress",
+      "waiting": "Waiting",
+      "done": "Done",
+      "archived": "Archived"
     },
     "create": "Create",
     "addTaskName": "Add task name",

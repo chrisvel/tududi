@@ -17,6 +17,7 @@ import { useStore } from '../store/useStore';
 import { useToast } from './Shared/ToastContext';
 import { SortOption } from './Shared/SortFilterButton';
 import IconSortDropdown from './Shared/IconSortDropdown';
+import MultiSelectUserDropdown from './Shared/MultiSelectUserDropdown';
 import { TagIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import {
     QueueListIcon,
@@ -25,6 +26,7 @@ import {
     CheckIcon,
 } from '@heroicons/react/24/outline';
 import { getApiPath } from '../config/paths';
+import { getCurrentUser } from '../utils/userUtils';
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
@@ -57,7 +59,10 @@ const Tasks: React.FC = () => {
     const [isSearchExpanded, setIsSearchExpanded] = useState(false);
     const [showCompleted, setShowCompleted] = useState(false);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-    const [groupBy, setGroupBy] = useState<'none' | 'project'>('none');
+    const [groupBy, setGroupBy] = useState<'none' | 'project' | 'assignee'>('none');
+    const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+    const [selectedAssigneeIds, setSelectedAssigneeIds] = useState<number[]>([]);
+    const [includeUnassignedFilter, setIncludeUnassignedFilter] = useState(false);
 
     const [offset, setOffset] = useState(0);
     const [hasMore, setHasMore] = useState(false);
@@ -109,6 +114,22 @@ const Tasks: React.FC = () => {
             });
         }
 
+        // Add assignee filtering
+        if (selectedAssigneeIds.length > 0 || includeUnassignedFilter) {
+            filteredTasks = filteredTasks.filter((task: Task) => {
+                if (
+                    task.assigned_to_user_id &&
+                    selectedAssigneeIds.includes(task.assigned_to_user_id)
+                ) {
+                    return true;
+                }
+                if (includeUnassignedFilter && !task.assigned_to_user_id) {
+                    return true;
+                }
+                return false;
+            });
+        }
+
         if (taskSearchQuery.trim() && !isUpcomingView) {
             const queryLower = taskSearchQuery.toLowerCase();
             filteredTasks = filteredTasks.filter(
@@ -120,7 +141,7 @@ const Tasks: React.FC = () => {
         }
 
         return filteredTasks;
-    }, [tasks, showCompleted, status, taskSearchQuery, isUpcomingView]);
+    }, [tasks, showCompleted, status, taskSearchQuery, isUpcomingView, selectedAssigneeIds, includeUnassignedFilter]);
 
     if (location.pathname === '/upcoming' && !query.get('type')) {
         query.set('type', 'upcoming');
@@ -137,7 +158,7 @@ const Tasks: React.FC = () => {
             localStorage.getItem('order_by') || 'created_at:desc';
         setOrderBy(savedOrderBy);
         const savedGroupBy =
-            (localStorage.getItem('tasks_group_by') as 'none' | 'project') ||
+            (localStorage.getItem('tasks_group_by') as 'none' | 'project' | 'assignee') ||
             'none';
         setGroupBy(savedGroupBy);
 
@@ -160,6 +181,30 @@ const Tasks: React.FC = () => {
             setIsSearchExpanded(false);
         }
     }, [isUpcomingView]);
+
+    useEffect(() => {
+        const assigneeParam = query.get('assignee');
+        if (assigneeParam) {
+            const parts = assigneeParam.split(',');
+            const ids: number[] = [];
+            let hasUnassigned = false;
+
+            parts.forEach((part) => {
+                if (part === 'unassigned') {
+                    hasUnassigned = true;
+                } else {
+                    const id = parseInt(part, 10);
+                    if (!isNaN(id)) ids.push(id);
+                }
+            });
+
+            setSelectedAssigneeIds(ids);
+            setIncludeUnassignedFilter(hasUnassigned);
+        } else {
+            setSelectedAssigneeIds([]);
+            setIncludeUnassignedFilter(false);
+        }
+    }, [location.search]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -279,7 +324,7 @@ const Tasks: React.FC = () => {
         if (!hasMore && !all) return;
         setIsLoadingMore(true);
         const shouldDisablePagination =
-            !isUpcomingView && groupBy === 'project';
+            !isUpcomingView && (groupBy === 'project' || groupBy === 'assignee');
         if (all || shouldDisablePagination) {
             const newLimit = totalCount > 0 ? totalCount : 10000;
             await fetchData(true, {
@@ -299,7 +344,7 @@ const Tasks: React.FC = () => {
     };
 
     useEffect(() => {
-        const shouldDisablePagination = isUpcomingView || groupBy === 'project';
+        const shouldDisablePagination = isUpcomingView || groupBy === 'project' || groupBy === 'assignee';
         fetchData(
             true,
             shouldDisablePagination
@@ -312,6 +357,34 @@ const Tasks: React.FC = () => {
                 : undefined
         );
     }, [location, isSidebarOpen, isMobile, groupBy, isUpcomingView]);
+
+    useEffect(() => {
+        const fetchCurrentUserId = async () => {
+            const currentUser = getCurrentUser();
+            if (!currentUser) {
+                setCurrentUserId(null);
+                return;
+            }
+
+            try {
+                const response = await fetch(getApiPath('users'), {
+                    credentials: 'include',
+                });
+                if (response.ok) {
+                    const users = await response.json();
+                    const currentUserData = users.find(
+                        (u: any) => u.uid === currentUser.uid
+                    );
+                    setCurrentUserId(currentUserData?.id || null);
+                }
+            } catch (error) {
+                console.error('Error fetching current user ID:', error);
+                setCurrentUserId(null);
+            }
+        };
+
+        fetchCurrentUserId();
+    }, []);
 
     useEffect(() => {
         const handleResize = () => {
@@ -519,12 +592,36 @@ const Tasks: React.FC = () => {
         setDropdownOpen(false);
     };
 
+    const handleAssigneeFilterChange = (
+        userIds: number[],
+        includeUnassigned: boolean
+    ) => {
+        const params = new URLSearchParams(location.search);
+
+        if (userIds.length === 0 && !includeUnassigned) {
+            params.delete('assignee');
+        } else {
+            const values: string[] = [...userIds.map((id) => id.toString())];
+            if (includeUnassigned) values.push('unassigned');
+            params.set('assignee', values.join(','));
+        }
+
+        navigate(
+            {
+                pathname: location.pathname,
+                search: `?${params.toString()}`,
+            },
+            { replace: true }
+        );
+    };
+
     const sortOptions: SortOption[] = [
         { value: 'due_date:asc', label: t('sort.due_date', 'Due Date') },
         { value: 'name:asc', label: t('sort.name', 'Name') },
         { value: 'priority:desc', label: t('sort.priority', 'Priority') },
         { value: 'status:desc', label: t('sort.status', 'Status') },
         { value: 'created_at:desc', label: t('sort.created_at', 'Created At') },
+        { value: 'assigned:asc', label: t('sort.assigned', 'Assignee') },
     ];
 
     const description = getDescription(query, projects, t, location.pathname);
@@ -636,7 +733,7 @@ const Tasks: React.FC = () => {
                                                 {t('tasks.groupBy', 'Group by')}
                                             </div>
                                             <div className="py-1">
-                                                {['none', 'project'].map(
+                                                {['none', 'project', 'assignee'].map(
                                                     (val) => (
                                                         <button
                                                             key={val}
@@ -645,6 +742,7 @@ const Tasks: React.FC = () => {
                                                                     val as
                                                                         | 'none'
                                                                         | 'project'
+                                                                        | 'assignee'
                                                                 );
                                                                 localStorage.setItem(
                                                                     'tasks_group_by',
@@ -664,10 +762,15 @@ const Tasks: React.FC = () => {
                                                                           'tasks.groupByProject',
                                                                           'Project'
                                                                       )
-                                                                    : t(
-                                                                          'tasks.grouping.none',
-                                                                          'None'
-                                                                      )}
+                                                                    : val === 'assignee'
+                                                                      ? t(
+                                                                            'tasks.groupByAssignee',
+                                                                            'Assignee'
+                                                                        )
+                                                                      : t(
+                                                                            'tasks.grouping.none',
+                                                                            'None'
+                                                                        )}
                                                             </span>
                                                             {groupBy ===
                                                                 val && (
@@ -926,6 +1029,17 @@ const Tasks: React.FC = () => {
                             </div>
                         )}
 
+                        {/* Assignee Filter */}
+                        <div className="mb-4">
+                            <MultiSelectUserDropdown
+                                selectedUserIds={selectedAssigneeIds}
+                                includeUnassigned={includeUnassignedFilter}
+                                onChange={handleAssigneeFilterChange}
+                                currentUserId={currentUserId}
+                                className="max-w-xs"
+                            />
+                        </div>
+
                         {displayTasks.length > 0 ||
                         (groupedTasks &&
                             Object.keys(groupedTasks).length > 0) ? (
@@ -952,6 +1066,24 @@ const Tasks: React.FC = () => {
                                         tasks={displayTasks}
                                         groupedTasks={null}
                                         groupBy="project"
+                                        onTaskCreate={handleTaskCreate}
+                                        onTaskUpdate={handleTaskUpdate}
+                                        onTaskCompletionToggle={
+                                            handleTaskCompletionToggle
+                                        }
+                                        onTaskDelete={handleTaskDelete}
+                                        projects={projects}
+                                        hideProjectName={false}
+                                        onToggleToday={handleToggleToday}
+                                        showCompletedTasks={showCompleted}
+                                        searchQuery={taskSearchQuery}
+                                    />
+                                ) : groupBy === 'assignee' ? (
+                                    <GroupedTaskList
+                                        tasks={displayTasks}
+                                        groupedTasks={null}
+                                        groupBy="assignee"
+                                        currentUserId={currentUserId}
                                         onTaskCreate={handleTaskCreate}
                                         onTaskUpdate={handleTaskUpdate}
                                         onTaskCompletionToggle={

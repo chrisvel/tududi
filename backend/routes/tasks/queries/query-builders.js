@@ -89,7 +89,14 @@ async function filterTasksByParams(
         {
             model: User,
             as: 'AssignedTo',
-            attributes: ['id', 'uid', 'email', 'name', 'surname', 'avatar_image'],
+            attributes: [
+                'id',
+                'uid',
+                'email',
+                'name',
+                'surname',
+                'avatar_image',
+            ],
             required: false,
         },
         {
@@ -314,6 +321,7 @@ async function filterTasksByParams(
             'priority',
             'status',
             'due_date',
+            'assigned',
         ];
 
         if (!allowedColumns.includes(orderColumn)) {
@@ -330,6 +338,11 @@ async function filterTasksByParams(
                 ],
                 ['due_date', orderDirection.toUpperCase()],
             ];
+        } else if (orderColumn === 'assigned') {
+            // For 'assigned' sorting, we'll do client-side sorting after the query
+            // to handle the complex "assigned to me first" logic
+            // So we don't set orderClause here - will use default created_at ordering
+            orderClause = [['created_at', 'DESC']];
         } else {
             orderClause = [[orderColumn, orderDirection.toUpperCase()]];
         }
@@ -389,7 +402,14 @@ function getTaskIncludeConfig() {
         {
             model: User,
             as: 'AssignedTo',
-            attributes: ['id', 'uid', 'email', 'name', 'surname', 'avatar_image'],
+            attributes: [
+                'id',
+                'uid',
+                'email',
+                'name',
+                'surname',
+                'avatar_image',
+            ],
             required: false,
         },
         {

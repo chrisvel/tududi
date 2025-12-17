@@ -371,6 +371,12 @@ router.get(
                                 required: false,
                             },
                             {
+                                model: User,
+                                as: 'AssignedTo',
+                                attributes: ['id', 'uid', 'email', 'name', 'surname', 'avatar_image'],
+                                required: false,
+                            },
+                            {
                                 model: Task,
                                 as: 'Subtasks',
                                 include: [

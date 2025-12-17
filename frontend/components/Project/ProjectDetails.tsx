@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     MagnifyingGlassIcon,
@@ -46,12 +46,18 @@ import BannerEditModal from './BannerEditModal';
 import ProjectTasksSection from './ProjectTasksSection';
 import ProjectNotesSection from './ProjectNotesSection';
 import { useProjectMetrics } from './useProjectMetrics';
+import GroupedTaskList from '../Task/GroupedTaskList';
+import MultiSelectUserDropdown from '../Shared/MultiSelectUserDropdown';
+import { getCurrentUser } from '../../utils/userUtils';
+import AutoSuggestNextActionBox from './AutoSuggestNextActionBox';
+import NewTask from '../Task/NewTask';
 
 const ProjectDetails: React.FC = () => {
     const UI_OPTIONS_KEY = 'ui_app_options';
 
     const { uidSlug } = useParams<{ uidSlug: string }>();
     const navigate = useNavigate();
+    const location = useLocation();
     const { t } = useTranslation();
     const { showSuccessToast } = useToast();
     const { areasStore, projectsStore } = useStore();
@@ -81,6 +87,10 @@ const ProjectDetails: React.FC = () => {
     const [orderBy, setOrderBy] = useState<string>('status:inProgressFirst');
     const [taskSearchQuery, setTaskSearchQuery] = useState('');
     const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+    const [groupBy, setGroupBy] = useState<'none' | 'status' | 'assignee'>('none');
+    const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+    const [selectedAssigneeIds, setSelectedAssigneeIds] = useState<number[]>([]);
+    const [includeUnassignedFilter, setIncludeUnassignedFilter] = useState(false);
     const {
         isOpen: isModalOpen,
         openModal,
@@ -224,6 +234,60 @@ const ProjectDetails: React.FC = () => {
             setOrderBy(storedSort);
         }
     }, []);
+
+    useEffect(() => {
+        const savedGroupBy = (localStorage.getItem('project_group_by') as 'none' | 'status' | 'assignee') || 'none';
+        setGroupBy(savedGroupBy);
+    }, []);
+
+    useEffect(() => {
+        const fetchCurrentUserId = async () => {
+            const currentUser = getCurrentUser();
+            if (!currentUser) {
+                setCurrentUserId(null);
+                return;
+            }
+
+            try {
+                const response = await fetch(getApiPath('users'), { credentials: 'include' });
+                if (response.ok) {
+                    const users = await response.json();
+                    const currentUserData = users.find((u: any) => u.uid === currentUser.uid);
+                    setCurrentUserId(currentUserData?.id || null);
+                }
+            } catch (error) {
+                console.error('Error fetching current user ID:', error);
+                setCurrentUserId(null);
+            }
+        };
+
+        fetchCurrentUserId();
+    }, []);
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const assigneeParam = params.get('assignee');
+        if (assigneeParam) {
+            const parts = assigneeParam.split(',');
+            const ids: number[] = [];
+            let hasUnassigned = false;
+
+            parts.forEach((part) => {
+                if (part === 'unassigned') {
+                    hasUnassigned = true;
+                } else {
+                    const id = parseInt(part, 10);
+                    if (!isNaN(id)) ids.push(id);
+                }
+            });
+
+            setSelectedAssigneeIds(ids);
+            setIncludeUnassignedFilter(hasUnassigned);
+        } else {
+            setSelectedAssigneeIds([]);
+            setIncludeUnassignedFilter(false);
+        }
+    }, [location.search]);
 
     useEffect(() => {
         if (!uidSlug) return;
@@ -538,6 +602,29 @@ const ProjectDetails: React.FC = () => {
         localStorage.setItem('project_order_by', newOrderBy);
     };
 
+    const handleAssigneeFilterChange = (
+        userIds: number[],
+        includeUnassigned: boolean
+    ) => {
+        const params = new URLSearchParams(location.search);
+
+        if (userIds.length === 0 && !includeUnassigned) {
+            params.delete('assignee');
+        } else {
+            const values: string[] = [...userIds.map((id) => id.toString())];
+            if (includeUnassigned) values.push('unassigned');
+            params.set('assignee', values.join(','));
+        }
+
+        navigate(
+            {
+                pathname: location.pathname,
+                search: `?${params.toString()}`,
+            },
+            { replace: true }
+        );
+    };
+
     const handleDeleteProject = async () => {
         if (!project?.uid) return;
         await deleteProject(project.uid);
@@ -678,6 +765,24 @@ const ProjectDetails: React.FC = () => {
             // taskStatusFilter === 'all'
             filteredTasks = tasks;
         }
+
+        // Assignee filter
+        if (selectedAssigneeIds.length > 0 || includeUnassignedFilter) {
+            filteredTasks = filteredTasks.filter((task: Task) => {
+                if (
+                    task.assigned_to_user_id &&
+                    selectedAssigneeIds.includes(task.assigned_to_user_id)
+                ) {
+                    return true;
+                }
+                if (includeUnassignedFilter && !task.assigned_to_user_id) {
+                    return true;
+                }
+                return false;
+            });
+        }
+
+        // Search filter
         if (taskSearchQuery.trim()) {
             const query = taskSearchQuery.toLowerCase();
             filteredTasks = filteredTasks.filter(
@@ -687,7 +792,10 @@ const ProjectDetails: React.FC = () => {
                     task.note?.toLowerCase().includes(query)
             );
         }
-        const getStatusRank = (status: Task['status']) => {
+
+        // Sorting (only when not grouping)
+        if (groupBy === 'none') {
+            const getStatusRank = (status: Task['status']) => {
             if (status === 'in_progress' || status === 1) return 0;
             if (status === 'not_started' || status === 0) return 1;
             if (status === 'waiting' || status === 4) return 2;
@@ -751,8 +859,11 @@ const ProjectDetails: React.FC = () => {
                         b.created_at ? new Date(b.created_at).getTime() : 0
                     );
             }
-        });
-    }, [tasks, taskStatusFilter, orderBy, taskSearchQuery]);
+            });
+        }
+
+        return filteredTasks;
+    }, [tasks, taskStatusFilter, orderBy, taskSearchQuery, groupBy, selectedAssigneeIds, includeUnassignedFilter]);
 
     const {
         taskStats,
@@ -818,6 +929,39 @@ const ProjectDetails: React.FC = () => {
 
     const renderStatusFilter = () => (
         <div className="space-y-3">
+            {/* Grouping Section */}
+            <div>
+                <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
+                    {t('tasks.groupBy', 'Group by')}
+                </div>
+                <div className="py-1">
+                    {['none', 'status', 'assignee'].map((val) => (
+                        <button
+                            key={val}
+                            onClick={() => {
+                                setGroupBy(val as 'none' | 'status' | 'assignee');
+                                localStorage.setItem('project_group_by', val);
+                            }}
+                            className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                                groupBy === val
+                                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                            }`}
+                        >
+                            <span>
+                                {val === 'status'
+                                    ? t('tasks.groupByStatus', 'Status')
+                                    : val === 'assignee'
+                                      ? t('tasks.groupByAssignee', 'Assignee')
+                                      : t('tasks.grouping.none', 'None')}
+                            </span>
+                            {groupBy === val && <CheckIcon className="h-4 w-4" />}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Show Section */}
             <div>
                 <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-t border-b border-gray-200 dark:border-gray-700">
                     {t('tasks.show', 'Show')}
@@ -1058,6 +1202,17 @@ const ProjectDetails: React.FC = () => {
                                 </div>
                             </div>
 
+                            {/* Assignee Filter */}
+                            <div className="mb-4">
+                                <MultiSelectUserDropdown
+                                    selectedUserIds={selectedAssigneeIds}
+                                    includeUnassigned={includeUnassignedFilter}
+                                    onChange={handleAssigneeFilterChange}
+                                    currentUserId={currentUserId}
+                                    className="max-w-xs"
+                                />
+                            </div>
+
                             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start transition-all duration-300">
                                 <div
                                     className={`flex justify-center transition-all duration-300 relative z-10 ${
@@ -1073,7 +1228,8 @@ const ProjectDetails: React.FC = () => {
                                                 : 'xl:translate-x-6'
                                         }`}
                                     >
-                                        <ProjectTasksSection
+                                        {groupBy === 'none' ? (
+                                            <ProjectTasksSection
                                             project={project}
                                             displayTasks={displayTasks}
                                             showAutoSuggestForm={
@@ -1099,6 +1255,41 @@ const ProjectDetails: React.FC = () => {
                                             taskSearchQuery={taskSearchQuery}
                                             t={t}
                                         />
+                                        ) : (
+                                            <div className="space-y-2">
+                                                {showAutoSuggestForm && (
+                                                    <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0">
+                                                        <AutoSuggestNextActionBox
+                                                            onAddAction={(actionDescription) => {
+                                                                if (project?.id) {
+                                                                    handleCreateNextAction(project.id, actionDescription);
+                                                                }
+                                                            }}
+                                                            onDismiss={handleSkipNextAction}
+                                                        />
+                                                    </div>
+                                                )}
+
+                                                <div className="transition-all duration-300 ease-in-out overflow-visible opacity-100 transform translate-y-0">
+                                                    <NewTask onTaskCreate={handleTaskCreate} />
+                                                </div>
+
+                                                <GroupedTaskList
+                                                    tasks={displayTasks}
+                                                    groupedTasks={null}
+                                                    groupBy={groupBy}
+                                                    currentUserId={currentUserId}
+                                                    onTaskUpdate={handleTaskUpdate}
+                                                    onTaskCompletionToggle={handleTaskCompletionToggle}
+                                                    onTaskDelete={handleTaskDelete}
+                                                    projects={allProjects}
+                                                    hideProjectName={true}
+                                                    onToggleToday={handleToggleToday}
+                                                    showCompletedTasks={taskStatusFilter !== 'active'}
+                                                    searchQuery={taskSearchQuery}
+                                                />
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 

@@ -22,7 +22,10 @@ module.exports = {
 
     async down(queryInterface, Sequelize) {
         // Remove index first
-        await queryInterface.removeIndex('tasks', 'tasks_assigned_to_user_id_idx');
+        await queryInterface.removeIndex(
+            'tasks',
+            'tasks_assigned_to_user_id_idx'
+        );
 
         // Remove column
         await queryInterface.removeColumn('tasks', 'assigned_to_user_id');

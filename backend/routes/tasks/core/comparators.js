@@ -1,6 +1,6 @@
 const moment = require('moment-timezone');
 
-function compareTasksByField(a, b, field, safeTimezone) {
+function compareTasksByField(a, b, field, safeTimezone, userId = null) {
     switch (field) {
         case 'priority':
             return (a.priority || 0) - (b.priority || 0);
@@ -23,6 +23,34 @@ function compareTasksByField(a, b, field, safeTimezone) {
                 return 1;
             }
             return 0;
+
+        case 'assigned': {
+            // "Assigned to me" always comes first, regardless of sort direction
+            const aIsAssignedToMe = a.assigned_to_user_id === userId;
+            const bIsAssignedToMe = b.assigned_to_user_id === userId;
+
+            if (aIsAssignedToMe && !bIsAssignedToMe) {
+                return -1;
+            }
+            if (!aIsAssignedToMe && bIsAssignedToMe) {
+                return 1;
+            }
+
+            // If both or neither are assigned to me, sort by assignee name
+            const aName = a.AssignedTo
+                ? `${a.AssignedTo.name || ''} ${a.AssignedTo.surname || ''}`.trim()
+                : '';
+            const bName = b.AssignedTo
+                ? `${b.AssignedTo.name || ''} ${b.AssignedTo.surname || ''}`.trim()
+                : '';
+
+            // Tasks with no assignee go to the end
+            if (!aName && bName) return 1;
+            if (aName && !bName) return -1;
+            if (!aName && !bName) return 0;
+
+            return aName.localeCompare(bName);
+        }
 
         case 'created_at':
         default:
