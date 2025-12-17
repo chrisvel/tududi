@@ -166,6 +166,7 @@ healthPaths.forEach(registerHealthCheck);
 
 // Routes
 const registerApiRoutes = (basePath) => {
+    // Public routes (before requireAuth)
     app.use(basePath, require('./routes/auth'));
     app.use(basePath, require('./routes/feature-flags'));
 
@@ -173,7 +174,13 @@ const registerApiRoutes = (basePath) => {
     // Must be registered BEFORE requireAuth middleware
     app.use(basePath, require('./routes/calendar-feed'));
 
+    // All routes below require authentication
     app.use(basePath, requireAuth);
+
+    // Calendar API routes (token management) - requires session auth
+    app.use(basePath, require('./routes/calendar-api'));
+
+    // Core routes
     app.use(basePath, require('./routes/tasks'));
     app.use(`${basePath}/habits`, require('./routes/habits'));
     app.use(basePath, require('./routes/projects'));
