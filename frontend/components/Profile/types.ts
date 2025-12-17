@@ -58,6 +58,10 @@ export interface Profile {
     next_task_suggestion_enabled: boolean;
     pomodoro_enabled: boolean;
     notification_preferences?: NotificationPreferences | null;
+    // Calendar settings
+    calendar_enabled: boolean;
+    ical_feed_enabled: boolean;
+    ical_feed_token: string | null;
 }
 
 export interface TelegramBotInfo {
