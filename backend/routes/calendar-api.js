@@ -42,7 +42,7 @@ router.post('/calendar/generate-token', async (req, res) => {
 
         // Generate new token
         const newToken = generateIcalToken();
-        
+
         // Update user with new token and enable feed
         await user.update({
             ical_feed_token: newToken,
@@ -136,7 +136,8 @@ router.get('/calendar/feed-url', async (req, res) => {
             return res.json({
                 enabled: false,
                 hasToken: false,
-                message: 'iCal feed is not enabled. Enable it in Calendar settings to get your feed URL.',
+                message:
+                    'iCal feed is not enabled. Enable it in Calendar settings to get your feed URL.',
             });
         }
 
