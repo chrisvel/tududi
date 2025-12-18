@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
@@ -8,7 +8,6 @@ import TaskPriorityIcon from './TaskPriorityIcon';
 
 // Import SubtasksDisplay component from TaskHeader
 interface SubtasksDisplayProps {
-    showSubtasks: boolean;
     loadingSubtasks: boolean;
     subtasks: Task[];
     onTaskClick: (e: React.MouseEvent, task: Task) => void;
@@ -18,7 +17,6 @@ interface SubtasksDisplayProps {
 }
 
 const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
-    showSubtasks,
     loadingSubtasks,
     subtasks,
     onTaskClick,
@@ -26,8 +24,6 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
     onSubtaskUpdate,
 }) => {
     const { t } = useTranslation();
-
-    if (!showSubtasks) return null;
 
     return (
         <div className="mt-1 space-y-1">
@@ -171,15 +167,34 @@ const TaskItem: React.FC<TaskItemProps> = ({
     const [isAnimatingOut, setIsAnimatingOut] = useState(false);
 
     // Subtasks state
-    const [showSubtasks, setShowSubtasks] = useState(false);
     const [subtasks, setSubtasks] = useState<Task[]>([]);
     const [loadingSubtasks, setLoadingSubtasks] = useState(false);
-    const [hasSubtasks, setHasSubtasks] = useState(false);
 
     // Update projectList when projects prop changes
     useEffect(() => {
         setProjectList(projects);
     }, [projects]);
+
+    const loadSubtasks = useCallback(async () => {
+        if (!task.id) return;
+
+        const existingSubtasks = task.subtasks || task.Subtasks || [];
+        if (existingSubtasks.length > 0) {
+            setSubtasks(existingSubtasks);
+            return;
+        }
+
+        setLoadingSubtasks(true);
+        try {
+            const subtasksData = await fetchSubtasks(task.id);
+            setSubtasks(subtasksData);
+        } catch (error) {
+            console.error('Failed to load subtasks:', error);
+            setSubtasks([]);
+        } finally {
+            setLoadingSubtasks(false);
+        }
+    }, [task.id, task.subtasks, task.Subtasks]);
 
     // Calculate completion percentage
     const calculateCompletionPercentage = () => {
@@ -200,53 +215,12 @@ const TaskItem: React.FC<TaskItemProps> = ({
     useEffect(() => {
         // Handle both 'subtasks' and 'Subtasks' property names (case sensitivity)
         const subtasksData = task.subtasks || task.Subtasks || [];
-        const hasSubtasksFromData = subtasksData.length > 0;
-
-        // Update subtasks and hasSubtasks state based on task data
-        setHasSubtasks(hasSubtasksFromData);
         setSubtasks(subtasksData);
-    }, [task.id, task.subtasks, task.Subtasks]); // Removed task.updated_at which was causing frequent re-renders
 
-    const loadSubtasks = async () => {
-        if (!task.id) return;
-
-        // If subtasks are already included in the task data, use them (handle case sensitivity)
-        const subtasksData = task.subtasks || task.Subtasks || [];
-        if (subtasksData.length > 0) {
-            setSubtasks(subtasksData);
-            return;
+        if (subtasksData.length === 0 && task.id) {
+            void loadSubtasks();
         }
-
-        // Only fetch if not already included (fallback for older API responses)
-        setLoadingSubtasks(true);
-        try {
-            const subtasksData = await fetchSubtasks(task.id);
-            setSubtasks(subtasksData);
-        } catch (error) {
-            console.error('Failed to load subtasks:', error);
-            setSubtasks([]);
-        } finally {
-            setLoadingSubtasks(false);
-        }
-    };
-
-    // Reload subtasks when showSubtasks changes to true
-    useEffect(() => {
-        if (showSubtasks && subtasks.length === 0) {
-            loadSubtasks();
-        }
-    }, [showSubtasks, subtasks.length]);
-
-    const handleSubtasksToggle = async (e: React.MouseEvent) => {
-        e.stopPropagation();
-
-        if (!showSubtasks && subtasks.length === 0) {
-            await loadSubtasks();
-        }
-
-        setShowSubtasks(!showSubtasks);
-    };
-
+    }, [task.id, task.subtasks, task.Subtasks, loadSubtasks]); // Removed task.updated_at which was causing frequent re-renders
     const handleTaskClick = () => {
         if (task.uid) {
             if (task.habit_mode) {
@@ -498,9 +472,6 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     onToggleToday={onToggleToday}
                     onTaskUpdate={onTaskUpdate}
                     isOverdue={isOverdue}
-                    showSubtasks={showSubtasks}
-                    hasSubtasks={hasSubtasks}
-                    onSubtasksToggle={handleSubtasksToggle}
                     onEdit={handleEdit}
                     onDelete={handleDeleteClick}
                     isUpcomingView={isUpcomingView}
@@ -509,11 +480,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                 {/* Progress bar at bottom of parent task */}
                 {subtasks.length > 0 && (
                     <div
-                        className={`absolute bottom-0 left-0 right-0 h-0.5 transition-all duration-300 ease-in-out overflow-hidden rounded-b-lg ${
-                            showSubtasks
-                                ? 'opacity-100 transform translate-y-0'
-                                : 'opacity-0 transform translate-y-2'
-                        }`}
+                        className="absolute bottom-0 left-0 right-0 h-0.5 transition-all duration-300 ease-in-out overflow-hidden rounded-b-lg opacity-100 transform translate-y-0"
                     >
                         <div className="w-full h-full bg-gray-200 dark:bg-gray-700">
                             <div
@@ -526,9 +493,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
             </div>
 
             {/* Hide subtasks display for archived tasks */}
-            {!(task.status === 'archived' || task.status === 3) && (
+            {(subtasks.length > 0 || loadingSubtasks) &&
+                !(task.status === 'archived' || task.status === 3) && (
                 <SubtasksDisplay
-                    showSubtasks={showSubtasks}
                     loadingSubtasks={loadingSubtasks}
                     subtasks={subtasks}
                     onTaskClick={(e) => {

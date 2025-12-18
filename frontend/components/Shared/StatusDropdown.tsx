@@ -5,45 +5,71 @@ import {
     ClockIcon,
     CheckCircleIcon,
     ArchiveBoxIcon,
+    CalendarIcon,
+    PlayIcon,
+    XCircleIcon,
 } from '@heroicons/react/24/outline';
 import { StatusType } from '../../entities/Task';
 import { useTranslation } from 'react-i18next';
+import { getStatusString } from '../../constants/taskStatus';
 
 interface StatusDropdownProps {
-    value: StatusType;
+    value: StatusType | number;
     onChange: (value: StatusType) => void;
 }
 
 const StatusDropdown: React.FC<StatusDropdownProps> = ({ value, onChange }) => {
     const { t } = useTranslation();
+    const statusString = getStatusString(value);
 
     const statuses = [
         {
             value: 'not_started',
             label: t('status.notStarted', 'Not Started'),
             icon: (
-                <MinusIcon className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                <MinusIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            ),
+        },
+        {
+            value: 'planned',
+            label: t('status.planned', 'Planned'),
+            icon: (
+                <CalendarIcon className="w-5 h-5 text-purple-500 dark:text-purple-400" />
             ),
         },
         {
             value: 'in_progress',
             label: t('status.inProgress', 'In Progress'),
             icon: (
-                <ClockIcon className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                <PlayIcon className="w-5 h-5 text-blue-500 dark:text-blue-400" />
+            ),
+        },
+        {
+            value: 'waiting',
+            label: t('status.waiting', 'Waiting'),
+            icon: (
+                <ClockIcon className="w-5 h-5 text-yellow-500 dark:text-yellow-400" />
             ),
         },
         {
             value: 'done',
             label: t('status.done', 'Done'),
             icon: (
-                <CheckCircleIcon className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                <CheckCircleIcon className="w-5 h-5 text-green-500 dark:text-green-400" />
+            ),
+        },
+        {
+            value: 'cancelled',
+            label: t('status.cancelled', 'Cancelled'),
+            icon: (
+                <XCircleIcon className="w-5 h-5 text-red-500 dark:text-red-400" />
             ),
         },
         {
             value: 'archived',
             label: t('status.archived', 'Archived'),
             icon: (
-                <ArchiveBoxIcon className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                <ArchiveBoxIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
             ),
         },
     ];
@@ -80,7 +106,7 @@ const StatusDropdown: React.FC<StatusDropdownProps> = ({ value, onChange }) => {
         };
     }, [isOpen]);
 
-    const selectedStatus = statuses.find((s) => s.value === value);
+    const selectedStatus = statuses.find((s) => s.value === statusString);
 
     return (
         <div

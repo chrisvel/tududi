@@ -6,6 +6,8 @@ export const TASK_STATUS = {
     DONE: 2,
     ARCHIVED: 3,
     WAITING: 4,
+    CANCELLED: 5,
+    PLANNED: 6,
 } as const;
 
 export const TASK_STATUS_STRINGS = {
@@ -14,6 +16,8 @@ export const TASK_STATUS_STRINGS = {
     DONE: 'done',
     ARCHIVED: 'archived',
     WAITING: 'waiting',
+    CANCELLED: 'cancelled',
+    PLANNED: 'planned',
 } as const;
 
 export const HABIT_STATUS_CANCELLED = 5;
@@ -36,6 +40,8 @@ export function getStatusString(
         'done',
         'archived',
         'waiting',
+        'cancelled',
+        'planned',
     ];
 
     return statusNames[status] || 'not_started';
@@ -54,6 +60,8 @@ export function getStatusValue(
         done: TASK_STATUS.DONE,
         archived: TASK_STATUS.ARCHIVED,
         waiting: TASK_STATUS.WAITING,
+        cancelled: TASK_STATUS.CANCELLED,
+        planned: TASK_STATUS.PLANNED,
     };
 
     return statusMap[status] ?? TASK_STATUS.NOT_STARTED;
@@ -68,6 +76,8 @@ export function getStatusLabel(status: StatusType | number): string {
         done: 'Completed',
         archived: 'Archived',
         waiting: 'Waiting',
+        cancelled: 'Cancelled',
+        planned: 'Planned',
     };
 
     return labels[statusString] || 'Unknown';
@@ -112,7 +122,14 @@ export function isTaskCancelled(
     status: StatusType | string | number | undefined | null
 ): boolean {
     if (status === undefined || status === null) return false;
-    return status === HABIT_STATUS_CANCELLED || status === 'cancelled';
+    return status === TASK_STATUS.CANCELLED || status === 'cancelled';
+}
+
+export function isTaskPlanned(
+    status: StatusType | number | undefined | null
+): boolean {
+    if (status === undefined || status === null) return false;
+    return status === TASK_STATUS.PLANNED || status === 'planned';
 }
 
 export function isTaskActive(
