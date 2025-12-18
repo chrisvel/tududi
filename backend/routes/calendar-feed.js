@@ -47,7 +47,10 @@ function formatICalDate(date) {
  */
 function formatICalDateTime(date) {
     const d = new Date(date);
-    return d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+    return d
+        .toISOString()
+        .replace(/[-:]/g, '')
+        .replace(/\.\d{3}/, '');
 }
 
 /**
@@ -85,12 +88,17 @@ function buildRRule(task) {
                 if (Array.isArray(weekdays) && weekdays.length > 0) {
                     // Map day numbers (0=Sunday) to iCal day codes
                     const dayMap = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
-                    const days = weekdays.map((d) => dayMap[parseInt(d)]).filter(Boolean);
+                    const days = weekdays
+                        .map((d) => dayMap[parseInt(d)])
+                        .filter(Boolean);
                     if (days.length > 0) {
                         parts.push(`BYDAY=${days.join(',')}`);
                     }
                 }
-            } else if (task.recurrence_weekday !== null && task.recurrence_weekday !== undefined) {
+            } else if (
+                task.recurrence_weekday !== null &&
+                task.recurrence_weekday !== undefined
+            ) {
                 const dayMap = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
                 const day = dayMap[parseInt(task.recurrence_weekday)];
                 if (day) {
@@ -105,7 +113,10 @@ function buildRRule(task) {
             // Handle specific day of month or week of month
             if (task.recurrence_month_day) {
                 parts.push(`BYMONTHDAY=${task.recurrence_month_day}`);
-            } else if (task.recurrence_week_of_month && task.recurrence_weekday !== null) {
+            } else if (
+                task.recurrence_week_of_month &&
+                task.recurrence_weekday !== null
+            ) {
                 const dayMap = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
                 const day = dayMap[parseInt(task.recurrence_weekday)];
                 if (day) {
@@ -165,7 +176,7 @@ function generateVEvent(task, hostname) {
     // Build description: Project first, then description, then note
     // Only include fields that have content
     const descParts = [];
-    
+
     // Project name first (if available)
     if (task.Project && task.Project.name) {
         descParts.push(`Project: ${task.Project.name}`);
@@ -246,7 +257,8 @@ router.get('/calendar/feed.ics', async (req, res) => {
         if (!token) {
             return res.status(401).json({
                 error: 'Authentication required',
-                message: 'Please provide a calendar feed token using the ?token= parameter',
+                message:
+                    'Please provide a calendar feed token using the ?token= parameter',
             });
         }
 
