@@ -6,6 +6,7 @@ import {
     getPostHeaders,
 } from './authUtils';
 import { getApiPath } from '../config/paths';
+import { isTaskDone, TASK_STATUS } from '../constants/taskStatus';
 
 export interface GroupedTasks {
     [groupName: string]: Task[];
@@ -116,8 +117,11 @@ export const toggleTaskCompletion = async (
         return result.task;
     }
 
-    const newStatus =
-        task.status === 2 || task.status === 'done' ? (task.note ? 1 : 0) : 2;
+    const newStatus = isTaskDone(task.status)
+        ? task.note
+            ? TASK_STATUS.IN_PROGRESS
+            : TASK_STATUS.NOT_STARTED
+        : TASK_STATUS.DONE;
 
     return await updateTask(taskUid, { status: newStatus });
 };

@@ -26,6 +26,11 @@ import {
     deleteTask,
     toggleTaskToday,
 } from '../../utils/tasksService';
+import {
+    isTaskDone,
+    isTaskActive,
+    isHabitArchived,
+} from '../../constants/taskStatus';
 import { fetchProjects } from '../../utils/projectsService';
 import { Task } from '../../entities/Task';
 import { useStore } from '../../store/useStore';
@@ -297,9 +302,6 @@ const TasksToday: React.FC = () => {
         localStorage.setItem('dueTodayTasksCollapsed', newState.toString());
     };
 
-    const isHabitArchived = (habit: Task) =>
-        habit.status === 3 || habit.status === 'archived';
-
     const isHabitCompletedToday = useCallback((habit: Task) => {
         if (!habit.habit_last_completion_at) {
             return false;
@@ -317,7 +319,8 @@ const TasksToday: React.FC = () => {
         () =>
             todayHabits.filter(
                 (habit) =>
-                    !isHabitArchived(habit) && !isHabitCompletedToday(habit)
+                    !isHabitArchived(habit.status) &&
+                    !isHabitCompletedToday(habit)
             ),
         [todayHabits, isHabitCompletedToday]
     );
@@ -326,7 +329,8 @@ const TasksToday: React.FC = () => {
         () =>
             todayHabits.filter(
                 (habit) =>
-                    !isHabitArchived(habit) && isHabitCompletedToday(habit)
+                    !isHabitArchived(habit.status) &&
+                    isHabitCompletedToday(habit)
             ),
         [todayHabits, isHabitCompletedToday]
     );
@@ -774,7 +778,7 @@ const TasksToday: React.FC = () => {
                 ); // Always remove from completed first
 
                 // Now, add the task to the appropriate list(s) based on its new status
-                if (updatedTask.status === 'done' || updatedTask.status === 2) {
+                if (isTaskDone(updatedTask.status)) {
                     // If completed, add to tasks_completed_today if it was completed today
                     if (updatedTask.completed_at) {
                         const completedDate = new Date(
@@ -795,7 +799,7 @@ const TasksToday: React.FC = () => {
                     // If not completed, add to relevant active lists
                     if (
                         updatedTask.today &&
-                        updatedTask.status !== 'archived'
+                        updatedTask.status !== 'cancelled'
                     ) {
                         newMetrics.today_plan_tasks = updateOrAddTask(
                             newMetrics.today_plan_tasks,
@@ -811,7 +815,7 @@ const TasksToday: React.FC = () => {
                     // Check if task has a due date (and not already in today_plan_tasks or in_progress)
                     if (
                         updatedTask.due_date &&
-                        updatedTask.status !== 'archived' &&
+                        updatedTask.status !== 'cancelled' &&
                         !newMetrics.today_plan_tasks.some(
                             (t) => t.id === updatedTask.id
                         ) &&
@@ -840,22 +844,15 @@ const TasksToday: React.FC = () => {
                             );
                         }
                     }
-                    // Check for suggested tasks (and not already in other active lists)
                     const isSuggested =
                         !updatedTask.today &&
                         !updatedTask.project_id &&
                         !updatedTask.due_date;
-                    // Check if task is not completed (can be string or number)
-                    const taskStatus = updatedTask.status as string | number;
-                    const isNotCompleted =
-                        taskStatus !== 'archived' &&
-                        taskStatus !== 'done' &&
-                        taskStatus !== 2 &&
-                        taskStatus !== 3;
+                    const isActive = isTaskActive(updatedTask.status);
 
                     if (
                         isSuggested &&
-                        isNotCompleted &&
+                        isActive &&
                         !newMetrics.today_plan_tasks.some(
                             (t) => t.id === updatedTask.id
                         ) &&

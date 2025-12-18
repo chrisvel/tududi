@@ -19,6 +19,13 @@ import TaskPriorityIcon from './TaskPriorityIcon';
 import { Project } from '../../entities/Project';
 import { Task, StatusType } from '../../entities/Task';
 import { fetchSubtasks } from '../../utils/tasksService';
+import {
+    isTaskDone,
+    isTaskInProgress,
+    isTaskNotStarted,
+    isTaskArchived,
+    isTaskCompleted,
+} from '../../constants/taskStatus';
 
 interface TaskHeaderProps {
     task: Task;
@@ -216,42 +223,38 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
         task.recurring_parent_id ||
         !!formattedDeferUntil;
 
-    const isTaskCompleted =
-        task.status === 'done' ||
-        task.status === 2 ||
-        task.status === 'archived' ||
-        task.status === 3;
+    const taskCompleted = isTaskCompleted(task.status);
 
-    const isTaskInProgress = task.status === 'in_progress' || task.status === 1;
+    const taskInProgress = isTaskInProgress(task.status);
 
-    const completionButtonBorderClass = isTaskCompleted
+    const completionButtonBorderClass = taskCompleted
         ? 'border-green-200 dark:border-green-900'
-        : isTaskInProgress
+        : taskInProgress
           ? 'border-blue-200 dark:border-blue-900'
           : 'border-gray-200 dark:border-gray-700';
 
-    const completionButtonTextClass = isTaskCompleted
+    const completionButtonTextClass = taskCompleted
         ? 'text-green-600 dark:text-green-400'
-        : isTaskInProgress
+        : taskInProgress
           ? 'text-blue-600 dark:text-blue-400'
           : 'text-gray-600 dark:text-gray-400';
 
-    const completionButtonHoverClass = isTaskCompleted
+    const completionButtonHoverClass = taskCompleted
         ? 'hover:bg-green-50 dark:hover:bg-green-900/40'
-        : isTaskInProgress
+        : taskInProgress
           ? 'hover:bg-blue-50 dark:hover:bg-blue-900/40'
           : 'hover:bg-gray-50 dark:hover:bg-gray-800';
 
     // Highlighted background for the active status button part
-    const completionButtonMainBgClass = isTaskCompleted
+    const completionButtonMainBgClass = taskCompleted
         ? 'bg-green-100 dark:bg-green-900/50'
-        : isTaskInProgress
+        : taskInProgress
           ? 'bg-blue-100 dark:bg-blue-900/50'
           : 'bg-gray-200 dark:bg-gray-700';
 
-    const completionButtonMainTextClass = isTaskCompleted
+    const completionButtonMainTextClass = taskCompleted
         ? 'text-green-900 dark:text-green-100 font-semibold'
-        : isTaskInProgress
+        : taskInProgress
           ? 'text-blue-900 dark:text-blue-100 font-semibold'
           : 'text-gray-900 dark:text-gray-100 font-semibold';
 
@@ -259,9 +262,9 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 
     const completionButtonChevronClasses = `inline-flex items-center justify-center transition ${completionButtonTextClass} ${completionButtonHoverClass} focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500`;
 
-    const CompletionIcon = isTaskCompleted
+    const CompletionIcon = taskCompleted
         ? CheckIcon
-        : isTaskInProgress
+        : taskInProgress
           ? PlayIcon
           : CheckIcon;
 
@@ -272,7 +275,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 
         if (onToggleCompletion) {
             // Add animation delay when marking as done (not when undoing)
-            if (!isTaskCompleted) {
+            if (!taskCompleted) {
                 setIsCompletingTask(true);
                 // Wait for green animation to complete (1200ms)
                 await new Promise((resolve) => setTimeout(resolve, 1200));
@@ -552,7 +555,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         <div className="flex items-center gap-2 ml-auto">
                             <div className="hidden group-hover:flex items-center space-x-1 transition-opacity duration-200 opacity-0 group-hover:opacity-100">
                                 {/* Today Plan Controls */}
-                                {onToggleToday && !isTaskCompleted && (
+                                {onToggleToday && !taskCompleted && (
                                     <button
                                         type="button"
                                         onClick={handleTodayToggle}
@@ -725,7 +728,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                     className={`relative transition-opacity duration-200 ${
                                         task.habit_mode
                                             ? 'opacity-0 group-hover:opacity-100'
-                                            : isTaskInProgress
+                                            : taskInProgress
                                               ? 'opacity-100'
                                               : 'opacity-0 group-hover:opacity-100'
                                     }`}
@@ -737,11 +740,11 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                         <button
                                             type="button"
                                             onClick={
-                                                isTaskInProgress ||
-                                                (!isTaskCompleted &&
+                                                taskInProgress ||
+                                                (!taskCompleted &&
                                                     (task.status ===
                                                         'not_started' ||
-                                                        task.status === 0))
+                                                        isTaskNotStarted(task.status)))
                                                     ? (e) => {
                                                           e.preventDefault();
                                                           e.stopPropagation();
@@ -750,9 +753,9 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                             }
                                             className={`${completionButtonMainClasses} px-3 py-1`}
                                             title={
-                                                isTaskCompleted
+                                                taskCompleted
                                                     ? t('common.undo', 'Undo')
-                                                    : isTaskInProgress
+                                                    : taskInProgress
                                                       ? t(
                                                             'tasks.inProgress',
                                                             'In Progress'
@@ -764,9 +767,9 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                             }
                                         >
                                             <CompletionIcon className="h-4 w-4" />
-                                            {isTaskCompleted
+                                            {taskCompleted
                                                 ? t('tasks.done', 'Done')
-                                                : isTaskInProgress
+                                                : taskInProgress
                                                   ? t(
                                                         'tasks.inProgress',
                                                         'In Progress'
@@ -776,9 +779,9 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                         'Not Started'
                                                     )}
                                         </button>
-                                        {!isTaskCompleted &&
+                                        {!taskCompleted &&
                                             (task.status === 'not_started' ||
-                                                task.status === 0) && (
+                                                isTaskNotStarted(task.status)) && (
                                                 <button
                                                     type="button"
                                                     onClick={async (e) => {
@@ -808,7 +811,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                     <PlayIcon className="h-4 w-4" />
                                                 </button>
                                             )}
-                                        {isTaskInProgress && (
+                                        {taskInProgress && (
                                             <button
                                                 type="button"
                                                 onClick={(e) => {
@@ -872,13 +875,13 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                 className={`w-full px-3 py-2 text-left text-sm rounded-t-lg flex items-center gap-2 ${
                                                     task.status ===
                                                         'not_started' ||
-                                                    task.status === 0
+                                                    isTaskNotStarted(task.status)
                                                         ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-semibold border-l-2 border-gray-500 dark:border-gray-400'
                                                         : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
                                                 }`}
                                             >
                                                 <PauseCircleIcon
-                                                    className={`h-4 w-4 ${task.status === 'not_started' || task.status === 0 ? 'text-gray-600 dark:text-gray-300' : 'text-gray-500 dark:text-gray-400'}`}
+                                                    className={`h-4 w-4 ${isTaskNotStarted(task.status) ? 'text-gray-600 dark:text-gray-300' : 'text-gray-500 dark:text-gray-400'}`}
                                                 />
                                                 <span className="flex-1">
                                                     {t(
@@ -910,13 +913,13 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                 className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 ${
                                                     task.status ===
                                                         'in_progress' ||
-                                                    task.status === 1
+                                                    isTaskInProgress(task.status)
                                                         ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-900 dark:text-blue-100 font-semibold border-l-2 border-blue-500 dark:border-blue-400'
                                                         : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
                                                 }`}
                                             >
                                                 <PlayIcon
-                                                    className={`h-4 w-4 ${task.status === 'in_progress' || task.status === 1 ? 'text-blue-600 dark:text-blue-300' : 'text-blue-500 dark:text-blue-400'}`}
+                                                    className={`h-4 w-4 ${isTaskInProgress(task.status) ? 'text-blue-600 dark:text-blue-300' : 'text-blue-500 dark:text-blue-400'}`}
                                                 />
                                                 <span className="flex-1">
                                                     {t(
@@ -960,7 +963,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                 disabled={isCompletingTask}
                                             >
                                                 <CheckIcon
-                                                    className={`h-4 w-4 ${task.status === 'done' || task.status === 2 ? 'text-green-600 dark:text-green-300' : 'text-green-500 dark:text-green-400'}`}
+                                                    className={`h-4 w-4 ${isTaskDone(task.status) ? 'text-green-600 dark:text-green-300' : 'text-green-500 dark:text-green-400'}`}
                                                 />
                                                 <span className="flex-1">
                                                     {t(
@@ -1133,11 +1136,11 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                     <button
                                         type="button"
                                         onClick={
-                                            isTaskInProgress ||
-                                            (!isTaskCompleted &&
+                                            taskInProgress ||
+                                            (!taskCompleted &&
                                                 (task.status ===
                                                     'not_started' ||
-                                                    task.status === 0))
+                                                    isTaskNotStarted(task.status)))
                                                 ? (e) => {
                                                       e.preventDefault();
                                                       e.stopPropagation();
@@ -1148,9 +1151,9 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                     >
                                         <CompletionIcon className="h-3.5 w-3.5" />
                                         <span className="ml-1">
-                                            {isTaskCompleted
+                                            {taskCompleted
                                                 ? t('tasks.done', 'Done')
-                                                : isTaskInProgress
+                                                : taskInProgress
                                                   ? t(
                                                         'tasks.inProgress',
                                                         'In Progress'
@@ -1161,9 +1164,9 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                     )}
                                         </span>
                                     </button>
-                                    {!isTaskCompleted &&
+                                    {!taskCompleted &&
                                         (task.status === 'not_started' ||
-                                            task.status === 0) && (
+                                            isTaskNotStarted(task.status)) && (
                                             <button
                                                 type="button"
                                                 onClick={async (e) => {
@@ -1192,7 +1195,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                 <PlayIcon className="h-3.5 w-3.5" />
                                             </button>
                                         )}
-                                    {isTaskInProgress && (
+                                    {taskInProgress && (
                                         <button
                                             type="button"
                                             onClick={(e) => {
@@ -1252,13 +1255,13 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                             }}
                                             className={`w-full px-3 py-2 text-left text-sm rounded-t-lg flex items-center gap-2 ${
                                                 task.status === 'not_started' ||
-                                                task.status === 0
+                                                isTaskNotStarted(task.status)
                                                     ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-semibold border-l-2 border-gray-500 dark:border-gray-400'
                                                     : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
                                             }`}
                                         >
                                             <PauseCircleIcon
-                                                className={`h-4 w-4 ${task.status === 'not_started' || task.status === 0 ? 'text-gray-600 dark:text-gray-300' : 'text-gray-500 dark:text-gray-400'}`}
+                                                className={`h-4 w-4 ${isTaskNotStarted(task.status) ? 'text-gray-600 dark:text-gray-300' : 'text-gray-500 dark:text-gray-400'}`}
                                             />
                                             <span className="flex-1">
                                                 {t(
@@ -1286,13 +1289,13 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                             }}
                                             className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 ${
                                                 task.status === 'in_progress' ||
-                                                task.status === 1
+                                                isTaskInProgress(task.status)
                                                     ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-900 dark:text-blue-100 font-semibold border-l-2 border-blue-500 dark:border-blue-400'
                                                     : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
                                             }`}
                                         >
                                             <PlayIcon
-                                                className={`h-4 w-4 ${task.status === 'in_progress' || task.status === 1 ? 'text-blue-600 dark:text-blue-300' : 'text-blue-500 dark:text-blue-400'}`}
+                                                className={`h-4 w-4 ${isTaskInProgress(task.status) ? 'text-blue-600 dark:text-blue-300' : 'text-blue-500 dark:text-blue-400'}`}
                                             />
                                             <span className="flex-1">
                                                 {t(
@@ -1334,7 +1337,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                             disabled={isCompletingTask}
                                         >
                                             <CheckIcon
-                                                className={`h-4 w-4 ${task.status === 'done' || task.status === 2 ? 'text-green-600 dark:text-green-300' : 'text-green-500 dark:text-green-400'}`}
+                                                className={`h-4 w-4 ${isTaskDone(task.status) ? 'text-green-600 dark:text-green-300' : 'text-green-500 dark:text-green-400'}`}
                                             />
                                             <span className="flex-1">
                                                 {t(
@@ -1399,7 +1402,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                 >
                                     <div className="py-1">
                                         {/* Today Plan Controls */}
-                                        {onToggleToday && !isTaskCompleted && (
+                                        {onToggleToday && !taskCompleted && (
                                             <button
                                                 type="button"
                                                 onClick={(e) => {
@@ -1536,8 +1539,7 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
                     <div key={subtask.id} className="ml-[10%] group">
                         <div
                             className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 border cursor-pointer transition-all duration-200 ${
-                                subtask.status === 'in_progress' ||
-                                subtask.status === 1
+                                isTaskInProgress(subtask.status)
                                     ? 'border-blue-500/60 dark:border-blue-600/60'
                                     : 'border-gray-50 dark:border-gray-800'
                             }`}
@@ -1555,10 +1557,7 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
                                     />
                                     <span
                                         className={`text-sm flex-1 truncate ${
-                                            subtask.status === 'done' ||
-                                            subtask.status === 2 ||
-                                            subtask.status === 'archived' ||
-                                            subtask.status === 3
+                                            isTaskCompleted(subtask.status)
                                                 ? 'text-gray-500 dark:text-gray-400 line-through'
                                                 : 'text-gray-900 dark:text-gray-100'
                                         }`}
@@ -1569,10 +1568,7 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
 
                                 {/* Right side - Status indicator */}
                                 <div className="flex items-center space-x-1">
-                                    {subtask.status === 'done' ||
-                                    subtask.status === 2 ||
-                                    subtask.status === 'archived' ||
-                                    subtask.status === 3 ? (
+                                    {isTaskCompleted(subtask.status) ? (
                                         <span className="text-xs text-green-600 dark:text-green-400">
                                             ✓
                                         </span>
