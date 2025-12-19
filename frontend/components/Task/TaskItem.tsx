@@ -118,7 +118,7 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
                                         }}
                                     />
                                     <span
-                                        className={`text-sm flex-1 truncate ${
+                                        className={`text-sm truncate min-w-0 ${
                                             isTaskCompleted(subtask.status)
                                                 ? 'text-gray-500 dark:text-gray-400 line-through'
                                                 : 'text-gray-900 dark:text-gray-100'

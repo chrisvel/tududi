@@ -178,8 +178,8 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
             }}
         >
             {/* Full view (md and larger) */}
-            <div className="hidden md:flex flex-col md:flex-row md:items-center md:justify-between">
-                <div className="flex items-center space-x-3 mb-2 md:mb-0 w-full">
+            <div className="hidden md:flex flex-col md:flex-row md:items-center md:relative">
+                <div className="flex items-center space-x-3 mb-2 md:mb-0 flex-1 min-w-0 pr-44">
                     <div className="hidden">
                         <TaskPriorityIcon
                             priority={task.priority}
@@ -190,18 +190,20 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                     </div>
                     <div className="flex flex-col flex-1 min-w-0">
                         {isUpcomingView ? (
-                            <div className="w-full">
+                            <div className="flex-1 min-w-0">
                                 {/* Full width title that wraps */}
-                                <div className="w-full mb-0.5 flex items-center gap-1.5">
-                                    <span className="text-sm font-medium text-gray-900 dark:text-gray-300 break-words tracking-tight inline-flex items-center gap-1.5">
+                                <div className="mb-0.5 flex items-center gap-1.5 min-w-0">
+                                    <div className="flex items-center gap-1.5 flex-1 min-w-0">
                                         {task.habit_mode && (
                                             <FireIcon
                                                 className="h-4 w-4 text-orange-500 flex-shrink-0"
                                                 title="Habit"
                                             />
                                         )}
-                                        {task.original_name || task.name}
-                                    </span>
+                                        <span className="text-sm font-medium text-gray-900 dark:text-gray-300 tracking-tight truncate">
+                                            {task.original_name || task.name}
+                                        </span>
+                                    </div>
                                     <SubtasksToggleButton />
                                 </div>
                                 {/* Show project and tags info in upcoming view */}
@@ -286,14 +288,14 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                 )}
                             </div>
                         ) : (
-                            <div className="flex items-center gap-1.5">
+                            <div className="flex items-center gap-1.5 min-w-0 flex-1">
                                 {task.habit_mode && (
                                     <FireIcon
                                         className="h-4 w-4 text-orange-500 flex-shrink-0"
                                         title="Habit"
                                     />
                                 )}
-                                <span className="text-md font-medium text-gray-900 dark:text-gray-300">
+                                <span className="text-md font-medium text-gray-900 dark:text-gray-300 truncate">
                                     {task.original_name || task.name}
                                 </span>
                                 <SubtasksToggleButton />
@@ -422,13 +424,13 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                     </div>
                 </div>
                 {!isUpcomingView && !task.habit_mode && onToggleCompletion && (
-                    <div className="flex items-center w-full justify-end">
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center">
                         <TaskStatusControl
                             task={task}
                             onToggleCompletion={onToggleCompletion}
                             onTaskUpdate={onTaskUpdate}
                             showMobileVariant={false}
-                            className="ml-auto"
+                            className=""
                         />
                     </div>
                 )}
@@ -451,14 +453,16 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                     <div className="ml-3 flex-1 min-w-0">
                         {/* Task Title */}
                         <div className="font-medium text-md text-gray-900 dark:text-gray-300">
-                            <span className="break-words inline-flex items-center gap-1.5">
+                            <span className="inline-flex items-center gap-1.5 w-full min-w-0">
                                 {task.habit_mode && (
                                     <FireIcon
                                         className="h-4 w-4 text-orange-500 flex-shrink-0"
                                         title="Habit"
                                     />
                                 )}
-                                {task.original_name || task.name}
+                                <span className="truncate flex-1">
+                                    {task.original_name || task.name}
+                                </span>
                                 <SubtasksToggleButton />
                             </span>
                         </div>
@@ -643,7 +647,7 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
                                         status={subtask.status}
                                     />
                                     <span
-                                        className={`text-sm flex-1 truncate ${
+                                        className={`text-sm truncate min-w-0 ${
                                             isTaskCompleted(subtask.status)
                                                 ? 'text-gray-500 dark:text-gray-400 line-through'
                                                 : 'text-gray-900 dark:text-gray-100'
