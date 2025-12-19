@@ -333,7 +333,8 @@ async function fetchTasksCompletedToday(userId, userTimezone) {
     const safeTimezone = getSafeTimezone(userTimezone);
     const todayBounds = getTodayBoundsInUTC(safeTimezone);
 
-    return await Task.findAll({
+    // Fetch regular completed tasks
+    const regularCompletedTasks = await Task.findAll({
         where: {
             user_id: userId,
             status: Task.STATUS.DONE,
@@ -345,8 +346,53 @@ async function fetchTasksCompletedToday(userId, userTimezone) {
             },
         },
         include: getTaskIncludeConfig(),
-        order: [['completed_at', 'DESC']],
     });
+
+    // Fetch recurring tasks completed today via recurring_completions table
+    const { RecurringCompletion } = require('../../../models');
+    const recurringCompletions = await RecurringCompletion.findAll({
+        where: {
+            completed_at: {
+                [Op.gte]: todayBounds.start,
+                [Op.lte]: todayBounds.end,
+            },
+            skipped: false,
+        },
+        include: [
+            {
+                model: Task,
+                as: 'Task',
+                where: {
+                    user_id: userId,
+                    parent_task_id: null,
+                },
+                include: getTaskIncludeConfig(),
+            },
+        ],
+    });
+
+    // Extract the tasks from recurring completions and add completed_at
+    const recurringCompletedTasks = recurringCompletions.map((rc) => {
+        const task = rc.Task;
+        // Add a virtual completed_at for display and sorting purposes
+        task.dataValues.completed_at = rc.completed_at;
+        return task;
+    });
+
+    // Combine both lists
+    const allCompletedTasks = [
+        ...regularCompletedTasks,
+        ...recurringCompletedTasks,
+    ];
+
+    // Sort by completed_at DESC
+    allCompletedTasks.sort((a, b) => {
+        const aTime = a.completed_at || a.dataValues.completed_at;
+        const bTime = b.completed_at || b.dataValues.completed_at;
+        return new Date(bTime) - new Date(aTime);
+    });
+
+    return allCompletedTasks;
 }
 
 module.exports = {

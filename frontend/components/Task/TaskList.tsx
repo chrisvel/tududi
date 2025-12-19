@@ -43,7 +43,7 @@ const TaskList: React.FC<TaskListProps> = ({
                 filteredTasks.map((task) => (
                     <div
                         key={task.id}
-                        className="task-item-wrapper transition-all duration-200 ease-in-out overflow-visible"
+                        className="task-item-wrapper transition-all duration-200 ease-in-out overflow-visible relative hover:z-[10000] focus-within:z-[10000]"
                         data-testid={`task-item-${task.id}`}
                     >
                         <TaskItem
