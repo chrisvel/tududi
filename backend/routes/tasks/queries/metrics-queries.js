@@ -49,22 +49,55 @@ async function fetchTasksInProgress(visibleTasksWhere) {
 }
 
 async function fetchTodayPlanTasks(visibleTasksWhere) {
+    const todayPlanStatuses = [
+        Task.STATUS.IN_PROGRESS,
+        Task.STATUS.WAITING,
+        Task.STATUS.PLANNED,
+        'in_progress',
+        'waiting',
+        'planned',
+    ];
+
+    const excludedStatuses = [
+        Task.STATUS.NOT_STARTED,
+        Task.STATUS.DONE,
+        Task.STATUS.ARCHIVED,
+        Task.STATUS.CANCELLED,
+        'not_started',
+        'done',
+        'archived',
+        'cancelled',
+    ];
+
     return await Task.findAll({
         where: {
             [Op.and]: [
                 visibleTasksWhere,
                 {
-                    today: true,
                     status: {
-                        [Op.notIn]: [
-                            Task.STATUS.DONE,
-                            Task.STATUS.ARCHIVED,
-                            'done',
-                            'archived',
-                        ],
+                        [Op.in]: todayPlanStatuses,
+                        [Op.notIn]: excludedStatuses,
                     },
                     parent_task_id: null,
-                    recurring_parent_id: null,
+                    // Exclude recurring parent tasks - only include non-recurring tasks or recurring instances
+                    [Op.or]: [
+                        {
+                            // Non-recurring tasks
+                            [Op.and]: [
+                                {
+                                    [Op.or]: [
+                                        { recurrence_type: 'none' },
+                                        { recurrence_type: null },
+                                    ],
+                                },
+                                { recurring_parent_id: null },
+                            ],
+                        },
+                        {
+                            // Recurring instances (not parents)
+                            recurring_parent_id: { [Op.ne]: null },
+                        },
+                    ],
                 },
             ],
         },

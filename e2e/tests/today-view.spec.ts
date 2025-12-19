@@ -19,7 +19,7 @@ test.describe('Today', () => {
         await page.waitForURL(/\/(dashboard|today)/, { timeout: 10000 });
     }
 
-    test('Planned: only today=true tasks', async ({
+    test('Planned: shows tasks with status in_progress, planned, or waiting', async ({
         page,
         context,
         baseURL,
@@ -32,17 +32,26 @@ test.describe('Today', () => {
         const timestamp = Date.now();
 
         // Create tasks via API using the logged-in context
+        // Status values: 0=NOT_STARTED, 1=IN_PROGRESS, 4=WAITING, 6=PLANNED
         const tasksToCreate = [
             {
-                name: `High Priority Planned ${timestamp}`,
-                today: true,
+                name: `In Progress Task ${timestamp}`,
+                status: 1, // IN_PROGRESS
                 priority: 2,
-            }, // 2 = HIGH
+                today: false, // Verify it works independently of today field
+            },
             {
-                name: `Task Without Today Flag ${timestamp}`,
-                today: false,
+                name: `Planned Task ${timestamp}`,
+                status: 6, // PLANNED
                 priority: 2,
-            }, // 2 = HIGH
+                today: false,
+            },
+            {
+                name: `Not Started Task ${timestamp}`,
+                status: 0, // NOT_STARTED
+                priority: 2,
+                today: true, // Even with today=true, should NOT appear in planned
+            },
         ];
 
         const taskIds: string[] = [];
@@ -67,17 +76,23 @@ test.describe('Today', () => {
         const plannedSection = page.getByTestId('planned-section');
         await expect(plannedSection).toBeVisible({ timeout: 10000 });
 
-        // Verify task with today flag is visible in the Planned section
-        const withTodayFlagTask = plannedSection.getByTestId(
+        // Verify in_progress task is visible in the Planned section
+        const inProgressTask = plannedSection.getByTestId(
             `task-item-${taskIds[0]}`
         );
-        await expect(withTodayFlagTask).toBeVisible({ timeout: 10000 });
+        await expect(inProgressTask).toBeVisible({ timeout: 10000 });
 
-        // Verify task without today flag is NOT visible in Planned section
-        const withoutFlagTask = plannedSection.getByTestId(
+        // Verify planned task is visible in the Planned section
+        const plannedTask = plannedSection.getByTestId(
             `task-item-${taskIds[1]}`
         );
-        await expect(withoutFlagTask).not.toBeVisible();
+        await expect(plannedTask).toBeVisible({ timeout: 10000 });
+
+        // Verify not_started task is NOT visible in Planned section
+        const notStartedTask = plannedSection.getByTestId(
+            `task-item-${taskIds[2]}`
+        );
+        await expect(notStartedTask).not.toBeVisible();
 
         // Clean up created tasks
         for (const taskId of taskIds) {

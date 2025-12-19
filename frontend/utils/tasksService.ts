@@ -19,6 +19,7 @@ export const fetchTasks = async (
     metrics: Metrics;
     groupedTasks?: GroupedTasks;
     tasks_in_progress?: Task[];
+    tasks_today_plan?: Task[];
     tasks_due_today?: Task[];
     tasks_overdue?: Task[];
     suggested_tasks?: Task[];
@@ -65,6 +66,7 @@ export const fetchTasks = async (
         groupedTasks: tasksResult.groupedTasks,
         // Dashboard task lists (only present when include_lists=true)
         tasks_in_progress: tasksResult.tasks_in_progress,
+        tasks_today_plan: tasksResult.tasks_today_plan,
         tasks_due_today: tasksResult.tasks_due_today,
         tasks_overdue: tasksResult.tasks_overdue,
         suggested_tasks: tasksResult.suggested_tasks,
