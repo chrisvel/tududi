@@ -457,7 +457,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
     return (
         <>
             <div
-                className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 relative overflow-visible transition-opacity duration-300 ease-in-out ${priorityBorderClass} ${
+                className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 relative overflow-visible transition-colors duration-200 ease-in-out hover:ring-1 hover:ring-blue-300/70 dark:hover:ring-blue-600/50 ${priorityBorderClass} ${
                     isInProgress
                         ? 'ring-1 ring-blue-500/60 dark:ring-blue-600/60'
                         : ''
