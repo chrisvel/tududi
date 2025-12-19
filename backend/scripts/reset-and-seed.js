@@ -45,25 +45,8 @@ async function main() {
         await seedDatabase();
         console.log('   ✅ Basic data seeded\n');
 
-        // Step 4: Seed notification test data
-        console.log('4️⃣  Seeding notification test data...');
-        const {
-            seedNotificationTestData,
-        } = require('./seed-notification-test-data');
-
-        // Override process.exit to prevent the seeder from exiting
-        const originalExit = process.exit;
-        process.exit = () => {}; // No-op
-
-        await seedNotificationTestData();
-
-        // Restore original process.exit
-        process.exit = originalExit;
-
-        console.log('   ✅ Notification test data seeded\n');
-
-        // Step 5: Generate notifications
-        console.log('5️⃣  Generating notifications...');
+        // Step 4: Generate notifications
+        console.log('4️⃣  Generating notifications...');
 
         const { checkDueTasks } = require('../services/dueTaskService');
         const {

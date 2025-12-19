@@ -6,6 +6,7 @@ import {
     getPostHeaders,
 } from './authUtils';
 import { getApiPath } from '../config/paths';
+import { isTaskDone, TASK_STATUS } from '../constants/taskStatus';
 
 export interface GroupedTasks {
     [groupName: string]: Task[];
@@ -18,6 +19,7 @@ export const fetchTasks = async (
     metrics: Metrics;
     groupedTasks?: GroupedTasks;
     tasks_in_progress?: Task[];
+    tasks_today_plan?: Task[];
     tasks_due_today?: Task[];
     tasks_overdue?: Task[];
     suggested_tasks?: Task[];
@@ -64,6 +66,7 @@ export const fetchTasks = async (
         groupedTasks: tasksResult.groupedTasks,
         // Dashboard task lists (only present when include_lists=true)
         tasks_in_progress: tasksResult.tasks_in_progress,
+        tasks_today_plan: tasksResult.tasks_today_plan,
         tasks_due_today: tasksResult.tasks_due_today,
         tasks_overdue: tasksResult.tasks_overdue,
         suggested_tasks: tasksResult.suggested_tasks,
@@ -116,8 +119,11 @@ export const toggleTaskCompletion = async (
         return result.task;
     }
 
-    const newStatus =
-        task.status === 2 || task.status === 'done' ? (task.note ? 1 : 0) : 2;
+    const newStatus = isTaskDone(task.status)
+        ? task.note
+            ? TASK_STATUS.IN_PROGRESS
+            : TASK_STATUS.NOT_STARTED
+        : TASK_STATUS.DONE;
 
     return await updateTask(taskUid, { status: newStatus });
 };

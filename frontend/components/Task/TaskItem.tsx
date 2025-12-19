@@ -1,24 +1,47 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import TaskHeader from './TaskHeader';
 import { useToast } from '../Shared/ToastContext';
 import TaskPriorityIcon from './TaskPriorityIcon';
+import { isTaskCompleted } from '../../constants/taskStatus';
 
 // Import SubtasksDisplay component from TaskHeader
 interface SubtasksDisplayProps {
-    showSubtasks: boolean;
     loadingSubtasks: boolean;
     subtasks: Task[];
     onTaskClick: (e: React.MouseEvent, task: Task) => void;
-    onTaskUpdate: (task: Task) => Promise<void>;
     loadSubtasks: () => Promise<void>;
     onSubtaskUpdate: (updatedSubtask: Task) => void;
 }
 
+const getPriorityBorderClassName = (
+    priority?: Task['priority'] | number
+): string => {
+    let normalizedPriority = priority;
+    if (typeof normalizedPriority === 'number') {
+        const priorityNames: Array<'low' | 'medium' | 'high'> = [
+            'low',
+            'medium',
+            'high',
+        ];
+        normalizedPriority = priorityNames[normalizedPriority] || undefined;
+    }
+
+    switch (normalizedPriority) {
+        case 'high':
+            return 'border-l-4 border-l-red-500';
+        case 'medium':
+            return 'border-l-4 border-l-yellow-400';
+        case 'low':
+            return 'border-l-4 border-l-blue-400';
+        default:
+            return 'border-l-4 border-l-transparent';
+    }
+};
+
 const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
-    showSubtasks,
     loadingSubtasks,
     subtasks,
     onTaskClick,
@@ -27,102 +50,93 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
 }) => {
     const { t } = useTranslation();
 
-    if (!showSubtasks) return null;
+    if (loadingSubtasks) {
+        return (
+            <div className="ml-[10%] text-sm text-gray-500 dark:text-gray-400">
+                {t('loading.subtasks', 'Loading subtasks...')}
+            </div>
+        );
+    }
+
+    if (subtasks.length === 0) {
+        return (
+            <div className="ml-[10%] text-sm text-gray-500 dark:text-gray-400">
+                {t('subtasks.noSubtasks', 'No subtasks found')}
+            </div>
+        );
+    }
 
     return (
         <div className="mt-1 space-y-1">
-            {loadingSubtasks ? (
-                <div className="ml-12 text-sm text-gray-500 dark:text-gray-400">
-                    {t('loading.subtasks', 'Loading subtasks...')}
-                </div>
-            ) : subtasks.length > 0 ? (
-                subtasks.map((subtask, index) => (
-                    <div
-                        key={subtask.id || `subtask-${index}`}
-                        className="ml-12 group"
-                    >
+            {subtasks.map((subtask) => {
+                const borderClass = isTaskCompleted(subtask.status)
+                    ? 'border-l-4 border-l-green-500'
+                    : getPriorityBorderClassName(subtask.priority);
+                return (
+                    <div key={subtask.id} className="ml-[10%]">
                         <div
-                            className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 cursor-pointer transition-all duration-200 ${
-                                subtask.status === 'in_progress' ||
-                                subtask.status === 1
-                                    ? 'border border-blue-500/60 dark:border-blue-600/60'
-                                    : ''
-                            }`}
+                            className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 relative overflow-visible transition-colors duration-200 ease-in-out hover:ring-1 hover:ring-gray-200 dark:hover:ring-gray-700 cursor-pointer ${borderClass}`}
                             onClick={(e) => {
                                 e.stopPropagation();
                                 onTaskClick(e, subtask);
                             }}
                         >
-                            <div className="px-4 py-2.5 flex items-center justify-between">
-                                <div className="flex items-center space-x-3 flex-1 min-w-0">
-                                    <div className="flex-shrink-0">
-                                        <TaskPriorityIcon
-                                            priority={subtask.priority || 'low'}
-                                            status={
-                                                subtask.status || 'not_started'
-                                            }
-                                            onToggleCompletion={async () => {
-                                                if (subtask.uid) {
-                                                    try {
-                                                        const updatedSubtask =
-                                                            await toggleTaskCompletion(
-                                                                subtask.uid,
-                                                                subtask
-                                                            );
-
-                                                        // Check if parent-child logic was executed
-                                                        if (
-                                                            updatedSubtask.parent_child_logic_executed
-                                                        ) {
-                                                            // For subtasks, we need a full page refresh because the parent task
-                                                            // might be displayed in multiple places (task list, today view, etc.)
-                                                            setTimeout(() => {
-                                                                window.location.reload();
-                                                            }, 200);
-                                                            return;
-                                                        }
-
-                                                        // Update the subtask in local state immediately
-                                                        onSubtaskUpdate(
-                                                            updatedSubtask
+                            <div className="px-3 py-2.5 flex items-center justify-between">
+                                <div className="flex items-center space-x-2 flex-1 min-w-0">
+                                    <TaskPriorityIcon
+                                        priority={subtask.priority || 'low'}
+                                        status={subtask.status || 'not_started'}
+                                        onToggleCompletion={async () => {
+                                            if (subtask.uid) {
+                                                try {
+                                                    const updatedSubtask =
+                                                        await toggleTaskCompletion(
+                                                            subtask.uid,
+                                                            subtask
                                                         );
-                                                    } catch (error) {
-                                                        console.error(
-                                                            'Error toggling subtask completion:',
-                                                            error
-                                                        );
-                                                        // Refresh subtasks on error
-                                                        await loadSubtasks();
+
+                                                    if (
+                                                        updatedSubtask.parent_child_logic_executed
+                                                    ) {
+                                                        setTimeout(() => {
+                                                            window.location.reload();
+                                                        }, 200);
+                                                        return;
                                                     }
+
+                                                    onSubtaskUpdate(
+                                                        updatedSubtask
+                                                    );
+                                                } catch (error) {
+                                                    console.error(
+                                                        'Error toggling subtask completion:',
+                                                        error
+                                                    );
+                                                    await loadSubtasks();
                                                 }
-                                            }}
-                                        />
-                                    </div>
+                                            }
+                                        }}
+                                    />
                                     <span
-                                        className={`text-base font-medium flex-1 truncate ${
-                                            subtask.status === 'done' ||
-                                            subtask.status === 2 ||
-                                            subtask.status === 'archived' ||
-                                            subtask.status === 3
-                                                ? 'text-gray-500 dark:text-gray-400'
+                                        className={`text-sm flex-1 truncate ${
+                                            isTaskCompleted(subtask.status)
+                                                ? 'text-gray-500 dark:text-gray-400 line-through'
                                                 : 'text-gray-900 dark:text-gray-100'
                                         }`}
                                     >
-                                        {subtask.name}
+                                        {subtask.original_name || subtask.name}
                                     </span>
                                 </div>
-                                <div className="flex items-center space-x-1">
-                                    {/* Right side status indicators removed */}
-                                </div>
+                                {isTaskCompleted(subtask.status) && (
+                                    <span className="text-xs text-green-600 dark:text-green-400">
+                                        ✓
+                                    </span>
+                                )}
                             </div>
                         </div>
                     </div>
-                ))
-            ) : (
-                <div className="ml-12 text-sm text-gray-500 dark:text-gray-400">
-                    {t('subtasks.noSubtasks', 'No subtasks found')}
-                </div>
-            )}
+                );
+            })}
         </div>
     );
 };
@@ -171,15 +185,29 @@ const TaskItem: React.FC<TaskItemProps> = ({
     const [isAnimatingOut, setIsAnimatingOut] = useState(false);
 
     // Subtasks state
-    const [showSubtasks, setShowSubtasks] = useState(false);
     const [subtasks, setSubtasks] = useState<Task[]>([]);
     const [loadingSubtasks, setLoadingSubtasks] = useState(false);
-    const [hasSubtasks, setHasSubtasks] = useState(false);
+    const [showSubtasks, setShowSubtasks] = useState(false);
 
     // Update projectList when projects prop changes
     useEffect(() => {
         setProjectList(projects);
     }, [projects]);
+
+    const loadSubtasks = useCallback(async () => {
+        if (!task.id) return;
+
+        setLoadingSubtasks(true);
+        try {
+            const subtasksData = await fetchSubtasks(task.id);
+            setSubtasks(subtasksData);
+        } catch (error) {
+            console.error('Failed to load subtasks:', error);
+            setSubtasks([]);
+        } finally {
+            setLoadingSubtasks(false);
+        }
+    }, [task.id]);
 
     // Calculate completion percentage
     const calculateCompletionPercentage = () => {
@@ -195,58 +223,22 @@ const TaskItem: React.FC<TaskItemProps> = ({
     };
 
     const completionPercentage = calculateCompletionPercentage();
+    const hasInitialSubtasks =
+        (task.subtasks && task.subtasks.length > 0) ||
+        (task.Subtasks && task.Subtasks.length > 0);
+    const shouldShowSubtasksIcon =
+        hasInitialSubtasks || subtasks.length > 0 || loadingSubtasks;
 
     // Check if task has subtasks using the included subtasks data
     useEffect(() => {
         // Handle both 'subtasks' and 'Subtasks' property names (case sensitivity)
         const subtasksData = task.subtasks || task.Subtasks || [];
-        const hasSubtasksFromData = subtasksData.length > 0;
-
-        // Update subtasks and hasSubtasks state based on task data
-        setHasSubtasks(hasSubtasksFromData);
         setSubtasks(subtasksData);
-    }, [task.id, task.subtasks, task.Subtasks]); // Removed task.updated_at which was causing frequent re-renders
+    }, [task.id, task.subtasks, task.Subtasks]);
 
-    const loadSubtasks = async () => {
-        if (!task.id) return;
-
-        // If subtasks are already included in the task data, use them (handle case sensitivity)
-        const subtasksData = task.subtasks || task.Subtasks || [];
-        if (subtasksData.length > 0) {
-            setSubtasks(subtasksData);
-            return;
-        }
-
-        // Only fetch if not already included (fallback for older API responses)
-        setLoadingSubtasks(true);
-        try {
-            const subtasksData = await fetchSubtasks(task.id);
-            setSubtasks(subtasksData);
-        } catch (error) {
-            console.error('Failed to load subtasks:', error);
-            setSubtasks([]);
-        } finally {
-            setLoadingSubtasks(false);
-        }
-    };
-
-    // Reload subtasks when showSubtasks changes to true
     useEffect(() => {
-        if (showSubtasks && subtasks.length === 0) {
-            loadSubtasks();
-        }
-    }, [showSubtasks, subtasks.length]);
-
-    const handleSubtasksToggle = async (e: React.MouseEvent) => {
-        e.stopPropagation();
-
-        if (!showSubtasks && subtasks.length === 0) {
-            await loadSubtasks();
-        }
-
-        setShowSubtasks(!showSubtasks);
-    };
-
+        setShowSubtasks(false);
+    }, [task.id]);
     const handleTaskClick = () => {
         if (task.uid) {
             if (task.habit_mode) {
@@ -268,6 +260,19 @@ const TaskItem: React.FC<TaskItemProps> = ({
         await onTaskUpdate(updatedSubtask);
         setSubtaskModalOpen(false);
         setSelectedSubtask(null);
+    };
+
+    const handleSubtasksToggle = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+
+        if (!showSubtasks) {
+            if (subtasks.length === 0) {
+                await loadSubtasks();
+            }
+            setShowSubtasks(true);
+        } else {
+            setShowSubtasks(false);
+        }
     };
 
     const handleSubtaskDelete = async () => {
@@ -445,45 +450,14 @@ const TaskItem: React.FC<TaskItemProps> = ({
     // Check if task is overdue (created yesterday or earlier and not completed)
     const isOverdue = isTaskOverdue(task);
 
-    const getPriorityBorderClass = () => {
-        // Show green border for completed tasks
-        if (
-            task.status === 'done' ||
-            task.status === 2 ||
-            task.status === 'archived' ||
-            task.status === 3
-        ) {
-            return 'border-l-4 border-l-green-500';
-        }
-
-        let priority = task.priority;
-        if (typeof priority === 'number') {
-            const priorityNames: Array<'low' | 'medium' | 'high'> = [
-                'low',
-                'medium',
-                'high',
-            ];
-            priority = priorityNames[priority] || undefined;
-        }
-
-        switch (priority) {
-            case 'high':
-                return 'border-l-4 border-l-red-500';
-            case 'medium':
-                return 'border-l-4 border-l-yellow-400';
-            case 'low':
-                return 'border-l-4 border-l-blue-400';
-            default:
-                return 'border-l-4 border-l-transparent';
-        }
-    };
-
-    const priorityBorderClass = getPriorityBorderClass();
+    const priorityBorderClass = isTaskCompleted(task.status)
+        ? 'border-l-4 border-l-green-500'
+        : getPriorityBorderClassName(task.priority);
 
     return (
         <>
             <div
-                className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 relative overflow-visible transition-opacity duration-300 ease-in-out ${priorityBorderClass} ${
+                className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 relative overflow-visible transition-colors duration-200 ease-in-out hover:ring-1 hover:ring-gray-200 dark:hover:ring-gray-700 ${priorityBorderClass} ${
                     isInProgress
                         ? 'ring-1 ring-blue-500/60 dark:ring-blue-600/60'
                         : ''
@@ -499,8 +473,12 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     onTaskUpdate={onTaskUpdate}
                     isOverdue={isOverdue}
                     showSubtasks={showSubtasks}
-                    hasSubtasks={hasSubtasks}
-                    onSubtasksToggle={handleSubtasksToggle}
+                    hasSubtasks={shouldShowSubtasksIcon}
+                    onSubtasksToggle={
+                        shouldShowSubtasksIcon
+                            ? handleSubtasksToggle
+                            : undefined
+                    }
                     onEdit={handleEdit}
                     onDelete={handleDeleteClick}
                     isUpcomingView={isUpcomingView}
@@ -508,14 +486,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
                 {/* Progress bar at bottom of parent task */}
                 {subtasks.length > 0 && (
-                    <div
-                        className={`absolute bottom-0 left-0 right-0 h-0.5 transition-all duration-300 ease-in-out overflow-hidden rounded-b-lg ${
-                            showSubtasks
-                                ? 'opacity-100 transform translate-y-0'
-                                : 'opacity-0 transform translate-y-2'
-                        }`}
-                    >
-                        <div className="w-full h-full bg-gray-200 dark:bg-gray-700">
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 opacity-100">
+                        <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 ml-1 rounded-r-lg overflow-hidden">
                             <div
                                 className="h-full bg-gradient-to-r from-green-400 via-green-500 to-green-600 transition-all duration-500 ease-out"
                                 style={{ width: `${completionPercentage}%` }}
@@ -526,28 +498,28 @@ const TaskItem: React.FC<TaskItemProps> = ({
             </div>
 
             {/* Hide subtasks display for archived tasks */}
-            {!(task.status === 'archived' || task.status === 3) && (
-                <SubtasksDisplay
-                    showSubtasks={showSubtasks}
-                    loadingSubtasks={loadingSubtasks}
-                    subtasks={subtasks}
-                    onTaskClick={(e) => {
-                        e.stopPropagation();
-                        handleSubtaskClick();
-                    }}
-                    onTaskUpdate={onTaskUpdate}
-                    loadSubtasks={loadSubtasks}
-                    onSubtaskUpdate={(updatedSubtask) => {
-                        setSubtasks((prev) =>
-                            prev.map((st) =>
-                                st.id === updatedSubtask.id
-                                    ? updatedSubtask
-                                    : st
-                            )
-                        );
-                    }}
-                />
-            )}
+            {showSubtasks &&
+                (subtasks.length > 0 || loadingSubtasks) &&
+                !(task.status === 'archived' || task.status === 3) && (
+                    <SubtasksDisplay
+                        loadingSubtasks={loadingSubtasks}
+                        subtasks={subtasks}
+                        onTaskClick={(e) => {
+                            e.stopPropagation();
+                            handleSubtaskClick();
+                        }}
+                        loadSubtasks={loadSubtasks}
+                        onSubtaskUpdate={(updatedSubtask) => {
+                            setSubtasks((prev) =>
+                                prev.map((st) =>
+                                    st.id === updatedSubtask.id
+                                        ? updatedSubtask
+                                        : st
+                                )
+                            );
+                        }}
+                    />
+                )}
 
             <TaskModal
                 isOpen={isModalOpen}

@@ -4,8 +4,12 @@ import {
     CheckCircleIcon,
     ArchiveBoxIcon,
     ArrowPathIcon,
+    ClockIcon,
+    XCircleIcon,
+    CalendarIcon,
 } from '@heroicons/react/24/solid';
 import { StatusType } from '../../entities/Task';
+import { getStatusString } from '../../constants/taskStatus';
 
 interface TaskStatusBadgeProps {
     status: StatusType | number;
@@ -16,20 +20,6 @@ const TaskStatusBadge: React.FC<TaskStatusBadgeProps> = ({
     status,
     className,
 }) => {
-    // Convert numeric status to string
-    const getStatusString = (status: StatusType | number): StatusType => {
-        if (typeof status === 'number') {
-            const statusNames: StatusType[] = [
-                'not_started',
-                'in_progress',
-                'done',
-                'archived',
-            ];
-            return statusNames[status] || 'not_started';
-        }
-        return status;
-    };
-
     const statusString = getStatusString(status);
     let statusIcon;
 
@@ -37,11 +27,20 @@ const TaskStatusBadge: React.FC<TaskStatusBadgeProps> = ({
         case 'not_started':
             statusIcon = <MinusIcon className="h-4 w-4 text-gray-400" />;
             break;
+        case 'planned':
+            statusIcon = <CalendarIcon className="h-4 w-4 text-purple-400" />;
+            break;
         case 'in_progress':
             statusIcon = <ArrowPathIcon className="h-4 w-4 text-blue-400" />;
             break;
+        case 'waiting':
+            statusIcon = <ClockIcon className="h-4 w-4 text-yellow-400" />;
+            break;
         case 'done':
             statusIcon = <CheckCircleIcon className="h-4 w-4 text-green-400" />;
+            break;
+        case 'cancelled':
+            statusIcon = <XCircleIcon className="h-4 w-4 text-red-400" />;
             break;
         case 'archived':
             statusIcon = <ArchiveBoxIcon className="h-4 w-4 text-gray-400" />;

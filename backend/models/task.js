@@ -58,7 +58,7 @@ module.exports = (sequelize) => {
                 defaultValue: 0,
                 validate: {
                     min: 0,
-                    max: 4,
+                    max: 6,
                 },
             },
             note: {
@@ -262,6 +262,8 @@ module.exports = (sequelize) => {
         DONE: 2,
         ARCHIVED: 3,
         WAITING: 4,
+        CANCELLED: 5,
+        PLANNED: 6,
     };
 
     Task.RECURRENCE_TYPE = {
@@ -301,6 +303,8 @@ module.exports = (sequelize) => {
             'done',
             'archived',
             'waiting',
+            'cancelled',
+            'planned',
         ];
         return statuses[statusValue] || 'not_started';
     };
@@ -319,6 +323,8 @@ module.exports = (sequelize) => {
             done: 2,
             archived: 3,
             waiting: 4,
+            cancelled: 5,
+            planned: 6,
         };
         return statuses[statusName] !== undefined ? statuses[statusName] : 0;
     };

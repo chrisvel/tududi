@@ -12,7 +12,6 @@ import {
     fetchTaskByUid,
     fetchTaskNextIterations,
     TaskIteration,
-    toggleTaskToday,
     toggleTaskCompletion,
 } from '../../utils/tasksService';
 import { createProject } from '../../utils/projectsService';
@@ -804,43 +803,6 @@ const TaskDetails: React.FC = () => {
         [parentTask?.id, parentTask?.recurrence_type]
     );
 
-    const handleToggleTodayPlan = async () => {
-        if (!task?.id || !task?.uid) {
-            return;
-        }
-
-        try {
-            const updatedTask = await toggleTaskToday(task.id, task);
-            let latestTaskData: Task | null = updatedTask;
-
-            if (uid) {
-                const refreshedTask = await fetchTaskByUid(uid);
-                latestTaskData = refreshedTask;
-                const existingIndex = tasksStore.tasks.findIndex(
-                    (t: Task) => t.uid === uid
-                );
-                if (existingIndex >= 0) {
-                    const updatedTasks = [...tasksStore.tasks];
-                    updatedTasks[existingIndex] = refreshedTask;
-                    tasksStore.setTasks(updatedTasks);
-                }
-            }
-
-            await refreshRecurringSetup(latestTaskData);
-            setTimelineRefreshKey((prev) => prev + 1);
-            showSuccessToast(
-                updatedTask.today
-                    ? t('tasks.addToToday', 'Add to today plan')
-                    : t('tasks.removeFromToday', 'Remove from today plan')
-            );
-        } catch (error) {
-            console.error('Error toggling today plan:', error);
-            showErrorToast(
-                t('task.statusUpdateError', 'Failed to update status')
-            );
-        }
-    };
-
     const handleQuickStatusToggle = async () => {
         if (!task?.uid) {
             return;
@@ -1245,7 +1207,6 @@ const TaskDetails: React.FC = () => {
                     onOverdueIconClick={handleOverdueIconClick}
                     isOverdueAlertVisible={isOverdue && isOverdueBubbleVisible}
                     onDismissOverdueAlert={handleDismissOverdueAlert}
-                    onToggleTodayPlan={handleToggleTodayPlan}
                     onQuickStatusToggle={handleQuickStatusToggle}
                     attachmentCount={attachmentCount}
                     subtasksCount={subtasks.length}
