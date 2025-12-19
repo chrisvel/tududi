@@ -6,13 +6,7 @@ import {
     FolderIcon,
     TagIcon,
     ChevronDownIcon,
-    PauseCircleIcon,
-    PlayCircleIcon,
-    CheckCircleIcon,
     ExclamationTriangleIcon,
-    CalendarDaysIcon,
-    CalendarIcon,
-    PlayIcon,
     FireIcon,
     ArrowUpIcon,
     ArrowDownIcon,
@@ -20,6 +14,8 @@ import {
 import { Link } from 'react-router-dom';
 import { Task, PriorityType } from '../../../entities/Task';
 import { formatDateTime } from '../../../utils/dateUtils';
+import TaskStatusControl from '../TaskStatusControl';
+import { getStatusValue } from '../../../constants/taskStatus';
 
 interface TaskDetailsHeaderProps {
     task: Task;
@@ -37,7 +33,6 @@ interface TaskDetailsHeaderProps {
     onOverdueIconClick?: () => void;
     isOverdueAlertVisible?: boolean;
     onDismissOverdueAlert?: () => void;
-    onToggleTodayPlan?: () => void;
     onQuickStatusToggle?: () => void;
     attachmentCount?: number;
     subtasksCount?: number;
@@ -59,7 +54,6 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
     onOverdueIconClick,
     isOverdueAlertVisible = false,
     onDismissOverdueAlert,
-    onToggleTodayPlan,
     onQuickStatusToggle,
     attachmentCount = 0,
     subtasksCount = 0,
@@ -68,11 +62,9 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [editedTitle, setEditedTitle] = useState(task.name);
     const [actionsMenuOpen, setActionsMenuOpen] = useState(false);
-    const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
     const [priorityDropdownOpen, setPriorityDropdownOpen] = useState(false);
     const titleInputRef = useRef<HTMLInputElement>(null);
     const actionsMenuRef = useRef<HTMLDivElement>(null);
-    const statusDropdownRef = useRef<HTMLDivElement>(null);
     const priorityDropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -96,13 +88,6 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                 setActionsMenuOpen(false);
             }
             if (
-                statusDropdownOpen &&
-                statusDropdownRef.current &&
-                !statusDropdownRef.current.contains(e.target as Node)
-            ) {
-                setStatusDropdownOpen(false);
-            }
-            if (
                 priorityDropdownOpen &&
                 priorityDropdownRef.current &&
                 !priorityDropdownRef.current.contains(e.target as Node)
@@ -111,12 +96,12 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
             }
         };
 
-        if (actionsMenuOpen || statusDropdownOpen || priorityDropdownOpen) {
+        if (actionsMenuOpen || priorityDropdownOpen) {
             document.addEventListener('mousedown', handleClickOutside);
             return () =>
                 document.removeEventListener('mousedown', handleClickOutside);
         }
-    }, [actionsMenuOpen, statusDropdownOpen, priorityDropdownOpen]);
+    }, [actionsMenuOpen, priorityDropdownOpen]);
 
     const handleStartTitleEdit = () => {
         setIsEditingTitle(true);
@@ -142,79 +127,13 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
         }
     };
 
-    const getStatusLabel = () => {
-        const status = task.status;
-        if (status === 'not_started' || status === 0) {
-            return t('task.status.notStarted', 'Not started');
-        } else if (status === 'in_progress' || status === 1) {
-            return t('task.status.inProgress', 'In progress');
-        } else if (status === 'done' || status === 2) {
-            return t('task.status.done', 'Done');
-        } else if (status === 'archived' || status === 3) {
-            return t('task.status.archived', 'Archived');
-        } else if (status === 'waiting' || status === 4) {
-            return t('task.status.waiting', 'Waiting');
+    const handleStatusControlUpdate = async (updatedTask: Task) => {
+        const currentStatusValue = getStatusValue(task.status);
+        const nextStatusValue = getStatusValue(updatedTask.status);
+
+        if (currentStatusValue !== nextStatusValue) {
+            await onStatusUpdate(nextStatusValue);
         }
-        return t('task.status.notStarted', 'Not started');
-    };
-
-    const getStatusButtonClass = () => {
-        const status = task.status;
-
-        if (status === 'not_started' || status === 0) {
-            return 'px-2 sm:px-2.5 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-1 sm:gap-2 sm:ml-2 border border-gray-300 text-gray-600 dark:border-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/60';
-        }
-
-        const baseClass =
-            'px-2 sm:px-2.5 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-1 sm:gap-2 sm:ml-2 border';
-
-        if (status === 'in_progress' || status === 1) {
-            return `${baseClass} border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30`;
-        } else if (status === 'done' || status === 2) {
-            return `${baseClass} border-green-500 text-green-600 dark:border-green-400 dark:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/30`;
-        } else if (status === 'archived' || status === 3) {
-            return `${baseClass} border-purple-500 text-purple-600 dark:border-purple-400 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/30`;
-        } else if (status === 'waiting' || status === 4) {
-            return `${baseClass} border-yellow-500 text-yellow-600 dark:border-yellow-400 dark:text-yellow-300 hover:bg-yellow-50 dark:hover:bg-yellow-900/30`;
-        }
-        return `${baseClass} border-gray-300 text-gray-700 dark:border-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/60`;
-    };
-
-    const handleStatusChange = async (newStatus: number | string) => {
-        setStatusDropdownOpen(false);
-        const statusNum =
-            typeof newStatus === 'string' ? parseInt(newStatus) : newStatus;
-        await onStatusUpdate(statusNum);
-    };
-
-    const getStatusIcon = (
-        statusOverride?: number | string
-    ): React.ElementType => {
-        const status =
-            typeof statusOverride !== 'undefined'
-                ? statusOverride
-                : task.status;
-
-        if (status === 'in_progress' || status === 1) {
-            return PlayCircleIcon;
-        } else if (status === 'done' || status === 2) {
-            return CheckCircleIcon;
-        }
-        return PauseCircleIcon;
-    };
-
-    const getStatusIconClass = (statusOverride?: number | string) => {
-        const status =
-            typeof statusOverride !== 'undefined'
-                ? statusOverride
-                : task.status;
-
-        if (status === 'in_progress' || status === 1) {
-            return 'text-blue-500 dark:text-blue-400';
-        } else if (status === 'done' || status === 2) {
-            return 'text-green-500 dark:text-green-400';
-        }
-        return 'text-gray-500 dark:text-gray-400';
     };
 
     const getPriorityLabel = (priorityOverride?: PriorityType) => {
@@ -347,135 +266,16 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                         {task.name}
                                     </h2>
 
-                                    {/* Status Dropdown Button - Next to title */}
                                     <div className="flex items-center gap-2 flex-wrap">
-                                        <div
-                                            className="relative flex-shrink-0"
-                                            ref={statusDropdownRef}
-                                        >
-                                            <button
-                                                className={getStatusButtonClass()}
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    e.stopPropagation();
-                                                    setStatusDropdownOpen(
-                                                        !statusDropdownOpen
-                                                    );
-                                                }}
-                                                aria-haspopup="true"
-                                                aria-expanded={
-                                                    statusDropdownOpen
-                                                }
-                                            >
-                                                {React.createElement(
-                                                    getStatusIcon(),
-                                                    {
-                                                        className: `h-4 w-4 ${getStatusIconClass()}`,
-                                                    }
-                                                )}
-                                                <span className="capitalize hidden sm:inline">
-                                                    {getStatusLabel()}
-                                                </span>
-                                                <ChevronDownIcon className="h-4 w-4" />
-                                            </button>
-                                            {statusDropdownOpen && (
-                                                <div className="absolute left-0 sm:right-0 sm:left-auto mt-2 w-48 rounded-lg shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 z-20">
-                                                    <button
-                                                        className={`w-full text-left px-3 py-2 text-sm rounded-t-lg flex items-center gap-2 ${
-                                                            task.status === 0 ||
-                                                            task.status ===
-                                                                'not_started'
-                                                                ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-medium'
-                                                                : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
-                                                        }`}
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
-                                                            e.stopPropagation();
-                                                            handleStatusChange(
-                                                                0
-                                                            );
-                                                        }}
-                                                    >
-                                                        <PauseCircleIcon
-                                                            className={`h-4 w-4 ${getStatusIconClass(0)}`}
-                                                        />
-                                                        <span className="capitalize flex-1">
-                                                            {t(
-                                                                'task.status.notStarted',
-                                                                'Not started'
-                                                            )}
-                                                        </span>
-                                                        {(task.status === 0 ||
-                                                            task.status ===
-                                                                'not_started') && (
-                                                            <CheckIcon className="h-4 w-4" />
-                                                        )}
-                                                    </button>
-                                                    <button
-                                                        className={`w-full text-left px-3 py-2 text-sm flex items-center gap-2 ${
-                                                            task.status === 1 ||
-                                                            task.status ===
-                                                                'in_progress'
-                                                                ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-medium'
-                                                                : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
-                                                        }`}
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
-                                                            e.stopPropagation();
-                                                            handleStatusChange(
-                                                                1
-                                                            );
-                                                        }}
-                                                    >
-                                                        <PlayCircleIcon
-                                                            className={`h-4 w-4 ${getStatusIconClass(1)}`}
-                                                        />
-                                                        <span className="capitalize flex-1">
-                                                            {t(
-                                                                'task.status.inProgress',
-                                                                'In progress'
-                                                            )}
-                                                        </span>
-                                                        {(task.status === 1 ||
-                                                            task.status ===
-                                                                'in_progress') && (
-                                                            <CheckIcon className="h-4 w-4" />
-                                                        )}
-                                                    </button>
-                                                    <button
-                                                        className={`w-full text-left px-3 py-2 text-sm rounded-b-lg flex items-center gap-2 ${
-                                                            task.status === 2 ||
-                                                            task.status ===
-                                                                'done'
-                                                                ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-medium'
-                                                                : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
-                                                        }`}
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
-                                                            e.stopPropagation();
-                                                            handleStatusChange(
-                                                                2
-                                                            );
-                                                        }}
-                                                    >
-                                                        <CheckCircleIcon
-                                                            className={`h-4 w-4 ${getStatusIconClass(2)}`}
-                                                        />
-                                                        <span className="capitalize flex-1">
-                                                            {t(
-                                                                'task.status.setAsDone',
-                                                                'Set as done'
-                                                            )}
-                                                        </span>
-                                                        {(task.status === 2 ||
-                                                            task.status ===
-                                                                'done') && (
-                                                            <CheckIcon className="h-4 w-4" />
-                                                        )}
-                                                    </button>
-                                                </div>
-                                            )}
-                                        </div>
+                                        <TaskStatusControl
+                                            task={task}
+                                            onToggleCompletion={onQuickStatusToggle}
+                                            onTaskUpdate={handleStatusControlUpdate}
+                                            hoverRevealQuickActions={false}
+                                            showMobileVariant={false}
+                                            variant="square"
+                                            className="flex-shrink-0"
+                                        />
 
                                         {/* Priority Dropdown Button - Next to status */}
                                         <div
@@ -812,9 +612,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                             {t('task.activity', 'Activity')}
                         </button>
                     </div>
-                    {(showOverdueIcon ||
-                        onToggleTodayPlan ||
-                        onQuickStatusToggle) && (
+                    {(showOverdueIcon || onQuickStatusToggle) && (
                         <div className="flex items-center gap-2 flex-shrink-0">
                             {showOverdueIcon && (
                                 <div
@@ -886,81 +684,6 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                     )}
                                 </div>
                             )}
-                            {onToggleTodayPlan && (
-                                <button
-                                    type="button"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        onToggleTodayPlan();
-                                    }}
-                                    className={`inline-flex items-center justify-center rounded-full transition-all duration-200 ${
-                                        Number(task.today_move_count || 0) > 1
-                                            ? 'px-3 h-8'
-                                            : 'w-8 h-8'
-                                    } ${
-                                        task.today
-                                            ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800'
-                                            : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
-                                    }`}
-                                    title={
-                                        task.today
-                                            ? t(
-                                                  'tasks.removeFromToday',
-                                                  'Remove from today plan'
-                                              )
-                                            : t(
-                                                  'tasks.addToToday',
-                                                  'Add to today plan'
-                                              )
-                                    }
-                                >
-                                    {task.today ? (
-                                        <CalendarDaysIcon className="h-4 w-4" />
-                                    ) : (
-                                        <CalendarIcon className="h-4 w-4" />
-                                    )}
-                                    {Number(task.today_move_count || 0) > 1 && (
-                                        <span className="ml-1 text-xs font-medium">
-                                            {Number(task.today_move_count || 0)}
-                                        </span>
-                                    )}
-                                </button>
-                            )}
-                            {onQuickStatusToggle &&
-                                (task.status === 'not_started' ||
-                                    task.status === 'in_progress' ||
-                                    task.status === 0 ||
-                                    task.status === 1) && (
-                                    <button
-                                        type="button"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            onQuickStatusToggle();
-                                        }}
-                                        className={`flex items-center justify-center w-8 h-8 rounded-full transition-all duration-200 ${
-                                            task.status === 'in_progress' ||
-                                            task.status === 1
-                                                ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800 animate-pulse'
-                                                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
-                                        }`}
-                                        title={
-                                            task.status === 'in_progress' ||
-                                            task.status === 1
-                                                ? t(
-                                                      'tasks.setNotStarted',
-                                                      'Set to not started'
-                                                  )
-                                                : t(
-                                                      'tasks.setInProgress',
-                                                      'Set in progress'
-                                                  )
-                                        }
-                                    >
-                                        <PlayIcon className="h-4 w-4" />
-                                    </button>
-                                )}
                             <div
                                 className="relative flex items-center"
                                 ref={actionsMenuRef}
