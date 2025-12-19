@@ -4,6 +4,7 @@ import {
     CalendarDaysIcon,
     CalendarIcon,
     ArrowPathIcon,
+    ListBulletIcon,
     ChevronDownIcon,
     PlayIcon,
     PauseCircleIcon,
@@ -50,6 +51,9 @@ interface TaskHeaderProps {
     onToggleToday?: (taskId: number, task?: Task) => Promise<void>;
     onTaskUpdate?: (task: Task) => Promise<void>;
     isOverdue?: boolean;
+    showSubtasks?: boolean;
+    hasSubtasks?: boolean;
+    onSubtasksToggle?: (e: React.MouseEvent) => void;
     // Props for edit and delete functionality
     onEdit?: (e: React.MouseEvent) => void;
     onDelete?: (e: React.MouseEvent) => void;
@@ -64,6 +68,9 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
     hideProjectName = false,
     onToggleToday: _onToggleToday,
     onTaskUpdate,
+    showSubtasks,
+    hasSubtasks,
+    onSubtasksToggle,
     // Props for edit and delete functionality
     onEdit: _onEdit,
     onDelete: _onDelete,
@@ -73,6 +80,38 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
     void _onToggleToday;
     void _onEdit;
     void _onDelete;
+    const SubtasksToggleButton = () => {
+        if (!hasSubtasks || !onSubtasksToggle) return null;
+
+        return (
+            <button
+                type="button"
+                onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onSubtasksToggle(e);
+                }}
+                className={`ml-1 flex items-center justify-center h-5 px-1.5 rounded-full border transition-colors duration-150 gap-0.5 ${
+                    showSubtasks
+                        ? 'bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-900/40 dark:border-blue-700 dark:text-blue-100'
+                        : 'text-gray-400 border-transparent hover:border-gray-200 hover:text-gray-600 dark:hover:border-gray-600'
+                }`}
+                aria-pressed={!!showSubtasks}
+                title={
+                    showSubtasks
+                        ? t('tasks.hideSubtasks', 'Hide subtasks')
+                        : t('tasks.showSubtasks', 'Show subtasks')
+                }
+            >
+                <ListBulletIcon className="h-3.5 w-3.5" />
+                <ChevronDownIcon
+                    className={`h-3 w-3 transition-transform ${
+                        showSubtasks ? 'rotate-180' : ''
+                    }`}
+                />
+            </button>
+        );
+    };
     const desktopCompletionMenuRef = useRef<HTMLDivElement>(null);
     const mobileCompletionMenuRef = useRef<HTMLDivElement>(null);
     const [completionMenuOpen, setCompletionMenuOpen] = useState<
@@ -430,7 +469,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         {isUpcomingView ? (
                             <div className="w-full">
                                 {/* Full width title that wraps */}
-                                <div className="w-full mb-0.5">
+                                <div className="w-full mb-0.5 flex items-center gap-1.5">
                                     <span className="text-sm font-medium text-gray-900 dark:text-gray-300 break-words tracking-tight inline-flex items-center gap-1.5">
                                         {task.habit_mode && (
                                             <FireIcon
@@ -438,8 +477,9 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                 title="Habit"
                                             />
                                         )}
-                                        {task.original_name || task.name}
-                                    </span>
+                                            {task.original_name || task.name}
+                                        </span>
+                                    <SubtasksToggleButton />
                                 </div>
                                 {/* Show project and tags info in upcoming view */}
                                 {project && !hideProjectName && (
@@ -533,6 +573,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                 <span className="text-md font-medium text-gray-900 dark:text-gray-300">
                                     {task.original_name || task.name}
                                 </span>
+                                <SubtasksToggleButton />
                             </div>
                         )}
                         {/* Project, tags, due date, and recurrence in same row, with spacing when they exist */}
@@ -790,6 +831,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                     />
                                 )}
                                 {task.original_name || task.name}
+                                <SubtasksToggleButton />
                             </span>
                         </div>
 
@@ -1128,7 +1170,15 @@ const TaskWithSubtasks: React.FC<TaskWithSubtasksProps> = (props) => {
 
     return (
         <>
-            <TaskHeader {...props} />
+            <TaskHeader
+                {...props}
+                showSubtasks={showSubtasks}
+                hasSubtasks={subtasks.length > 0 || loadingSubtasks}
+                onSubtasksToggle={(e) => {
+                    e.stopPropagation();
+                    setShowSubtasks((prev) => !prev);
+                }}
+            />
             <SubtasksDisplay
                 showSubtasks={showSubtasks}
                 loadingSubtasks={loadingSubtasks}

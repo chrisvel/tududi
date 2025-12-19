@@ -169,6 +169,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
     // Subtasks state
     const [subtasks, setSubtasks] = useState<Task[]>([]);
     const [loadingSubtasks, setLoadingSubtasks] = useState(false);
+    const [showSubtasks, setShowSubtasks] = useState(false);
 
     // Update projectList when projects prop changes
     useEffect(() => {
@@ -177,12 +178,6 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
     const loadSubtasks = useCallback(async () => {
         if (!task.id) return;
-
-        const existingSubtasks = task.subtasks || task.Subtasks || [];
-        if (existingSubtasks.length > 0) {
-            setSubtasks(existingSubtasks);
-            return;
-        }
 
         setLoadingSubtasks(true);
         try {
@@ -194,7 +189,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
         } finally {
             setLoadingSubtasks(false);
         }
-    }, [task.id, task.subtasks, task.Subtasks]);
+    }, [task.id]);
 
     // Calculate completion percentage
     const calculateCompletionPercentage = () => {
@@ -210,17 +205,22 @@ const TaskItem: React.FC<TaskItemProps> = ({
     };
 
     const completionPercentage = calculateCompletionPercentage();
+    const hasInitialSubtasks =
+        (task.subtasks && task.subtasks.length > 0) ||
+        (task.Subtasks && task.Subtasks.length > 0);
+    const shouldShowSubtasksIcon =
+        hasInitialSubtasks || subtasks.length > 0 || loadingSubtasks;
 
     // Check if task has subtasks using the included subtasks data
     useEffect(() => {
         // Handle both 'subtasks' and 'Subtasks' property names (case sensitivity)
         const subtasksData = task.subtasks || task.Subtasks || [];
         setSubtasks(subtasksData);
+    }, [task.id, task.subtasks, task.Subtasks]);
 
-        if (subtasksData.length === 0 && task.id) {
-            void loadSubtasks();
-        }
-    }, [task.id, task.subtasks, task.Subtasks, loadSubtasks]); // Removed task.updated_at which was causing frequent re-renders
+    useEffect(() => {
+        setShowSubtasks(false);
+    }, [task.id]);
     const handleTaskClick = () => {
         if (task.uid) {
             if (task.habit_mode) {
@@ -242,6 +242,19 @@ const TaskItem: React.FC<TaskItemProps> = ({
         await onTaskUpdate(updatedSubtask);
         setSubtaskModalOpen(false);
         setSelectedSubtask(null);
+    };
+
+    const handleSubtasksToggle = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+
+        if (!showSubtasks) {
+            if (subtasks.length === 0) {
+                await loadSubtasks();
+            }
+            setShowSubtasks(true);
+        } else {
+            setShowSubtasks(false);
+        }
     };
 
     const handleSubtaskDelete = async () => {
@@ -457,7 +470,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
     return (
         <>
             <div
-                className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 relative overflow-visible transition-colors duration-200 ease-in-out hover:ring-1 hover:ring-blue-300/70 dark:hover:ring-blue-600/50 ${priorityBorderClass} ${
+                className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 relative overflow-visible transition-colors duration-200 ease-in-out hover:ring-1 hover:ring-gray-200 dark:hover:ring-gray-700 ${priorityBorderClass} ${
                     isInProgress
                         ? 'ring-1 ring-blue-500/60 dark:ring-blue-600/60'
                         : ''
@@ -472,6 +485,11 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     onToggleToday={onToggleToday}
                     onTaskUpdate={onTaskUpdate}
                     isOverdue={isOverdue}
+                    showSubtasks={showSubtasks}
+                    hasSubtasks={shouldShowSubtasksIcon}
+                    onSubtasksToggle={
+                        shouldShowSubtasksIcon ? handleSubtasksToggle : undefined
+                    }
                     onEdit={handleEdit}
                     onDelete={handleDeleteClick}
                     isUpcomingView={isUpcomingView}
@@ -493,9 +511,11 @@ const TaskItem: React.FC<TaskItemProps> = ({
             </div>
 
             {/* Hide subtasks display for archived tasks */}
-            {(subtasks.length > 0 || loadingSubtasks) &&
+            {showSubtasks &&
+                (subtasks.length > 0 || loadingSubtasks) &&
                 !(task.status === 'archived' || task.status === 3) && (
                 <SubtasksDisplay
+                    showSubtasks={showSubtasks}
                     loadingSubtasks={loadingSubtasks}
                     subtasks={subtasks}
                     onTaskClick={(e) => {
