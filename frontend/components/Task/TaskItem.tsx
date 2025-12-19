@@ -485,10 +485,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
                 {/* Progress bar at bottom of parent task */}
                 {subtasks.length > 0 && (
-                    <div
-                        className="absolute bottom-0 left-0 right-0 h-0.5 transition-all duration-300 ease-in-out overflow-hidden rounded-b-lg opacity-100 transform translate-y-0"
-                    >
-                        <div className="w-full h-full bg-gray-200 dark:bg-gray-700">
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 opacity-100">
+                        <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 ml-1 rounded-r-lg overflow-hidden">
                             <div
                                 className="h-full bg-gradient-to-r from-green-400 via-green-500 to-green-600 transition-all duration-500 ease-out"
                                 style={{ width: `${completionPercentage}%` }}
