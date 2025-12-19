@@ -13,7 +13,7 @@ import TaskPriorityIcon from './TaskPriorityIcon';
 import { Project } from '../../entities/Project';
 import { Task } from '../../entities/Task';
 import { fetchSubtasks } from '../../utils/tasksService';
-import { isTaskCompleted } from '../../constants/taskStatus';
+import { isTaskCompleted, isTaskInProgress } from '../../constants/taskStatus';
 import TaskStatusControl from './TaskStatusControl';
 
 interface TaskHeaderProps {
@@ -200,8 +200,8 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                 title="Habit"
                                             />
                                         )}
-                                            {task.original_name || task.name}
-                                        </span>
+                                        {task.original_name || task.name}
+                                    </span>
                                     <SubtasksToggleButton />
                                 </div>
                                 {/* Show project and tags info in upcoming view */}
@@ -421,19 +421,17 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         )}
                     </div>
                 </div>
-                {!isUpcomingView &&
-                    !task.habit_mode &&
-                    onToggleCompletion && (
-                        <div className="flex items-center w-full justify-end">
-                            <TaskStatusControl
-                                task={task}
-                                onToggleCompletion={onToggleCompletion}
-                                onTaskUpdate={onTaskUpdate}
-                                showMobileVariant={false}
-                                className="ml-auto"
-                            />
-                        </div>
-                    )}
+                {!isUpcomingView && !task.habit_mode && onToggleCompletion && (
+                    <div className="flex items-center w-full justify-end">
+                        <TaskStatusControl
+                            task={task}
+                            onToggleCompletion={onToggleCompletion}
+                            onTaskUpdate={onTaskUpdate}
+                            showMobileVariant={false}
+                            className="ml-auto"
+                        />
+                    </div>
+                )}
             </div>
 
             {/* Mobile view (below md breakpoint) */}
@@ -704,8 +702,7 @@ const TaskWithSubtasks: React.FC<TaskWithSubtasksProps> = (props) => {
     }, [props.task.id]);
 
     useEffect(() => {
-        const subtasksData =
-            props.task.subtasks || props.task.Subtasks || [];
+        const subtasksData = props.task.subtasks || props.task.Subtasks || [];
         const hasSubtasksFromData = subtasksData.length > 0;
         setSubtasks(subtasksData);
         setShowSubtasks(hasSubtasksFromData);

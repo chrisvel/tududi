@@ -45,9 +45,7 @@ const STATUS_STYLES: Record<StatusKey, StatusStyle> = {
     },
 };
 
-const resolveStatusKey = (
-    status?: StatusType | number | null
-): StatusKey => {
+const resolveStatusKey = (status?: StatusType | number | null): StatusKey => {
     if (status === 'planned' || status === 6) return 'planned';
     if (status === 'in_progress' || status === 1) return 'in_progress';
     if (status === 'done' || status === 2) return 'done';

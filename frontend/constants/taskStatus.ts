@@ -27,9 +27,7 @@ export type TaskStatusValue = (typeof TASK_STATUS)[keyof typeof TASK_STATUS];
 export type TaskStatusString =
     (typeof TASK_STATUS_STRINGS)[keyof typeof TASK_STATUS_STRINGS];
 
-export function getStatusString(
-    status: StatusType | number
-): TaskStatusString {
+export function getStatusString(status: StatusType | number): TaskStatusString {
     if (typeof status === 'string') {
         return status as TaskStatusString;
     }
@@ -47,9 +45,7 @@ export function getStatusString(
     return statusNames[status] || 'not_started';
 }
 
-export function getStatusValue(
-    status: StatusType | number
-): TaskStatusValue {
+export function getStatusValue(status: StatusType | number): TaskStatusValue {
     if (typeof status === 'number') {
         return status as TaskStatusValue;
     }

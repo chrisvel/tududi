@@ -124,8 +124,7 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
                                                 : 'text-gray-900 dark:text-gray-100'
                                         }`}
                                     >
-                                        {subtask.original_name ||
-                                            subtask.name}
+                                        {subtask.original_name || subtask.name}
                                     </span>
                                 </div>
                                 {isTaskCompleted(subtask.status) && (
@@ -476,7 +475,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     showSubtasks={showSubtasks}
                     hasSubtasks={shouldShowSubtasksIcon}
                     onSubtasksToggle={
-                        shouldShowSubtasksIcon ? handleSubtasksToggle : undefined
+                        shouldShowSubtasksIcon
+                            ? handleSubtasksToggle
+                            : undefined
                     }
                     onEdit={handleEdit}
                     onDelete={handleDeleteClick}
@@ -500,25 +501,25 @@ const TaskItem: React.FC<TaskItemProps> = ({
             {showSubtasks &&
                 (subtasks.length > 0 || loadingSubtasks) &&
                 !(task.status === 'archived' || task.status === 3) && (
-                <SubtasksDisplay
-                    loadingSubtasks={loadingSubtasks}
-                    subtasks={subtasks}
-                    onTaskClick={(e) => {
-                        e.stopPropagation();
-                        handleSubtaskClick();
-                    }}
-                    loadSubtasks={loadSubtasks}
-                    onSubtaskUpdate={(updatedSubtask) => {
-                        setSubtasks((prev) =>
-                            prev.map((st) =>
-                                st.id === updatedSubtask.id
-                                    ? updatedSubtask
-                                    : st
-                            )
-                        );
-                    }}
-                />
-            )}
+                    <SubtasksDisplay
+                        loadingSubtasks={loadingSubtasks}
+                        subtasks={subtasks}
+                        onTaskClick={(e) => {
+                            e.stopPropagation();
+                            handleSubtaskClick();
+                        }}
+                        loadSubtasks={loadSubtasks}
+                        onSubtaskUpdate={(updatedSubtask) => {
+                            setSubtasks((prev) =>
+                                prev.map((st) =>
+                                    st.id === updatedSubtask.id
+                                        ? updatedSubtask
+                                        : st
+                                )
+                            );
+                        }}
+                    />
+                )}
 
             <TaskModal
                 isOpen={isModalOpen}

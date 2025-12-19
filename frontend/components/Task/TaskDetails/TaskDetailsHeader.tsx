@@ -269,8 +269,12 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                     <div className="flex items-center gap-2 flex-wrap">
                                         <TaskStatusControl
                                             task={task}
-                                            onToggleCompletion={onQuickStatusToggle}
-                                            onTaskUpdate={handleStatusControlUpdate}
+                                            onToggleCompletion={
+                                                onQuickStatusToggle
+                                            }
+                                            onTaskUpdate={
+                                                handleStatusControlUpdate
+                                            }
                                             hoverRevealQuickActions={false}
                                             showMobileVariant={false}
                                             variant="square"

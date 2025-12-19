@@ -113,7 +113,9 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
     const textSizeClass = isSquareVariant ? 'text-xs' : 'text-sm';
     const gapClass = isSquareVariant ? 'gap-1.5' : 'gap-2';
     const iconSizeClass = isSquareVariant ? 'h-3.5 w-3.5' : 'h-4 w-4';
-    const containerRoundedClass = isSquareVariant ? 'rounded-lg' : 'rounded-full';
+    const containerRoundedClass = isSquareVariant
+        ? 'rounded-lg'
+        : 'rounded-full';
     const completionButtonPaddingClass = isSquareVariant
         ? 'px-2.5 py-1'
         : 'px-3 py-1';
@@ -388,7 +390,7 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
                         <CheckIcon
                             className={`${iconSizeClass} transition-all duration-300 ${isCompletingTask ? 'scale-125 text-green-600 dark:text-green-400' : ''}`}
                         />
-                </button>
+                    </button>
                 )}
                 <button
                     type="button"
@@ -438,7 +440,9 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
                             className={`${completionButtonMainClasses} px-2 py-1 ${statusButtonColorClasses}`}
                         >
                             <CompletionIcon className="h-3.5 w-3.5" />
-                            <span className="ml-1">{completionButtonLabel}</span>
+                            <span className="ml-1">
+                                {completionButtonLabel}
+                            </span>
                         </button>
                         {showQuickStartButton && (
                             <button
@@ -467,10 +471,7 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
                                     handleCompletionClick(e);
                                 }}
                                 className={`${isCompletingTask ? 'bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400' : `${completionButtonChevronClasses} ${statusButtonColorClasses}`} px-2 border-l ${statusBorderColorClass} transition-all duration-300`}
-                                title={t(
-                                    'tasks.markAsDone',
-                                    'Mark as done'
-                                )}
+                                title={t('tasks.markAsDone', 'Mark as done')}
                                 disabled={isCompletingTask}
                             >
                                 <CheckIcon
