@@ -254,10 +254,10 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                             </div>
                         ) : (
                             <>
-                                <div className="flex items-center gap-3 flex-wrap">
+                                <div className="flex items-center gap-3 flex-wrap min-w-0">
                                     <h2
                                         onClick={handleStartTitleEdit}
-                                        className="text-2xl font-normal text-gray-900 dark:text-gray-100 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded px-2 py-1 -mx-2 transition-colors"
+                                        className="text-2xl font-normal text-gray-900 dark:text-gray-100 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded px-2 py-1 -mx-2 transition-colors truncate min-w-0"
                                         title={t(
                                             'task.clickToEditTitle',
                                             'Click to edit title'
@@ -266,7 +266,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                         {task.name}
                                     </h2>
 
-                                    <div className="flex items-center gap-2 flex-wrap">
+                                    <div className="flex items-center gap-2 flex-wrap flex-shrink-0">
                                         <TaskStatusControl
                                             task={task}
                                             onToggleCompletion={
