@@ -1024,6 +1024,26 @@ const TasksToday: React.FC = () => {
                 // The updatedTask is already the result of the API call from TaskItem
                 // Use the centralized task update handler to update UI optimistically
                 await handleTaskUpdate(updatedTask);
+
+                // Check if this was a recurring task completion that needs refresh
+                // Recurring tasks get advanced after completion, so they won't appear in completed list
+                // without a refetch
+                const isRecurringParent =
+                    updatedTask.recurrence_type &&
+                    updatedTask.recurrence_type !== 'none' &&
+                    !updatedTask.recurring_parent_id;
+
+                if (isRecurringParent) {
+                    // Refetch tasks to get the updated completed list for recurring tasks
+                    const result = await fetchTasks('?type=today');
+                    if (isMounted.current) {
+                        setMetrics((prevMetrics) => ({
+                            ...prevMetrics,
+                            tasks_completed_today:
+                                result.tasks_completed_today || [],
+                        }));
+                    }
+                }
             } catch (error) {
                 console.error('Error toggling task completion:', error);
             }

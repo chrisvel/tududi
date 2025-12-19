@@ -338,7 +338,10 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
                                             {/* Day column tasks */}
                                             <div className="space-y-1.5">
                                                 {dayTasks.map((task) => (
-                                                    <div key={task.id}>
+                                                    <div
+                                                        key={task.id}
+                                                        className="relative hover:z-[10000] focus-within:z-[10000]"
+                                                    >
                                                         <TaskItem
                                                             task={task}
                                                             onTaskUpdate={
@@ -437,7 +440,7 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
                                   {projectTasks.map((task) => (
                                       <div
                                           key={task.id}
-                                          className="task-item-wrapper transition-all duration-200 ease-in-out"
+                                          className="task-item-wrapper transition-all duration-200 ease-in-out relative hover:z-[10000] focus-within:z-[10000]"
                                       >
                                           <TaskItem
                                               task={task}
@@ -459,7 +462,7 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
                 : standaloneTask.map((task) => (
                       <div
                           key={task.id}
-                          className="task-item-wrapper transition-all duration-200 ease-in-out"
+                          className="task-item-wrapper transition-all duration-200 ease-in-out relative hover:z-[10000] focus-within:z-[10000]"
                       >
                           <TaskItem
                               task={task}
@@ -488,7 +491,7 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
                     >
                         {/* Show template only if it's not virtual */}
                         {!isVirtualTemplate && (
-                            <div className="relative">
+                            <div className="relative hover:z-[10000] focus-within:z-[10000]">
                                 <div className="flex items-center">
                                     <div className="flex-1">
                                         <TaskItem
@@ -569,7 +572,7 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
                                     .map((instance) => (
                                         <div
                                             key={instance.id}
-                                            className="opacity-75 hover:opacity-100 transition-opacity"
+                                            className="opacity-75 hover:opacity-100 focus-within:opacity-100 transition-opacity relative hover:z-[10000] focus-within:z-[10000]"
                                         >
                                             <TaskItem
                                                 task={instance}

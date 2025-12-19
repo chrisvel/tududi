@@ -333,7 +333,9 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
     const completionButtonLabel = statusDisplay.label;
 
     return (
-        <div className={`relative ${className}`}>
+        <div
+            className={`relative ${completionMenuOpen ? 'z-[10000]' : ''} ${className}`}
+        >
             <div
                 className={`inline-flex items-stretch ${containerRoundedClass} border ${statusBorderColorClass} overflow-hidden ${hoverRevealQuickActions ? 'group' : ''}`}
                 ref={desktopCompletionMenuRef}
@@ -410,7 +412,7 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
             </div>
             {completionMenuOpen === 'desktop' && (
                 <div
-                    className={`absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-900 border ${statusBorderColorClass} rounded-lg shadow-lg z-[9999]`}
+                    className={`absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-900 border ${statusBorderColorClass} rounded-lg shadow-lg z-[9999] opacity-100`}
                 >
                     {renderStatusMenuOptions('desktop')}
                 </div>
@@ -497,7 +499,7 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
                     </div>
                     {completionMenuOpen === 'mobile' && (
                         <div
-                            className={`absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-900 border ${statusBorderColorClass} rounded-lg shadow-lg z-[9999]`}
+                            className={`absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-900 border ${statusBorderColorClass} rounded-lg shadow-lg z-[9999] opacity-100`}
                         >
                             {renderStatusMenuOptions('mobile')}
                         </div>
