@@ -338,7 +338,10 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
                                             {/* Day column tasks */}
                                             <div className="space-y-1.5">
                                                 {dayTasks.map((task) => (
-                                                    <div key={task.id} className="relative hover:z-[10000] focus-within:z-[10000]">
+                                                    <div
+                                                        key={task.id}
+                                                        className="relative hover:z-[10000] focus-within:z-[10000]"
+                                                    >
                                                         <TaskItem
                                                             task={task}
                                                             onTaskUpdate={

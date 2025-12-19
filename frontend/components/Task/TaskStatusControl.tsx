@@ -333,7 +333,9 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
     const completionButtonLabel = statusDisplay.label;
 
     return (
-        <div className={`relative ${completionMenuOpen ? 'z-[10000]' : ''} ${className}`}>
+        <div
+            className={`relative ${completionMenuOpen ? 'z-[10000]' : ''} ${className}`}
+        >
             <div
                 className={`inline-flex items-stretch ${containerRoundedClass} border ${statusBorderColorClass} overflow-hidden ${hoverRevealQuickActions ? 'group' : ''}`}
                 ref={desktopCompletionMenuRef}

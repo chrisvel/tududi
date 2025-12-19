@@ -371,11 +371,15 @@ async function fetchTasksCompletedToday(userId, userTimezone) {
         ],
     });
 
-    // Extract the tasks from recurring completions and add completed_at
+    // Extract the tasks from recurring completions and add completed_at and status
     const recurringCompletedTasks = recurringCompletions.map((rc) => {
         const task = rc.Task;
-        // Add a virtual completed_at for display and sorting purposes
+        // Add virtual completed_at and status for display purposes
         task.dataValues.completed_at = rc.completed_at;
+        task.dataValues.status = Task.STATUS.DONE;
+        // Also set the direct property to ensure it's accessible
+        task.status = Task.STATUS.DONE;
+        task.completed_at = rc.completed_at;
         return task;
     });
 
