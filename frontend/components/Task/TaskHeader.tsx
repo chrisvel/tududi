@@ -211,6 +211,14 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 
     const statusButtonColorClasses = getStatusButtonColorClasses(task.status);
     const statusBorderColorClass = getStatusBorderColorClasses(task.status);
+    const quickStartStatuses = new Set([
+        'not_started',
+        'planned',
+        'waiting',
+        'cancelled',
+    ]);
+    const showQuickStartButton = quickStartStatuses.has(currentStatusString);
+    const showQuickCompleteButton = currentStatusString !== 'done';
 
     const handleCompletionClick = async (e: React.MouseEvent) => {
         e.preventDefault();
@@ -654,7 +662,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         {onToggleCompletion && (
                             <div className="relative ml-auto" ref={desktopCompletionMenuRef}>
                                 <div
-                                    className={`inline-flex items-stretch rounded-full border ${statusBorderColorClass} overflow-hidden`}
+                                    className={`inline-flex items-stretch rounded-full border ${statusBorderColorClass} overflow-hidden group`}
                                 >
                                     <button
                                         type="button"
@@ -688,7 +696,25 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                         <CompletionIcon className="h-4 w-4" />
                                         {completionButtonLabel}
                                     </button>
-                                    {taskInProgress && (
+                                    {showQuickStartButton && (
+                                        <button
+                                            type="button"
+                                            onClick={async (e) => {
+                                                await handleStatusSelection(
+                                                    e,
+                                                    'in_progress'
+                                                );
+                                            }}
+                                            className={`${completionButtonChevronClasses} ${statusButtonColorClasses} px-2 border-l ${statusBorderColorClass} flex transition-all duration-200 md:px-0 md:border-l-0 md:w-0 md:opacity-0 md:pointer-events-none md:group-hover:px-2 md:group-hover:border-l md:group-hover:w-auto md:group-hover:opacity-100 md:group-hover:pointer-events-auto`}
+                                            title={t(
+                                                'tasks.setInProgress',
+                                                'Set in progress'
+                                            )}
+                                        >
+                                            <PlayIcon className="h-4 w-4" />
+                                        </button>
+                                    )}
+                                    {showQuickCompleteButton && (
                                         <button
                                             type="button"
                                             onClick={(e) => {
@@ -696,7 +722,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                 e.stopPropagation();
                                                 handleCompletionClick(e);
                                             }}
-                                            className={`${isCompletingTask ? 'bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400' : completionButtonChevronClasses} px-2 border-l ${statusBorderColorClass} transition-all duration-300`}
+                                            className={`${isCompletingTask ? 'bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400' : `${completionButtonChevronClasses} ${statusButtonColorClasses}`} px-2 border-l ${statusBorderColorClass} flex transition-all duration-200 md:px-0 md:border-l-0 md:w-0 md:opacity-0 md:pointer-events-none md:group-hover:px-2 md:group-hover:border-l md:group-hover:w-auto md:group-hover:opacity-100 md:group-hover:pointer-events-auto`}
                                             title={t(
                                                 'tasks.markAsDone',
                                                 'Mark as done'
@@ -912,7 +938,25 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                             {completionButtonLabel}
                                         </span>
                                     </button>
-                                    {taskInProgress && (
+                                    {showQuickStartButton && (
+                                        <button
+                                            type="button"
+                                            onClick={async (e) => {
+                                                await handleStatusSelection(
+                                                    e,
+                                                    'in_progress'
+                                                );
+                                            }}
+                                            className={`${completionButtonChevronClasses} ${statusButtonColorClasses} px-2 border-l ${statusBorderColorClass}`}
+                                            title={t(
+                                                'tasks.setInProgress',
+                                                'Set in progress'
+                                            )}
+                                        >
+                                            <PlayIcon className="h-3.5 w-3.5" />
+                                        </button>
+                                    )}
+                                    {showQuickCompleteButton && (
                                         <button
                                             type="button"
                                             onClick={(e) => {
@@ -920,7 +964,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                 e.stopPropagation();
                                                 handleCompletionClick(e);
                                             }}
-                                            className={`${isCompletingTask ? 'bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400' : completionButtonChevronClasses} px-2 border-l ${statusBorderColorClass} transition-all duration-300`}
+                                            className={`${isCompletingTask ? 'bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400' : `${completionButtonChevronClasses} ${statusButtonColorClasses}`} px-2 border-l ${statusBorderColorClass} transition-all duration-300`}
                                             title={t(
                                                 'tasks.markAsDone',
                                                 'Mark as done'
