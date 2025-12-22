@@ -33,6 +33,7 @@ import {
     TaskDeferUntilCard,
     TaskAttachmentsCard,
     TaskAssignmentCard,
+    TaskOwnerCard,
 } from './TaskDetails/';
 import TaskSubscribers from './TaskSubscribers';
 import { isTaskOverdue, isTaskPastDue } from '../../utils/dateUtils';
@@ -1370,15 +1371,7 @@ const TaskDetails: React.FC = () => {
                                     onUnassign={handleUnassignTask}
                                 />
 
-                                {currentUserId && (
-                                    <TaskSubscribers
-                                        task={task}
-                                        currentUserId={currentUserId}
-                                        onUpdate={handleSubscriberUpdate}
-                                    />
-                                )}
-
-                                {/*<TaskOwnerCard task={task} />*/}
+                                <TaskOwnerCard task={task} />
 
                                 <TaskDueDateCard
                                     task={task}
@@ -1399,6 +1392,14 @@ const TaskDetails: React.FC = () => {
                                     onSave={handleSaveDeferUntil}
                                     onCancel={handleCancelDeferUntilEdit}
                                 />
+
+                                {currentUserId && (
+                                    <TaskSubscribers
+                                        task={task}
+                                        currentUserId={currentUserId}
+                                        onUpdate={handleSubscriberUpdate}
+                                    />
+                                )}
                             </div>
                         </div>
                     )}
