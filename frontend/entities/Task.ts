@@ -47,6 +47,16 @@ export interface Task {
     habit_best_streak?: number;
     habit_total_completions?: number;
     habit_last_completion_at?: string;
+    // Owner (creator) fields
+    user_id?: number;
+    Owner?: {
+        id: number;
+        uid: string;
+        email: string;
+        name?: string;
+        surname?: string;
+        avatar_image?: string;
+    };
     // Assignment fields
     assigned_to_user_id?: number;
     AssignedTo?: {
@@ -57,6 +67,16 @@ export interface Task {
         surname?: string;
         avatar_image?: string;
     };
+    // Subscription fields
+    Subscribers?: {
+        id: number;
+        uid: string;
+        email: string;
+        name?: string;
+        surname?: string;
+        avatar_image?: string;
+    }[];
+    subscriber_count?: number;
 }
 
 export type StatusType =

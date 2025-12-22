@@ -3,7 +3,6 @@ import { Location } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     CalendarDaysIcon,
-    InboxIcon,
     ListBulletIcon,
     ClockIcon,
     CalendarIcon,

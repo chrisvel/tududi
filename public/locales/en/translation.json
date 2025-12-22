@@ -486,7 +486,9 @@
       "unassigned": "Unassigned",
       "searchUsers": "Search users...",
       "loadingUsers": "Loading users...",
-      "noUsersFound": "No users found"
+      "noUsersFound": "No users found",
+      "createdBy": "Created By",
+      "unknownOwner": "Unknown"
     },
     "noteTitle": "Note Title",
     "noteContent": "Note Content",
@@ -815,7 +817,17 @@
     "noDeferUntil": "No defer until",
     "deferUntilUpdated": "Defer until updated successfully",
     "deferUntilUpdateError": "Failed to update defer until",
-    "upcoming": "upcoming"
+    "upcoming": "upcoming",
+    "subscribers": "Subscribers",
+    "subscriber": "subscriber",
+    "manage_subscribers": "Manage Subscribers",
+    "no_subscribers": "No subscribers",
+    "subscribe_me": "Subscribe me",
+    "unsubscribe_me": "Unsubscribe me",
+    "subscribeSuccess": "Subscribed successfully",
+    "subscribeError": "Failed to subscribe",
+    "unsubscribeSuccess": "Unsubscribed successfully",
+    "unsubscribeError": "Failed to unsubscribe"
   },
   "subtasks": {
     "placeholder": "Add a subtask..."
@@ -837,7 +849,8 @@
       "active": "Active",
       "inactive": "Inactive",
       "all": "All",
-      "allAreas": "All Departments"
+      "allAreas": "All Departments",
+      "subscribed": "Subscribed Tasks"
     },
     "states": {
       "idea": "Idea",

@@ -1293,9 +1293,6 @@ const TasksToday: React.FC = () => {
     };
 
     const todayProgress = getTodayProgress();
-    const totalPlannedItems = plannedTasks.length + plannedHabits.length;
-    const totalCompletedItems =
-        completedTasksList.length + completedHabits.length;
 
     // Apply assignee filter to all task sections
     const overdueTasksFiltered = filterTasksByAssignee(sortedOverdueTasks);

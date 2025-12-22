@@ -372,6 +372,20 @@ async function notifyTaskCompletion(task, assignee, owner) {
             },
             sentAt: new Date(),
         });
+
+        // Also notify subscribers about task completion
+        try {
+            const {
+                notifySubscribersAboutStatusChange,
+            } = require('./taskSubscriptionService');
+            await notifySubscribersAboutStatusChange(task, assignee);
+        } catch (subscriberNotifError) {
+            logError(
+                'Error notifying subscribers about completion:',
+                subscriberNotifError
+            );
+            // Don't throw - notification failure shouldn't break completion
+        }
     } catch (error) {
         logError('Error sending task completion notification:', error);
         // Don't throw - notification failure shouldn't break completion

@@ -87,6 +87,7 @@ async function serializeTask(
                   uid: taskJson.Project.uid,
               }
             : null,
+        Owner: taskJson.Owner || null,
         subtasks: Subtasks
             ? Subtasks.map((subtask) => ({
                   ...subtask,
@@ -113,6 +114,10 @@ async function serializeTask(
                 : new Date(task.completed_at).toISOString()
             : null,
         today_move_count: todayMoveCount,
+        Subscribers: taskJson.Subscribers || [],
+        subscriber_count: taskJson.Subscribers
+            ? taskJson.Subscribers.length
+            : 0,
     };
 }
 

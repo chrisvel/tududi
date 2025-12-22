@@ -107,6 +107,20 @@ Tag.belongsToMany(Task, {
     otherKey: 'task_id',
 });
 
+// Task-User subscribers many-to-many relationship
+Task.belongsToMany(User, {
+    through: 'tasks_subscribers',
+    foreignKey: 'task_id',
+    otherKey: 'user_id',
+    as: 'Subscribers',
+});
+User.belongsToMany(Task, {
+    through: 'tasks_subscribers',
+    foreignKey: 'user_id',
+    otherKey: 'task_id',
+    as: 'SubscribedTasks',
+});
+
 Note.belongsToMany(Tag, {
     through: 'notes_tags',
     foreignKey: 'note_id',
