@@ -140,9 +140,9 @@
 
 /**
  * @swagger
- * /api/asid-login:
+ * /api/create-asid-user:
  *   post:
- *     summary: Login to the application for ASID
+ *     summary: Create ASID user in tududi
  *     tags: [Authentication]
  *     security:
  *     - ApiKeyAuth: []

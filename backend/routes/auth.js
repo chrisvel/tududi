@@ -238,7 +238,7 @@ router.get('/logout', (req, res) => {
     });
 });
 
-router.post('/asid-login', requireApiKey, async (req, res) => {
+router.post('/create-asid-user', requireApiKey, async (req, res) => {
     const { sequelize } = require('../models');
     const transaction = await sequelize.transaction();
     try {
