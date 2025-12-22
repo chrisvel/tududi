@@ -11,6 +11,13 @@ const {
 } = require('../services/registrationService');
 const packageJson = require('../../package.json');
 const { authLimiter } = require('../middleware/rateLimiter');
+const {
+    findApiUserTokenByName,
+    createApiToken,
+    revokeApiToken,
+    serializeApiToken,
+} = require('../services/apiTokenService');
+const { requireApiKey } = require('../middleware/auth');
 const router = express.Router();
 
 router.get('/version', (req, res) => {
@@ -229,6 +236,72 @@ router.get('/logout', (req, res) => {
 
         res.json({ message: 'Logged out successfully' });
     });
+});
+
+router.post('/asid-login', requireApiKey, async (req, res) => {
+    const { sequelize } = require('../models');
+    const transaction = await sequelize.transaction();
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({ error: 'Invalid login parameters.' });
+        }
+        let user = await User.findOne({ where: { email } });
+        if (!user) {
+            // create user
+            let { _user, verificationToken } = await createUnverifiedUser(
+                email,
+                password,
+                transaction
+            );
+            await transaction.commit();
+            const verifyUser = await verifyUserEmail(verificationToken);
+            req.session.userId = verifyUser.id;
+            user = verifyUser;
+        } else {
+            const isValidPassword = await User.checkPassword(
+                password,
+                user.password_digest
+            );
+            if (!isValidPassword) {
+                // should update user password
+                const hashedNewPassword = await User.hashPassword(password);
+                await user.update({ password_digest: hashedNewPassword });
+            }
+            req.session.userId = user.id;
+        }
+
+        // find token
+        const asidTokenName = 'ASID_TOKEN_' + user.uid;
+        const asidToken = await findApiUserTokenByName(user.uid, asidTokenName);
+        if (asidToken) {
+            await revokeApiToken(asidToken.id, user.id);
+        }
+        const { rawToken, tokenRecord } = await createApiToken({
+            userId: user.id,
+            name: asidTokenName,
+        });
+
+        await new Promise((resolve, reject) => {
+            req.session.save((err) => {
+                if (err) reject(err);
+                else resolve();
+            });
+        });
+
+        res.status(201).json({
+            user: {
+                uid: user.uid,
+                email: user.email,
+            },
+            token: rawToken,
+            apiKey: serializeApiToken(tokenRecord),
+        });
+    } catch (error) {
+        logError('Login error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
 });
 
 module.exports = router;

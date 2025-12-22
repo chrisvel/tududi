@@ -79,6 +79,7 @@ const config = {
     frontendUrl: process.env.FRONTEND_URL || 'http://localhost:8080',
 
     backendUrl: process.env.BACKEND_URL || 'http://localhost:3002',
+    asidApiUrl: process.env.ASID_API_URL || 'http://localhost:8000/api',
 
     // Some CI/sandbox environments disallow binding to 0.0.0.0, so force
     // loopback for tests unless HOST is explicitly provided.

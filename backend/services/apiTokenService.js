@@ -88,11 +88,23 @@ async function deleteApiToken(tokenId, userId) {
     return true;
 }
 
+async function findApiUserTokenByName(userId, tokenName) {
+    return await ApiToken.findOne({
+        where: {
+            user_id: userId,
+            name: tokenName,
+            revoked_at: null,
+            expires_at: null,
+        },
+    });
+}
+
 module.exports = {
     createApiToken,
     revokeApiToken,
     deleteApiToken,
     findValidTokenByValue,
     serializeApiToken,
+    findApiUserTokenByName,
     TOKEN_PREFIX_LENGTH,
 };

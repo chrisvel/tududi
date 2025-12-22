@@ -202,6 +202,9 @@ describe('notificationPreferences utils', () => {
                 task_overdue: 'overdueTasks',
                 project_due_soon: 'dueProjects',
                 project_overdue: 'overdueProjects',
+                assigned_task_completed: 'assignedTaskCompleted',
+                task_assigned: 'taskAssigned',
+                task_unassigned: 'taskUnassigned',
             });
         });
     });
