@@ -100,13 +100,13 @@ const Sidebar: React.FC<SidebarProps> = ({
                             isDarkMode={isDarkMode}
                             openProjectModal={openProjectModal}
                         />
-                        <SidebarNotes
+                        {/* <SidebarNotes
                             handleNavClick={handleNavClick}
                             openNoteModal={openNoteModal}
                             notes={notes}
                             location={location}
                             isDarkMode={isDarkMode}
-                        />
+                        /> */}
                         {featureFlags.habits && (
                             <SidebarHabits
                                 handleNavClick={handleNavClick}
@@ -122,18 +122,18 @@ const Sidebar: React.FC<SidebarProps> = ({
                             isDarkMode={isDarkMode}
                             openAreaModal={openAreaModal}
                         />
-                        <SidebarTags
+                        {/* <SidebarTags
                             handleNavClick={handleNavClick}
                             location={location}
                             isDarkMode={isDarkMode}
                             openTagModal={openTagModal}
                             tags={tags}
-                        />
-                        <SidebarViews
+                        /> */}
+                        {/* <SidebarViews
                             handleNavClick={handleNavClick}
                             location={location}
                             isDarkMode={isDarkMode}
-                        />
+                        /> */}
                     </div>
 
                     <SidebarFooter
