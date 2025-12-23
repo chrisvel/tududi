@@ -10,3 +10,4 @@ export { default as TaskDueDateCard } from './TaskDueDateCard';
 export { default as TaskDeferUntilCard } from './TaskDeferUntilCard';
 export { default as TaskAttachmentsCard } from './TaskAttachmentsCard';
 export { default as TaskAssignmentCard } from './TaskAssignmentCard';
+export { default as TaskOwnerCard } from './TaskOwnerCard';
