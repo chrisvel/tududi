@@ -381,9 +381,7 @@ const Layout: React.FC<LayoutProps> = ({
                     openAreaModal={openAreaModal}
                     openTagModal={openTagModal}
                     openNewHabit={openNewHabit}
-                    notes={notes}
                     areas={areas}
-                    tags={tags}
                 />
                 <div
                     className={`flex-1 flex items-center justify-center bg-gray-100 dark:bg-gray-800 transition-all duration-300 ease-in-out ${mainContentMarginLeft}`}
@@ -419,9 +417,7 @@ const Layout: React.FC<LayoutProps> = ({
                     openAreaModal={openAreaModal}
                     openTagModal={openTagModal}
                     openNewHabit={openNewHabit}
-                    notes={notes}
                     areas={areas}
-                    tags={tags}
                 />
                 <div
                     className={`flex-1 flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800 transition-all duration-300 ease-in-out ${mainContentMarginLeft}`}
@@ -457,9 +453,7 @@ const Layout: React.FC<LayoutProps> = ({
                     openAreaModal={openAreaModal}
                     openTagModal={openTagModal}
                     openNewHabit={openNewHabit}
-                    notes={notes}
                     areas={areas}
-                    tags={tags}
                 />
 
                 <div

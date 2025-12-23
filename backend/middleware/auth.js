@@ -1,5 +1,6 @@
 const { User } = require('../models');
 const { findValidTokenByValue } = require('../services/apiTokenService');
+const ASID_API_KEY = process.env.ASID_API_KEY;
 
 const getBearerToken = (req) => {
     const authHeader = req.headers?.authorization || '';
@@ -8,6 +9,26 @@ const getBearerToken = (req) => {
         return token.trim();
     }
     return null;
+};
+const requireApiKey = async (req, res, next) => {
+    try {
+        const apiKey = req.headers['x-api-key'];
+        if (!apiKey) {
+            return res.status(401).json({ error: 'API key required' });
+        }
+        if (
+            apiKey !== ASID_API_KEY &&
+            ASID_API_KEY !== '' &&
+            ASID_API_KEY !== null &&
+            ASID_API_KEY !== undefined
+        ) {
+            return res.status(401).json({ error: 'Invalid API key' });
+        }
+        next();
+    } catch (error) {
+        console.error('Authentication error:', error);
+        res.status(500).json({ error: 'Authentication error' });
+    }
 };
 
 const requireAuth = async (req, res, next) => {
@@ -67,4 +88,5 @@ const requireAuth = async (req, res, next) => {
 
 module.exports = {
     requireAuth,
+    requireApiKey,
 };

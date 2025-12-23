@@ -3,7 +3,6 @@ import { Location } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     CalendarDaysIcon,
-    InboxIcon,
     ListBulletIcon,
     ClockIcon,
     CalendarIcon,
@@ -46,11 +45,11 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
     }, []);
 
     const allNavLinks = [
-        {
-            path: '/inbox',
-            title: t('sidebar.inbox', 'Inbox'),
-            icon: <InboxIcon className="h-5 w-5" />,
-        },
+        // {
+        //     path: '/inbox',
+        //     title: t('sidebar.inbox', 'Inbox'),
+        //     icon: <InboxIcon className="h-5 w-5" />,
+        // },
         {
             path: '/today',
             title: t('sidebar.today', 'Today'),

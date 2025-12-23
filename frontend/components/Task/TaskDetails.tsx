@@ -18,6 +18,7 @@ import {
 import { createProject } from '../../utils/projectsService';
 import { fetchAttachments } from '../../utils/attachmentsService';
 import { useStore } from '../../store/useStore';
+import { getApiPath } from '../../config/paths';
 import { useToast } from '../Shared/ToastContext';
 import LoadingScreen from '../Shared/LoadingScreen';
 import TaskTimeline from './TaskTimeline';
@@ -32,8 +33,11 @@ import {
     TaskDeferUntilCard,
     TaskAttachmentsCard,
     TaskAssignmentCard,
+    TaskOwnerCard,
 } from './TaskDetails/';
+import TaskSubscribers from './TaskSubscribers';
 import { isTaskOverdue, isTaskPastDue } from '../../utils/dateUtils';
+import { getCurrentUser } from '../../utils/userUtils';
 
 const TaskDetails: React.FC = () => {
     const { uid } = useParams<{ uid: string }>();
@@ -66,6 +70,7 @@ const TaskDetails: React.FC = () => {
     const [isEditingSubtasks, setIsEditingSubtasks] = useState(false);
     const [editedSubtasks, setEditedSubtasks] = useState<Task[]>([]);
     const [actionsMenuOpen, setActionsMenuOpen] = useState(false);
+    const [currentUserId, setCurrentUserId] = useState<number | null>(null);
     const actionsMenuRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
@@ -512,6 +517,31 @@ const TaskDetails: React.FC = () => {
         loadAttachmentCount();
     }, [task?.uid]);
 
+    // Load current user ID
+    useEffect(() => {
+        const loadCurrentUserId = async () => {
+            try {
+                const currentUser = getCurrentUser();
+                if (currentUser) {
+                    const response = await fetch(getApiPath('users'), {
+                        credentials: 'include',
+                    });
+                    if (response.ok) {
+                        const users = await response.json();
+                        const currentUserData = users.find(
+                            (u: any) => u.uid === currentUser.uid
+                        );
+                        setCurrentUserId(currentUserData?.id || null);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading current user:', error);
+            }
+        };
+
+        loadCurrentUserId();
+    }, []);
+
     useEffect(() => {
         const loadNextIterations = async () => {
             if (
@@ -763,6 +793,19 @@ const TaskDetails: React.FC = () => {
                 t('task.unassignedError', 'Failed to unassign task')
             );
         }
+    };
+
+    const handleSubscriberUpdate = (updatedTask: Task) => {
+        // Update the task in the store with new subscriber data
+        const existingIndex = tasksStore.tasks.findIndex(
+            (t: Task) => t.uid === updatedTask.uid
+        );
+        if (existingIndex >= 0) {
+            const updatedTasks = [...tasksStore.tasks];
+            updatedTasks[existingIndex] = updatedTask;
+            tasksStore.setTasks(updatedTasks);
+        }
+        setTimelineRefreshKey((prev) => prev + 1);
     };
 
     const handleEdit = (e?: React.MouseEvent) => {
@@ -1328,6 +1371,8 @@ const TaskDetails: React.FC = () => {
                                     onUnassign={handleUnassignTask}
                                 />
 
+                                <TaskOwnerCard task={task} />
+
                                 <TaskDueDateCard
                                     task={task}
                                     isEditing={isEditingDueDate}
@@ -1347,6 +1392,14 @@ const TaskDetails: React.FC = () => {
                                     onSave={handleSaveDeferUntil}
                                     onCancel={handleCancelDeferUntilEdit}
                                 />
+
+                                {currentUserId && (
+                                    <TaskSubscribers
+                                        task={task}
+                                        currentUserId={currentUserId}
+                                        onUpdate={handleSubscriberUpdate}
+                                    />
+                                )}
                             </div>
                         </div>
                     )}

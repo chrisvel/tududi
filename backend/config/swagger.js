@@ -3,6 +3,8 @@ const path = require('path');
 
 const API_VERSION = process.env.API_VERSION || 'v1';
 const API_BASE_PATH = `/api/${API_VERSION}`;
+const BACKEND_URL = process.env.BACKEND_DOMAIN || 'http://localhost:3002';
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:8080';
 
 const options = {
     definition: {
@@ -22,11 +24,11 @@ const options = {
         },
         servers: [
             {
-                url: 'http://localhost:3002',
+                url: BACKEND_URL,
                 description: `Backend server (base path ${API_BASE_PATH})`,
             },
             {
-                url: 'http://localhost:8080',
+                url: FRONTEND_URL,
                 description: `Frontend dev server (proxy to ${API_BASE_PATH})`,
             },
         ],
@@ -44,6 +46,13 @@ const options = {
                     bearerFormat: 'JWT',
                     description:
                         'JWT token authentication via Authorization header',
+                },
+                ApiKeyAuth: {
+                    type: 'apiKey',
+                    in: 'header',
+                    name: 'x-api-key',
+                    description:
+                        'API key authentication via Authorization header',
                 },
             },
             schemas: {

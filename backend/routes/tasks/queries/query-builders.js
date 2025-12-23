@@ -88,6 +88,19 @@ async function filterTasksByParams(
         },
         {
             model: User,
+            as: 'Owner',
+            attributes: [
+                'id',
+                'uid',
+                'email',
+                'name',
+                'surname',
+                'avatar_image',
+            ],
+            required: false,
+        },
+        {
+            model: User,
             as: 'AssignedTo',
             attributes: [
                 'id',
@@ -97,6 +110,20 @@ async function filterTasksByParams(
                 'surname',
                 'avatar_image',
             ],
+            required: false,
+        },
+        {
+            model: User,
+            as: 'Subscribers',
+            attributes: [
+                'id',
+                'uid',
+                'email',
+                'name',
+                'surname',
+                'avatar_image',
+            ],
+            through: { attributes: [] },
             required: false,
         },
         {
@@ -397,6 +424,19 @@ function getTaskIncludeConfig() {
         {
             model: Project,
             attributes: ['id', 'name', 'state', 'uid'],
+            required: false,
+        },
+        {
+            model: User,
+            as: 'Owner',
+            attributes: [
+                'id',
+                'uid',
+                'email',
+                'name',
+                'surname',
+                'avatar_image',
+            ],
             required: false,
         },
         {

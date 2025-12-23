@@ -6,11 +6,8 @@ import { Tag } from '../entities/Tag';
 import SidebarAreas from './Sidebar/SidebarAreas';
 import SidebarFooter from './Sidebar/SidebarFooter';
 import SidebarNav from './Sidebar/SidebarNav';
-import SidebarNotes from './Sidebar/SidebarNotes';
 import SidebarHabits from './Sidebar/SidebarHabits';
 import SidebarProjects from './Sidebar/SidebarProjects';
-import SidebarTags from './Sidebar/SidebarTags';
-import SidebarViews from './Sidebar/SidebarViews';
 import { getFeatureFlags, FeatureFlags } from '../utils/featureFlags';
 
 interface SidebarProps {
@@ -25,9 +22,7 @@ interface SidebarProps {
     openAreaModal: (area: Area | null) => void;
     openTagModal: (tag: Tag | null) => void;
     openNewHabit: () => void;
-    notes: Note[];
     areas: Area[];
-    tags: Tag[];
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -42,9 +37,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     openAreaModal,
     openTagModal,
     openNewHabit,
-    notes,
     areas,
-    tags,
 }) => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -100,13 +93,13 @@ const Sidebar: React.FC<SidebarProps> = ({
                             isDarkMode={isDarkMode}
                             openProjectModal={openProjectModal}
                         />
-                        <SidebarNotes
+                        {/* <SidebarNotes
                             handleNavClick={handleNavClick}
                             openNoteModal={openNoteModal}
                             notes={notes}
                             location={location}
                             isDarkMode={isDarkMode}
-                        />
+                        /> */}
                         {featureFlags.habits && (
                             <SidebarHabits
                                 handleNavClick={handleNavClick}
@@ -122,18 +115,18 @@ const Sidebar: React.FC<SidebarProps> = ({
                             isDarkMode={isDarkMode}
                             openAreaModal={openAreaModal}
                         />
-                        <SidebarTags
+                        {/* <SidebarTags
                             handleNavClick={handleNavClick}
                             location={location}
                             isDarkMode={isDarkMode}
                             openTagModal={openTagModal}
                             tags={tags}
-                        />
-                        <SidebarViews
+                        /> */}
+                        {/* <SidebarViews
                             handleNavClick={handleNavClick}
                             location={location}
                             isDarkMode={isDarkMode}
-                        />
+                        /> */}
                     </div>
 
                     <SidebarFooter

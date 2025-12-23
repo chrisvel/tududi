@@ -559,7 +559,8 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
 
         await handleCompletionStatus(taskAttributes, status, task);
 
-        if (project_id !== undefined) {
+        // Only validate project access if the user is actually changing the project
+        if (project_id !== undefined && project_id !== task.project_id) {
             try {
                 const validProjectId = await validateProjectAccess(
                     project_id,
@@ -770,6 +771,24 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
             tagsData,
             req.currentUser.id
         );
+
+        // Notify subscribers about task updates
+        if (Object.keys(taskAttributes).length > 0) {
+            try {
+                const {
+                    notifySubscribersAboutUpdate,
+                } = require('../../services/taskSubscriptionService');
+                await notifySubscribersAboutUpdate(
+                    task,
+                    req.currentUser,
+                    taskAttributes,
+                    oldValues
+                );
+            } catch (notifError) {
+                logError('Error notifying subscribers:', notifError);
+                // Don't fail the request if notification fails
+            }
+        }
 
         if (today !== undefined && today !== oldValues.today) {
             try {
@@ -1001,5 +1020,117 @@ router.post('/task/:uid/unassign', requireTaskWriteAccess, async (req, res) => {
         res.status(500).json({ error: 'Failed to unassign task' });
     }
 });
+
+// Subscribe to task
+router.post('/task/:uid/subscribe', requireTaskReadAccess, async (req, res) => {
+    try {
+        const { user_id } = req.body;
+
+        if (!user_id) {
+            return res.status(400).json({ error: 'user_id is required' });
+        }
+
+        const task = await taskRepository.findByUid(req.params.uid);
+        if (!task) {
+            return res.status(404).json({ error: 'Task not found' });
+        }
+
+        const {
+            subscribeToTask,
+        } = require('../../services/taskSubscriptionService');
+        const updatedTask = await subscribeToTask(
+            task.id,
+            user_id,
+            req.currentUser.id
+        );
+
+        const serialized = await serializeTask(
+            updatedTask,
+            req.currentUser.timezone
+        );
+        res.json(serialized);
+    } catch (error) {
+        logError('Error subscribing to task:', error);
+
+        if (
+            error.message === 'User not found' ||
+            error.message === 'User already subscribed'
+        ) {
+            return res.status(400).json({ error: error.message });
+        }
+        if (error.message === 'Not authorized to modify task subscribers') {
+            return res.status(403).json({ error: error.message });
+        }
+
+        res.status(500).json({ error: 'Failed to subscribe to task' });
+    }
+});
+
+// Unsubscribe from task
+router.post(
+    '/task/:uid/unsubscribe',
+    requireTaskReadAccess,
+    async (req, res) => {
+        try {
+            const { user_id } = req.body;
+
+            if (!user_id) {
+                return res.status(400).json({ error: 'user_id is required' });
+            }
+
+            const task = await taskRepository.findByUid(req.params.uid);
+            if (!task) {
+                return res.status(404).json({ error: 'Task not found' });
+            }
+
+            const {
+                unsubscribeFromTask,
+            } = require('../../services/taskSubscriptionService');
+            const updatedTask = await unsubscribeFromTask(
+                task.id,
+                user_id,
+                req.currentUser.id
+            );
+
+            const serialized = await serializeTask(
+                updatedTask,
+                req.currentUser.timezone
+            );
+            res.json(serialized);
+        } catch (error) {
+            logError('Error unsubscribing from task:', error);
+
+            if (error.message === 'User not subscribed to task') {
+                return res.status(400).json({ error: error.message });
+            }
+
+            res.status(500).json({ error: 'Failed to unsubscribe from task' });
+        }
+    }
+);
+
+// Get task subscribers
+router.get(
+    '/task/:uid/subscribers',
+    requireTaskReadAccess,
+    async (req, res) => {
+        try {
+            const task = await taskRepository.findByUid(req.params.uid);
+            if (!task) {
+                return res.status(404).json({ error: 'Task not found' });
+            }
+
+            const {
+                getTaskSubscribers,
+            } = require('../../services/taskSubscriptionService');
+            const subscribers = await getTaskSubscribers(task.id);
+
+            res.json({ subscribers });
+        } catch (error) {
+            logError('Error fetching task subscribers:', error);
+            res.status(500).json({ error: 'Failed to fetch subscribers' });
+        }
+    }
+);
 
 module.exports = router;
