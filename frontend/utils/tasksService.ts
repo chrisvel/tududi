@@ -206,3 +206,45 @@ export const fetchTaskNextIterations = async (
     const result = await response.json();
     return result.iterations || [];
 };
+
+// Subscriber management functions
+export const subscribeToTask = async (
+    taskUid: string,
+    userId: number
+): Promise<Task> => {
+    const response = await fetch(getApiPath(`task/${taskUid}/subscribe`), {
+        method: 'POST',
+        credentials: 'include',
+        headers: getPostHeaders(),
+        body: JSON.stringify({ user_id: userId }),
+    });
+
+    await handleAuthResponse(response, 'Failed to subscribe to task.');
+    return await response.json();
+};
+
+export const unsubscribeFromTask = async (
+    taskUid: string,
+    userId: number
+): Promise<Task> => {
+    const response = await fetch(getApiPath(`task/${taskUid}/unsubscribe`), {
+        method: 'POST',
+        credentials: 'include',
+        headers: getPostHeaders(),
+        body: JSON.stringify({ user_id: userId }),
+    });
+
+    await handleAuthResponse(response, 'Failed to unsubscribe from task.');
+    return await response.json();
+};
+
+export const getTaskSubscribers = async (taskUid: string): Promise<any[]> => {
+    const response = await fetch(getApiPath(`task/${taskUid}/subscribers`), {
+        credentials: 'include',
+        headers: getDefaultHeaders(),
+    });
+
+    await handleAuthResponse(response, 'Failed to fetch task subscribers.');
+    const result = await response.json();
+    return result.subscribers || [];
+};

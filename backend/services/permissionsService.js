@@ -1,4 +1,5 @@
-const { Op } = require('sequelize');
+const { Op, QueryTypes } = require('sequelize');
+const { sequelize } = require('../models');
 const { Project, Task, Note, Permission } = require('../models');
 const { isAdmin } = require('./rolesService');
 
@@ -29,11 +30,14 @@ async function getAccess(userId, resourceType, resourceUid) {
     } else if (resourceType === 'task') {
         const t = await Task.findOne({
             where: { uid: resourceUid },
-            attributes: ['user_id', 'project_id'],
+            attributes: ['user_id', 'project_id', 'assigned_to_user_id'],
             raw: true,
         });
         if (!t) return ACCESS.NONE;
         if (t.user_id === userId) return ACCESS.RW;
+
+        // Check if user is assigned to the task
+        if (t.assigned_to_user_id === userId) return ACCESS.RW;
 
         // Check if user has access through the parent project
         if (t.project_id) {
@@ -150,6 +154,23 @@ async function ownershipOrPermissionWhere(resourceType, userId, cache = null) {
 
         if (sharedProjectIds.length > 0) {
             conditions.push({ project_id: { [Op.in]: sharedProjectIds } }); // Items in shared projects
+        }
+
+        // For tasks, also include tasks the user is subscribed to
+        if (resourceType === 'task') {
+            const subscribedTaskIds = await sequelize.query(
+                `SELECT DISTINCT task_id FROM tasks_subscribers WHERE user_id = :userId`,
+                {
+                    replacements: { userId },
+                    type: QueryTypes.SELECT,
+                    raw: true,
+                }
+            );
+
+            if (subscribedTaskIds.length > 0) {
+                const taskIds = subscribedTaskIds.map((row) => row.task_id);
+                conditions.push({ id: { [Op.in]: taskIds } }); // Subscribed tasks
+            }
         }
 
         const result = { [Op.or]: conditions };
