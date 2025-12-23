@@ -62,6 +62,24 @@ describe('Notification Preferences', () => {
                     push: false,
                     telegram: false,
                 },
+                assignedTaskCompleted: {
+                    email: false,
+                    inApp: true,
+                    push: false,
+                    telegram: false,
+                },
+                taskAssigned: {
+                    email: false,
+                    inApp: true,
+                    push: false,
+                    telegram: false,
+                },
+                taskUnassigned: {
+                    email: false,
+                    inApp: true,
+                    push: false,
+                    telegram: false,
+                },
             });
         });
 

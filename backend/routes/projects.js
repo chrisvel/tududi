@@ -373,7 +373,14 @@ router.get(
                             {
                                 model: User,
                                 as: 'AssignedTo',
-                                attributes: ['id', 'uid', 'email', 'name', 'surname', 'avatar_image'],
+                                attributes: [
+                                    'id',
+                                    'uid',
+                                    'email',
+                                    'name',
+                                    'surname',
+                                    'avatar_image',
+                                ],
                                 required: false,
                             },
                             {

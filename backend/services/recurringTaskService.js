@@ -172,7 +172,7 @@ const getNthWeekdayOfMonth = (year, month, weekday, n) => {
     const targetDate = new Date(firstOccurrence);
     targetDate.setDate(firstOccurrence.getDate() + (n - 1) * 7);
 
-    if (targetDate.getMonth() !== month) {
+    if (targetDate.getUTCMonth() !== month) {
         return null;
     }
 
