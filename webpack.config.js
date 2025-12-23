@@ -92,6 +92,7 @@ module.exports = {
             template: 'public/index.html',
             templateParameters: {
                 BASE_PATH: process.env.TUDUDI_BASE_PATH || '',
+                GTM_ID: process.env.GTM_ID || 'GTM-KZ4TPHXQ',
             },
         }),
         new CopyWebpackPlugin({
