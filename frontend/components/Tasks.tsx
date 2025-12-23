@@ -5,6 +5,7 @@ import { useSidebar } from '../contexts/SidebarContext';
 import TaskList from './Task/TaskList';
 import GroupedTaskList from './Task/GroupedTaskList';
 import NewTask from './Task/NewTask';
+import TaskModal from './Task/TaskModal';
 import { Task } from '../entities/Task';
 import { getTitleAndIcon } from './Task/getTitleAndIcon';
 import { getDescription } from './Task/getDescription';
@@ -63,6 +64,7 @@ const Tasks: React.FC = () => {
     const [currentUserId, setCurrentUserId] = useState<number | null>(null);
     const [selectedAssigneeIds, setSelectedAssigneeIds] = useState<number[]>([]);
     const [includeUnassignedFilter, setIncludeUnassignedFilter] = useState(false);
+    const [showCreateTaskModal, setShowCreateTaskModal] = useState(false);
 
     const [offset, setOffset] = useState(0);
     const [hasMore, setHasMore] = useState(false);
@@ -80,6 +82,7 @@ const Tasks: React.FC = () => {
         query.get('type') === 'upcoming' || location.pathname === '/upcoming';
     const status = query.get('status');
     const tag = query.get('tag');
+    const createTaskParam = query.get('createTask');
 
     useEffect(() => {
         if (status === 'completed') {
@@ -90,6 +93,21 @@ const Tasks: React.FC = () => {
             setShowCompleted(true);
         }
     }, [status, isUpcomingView]);
+
+    useEffect(() => {
+        if (createTaskParam === 'true') {
+            setShowCreateTaskModal(true);
+            const params = new URLSearchParams(location.search);
+            params.delete('createTask');
+            navigate(
+                {
+                    pathname: location.pathname,
+                    search: params.toString(),
+                },
+                { replace: true }
+            );
+        }
+    }, [createTaskParam, location.pathname]);
 
     const displayTasks = useMemo(() => {
         let filteredTasks: Task[] = tasks;
@@ -452,6 +470,21 @@ const Tasks: React.FC = () => {
         }
     };
 
+    const handleModalTaskCreate = async (task: Task) => {
+        await handleTaskCreate(task);
+        setShowCreateTaskModal(false);
+    };
+
+    const handleCreateProject = async (name: string) => {
+        const response = await fetch(getApiPath('projects'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name }),
+        });
+        if (!response.ok) throw new Error('Failed to create project');
+        return await response.json();
+    };
+
     const handleTaskUpdate = async (updatedTask: Task) => {
         try {
             const response = await fetch(
@@ -628,7 +661,8 @@ const Tasks: React.FC = () => {
 
     const isNewTaskAllowed = () => {
         const type = query.get('type');
-        return status !== 'done' && type !== 'upcoming';
+        const hasSearchQuery = taskSearchQuery.trim().length > 0;
+        return status !== 'done' && type !== 'upcoming' && !hasSearchQuery;
     };
 
     return (
@@ -1199,6 +1233,24 @@ const Tasks: React.FC = () => {
                             </div>
                         )}
                     </>
+                )}
+
+                {/* Create Task Modal */}
+                {showCreateTaskModal && (
+                    <TaskModal
+                        isOpen={showCreateTaskModal}
+                        onClose={() => setShowCreateTaskModal(false)}
+                        task={{
+                            name: '',
+                            status: 'not_started',
+                            uid: '',
+                            id: 0,
+                        } as Task}
+                        onSave={handleModalTaskCreate}
+                        onDelete={async () => {}}
+                        projects={projects}
+                        onCreateProject={handleCreateProject}
+                    />
                 )}
             </div>
         </div>
