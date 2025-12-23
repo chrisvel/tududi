@@ -16,6 +16,7 @@ const {
     ApiToken,
     Notification,
     RecurringCompletion,
+    SupporterLicense,
 } = require('../models');
 const { isAdmin } = require('../services/rolesService');
 const { logError } = require('../services/logService');
@@ -97,20 +98,43 @@ router.get('/admin/users', requireAdmin, async (req, res) => {
     try {
         const users = await User.findAll({
             attributes: ['id', 'email', 'name', 'surname', 'created_at'],
+            include: [
+                {
+                    model: SupporterLicense,
+                    as: 'SupporterLicenses',
+                    attributes: ['tier', 'expires_at', 'revoked_at', 'activated_at'],
+                    separate: true,
+                    order: [['activated_at', 'DESC']],
+                    limit: 1,
+                    required: false,
+                },
+            ],
         });
         // Fetch roles in bulk
         const roles = await Role.findAll({
             attributes: ['user_id', 'is_admin'],
         });
         const userIdToRole = new Map(roles.map((r) => [r.user_id, r.is_admin]));
-        const result = users.map((u) => ({
-            id: u.id,
-            email: u.email,
-            name: u.name,
-            surname: u.surname,
-            created_at: u.created_at,
-            role: userIdToRole.get(u.id) ? 'admin' : 'user',
-        }));
+        const result = users.map((u) => {
+            // Get active supporter license
+            let supporterTier = null;
+            if (u.SupporterLicenses && u.SupporterLicenses.length > 0) {
+                const license = u.SupporterLicenses[0];
+                if (license.isValid && license.isValid()) {
+                    supporterTier = license.tier;
+                }
+            }
+
+            return {
+                id: u.id,
+                email: u.email,
+                name: u.name,
+                surname: u.surname,
+                created_at: u.created_at,
+                role: userIdToRole.get(u.id) ? 'admin' : 'user',
+                supporter_tier: supporterTier,
+            };
+        });
         res.json(result);
     } catch (err) {
         logError('Error listing users:', err);

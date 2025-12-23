@@ -18,6 +18,7 @@ import Calendar from './components/Calendar';
 import ProfileSettings from './components/Profile/ProfileSettings';
 import About from './components/About';
 import BackupRestore from './components/Backup/BackupRestore';
+import Plan from './components/Plan';
 import Layout from './Layout';
 import { User } from './entities/User';
 import TasksToday from './components/Task/TasksToday';
@@ -254,6 +255,7 @@ const App: React.FC = () => {
                                 element={<NoteDetails />}
                             />
                             <Route path="/calendar" element={<Calendar />} />
+                            <Route path="/plan" element={<Plan />} />
                             <Route
                                 path="/profile"
                                 element={
@@ -285,6 +287,31 @@ const App: React.FC = () => {
                                                     () =>
                                                         import(
                                                             './components/Admin/AdminUsersPage'
+                                                        )
+                                                )
+                                            )}
+                                        </React.Suspense>
+                                    ) : (
+                                        <Navigate to="/today" replace />
+                                    )
+                                }
+                            />
+                            <Route
+                                path="/admin/supporters"
+                                element={
+                                    currentUser?.is_admin === true ? (
+                                        <React.Suspense
+                                            fallback={
+                                                <div className="p-4">
+                                                    Loading...
+                                                </div>
+                                            }
+                                        >
+                                            {React.createElement(
+                                                React.lazy(
+                                                    () =>
+                                                        import(
+                                                            './components/Admin/AdminSupportersPage'
                                                         )
                                                 )
                                             )}

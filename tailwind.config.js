@@ -7,6 +7,12 @@ module.exports = {
   ],
   theme: {
     extend: {
+      colors: {
+        gray: {
+          825: '#1a1d24',
+          850: '#151820',
+        },
+      },
       keyframes: {
         'scale-in': {
           '0%': { transform: 'scale(0.8)', opacity: '0.5' },

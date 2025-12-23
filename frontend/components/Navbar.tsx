@@ -11,9 +11,12 @@ import { useTranslation } from 'react-i18next';
 import PomodoroTimer from './Shared/PomodoroTimer';
 import UniversalSearch from './UniversalSearch/UniversalSearch';
 import NotificationsDropdown from './Notifications/NotificationsDropdown';
+import SupporterBadge from './Shared/SupporterBadge';
 import { getApiPath } from '../config/paths';
 import { getFeatureFlags, FeatureFlags } from '../utils/featureFlags';
 import { setUserTimezone } from '../utils/dateUtils';
+
+import { SupporterTier } from '../types/supporter';
 
 interface NavbarProps {
     isDarkMode: boolean;
@@ -22,6 +25,7 @@ interface NavbarProps {
         email: string;
         avatar_image?: string;
         is_admin?: boolean;
+        supporter_tier?: SupporterTier | null;
     };
     setCurrentUser: React.Dispatch<React.SetStateAction<any>>;
     isSidebarOpen: boolean;
@@ -234,17 +238,27 @@ const Navbar: React.FC<NavbarProps> = ({
                             className="flex items-center focus:outline-none"
                             aria-label="User Menu"
                         >
-                            {currentUser?.avatar_image ? (
-                                <img
-                                    src={getApiPath(currentUser.avatar_image)}
-                                    alt="User Avatar"
-                                    className="h-8 w-8 rounded-full object-cover border-2 border-green-500"
-                                />
-                            ) : (
-                                <div className="h-8 w-8 rounded-full border-2 border-green-500 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                                    <UserIcon className="h-6 w-6 text-gray-500 dark:text-gray-300" />
-                                </div>
-                            )}
+                            <div className="relative">
+                                {currentUser?.avatar_image ? (
+                                    <img
+                                        src={getApiPath(currentUser.avatar_image)}
+                                        alt="User Avatar"
+                                        className="h-8 w-8 rounded-full object-cover border-2 border-green-500"
+                                    />
+                                ) : (
+                                    <div className="h-8 w-8 rounded-full border-2 border-green-500 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                                        <UserIcon className="h-6 w-6 text-gray-500 dark:text-gray-300" />
+                                    </div>
+                                )}
+                                {currentUser?.supporter_tier && (
+                                    <div className="absolute -bottom-1 -right-1">
+                                        <SupporterBadge
+                                            tier={currentUser.supporter_tier}
+                                            size="small"
+                                        />
+                                    </div>
+                                )}
+                            </div>
                         </button>
                         {isDropdownOpen && (
                             <div
@@ -252,9 +266,20 @@ const Navbar: React.FC<NavbarProps> = ({
                                 className="absolute right-0 top-full mt-2 min-w-48 w-max bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 border border-gray-200 dark:border-gray-700"
                             >
                                 {currentUser?.email && (
-                                    <div className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-600 flex items-center">
-                                        <EnvelopeIcon className="h-4 w-4 mr-2" />
-                                        {currentUser.email}
+                                    <div className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-600">
+                                        <div className="flex items-center">
+                                            <EnvelopeIcon className="h-4 w-4 mr-2" />
+                                            {currentUser.email}
+                                        </div>
+                                        {currentUser.supporter_tier && (
+                                            <div className="mt-2 flex items-center">
+                                                <SupporterBadge
+                                                    tier={currentUser.supporter_tier}
+                                                    size="small"
+                                                    showLabel
+                                                />
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                                 <Link
@@ -280,14 +305,23 @@ const Navbar: React.FC<NavbarProps> = ({
                                     </Link>
                                 )}
                                 {currentUser?.is_admin === true && (
-                                    <Link
-                                        to="/admin/users"
-                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                        onClick={() => setIsDropdownOpen(false)}
-                                    >
-                                        {t('admin.manageUsers', 'Manage users')}
-                                    </Link>
+                                    <>
+                                        <Link
+                                            to="/admin/users"
+                                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                            onClick={() => setIsDropdownOpen(false)}
+                                        >
+                                            {t('admin.manageUsers', 'Manage users')}
+                                        </Link>
+                                    </>
                                 )}
+                                <Link
+                                    to="/plan"
+                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    onClick={() => setIsDropdownOpen(false)}
+                                >
+                                    {t('navigation.plan', 'Plan')}
+                                </Link>
                                 <Link
                                     to="/about"
                                     className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"

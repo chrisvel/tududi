@@ -193,6 +193,8 @@ const registerApiRoutes = (basePath) => {
         `${basePath}/test-notifications`,
         require('./routes/test-notifications')
     );
+    app.use(basePath, require('./routes/supporter-licenses'));
+    app.use(basePath, require('./routes/paypal'));
 };
 
 // Register routes at both /api and /api/v1 (if versioned) to maintain backwards compatibility

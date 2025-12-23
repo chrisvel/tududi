@@ -8,8 +8,10 @@ import {
     TrashIcon,
 } from '@heroicons/react/24/outline';
 import ConfirmDialog from '../Shared/ConfirmDialog';
+import SupporterBadge from '../Shared/SupporterBadge';
 import { getApiPath } from '../../config/paths';
 import { useToast } from '../Shared/ToastContext';
+import { SupporterTier } from '../../types/supporter';
 
 interface AdminUserItem {
     id: number;
@@ -18,6 +20,7 @@ interface AdminUserItem {
     surname?: string;
     created_at: string;
     role: 'admin' | 'user';
+    supporter_tier?: SupporterTier | null;
 }
 
 const fetchAdminUsers = async (t: any): Promise<AdminUserItem[]> => {
@@ -622,6 +625,9 @@ const AdminUsersPage: React.FC = () => {
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                     {t('admin.role', 'Role')}
                                 </th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    {t('admin.supporter', 'Supporter')}
+                                </th>
                                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                     {t('admin.actions', 'Actions')}
                                 </th>
@@ -631,7 +637,7 @@ const AdminUsersPage: React.FC = () => {
                             {loading && (
                                 <tr>
                                     <td
-                                        colSpan={6}
+                                        colSpan={7}
                                         className="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400"
                                     >
                                         {t(
@@ -644,7 +650,7 @@ const AdminUsersPage: React.FC = () => {
                             {!loading && users && users.length === 0 && (
                                 <tr>
                                     <td
-                                        colSpan={6}
+                                        colSpan={7}
                                         className="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400"
                                     >
                                         {t('admin.noUsers', 'No users')}
@@ -680,6 +686,19 @@ const AdminUsersPage: React.FC = () => {
                                                     ? t('admin.admin', 'admin')
                                                     : t('admin.user', 'user')}
                                             </span>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            {u.supporter_tier ? (
+                                                <SupporterBadge
+                                                    tier={u.supporter_tier}
+                                                    size="small"
+                                                    showLabel
+                                                />
+                                            ) : (
+                                                <span className="text-sm text-gray-400 dark:text-gray-500">
+                                                    -
+                                                </span>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <div className="flex items-center justify-end space-x-2">

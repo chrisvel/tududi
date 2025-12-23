@@ -1,5 +1,5 @@
 const express = require('express');
-const { User } = require('../models');
+const { User, SupporterLicense } = require('../models');
 const { isAdmin } = require('../services/rolesService');
 const { logError } = require('../services/logService');
 const { getConfig } = require('../config/config');
@@ -128,6 +128,7 @@ router.get('/current_user', async (req, res) => {
         if (req.session && req.session.userId) {
             const user = await User.findByPk(req.session.userId, {
                 attributes: [
+                    'id',
                     'uid',
                     'email',
                     'name',
@@ -137,9 +138,34 @@ router.get('/current_user', async (req, res) => {
                     'timezone',
                     'avatar_image',
                 ],
+                include: [
+                    {
+                        model: SupporterLicense,
+                        as: 'SupporterLicenses',
+                        attributes: ['tier', 'expires_at', 'revoked_at', 'activated_at'],
+                        required: false,
+                    },
+                ],
+                order: [[{ model: SupporterLicense, as: 'SupporterLicenses' }, 'activated_at', 'DESC']],
             });
             if (user) {
                 const admin = await isAdmin(user.uid);
+
+                // Get active supporter license (take the most recent one)
+                let supporterTier = null;
+
+                if (user.SupporterLicenses && user.SupporterLicenses.length > 0) {
+                    const license = user.SupporterLicenses[0];
+
+                    // Check if license is valid (inline validation)
+                    const isValid = !license.revoked_at &&
+                        (!license.expires_at || new Date(license.expires_at) > new Date());
+
+                    if (isValid) {
+                        supporterTier = license.tier;
+                    }
+                }
+
                 return res.json({
                     user: {
                         uid: user.uid,
@@ -151,6 +177,7 @@ router.get('/current_user', async (req, res) => {
                         timezone: user.timezone,
                         avatar_image: user.avatar_image,
                         is_admin: admin,
+                        supporter_tier: supporterTier,
                     },
                 });
             }

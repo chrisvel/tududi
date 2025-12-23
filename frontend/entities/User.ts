@@ -1,3 +1,5 @@
+import { SupporterTier } from '../types/supporter';
+
 export interface User {
     uid: string;
     email: string;
@@ -8,4 +10,5 @@ export interface User {
     timezone: string;
     avatarUrl?: string;
     is_admin?: boolean;
+    supporter_tier?: SupporterTier | null;
 }
