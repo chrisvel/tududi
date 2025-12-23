@@ -1,65 +1,62 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <base href="/">
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','<%= GTM_ID %>');</script>
-    <!-- End Google Tag Manager -->
-    <script>
-      (function () {
-        function sanitize(value) {
-          if (!value) return '';
-          var trimmed = value.trim();
-          if (!trimmed || trimmed === '/') return '';
-          if (trimmed.endsWith('/')) trimmed = trimmed.slice(0, -1);
-          if (!trimmed.startsWith('/')) trimmed = '/' + trimmed;
-          return trimmed;
-        }
 
-        function detectIngress() {
-          var match = window.location.pathname.match(/^\/api\/hassio_ingress\/[^/]+/);
-          return match ? match[0] : '';
-        }
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/">
+  <script>
+    (function () {
+      function sanitize(value) {
+        if (!value) return '';
+        var trimmed = value.trim();
+        if (!trimmed || trimmed === '/') return '';
+        if (trimmed.endsWith('/')) trimmed = trimmed.slice(0, -1);
+        if (!trimmed.startsWith('/')) trimmed = '/' + trimmed;
+        return trimmed;
+      }
 
-        var envBase = '<%= BASE_PATH || "" %>';
-        var runtimeBase = sanitize(window.__TUDUDI_BASE_PATH__ || envBase);
-        if (!runtimeBase) {
-          runtimeBase = sanitize(detectIngress());
-        }
+      function detectIngress() {
+        var match = window.location.pathname.match(/^\/api\/hassio_ingress\/[^/]+/);
+        return match ? match[0] : '';
+      }
 
-        window.__TUDUDI_BASE_PATH__ = runtimeBase;
-        var baseHref = runtimeBase ? runtimeBase + '/' : '/';
-        var baseTag = document.querySelector('base') || document.createElement('base');
-        if (!baseTag.parentNode) {
-          document.head.insertBefore(baseTag, document.head.firstChild);
-        }
-        baseTag.setAttribute('href', baseHref);
-      })();
-    </script>
-    <title>tududi</title>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="<%= BASE_PATH ? BASE_PATH + '/' : '' %>favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="<%= BASE_PATH ? BASE_PATH + '/' : '' %>favicon-32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="<%= BASE_PATH ? BASE_PATH + '/' : '' %>favicon-16.png">
+      var envBase = '<%= BASE_PATH || "" %>';
+      var runtimeBase = sanitize(window.__TUDUDI_BASE_PATH__ || envBase);
+      if (!runtimeBase) {
+        runtimeBase = sanitize(detectIngress());
+      }
 
-    <!-- Web app manifest for PWA support -->
-    <link rel="manifest" href="<%= BASE_PATH ? BASE_PATH + '/' : '' %>manifest.json">
-  </head>
-  <body>
+      window.__TUDUDI_BASE_PATH__ = runtimeBase;
+      var baseHref = runtimeBase ? runtimeBase + '/' : '/';
+      var baseTag = document.querySelector('base') || document.createElement('base');
+      if (!baseTag.parentNode) {
+        document.head.insertBefore(baseTag, document.head.firstChild);
+      }
+      baseTag.setAttribute('href', baseHref);
+    })();
+  </script>
+  <title>Subemo - Task Manager</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet">
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="<%= BASE_PATH ? BASE_PATH + '/' : '' %>favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="<%= BASE_PATH ? BASE_PATH + '/' : '' %>favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="<%= BASE_PATH ? BASE_PATH + '/' : '' %>favicon-16.png">
+
+  <!-- Web app manifest for PWA support -->
+  <link rel="manifest" href="<%= BASE_PATH ? BASE_PATH + '/' : '' %>manifest.json">
+</head>
+
+<body>
   <!-- Google Tag Manager (noscript) -->
-  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=<%= GTM_ID %>"
-                    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=<%= GTM_ID %>" height="0" width="0"
+      style="display:none;visibility:hidden"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
-    <div id="root"></div>
-  </body>
+  <div id="root"></div>
+</body>
+
 </html>
