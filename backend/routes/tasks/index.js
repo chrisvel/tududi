@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
+// Import sub-routers for task-related routes
+const attachmentsRouter = require('./attachments');
+const eventsRouter = require('./events');
+
 const {
     Task,
     TaskEvent,
@@ -884,5 +888,9 @@ router.get('/task/:id/next-iterations', async (req, res) => {
         res.status(500).json({ error: 'Failed to get next iterations' });
     }
 });
+
+// Mount sub-routers for task-related routes
+router.use(attachmentsRouter);
+router.use(eventsRouter);
 
 module.exports = router;

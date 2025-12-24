@@ -1,13 +1,13 @@
 const express = require('express');
-const { Task, TaskEvent } = require('../models');
-const { isValidUid } = require('../utils/slug-utils');
+const { Task, TaskEvent } = require('../../models');
+const { isValidUid } = require('../../utils/slug-utils');
 const {
     getTaskTimeline,
     getTaskCompletionTime,
     getUserProductivityMetrics,
     getTaskActivitySummary,
-} = require('../services/taskEventService');
-const { logError } = require('../services/logService');
+} = require('../../services/taskEventService');
+const { logError } = require('../../services/logService');
 const router = express.Router();
 
 // GET /api/task/:uid/timeline - Get task event timeline
@@ -16,7 +16,7 @@ router.get('/task/:uid/timeline', async (req, res) => {
         if (!isValidUid(req.params.uid))
             return res.status(400).json({ error: 'Invalid UID' });
 
-        const permissionsService = require('../services/permissionsService');
+        const permissionsService = require('../../services/permissionsService');
 
         // Check if user has access to the task (either owns it or has access through shared project)
         const access = await permissionsService.getAccess(
@@ -52,7 +52,7 @@ router.get('/task/:uid/completion-time', async (req, res) => {
         if (!isValidUid(req.params.uid))
             return res.status(400).json({ error: 'Invalid UID' });
 
-        const permissionsService = require('../services/permissionsService');
+        const permissionsService = require('../../services/permissionsService');
 
         // Check if user has access to the task (either owns it or has access through shared project)
         const access = await permissionsService.getAccess(
@@ -136,7 +136,7 @@ router.get('/tasks/completion-analytics', async (req, res) => {
         const { limit = 50, offset = 0, projectUid } = req.query;
 
         // Get completed tasks for the user
-        const { Task, Project } = require('../models');
+        const { Task, Project } = require('../../models');
         const { Op } = require('sequelize');
 
         const whereClause = {
