@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import ConfirmDialog from '../Shared/ConfirmDialog';
-import TaskModal from './TaskModal';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import {
@@ -51,10 +50,8 @@ const TaskDetails: React.FC = () => {
 
     const [loading, setLoading] = useState(!task);
     const [error, setError] = useState<string | null>(null);
-    const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
-    const [focusSubtasks, setFocusSubtasks] = useState(false);
     const [timelineRefreshKey, setTimelineRefreshKey] = useState(0);
     const [isOverdueBubbleVisible, setIsOverdueBubbleVisible] = useState(false);
     const [nextIterations, setNextIterations] = useState<TaskIteration[]>([]);
@@ -151,44 +148,7 @@ const TaskDetails: React.FC = () => {
         if (!tagsStore.hasLoaded && !tagsStore.isLoading) {
             tagsStore.loadTags();
         }
-
-        try {
-            const pendingStateStr = sessionStorage.getItem('pendingModalState');
-            if (pendingStateStr) {
-                const pendingState = JSON.parse(pendingStateStr);
-                const isRecent = Date.now() - pendingState.timestamp < 2000;
-                const isCorrectTask = pendingState.taskId === uid;
-
-                if (isRecent && isCorrectTask && pendingState.isOpen) {
-                    queueMicrotask(() => {
-                        setIsTaskModalOpen(true);
-                        setFocusSubtasks(pendingState.focusSubtasks);
-                    });
-                    sessionStorage.removeItem('pendingModalState');
-                }
-            }
-
-            const pendingEditStateStr = sessionStorage.getItem(
-                'pendingTaskEditModalState'
-            );
-            if (pendingEditStateStr) {
-                const pendingEditState = JSON.parse(pendingEditStateStr);
-                const isRecent = Date.now() - pendingEditState.timestamp < 5000;
-                const isCorrectTask = pendingEditState.taskId === uid;
-
-                if (isRecent && isCorrectTask && pendingEditState.isOpen) {
-                    queueMicrotask(() => {
-                        setIsTaskModalOpen(true);
-                        setFocusSubtasks(false);
-                    });
-                    sessionStorage.removeItem('pendingTaskEditModalState');
-                }
-            }
-        } catch {
-            sessionStorage.removeItem('pendingModalState');
-            sessionStorage.removeItem('pendingTaskEditModalState');
-        }
-    }, [uid, tagsStore]);
+    }, [tagsStore]);
 
     const handleStartRecurrenceEdit = () => {
         setRecurrenceForm({
@@ -727,27 +687,6 @@ const TaskDetails: React.FC = () => {
         }
     };
 
-    const handleEdit = (e?: React.MouseEvent) => {
-        if (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            e.nativeEvent.stopImmediatePropagation();
-        }
-
-        const modalState = {
-            isOpen: true,
-            taskId: uid,
-            timestamp: Date.now(),
-        };
-        sessionStorage.setItem(
-            'pendingTaskEditModalState',
-            JSON.stringify(modalState)
-        );
-
-        setFocusSubtasks(false);
-        setIsTaskModalOpen(true);
-    };
-
     const refreshRecurringSetup = useCallback(
         async (latestTask?: Task | null) => {
             if (!latestTask) {
@@ -891,31 +830,6 @@ const TaskDetails: React.FC = () => {
             showErrorToast(
                 t('task.statusUpdateError', 'Failed to update status')
             );
-        }
-    };
-
-    const handleTaskUpdate = async (updatedTask: Task) => {
-        try {
-            if (task?.uid) {
-                await updateTask(task.uid, updatedTask);
-                if (uid) {
-                    const updatedTaskFromServer = await fetchTaskByUid(uid);
-                    const existingIndex = tasksStore.tasks.findIndex(
-                        (t: Task) => t.uid === uid
-                    );
-                    if (existingIndex >= 0) {
-                        const updatedTasks = [...tasksStore.tasks];
-                        updatedTasks[existingIndex] = updatedTaskFromServer;
-                        tasksStore.setTasks(updatedTasks);
-                    }
-                }
-
-                setTimelineRefreshKey((prev) => prev + 1);
-            }
-            setIsTaskModalOpen(false);
-        } catch (error) {
-            console.error('Error updating task:', error);
-            showErrorToast(t('task.updateError', 'Failed to update task'));
         }
     };
 
@@ -1189,13 +1103,12 @@ const TaskDetails: React.FC = () => {
         <div className="px-4 lg:px-6 pt-4">
             <div className="w-full">
                 {/* Header Section with Title and Action Buttons */}
-                <TaskDetailsHeader
-                    task={task}
-                    onTitleUpdate={handleTitleUpdate}
-                    onStatusUpdate={handleStatusUpdate}
-                    onPriorityUpdate={handlePriorityUpdate}
-                    onEdit={handleEdit}
-                    onDelete={handleDeleteClick}
+                    <TaskDetailsHeader
+                        task={task}
+                        onTitleUpdate={handleTitleUpdate}
+                        onStatusUpdate={handleStatusUpdate}
+                        onPriorityUpdate={handlePriorityUpdate}
+                        onDelete={handleDeleteClick}
                     getProjectLink={getProjectLink}
                     getTagLink={getTagLink}
                     activePill={activePill}
@@ -1329,34 +1242,6 @@ const TaskDetails: React.FC = () => {
                     )}
                 </div>
                 {/* End of main content sections */}
-
-                {/* Task Modal for Editing - Only render when we have task data */}
-                {task && (
-                    <TaskModal
-                        isOpen={isTaskModalOpen}
-                        task={task}
-                        onClose={() => {
-                            setIsTaskModalOpen(false);
-                            setFocusSubtasks(false);
-                            sessionStorage.removeItem('pendingModalState');
-                            sessionStorage.removeItem(
-                                'pendingTaskEditModalState'
-                            );
-                        }}
-                        onSave={handleTaskUpdate}
-                        onDelete={async () => {
-                            if (task.uid) {
-                                await deleteTask(task.uid);
-                                navigate('/today');
-                            }
-                        }}
-                        projects={projects}
-                        onCreateProject={handleCreateProject}
-                        showToast={false}
-                        initialSubtasks={task.subtasks || []}
-                        autoFocusSubtasks={focusSubtasks}
-                    />
-                )}
 
                 {/* Confirm Delete Dialog */}
                 {isConfirmDialogOpen && taskToDelete && (

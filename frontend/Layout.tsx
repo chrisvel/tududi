@@ -9,7 +9,6 @@ import ProjectModal from './components/Project/ProjectModal';
 import NoteModal from './components/Note/NoteModal';
 import AreaModal from './components/Area/AreaModal';
 import TagModal from './components/Tag/TagModal';
-import TaskModal from './components/Task/TaskModal';
 import { Note } from './entities/Note';
 import { Area } from './entities/Area';
 import { Tag } from './entities/Tag';
@@ -25,7 +24,6 @@ import {
     createProject,
     updateProject,
 } from './utils/projectsService';
-import { createTask, updateTask } from './utils/tasksService';
 import { isAuthError } from './utils/authUtils';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
@@ -45,7 +43,7 @@ const Layout: React.FC<LayoutProps> = ({
     children,
 }) => {
     const { t } = useTranslation();
-    const { showSuccessToast } = useToast();
+    const { showSuccessToast, showErrorToast } = useToast();
     const navigate = useNavigate();
     const location = useLocation();
     const isUpcomingView = location.pathname === '/upcoming';
@@ -53,7 +51,6 @@ const Layout: React.FC<LayoutProps> = ({
         window.innerWidth >= 1024
     );
     const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
-    const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
     const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
     const [isAreaModalOpen, setIsAreaModalOpen] = useState(false);
@@ -66,7 +63,11 @@ const Layout: React.FC<LayoutProps> = ({
     const {
         notesStore: { notes, isLoading: isNotesLoading, isError: isNotesError },
         areasStore: { areas, isLoading: isAreasLoading, isError: isAreasError },
-        tasksStore: { isLoading: isTasksLoading, isError: isTasksError },
+        tasksStore: {
+            isLoading: isTasksLoading,
+            isError: isTasksError,
+            createTask: createTaskInStore,
+        },
         projectsStore: {
             projects,
             setProjects,
@@ -76,8 +77,27 @@ const Layout: React.FC<LayoutProps> = ({
         tagsStore: { tags, isLoading: isTagsLoading, isError: isTagsError },
     } = useStore();
 
+    const createAndOpenTaskDetails = async () => {
+        try {
+            const newTask = await createTaskInStore({
+                name: t('task.newTaskPlaceholder', 'New Task'),
+                status: 'not_started',
+                completed_at: null,
+            });
+
+            if (newTask?.uid) {
+                navigate(`/task/${newTask.uid}`);
+            } else {
+                throw new Error('New task missing UID');
+            }
+        } catch (error) {
+            console.error('Error creating task from Layout:', error);
+            showErrorToast(t('task.createError', 'Failed to create task.'));
+        }
+    };
+
     const openTaskModal = () => {
-        setIsTaskModalOpen(true);
+        void createAndOpenTaskDetails();
     };
 
     useEffect(() => {
@@ -129,10 +149,6 @@ const Layout: React.FC<LayoutProps> = ({
     const closeNoteModal = () => {
         setIsNoteModalOpen(false);
         setSelectedNote(null);
-    };
-
-    const closeTaskModal = () => {
-        setIsTaskModalOpen(false);
     };
 
     const openProjectModal = () => {
@@ -197,46 +213,6 @@ const Layout: React.FC<LayoutProps> = ({
                 return;
             }
             closeNoteModal();
-        }
-    };
-
-    const handleSaveTask = async (taskData: Task) => {
-        try {
-            if (taskData.uid) {
-                await updateTask(taskData.uid, taskData);
-                const taskLink = (
-                    <span>
-                        {t('task.updated', 'Task')}{' '}
-                        <Link
-                            to="/tasks"
-                            className="text-green-200 underline hover:text-green-100"
-                        >
-                            {taskData.name}
-                        </Link>{' '}
-                        {t('task.updatedSuccessfully', 'updated successfully!')}
-                    </span>
-                );
-                showSuccessToast(taskLink);
-            } else {
-                const createdTask = await createTask(taskData);
-
-                // Notify Tasks component that a task was created
-                window.dispatchEvent(
-                    new CustomEvent('taskCreated', { detail: createdTask })
-                );
-            }
-            // Don't refetch all tasks here - let individual components handle their own state
-            // This prevents unnecessary re-renders and race conditions
-            closeTaskModal();
-        } catch (error: any) {
-            console.error('Error saving task:', error);
-            // Don't close modal if there's an auth error (user will be redirected)
-            if (isAuthError(error)) {
-                return;
-            }
-            // For other errors, still close the modal but let the error bubble up
-            closeTaskModal();
-            throw error;
         }
     };
 
@@ -472,22 +448,6 @@ const Layout: React.FC<LayoutProps> = ({
                         </div>
                     </div>
                 </div>
-
-                {isTaskModalOpen && (
-                    <TaskModal
-                        isOpen={isTaskModalOpen}
-                        onClose={closeTaskModal}
-                        task={{
-                            name: '',
-                            status: 'not_started',
-                            completed_at: null,
-                        }}
-                        onSave={handleSaveTask}
-                        onDelete={async () => {}}
-                        projects={projects}
-                        onCreateProject={handleCreateProject}
-                    />
-                )}
 
                 {isProjectModalOpen && (
                     <ProjectModal

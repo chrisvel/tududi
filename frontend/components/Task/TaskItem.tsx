@@ -140,12 +140,10 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
         </div>
     );
 };
-import TaskModal from './TaskModal';
 import { toggleTaskCompletion, fetchSubtasks } from '../../utils/tasksService';
 import { isTaskOverdue } from '../../utils/dateUtils';
 import { useTranslation } from 'react-i18next';
 import ConfirmDialog from '../Shared/ConfirmDialog';
-import { useStore } from '../../store/useStore';
 import { getApiPath } from '../../config/paths';
 
 interface TaskItemProps {
@@ -173,13 +171,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
 }) => {
     const navigate = useNavigate();
     const { t } = useTranslation();
-    const { modalStore } = useStore();
-    const isModalOpen = modalStore.isTaskModalOpen(task.id);
-    const [subtaskModalOpen, setSubtaskModalOpen] = useState(false);
-    const [selectedSubtask, setSelectedSubtask] = useState<Task | null>(null);
     const [projectList, setProjectList] = useState<Project[]>(projects);
-    const [parentTaskModalOpen, setParentTaskModalOpen] = useState(false);
-    const [parentTask, setParentTask] = useState<Task | null>(null);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const { showErrorToast } = useToast();
     const [isAnimatingOut, setIsAnimatingOut] = useState(false);
@@ -252,12 +244,6 @@ const TaskItem: React.FC<TaskItemProps> = ({
         }
     };
 
-    const handleSubtaskSave = async (updatedSubtask: Task) => {
-        await onTaskUpdate(updatedSubtask);
-        setSubtaskModalOpen(false);
-        setSelectedSubtask(null);
-    };
-
     const handleSubtasksToggle = async (e: React.MouseEvent) => {
         e.stopPropagation();
 
@@ -271,42 +257,12 @@ const TaskItem: React.FC<TaskItemProps> = ({
         }
     };
 
-    const handleSubtaskDelete = async () => {
-        if (selectedSubtask && selectedSubtask.uid) {
-            await onTaskDelete(selectedSubtask.uid);
-            setSubtaskModalOpen(false);
-            setSelectedSubtask(null);
-        }
-    };
-
-    const handleParentTaskSave = async (updatedParentTask: Task) => {
-        await onTaskUpdate(updatedParentTask);
-        setParentTaskModalOpen(false);
-        setParentTask(null);
-    };
-
-    const handleParentTaskDelete = async () => {
-        if (parentTask && parentTask.uid) {
-            await onTaskDelete(parentTask.uid);
-            setParentTaskModalOpen(false);
-            setParentTask(null);
-        }
-    };
-
-    const handleSave = async (updatedTask: Task) => {
-        try {
-            await onTaskUpdate(updatedTask);
-            // Let TaskModal invoke onClose so unsaved-change checks remain consistent
-        } catch (error: any) {
-            console.error('Task update failed:', error);
-            showErrorToast(t('errors.permissionDenied', 'Permission denied'));
-        }
-    };
-
     const handleEdit = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        modalStore.openTaskModal(task.id);
+        if (task.uid) {
+            navigate(`/task/${task.uid}`);
+        }
     };
 
     const handleDeleteClick = (e: React.MouseEvent) => {
@@ -400,29 +356,6 @@ const TaskItem: React.FC<TaskItemProps> = ({
         }
     };
 
-    const handleCreateProject = async (name: string): Promise<Project> => {
-        try {
-            const response = await fetch(getApiPath('project'), {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ name, active: true }),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to create project');
-            }
-
-            const newProject = await response.json();
-            setProjectList((prevProjects) => [...prevProjects, newProject]);
-            return newProject;
-        } catch (error) {
-            console.error('Error creating project:', error);
-            throw error;
-        }
-    };
-
     // Use the project from the task's included data if available, otherwise find from projectList
     let project =
         task.Project || projectList.find((p) => p.id === task.project_id);
@@ -508,49 +441,6 @@ const TaskItem: React.FC<TaskItemProps> = ({
                         }}
                     />
                 )}
-
-            <TaskModal
-                isOpen={isModalOpen}
-                onClose={() => modalStore.closeTaskModal()}
-                task={task}
-                onSave={handleSave}
-                onDelete={handleDelete}
-                projects={projectList}
-                onCreateProject={handleCreateProject}
-                initialSubtasks={task.subtasks || []}
-            />
-
-            {selectedSubtask && (
-                <TaskModal
-                    isOpen={subtaskModalOpen}
-                    onClose={() => {
-                        setSubtaskModalOpen(false);
-                        setSelectedSubtask(null);
-                    }}
-                    task={selectedSubtask}
-                    onSave={handleSubtaskSave}
-                    onDelete={handleSubtaskDelete}
-                    projects={projectList}
-                    onCreateProject={handleCreateProject}
-                />
-            )}
-
-            {parentTask && (
-                <TaskModal
-                    isOpen={parentTaskModalOpen}
-                    onClose={() => {
-                        setParentTaskModalOpen(false);
-                        setParentTask(null);
-                    }}
-                    task={parentTask}
-                    onSave={handleParentTaskSave}
-                    onDelete={handleParentTaskDelete}
-                    projects={projectList}
-                    onCreateProject={handleCreateProject}
-                    autoFocusSubtasks={true}
-                />
-            )}
-
             {/* Confirm Delete Dialog */}
             {isConfirmDialogOpen && (
                 <ConfirmDialog

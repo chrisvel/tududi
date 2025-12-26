@@ -101,13 +101,6 @@ interface InboxStore {
     resetPagination: () => void;
 }
 
-interface ModalStore {
-    openTaskModalId: number | null;
-    openTaskModal: (taskId: number) => void;
-    closeTaskModal: () => void;
-    isTaskModalOpen: (taskId: number) => boolean;
-}
-
 interface HabitsStore {
     habits: Task[];
     isLoading: boolean;
@@ -127,7 +120,6 @@ interface StoreState {
     tagsStore: TagsStore;
     tasksStore: TasksStore;
     inboxStore: InboxStore;
-    modalStore: ModalStore;
     habitsStore: HabitsStore;
 }
 
@@ -698,21 +690,6 @@ export const useStore = create<StoreState>((set: any) => ({
                     },
                 },
             })),
-    },
-    modalStore: {
-        openTaskModalId: null,
-        openTaskModal: (taskId: number) =>
-            set((state) => ({
-                modalStore: { ...state.modalStore, openTaskModalId: taskId },
-            })),
-        closeTaskModal: () =>
-            set((state) => ({
-                modalStore: { ...state.modalStore, openTaskModalId: null },
-            })),
-        isTaskModalOpen: (taskId: number) => {
-            const state = useStore.getState();
-            return state.modalStore.openTaskModalId === taskId;
-        },
     },
     habitsStore: {
         habits: [],
