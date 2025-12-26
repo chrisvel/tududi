@@ -223,18 +223,14 @@ const TaskItem: React.FC<TaskItemProps> = ({
     };
 
     const completionPercentage = calculateCompletionPercentage();
-    const hasInitialSubtasks =
-        (task.subtasks && task.subtasks.length > 0) ||
-        (task.Subtasks && task.Subtasks.length > 0);
+    const hasInitialSubtasks = task.subtasks && task.subtasks.length > 0;
     const shouldShowSubtasksIcon =
         hasInitialSubtasks || subtasks.length > 0 || loadingSubtasks;
 
-    // Check if task has subtasks using the included subtasks data
     useEffect(() => {
-        // Handle both 'subtasks' and 'Subtasks' property names (case sensitivity)
-        const subtasksData = task.subtasks || task.Subtasks || [];
+        const subtasksData = task.subtasks || [];
         setSubtasks(subtasksData);
-    }, [task.id, task.subtasks, task.Subtasks]);
+    }, [task.id, task.subtasks]);
 
     useEffect(() => {
         setShowSubtasks(false);
@@ -367,15 +363,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                         // Explicitly preserve subtasks data from original task
                         subtasks:
                             response.subtasks ||
-                            response.Subtasks ||
                             task.subtasks ||
-                            task.Subtasks ||
-                            [],
-                        Subtasks:
-                            response.subtasks ||
-                            response.Subtasks ||
-                            task.subtasks ||
-                            task.Subtasks ||
                             [],
                     };
                     await onTaskUpdate(mergedTask);
@@ -529,7 +517,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                 onDelete={handleDelete}
                 projects={projectList}
                 onCreateProject={handleCreateProject}
-                initialSubtasks={task.subtasks || task.Subtasks || []}
+                initialSubtasks={task.subtasks || []}
             />
 
             {selectedSubtask && (

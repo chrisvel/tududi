@@ -15,8 +15,8 @@ export interface Task {
     today?: boolean;
     today_move_count?: number;
     tags?: Tag[];
-    project_id?: number; // Deprecated, use project_uid
-    project_uid?: string; // Foreign key for project by uid
+    project_id?: number; 
+    project_uid?: string;
     Project?: Project;
     created_at?: string;
     updated_at?: string;
@@ -24,20 +24,17 @@ export interface Task {
     recurrence_interval?: number;
     recurrence_end_date?: string;
     recurrence_weekday?: number;
-    recurrence_weekdays?: number[]; // Array of weekday numbers for weekly recurrence
+    recurrence_weekdays?: number[];
     recurrence_month_day?: number;
     recurrence_week_of_month?: number;
     completion_based?: boolean;
     recurring_parent_id?: number;
     recurring_parent_uid?: string;
-    last_generated_date?: string;
     completed_at: string | null;
     parent_task_id?: number;
     subtasks?: Task[];
-    Subtasks?: Task[]; // Handle API response case sensitivity (temporary)
-    parent_child_logic_executed?: boolean; // Flag indicating if parent-child logic was executed during toggle
+    parent_child_logic_executed?: boolean;
     attachments?: Attachment[];
-    // Habit fields
     habit_mode?: boolean;
     habit_target_count?: number;
     habit_frequency_period?: 'daily' | 'weekly' | 'monthly';

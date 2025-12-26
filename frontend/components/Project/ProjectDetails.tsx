@@ -318,15 +318,7 @@ const ProjectDetails: React.FC = () => {
                               ...updatedTask,
                               subtasks:
                                   updatedTask.subtasks ||
-                                  updatedTask.Subtasks ||
                                   task.subtasks ||
-                                  task.Subtasks ||
-                                  [],
-                              Subtasks:
-                                  updatedTask.subtasks ||
-                                  updatedTask.Subtasks ||
-                                  task.subtasks ||
-                                  task.Subtasks ||
                                   [],
                           }
                         : task
@@ -358,19 +350,8 @@ const ProjectDetails: React.FC = () => {
                               ...savedTask,
                               subtasks:
                                   savedTask.subtasks ||
-                                  savedTask.Subtasks ||
                                   updatedTask.subtasks ||
-                                  updatedTask.Subtasks ||
                                   task.subtasks ||
-                                  task.Subtasks ||
-                                  [],
-                              Subtasks:
-                                  savedTask.subtasks ||
-                                  savedTask.Subtasks ||
-                                  updatedTask.subtasks ||
-                                  updatedTask.Subtasks ||
-                                  task.subtasks ||
-                                  task.Subtasks ||
                                   [],
                           }
                         : task
@@ -395,15 +376,7 @@ const ProjectDetails: React.FC = () => {
                           ...updatedTask,
                           subtasks:
                               updatedTask.subtasks ||
-                              updatedTask.Subtasks ||
                               task.subtasks ||
-                              task.Subtasks ||
-                              [],
-                          Subtasks:
-                              updatedTask.subtasks ||
-                              updatedTask.Subtasks ||
-                              task.subtasks ||
-                              task.Subtasks ||
                               [],
                       }
                     : task

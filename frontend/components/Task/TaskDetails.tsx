@@ -47,7 +47,7 @@ const TaskDetails: React.FC = () => {
         state.tasksStore.tasks.find((t: Task) => t.uid === uid)
     );
 
-    const subtasks = task?.subtasks || task?.Subtasks || [];
+    const subtasks = task?.subtasks || [];
 
     const [loading, setLoading] = useState(!task);
     const [error, setError] = useState<string | null>(null);
@@ -569,12 +569,10 @@ const TaskDetails: React.FC = () => {
     }, [
         task?.id,
         task?.recurrence_type,
-        task?.last_generated_date,
         task?.due_date,
         task?.recurring_parent_id,
         parentTask?.id,
         parentTask?.recurrence_type,
-        parentTask?.last_generated_date,
     ]);
 
     useEffect(() => {
@@ -1355,7 +1353,7 @@ const TaskDetails: React.FC = () => {
                         projects={projects}
                         onCreateProject={handleCreateProject}
                         showToast={false}
-                        initialSubtasks={task.subtasks || task.Subtasks || []}
+                        initialSubtasks={task.subtasks || []}
                         autoFocusSubtasks={focusSubtasks}
                     />
                 )}

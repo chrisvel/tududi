@@ -400,15 +400,7 @@ const Tasks: React.FC = () => {
                                   ...updatedTaskFromServer,
                                   subtasks:
                                       updatedTaskFromServer.subtasks ||
-                                      updatedTaskFromServer.Subtasks ||
                                       task.subtasks ||
-                                      task.Subtasks ||
-                                      [],
-                                  Subtasks:
-                                      updatedTaskFromServer.subtasks ||
-                                      updatedTaskFromServer.Subtasks ||
-                                      task.subtasks ||
-                                      task.Subtasks ||
                                       [],
                               }
                             : task

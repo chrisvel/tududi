@@ -586,18 +586,9 @@ export const useStore = create<StoreState>((set: any) => ({
                             ? {
                                   ...task,
                                   ...updatedTask,
-                                  // Explicitly preserve subtasks data
                                   subtasks:
                                       updatedTask.subtasks ||
-                                      updatedTask.Subtasks ||
                                       task.subtasks ||
-                                      task.Subtasks ||
-                                      [],
-                                  Subtasks:
-                                      updatedTask.subtasks ||
-                                      updatedTask.Subtasks ||
-                                      task.subtasks ||
-                                      task.Subtasks ||
                                       [],
                               }
                             : task

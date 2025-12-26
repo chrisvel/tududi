@@ -708,7 +708,7 @@ const TaskWithSubtasks: React.FC<TaskWithSubtasksProps> = (props) => {
     }, [props.task.id]);
 
     useEffect(() => {
-        const subtasksData = props.task.subtasks || props.task.Subtasks || [];
+        const subtasksData = props.task.subtasks || [];
         const hasSubtasksFromData = subtasksData.length > 0;
         setSubtasks(subtasksData);
         setShowSubtasks(hasSubtasksFromData);
@@ -716,7 +716,7 @@ const TaskWithSubtasks: React.FC<TaskWithSubtasksProps> = (props) => {
         if (!hasSubtasksFromData) {
             void loadSubtasks();
         }
-    }, [props.task.id, props.task.subtasks, props.task.Subtasks, loadSubtasks]);
+    }, [props.task.id, props.task.subtasks, loadSubtasks]);
 
     return (
         <>
