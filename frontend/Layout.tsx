@@ -9,7 +9,6 @@ import ProjectModal from './components/Project/ProjectModal';
 import NoteModal from './components/Note/NoteModal';
 import AreaModal from './components/Area/AreaModal';
 import TagModal from './components/Tag/TagModal';
-import InboxModal from './components/Inbox/InboxModal';
 import TaskModal from './components/Task/TaskModal';
 import { Note } from './entities/Note';
 import { Area } from './entities/Area';
@@ -59,9 +58,6 @@ const Layout: React.FC<LayoutProps> = ({
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
     const [isAreaModalOpen, setIsAreaModalOpen] = useState(false);
     const [isTagModalOpen, setIsTagModalOpen] = useState(false);
-    const [taskModalType, setTaskModalType] = useState<'simplified' | 'full'>(
-        'simplified'
-    );
 
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const [selectedArea, setSelectedArea] = useState<Area | null>(null);
@@ -80,9 +76,8 @@ const Layout: React.FC<LayoutProps> = ({
         tagsStore: { tags, isLoading: isTagsLoading, isError: isTagsError },
     } = useStore();
 
-    const openTaskModal = (type: 'simplified' | 'full' = 'simplified') => {
+    const openTaskModal = () => {
         setIsTaskModalOpen(true);
-        setTaskModalType(type);
     };
 
     useEffect(() => {
@@ -478,29 +473,21 @@ const Layout: React.FC<LayoutProps> = ({
                     </div>
                 </div>
 
-                {isTaskModalOpen &&
-                    (taskModalType === 'simplified' ? (
-                        <InboxModal
-                            isOpen={isTaskModalOpen}
-                            onClose={closeTaskModal}
-                            onSave={handleSaveTask}
-                            projects={projects}
-                        />
-                    ) : (
-                        <TaskModal
-                            isOpen={isTaskModalOpen}
-                            onClose={closeTaskModal}
-                            task={{
-                                name: '',
-                                status: 'not_started',
-                                completed_at: null,
-                            }}
-                            onSave={handleSaveTask}
-                            onDelete={async () => {}}
-                            projects={projects}
-                            onCreateProject={handleCreateProject}
-                        />
-                    ))}
+                {isTaskModalOpen && (
+                    <TaskModal
+                        isOpen={isTaskModalOpen}
+                        onClose={closeTaskModal}
+                        task={{
+                            name: '',
+                            status: 'not_started',
+                            completed_at: null,
+                        }}
+                        onSave={handleSaveTask}
+                        onDelete={async () => {}}
+                        projects={projects}
+                        onCreateProject={handleCreateProject}
+                    />
+                )}
 
                 {isProjectModalOpen && (
                     <ProjectModal

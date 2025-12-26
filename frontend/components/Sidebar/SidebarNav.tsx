@@ -17,7 +17,7 @@ interface SidebarNavProps {
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
     location: Location;
     isDarkMode: boolean;
-    openTaskModal: (type?: 'simplified' | 'full') => void;
+    openTaskModal: () => void;
 }
 
 const SidebarNav: React.FC<SidebarNavProps> = ({
@@ -140,7 +140,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                                         tabIndex={0}
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            openTaskModal('full');
+                                            openTaskModal();
                                         }}
                                         onKeyDown={(e) => {
                                             if (
@@ -149,7 +149,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                                             ) {
                                                 e.stopPropagation();
                                                 e.preventDefault();
-                                                openTaskModal('full');
+                                                openTaskModal();
                                             }
                                         }}
                                         className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none cursor-pointer"

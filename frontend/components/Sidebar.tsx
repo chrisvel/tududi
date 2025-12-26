@@ -19,7 +19,7 @@ interface SidebarProps {
     currentUser: { email: string };
     isDarkMode: boolean;
     toggleDarkMode: () => void;
-    openTaskModal: (type?: 'simplified' | 'full') => void;
+    openTaskModal: () => void;
     openProjectModal: () => void;
     openNoteModal: (note: Note | null) => void;
     openAreaModal: (area: Area | null) => void;
