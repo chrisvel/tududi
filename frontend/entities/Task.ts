@@ -15,8 +15,7 @@ export interface Task {
     today?: boolean;
     today_move_count?: number;
     tags?: Tag[];
-    project_id?: number; 
-    project_uid?: string;
+    project_id?: number;
     Project?: Project;
     created_at?: string;
     updated_at?: string;

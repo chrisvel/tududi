@@ -1326,7 +1326,9 @@ const QuickCaptureInput = React.forwardRef<
                                             status: 'not_started',
                                             priority: null,
                                             tags: taskTags,
-                                            project_uid: projectUid,
+                                            Project: projectUid
+                                                ? ({ uid: projectUid } as Project)
+                                                : undefined,
                                             completed_at: null,
                                         };
                                         openTaskModal(newTask);

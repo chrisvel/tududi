@@ -523,7 +523,7 @@ const TaskDetails: React.FC = () => {
                         ? task.due_date.split('T')[0]
                         : undefined;
                     const iterations = await fetchTaskNextIterations(
-                        task.id,
+                        task.uid!,
                         startFromDate
                     );
                     setNextIterations(iterations);
@@ -535,7 +535,7 @@ const TaskDetails: React.FC = () => {
                 }
             } else if (
                 task?.recurring_parent_id &&
-                parentTask?.id &&
+                parentTask?.uid &&
                 parentTask.recurrence_type &&
                 parentTask.recurrence_type !== 'none'
             ) {
@@ -546,7 +546,7 @@ const TaskDetails: React.FC = () => {
                         ? task.due_date.split('T')[0]
                         : undefined;
                     const iterations = await fetchTaskNextIterations(
-                        parentTask.id,
+                        parentTask.uid,
                         startFromDate
                     );
 
@@ -777,16 +777,16 @@ const TaskDetails: React.FC = () => {
                         ? latestTask.due_date.split('T')[0]
                         : undefined;
                     const iterations = await fetchTaskNextIterations(
-                        latestTask.id,
+                        latestTask.uid!,
                         startFromDate
                     );
                     setNextIterations(iterations);
-                } else if (canUseParentIterations && parentTask?.id) {
+                } else if (canUseParentIterations && parentTask?.uid) {
                     const startFromDate = latestTask.due_date
                         ? latestTask.due_date.split('T')[0]
                         : undefined;
                     const iterations = await fetchTaskNextIterations(
-                        parentTask.id,
+                        parentTask.uid,
                         startFromDate
                     );
                     setNextIterations(iterations);

@@ -33,6 +33,7 @@ const {
     getSafeTimezone,
     getTodayBoundsInUTC,
 } = require('../../utils/timezone-utils');
+const { isValidUid } = require('../../utils/slug-utils');
 
 const {
     validateProjectAccess,
@@ -836,10 +837,19 @@ router.delete('/task/:uid', requireTaskWriteAccess, async (req, res) => {
     }
 });
 
-router.get('/task/:id/subtasks', async (req, res) => {
+router.get('/task/:uid/subtasks', async (req, res) => {
     try {
+        if (!isValidUid(req.params.uid)) {
+            return res.status(400).json({ error: 'Invalid UID' });
+        }
+
+        const task = await taskRepository.findByUid(req.params.uid);
+        if (!task) {
+            return res.json([]);
+        }
+
         const result = await getSubtasks(
-            req.params.id,
+            task.id,
             req.currentUser.id,
             req.currentUser.timezone
         );
@@ -859,12 +869,14 @@ router.get('/task/:id/subtasks', async (req, res) => {
     }
 });
 
-router.get('/task/:id/next-iterations', async (req, res) => {
+router.get('/task/:uid/next-iterations', async (req, res) => {
     try {
-        const taskId = parseInt(req.params.id);
+        if (!isValidUid(req.params.uid)) {
+            return res.status(400).json({ error: 'Invalid UID' });
+        }
 
-        const task = await taskRepository.findByIdAndUser(
-            taskId,
+        const task = await taskRepository.findByUidAndUser(
+            req.params.uid,
             req.currentUser.id
         );
 

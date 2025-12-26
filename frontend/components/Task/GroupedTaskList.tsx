@@ -226,8 +226,7 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
             const resolvedProjectId =
                 normalizeProjectId(task.project_id) ??
                 normalizeProjectId(task.Project?.id);
-            const resolvedProjectUid =
-                task.project_uid || task.Project?.uid || undefined;
+            const resolvedProjectUid = task.Project?.uid;
 
             const key = getGroupKey(resolvedProjectId, resolvedProjectUid);
 

@@ -270,8 +270,8 @@ const ViewDetail: React.FC = () => {
                 matchedProject = projectLookupMap.byId.get(task.project_id);
             }
 
-            if (!matchedProject && task.project_uid) {
-                matchedProject = projectLookupMap.byUid.get(task.project_uid);
+            if (!matchedProject && task.Project?.uid) {
+                matchedProject = projectLookupMap.byUid.get(task.Project.uid);
             }
 
             if (!matchedProject && typeof task.project_id === 'string') {

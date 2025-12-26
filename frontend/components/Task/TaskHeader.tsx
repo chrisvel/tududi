@@ -691,11 +691,11 @@ const TaskWithSubtasks: React.FC<TaskWithSubtasksProps> = (props) => {
     const [loadingSubtasks, setLoadingSubtasks] = useState(false);
 
     const loadSubtasks = useCallback(async () => {
-        if (!props.task.id) return;
+        if (!props.task.uid) return;
 
         setLoadingSubtasks(true);
         try {
-            const subtasksData = await fetchSubtasks(props.task.id);
+            const subtasksData = await fetchSubtasks(props.task.uid);
             setSubtasks(subtasksData);
             setShowSubtasks(subtasksData.length > 0);
         } catch (error) {

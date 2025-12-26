@@ -195,11 +195,11 @@ const TaskItem: React.FC<TaskItemProps> = ({
     }, [projects]);
 
     const loadSubtasks = useCallback(async () => {
-        if (!task.id) return;
+        if (!task.uid) return;
 
         setLoadingSubtasks(true);
         try {
-            const subtasksData = await fetchSubtasks(task.id);
+            const subtasksData = await fetchSubtasks(task.uid);
             setSubtasks(subtasksData);
         } catch (error) {
             console.error('Failed to load subtasks:', error);

@@ -68,7 +68,7 @@ interface TasksStore {
     toggleTaskToday: (taskId: number) => Promise<Task>;
     loadTaskById: (taskId: number) => Promise<Task>;
     loadTaskByUid: (uid: string) => Promise<Task>;
-    loadSubtasks: (parentTaskId: number) => Promise<Task[]>;
+    loadSubtasks: (parentTaskUid: string) => Promise<Task[]>;
     addTask: (task: Task) => void;
     removeTask: (taskId: number) => void;
     updateTaskInStore: (updatedTask: Task) => void;
@@ -537,10 +537,12 @@ export const useStore = create<StoreState>((set: any) => ({
                 throw error;
             }
         },
-        loadSubtasks: async (parentTaskId) => {
+        loadSubtasks: async (parentTaskUid) => {
             const { fetchSubtasks } = await import('../utils/tasksService');
             try {
-                const subtasks = await fetchSubtasks(parentTaskId);
+                const subtasks = await fetchSubtasks(parentTaskUid);
+                const parentTaskId =
+                    subtasks.length > 0 ? subtasks[0].parent_task_id : null;
                 set((state) => ({
                     tasksStore: {
                         ...state.tasksStore,
