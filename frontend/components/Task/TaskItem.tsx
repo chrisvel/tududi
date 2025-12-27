@@ -4,7 +4,7 @@ import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import TaskHeader from './TaskHeader';
 import { useToast } from '../Shared/ToastContext';
-import TaskPriorityIcon from './TaskPriorityIcon';
+import TaskPriorityIcon from '../Shared/Icons/TaskPriorityIcon';
 import { isTaskCompleted } from '../../constants/taskStatus';
 
 // Import SubtasksDisplay component from TaskHeader

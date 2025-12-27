@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 import { Task } from '../../../entities/Task';
-import TaskPriorityIcon from '../TaskPriorityIcon';
+import TaskPriorityIcon from '../../Shared/Icons/TaskPriorityIcon';
 import { toggleTaskCompletion } from '../../../utils/tasksService';
 
 interface TaskSubtasksSectionProps {

@@ -9,7 +9,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { TagIcon, FolderIcon, FireIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
-import TaskPriorityIcon from './TaskPriorityIcon';
+import TaskPriorityIcon from '../Shared/Icons/TaskPriorityIcon';
 import { Project } from '../../entities/Project';
 import { Task } from '../../entities/Task';
 import { fetchSubtasks } from '../../utils/tasksService';

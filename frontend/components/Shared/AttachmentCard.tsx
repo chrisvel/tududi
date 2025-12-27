@@ -5,7 +5,7 @@ import {
     EyeIcon,
 } from '@heroicons/react/24/outline';
 import { Attachment } from '../../entities/Attachment';
-import FileIcon from './FileIcon';
+import FileIcon from './Icons/FileIcon';
 
 interface AttachmentCardProps {
     attachment: Attachment;

@@ -11,7 +11,7 @@ import {
     TagIcon,
     InboxIcon,
 } from '@heroicons/react/24/outline';
-import TelegramIcon from '../Icons/TelegramIcon';
+import TelegramIcon from '../Shared/Icons/TelegramIcon';
 import { useTranslation } from 'react-i18next';
 import { Note } from '../../entities/Note';
 import { Area } from '../../entities/Area';
