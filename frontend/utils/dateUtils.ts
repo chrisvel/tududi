@@ -9,9 +9,12 @@ import {
     isTaskPlanned,
     isTaskWaiting,
 } from '../constants/taskStatus';
+import { StatusType } from '../entities/Task';
 
 // Check if task is in today's plan (has active status)
-const isTaskInTodayPlan = (status: string | number): boolean =>
+export const isTaskInTodayPlan = (
+    status: StatusType | number | undefined | null
+): boolean =>
     isTaskInProgress(status) || isTaskPlanned(status) || isTaskWaiting(status);
 
 let userTimezone: string | null = null;
@@ -209,7 +212,7 @@ export const formatDateTime = (
  */
 export const isTaskOverdueInTodayPlan = (task: {
     created_at?: string;
-    status: string | number;
+    status: StatusType | number;
     completed_at: string | null;
 }): boolean => {
     // If task is not in today plan (no active status), it's not overdue in today plan

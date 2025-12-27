@@ -25,6 +25,9 @@ import {
     isTaskDone,
     isTaskActive,
     isHabitArchived,
+    isTaskInProgress,
+    isTaskPlanned,
+    isTaskWaiting,
 } from '../../constants/taskStatus';
 import { fetchProjects } from '../../utils/projectsService';
 import { Task } from '../../entities/Task';
@@ -774,10 +777,12 @@ const TasksToday: React.FC = () => {
                     }
                 } else {
                     // If not completed, add to relevant active lists
-                    if (
-                        updatedTask.today &&
-                        updatedTask.status !== 'cancelled'
-                    ) {
+                    // Check if task has "today plan" status (in_progress, planned, or waiting)
+                    const isInTodayPlan =
+                        isTaskInProgress(updatedTask.status) ||
+                        isTaskPlanned(updatedTask.status) ||
+                        isTaskWaiting(updatedTask.status);
+                    if (isInTodayPlan && updatedTask.status !== 'cancelled') {
                         newMetrics.today_plan_tasks = updateOrAddTask(
                             newMetrics.today_plan_tasks,
                             updatedTask
@@ -821,8 +826,13 @@ const TasksToday: React.FC = () => {
                             );
                         }
                     }
+                    // Task is suggested if not in today plan, no project, and no due date
+                    const notInTodayPlan =
+                        !isTaskInProgress(updatedTask.status) &&
+                        !isTaskPlanned(updatedTask.status) &&
+                        !isTaskWaiting(updatedTask.status);
                     const isSuggested =
-                        !updatedTask.today &&
+                        notInTodayPlan &&
                         !updatedTask.project_id &&
                         !updatedTask.due_date;
                     const isActive = isTaskActive(updatedTask.status);
