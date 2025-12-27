@@ -217,7 +217,7 @@ describe('Projects Routes', () => {
             project = await Project.create({
                 name: 'Test Project',
                 description: 'Test Description',
-                state: 'idea',
+                state: 'not_started',
                 priority: 0,
                 user_id: user.id,
             });

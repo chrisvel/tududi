@@ -45,7 +45,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             name: '',
             description: '',
             area_id: null,
-            state: 'idea',
+            state: 'not_started',
             tags: [],
             priority: null,
             due_date_at: null,
@@ -128,7 +128,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 name: '',
                 description: '',
                 area_id: null,
-                state: 'idea',
+                state: 'not_started',
                 tags: [],
                 priority: null,
                 due_date_at: null,
@@ -328,7 +328,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 formData.name.trim() !== '' ||
                 formData.description?.trim() !== '' ||
                 formData.area_id !== null ||
-                formData.state !== 'idea' ||
+                formData.state !== 'not_started' ||
                 tags.length > 0 ||
                 formData.priority !== null ||
                 formData.due_date_at !== null
@@ -523,7 +523,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                     <ProjectStateDropdown
                                                         value={
                                                             formData.state ||
-                                                            'idea'
+                                                            'not_started'
                                                         }
                                                         onChange={(state) =>
                                                             setFormData(
@@ -664,7 +664,8 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                         >
                                             <PlayIcon className="h-5 w-5" />
                                             {formData.state &&
-                                                formData.state !== 'idea' && (
+                                                formData.state !==
+                                                    'not_started' && (
                                                     <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
                                                 )}
                                         </button>

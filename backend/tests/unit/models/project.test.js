@@ -85,7 +85,7 @@ describe('Project Model', () => {
                 user_id: user.id,
             });
 
-            expect(project.state).toBe('idea');
+            expect(project.state).toBe('not_started');
             expect(project.pin_to_sidebar).toBe(false);
             expect(project.task_show_completed).toBe(false);
             expect(project.task_sort_order).toBe('created_at:desc');

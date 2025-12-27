@@ -4,12 +4,12 @@ import { PriorityType, Task } from './Task';
 import { Note } from './Note';
 
 export type ProjectState =
-    | 'idea'
+    | 'not_started'
     | 'planned'
     | 'in_progress'
-    | 'active'
-    | 'blocked'
-    | 'completed';
+    | 'waiting'
+    | 'done'
+    | 'cancelled';
 
 export interface Project {
     id?: number;

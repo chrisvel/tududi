@@ -69,7 +69,7 @@ const Projects: React.FC = () => {
     const [orderBy, setOrderBy] = useState<string>('created_at:desc');
 
     const [searchParams, setSearchParams] = useSearchParams();
-    const stateFilter = searchParams.get('state') || 'all';
+    const stateFilter = searchParams.get('state') || 'not_completed';
 
     // Get area UID from URL parameters
     const getAreaUidFromParams = () => {
@@ -94,16 +94,25 @@ const Projects: React.FC = () => {
     // Filter options for dropdowns
     const statusOptions: FilterOption[] = [
         { value: 'all', label: t('projects.filters.all') },
-        { value: 'idea', label: t('projects.states.idea', 'Idea') },
-        { value: 'planned', label: t('projects.states.planned', 'Planned') },
+        {
+            value: 'not_started',
+            label: t('projectStatus.not_started', 'Not Started'),
+        },
+        { value: 'planned', label: t('projectStatus.planned', 'Planned') },
         {
             value: 'in_progress',
-            label: t('projects.states.in_progress', 'In Progress'),
+            label: t('projectStatus.in_progress', 'In Progress'),
         },
-        { value: 'blocked', label: t('projects.states.blocked', 'Blocked') },
+        { value: 'waiting', label: t('projectStatus.waiting', 'Waiting') },
+        { value: 'done', label: t('projectStatus.done', 'Completed') },
         {
-            value: 'completed',
-            label: t('projects.states.completed', 'Completed'),
+            value: 'cancelled',
+            label: t('projectStatus.cancelled', 'Cancelled'),
+        },
+        { value: 'divider', label: '' },
+        {
+            value: 'not_completed',
+            label: t('projects.filters.notCompleted', 'Not Completed'),
         },
     ];
 
@@ -244,7 +253,7 @@ const Projects: React.FC = () => {
     const handleStateFilterChange = (value: string) => {
         const params = new URLSearchParams(searchParams);
 
-        if (value === 'all') {
+        if (value === 'not_completed') {
             params.delete('state');
         } else {
             params.set('state', value);
@@ -274,7 +283,12 @@ const Projects: React.FC = () => {
         let filteredProjects = [...projects];
 
         // Apply state filter
-        if (stateFilter !== 'all') {
+        if (stateFilter === 'not_completed') {
+            filteredProjects = filteredProjects.filter(
+                (project) =>
+                    project.state !== 'done' && project.state !== 'cancelled'
+            );
+        } else if (stateFilter !== 'all') {
             filteredProjects = filteredProjects.filter(
                 (project) => project.state === stateFilter
             );

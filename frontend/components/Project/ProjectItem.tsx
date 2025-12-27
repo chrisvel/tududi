@@ -4,11 +4,12 @@ import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
 import {
     PencilSquareIcon,
     TrashIcon,
-    LightBulbIcon,
-    DocumentTextIcon,
+    EllipsisHorizontalCircleIcon,
+    ClipboardDocumentListIcon,
     PlayIcon,
-    StopIcon,
+    ClockIcon,
     CheckCircleIcon,
+    XCircleIcon,
     ShareIcon,
     ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
@@ -50,36 +51,39 @@ const getProjectInitials = (name: string, maxLetters?: number) => {
 
 const getStateIcon = (state: ProjectState | undefined) => {
     switch (state) {
-        case 'idea':
-            return { icon: LightBulbIcon };
+        case 'not_started':
+            return { icon: EllipsisHorizontalCircleIcon };
         case 'planned':
-            return { icon: DocumentTextIcon };
+            return { icon: ClipboardDocumentListIcon };
         case 'in_progress':
             return { icon: PlayIcon };
-        case 'blocked':
-            return { icon: StopIcon };
-        case 'completed':
+        case 'waiting':
+            return { icon: ClockIcon };
+        case 'done':
             return { icon: CheckCircleIcon };
+        case 'cancelled':
+            return { icon: XCircleIcon };
         default:
-            return { icon: LightBulbIcon };
+            return { icon: EllipsisHorizontalCircleIcon };
     }
 };
 
 const getStateLabel = (state: ProjectState | undefined, t: any): string => {
     switch (state) {
-        case 'idea':
-            return t('projects.states.idea', 'Idea');
+        case 'not_started':
+            return t('projectStatus.not_started', 'Not Started');
         case 'planned':
-            return t('projects.states.planned', 'Planned');
+            return t('projectStatus.planned', 'Planned');
         case 'in_progress':
-        case 'active':
-            return t('projects.states.in_progress', 'In Progress');
-        case 'blocked':
-            return t('projects.states.blocked', 'Blocked');
-        case 'completed':
-            return t('projects.states.completed', 'Completed');
+            return t('projectStatus.in_progress', 'In Progress');
+        case 'waiting':
+            return t('projectStatus.waiting', 'Waiting');
+        case 'done':
+            return t('projectStatus.done', 'Completed');
+        case 'cancelled':
+            return t('projectStatus.cancelled', 'Cancelled');
         default:
-            return t('projects.states.idea', 'Idea');
+            return t('projectStatus.not_started', 'Not Started');
     }
 };
 

@@ -103,26 +103,33 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
                     style={autoWidth ? dynamicStyles : {}}
                 >
                     <div className="p-1">
-                        {options.map((option) => (
-                            <button
-                                key={option.value}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    onChange(option.value);
-                                    setIsOpen(false);
-                                }}
-                                className={`block ${isMobile ? 'px-4 py-2 text-xs' : 'px-4 py-2 text-sm'} text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left`}
-                            >
-                                <span className="flex items-center justify-between">
-                                    <span>{option.label}</span>
-                                    {value === option.value && (
-                                        <CheckIcon
-                                            className={`${iconSize} ml-2`}
-                                        />
-                                    )}
-                                </span>
-                            </button>
-                        ))}
+                        {options.map((option, index) =>
+                            option.value === 'divider' ? (
+                                <div
+                                    key={`divider-${index}`}
+                                    className="my-1 -mx-1 border-t border-gray-100 dark:border-gray-700"
+                                />
+                            ) : (
+                                <button
+                                    key={option.value}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onChange(option.value);
+                                        setIsOpen(false);
+                                    }}
+                                    className={`block ${isMobile ? 'px-4 py-2 text-xs' : 'px-4 py-2 text-sm'} text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left`}
+                                >
+                                    <span className="flex items-center justify-between">
+                                        <span>{option.label}</span>
+                                        {value === option.value && (
+                                            <CheckIcon
+                                                className={`${iconSize} ml-2`}
+                                            />
+                                        )}
+                                    </span>
+                                </button>
+                            )
+                        )}
                     </div>
                 </div>
             )}
