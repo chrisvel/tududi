@@ -20,7 +20,7 @@
     "test:coverage": "npm run frontend:test:coverage && npm run backend:test:coverage",
     "frontend:dev": "webpack serve --config webpack.config.js --hot",
     "frontend:start": "tsc --noEmit && webpack serve --config webpack.config.js",
-    "frontend:build": "npm run clean && tsc --noEmit && webpack --config webpack.config.js",
+    "frontend:build": "npm run clean && tsc --noEmit && webpack --config webpack.config.js && node scripts/generate-sw.js",
     "frontend:test": "jest",
     "frontend:test:watch": "jest --watch",
     "frontend:test:coverage": "jest --coverage",

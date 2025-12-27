@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline - tududi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Dark mode detection
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Lora', serif;
+            font-size: 90%;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+        
+        .offline-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 2rem;
+            position: relative;
+        }
+        
+        .offline-icon::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            opacity: 0.1;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        .wifi-icon {
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-md w-full text-center">
+        <!-- Logo -->
+        <div class="logo-container mb-8">
+            <img src="icon-logo.png" alt="tududi logo" class="w-12 h-12 dark:brightness-110">
+            <span class="text-2xl font-bold text-gray-900 dark:text-white">tududi</span>
+        </div>
+        
+        <!-- Offline Icon -->
+        <div class="offline-icon">
+            <svg class="wifi-icon w-20 h-20 text-blue-500 dark:text-blue-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a4.978 4.978 0 01-1.414-2.83m-1.414 5.658a9 9 0 01-2.167-9.238m7.824 2.167a1 1 0 111.414 1.414m-1.414-1.414L3 3"></path>
+            </svg>
+        </div>
+        
+        <!-- Title -->
+        <h1 class="text-3xl font-bold mb-4 text-gray-900 dark:text-white">
+            You're offline
+        </h1>
+        
+        <!-- Description -->
+        <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">
+            It looks like you've lost your internet connection. Don't worry, your data is safe!
+        </p>
+        
+        <!-- Info Box -->
+        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6 mb-8 text-left">
+            <div class="flex items-start gap-3">
+                <svg class="w-6 h-6 text-blue-500 dark:text-blue-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div class="flex-1">
+                    <h3 class="font-semibold text-gray-900 dark:text-white mb-2">What you can do:</h3>
+                    <ul class="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+                        <li>• Check your internet connection</li>
+                        <li>• Try turning your WiFi off and on</li>
+                        <li>• Check if airplane mode is enabled</li>
+                        <li>• Wait a moment and try again</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Retry Button -->
+        <button 
+            onclick="window.location.reload()" 
+            class="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-95"
+        >
+            <span class="flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                Try Again
+            </span>
+        </button>
+        
+        <!-- Connection Status -->
+        <div class="mt-6 flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+            <div class="w-2 h-2 rounded-full bg-red-500 pulse-animation"></div>
+            <span id="status-text">Connection lost</span>
+        </div>
+    </div>
+    
+    <script>
+        // Monitor online status
+        function updateStatus() {
+            const statusText = document.getElementById('status-text');
+            if (navigator.onLine) {
+                statusText.textContent = 'Back online! Refreshing...';
+                statusText.previousElementSibling.classList.remove('bg-red-500', 'pulse-animation');
+                statusText.previousElementSibling.classList.add('bg-green-500');
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                statusText.textContent = 'Connection lost';
+            }
+        }
+        
+        window.addEventListener('online', updateStatus);
+        window.addEventListener('offline', updateStatus);
+        
+        // Check every 5 seconds
+        setInterval(() => {
+            if (navigator.onLine) {
+                updateStatus();
+            }
+        }, 5000);
+    </script>
+</body>
+</html>
+
