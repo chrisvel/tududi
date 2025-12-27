@@ -175,7 +175,11 @@ const TasksToday: React.FC = () => {
     const plannedTasks = useMemo(() => {
         // Only use today_plan_tasks from backend - it already filters by status
         // (in_progress, planned, waiting) regardless of the 'today' field
-        return filterNonHabitTasks(metrics.today_plan_tasks || []);
+        // Also filter to ensure only active statuses are shown
+        const activeTasks = (metrics.today_plan_tasks || []).filter((task) => {
+            return isTaskActive(task.status);
+        });
+        return filterNonHabitTasks(activeTasks);
     }, [metrics.today_plan_tasks]);
     const completedTasksList = useMemo(
         () => filterNonHabitTasks(metrics.tasks_completed_today || []),
@@ -471,6 +475,105 @@ const TasksToday: React.FC = () => {
     useEffect(() => {
         loadHabitsStore();
     }, [loadHabitsStore]);
+
+    // Sync metrics with task store updates
+    useEffect(() => {
+        if (!hasInitialized || !isMounted.current) {
+            return;
+        }
+
+        // Update metrics state when tasks in the store change
+        setMetrics((prevMetrics) => {
+            const newMetrics = { ...prevMetrics };
+
+            // Helper to update and filter tasks based on their current status
+            const updateAndFilterTasks = (
+                taskList: Task[],
+                filterFn: (task: Task) => boolean
+            ): Task[] => {
+                return taskList
+                    .map((metricTask) => {
+                        const storeTask = storeTasks.find(
+                            (t) => t.id === metricTask.id
+                        );
+                        return storeTask || metricTask;
+                    })
+                    .filter(filterFn);
+            };
+
+            // Collect tasks that were in active lists but are now completed
+            const allActiveLists = [
+                ...(prevMetrics.today_plan_tasks || []),
+                ...(prevMetrics.tasks_due_today || []),
+                ...(prevMetrics.tasks_overdue || []),
+                ...(prevMetrics.suggested_tasks || []),
+            ];
+
+            const newlyCompletedTasks = allActiveLists
+                .map((metricTask) => {
+                    const storeTask = storeTasks.find(
+                        (t) => t.id === metricTask.id
+                    );
+                    return storeTask;
+                })
+                .filter(
+                    (task): task is Task =>
+                        task !== undefined && isTaskDone(task.status)
+                );
+
+            // Update today_plan_tasks - filter out completed tasks
+            newMetrics.today_plan_tasks = updateAndFilterTasks(
+                prevMetrics.today_plan_tasks || [],
+                (task) => isTaskActive(task.status)
+            );
+
+            // Update tasks_due_today - filter out completed tasks
+            newMetrics.tasks_due_today = updateAndFilterTasks(
+                prevMetrics.tasks_due_today || [],
+                (task) => isTaskActive(task.status)
+            );
+
+            // Update tasks_overdue - filter out completed tasks
+            newMetrics.tasks_overdue = updateAndFilterTasks(
+                prevMetrics.tasks_overdue || [],
+                (task) => isTaskActive(task.status)
+            );
+
+            // Update tasks_completed_today - include existing + newly completed tasks
+            const updatedCompletedTasks = updateAndFilterTasks(
+                prevMetrics.tasks_completed_today || [],
+                (task) => isTaskDone(task.status)
+            );
+
+            // Add newly completed tasks if they were completed today and aren't already in the list
+            const today = new Date();
+            const todayStr = format(today, 'yyyy-MM-dd');
+
+            newlyCompletedTasks.forEach((task) => {
+                const alreadyInList = updatedCompletedTasks.some(
+                    (t) => t.id === task.id
+                );
+                const completedToday =
+                    task.completed_at &&
+                    format(new Date(task.completed_at), 'yyyy-MM-dd') ===
+                        todayStr;
+
+                if (!alreadyInList && completedToday) {
+                    updatedCompletedTasks.push(task);
+                }
+            });
+
+            newMetrics.tasks_completed_today = updatedCompletedTasks;
+
+            // Update suggested_tasks - filter out completed tasks
+            newMetrics.suggested_tasks = updateAndFilterTasks(
+                prevMetrics.suggested_tasks || [],
+                (task) => isTaskActive(task.status)
+            );
+
+            return newMetrics;
+        });
+    }, [storeTasks, hasInitialized]);
 
     useEffect(() => {
         isMounted.current = true;
