@@ -1,6 +1,9 @@
 'use strict';
 
-const { safeAddColumns } = require('../utils/migration-utils');
+const {
+    safeAddColumns,
+    safeRemoveColumn,
+} = require('../utils/migration-utils');
 
 module.exports = {
     async up(queryInterface, Sequelize) {
@@ -32,9 +35,9 @@ module.exports = {
         ]);
     },
 
-    async down(queryInterface, Sequelize) {
-        await queryInterface.removeColumn('users', 'ical_feed_token');
-        await queryInterface.removeColumn('users', 'ical_feed_enabled');
-        await queryInterface.removeColumn('users', 'calendar_enabled');
+    async down(queryInterface) {
+        await safeRemoveColumn(queryInterface, 'users', 'ical_feed_token');
+        await safeRemoveColumn(queryInterface, 'users', 'ical_feed_enabled');
+        await safeRemoveColumn(queryInterface, 'users', 'calendar_enabled');
     },
 };

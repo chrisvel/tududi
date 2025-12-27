@@ -74,9 +74,7 @@ function buildRRule(task) {
         case 'weekly':
             parts.push('FREQ=WEEKLY');
             if (interval > 1) parts.push(`INTERVAL=${interval}`);
-            // Handle specific weekdays if set
             if (task.recurrence_weekdays) {
-                // recurrence_weekdays might be stored as JSON array or comma-separated
                 let weekdays = task.recurrence_weekdays;
                 if (typeof weekdays === 'string') {
                     try {
@@ -86,7 +84,6 @@ function buildRRule(task) {
                     }
                 }
                 if (Array.isArray(weekdays) && weekdays.length > 0) {
-                    // Map day numbers (0=Sunday) to iCal day codes
                     const dayMap = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
                     const days = weekdays
                         .map((d) => dayMap[parseInt(d)])
@@ -110,7 +107,6 @@ function buildRRule(task) {
         case 'monthly':
             parts.push('FREQ=MONTHLY');
             if (interval > 1) parts.push(`INTERVAL=${interval}`);
-            // Handle specific day of month or week of month
             if (task.recurrence_month_day) {
                 parts.push(`BYMONTHDAY=${task.recurrence_month_day}`);
             } else if (
@@ -134,7 +130,6 @@ function buildRRule(task) {
             return null;
     }
 
-    // Add end date if specified
     if (task.recurrence_end_date) {
         parts.push(`UNTIL=${formatICalDate(task.recurrence_end_date)}`);
     }
@@ -150,16 +145,12 @@ function generateVEvent(task, hostname) {
 
     lines.push('BEGIN:VEVENT');
 
-    // UID must be globally unique and persistent
     lines.push(`UID:task-${task.id}@${hostname}`);
 
-    // Use due_date as the event date (all-day event)
-    // Tasks typically don't have specific times, so we use VALUE=DATE
     const dueDate = formatICalDate(task.due_date);
     lines.push(`DTSTART;VALUE=DATE:${dueDate}`);
     lines.push(`DTEND;VALUE=DATE:${dueDate}`);
 
-    // Created and modified timestamps
     if (task.created_at) {
         lines.push(`CREATED:${formatICalDateTime(task.created_at)}`);
     }
@@ -170,35 +161,27 @@ function generateVEvent(task, hostname) {
         lines.push(`DTSTAMP:${formatICalDateTime(new Date())}`);
     }
 
-    // Task name as summary
     lines.push(`SUMMARY:${escapeICalText(task.name)}`);
 
-    // Build description: Project first, then description, then note
-    // Only include fields that have content
     const descParts = [];
 
-    // Project name first (if available)
     if (task.Project && task.Project.name) {
         descParts.push(`Project: ${task.Project.name}`);
     }
 
-    // Task description (the main text field in tududi UI)
     if (task.description && task.description.trim()) {
         descParts.push(task.description.trim());
     }
 
-    // Note field (if it exists and has content)
     if (task.note && task.note.trim()) {
         descParts.push(task.note.trim());
     }
 
     if (descParts.length > 0) {
-        // Join with double newline for visual separation
         const descriptionText = descParts.join('\n\n');
         lines.push(`DESCRIPTION:${escapeICalText(descriptionText)}`);
     }
 
-    // Add recurrence rule if task is recurring
     const rrule = buildRRule(task);
     if (rrule) {
         lines.push(`RRULE:${rrule}`);
@@ -209,13 +192,9 @@ function generateVEvent(task, hostname) {
     return lines.join('\r\n');
 }
 
-/**
- * Generate the complete iCalendar document
- */
 function generateICalendar(tasks, calendarName, hostname) {
     const lines = [];
 
-    // Calendar header
     lines.push('BEGIN:VCALENDAR');
     lines.push('VERSION:2.0');
     lines.push('PRODID:-//tududi//Task Calendar//EN');
@@ -224,14 +203,10 @@ function generateICalendar(tasks, calendarName, hostname) {
     lines.push(`X-WR-CALNAME:${escapeICalText(calendarName)}`);
     lines.push('X-WR-TIMEZONE:UTC');
 
-    // Generate events for each task
     for (const task of tasks) {
         lines.push(generateVEvent(task, hostname));
     }
-
     lines.push('END:VCALENDAR');
-
-    // iCalendar requires CRLF line endings
     return lines.join('\r\n');
 }
 
@@ -253,7 +228,6 @@ router.get('/calendar/feed.ics', async (req, res) => {
     try {
         const { token, completed, project } = req.query;
 
-        // Validate token
         if (!token) {
             return res.status(401).json({
                 error: 'Authentication required',
@@ -262,7 +236,6 @@ router.get('/calendar/feed.ics', async (req, res) => {
             });
         }
 
-        // Find user by ical_feed_token
         const user = await User.findOne({
             where: {
                 ical_feed_token: token,
@@ -276,7 +249,6 @@ router.get('/calendar/feed.ics', async (req, res) => {
             });
         }
 
-        // Build query conditions
         const whereConditions = {
             user_id: user.id,
             due_date: {
@@ -284,14 +256,12 @@ router.get('/calendar/feed.ics', async (req, res) => {
             },
         };
 
-        // Filter out completed tasks by default
         if (completed !== 'true' && completed !== '1') {
             whereConditions.status = {
                 [Op.ne]: 2, // Exclude done/completed tasks
             };
         }
 
-        // Filter by project if specified
         if (project) {
             const projectId = parseInt(project, 10);
             if (!isNaN(projectId)) {
@@ -299,11 +269,8 @@ router.get('/calendar/feed.ics', async (req, res) => {
             }
         }
 
-        // Exclude recurring child tasks (they're virtual instances)
-        // We only want parent recurring tasks which will have RRULE
         whereConditions.recurring_parent_id = null;
 
-        // Fetch tasks with associations
         const tasks = await Task.findAll({
             where: whereConditions,
             include: [
@@ -316,16 +283,12 @@ router.get('/calendar/feed.ics', async (req, res) => {
             order: [['due_date', 'ASC']],
         });
 
-        // Generate calendar name based on user
         const calendarName = `tududi Tasks - ${user.name || user.email}`;
 
-        // Get hostname for UID generation
         const hostname = req.get('host') || 'tududi.local';
 
-        // Generate iCalendar content
         const icalContent = generateICalendar(tasks, calendarName, hostname);
 
-        // Set appropriate headers for calendar subscription
         res.set({
             'Content-Type': 'text/calendar; charset=utf-8',
             'Content-Disposition': 'inline; filename="tududi-tasks.ics"',
