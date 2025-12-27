@@ -88,11 +88,10 @@ const NextTaskSuggestion: React.FC<NextTaskSuggestionProps> = ({
 
         setIsUpdating(true);
         try {
-            // Universal rule: when setting status to in_progress, also add to today
+            // Setting status to in_progress makes it appear in today's plan
             const updatedTask = {
                 ...suggestedTask,
                 status: 'in_progress' as const,
-                today: true,
             };
             await onTaskUpdate(updatedTask);
             showSuccessToast(

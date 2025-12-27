@@ -106,16 +106,19 @@ async function filterTasksByParams(
             const safeTimezone = getSafeTimezone(userTimezone);
             const todayBounds = getTodayBoundsInUTC(safeTimezone);
 
-            whereClause.status = {
-                [Op.notIn]: [
-                    Task.STATUS.DONE,
-                    Task.STATUS.ARCHIVED,
-                    'done',
-                    'archived',
-                ],
-            };
+            // Tasks in today view are those with active statuses (in_progress, planned, waiting)
+            const todayPlanStatuses = [
+                Task.STATUS.IN_PROGRESS,
+                Task.STATUS.WAITING,
+                Task.STATUS.PLANNED,
+                'in_progress',
+                'waiting',
+                'planned',
+            ];
+
             whereClause[Op.or] = [
                 {
+                    // Non-recurring tasks with active status
                     [Op.and]: [
                         {
                             [Op.or]: [
@@ -124,18 +127,20 @@ async function filterTasksByParams(
                             ],
                         },
                         { recurring_parent_id: null },
-                        { today: true },
+                        { status: { [Op.in]: todayPlanStatuses } },
                     ],
                 },
                 {
+                    // Recurring parent tasks with active status
                     [Op.and]: [
                         { recurrence_type: { [Op.ne]: 'none' } },
                         { recurrence_type: { [Op.ne]: null } },
                         { recurring_parent_id: null },
-                        { today: true },
+                        { status: { [Op.in]: todayPlanStatuses } },
                     ],
                 },
                 {
+                    // Recurring instances due today
                     [Op.and]: [
                         { recurring_parent_id: { [Op.ne]: null } },
                         {

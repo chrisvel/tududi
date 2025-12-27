@@ -267,7 +267,7 @@ const HabitDetails: React.FC = () => {
                 habit_flexibility_mode: editableValues.habit_flexibility_mode,
                 recurrence_type: 'daily',
                 recurrence_interval: 1,
-                today: true,
+                status: 'planned', // Show in today's plan
             };
 
             const created = await createHabit(habitData);

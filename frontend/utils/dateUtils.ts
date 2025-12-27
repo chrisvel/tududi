@@ -4,6 +4,18 @@ import { enUS } from 'date-fns/locale/en-US';
 import { es } from 'date-fns/locale/es';
 import { el } from 'date-fns/locale/el';
 import i18n from '../i18n';
+import {
+    isTaskInProgress,
+    isTaskPlanned,
+    isTaskWaiting,
+} from '../constants/taskStatus';
+import { StatusType } from '../entities/Task';
+
+// Check if task is in today's plan (has active status)
+export const isTaskInTodayPlan = (
+    status: StatusType | number | undefined | null
+): boolean =>
+    isTaskInProgress(status) || isTaskPlanned(status) || isTaskWaiting(status);
 
 let userTimezone: string | null = null;
 
@@ -198,19 +210,17 @@ export const formatDateTime = (
  * @param task - The task to check
  * @returns True if the task is likely overdue in today plan, false otherwise
  */
-export const isTaskOverdue = (task: {
-    today?: boolean;
+export const isTaskOverdueInTodayPlan = (task: {
     created_at?: string;
-    today_move_count?: number;
-    status: string | number;
+    status: StatusType | number;
     completed_at: string | null;
 }): boolean => {
-    // If task is not in today plan, it's not overdue
-    if (!task.today) {
+    // If task is not in today plan (no active status), it's not overdue in today plan
+    if (!isTaskInTodayPlan(task.status)) {
         return false;
     }
 
-    // Only hide overdue badge if task is actually completed (done/archived), not just in progress
+    // Only hide overdue badge if task is actually completed (done/archived)
     if (
         task.completed_at ||
         task.status === 'done' ||
@@ -219,11 +229,6 @@ export const isTaskOverdue = (task: {
         task.status === 3
     ) {
         return false;
-    }
-
-    // If task has been moved to today multiple times, it's likely been sitting around
-    if (task.today_move_count && task.today_move_count > 1) {
-        return true;
     }
 
     // If no creation date, can't determine if overdue

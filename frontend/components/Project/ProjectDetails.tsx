@@ -25,11 +25,7 @@ import {
     deleteProject,
     fetchProjects,
 } from '../../utils/projectsService';
-import {
-    createTask,
-    deleteTask,
-    toggleTaskToday,
-} from '../../utils/tasksService';
+import { createTask, deleteTask } from '../../utils/tasksService';
 import {
     updateNote,
     deleteNote as apiDeleteNote,
@@ -377,40 +373,6 @@ const ProjectDetails: React.FC = () => {
                     : task
             )
         );
-    };
-
-    const handleToggleToday = async (taskId: number, task?: Task) => {
-        try {
-            const updatedTask = await toggleTaskToday(taskId, task);
-            setTasks((prev) =>
-                prev.map((t) =>
-                    t.id === taskId
-                        ? {
-                              ...t,
-                              today: updatedTask.today,
-                              today_move_count: updatedTask.today_move_count,
-                          }
-                        : t
-                )
-            );
-        } catch {
-            if (!uidSlug) return;
-            try {
-                const projectData = await fetchProjectBySlug(uidSlug);
-                setProject(projectData);
-                setTasks(projectData.tasks || projectData.Tasks || []);
-                const fetchedNotes =
-                    projectData.notes || projectData.Notes || [];
-                setNotes(
-                    fetchedNotes.map((note) => {
-                        if (note.Tags && !note.tags) note.tags = note.Tags;
-                        return note;
-                    })
-                );
-            } catch {
-                // silent
-            }
-        }
     };
 
     const handleSaveProject = async (updatedProject: Project) => {
@@ -1059,7 +1021,7 @@ const ProjectDetails: React.FC = () => {
                                                 handleTaskCompletionToggle
                                             }
                                             onTaskDelete={handleTaskDelete}
-                                            onToggleToday={handleToggleToday}
+                                            onToggleToday={undefined}
                                             allProjects={allProjects}
                                             showCompleted={
                                                 taskStatusFilter !== 'active'

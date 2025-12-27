@@ -12,8 +12,6 @@ export interface Task {
     due_date?: string;
     defer_until?: string;
     note?: string;
-    today?: boolean;
-    today_move_count?: number;
     tags?: Tag[];
     project_id?: number;
     Project?: Project;

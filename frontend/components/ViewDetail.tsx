@@ -567,27 +567,6 @@ const ViewDetail: React.FC = () => {
         }
     };
 
-    const handleToggleToday = async (taskId: number, task?: Task) => {
-        try {
-            const { toggleTaskToday } = await import('../utils/tasksService');
-            const updatedTask = await toggleTaskToday(taskId, task);
-
-            setTasks((prevTasks) =>
-                prevTasks.map((task) =>
-                    task.id === taskId
-                        ? {
-                              ...task,
-                              today: updatedTask.today,
-                              today_move_count: updatedTask.today_move_count,
-                          }
-                        : task
-                )
-            );
-        } catch (error) {
-            console.error('Error toggling today status:', error);
-        }
-    };
-
     const handleTaskCompletionToggle = (updatedTask: Task) => {
         setTasks((prevTasks) =>
             prevTasks.map((task) =>
@@ -1159,7 +1138,7 @@ const ViewDetail: React.FC = () => {
                                 onTaskDelete={handleTaskDelete}
                                 projects={projectLookupList}
                                 hideProjectName={false}
-                                onToggleToday={handleToggleToday}
+                                onToggleToday={undefined}
                                 showCompletedTasks={showCompletedTasks}
                                 searchQuery={taskSearchQuery}
                             />
@@ -1173,7 +1152,7 @@ const ViewDetail: React.FC = () => {
                                 onTaskDelete={handleTaskDelete}
                                 projects={projectLookupList}
                                 hideProjectName={false}
-                                onToggleToday={handleToggleToday}
+                                onToggleToday={undefined}
                                 showCompletedTasks={showCompletedTasks}
                             />
                         )}

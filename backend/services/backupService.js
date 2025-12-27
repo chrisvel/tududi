@@ -418,7 +418,6 @@ async function importUserData(userId, backupData, options = { merge: true }) {
                             name: taskData.name,
                             due_date: taskData.due_date,
                             defer_until: taskData.defer_until,
-                            today: taskData.today,
                             priority: taskData.priority,
                             status: taskData.status,
                             note: taskData.note,

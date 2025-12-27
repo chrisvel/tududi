@@ -7,6 +7,22 @@ const {
 } = require('../../../utils/timezone-utils');
 const { getTaskIncludeConfig } = require('./query-builders');
 
+// Statuses that indicate a task is in the "today plan" (actively being worked on)
+// Used to exclude from overdue/due-today sections to avoid duplicates
+const TODAY_PLAN_STATUSES = [
+    Task.STATUS.IN_PROGRESS,
+    Task.STATUS.WAITING,
+    Task.STATUS.PLANNED,
+    'in_progress',
+    'waiting',
+    'planned',
+];
+
+// Helper to check if a task is in the today plan based on status
+function isTaskInTodayPlan(task) {
+    return TODAY_PLAN_STATUSES.includes(task.status);
+}
+
 async function countTotalOpenTasks(visibleTasksWhere) {
     return await Task.count({
         where: {
@@ -125,11 +141,11 @@ async function fetchTasksDueToday(visibleTasksWhere, userTimezone) {
                             Task.STATUS.ARCHIVED,
                             'done',
                             'archived',
+                            ...TODAY_PLAN_STATUSES,
                         ],
                     },
                     parent_task_id: null,
                     recurring_parent_id: null,
-                    today: { [Op.or]: [false, null] },
                     [Op.or]: [
                         {
                             due_date: {
@@ -173,11 +189,12 @@ async function fetchOverdueTasks(visibleTasksWhere, userTimezone) {
                             Task.STATUS.ARCHIVED,
                             'done',
                             'archived',
+                            // Exclude tasks in today plan (they show in Planned section)
+                            ...TODAY_PLAN_STATUSES,
                         ],
                     },
                     parent_task_id: null,
                     recurring_parent_id: null,
-                    today: { [Op.or]: [false, null] },
                     [Op.or]: [
                         { due_date: { [Op.lt]: todayBounds.start } },
                         sequelize.literal(`EXISTS (

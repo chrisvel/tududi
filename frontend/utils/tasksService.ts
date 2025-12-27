@@ -174,20 +174,6 @@ export const fetchSubtasks = async (parentTaskUid: string): Promise<Task[]> => {
     return await response.json();
 };
 
-export const toggleTaskToday = async (
-    taskId: number,
-    currentTask?: Task
-): Promise<Task> => {
-    if (!currentTask) {
-        currentTask = await fetchTaskById(taskId);
-    }
-
-    return await updateTask(currentTask.uid!, {
-        ...currentTask,
-        today: !currentTask.today,
-    });
-};
-
 export interface TaskIteration {
     date: string;
     utc_date: string;
