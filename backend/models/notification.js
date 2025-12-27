@@ -73,7 +73,12 @@ module.exports = (sequelize) => {
                         if (!Array.isArray(value)) {
                             throw new Error('Sources must be an array');
                         }
-                        const validSources = ['telegram', 'mobile', 'email'];
+                        const validSources = [
+                            'telegram',
+                            'mobile',
+                            'email',
+                            'push',
+                        ];
                         const invalidSources = value.filter(
                             (s) => !validSources.includes(s)
                         );
@@ -168,8 +173,28 @@ module.exports = (sequelize) => {
             );
         }
 
+        if (sources.includes('push')) {
+            await sendWebPushNotification(userId, {
+                title,
+                message,
+                data,
+                type,
+            });
+        }
+
         return notification;
     };
+
+    async function sendWebPushNotification(userId, notification) {
+        try {
+            const webPushService = require('../services/webPushService');
+            if (webPushService.isWebPushConfigured()) {
+                await webPushService.sendPushNotification(userId, notification);
+            }
+        } catch (error) {
+            console.error('Failed to send Web Push notification:', error);
+        }
+    }
 
     async function sendEmailNotification(
         userId,

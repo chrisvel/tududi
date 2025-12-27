@@ -4,6 +4,7 @@ const { logError } = require('./logService');
 const {
     shouldSendInAppNotification,
     shouldSendTelegramNotification,
+    shouldSendPushNotification,
 } = require('../utils/notificationPreferences');
 
 /**
@@ -112,6 +113,11 @@ async function checkDueProjects() {
                     )
                 ) {
                     sources.push('telegram');
+                }
+                if (
+                    shouldSendPushNotification(project.User, notificationType)
+                ) {
+                    sources.push('push');
                 }
 
                 await Notification.createNotification({

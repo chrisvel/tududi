@@ -1,6 +1,7 @@
 const express = require('express');
 const { Notification } = require('../models');
 const { logError } = require('../services/logService');
+const webPushService = require('../services/webPushService');
 const router = express.Router();
 const { getAuthenticatedUserId } = require('../utils/request-utils');
 
@@ -153,6 +154,61 @@ router.delete('/:id', async (req, res) => {
     } catch (error) {
         logError('Error dismissing notification:', error);
         res.status(500).json({ error: 'Failed to dismiss notification' });
+    }
+});
+
+// GET /notifications/push/vapid-key - Get public VAPID key
+router.get('/push/vapid-key', (req, res) => {
+    const publicKey = webPushService.getVapidPublicKey();
+    if (!publicKey) {
+        return res
+            .status(503)
+            .json({ error: 'Push notifications not configured' });
+    }
+    res.json({ publicKey });
+});
+
+// POST /notifications/push/subscribe - Subscribe to push notifications
+router.post('/push/subscribe', async (req, res) => {
+    try {
+        const { subscription } = req.body;
+        if (!subscription || !subscription.endpoint || !subscription.keys) {
+            return res
+                .status(400)
+                .json({ error: 'Invalid subscription object' });
+        }
+
+        const result = await webPushService.subscribe(
+            req.authUserId,
+            subscription
+        );
+        if (!result.success) {
+            return res.status(500).json({ error: result.error });
+        }
+
+        res.json({ success: true, created: result.created });
+    } catch (error) {
+        logError('Error subscribing to push:', error);
+        res.status(500).json({ error: 'Failed to subscribe' });
+    }
+});
+
+// DELETE /notifications/push/unsubscribe - Unsubscribe from push notifications
+router.delete('/push/unsubscribe', async (req, res) => {
+    try {
+        const { endpoint } = req.body;
+        if (!endpoint) {
+            return res.status(400).json({ error: 'Endpoint is required' });
+        }
+
+        const result = await webPushService.unsubscribe(
+            req.authUserId,
+            endpoint
+        );
+        res.json({ success: true, deleted: result.deleted });
+    } catch (error) {
+        logError('Error unsubscribing from push:', error);
+        res.status(500).json({ error: 'Failed to unsubscribe' });
     }
 });
 

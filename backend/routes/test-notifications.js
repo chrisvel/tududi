@@ -97,6 +97,11 @@ function getSources(user, notificationType) {
         sources.push('email');
     }
 
+    // Add push to sources if enabled
+    if (prefs[prefKey].push === true) {
+        sources.push('push');
+    }
+
     return sources;
 }
 
