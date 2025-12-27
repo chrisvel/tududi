@@ -54,4 +54,3 @@ module.exports = {
         await queryInterface.dropTable('push_subscriptions');
     },
 };
-

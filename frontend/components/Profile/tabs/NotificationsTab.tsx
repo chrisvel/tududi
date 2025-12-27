@@ -20,9 +20,13 @@ interface NotificationsTabProps {
 // Convert VAPID key from base64 to Uint8Array
 function urlBase64ToUint8Array(base64String: string): Uint8Array<ArrayBuffer> {
     const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
-    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const base64 = (base64String + padding)
+        .replace(/-/g, '+')
+        .replace(/_/g, '/');
     const rawData = window.atob(base64);
-    const outputArray = new Uint8Array(rawData.length) as Uint8Array<ArrayBuffer>;
+    const outputArray = new Uint8Array(
+        rawData.length
+    ) as Uint8Array<ArrayBuffer>;
     for (let i = 0; i < rawData.length; ++i) {
         outputArray[i] = rawData.charCodeAt(i);
     }
@@ -144,7 +148,8 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
     const [testLoading, setTestLoading] = React.useState<boolean>(false);
     const [testMessage, setTestMessage] = React.useState<string>('');
     const [pushSupported, setPushSupported] = React.useState<boolean>(false);
-    const [hasUnsavedChanges, setHasUnsavedChanges] = React.useState<boolean>(false);
+    const [hasUnsavedChanges, setHasUnsavedChanges] =
+        React.useState<boolean>(false);
     const testMessageTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
     // Register reset function with parent on mount
@@ -169,15 +174,20 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                 // Try to get registration with timeout fallback
                 const registration = await Promise.race([
                     navigator.serviceWorker.ready,
-                    new Promise<ServiceWorkerRegistration | undefined>((resolve) =>
-                        setTimeout(async () => {
-                            const reg = await navigator.serviceWorker.getRegistration('/');
-                            resolve(reg);
-                        }, 2000)
+                    new Promise<ServiceWorkerRegistration | undefined>(
+                        (resolve) =>
+                            setTimeout(async () => {
+                                const reg =
+                                    await navigator.serviceWorker.getRegistration(
+                                        '/'
+                                    );
+                                resolve(reg);
+                            }, 2000)
                     ),
                 ]);
                 if (registration) {
-                    const subscription = await registration.pushManager.getSubscription();
+                    const subscription =
+                        await registration.pushManager.getSubscription();
                     setPushSubscribed(!!subscription);
                 }
             } catch (err) {
@@ -192,7 +202,9 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
         setPushLoading(true);
         try {
             // Get VAPID public key from server
-            const keyResponse = await fetch('/api/notifications/push/vapid-key');
+            const keyResponse = await fetch(
+                '/api/notifications/push/vapid-key'
+            );
             if (!keyResponse.ok) {
                 throw new Error('Push notifications not configured on server');
             }
@@ -210,7 +222,8 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                 new Promise<ServiceWorkerRegistration | undefined>((resolve) =>
                     setTimeout(async () => {
                         // Fallback: try to get registration directly
-                        const reg = await navigator.serviceWorker.getRegistration('/');
+                        const reg =
+                            await navigator.serviceWorker.getRegistration('/');
                         resolve(reg);
                     }, 3000)
                 ),
@@ -218,7 +231,10 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
 
             if (!registration) {
                 // Try to register SW if not found
-                registration = await navigator.serviceWorker.register('/pwa/sw.js', { scope: '/' });
+                registration = await navigator.serviceWorker.register(
+                    '/pwa/sw.js',
+                    { scope: '/' }
+                );
                 await registration.update();
                 // Wait for it to activate
                 await new Promise<void>((resolve) => {
@@ -226,11 +242,17 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                         resolve();
                     } else {
                         registration!.addEventListener('updatefound', () => {
-                            registration!.installing?.addEventListener('statechange', (e) => {
-                                if ((e.target as ServiceWorker).state === 'activated') {
-                                    resolve();
+                            registration!.installing?.addEventListener(
+                                'statechange',
+                                (e) => {
+                                    if (
+                                        (e.target as ServiceWorker).state ===
+                                        'activated'
+                                    ) {
+                                        resolve();
+                                    }
                                 }
-                            });
+                            );
                         });
                         setTimeout(resolve, 5000); // Max wait 5s
                     }
@@ -242,11 +264,16 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
             });
 
             // Send subscription to server
-            const subResponse = await fetch('/api/notifications/push/subscribe', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ subscription: subscription.toJSON() }),
-            });
+            const subResponse = await fetch(
+                '/api/notifications/push/subscribe',
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        subscription: subscription.toJSON(),
+                    }),
+                }
+            );
             if (!subResponse.ok) {
                 const err = await subResponse.json();
                 throw new Error(err.error || 'Failed to save subscription');
@@ -266,7 +293,8 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
         setPushLoading(true);
         try {
             const registration = await navigator.serviceWorker.ready;
-            const subscription = await registration.pushManager.getSubscription();
+            const subscription =
+                await registration.pushManager.getSubscription();
             if (subscription) {
                 await fetch('/api/notifications/push/unsubscribe', {
                     method: 'DELETE',
@@ -329,8 +357,13 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
         }
 
         if (hasUnsavedChanges) {
-            setTestMessage('⚠️ You have unsaved changes. Save your preferences first to test with the new settings.');
-            testMessageTimeoutRef.current = setTimeout(() => setTestMessage(''), 5000);
+            setTestMessage(
+                '⚠️ You have unsaved changes. Save your preferences first to test with the new settings.'
+            );
+            testMessageTimeoutRef.current = setTimeout(
+                () => setTestMessage(''),
+                5000
+            );
             return;
         }
 
@@ -363,7 +396,10 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
         } finally {
             setTestLoading(false);
             // Clear message after 5 seconds
-            testMessageTimeoutRef.current = setTimeout(() => setTestMessage(''), 5000);
+            testMessageTimeoutRef.current = setTimeout(
+                () => setTestMessage(''),
+                5000
+            );
         }
     };
 
@@ -386,17 +422,29 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                     <div className="flex items-center justify-between">
                         <div>
                             <h4 className="text-sm font-medium text-blue-900 dark:text-blue-100">
-                                {t('notifications.push.title', 'Browser Push Notifications')}
+                                {t(
+                                    'notifications.push.title',
+                                    'Browser Push Notifications'
+                                )}
                             </h4>
                             <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
                                 {pushSubscribed
-                                    ? t('notifications.push.enabled', 'Push notifications are enabled for this browser.')
-                                    : t('notifications.push.disabled', 'Enable to receive notifications even when the app is closed.')
-                                }
+                                    ? t(
+                                          'notifications.push.enabled',
+                                          'Push notifications are enabled for this browser.'
+                                      )
+                                    : t(
+                                          'notifications.push.disabled',
+                                          'Enable to receive notifications even when the app is closed.'
+                                      )}
                             </p>
                         </div>
                         <button
-                            onClick={pushSubscribed ? unsubscribeFromPush : subscribeToPush}
+                            onClick={
+                                pushSubscribed
+                                    ? unsubscribeFromPush
+                                    : subscribeToPush
+                            }
                             disabled={pushLoading}
                             className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                                 pushSubscribed
@@ -407,9 +455,8 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                             {pushLoading
                                 ? t('common.loading', 'Loading...')
                                 : pushSubscribed
-                                    ? t('notifications.push.disable', 'Disable')
-                                    : t('notifications.push.enable', 'Enable')
-                            }
+                                  ? t('notifications.push.disable', 'Disable')
+                                  : t('notifications.push.enable', 'Enable')}
                         </button>
                     </div>
                 </div>
@@ -472,14 +519,14 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                             icon={BellAlertIcon}
                             label={t(
                                 'notifications.types.dueTasks',
-                                 'Due Tasks'
+                                'Due Tasks'
                             )}
                             description={t(
                                 'notifications.descriptions.dueTasks',
                                 'Tasks that are due within 24 hours'
                             )}
                             preferences={preferences.dueTasks}
-                            onToggle={(channel, value) => 
+                            onToggle={(channel, value) =>
                                 handleToggle('dueTasks', channel, value)
                             }
                             telegramConfigured={telegramConfigured}

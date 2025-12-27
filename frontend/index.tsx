@@ -10,7 +10,6 @@ import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n'; // Import the i18n instance with its configuration
 import { getBasePath } from './config/paths';
 
-
 const storedPreference = localStorage.getItem('isDarkMode');
 const prefersDarkMode = window.matchMedia(
     '(prefers-color-scheme: dark)'

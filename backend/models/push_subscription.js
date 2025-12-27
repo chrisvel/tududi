@@ -40,4 +40,3 @@ module.exports = (sequelize) => {
 
     return PushSubscription;
 };
-
