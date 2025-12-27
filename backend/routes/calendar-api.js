@@ -148,6 +148,8 @@ router.get('/calendar/feed-url', async (req, res) => {
             parameters: {
                 completed: 'Set to "true" to include completed tasks',
                 project: 'Filter by project ID',
+                tag: 'Filter by tag name',
+                priority: 'Filter by priority',
             },
         });
     } catch (error) {

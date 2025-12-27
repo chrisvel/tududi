@@ -220,13 +220,15 @@ function generateICalendar(tasks, calendarName, hostname) {
  *   - token (required): iCal feed token for authentication
  *   - completed: Include completed tasks (default: false)
  *   - project: Filter by project ID
+ *   - tag: Filter by tag name
+ *   - priority: Filter by priority
  *
  * Example URL for Apple Calendar subscription:
  *   https://your-tududi.com/api/calendar/feed.ics?token=ical_xxxxx
  */
 router.get('/calendar/feed.ics', async (req, res) => {
     try {
-        const { token, completed, project } = req.query;
+        const { token, completed, project, tag, priority } = req.query;
 
         if (!token) {
             return res.status(401).json({
@@ -267,6 +269,32 @@ router.get('/calendar/feed.ics', async (req, res) => {
             if (!isNaN(projectId)) {
                 whereConditions.project_id = projectId;
             }
+        }
+
+        if (tag) {
+            const taggedTaskIds = await sequelize.query(
+                `SELECT DISTINCT tasks_tags.task_id
+             FROM tasks_tags
+             INNER JOIN tags ON tags.id = tasks_tags.tag_id
+             WHERE tags.name = :tagName`,
+                {
+                    replacements: { tagName: tag },
+                    type: QueryTypes.SELECT,
+                }
+            );
+
+            const tagFilteredTaskIds = taggedTaskIds.map((row) => row.task_id);
+
+            if (tagFilteredTaskIds.length) {
+                whereConditions.id = {
+                    ...(whereConditions.id || {}),
+                    [Op.in]: tagFilteredTaskIds,
+                };
+            }
+        }
+
+        if (priority) {
+            whereConditions.priority = Task.getPriorityValue(priority);
         }
 
         whereConditions.recurring_parent_id = null;
