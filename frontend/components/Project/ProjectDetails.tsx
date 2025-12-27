@@ -317,9 +317,7 @@ const ProjectDetails: React.FC = () => {
                               ...task,
                               ...updatedTask,
                               subtasks:
-                                  updatedTask.subtasks ||
-                                  task.subtasks ||
-                                  [],
+                                  updatedTask.subtasks || task.subtasks || [],
                           }
                         : task
                 )
@@ -374,10 +372,7 @@ const ProjectDetails: React.FC = () => {
                     ? {
                           ...task,
                           ...updatedTask,
-                          subtasks:
-                              updatedTask.subtasks ||
-                              task.subtasks ||
-                              [],
+                          subtasks: updatedTask.subtasks || task.subtasks || [],
                       }
                     : task
             )

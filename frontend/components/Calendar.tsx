@@ -53,7 +53,7 @@ const Calendar: React.FC = () => {
     const [isLoadingTasks, setIsLoadingTasks] = useState(false);
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
     const [allTasks, setAllTasks] = useState<any[]>([]);
-    const [projects, setProjects] = useState<Project[]>([]);
+    const [, setProjects] = useState<Project[]>([]);
     const [isEventDetailModalOpen, setIsEventDetailModalOpen] = useState(false);
 
     // Dispatch global modal events

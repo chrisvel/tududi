@@ -38,7 +38,6 @@ const TaskDetails: React.FC = () => {
     const { t } = useTranslation();
     const { showSuccessToast, showErrorToast } = useToast();
 
-    const projects = useStore((state: any) => state.projectsStore.projects);
     const projectsStore = useStore((state: any) => state.projectsStore);
     const tagsStore = useStore((state: any) => state.tagsStore);
     const tasksStore = useStore((state: any) => state.tasksStore);
@@ -857,15 +856,6 @@ const TaskDetails: React.FC = () => {
         setTaskToDelete(null);
     };
 
-    const handleCreateProject = async (name: string): Promise<Project> => {
-        try {
-            return await createProject({ name });
-        } catch (error) {
-            console.error('Error creating project:', error);
-            throw error;
-        }
-    };
-
     const getProjectLink = (project: Project) => {
         if (project.uid) {
             const slug = project.name
@@ -1103,12 +1093,12 @@ const TaskDetails: React.FC = () => {
         <div className="px-4 lg:px-6 pt-4">
             <div className="w-full">
                 {/* Header Section with Title and Action Buttons */}
-                    <TaskDetailsHeader
-                        task={task}
-                        onTitleUpdate={handleTitleUpdate}
-                        onStatusUpdate={handleStatusUpdate}
-                        onPriorityUpdate={handlePriorityUpdate}
-                        onDelete={handleDeleteClick}
+                <TaskDetailsHeader
+                    task={task}
+                    onTitleUpdate={handleTitleUpdate}
+                    onStatusUpdate={handleStatusUpdate}
+                    onPriorityUpdate={handlePriorityUpdate}
+                    onDelete={handleDeleteClick}
                     getProjectLink={getProjectLink}
                     getTagLink={getTagLink}
                     activePill={activePill}

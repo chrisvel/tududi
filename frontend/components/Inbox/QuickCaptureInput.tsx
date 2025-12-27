@@ -1327,7 +1327,9 @@ const QuickCaptureInput = React.forwardRef<
                                             priority: null,
                                             tags: taskTags,
                                             Project: projectUid
-                                                ? ({ uid: projectUid } as Project)
+                                                ? ({
+                                                      uid: projectUid,
+                                                  } as Project)
                                                 : undefined,
                                             completed_at: null,
                                         };

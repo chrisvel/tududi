@@ -317,10 +317,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                         ...task,
                         ...response,
                         // Explicitly preserve subtasks data from original task
-                        subtasks:
-                            response.subtasks ||
-                            task.subtasks ||
-                            [],
+                        subtasks: response.subtasks || task.subtasks || [],
                     };
                     await onTaskUpdate(mergedTask);
                 }

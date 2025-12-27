@@ -13,7 +13,6 @@ import { Note } from './entities/Note';
 import { Area } from './entities/Area';
 import { Tag } from './entities/Tag';
 import { Project } from './entities/Project';
-import { Task } from './entities/Task';
 import { User } from './entities/User';
 import { useStore } from './store/useStore';
 import { createNote, updateNote } from './utils/notesService';
@@ -25,7 +24,7 @@ import {
     updateProject,
 } from './utils/projectsService';
 import { isAuthError } from './utils/authUtils';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 interface LayoutProps {
     currentUser: User;
