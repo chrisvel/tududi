@@ -1685,6 +1685,7 @@ const QuickCaptureInput = React.forwardRef<
                                             inputRef.current = el;
                                         }}
                                         type="text"
+                                        data-testid="quick-capture-input"
                                         value={inputText}
                                         onChange={handleChange}
                                         onSelect={(e) => {

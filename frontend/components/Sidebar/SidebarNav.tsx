@@ -116,6 +116,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                             onClick={() =>
                                 handleNavClick(link.path, link.title, link.icon)
                             }
+                            data-testid={`sidebar-nav-${link.path.replace(/^\//, '').replace(/\?.*$/, '')}`}
                             className={`w-full text-left px-4 py-1 flex items-center justify-between rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 ${isActive(
                                 link.path,
                                 link.query

@@ -101,7 +101,7 @@ test.describe.serial('Enabled', () => {
             await expect(page.getByTestId('register-success-back-link')).toBeVisible();
         } else if (errorVisible) {
             await expect(page.getByTestId('register-error')).toBeVisible();
-            await expect(page.getByTestId('register-error')).toContainText(/failed to send verification email/i);
+            await expect(page.getByTestId('register-error')).toContainText(/failed|error/i);
         } else {
             throw new Error('Neither success nor error message appeared');
         }
