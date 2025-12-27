@@ -17,7 +17,7 @@ import {
     CheckIcon,
     BellIcon,
 } from '@heroicons/react/24/outline';
-import TelegramIcon from '../Icons/TelegramIcon';
+import TelegramIcon from '../Shared/Icons/TelegramIcon';
 import { useToast } from '../Shared/ToastContext';
 import { dispatchTelegramStatusChange } from '../../contexts/TelegramStatusContext';
 import ConfirmDialog from '../Shared/ConfirmDialog';

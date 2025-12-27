@@ -726,18 +726,9 @@ const TasksToday: React.FC = () => {
                                 ? {
                                       ...task,
                                       ...taskToProcess,
-                                      // Explicitly preserve subtasks data
                                       subtasks:
                                           taskToProcess.subtasks ||
-                                          taskToProcess.Subtasks ||
                                           task.subtasks ||
-                                          task.Subtasks ||
-                                          [],
-                                      Subtasks:
-                                          taskToProcess.subtasks ||
-                                          taskToProcess.Subtasks ||
-                                          task.subtasks ||
-                                          task.Subtasks ||
                                           [],
                                   }
                                 : task
@@ -895,15 +886,7 @@ const TasksToday: React.FC = () => {
                                       ...updatedTaskFromServer,
                                       subtasks:
                                           updatedTaskFromServer.subtasks ||
-                                          updatedTaskFromServer.Subtasks ||
                                           task.subtasks ||
-                                          task.Subtasks ||
-                                          [],
-                                      Subtasks:
-                                          updatedTaskFromServer.subtasks ||
-                                          updatedTaskFromServer.Subtasks ||
-                                          task.subtasks ||
-                                          task.Subtasks ||
                                           [],
                                   }
                                 : task

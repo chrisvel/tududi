@@ -164,8 +164,8 @@ export const fetchTaskByUid = async (uid: string): Promise<Task> => {
     return await response.json();
 };
 
-export const fetchSubtasks = async (parentTaskId: number): Promise<Task[]> => {
-    const response = await fetch(getApiPath(`task/${parentTaskId}/subtasks`), {
+export const fetchSubtasks = async (parentTaskUid: string): Promise<Task[]> => {
+    const response = await fetch(getApiPath(`task/${parentTaskUid}/subtasks`), {
         credentials: 'include',
         headers: getDefaultHeaders(),
     });
@@ -194,14 +194,14 @@ export interface TaskIteration {
 }
 
 export const fetchTaskNextIterations = async (
-    taskId: number,
+    taskUid: string,
     startFromDate?: string
 ): Promise<TaskIteration[]> => {
     const url = startFromDate
         ? getApiPath(
-              `task/${taskId}/next-iterations?startFromDate=${startFromDate}`
+              `task/${taskUid}/next-iterations?startFromDate=${startFromDate}`
           )
-        : getApiPath(`task/${taskId}/next-iterations`);
+        : getApiPath(`task/${taskUid}/next-iterations`);
 
     const response = await fetch(url, {
         credentials: 'include',

@@ -15,14 +15,12 @@ describe('Task Model', () => {
         it('should create a task with valid data', async () => {
             const taskData = {
                 name: 'Test Task',
-                description: 'Test Description',
                 user_id: user.id,
             };
 
             const task = await Task.create(taskData);
 
             expect(task.name).toBe(taskData.name);
-            expect(task.description).toBe(taskData.description);
             expect(task.user_id).toBe(user.id);
             expect(task.today).toBe(false);
             expect(task.priority).toBe(0);
@@ -141,7 +139,6 @@ describe('Task Model', () => {
             const task = await Task.create({
                 name: 'Test Task',
                 user_id: user.id,
-                description: null,
                 due_date: null,
                 note: null,
                 recurrence_interval: null,
@@ -149,7 +146,6 @@ describe('Task Model', () => {
                 project_id: null,
             });
 
-            expect(task.description).toBeNull();
             expect(task.due_date).toBeNull();
             expect(task.note).toBeNull();
             expect(task.recurrence_interval).toBeNull();
@@ -161,7 +157,6 @@ describe('Task Model', () => {
             const dueDate = new Date();
             const task = await Task.create({
                 name: 'Test Task',
-                description: 'Test Description',
                 due_date: dueDate,
                 today: true,
                 priority: Task.PRIORITY.HIGH,
@@ -170,7 +165,6 @@ describe('Task Model', () => {
                 user_id: user.id,
             });
 
-            expect(task.description).toBe('Test Description');
             expect(task.due_date).toEqual(dueDate);
             expect(task.today).toBe(true);
             expect(task.priority).toBe(Task.PRIORITY.HIGH);

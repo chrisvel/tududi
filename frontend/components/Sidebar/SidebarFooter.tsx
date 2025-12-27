@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     SunIcon,
     MoonIcon,
@@ -10,7 +11,7 @@ import {
     TagIcon,
     InboxIcon,
 } from '@heroicons/react/24/outline';
-import TelegramIcon from '../Icons/TelegramIcon';
+import TelegramIcon from '../Shared/Icons/TelegramIcon';
 import { useTranslation } from 'react-i18next';
 import { Note } from '../../entities/Note';
 import { Area } from '../../entities/Area';
@@ -25,7 +26,7 @@ interface SidebarFooterProps {
     setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
     isDropdownOpen: boolean;
     toggleDropdown: () => void;
-    openTaskModal: (type?: 'simplified' | 'full') => void;
+    openTaskModal: () => void;
     openProjectModal: () => void;
     openNoteModal: (note: Note | null) => void;
     openAreaModal: (area: Area | null) => void;
@@ -36,6 +37,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
     isDarkMode,
     toggleDarkMode,
     isSidebarOpen,
+    setIsSidebarOpen,
     openTaskModal,
     openProjectModal,
     openNoteModal,
@@ -47,6 +49,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
     const { status: telegramStatus } = useTelegramStatus();
     const dropdownRef = useRef<HTMLDivElement>(null);
     const [version, setVersion] = useState<string>('v0.86');
+    const navigate = useNavigate();
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
@@ -132,10 +135,13 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
     const handleDropdownSelect = (type: string) => {
         switch (type) {
             case 'Inbox':
-                openTaskModal('simplified');
+                navigate('/inbox');
+                if (window.innerWidth < 1024) {
+                    setIsSidebarOpen(false);
+                }
                 break;
             case 'Task':
-                openTaskModal('full');
+                openTaskModal();
                 break;
             case 'Project':
                 openProjectModal();

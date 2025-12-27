@@ -58,7 +58,7 @@ describe('Tasks Routes', () => {
             console.error = jest.fn();
 
             const taskData = {
-                description: 'Test Description',
+                note: 'Test Note',
             };
 
             const response = await agent.post('/api/task').send(taskData);
@@ -76,14 +76,12 @@ describe('Tasks Routes', () => {
         beforeEach(async () => {
             task1 = await Task.create({
                 name: 'Task 1',
-                description: 'Description 1',
                 user_id: user.id,
                 today: true,
             });
 
             task2 = await Task.create({
                 name: 'Task 2',
-                description: 'Description 2',
                 user_id: user.id,
                 today: false,
             });
@@ -124,7 +122,6 @@ describe('Tasks Routes', () => {
         beforeEach(async () => {
             task = await Task.create({
                 name: 'Test Task',
-                description: 'Test Description',
                 priority: 0,
                 status: 0,
                 user_id: user.id,

@@ -183,16 +183,10 @@ const registerApiRoutes = (basePath) => {
     app.use(basePath, require('./routes/url'));
     app.use(basePath, require('./routes/telegram'));
     app.use(basePath, require('./routes/quotes'));
-    app.use(basePath, require('./routes/task-events'));
-    app.use(basePath, require('./routes/task-attachments'));
     app.use(`${basePath}/backup`, require('./routes/backup'));
     app.use(`${basePath}/search`, require('./routes/search'));
     app.use(`${basePath}/views`, require('./routes/views'));
     app.use(`${basePath}/notifications`, require('./routes/notifications'));
-    app.use(
-        `${basePath}/test-notifications`,
-        require('./routes/test-notifications')
-    );
 };
 
 // Register routes at both /api and /api/v1 (if versioned) to maintain backwards compatibility

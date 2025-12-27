@@ -381,9 +381,9 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             };
 
             if (item.uid !== undefined) {
-                openTaskModal(newTask, item.uid);
+                void openTaskModal(newTask, item.uid);
             } else {
-                openTaskModal(newTask);
+                void openTaskModal(newTask);
             }
         } catch (error) {
             console.error('Error converting to task:', error);

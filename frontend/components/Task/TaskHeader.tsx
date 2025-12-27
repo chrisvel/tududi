@@ -9,7 +9,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { TagIcon, FolderIcon, FireIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
-import TaskPriorityIcon from './TaskPriorityIcon';
+import TaskPriorityIcon from '../Shared/Icons/TaskPriorityIcon';
 import { Project } from '../../entities/Project';
 import { Task } from '../../entities/Task';
 import { fetchSubtasks } from '../../utils/tasksService';
@@ -691,11 +691,11 @@ const TaskWithSubtasks: React.FC<TaskWithSubtasksProps> = (props) => {
     const [loadingSubtasks, setLoadingSubtasks] = useState(false);
 
     const loadSubtasks = useCallback(async () => {
-        if (!props.task.id) return;
+        if (!props.task.uid) return;
 
         setLoadingSubtasks(true);
         try {
-            const subtasksData = await fetchSubtasks(props.task.id);
+            const subtasksData = await fetchSubtasks(props.task.uid);
             setSubtasks(subtasksData);
             setShowSubtasks(subtasksData.length > 0);
         } catch (error) {
@@ -708,7 +708,7 @@ const TaskWithSubtasks: React.FC<TaskWithSubtasksProps> = (props) => {
     }, [props.task.id]);
 
     useEffect(() => {
-        const subtasksData = props.task.subtasks || props.task.Subtasks || [];
+        const subtasksData = props.task.subtasks || [];
         const hasSubtasksFromData = subtasksData.length > 0;
         setSubtasks(subtasksData);
         setShowSubtasks(hasSubtasksFromData);
@@ -716,7 +716,7 @@ const TaskWithSubtasks: React.FC<TaskWithSubtasksProps> = (props) => {
         if (!hasSubtasksFromData) {
             void loadSubtasks();
         }
-    }, [props.task.id, props.task.subtasks, props.task.Subtasks, loadSubtasks]);
+    }, [props.task.id, props.task.subtasks, loadSubtasks]);
 
     return (
         <>

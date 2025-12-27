@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import TaskModal from './Task/TaskModal';
 import { Task } from '../entities/Task';
 import { Project } from '../entities/Project';
-import { deleteTask, updateTask } from '../utils/tasksService';
+import { updateTask } from '../utils/tasksService';
 import {
     ChevronLeftIcon,
     ChevronRightIcon,
@@ -17,7 +16,7 @@ import CalendarMonthView from './Calendar/CalendarMonthView';
 import CalendarWeekView from './Calendar/CalendarWeekView';
 import CalendarDayView from './Calendar/CalendarDayView';
 import { getApiPath } from '../config/paths';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const getLocale = (language: string) => {
     switch (language) {
@@ -47,14 +46,14 @@ interface CalendarEvent {
 
 const Calendar: React.FC = () => {
     const { t, i18n } = useTranslation();
+    const navigate = useNavigate();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [view, setView] = useState<'month' | 'week' | 'day'>('month');
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [isLoadingTasks, setIsLoadingTasks] = useState(false);
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
     const [allTasks, setAllTasks] = useState<any[]>([]);
-    const [projects, setProjects] = useState<Project[]>([]);
-    const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+    const [, setProjects] = useState<Project[]>([]);
     const [isEventDetailModalOpen, setIsEventDetailModalOpen] = useState(false);
 
     // Dispatch global modal events
@@ -191,7 +190,7 @@ const Calendar: React.FC = () => {
         }
     };
 
-    const navigate = (direction: 'prev' | 'next') => {
+    const navigateView = (direction: 'prev' | 'next') => {
         setCurrentDate((prev) => {
             if (view === 'month') {
                 const newDate = new Date(prev);
@@ -233,7 +232,7 @@ const Calendar: React.FC = () => {
             const task = allTasks.find((t) => t.id.toString() === taskId);
 
             if (task) {
-                // Convert task to proper Task entity format for TaskModal
+                // Normalize task shape before opening TaskDetails
                 const taskEntity: Task = {
                     ...task,
                     name: task.name || task.title || `Task ${task.id}`,
@@ -259,56 +258,11 @@ const Calendar: React.FC = () => {
     };
 
     const handleEditTask = () => {
-        setIsEventDetailModalOpen(false);
-        setIsTaskModalOpen(true);
-    };
-
-    const handleTaskSave = (updatedTask: Task) => {
-        // Update the task in allTasks
-        setAllTasks((prev) =>
-            prev.map((t) => (t.id === updatedTask.id ? updatedTask : t))
-        );
-        // Refresh calendar
-        loadTasks();
-        // Close modal
-        setIsTaskModalOpen(false);
-        setSelectedTask(null);
-    };
-
-    const handleTaskDelete = async (taskUid: string) => {
-        try {
-            await deleteTask(taskUid);
-            // Remove task from allTasks
-            setAllTasks((prev) => prev.filter((t) => t.uid !== taskUid));
-            // Refresh calendar
-            loadTasks();
-            // Close modal
-            setIsTaskModalOpen(false);
+        if (selectedTask?.uid) {
+            setIsEventDetailModalOpen(false);
+            const targetUid = selectedTask.uid;
             setSelectedTask(null);
-        } catch (error) {
-            console.error('Failed to delete task:', error);
-        }
-    };
-
-    const handleCreateProject = async (name: string): Promise<Project> => {
-        try {
-            const response = await fetch(getApiPath('projects'), {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({ name, description: '' }),
-            });
-
-            if (response.ok) {
-                const newProject = await response.json();
-                setProjects((prev) => [...prev, newProject]);
-                return newProject;
-            } else {
-                throw new Error('Failed to create project');
-            }
-        } catch (error) {
-            console.error('Error creating project:', error);
-            throw error;
+            navigate(`/task/${targetUid}`);
         }
     };
 
@@ -448,7 +402,7 @@ const Calendar: React.FC = () => {
 
                         {/* Navigation */}
                         <button
-                            onClick={() => navigate('prev')}
+                            onClick={() => navigateView('prev')}
                             className="p-2.5 rounded-lg bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 transition-all duration-200 hover:shadow-md"
                         >
                             <ChevronLeftIcon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
@@ -462,7 +416,7 @@ const Calendar: React.FC = () => {
                         </button>
 
                         <button
-                            onClick={() => navigate('next')}
+                            onClick={() => navigateView('next')}
                             className="p-2.5 rounded-lg bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 transition-all duration-200 hover:shadow-md"
                         >
                             <ChevronRightIcon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
@@ -527,20 +481,6 @@ const Calendar: React.FC = () => {
                 )}
 
                 {/* Full Task Edit Modal */}
-                {selectedTask && (
-                    <TaskModal
-                        isOpen={isTaskModalOpen}
-                        onClose={() => {
-                            setIsTaskModalOpen(false);
-                            setSelectedTask(null);
-                        }}
-                        task={selectedTask}
-                        onSave={handleTaskSave}
-                        onDelete={handleTaskDelete}
-                        projects={projects}
-                        onCreateProject={handleCreateProject}
-                    />
-                )}
             </div>
         </div>
     );

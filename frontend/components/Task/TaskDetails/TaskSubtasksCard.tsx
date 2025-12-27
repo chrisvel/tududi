@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ListBulletIcon } from '@heroicons/react/24/outline';
 import TaskSubtasksSection from '../TaskForm/TaskSubtasksSection';
-import TaskPriorityIcon from '../TaskPriorityIcon';
+import TaskPriorityIcon from '../../Shared/Icons/TaskPriorityIcon';
 import { Task } from '../../../entities/Task';
 
 interface TaskSubtasksCardProps {

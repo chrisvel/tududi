@@ -105,7 +105,7 @@ describe('Subtask Ordering', () => {
 
             // Get subtasks via API
             const response = await agent
-                .get(`/api/task/${createResponse.body.id}/subtasks`)
+                .get(`/api/task/${createResponse.body.uid}/subtasks`)
                 .expect(200);
 
             expect(response.body).toHaveLength(3);

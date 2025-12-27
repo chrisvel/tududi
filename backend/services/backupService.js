@@ -415,9 +415,7 @@ async function importUserData(userId, backupData, options = { merge: true }) {
                     const newTask = await Task.create(
                         {
                             uid: taskData.uid,
-                            uuid: taskData.uuid,
                             name: taskData.name,
-                            description: taskData.description,
                             due_date: taskData.due_date,
                             defer_until: taskData.defer_until,
                             today: taskData.today,

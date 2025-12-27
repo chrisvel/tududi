@@ -58,7 +58,7 @@ describe('Subtasks API', () => {
             });
 
             const response = await agent
-                .get(`/api/task/${parentTask.id}/subtasks`)
+                .get(`/api/task/${parentTask.uid}/subtasks`)
                 .expect(200);
 
             expect(response.body).toHaveLength(2);
@@ -77,7 +77,7 @@ describe('Subtasks API', () => {
             });
 
             const response = await agent
-                .get(`/api/task/${task.id}/subtasks`)
+                .get(`/api/task/${task.uid}/subtasks`)
 
                 .expect(200);
 
@@ -85,8 +85,9 @@ describe('Subtasks API', () => {
         });
 
         it('should return empty array for non-existent task', async () => {
+            // Valid UID format (15 chars, valid characters) but doesn't exist
             const response = await agent
-                .get('/api/task/999999/subtasks')
+                .get('/api/task/abcdef123456789/subtasks')
                 .expect(200);
 
             expect(response.body).toHaveLength(0);
@@ -101,7 +102,7 @@ describe('Subtasks API', () => {
             });
 
             const response = await request(app)
-                .get(`/api/task/${task.id}/subtasks`)
+                .get(`/api/task/${task.uid}/subtasks`)
                 .expect(401);
             expect(response.status).toBe(401);
         });
@@ -630,7 +631,7 @@ describe('Subtasks API', () => {
             });
 
             const response = await agent
-                .get(`/api/task/${otherTask.id}/subtasks`)
+                .get(`/api/task/${otherTask.uid}/subtasks`)
                 .expect(403);
             expect(response.body.error).toBe('Forbidden');
         });
