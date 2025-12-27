@@ -192,7 +192,12 @@ function generateVEvent(task, hostname) {
     return lines.join('\r\n');
 }
 
-function generateICalendar(tasks, calendarName, hostname) {
+function generateICalendar(
+    tasks,
+    calendarName,
+    hostname,
+    userTimezone = 'UTC'
+) {
     const lines = [];
 
     lines.push('BEGIN:VCALENDAR');
@@ -201,7 +206,7 @@ function generateICalendar(tasks, calendarName, hostname) {
     lines.push('CALSCALE:GREGORIAN');
     lines.push('METHOD:PUBLISH');
     lines.push(`X-WR-CALNAME:${escapeICalText(calendarName)}`);
-    lines.push('X-WR-TIMEZONE:UTC');
+    lines.push(`X-WR-TIMEZONE:${userTimezone}`);
 
     for (const task of tasks) {
         lines.push(generateVEvent(task, hostname));
@@ -315,7 +320,12 @@ router.get('/calendar/feed.ics', async (req, res) => {
 
         const hostname = req.get('host') || 'tududi.local';
 
-        const icalContent = generateICalendar(tasks, calendarName, hostname);
+        const icalContent = generateICalendar(
+            tasks,
+            calendarName,
+            hostname,
+            user.timezone || 'UTC'
+        );
 
         res.set({
             'Content-Type': 'text/calendar; charset=utf-8',
