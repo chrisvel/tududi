@@ -4,6 +4,7 @@ import React, {
     ChangeEvent,
     FormEvent,
     useCallback,
+    useRef,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -131,6 +132,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         useState<TelegramBotInfo | null>(null);
     const [apiKeys, setApiKeys] = useState<ApiKeySummary[]>([]);
     const [apiKeysLoading, setApiKeysLoading] = useState(false);
+    const notificationsResetRef = useRef<(() => void) | null>(null);
     const [apiKeysLoaded, setApiKeysLoaded] = useState(false);
     const [newApiKeyName, setNewApiKeyName] = useState('');
     const [newApiKeyExpiration, setNewApiKeyExpiration] = useState('');
@@ -1059,6 +1061,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 : t('profile.successMessage', 'Profile updated successfully!');
             showSuccessToast(successMessage);
 
+            // Reset unsaved changes in NotificationsTab after successful save
+            if (notificationsResetRef.current) {
+                notificationsResetRef.current();
+            }
+
             if (avatarFile || removeAvatar) {
                 setTimeout(() => {
                     window.location.reload();
@@ -1254,6 +1261,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                                 preferences,
                                         }))
                                     }
+                                    onSave={(resetFn) => {
+                                        notificationsResetRef.current = resetFn;
+                                    }}
                                 />
 
                                 <TelegramTab
