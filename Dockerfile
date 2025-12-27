@@ -126,7 +126,10 @@ ENV NODE_ENV=production \
     SWAGGER_ENABLED=false \
     FF_ENABLE_BACKUPS=false \
     FF_ENABLE_CALENDAR=false \
-    FF_ENABLE_HABITS=false
+    FF_ENABLE_HABITS=false \
+    VAPID_PUBLIC_KEY="" \
+    VAPID_PRIVATE_KEY="" \
+    VAPID_SUBJECT="mailto:admin@localhost"
 
 HEALTHCHECK --interval=60s --timeout=3s --start-period=10s --retries=2 \
     CMD ["wget", "-q", "--spider", "http://127.0.0.1:3002/api/health"]

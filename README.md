@@ -142,6 +142,49 @@ curl -X POST \
 
 For full API documentation, visit `/api-docs` after authentication or check the Swagger schema definitions in [`backend/config/swagger.js`](backend/config/swagger.js).
 
+## 🔔 Push Notifications
+
+Tududi supports browser push notifications (PWA) for tasks and project updates.
+
+### Setup
+
+**1. Generate VAPID keys:**
+```bash
+npm run vapid:generate
+```
+
+**2. Development:** Add to `backend/.env`:
+```bash
+VAPID_PUBLIC_KEY=your_public_key_here
+VAPID_PRIVATE_KEY=your_private_key_here
+VAPID_SUBJECT=mailto:your-email@example.com
+```
+
+**3. Production:** Set environment variables based on your deployment:
+
+**Docker Compose:** Edit `docker-compose.yml`:
+```yaml
+environment:
+  - VAPID_PUBLIC_KEY=your_public_key_here
+  - VAPID_PRIVATE_KEY=your_private_key_here
+  - VAPID_SUBJECT=mailto:your-email@example.com
+```
+
+**Docker CLI:**
+```bash
+docker run \
+  -e VAPID_PUBLIC_KEY=your_public_key_here \
+  -e VAPID_PRIVATE_KEY=your_private_key_here \
+  -e VAPID_SUBJECT=mailto:your-email@example.com \
+  # ... other options
+```
+
+**Cloud/Kubernetes:** Use platform secrets management
+
+### Usage
+
+Once configured, users can enable push notifications in **Settings → Notifications → Browser Push Notifications**.
+
 ## 🤝 Contributing
 
 Contributions to tududi are welcome! Whether it's bug fixes, new features, documentation improvements, or translations, we appreciate your help.
