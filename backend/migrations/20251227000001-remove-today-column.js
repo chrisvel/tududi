@@ -1,5 +1,10 @@
 'use strict';
 
+const {
+    safeRemoveColumn,
+    safeAddColumns,
+} = require('../utils/migration-utils');
+
 /**
  * Migration to remove the deprecated 'today' column from tasks table.
  * The 'today' field is no longer used - task visibility in the today view
@@ -9,24 +14,17 @@
  */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        const tableInfo = await queryInterface.describeTable('tasks');
-
-        // Safely remove today column if it exists
-        if (tableInfo.today) {
-            await queryInterface.removeColumn('tasks', 'today');
-        }
+        await safeRemoveColumn(queryInterface, 'tasks', 'today');
     },
 
     async down(queryInterface, Sequelize) {
-        const tableInfo = await queryInterface.describeTable('tasks');
-
-        // Re-add today column if it doesn't exist
-        if (!tableInfo.today) {
-            await queryInterface.addColumn('tasks', 'today', {
+        await safeAddColumns(queryInterface, 'tasks', [
+            {
+                name: 'today',
                 type: Sequelize.BOOLEAN,
                 allowNull: false,
                 defaultValue: false,
-            });
-        }
+            },
+        ]);
     },
 };
