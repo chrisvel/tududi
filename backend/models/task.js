@@ -28,11 +28,6 @@ module.exports = (sequelize) => {
                 type: DataTypes.DATE,
                 allowNull: true,
             },
-            today: {
-                type: DataTypes.BOOLEAN,
-                allowNull: false,
-                defaultValue: false,
-            },
             priority: {
                 type: DataTypes.INTEGER,
                 allowNull: true,

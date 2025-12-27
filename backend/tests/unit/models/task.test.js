@@ -22,7 +22,6 @@ describe('Task Model', () => {
 
             expect(task.name).toBe(taskData.name);
             expect(task.user_id).toBe(user.id);
-            expect(task.today).toBe(false);
             expect(task.priority).toBe(0);
             expect(task.status).toBe(0);
             expect(task.recurrence_type).toBe('none');
@@ -127,7 +126,6 @@ describe('Task Model', () => {
                 user_id: user.id,
             });
 
-            expect(task.today).toBe(false);
             expect(task.priority).toBe(0);
             expect(task.status).toBe(0);
             expect(task.recurrence_type).toBe('none');
@@ -158,7 +156,6 @@ describe('Task Model', () => {
             const task = await Task.create({
                 name: 'Test Task',
                 due_date: dueDate,
-                today: true,
                 priority: Task.PRIORITY.HIGH,
                 status: Task.STATUS.IN_PROGRESS,
                 note: 'Test Note',
@@ -166,7 +163,6 @@ describe('Task Model', () => {
             });
 
             expect(task.due_date).toEqual(dueDate);
-            expect(task.today).toBe(true);
             expect(task.priority).toBe(Task.PRIORITY.HIGH);
             expect(task.status).toBe(Task.STATUS.IN_PROGRESS);
             expect(task.note).toBe('Test Note');

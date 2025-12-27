@@ -77,6 +77,7 @@ async function computeSuggestedTasks(
     totalOpenTasks,
     tasksInProgress,
     tasksDueToday,
+    tasksOverdue,
     todayPlanTasks
 ) {
     if (
@@ -90,6 +91,7 @@ async function computeSuggestedTasks(
     const excludedTaskIds = [
         ...tasksInProgress.map((t) => t.id),
         ...tasksDueToday.map((t) => t.id),
+        ...tasksOverdue.map((t) => t.id),
         ...todayPlanTasks.map((t) => t.id),
     ];
 
@@ -225,6 +227,7 @@ async function computeTaskMetrics(
         totalOpenTasks,
         tasksInProgress,
         tasksDueToday,
+        tasksOverdue,
         todayPlanTasks
     );
 

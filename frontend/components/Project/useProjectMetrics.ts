@@ -2,6 +2,17 @@ import { useMemo, useCallback } from 'react';
 import React from 'react';
 import { Task } from '../../entities/Task';
 import { TFunction } from 'i18next';
+import {
+    isTaskInProgress,
+    isTaskPlanned,
+    isTaskWaiting,
+} from '../../constants/taskStatus';
+
+// Check if task is in today's plan (has active status)
+const isTaskInTodayPlan = (task: Task): boolean =>
+    isTaskInProgress(task.status) ||
+    isTaskPlanned(task.status) ||
+    isTaskWaiting(task.status);
 
 export const useProjectMetrics = (
     tasks: Task[],
@@ -346,7 +357,7 @@ export const useProjectMetrics = (
 
                 score += getPriorityScore(task.priority);
 
-                if (task.today) {
+                if (isTaskInTodayPlan(task)) {
                     score -= 6;
                 }
 
@@ -419,9 +430,8 @@ export const useProjectMetrics = (
         const isAlreadyInProgress =
             nextBestAction.status === 'in_progress' ||
             nextBestAction.status === 1;
-        const isAlreadyToday = !!nextBestAction.today;
 
-        if (isAlreadyInProgress && isAlreadyToday) {
+        if (isAlreadyInProgress) {
             return;
         }
 
@@ -429,7 +439,6 @@ export const useProjectMetrics = (
             await handleTaskUpdate({
                 ...nextBestAction,
                 status: 'in_progress',
-                today: true,
             });
 
             if (showSuccessToast) {

@@ -457,7 +457,6 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
             tags,
             Tags,
             subtasks,
-            today,
             recurrence_type,
             recurrence_interval,
             recurrence_end_date,
@@ -537,15 +536,6 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
             validateDeferUntilAndDueDate(finalDeferUntil, finalDueDate);
         } catch (error) {
             return res.status(400).json({ error: error.message });
-        }
-
-        if (
-            today !== undefined &&
-            task.today === true &&
-            today === false &&
-            task.status === Task.STATUS.IN_PROGRESS
-        ) {
-            taskAttributes.status = Task.STATUS.NOT_STARTED;
         }
 
         await handleCompletionStatus(taskAttributes, status, task);
@@ -728,22 +718,6 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
             tagsData,
             req.currentUser.id
         );
-
-        if (today !== undefined && today !== oldValues.today) {
-            try {
-                await logEvent({
-                    taskId: task.id,
-                    userId: req.currentUser.id,
-                    eventType: 'today_changed',
-                    fieldName: 'today',
-                    oldValue: oldValues.today,
-                    newValue: today,
-                    metadata: { source: 'web', action: 'update_today' },
-                });
-            } catch (eventError) {
-                logError('Error logging today change event:', eventError);
-            }
-        }
 
         const taskWithAssociations = await taskRepository.findById(task.id, {
             include: TASK_INCLUDES,

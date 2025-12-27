@@ -141,7 +141,7 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
     );
 };
 import { toggleTaskCompletion, fetchSubtasks } from '../../utils/tasksService';
-import { isTaskOverdue } from '../../utils/dateUtils';
+import { isTaskOverdueInTodayPlan } from '../../utils/dateUtils';
 import { useTranslation } from 'react-i18next';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import { getApiPath } from '../../config/paths';
@@ -366,7 +366,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
     const isInProgress = task.status === 'in_progress' || task.status === 1;
 
     // Check if task is overdue (created yesterday or earlier and not completed)
-    const isOverdue = isTaskOverdue(task);
+    const isOverdue = isTaskOverdueInTodayPlan(task);
 
     const priorityBorderClass = isTaskCompleted(task.status)
         ? 'border-l-4 border-l-green-500'

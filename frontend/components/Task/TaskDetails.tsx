@@ -30,7 +30,7 @@ import {
     TaskDeferUntilCard,
     TaskAttachmentsCard,
 } from './TaskDetails/';
-import { isTaskOverdue, isTaskPastDue } from '../../utils/dateUtils';
+import { isTaskOverdueInTodayPlan, isTaskPastDue } from '../../utils/dateUtils';
 
 const TaskDetails: React.FC = () => {
     const { uid } = useParams<{ uid: string }>();
@@ -163,7 +163,7 @@ const TaskDetails: React.FC = () => {
         setIsEditingRecurrence(true);
     };
 
-    const isOverdue = task ? isTaskOverdue(task) : false;
+    const isOverdue = task ? isTaskOverdueInTodayPlan(task) : false;
     const isPastDue = task ? isTaskPastDue(task) : false;
 
     useEffect(() => {
@@ -758,8 +758,7 @@ const TaskDetails: React.FC = () => {
         try {
             const nextStatusPayload: Task = {
                 ...task,
-                status: isCurrentlyInProgress ? 0 : 1,
-                today: isCurrentlyInProgress ? task.today : true,
+                status: isCurrentlyInProgress ? 0 : 1, // 0=not_started, 1=in_progress
             };
 
             await updateTask(task.uid, nextStatusPayload);

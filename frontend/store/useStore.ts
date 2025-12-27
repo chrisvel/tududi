@@ -65,7 +65,6 @@ interface TasksStore {
     updateTask: (taskUid: string, taskData: Task) => Promise<Task>;
     deleteTask: (taskUid: string) => Promise<void>;
     toggleTaskCompletion: (taskUid: string) => Promise<Task>;
-    toggleTaskToday: (taskId: number) => Promise<Task>;
     loadTaskById: (taskId: number) => Promise<Task>;
     loadTaskByUid: (uid: string) => Promise<Task>;
     loadSubtasks: (parentTaskUid: string) => Promise<Task[]>;
@@ -446,33 +445,6 @@ export const useStore = create<StoreState>((set: any) => ({
             } catch (error) {
                 console.error(
                     'toggleTaskCompletion: Failed to toggle task completion:',
-                    error
-                );
-                set((state) => ({
-                    tasksStore: { ...state.tasksStore, isError: true },
-                }));
-                throw error;
-            }
-        },
-        toggleTaskToday: async (taskId) => {
-            const { toggleTaskToday } = await import('../utils/tasksService');
-            try {
-                const currentTask = useStore
-                    .getState()
-                    .tasksStore.tasks.find((t) => t.id === taskId);
-                const updatedTask = await toggleTaskToday(taskId, currentTask);
-                set((state) => ({
-                    tasksStore: {
-                        ...state.tasksStore,
-                        tasks: state.tasksStore.tasks.map((task) =>
-                            task.id === taskId ? updatedTask : task
-                        ),
-                    },
-                }));
-                return updatedTask;
-            } catch (error) {
-                console.error(
-                    'toggleTaskToday: Failed to toggle task today status:',
                     error
                 );
                 set((state) => ({

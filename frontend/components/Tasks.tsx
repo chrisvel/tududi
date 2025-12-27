@@ -8,11 +8,7 @@ import NewTask from './Task/NewTask';
 import { Task } from '../entities/Task';
 import { getTitleAndIcon } from './Task/getTitleAndIcon';
 import { getDescription } from './Task/getDescription';
-import {
-    createTask,
-    toggleTaskToday,
-    GroupedTasks,
-} from '../utils/tasksService';
+import { createTask, GroupedTasks } from '../utils/tasksService';
 import { useStore } from '../store/useStore';
 import { useToast } from './Shared/ToastContext';
 import { SortOption } from './Shared/SortFilterButton';
@@ -462,37 +458,6 @@ const Tasks: React.FC = () => {
         } catch (error) {
             console.error('Error deleting task:', error);
             setError('Error deleting task.');
-        }
-    };
-
-    const handleToggleToday = async (
-        taskId: number,
-        task?: Task
-    ): Promise<void> => {
-        try {
-            await toggleTaskToday(taskId, task);
-            const params = new URLSearchParams(location.search);
-            const type = params.get('type') || 'all';
-            const tag = params.get('tag');
-            const project = params.get('project');
-            const priority = params.get('priority');
-
-            let apiPath = `tasks?type=${type}&order_by=${orderBy}`;
-            if (tag) apiPath += `&tag=${tag}`;
-            if (project) apiPath += `&project=${project}`;
-            if (priority) apiPath += `&priority=${priority}`;
-
-            const response = await fetch(getApiPath(apiPath), {
-                credentials: 'include',
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setTasks(data.tasks || data);
-            }
-        } catch (error) {
-            console.error('Error toggling task today status:', error);
-            setError('Error toggling task today status.');
         }
     };
 
@@ -952,7 +917,7 @@ const Tasks: React.FC = () => {
                                         onTaskDelete={handleTaskDelete}
                                         projects={projects}
                                         hideProjectName={false}
-                                        onToggleToday={handleToggleToday}
+                                        onToggleToday={undefined}
                                         showCompletedTasks={showCompleted}
                                         searchQuery={taskSearchQuery}
                                     />
@@ -966,7 +931,7 @@ const Tasks: React.FC = () => {
                                         }
                                         onTaskDelete={handleTaskDelete}
                                         projects={projects}
-                                        onToggleToday={handleToggleToday}
+                                        onToggleToday={undefined}
                                         showCompletedTasks={showCompleted}
                                     />
                                 )}

@@ -73,7 +73,6 @@ async function createSubtasks(parentTaskId, subtasks, userId) {
                         ? new Date(subtask.completed_at)
                         : new Date()
                     : null,
-            today: subtask.today || false,
             recurrence_type: 'none',
             completion_based: false,
             order: maxOrder + index + 1, // Assign sequential order values

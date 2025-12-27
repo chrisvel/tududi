@@ -13,7 +13,6 @@ function captureOldValues(task) {
         defer_until: task.defer_until,
         project_id: task.project_id,
         note: task.note,
-        today: task.today,
         recurrence_type: task.recurrence_type,
         recurrence_interval: task.recurrence_interval,
         recurrence_end_date: task.recurrence_end_date,
