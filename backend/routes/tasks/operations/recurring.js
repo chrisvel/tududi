@@ -87,7 +87,7 @@ async function calculateNextIterations(task, startFromDate, userTimezone) {
             const weekdays = Array.isArray(task.recurrence_weekdays)
                 ? task.recurrence_weekdays
                 : JSON.parse(task.recurrence_weekdays);
-            const todayWeekday = nextDate.getDay();
+            const todayWeekday = nextDate.getUTCDay();
             console.log('Weekly recurrence check:', {
                 weekdays,
                 todayWeekday,
@@ -98,7 +98,7 @@ async function calculateNextIterations(task, startFromDate, userTimezone) {
             task.recurrence_weekday !== null &&
             task.recurrence_weekday !== undefined
         ) {
-            const todayWeekday = nextDate.getDay();
+            const todayWeekday = nextDate.getUTCDay();
             includesToday = task.recurrence_weekday === todayWeekday;
         }
     } else if (task.recurrence_type === 'daily') {
@@ -145,8 +145,8 @@ async function calculateNextIterations(task, startFromDate, userTimezone) {
     // If today doesn't match, calculate the next occurrence
     if (!includesToday) {
         if (task.recurrence_type === 'daily') {
-            nextDate.setDate(
-                nextDate.getDate() + (task.recurrence_interval || 1)
+            nextDate.setUTCDate(
+                nextDate.getUTCDate() + (task.recurrence_interval || 1)
             );
         } else if (task.recurrence_type === 'weekly') {
             const interval = task.recurrence_interval || 1;
@@ -154,16 +154,18 @@ async function calculateNextIterations(task, startFromDate, userTimezone) {
                 task.recurrence_weekday !== null &&
                 task.recurrence_weekday !== undefined
             ) {
-                const currentWeekday = nextDate.getDay();
+                const currentWeekday = nextDate.getUTCDay();
                 const daysUntilTarget =
                     (task.recurrence_weekday - currentWeekday + 7) % 7;
                 if (daysUntilTarget === 0) {
-                    nextDate.setDate(nextDate.getDate() + interval * 7);
+                    nextDate.setUTCDate(nextDate.getUTCDate() + interval * 7);
                 } else {
-                    nextDate.setDate(nextDate.getDate() + daysUntilTarget);
+                    nextDate.setUTCDate(
+                        nextDate.getUTCDate() + daysUntilTarget
+                    );
                 }
             } else {
-                nextDate.setDate(nextDate.getDate() + interval * 7);
+                nextDate.setUTCDate(nextDate.getUTCDate() + interval * 7);
             }
         } else {
             nextDate = calculateNextDueDate(task, startDate);
@@ -188,8 +190,8 @@ async function calculateNextIterations(task, startFromDate, userTimezone) {
 
         if (task.recurrence_type === 'daily') {
             nextDate = new Date(nextDate);
-            nextDate.setDate(
-                nextDate.getDate() + (task.recurrence_interval || 1)
+            nextDate.setUTCDate(
+                nextDate.getUTCDate() + (task.recurrence_interval || 1)
             );
         } else if (task.recurrence_type === 'weekly') {
             nextDate = new Date(nextDate);
@@ -200,14 +202,13 @@ async function calculateNextIterations(task, startFromDate, userTimezone) {
                 const weekdays = Array.isArray(task.recurrence_weekdays)
                     ? task.recurrence_weekdays
                     : JSON.parse(task.recurrence_weekdays);
-                const currentWeekday = nextDate.getDay();
 
                 // Find next matching weekday
                 let found = false;
                 for (let daysAhead = 1; daysAhead <= 7; daysAhead++) {
                     const testDate = new Date(nextDate);
-                    testDate.setDate(testDate.getDate() + daysAhead);
-                    const testWeekday = testDate.getDay();
+                    testDate.setUTCDate(testDate.getUTCDate() + daysAhead);
+                    const testWeekday = testDate.getUTCDay();
 
                     if (weekdays.includes(testWeekday)) {
                         nextDate = testDate;
@@ -218,12 +219,12 @@ async function calculateNextIterations(task, startFromDate, userTimezone) {
 
                 if (!found) {
                     // Fallback: add 7 days
-                    nextDate.setDate(nextDate.getDate() + 7);
+                    nextDate.setUTCDate(nextDate.getUTCDate() + 7);
                 }
             } else {
                 // Old behavior for single weekday
-                nextDate.setDate(
-                    nextDate.getDate() + (task.recurrence_interval || 1) * 7
+                nextDate.setUTCDate(
+                    nextDate.getUTCDate() + (task.recurrence_interval || 1) * 7
                 );
             }
         } else {

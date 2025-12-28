@@ -488,12 +488,9 @@ const TaskDetails: React.FC = () => {
             ) {
                 try {
                     setLoadingIterations(true);
-                    const startFromDate = task.due_date
-                        ? task.due_date.split('T')[0]
-                        : undefined;
+                    // Don't pass startFromDate - let backend default to today
                     const iterations = await fetchTaskNextIterations(
-                        task.uid!,
-                        startFromDate
+                        task.uid!
                     );
                     setNextIterations(iterations);
                 } catch (error) {
@@ -511,12 +508,9 @@ const TaskDetails: React.FC = () => {
                 try {
                     setLoadingIterations(true);
 
-                    const startFromDate = task.due_date
-                        ? task.due_date.split('T')[0]
-                        : undefined;
+                    // Don't pass startFromDate - let backend default to today
                     const iterations = await fetchTaskNextIterations(
-                        parentTask.uid,
-                        startFromDate
+                        parentTask.uid
                     );
 
                     setNextIterations(iterations);
@@ -721,21 +715,15 @@ const TaskDetails: React.FC = () => {
             try {
                 setLoadingIterations(true);
                 if (isTemplateTask) {
-                    const startFromDate = latestTask.due_date
-                        ? latestTask.due_date.split('T')[0]
-                        : undefined;
+                    // Don't pass startFromDate - let backend default to today
                     const iterations = await fetchTaskNextIterations(
-                        latestTask.uid!,
-                        startFromDate
+                        latestTask.uid!
                     );
                     setNextIterations(iterations);
                 } else if (canUseParentIterations && parentTask?.uid) {
-                    const startFromDate = latestTask.due_date
-                        ? latestTask.due_date.split('T')[0]
-                        : undefined;
+                    // Don't pass startFromDate - let backend default to today
                     const iterations = await fetchTaskNextIterations(
-                        parentTask.uid,
-                        startFromDate
+                        parentTask.uid
                     );
                     setNextIterations(iterations);
                 }

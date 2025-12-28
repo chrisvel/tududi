@@ -52,7 +52,7 @@ const calculateNextDueDate = (task, fromDate) => {
 
 const calculateDailyRecurrence = (fromDate, interval) => {
     const nextDate = new Date(fromDate);
-    nextDate.setDate(nextDate.getDate() + interval);
+    nextDate.setUTCDate(nextDate.getUTCDate() + interval);
     return nextDate;
 };
 
@@ -60,22 +60,22 @@ const calculateWeeklyRecurrence = (fromDate, interval, weekday) => {
     const nextDate = new Date(fromDate);
 
     if (weekday !== null && weekday !== undefined) {
-        const currentWeekday = nextDate.getDay();
+        const currentWeekday = nextDate.getUTCDay();
         const daysUntilTarget = (weekday - currentWeekday + 7) % 7;
 
         if (
             daysUntilTarget === 0 &&
             nextDate.getTime() === fromDate.getTime()
         ) {
-            nextDate.setDate(nextDate.getDate() + interval * 7);
+            nextDate.setUTCDate(nextDate.getUTCDate() + interval * 7);
         } else {
-            nextDate.setDate(nextDate.getDate() + daysUntilTarget);
+            nextDate.setUTCDate(nextDate.getUTCDate() + daysUntilTarget);
             if (nextDate <= fromDate) {
-                nextDate.setDate(nextDate.getDate() + interval * 7);
+                nextDate.setUTCDate(nextDate.getUTCDate() + interval * 7);
             }
         }
     } else {
-        nextDate.setDate(nextDate.getDate() + interval * 7);
+        nextDate.setUTCDate(nextDate.getUTCDate() + interval * 7);
     }
 
     return nextDate;
