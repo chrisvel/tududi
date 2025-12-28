@@ -11,6 +11,7 @@ import {
     TagIcon,
     MagnifyingGlassIcon,
 } from '@heroicons/react/24/solid';
+import { FolderIcon as FolderOutlineIcon } from '@heroicons/react/24/outline';
 import { Task } from '../../entities/Task';
 import { Note } from '../../entities/Note';
 import { Project } from '../../entities/Project';
@@ -22,6 +23,8 @@ import TagModal from './TagModal';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 
 import { Tag } from '../../entities/Tag';
+import { deleteNote as apiDeleteNote } from '../../utils/notesService';
+import { useToast } from '../Shared/ToastContext';
 import { useStore } from '../../store/useStore';
 import { updateTag, deleteTag } from '../../utils/tagsService';
 import { getApiPath } from '../../config/paths';
@@ -98,6 +101,11 @@ const TagDetails: React.FC = () => {
         project: Project | null;
     }>({ isOpen: false, project: null });
 
+    // State for note deletion
+    const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
+    const [isNoteConfirmDialogOpen, setIsNoteConfirmDialogOpen] = useState<boolean>(false);
+
+    const { showSuccessToast, showErrorToast } = useToast();
     const navigate = useNavigate();
 
     // Sort options for tasks
@@ -373,6 +381,39 @@ const TagDetails: React.FC = () => {
 
     const handleStatusChange = (value: 'all' | 'active' | 'completed') => {
         setTaskStatusFilter(value);
+    };
+
+    // Note handlers
+    const handleEditNote = (note: Note) => {
+        if (note.uid) {
+            const slug = note.title
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-|-$/g, '');
+            navigate(`/notes/${note.uid}-${slug}`);
+        }
+    };
+
+    const handleDeleteNoteClick = (note: Note) => {
+        setNoteToDelete(note);
+        setIsNoteConfirmDialogOpen(true);
+    };
+
+    const handleConfirmDeleteNote = async () => {
+        if (noteToDelete?.uid) {
+            try {
+                await apiDeleteNote(noteToDelete.uid);
+                setNotes((prevNotes) =>
+                    prevNotes.filter((note) => note.uid !== noteToDelete.uid)
+                );
+                showSuccessToast(t('success.noteDeleted'));
+            } catch (error) {
+                console.error('Error deleting note:', error);
+                showErrorToast(t('errors.failedToDeleteNote'));
+            }
+        }
+        setIsNoteConfirmDialogOpen(false);
+        setNoteToDelete(null);
     };
 
     const showCompletedTasks = taskStatusFilter !== 'active';
@@ -742,21 +783,26 @@ const TagDetails: React.FC = () => {
                             {t('notes.title')} ({notes.length})
                         </h3>
                         <ul className="space-y-1">
-                            {notes.map((note) => (
-                                <li
-                                    key={note.uid}
-                                    className="bg-white dark:bg-gray-900 shadow rounded-lg px-4 py-3 flex justify-between items-center"
-                                    onMouseEnter={() =>
-                                        setHoveredNoteId(note.uid || null)
-                                    }
-                                    onMouseLeave={() => setHoveredNoteId(null)}
-                                >
-                                    <div className="flex-grow overflow-hidden pr-4">
-                                        <div className="flex items-center flex-wrap gap-2">
+                            {notes.map((note) => {
+                                const noteTags = note.tags || note.Tags || [];
+                                const noteProject = note.project || note.Project;
+                                const hasMetadata = noteProject || noteTags.length > 0;
+
+                                return (
+                                    <li
+                                        key={note.uid}
+                                        className="bg-white dark:bg-gray-900 shadow rounded-lg px-4 py-2 flex justify-between items-start"
+                                        onMouseEnter={() =>
+                                            setHoveredNoteId(note.uid || null)
+                                        }
+                                        onMouseLeave={() => setHoveredNoteId(null)}
+                                    >
+                                        <div className="flex-grow overflow-hidden pr-4">
+                                            {/* Note Title */}
                                             <Link
                                                 to={
                                                     note.uid
-                                                        ? `/note/${note.uid}-${note.title
+                                                        ? `/notes/${note.uid}-${note.title
                                                               .toLowerCase()
                                                               .replace(
                                                                   /[^a-z0-9]+/g,
@@ -766,69 +812,98 @@ const TagDetails: React.FC = () => {
                                                                   /^-|-$/g,
                                                                   ''
                                                               )}`
-                                                        : note.uid
-                                                          ? `/note/${note.uid}`
-                                                          : '#'
+                                                        : '#'
                                                 }
-                                                className="text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline"
+                                                className="text-md font-medium text-gray-900 dark:text-gray-300 hover:underline block"
                                             >
                                                 {note.title}
                                             </Link>
-                                            {/* Tags */}
-                                            {((note.tags &&
-                                                note.tags.length > 0) ||
-                                                (note.Tags &&
-                                                    note.Tags.length > 0)) && (
-                                                <>
-                                                    {(
-                                                        note.tags ||
-                                                        note.Tags ||
-                                                        []
-                                                    ).map((noteTag) => (
-                                                        <button
-                                                            key={noteTag.id}
-                                                            onClick={(e) => {
-                                                                e.preventDefault();
-                                                                navigate(
-                                                                    `/tag/${encodeURIComponent(noteTag.name)}`
-                                                                );
-                                                            }}
-                                                            className="flex items-center space-x-1 px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                                                        >
-                                                            <TagIcon className="h-3 w-3 text-gray-500 dark:text-gray-300" />
-                                                            <span className="text-gray-700 dark:text-gray-300">
-                                                                {noteTag.name}
+                                            {/* Project and Tags below title - matching TaskHeader style */}
+                                            {hasMetadata && (
+                                                <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                    {/* Project */}
+                                                    {noteProject && (
+                                                        <div className="flex items-center">
+                                                            <FolderOutlineIcon className="h-3 w-3 mr-1" />
+                                                            <Link
+                                                                to={
+                                                                    noteProject.uid
+                                                                        ? `/project/${noteProject.uid}-${noteProject.name
+                                                                              .toLowerCase()
+                                                                              .replace(
+                                                                                  /[^a-z0-9]+/g,
+                                                                                  '-'
+                                                                              )
+                                                                              .replace(
+                                                                                  /^-|-$/g,
+                                                                                  ''
+                                                                              )}`
+                                                                        : `/project/${noteProject.id}`
+                                                                }
+                                                                className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
+                                                                onClick={(e) => e.stopPropagation()}
+                                                            >
+                                                                {noteProject.name}
+                                                            </Link>
+                                                        </div>
+                                                    )}
+                                                    {/* Tags */}
+                                                    {noteTags.length > 0 && (
+                                                        <div className="flex items-center">
+                                                            <TagIcon className="h-3 w-3 mr-1" />
+                                                            <span>
+                                                                {noteTags.map((noteTag, index) => (
+                                                                    <React.Fragment key={noteTag.id || noteTag.name}>
+                                                                        <Link
+                                                                            to={
+                                                                                noteTag.uid
+                                                                                    ? `/tag/${noteTag.uid}-${noteTag.name
+                                                                                          .toLowerCase()
+                                                                                          .replace(
+                                                                                              /[^a-z0-9]+/g,
+                                                                                              '-'
+                                                                                          )
+                                                                                          .replace(
+                                                                                              /^-|-$/g,
+                                                                                              ''
+                                                                                          )}`
+                                                                                    : `/tag/${encodeURIComponent(noteTag.name)}`
+                                                                            }
+                                                                            className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
+                                                                            onClick={(e) => e.stopPropagation()}
+                                                                        >
+                                                                            {noteTag.name}
+                                                                        </Link>
+                                                                        {index < noteTags.length - 1 && ', '}
+                                                                    </React.Fragment>
+                                                                ))}
                                                             </span>
-                                                        </button>
-                                                    ))}
-                                                </>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             )}
                                         </div>
-                                    </div>
-                                    <div className="flex space-x-2">
-                                        <button
-                                            onClick={
-                                                () => {} // Edit functionality not implemented yet
-                                            }
-                                            className={`text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none transition-opacity ${hoveredNoteId === note.uid ? 'opacity-100' : 'opacity-0'}`}
-                                            aria-label={`Edit ${note.title}`}
-                                            title={`Edit ${note.title}`}
-                                        >
-                                            <PencilSquareIcon className="h-5 w-5" />
-                                        </button>
-                                        <button
-                                            onClick={
-                                                () => {} // Delete functionality not implemented yet
-                                            }
-                                            className={`text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none transition-opacity ${hoveredNoteId === note.uid ? 'opacity-100' : 'opacity-0'}`}
-                                            aria-label={`Delete ${note.title}`}
-                                            title={`Delete ${note.title}`}
-                                        >
-                                            <TrashIcon className="h-5 w-5" />
-                                        </button>
-                                    </div>
-                                </li>
-                            ))}
+                                        <div className="flex space-x-2 pt-1">
+                                            <button
+                                                onClick={() => handleEditNote(note)}
+                                                className={`text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none transition-opacity ${hoveredNoteId === note.uid ? 'opacity-100' : 'opacity-0'}`}
+                                                aria-label={`Edit ${note.title}`}
+                                                title={`Edit ${note.title}`}
+                                            >
+                                                <PencilSquareIcon className="h-5 w-5" />
+                                            </button>
+                                            <button
+                                                onClick={() => handleDeleteNoteClick(note)}
+                                                className={`text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none transition-opacity ${hoveredNoteId === note.uid ? 'opacity-100' : 'opacity-0'}`}
+                                                aria-label={`Delete ${note.title}`}
+                                                title={`Delete ${note.title}`}
+                                            >
+                                                <TrashIcon className="h-5 w-5" />
+                                            </button>
+                                        </div>
+                                    </li>
+                                );
+                            })}
                         </ul>
                     </div>
                 )}
@@ -912,7 +987,7 @@ const TagDetails: React.FC = () => {
                 />
             )}
 
-            {/* Confirm Dialog */}
+            {/* Confirm Dialog for Tag */}
             {isConfirmDialogOpen && tag && (
                 <ConfirmDialog
                     title={t('tags.deleteTag', 'Delete Tag')}
@@ -922,6 +997,22 @@ const TagDetails: React.FC = () => {
                     )}
                     onConfirm={handleDeleteTag}
                     onCancel={() => setIsConfirmDialogOpen(false)}
+                />
+            )}
+
+            {/* Confirm Dialog for Note Deletion */}
+            {isNoteConfirmDialogOpen && noteToDelete && (
+                <ConfirmDialog
+                    title={t('notes.deleteNote', 'Delete Note')}
+                    message={t(
+                        'notes.deleteNoteConfirm',
+                        `Are you sure you want to delete the note "${noteToDelete.title}"?`
+                    )}
+                    onConfirm={handleConfirmDeleteNote}
+                    onCancel={() => {
+                        setIsNoteConfirmDialogOpen(false);
+                        setNoteToDelete(null);
+                    }}
                 />
             )}
         </div>
