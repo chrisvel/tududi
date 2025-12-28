@@ -151,7 +151,9 @@
     "open": "Aç",
     "completed": "Tamamlandı",
     "noCompletedTasksToday": "Bugün tamamlanan görev yok.",
-    "markAsDone": "Mark as done"
+    "markAsDone": "Mark as done",
+    "notStarted": "Başlanmadı",
+    "done": "Tamamlandı"
   },
   "timeline": {
     "activityTimeline": "Etkinlik Zaman Çizelgesi",
@@ -820,7 +822,8 @@
       "active": "Aktif",
       "inactive": "Pasif",
       "all": "Hepsi",
-      "allAreas": "Tüm Alanlar"
+      "allAreas": "Tüm Alanlar",
+      "notCompleted": "Tamamlanmadı"
     },
     "selectState": "Durum Seç",
     "state": "Proje Durumu",
@@ -1342,5 +1345,19 @@
       "title": "Not:",
       "message": "E-posta ve Push bildirimleri yakında geliyor. Uygulama içi ve Telegram bildirimleri şu anda mevcuttur."
     }
+  },
+  "projectStatus": {
+    "not_started": "Başlanmadı",
+    "not_started_desc": "Kaydedildi ama henüz başlanmadı",
+    "planned": "Planlandı",
+    "planned_desc": "Kapsam belirlendi ve başlamaya hazır",
+    "in_progress": "Devam Ediyor",
+    "in_progress_desc": "Aktif çalışma yapılıyor",
+    "waiting": "Bekliyor",
+    "waiting_desc": "Dışsal girdi bekleniyor",
+    "done": "Tamamlandı",
+    "done_desc": "Bitirildi ve tamamlandı",
+    "cancelled": "İptal Edildi",
+    "cancelled_desc": "Tamamlanmayacak"
   }
 }

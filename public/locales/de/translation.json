@@ -151,7 +151,9 @@
     "open": "Öffnen",
     "completed": "Abgeschlossen",
     "noCompletedTasksToday": "Keine abgeschlossenen Aufgaben heute.",
-    "markAsDone": "Mark as done"
+    "markAsDone": "Mark as done",
+    "notStarted": "Nicht gestartet",
+    "done": "Fertig"
   },
   "timeline": {
     "activityTimeline": "Aktivitätsverlauf",
@@ -912,7 +914,8 @@
       "active": "Aktiv",
       "inactive": "Inaktiv",
       "all": "Alle",
-      "allAreas": "Alle Bereiche"
+      "allAreas": "Alle Bereiche",
+      "notCompleted": "Nicht abgeschlossen"
     },
     "selectState": "Zustand auswählen",
     "state": "Projektzustand",
@@ -1351,5 +1354,19 @@
       "title": "Hinweis:",
       "message": "E-Mail- und Push-Benachrichtigungen kommen bald. In-App- und Telegram-Benachrichtigungen sind derzeit verfügbar."
     }
+  },
+  "projectStatus": {
+    "not_started": "Nicht gestartet",
+    "not_started_desc": "Erfasst, aber noch nicht gestartet",
+    "planned": "Geplant",
+    "planned_desc": "Abgegrenzt und bereit zum Start",
+    "in_progress": "In Bearbeitung",
+    "in_progress_desc": "Aktive Arbeit läuft",
+    "waiting": "Warten",
+    "waiting_desc": "Warten auf externe Eingaben",
+    "done": "Abgeschlossen",
+    "done_desc": "Fertig und abgeschlossen",
+    "cancelled": "Abgebrochen",
+    "cancelled_desc": "Wird nicht abgeschlossen"
   }
 }

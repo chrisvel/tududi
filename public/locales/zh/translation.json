@@ -151,7 +151,9 @@
     "open": "打开",
     "completed": "已完成",
     "noCompletedTasksToday": "今天没有完成的任务。",
-    "markAsDone": "Mark as done"
+    "markAsDone": "Mark as done",
+    "notStarted": "未开始",
+    "done": "完成"
   },
   "timeline": {
     "activityTimeline": "活动时间线",
@@ -820,7 +822,8 @@
       "active": "活动",
       "inactive": "非活动",
       "all": "所有",
-      "allAreas": "所有区域"
+      "allAreas": "所有区域",
+      "notCompleted": "未完成"
     },
     "selectState": "选择状态",
     "state": "项目状态",
@@ -1342,5 +1345,19 @@
       "title": "注意：",
       "message": "电子邮件和推送通知即将推出。应用内和 Telegram 通知目前可用。"
     }
+  },
+  "projectStatus": {
+    "not_started": "未开始",
+    "not_started_desc": "已捕获但尚未开始",
+    "planned": "已规划",
+    "planned_desc": "已确定范围并准备开始",
+    "in_progress": "进行中",
+    "in_progress_desc": "正在进行的工作",
+    "waiting": "等待中",
+    "waiting_desc": "等待外部输入",
+    "done": "已完成",
+    "done_desc": "已完成并结束",
+    "cancelled": "已取消",
+    "cancelled_desc": "将不会完成"
   }
 }
