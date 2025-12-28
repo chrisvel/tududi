@@ -133,10 +133,17 @@ const options = {
                             type: 'string',
                             description: 'Project description',
                         },
-                        state: {
+                        status: {
                             type: 'string',
-                            enum: ['active', 'archived', 'completed'],
-                            description: 'Project state',
+                            enum: [
+                                'not_started',
+                                'planned',
+                                'in_progress',
+                                'waiting',
+                                'done',
+                                'cancelled',
+                            ],
+                            description: 'Project status',
                         },
                         priority: {
                             type: 'string',

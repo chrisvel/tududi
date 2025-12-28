@@ -71,7 +71,7 @@ module.exports = (sequelize) => {
                 allowNull: true,
                 defaultValue: 'created_at:desc',
             },
-            state: {
+            status: {
                 type: DataTypes.ENUM(
                     'not_started',
                     'in_progress',

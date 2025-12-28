@@ -13,7 +13,7 @@ import {
     ShareIcon,
     ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
-import { Project, ProjectState } from '../../entities/Project';
+import { Project, ProjectStatus } from '../../entities/Project';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '../Shared/ToastContext';
 import { getCurrentUser } from '../../utils/userUtils';
@@ -49,8 +49,8 @@ const getProjectInitials = (name: string, maxLetters?: number) => {
     return maxLetters ? initials.substring(0, maxLetters) : initials;
 };
 
-const getStateIcon = (state: ProjectState | undefined) => {
-    switch (state) {
+const getStatusIcon = (status: ProjectStatus | undefined) => {
+    switch (status) {
         case 'not_started':
             return { icon: EllipsisHorizontalCircleIcon };
         case 'planned':
@@ -68,8 +68,8 @@ const getStateIcon = (state: ProjectState | undefined) => {
     }
 };
 
-const getStateLabel = (state: ProjectState | undefined, t: any): string => {
-    switch (state) {
+const getStatusLabel = (status: ProjectStatus | undefined, t: any): string => {
+    switch (status) {
         case 'not_started':
             return t('projectStatus.not_started', 'Not Started');
         case 'planned':
@@ -303,14 +303,14 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                     />
                                 )}
                                 {(() => {
-                                    const { icon: StateIcon } = getStateIcon(
-                                        project.state
+                                    const { icon: StatusIcon } = getStatusIcon(
+                                        project.status
                                     );
                                     return (
-                                        <StateIcon
+                                        <StatusIcon
                                             className="h-4 w-4 text-white/80 drop-shadow-sm"
-                                            title={getStateLabel(
-                                                project.state,
+                                            title={getStatusLabel(
+                                                project.status,
                                                 t
                                             )}
                                         />

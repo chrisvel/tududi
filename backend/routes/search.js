@@ -432,7 +432,7 @@ router.get('/', async (req, res) => {
                     name: project.name,
                     description: project.description,
                     priority: project.priority,
-                    status: project.state,
+                    status: project.status,
                 }))
             );
         }

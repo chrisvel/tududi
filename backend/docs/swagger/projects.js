@@ -9,11 +9,11 @@
  *       - BearerAuth: []
  *     parameters:
  *       - in: query
- *         name: state
+ *         name: status
  *         schema:
  *           type: string
- *           enum: [planned, in_progress, blocked, completed, archived, all]
- *         description: Filter by project state
+ *           enum: [not_started, planned, in_progress, waiting, done, cancelled, all, not_completed]
+ *         description: Filter by project status
  *       - in: query
  *         name: area_id
  *         schema:
@@ -62,10 +62,10 @@
  *                 type: string
  *                 enum: [low, medium, high]
  *                 description: Project priority
- *               state:
+ *               status:
  *                 type: string
- *                 enum: [idea, planned, in_progress, blocked, completed, archived]
- *                 description: Project state
+ *                 enum: [not_started, planned, in_progress, waiting, done, cancelled]
+ *                 description: Project status
  *               area_id:
  *                 type: integer
  *                 description: Associated area ID
@@ -127,10 +127,10 @@
  *                 type: string
  *                 enum: [low, medium, high]
  *                 description: Project priority
- *               state:
+ *               status:
  *                 type: string
- *                 enum: [idea, planned, in_progress, blocked, completed, archived]
- *                 description: Project state
+ *                 enum: [not_started, planned, in_progress, waiting, done, cancelled]
+ *                 description: Project status
  *               area_id:
  *                 type: integer
  *                 description: Associated area ID

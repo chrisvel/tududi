@@ -3,7 +3,7 @@ import { Tag } from './Tag';
 import { PriorityType, Task } from './Task';
 import { Note } from './Note';
 
-export type ProjectState =
+export type ProjectStatus =
     | 'not_started'
     | 'planned'
     | 'in_progress'
@@ -30,7 +30,7 @@ export interface Project {
     image_url?: string;
     task_show_completed?: boolean;
     task_sort_order?: string;
-    state?: ProjectState;
+    status?: ProjectStatus;
     created_at?: string;
     updated_at?: string;
     share_count?: number;

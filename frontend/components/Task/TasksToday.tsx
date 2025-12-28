@@ -1196,12 +1196,12 @@ const TasksToday: React.FC = () => {
                                         {Array.isArray(localProjects)
                                             ? localProjects.filter(
                                                   (project) =>
-                                                      project.state &&
+                                                      project.status &&
                                                       [
                                                           'planned',
                                                           'in_progress',
-                                                          'blocked',
-                                                      ].includes(project.state)
+                                                          'waiting',
+                                                      ].includes(project.status)
                                               ).length
                                             : 0}
                                     </p>

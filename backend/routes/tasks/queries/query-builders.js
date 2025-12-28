@@ -83,7 +83,7 @@ async function filterTasksByParams(
         },
         {
             model: Project,
-            attributes: ['id', 'name', 'state', 'uid'],
+            attributes: ['id', 'name', 'status', 'uid'],
             required: false,
         },
         {
@@ -373,7 +373,7 @@ function getTaskIncludeConfig() {
         },
         {
             model: Project,
-            attributes: ['id', 'name', 'state', 'uid'],
+            attributes: ['id', 'name', 'status', 'uid'],
             required: false,
         },
         {

@@ -72,8 +72,8 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
             // 1. Stalled Projects (no tasks/actions)
             const stalledProjects = projects.filter(
                 (project) =>
-                    (project.state === 'planned' ||
-                        project.state === 'in_progress') &&
+                    (project.status === 'planned' ||
+                        project.status === 'in_progress') &&
                     !activeTasks.some((task) => task.project_id === project.id)
             );
 
@@ -110,8 +110,8 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
                             task.status === 'in_progress')
                 );
                 return (
-                    (project.state === 'planned' ||
-                        project.state === 'in_progress') &&
+                    (project.status === 'planned' ||
+                        project.status === 'in_progress') &&
                     hasCompletedTasks &&
                     !hasNextAction
                 );
@@ -214,8 +214,8 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
             const stuckProjects = projects.filter((project) => {
                 if (
                     !(
-                        project.state === 'planned' ||
-                        project.state === 'in_progress'
+                        project.status === 'planned' ||
+                        project.status === 'in_progress'
                     )
                 )
                     return false;

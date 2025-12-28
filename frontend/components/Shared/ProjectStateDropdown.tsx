@@ -8,12 +8,12 @@ import {
     XCircleIcon,
     EllipsisHorizontalCircleIcon,
 } from '@heroicons/react/24/outline';
-import { ProjectState } from '../../entities/Project';
+import { ProjectStatus } from '../../entities/Project';
 import { useTranslation } from 'react-i18next';
 
 interface ProjectStateDropdownProps {
-    value: ProjectState;
-    onChange: (value: ProjectState) => void;
+    value: ProjectStatus;
+    onChange: (value: ProjectStatus) => void;
 }
 
 const ProjectStateDropdown: React.FC<ProjectStateDropdownProps> = ({
@@ -24,7 +24,7 @@ const ProjectStateDropdown: React.FC<ProjectStateDropdownProps> = ({
 
     const states = [
         {
-            value: 'not_started' as ProjectState,
+            value: 'not_started' as ProjectStatus,
             label: t('projectStatus.not_started', 'Not Started'),
             description: t(
                 'projectStatus.not_started_desc',
@@ -35,7 +35,7 @@ const ProjectStateDropdown: React.FC<ProjectStateDropdownProps> = ({
             ),
         },
         {
-            value: 'planned' as ProjectState,
+            value: 'planned' as ProjectStatus,
             label: t('projectStatus.planned', 'Planned'),
             description: t(
                 'projectStatus.planned_desc',
@@ -46,7 +46,7 @@ const ProjectStateDropdown: React.FC<ProjectStateDropdownProps> = ({
             ),
         },
         {
-            value: 'in_progress' as ProjectState,
+            value: 'in_progress' as ProjectStatus,
             label: t('projectStatus.in_progress', 'In Progress'),
             description: t(
                 'projectStatus.in_progress_desc',
@@ -55,7 +55,7 @@ const ProjectStateDropdown: React.FC<ProjectStateDropdownProps> = ({
             icon: <PlayIcon className="w-5 h-5 text-green-500" />,
         },
         {
-            value: 'waiting' as ProjectState,
+            value: 'waiting' as ProjectStatus,
             label: t('projectStatus.waiting', 'Waiting'),
             description: t(
                 'projectStatus.waiting_desc',
@@ -64,13 +64,13 @@ const ProjectStateDropdown: React.FC<ProjectStateDropdownProps> = ({
             icon: <ClockIcon className="w-5 h-5 text-yellow-500" />,
         },
         {
-            value: 'done' as ProjectState,
+            value: 'done' as ProjectStatus,
             label: t('projectStatus.done', 'Completed'),
             description: t('projectStatus.done_desc', 'finished and done'),
             icon: <CheckCircleIcon className="w-5 h-5 text-green-600" />,
         },
         {
-            value: 'cancelled' as ProjectState,
+            value: 'cancelled' as ProjectStatus,
             label: t('projectStatus.cancelled', 'Cancelled'),
             description: t(
                 'projectStatus.cancelled_desc',
@@ -119,8 +119,8 @@ const ProjectStateDropdown: React.FC<ProjectStateDropdownProps> = ({
         }
     };
 
-    const handleSelect = (state: ProjectState) => {
-        onChange(state);
+    const handleSelect = (status: ProjectStatus) => {
+        onChange(status);
         setIsOpen(false);
     };
 

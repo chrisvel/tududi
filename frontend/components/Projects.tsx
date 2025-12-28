@@ -69,7 +69,7 @@ const Projects: React.FC = () => {
     const [orderBy, setOrderBy] = useState<string>('created_at:desc');
 
     const [searchParams, setSearchParams] = useSearchParams();
-    const stateFilter = searchParams.get('state') || 'not_completed';
+    const statusFilter = searchParams.get('status') || 'not_completed';
 
     // Get area UID from URL parameters
     const getAreaUidFromParams = () => {
@@ -250,13 +250,13 @@ const Projects: React.FC = () => {
         return (project as any).completion_percentage || 0;
     };
 
-    const handleStateFilterChange = (value: string) => {
+    const handleStatusFilterChange = (value: string) => {
         const params = new URLSearchParams(searchParams);
 
         if (value === 'not_completed') {
-            params.delete('state');
+            params.delete('status');
         } else {
-            params.set('state', value);
+            params.set('status', value);
         }
         setSearchParams(params);
     };
@@ -282,15 +282,15 @@ const Projects: React.FC = () => {
     const displayProjects = useMemo(() => {
         let filteredProjects = [...projects];
 
-        // Apply state filter
-        if (stateFilter === 'not_completed') {
+        // Apply status filter
+        if (statusFilter === 'not_completed') {
             filteredProjects = filteredProjects.filter(
                 (project) =>
-                    project.state !== 'done' && project.state !== 'cancelled'
+                    project.status !== 'done' && project.status !== 'cancelled'
             );
-        } else if (stateFilter !== 'all') {
+        } else if (statusFilter !== 'all') {
             filteredProjects = filteredProjects.filter(
-                (project) => project.state === stateFilter
+                (project) => project.status === statusFilter
             );
         }
 
@@ -361,7 +361,7 @@ const Projects: React.FC = () => {
         });
 
         return filteredProjects;
-    }, [projects, stateFilter, actualAreaFilter, searchQuery, orderBy]);
+    }, [projects, statusFilter, actualAreaFilter, searchQuery, orderBy]);
 
     if (isLoading) {
         return (
@@ -440,8 +440,8 @@ const Projects: React.FC = () => {
                         <div className="w-full md:w-auto mb-4 md:mb-0">
                             <FilterDropdown
                                 options={statusOptions}
-                                value={stateFilter}
-                                onChange={handleStateFilterChange}
+                                value={statusFilter}
+                                onChange={handleStatusFilterChange}
                                 size="desktop"
                                 autoWidth={true}
                             />
