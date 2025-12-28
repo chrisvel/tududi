@@ -303,6 +303,36 @@ describe('Recurring Tasks', () => {
                 expect(nextDate.getUTCDate()).toBe(expectedDate.getUTCDate());
             });
 
+            it('should not skip months for monthly_last_day when starting from 31st', async () => {
+                // Bug fix: Jan 31 -> should go to Feb 28, not March 31
+                const jan31 = new Date(Date.UTC(2025, 0, 31, 0, 0, 0, 0));
+
+                const taskData = {
+                    name: 'End of Month Task',
+                    recurrence_type: 'monthly_last_day',
+                    recurrence_interval: 1,
+                    due_date: jan31.toISOString().split('T')[0],
+                };
+
+                const response = await agent.post('/api/task').send(taskData);
+                const task = await Task.findByPk(response.body.id);
+
+                // First occurrence: Jan 31 -> Feb 28
+                const nextDate1 = calculateNextDueDate(task, jan31);
+                expect(nextDate1.getUTCMonth()).toBe(1); // February
+                expect(nextDate1.getUTCDate()).toBe(28);
+
+                // Second occurrence: Feb 28 -> Mar 31
+                const nextDate2 = calculateNextDueDate(task, nextDate1);
+                expect(nextDate2.getUTCMonth()).toBe(2); // March
+                expect(nextDate2.getUTCDate()).toBe(31);
+
+                // Third occurrence: Mar 31 -> Apr 30
+                const nextDate3 = calculateNextDueDate(task, nextDate2);
+                expect(nextDate3.getUTCMonth()).toBe(3); // April
+                expect(nextDate3.getUTCDate()).toBe(30);
+            });
+
             it('should handle monthly recurrence when day does not exist in target month', async () => {
                 // Create a task for Jan 31
                 const jan31 = new Date(Date.UTC(2024, 0, 31, 0, 0, 0, 0));
