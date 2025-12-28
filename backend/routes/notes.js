@@ -4,6 +4,16 @@ const { extractUidFromSlug, isValidUid } = require('../utils/slug-utils');
 const { validateTagName } = require('../services/tagsService');
 const router = express.Router();
 const { getAuthenticatedUserId } = require('../utils/request-utils');
+const { sortTags } = require('./tasks/core/serializers');
+
+// Helper function to serialize a note with sorted tags
+function serializeNote(note) {
+    const noteJson = note.toJSON ? note.toJSON() : note;
+    return {
+        ...noteJson,
+        Tags: sortTags(noteJson.Tags),
+    };
+}
 
 router.use((req, res, next) => {
     const userId = getAuthenticatedUserId(req);
@@ -99,7 +109,7 @@ router.get('/notes', async (req, res) => {
             distinct: true,
         });
 
-        res.json(notes);
+        res.json(notes.map(serializeNote));
     } catch (error) {
         logError('Error fetching notes:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -140,7 +150,7 @@ router.get(
                 ],
             });
 
-            res.json(note);
+            res.json(serializeNote(note));
         } catch (error) {
             logError('Error fetching note:', error);
             res.status(500).json({ error: 'Internal server error' });
@@ -239,8 +249,9 @@ router.post('/note', async (req, res) => {
             ],
         });
 
+        const serializedNote = serializeNote(noteWithAssociations);
         res.status(201).json({
-            ...noteWithAssociations.toJSON(),
+            ...serializedNote,
             uid: noteWithAssociations.uid,
         });
     } catch (error) {
@@ -363,7 +374,7 @@ router.patch(
                 ],
             });
 
-            res.json(noteWithAssociations);
+            res.json(serializeNote(noteWithAssociations));
         } catch (error) {
             logError('Error updating note:', error);
             res.status(400).json({

@@ -494,9 +494,9 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                             </Link>
                                         )}
                                         {task.tags && task.tags.length > 0 && (
-                                            <div className="flex items-center gap-1 flex-wrap">
-                                                <TagIcon className="h-4 w-4" />
-                                                <div className="flex flex-wrap">
+                                            <div className="flex items-center">
+                                                <TagIcon className="h-4 w-4 mr-1" />
+                                                <span>
                                                     {task.tags.map(
                                                         (
                                                             tag: any,
@@ -529,15 +529,12 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                                                 {index <
                                                                     task.tags!
                                                                         .length -
-                                                                        1 && (
-                                                                    <span>
-                                                                        {', '}
-                                                                    </span>
-                                                                )}
+                                                                        1 &&
+                                                                    ', '}
                                                             </React.Fragment>
                                                         )
                                                     )}
-                                                </div>
+                                                </span>
                                             </div>
                                         )}
                                     </div>

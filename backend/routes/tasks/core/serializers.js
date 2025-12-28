@@ -9,6 +9,14 @@ const {
 } = require('../../../services/taskEventService');
 const taskRepository = require('../../../repositories/TaskRepository');
 
+// Sort tags alphabetically by name (case-insensitive)
+function sortTags(tags) {
+    if (!tags || !Array.isArray(tags)) return [];
+    return [...tags].sort((a, b) =>
+        a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+    );
+}
+
 async function serializeTask(
     task,
     userTimezone = 'UTC',
@@ -80,7 +88,7 @@ async function serializeTask(
             taskJson.defer_until,
             safeTimezone
         ),
-        tags: taskJson.Tags || [],
+        tags: sortTags(taskJson.Tags),
         Project: taskJson.Project
             ? {
                   ...taskJson.Project,
@@ -91,7 +99,7 @@ async function serializeTask(
             ? Subtasks.map((subtask) => ({
                   ...subtask,
                   uid: subtask.uid,
-                  tags: subtask.Tags || [],
+                  tags: sortTags(subtask.Tags),
                   due_date: processDueDateForResponse(
                       subtask.due_date,
                       safeTimezone
@@ -148,4 +156,5 @@ module.exports = {
     serializeTask,
     serializeTasks,
     buildMetricsResponse,
+    sortTags,
 };
