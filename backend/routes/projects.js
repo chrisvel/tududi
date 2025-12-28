@@ -158,7 +158,10 @@ router.post(
 
 router.get('/projects', async (req, res) => {
     try {
-        const { state, active, pin_to_sidebar, area_id, area } = req.query;
+        const { status, state, active, pin_to_sidebar, area_id, area } =
+            req.query;
+        // Support both 'status' (new) and 'state' (legacy) query params
+        const statusFilter = status || state;
 
         // Base: owned or shared projects
         const ownedOrShared =
@@ -168,22 +171,22 @@ router.get('/projects', async (req, res) => {
             );
         let whereClause = ownedOrShared;
 
-        // Filter by state (new primary filter)
-        if (state && state !== 'all') {
-            if (Array.isArray(state)) {
-                whereClause.state = { [Op.in]: state };
+        // Filter by status
+        if (statusFilter && statusFilter !== 'all') {
+            if (Array.isArray(statusFilter)) {
+                whereClause.status = { [Op.in]: statusFilter };
             } else {
-                whereClause.state = state;
+                whereClause.status = statusFilter;
             }
         }
 
-        // Legacy support for active filter - map to states
+        // Legacy support for active filter - map to statuses
         if (active === 'true') {
-            whereClause.state = {
-                [Op.in]: ['planned', 'in_progress', 'blocked'],
+            whereClause.status = {
+                [Op.in]: ['planned', 'in_progress', 'waiting'],
             };
         } else if (active === 'false') {
-            whereClause.state = { [Op.in]: ['idea', 'completed'] };
+            whereClause.status = { [Op.in]: ['not_started', 'done'] };
         }
 
         // Filter by pinned status
@@ -490,7 +493,8 @@ router.post('/project', async (req, res) => {
             priority,
             due_date_at,
             image_url,
-            state,
+            status,
+            state, // Legacy support
             tags,
             Tags,
         } = req.body;
@@ -514,7 +518,7 @@ router.post('/project', async (req, res) => {
             priority: priority || null,
             due_date_at: due_date_at || null,
             image_url: image_url || null,
-            state: state || 'idea',
+            status: status || state || 'not_started',
             user_id: req.authUserId,
         };
 
@@ -578,7 +582,8 @@ router.patch(
                 priority,
                 due_date_at,
                 image_url,
-                state,
+                status,
+                state, // Legacy support
                 tags,
                 Tags,
             } = req.body;
@@ -595,7 +600,9 @@ router.patch(
             if (priority !== undefined) updateData.priority = priority;
             if (due_date_at !== undefined) updateData.due_date_at = due_date_at;
             if (image_url !== undefined) updateData.image_url = image_url;
-            if (state !== undefined) updateData.state = state;
+            // Support both status (new) and state (legacy)
+            if (status !== undefined) updateData.status = status;
+            else if (state !== undefined) updateData.status = state;
 
             await project.update(updateData);
             await updateProjectTags(project, tagsData, req.authUserId);

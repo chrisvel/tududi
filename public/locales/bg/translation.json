@@ -151,7 +151,9 @@
     "open": "Отвори",
     "completed": "Завършено",
     "noCompletedTasksToday": "Няма завършени задачи днес.",
-    "markAsDone": "Mark as done"
+    "markAsDone": "Mark as done",
+    "notStarted": "Не е започнато",
+    "done": "Завършено"
   },
   "timeline": {
     "activityTimeline": "Хронология на активността",
@@ -820,7 +822,8 @@
       "active": "Активен",
       "inactive": "Неактивен",
       "all": "Всички",
-      "allAreas": "Всички области"
+      "allAreas": "Всички области",
+      "notCompleted": "Не е завършено"
     },
     "selectState": "Изберете състояние",
     "state": "Състояние на проекта",
@@ -1342,5 +1345,19 @@
       "title": "Забележка:",
       "message": "Имейл и Push известия ще бъдат налични скоро. В приложението и Telegram известията в момента са налични."
     }
+  },
+  "projectStatus": {
+    "not_started": "Не е започнато",
+    "not_started_desc": "Записано, но все още не е започнато",
+    "planned": "Планирано",
+    "planned_desc": "Определено и готово за започване",
+    "in_progress": "В процес",
+    "in_progress_desc": "Активна работа в ход",
+    "waiting": "Изчакване",
+    "waiting_desc": "Изчакване на външна информация",
+    "done": "Завършено",
+    "done_desc": "Завършено и готово",
+    "cancelled": "Отменено",
+    "cancelled_desc": "Няма да бъде завършено"
   }
 }

@@ -21,7 +21,7 @@ describe('Project Model', () => {
             const projectData = {
                 name: 'Test Project',
                 description: 'Test Description',
-                state: 'planned',
+                status: 'planned',
                 pin_to_sidebar: false,
                 priority: 1,
                 user_id: user.id,
@@ -32,7 +32,7 @@ describe('Project Model', () => {
 
             expect(project.name).toBe(projectData.name);
             expect(project.description).toBe(projectData.description);
-            expect(project.state).toBe(projectData.state);
+            expect(project.status).toBe(projectData.status);
             expect(project.pin_to_sidebar).toBe(projectData.pin_to_sidebar);
             expect(project.priority).toBe(projectData.priority);
             expect(project.user_id).toBe(user.id);
@@ -85,7 +85,7 @@ describe('Project Model', () => {
                 user_id: user.id,
             });
 
-            expect(project.state).toBe('idea');
+            expect(project.status).toBe('not_started');
             expect(project.pin_to_sidebar).toBe(false);
             expect(project.task_show_completed).toBe(false);
             expect(project.task_sort_order).toBe('created_at:desc');

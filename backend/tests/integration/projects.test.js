@@ -29,7 +29,7 @@ describe('Projects Routes', () => {
             const projectData = {
                 name: 'Test Project',
                 description: 'Test Description',
-                state: 'planned',
+                status: 'planned',
                 pin_to_sidebar: false,
                 priority: 1,
                 area_id: area.id,
@@ -40,7 +40,7 @@ describe('Projects Routes', () => {
             expect(response.status).toBe(201);
             expect(response.body.name).toBe(projectData.name);
             expect(response.body.description).toBe(projectData.description);
-            expect(response.body.state).toBe(projectData.state);
+            expect(response.body.status).toBe(projectData.status);
             expect(response.body.pin_to_sidebar).toBe(
                 projectData.pin_to_sidebar
             );
@@ -217,7 +217,7 @@ describe('Projects Routes', () => {
             project = await Project.create({
                 name: 'Test Project',
                 description: 'Test Description',
-                state: 'idea',
+                status: 'not_started',
                 priority: 0,
                 user_id: user.id,
             });
@@ -227,7 +227,7 @@ describe('Projects Routes', () => {
             const updateData = {
                 name: 'Updated Project',
                 description: 'Updated Description',
-                state: 'in_progress',
+                status: 'in_progress',
                 priority: 2,
             };
 
@@ -238,7 +238,7 @@ describe('Projects Routes', () => {
             expect(response.status).toBe(200);
             expect(response.body.name).toBe(updateData.name);
             expect(response.body.description).toBe(updateData.description);
-            expect(response.body.state).toBe(updateData.state);
+            expect(response.body.status).toBe(updateData.status);
             expect(response.body.priority).toBe(updateData.priority);
         });
 

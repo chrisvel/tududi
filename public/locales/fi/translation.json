@@ -151,7 +151,9 @@
     "open": "Avaa",
     "completed": "Valmis",
     "noCompletedTasksToday": "Ei suoritettuja tehtäviä tänään.",
-    "markAsDone": "Mark as done"
+    "markAsDone": "Mark as done",
+    "notStarted": "Ei aloitettu",
+    "done": "Valmis"
   },
   "timeline": {
     "activityTimeline": "Toiminta-aikajana",
@@ -820,7 +822,8 @@
       "active": "Aktiivinen",
       "inactive": "Passiivinen",
       "all": "Kaikki",
-      "allAreas": "Kaikki alueet"
+      "allAreas": "Kaikki alueet",
+      "notCompleted": "Ei valmis"
     },
     "selectState": "Valitse tila",
     "state": "Projektin tila",
@@ -1342,5 +1345,19 @@
       "title": "Huom:",
       "message": "Sähköposti- ja Push-ilmoitukset ovat tulossa pian. Sovelluksen sisäiset ja Telegram-ilmoitukset ovat tällä hetkellä saatavilla."
     }
+  },
+  "projectStatus": {
+    "not_started": "Ei aloitettu",
+    "not_started_desc": "Tallennettu mutta ei vielä aloitettu",
+    "planned": "Suunniteltu",
+    "planned_desc": "Määritelty ja valmis aloittamaan",
+    "in_progress": "Käynnissä",
+    "in_progress_desc": "Aktiivista työtä käynnissä",
+    "waiting": "Odottaa",
+    "waiting_desc": "Odottaa ulkoista syötettä",
+    "done": "Valmistunut",
+    "done_desc": "Valmis ja tehty",
+    "cancelled": "Peruutettu",
+    "cancelled_desc": "Ei tule valmistumaan"
   }
 }

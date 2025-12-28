@@ -151,7 +151,9 @@
     "open": "Open",
     "completed": "Voltooid",
     "noCompletedTasksToday": "Geen voltooide taken vandaag.",
-    "markAsDone": "Mark as done"
+    "markAsDone": "Mark as done",
+    "notStarted": "Niet Begonnen",
+    "done": "Voltooid"
   },
   "timeline": {
     "activityTimeline": "Activiteit Tijdlijn",
@@ -820,7 +822,8 @@
       "active": "Actief",
       "inactive": "Inactief",
       "all": "Alle",
-      "allAreas": "Alle gebieden"
+      "allAreas": "Alle gebieden",
+      "notCompleted": "Niet Voltooid"
     },
     "selectState": "Selecteer Staat",
     "state": "Projectstaat",
@@ -1342,5 +1345,19 @@
       "title": "Opmerking:",
       "message": "E-mail- en pushmeldingen komen binnenkort. In-app en Telegram-meldingen zijn momenteel beschikbaar."
     }
+  },
+  "projectStatus": {
+    "not_started": "Niet Begonnen",
+    "not_started_desc": "Vastgelegd maar nog niet begonnen",
+    "planned": "Gepland",
+    "planned_desc": "Afgebakend en klaar om te beginnen",
+    "in_progress": "Bezig",
+    "in_progress_desc": "Actief werk bezig",
+    "waiting": "Wachten",
+    "waiting_desc": "Wachten op externe input",
+    "done": "Voltooid",
+    "done_desc": "Afgerond en voltooid",
+    "cancelled": "Geannuleerd",
+    "cancelled_desc": "Zal niet worden voltooid"
   }
 }

@@ -366,7 +366,9 @@
     "open": "Abrir",
     "completed": "Completado",
     "noCompletedTasksToday": "No hay tareas completadas hoy.",
-    "markAsDone": "Mark as done"
+    "markAsDone": "Mark as done",
+    "notStarted": "No Iniciado",
+    "done": "Hecho"
   },
   "timeline": {
     "activityTimeline": "Línea de Tiempo de Actividad",
@@ -427,24 +429,11 @@
       "active": "Activos",
       "inactive": "Inactivos",
       "all": "Todos",
-      "allAreas": "Todas las áreas"
+      "allAreas": "Todas las áreas",
+      "notCompleted": "No Completados"
     },
     "selectState": "Seleccionar Estado",
     "state": "Estado del Proyecto",
-    "states": {
-      "idea": "Idea",
-      "planned": "Planificado",
-      "in_progress": "En Progreso",
-      "blocked": "Bloqueado",
-      "completed": "Completado",
-      "idea_desc": "Capturado pero aún no planificado",
-      "planned_desc": "Definido y listo para comenzar",
-      "in_progress_desc": "Trabajo activo en curso",
-      "blocked_desc": "Pausado temporalmente o atascado",
-      "completed_desc": "Terminado y completado",
-      "active": "En Progreso",
-      "active_desc": "Trabajo activo en curso"
-    },
     "showMetrics": "Mostrar métricas",
     "hideMetrics": "Ocultar métricas",
     "progress": "Progreso",
@@ -1343,5 +1332,19 @@
       "title": "Nota:",
       "message": "Las notificaciones por correo electrónico y Push llegarán pronto. Las notificaciones en la aplicación y de Telegram están disponibles actualmente."
     }
+  },
+  "projectStatus": {
+    "not_started": "No Iniciado",
+    "not_started_desc": "Capturado pero aún no iniciado",
+    "planned": "Planificado",
+    "planned_desc": "Definido y listo para comenzar",
+    "in_progress": "En Progreso",
+    "in_progress_desc": "Trabajo activo en curso",
+    "waiting": "Esperando",
+    "waiting_desc": "Esperando entrada externa",
+    "done": "Completado",
+    "done_desc": "Terminado y hecho",
+    "cancelled": "Cancelado",
+    "cancelled_desc": "No se completará"
   }
 }

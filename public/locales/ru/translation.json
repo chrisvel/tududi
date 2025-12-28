@@ -151,7 +151,9 @@
     "open": "Открыть",
     "completed": "Завершено",
     "noCompletedTasksToday": "Сегодня нет завершенных задач.",
-    "markAsDone": "Mark as done"
+    "markAsDone": "Mark as done",
+    "notStarted": "Не начато",
+    "done": "Выполнено"
   },
   "timeline": {
     "activityTimeline": "Хронология активности",
@@ -820,7 +822,8 @@
       "active": "Активные",
       "inactive": "Неактивные",
       "all": "Все",
-      "allAreas": "Все области"
+      "allAreas": "Все области",
+      "notCompleted": "Не завершено"
     },
     "selectState": "Выберите состояние",
     "state": "Состояние проекта",
@@ -1342,5 +1345,19 @@
       "title": "Примечание:",
       "message": "Уведомления по электронной почте и Push скоро будут доступны. Уведомления в приложении и Telegram в настоящее время доступны."
     }
+  },
+  "projectStatus": {
+    "not_started": "Не начато",
+    "not_started_desc": "Зафиксировано, но еще не начато",
+    "planned": "Запланировано",
+    "planned_desc": "Определено и готово к началу",
+    "in_progress": "В процессе",
+    "in_progress_desc": "Активная работа ведется",
+    "waiting": "Ожидание",
+    "waiting_desc": "Ожидание внешнего ввода",
+    "done": "Завершено",
+    "done_desc": "Закончено и выполнено",
+    "cancelled": "Отменено",
+    "cancelled_desc": "Не будет завершено"
   }
 }

@@ -151,7 +151,9 @@
     "open": "Mở",
     "completed": "Đã hoàn thành",
     "noCompletedTasksToday": "Không có nhiệm vụ hoàn thành hôm nay.",
-    "markAsDone": "Mark as done"
+    "markAsDone": "Mark as done",
+    "notStarted": "Chưa bắt đầu",
+    "done": "Đã hoàn thành"
   },
   "timeline": {
     "activityTimeline": "Dòng Thời Gian Hoạt Động",
@@ -820,7 +822,8 @@
       "active": "Đang hoạt động",
       "inactive": "Không hoạt động",
       "all": "Tất cả",
-      "allAreas": "Tất cả các khu vực"
+      "allAreas": "Tất cả các khu vực",
+      "notCompleted": "Chưa hoàn thành"
     },
     "selectState": "Chọn Trạng Thái",
     "state": "Trạng Thái Dự Án",
@@ -1342,5 +1345,19 @@
       "title": "Lưu ý:",
       "message": "Thông báo Email và Push sẽ sớm có. Thông báo trong ứng dụng và Telegram hiện đang có sẵn."
     }
+  },
+  "projectStatus": {
+    "not_started": "Chưa bắt đầu",
+    "not_started_desc": "Đã ghi nhận nhưng chưa bắt đầu",
+    "planned": "Đã lên kế hoạch",
+    "planned_desc": "Đã xác định và sẵn sàng để bắt đầu",
+    "in_progress": "Đang tiến hành",
+    "in_progress_desc": "Công việc đang diễn ra",
+    "waiting": "Đang chờ",
+    "waiting_desc": "Đang chờ thông tin từ bên ngoài",
+    "done": "Đã hoàn thành",
+    "done_desc": "Đã hoàn tất và xong",
+    "cancelled": "Đã hủy",
+    "cancelled_desc": "Sẽ không được hoàn thành"
   }
 }

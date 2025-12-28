@@ -961,7 +961,7 @@ describe('Universal Search Routes', () => {
                 expect(project.name).toBe('Test project');
                 expect(project.description).toBe('Project description');
                 expect(project.priority).toBe('medium');
-                expect(project.status).toBe('active');
+                expect(project.status).toBe('not_started');
             });
 
             it('should return note with correct structure', async () => {

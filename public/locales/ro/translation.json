@@ -151,7 +151,9 @@
     "open": "Deschide",
     "completed": "Finalizat",
     "noCompletedTasksToday": "Nicio sarcină finalizată astăzi.",
-    "markAsDone": "Mark as done"
+    "markAsDone": "Mark as done",
+    "notStarted": "Nefăcut",
+    "done": "Finalizat"
   },
   "timeline": {
     "activityTimeline": "Cronologia activităților",
@@ -820,7 +822,8 @@
       "active": "Activ",
       "inactive": "Inactiv",
       "all": "Toate",
-      "allAreas": "Toate zonele"
+      "allAreas": "Toate zonele",
+      "notCompleted": "Nefinalizat"
     },
     "selectState": "Selectați Starea",
     "state": "Starea Proiectului",
@@ -1342,5 +1345,19 @@
       "title": "Notă:",
       "message": "Notificările prin Email și Push vor fi disponibile în curând. Notificările în aplicație și pe Telegram sunt disponibile în prezent."
     }
+  },
+  "projectStatus": {
+    "not_started": "Nefăcut",
+    "not_started_desc": "Capturat, dar încă nefăcut",
+    "planned": "Planificat",
+    "planned_desc": "Definit și gata de început",
+    "in_progress": "În desfășurare",
+    "in_progress_desc": "Lucrări active în desfășurare",
+    "waiting": "Așteptând",
+    "waiting_desc": "Așteptând input extern",
+    "done": "Finalizat",
+    "done_desc": "Terminată și finalizată",
+    "cancelled": "Anulat",
+    "cancelled_desc": "Nu va fi finalizat"
   }
 }

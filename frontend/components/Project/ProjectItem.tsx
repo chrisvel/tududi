@@ -4,15 +4,16 @@ import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
 import {
     PencilSquareIcon,
     TrashIcon,
-    LightBulbIcon,
-    DocumentTextIcon,
+    EllipsisHorizontalCircleIcon,
+    ClipboardDocumentListIcon,
     PlayIcon,
-    StopIcon,
+    ClockIcon,
     CheckCircleIcon,
+    XCircleIcon,
     ShareIcon,
     ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
-import { Project, ProjectState } from '../../entities/Project';
+import { Project, ProjectStatus } from '../../entities/Project';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '../Shared/ToastContext';
 import { getCurrentUser } from '../../utils/userUtils';
@@ -48,38 +49,41 @@ const getProjectInitials = (name: string, maxLetters?: number) => {
     return maxLetters ? initials.substring(0, maxLetters) : initials;
 };
 
-const getStateIcon = (state: ProjectState | undefined) => {
-    switch (state) {
-        case 'idea':
-            return { icon: LightBulbIcon };
+const getStatusIcon = (status: ProjectStatus | undefined) => {
+    switch (status) {
+        case 'not_started':
+            return { icon: EllipsisHorizontalCircleIcon };
         case 'planned':
-            return { icon: DocumentTextIcon };
+            return { icon: ClipboardDocumentListIcon };
         case 'in_progress':
             return { icon: PlayIcon };
-        case 'blocked':
-            return { icon: StopIcon };
-        case 'completed':
+        case 'waiting':
+            return { icon: ClockIcon };
+        case 'done':
             return { icon: CheckCircleIcon };
+        case 'cancelled':
+            return { icon: XCircleIcon };
         default:
-            return { icon: LightBulbIcon };
+            return { icon: EllipsisHorizontalCircleIcon };
     }
 };
 
-const getStateLabel = (state: ProjectState | undefined, t: any): string => {
-    switch (state) {
-        case 'idea':
-            return t('projects.states.idea', 'Idea');
+const getStatusLabel = (status: ProjectStatus | undefined, t: any): string => {
+    switch (status) {
+        case 'not_started':
+            return t('projectStatus.not_started', 'Not Started');
         case 'planned':
-            return t('projects.states.planned', 'Planned');
+            return t('projectStatus.planned', 'Planned');
         case 'in_progress':
-        case 'active':
-            return t('projects.states.in_progress', 'In Progress');
-        case 'blocked':
-            return t('projects.states.blocked', 'Blocked');
-        case 'completed':
-            return t('projects.states.completed', 'Completed');
+            return t('projectStatus.in_progress', 'In Progress');
+        case 'waiting':
+            return t('projectStatus.waiting', 'Waiting');
+        case 'done':
+            return t('projectStatus.done', 'Completed');
+        case 'cancelled':
+            return t('projectStatus.cancelled', 'Cancelled');
         default:
-            return t('projects.states.idea', 'Idea');
+            return t('projectStatus.not_started', 'Not Started');
     }
 };
 
@@ -299,14 +303,14 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                     />
                                 )}
                                 {(() => {
-                                    const { icon: StateIcon } = getStateIcon(
-                                        project.state
+                                    const { icon: StatusIcon } = getStatusIcon(
+                                        project.status
                                     );
                                     return (
-                                        <StateIcon
+                                        <StatusIcon
                                             className="h-4 w-4 text-white/80 drop-shadow-sm"
-                                            title={getStateLabel(
-                                                project.state,
+                                            title={getStatusLabel(
+                                                project.status,
                                                 t
                                             )}
                                         />

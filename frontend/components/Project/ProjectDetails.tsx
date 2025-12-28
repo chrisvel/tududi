@@ -3,11 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     MagnifyingGlassIcon,
-    LightBulbIcon,
+    EllipsisHorizontalCircleIcon,
     ClipboardDocumentListIcon,
     PlayIcon,
-    ExclamationTriangleIcon,
+    ClockIcon,
     CheckCircleIcon,
+    XCircleIcon,
     ChartBarIcon,
     CheckIcon,
 } from '@heroicons/react/24/outline';
@@ -700,32 +701,35 @@ const ProjectDetails: React.FC = () => {
         monthlyCompleted,
     } = useProjectMetrics(tasks, handleTaskUpdate, t, showSuccessToast);
 
-    const getStateIcon = (state: string) => {
-        switch (state) {
-            case 'idea':
+    const getStatusIcon = (status: string) => {
+        switch (status) {
+            case 'not_started':
                 return (
-                    <LightBulbIcon className="h-3 w-3 text-yellow-500 flex-shrink-0 mt-0.5" />
+                    <EllipsisHorizontalCircleIcon className="h-3 w-3 text-gray-500 flex-shrink-0 mt-0.5" />
                 );
             case 'planned':
                 return (
                     <ClipboardDocumentListIcon className="h-3 w-3 text-blue-500 flex-shrink-0 mt-0.5" />
                 );
             case 'in_progress':
-            case 'active':
                 return (
                     <PlayIcon className="h-3 w-3 text-green-500 flex-shrink-0 mt-0.5" />
                 );
-            case 'blocked':
+            case 'waiting':
                 return (
-                    <ExclamationTriangleIcon className="h-3 w-3 text-red-500 flex-shrink-0 mt-0.5" />
+                    <ClockIcon className="h-3 w-3 text-yellow-500 flex-shrink-0 mt-0.5" />
                 );
-            case 'completed':
+            case 'done':
                 return (
-                    <CheckCircleIcon className="h-3 w-3 text-gray-500 flex-shrink-0 mt-0.5" />
+                    <CheckCircleIcon className="h-3 w-3 text-green-600 flex-shrink-0 mt-0.5" />
+                );
+            case 'cancelled':
+                return (
+                    <XCircleIcon className="h-3 w-3 text-red-500 flex-shrink-0 mt-0.5" />
                 );
             default:
                 return (
-                    <PlayIcon className="h-3 w-3 text-white/70 flex-shrink-0 mt-0.5" />
+                    <EllipsisHorizontalCircleIcon className="h-3 w-3 text-white/70 flex-shrink-0 mt-0.5" />
                 );
         }
     };
@@ -834,7 +838,7 @@ const ProjectDetails: React.FC = () => {
                 project={project}
                 areas={areas}
                 t={t}
-                getStateIcon={getStateIcon}
+                getStatusIcon={getStatusIcon}
                 onDeleteClick={() => {
                     setNoteToDelete(null);
                     setIsConfirmDialogOpen(true);

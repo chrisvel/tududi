@@ -364,7 +364,7 @@ async function importUserData(userId, backupData, options = { merge: true }) {
                             task_show_completed:
                                 projectData.task_show_completed,
                             task_sort_order: projectData.task_sort_order,
-                            state: projectData.state,
+                            status: projectData.status || projectData.state,
                             user_id: userId,
                             area_id: areaId,
                         },

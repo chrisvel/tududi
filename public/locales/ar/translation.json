@@ -151,7 +151,9 @@
     "open": "فتح",
     "completed": "مكتمل",
     "noCompletedTasksToday": "لا توجد مهام مكتملة اليوم.",
-    "markAsDone": "Mark as done"
+    "markAsDone": "Mark as done",
+    "notStarted": "لم يبدأ بعد",
+    "done": "تم"
   },
   "timeline": {
     "activityTimeline": "جدول الأنشطة",
@@ -820,7 +822,8 @@
       "active": "نشط",
       "inactive": "غير نشط",
       "all": "الكل",
-      "allAreas": "جميع المناطق"
+      "allAreas": "جميع المناطق",
+      "notCompleted": "لم يكتمل"
     },
     "selectState": "اختر الحالة",
     "state": "حالة المشروع",
@@ -1342,5 +1345,19 @@
       "title": "ملاحظة:",
       "message": "ستكون إشعارات البريد الإلكتروني وإشعارات الدفع متاحة قريبًا. الإشعارات داخل التطبيق وإشعارات تليجرام متاحة حاليًا."
     }
+  },
+  "projectStatus": {
+    "not_started": "لم يبدأ بعد",
+    "not_started_desc": "تم التقاطه ولكن لم يبدأ بعد",
+    "planned": "مخطط",
+    "planned_desc": "تم تحديد نطاقه وجاهز للبدء",
+    "in_progress": "قيد التنفيذ",
+    "in_progress_desc": "عمل نشط جارٍ",
+    "waiting": "انتظار",
+    "waiting_desc": "في انتظار مدخلات خارجية",
+    "done": "مكتمل",
+    "done_desc": "انتهى وتم",
+    "cancelled": "ملغى",
+    "cancelled_desc": "لن يكتمل"
   }
 }

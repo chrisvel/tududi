@@ -151,7 +151,9 @@
     "open": "Odpri",
     "completed": "Dokončano",
     "noCompletedTasksToday": "Danes ni zaključenih nalog.",
-    "markAsDone": "Mark as done"
+    "markAsDone": "Mark as done",
+    "notStarted": "Niso začeli",
+    "done": "Dokončano"
   },
   "timeline": {
     "activityTimeline": "Časovnica aktivnosti",
@@ -820,7 +822,8 @@
       "active": "Aktivno",
       "inactive": "Neaktivno",
       "all": "Vse",
-      "allAreas": "Vse področja"
+      "allAreas": "Vse področja",
+      "notCompleted": "Nedokončano"
     },
     "selectState": "Izberite stanje",
     "state": "Stanje projekta",
@@ -1342,5 +1345,19 @@
       "title": "Opomba:",
       "message": "Obvestila po e-pošti in potisna obvestila kmalu prihajajo. Obvestila v aplikaciji in na Telegramu so trenutno na voljo."
     }
+  },
+  "projectStatus": {
+    "not_started": "Niso začeli",
+    "not_started_desc": "Zajeto, a še ni začeto",
+    "planned": "Načrtovano",
+    "planned_desc": "Opredeljeno in pripravljeno za začetek",
+    "in_progress": "V teku",
+    "in_progress_desc": "Aktivno delo poteka",
+    "waiting": "Čaka",
+    "waiting_desc": "Čaka na zunanje vnose",
+    "done": "Dokončano",
+    "done_desc": "Končano in opravljeno",
+    "cancelled": "Preklicano",
+    "cancelled_desc": "Ne bo dokončano"
   }
 }

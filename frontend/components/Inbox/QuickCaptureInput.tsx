@@ -1065,7 +1065,7 @@ const QuickCaptureInput = React.forwardRef<
                 try {
                     await createProject({
                         name: projectName,
-                        state: 'planned',
+                        status: 'planned',
                     });
                 } catch (error) {
                     console.error(
@@ -1411,7 +1411,7 @@ const QuickCaptureInput = React.forwardRef<
                                         const newProject: Project = {
                                             name: cleaned,
                                             description: '',
-                                            state: 'planned',
+                                            status: 'planned',
                                             tags: buildTagObjects(
                                                 composerFooterContext.hashtags
                                             ),
