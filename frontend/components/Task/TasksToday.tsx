@@ -1215,7 +1215,7 @@ const TasksToday: React.FC = () => {
                                             {t('tasks.dueToday')}
                                         </p>
                                     </div>
-                                    <p className="text-sm font-semibold">
+                                    <p className={`text-sm font-semibold ${metrics.tasks_due_today.length > 0 ? 'text-red-500' : ''}`}>
                                         {metrics.tasks_due_today.length}
                                     </p>
                                 </div>
@@ -1228,7 +1228,7 @@ const TasksToday: React.FC = () => {
                                             {t('tasks.overdue', 'Overdue')}
                                         </p>
                                     </div>
-                                    <p className="text-sm font-semibold">
+                                    <p className={`text-sm font-semibold ${metrics.tasks_overdue.length > 0 ? 'text-red-500' : ''}`}>
                                         {metrics.tasks_overdue.length}
                                     </p>
                                 </div>
@@ -1298,7 +1298,7 @@ const TasksToday: React.FC = () => {
                                                             </div>
                                                         </div>
                                                     )}
-                                                    <p className="text-sm font-semibold">
+                                                    <p className={`text-sm font-semibold ${metrics.tasks_completed_today.length > 0 ? 'text-green-500' : ''}`}>
                                                         {
                                                             metrics
                                                                 .tasks_completed_today
