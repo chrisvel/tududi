@@ -6,6 +6,7 @@ import {
     ArrowPathIcon,
     ListBulletIcon,
     ChevronDownIcon,
+    CheckIcon,
 } from '@heroicons/react/24/outline';
 import { TagIcon, FolderIcon, FireIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
@@ -153,11 +154,12 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
         ? formatDeferUntil(task.defer_until)
         : null;
 
-    // Check if task has metadata (project, tags, due_date, recurrence_type, recurring_parent_id, or defer_until)
+    // Check if task has metadata (project, tags, due_date, completed_at, recurrence_type, recurring_parent_id, or defer_until)
     const hasMetadata =
         (project && !hideProjectName) ||
         (task.tags && task.tags.length > 0) ||
         task.due_date ||
+        (isTaskCompleted(task.status) && task.completed_at) ||
         (task.recurrence_type && task.recurrence_type !== 'none') ||
         task.recurring_parent_id ||
         !!formattedDeferUntil;
@@ -396,6 +398,19 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                         </span>
                                     </div>
                                 )}
+                                {isTaskCompleted(task.status) &&
+                                    task.completed_at && (
+                                        <div className="flex items-center whitespace-nowrap">
+                                            <CheckIcon className="h-3 w-3 mr-1" />
+                                            <span>
+                                                {formatDueDate(
+                                                    task.completed_at.split(
+                                                        'T'
+                                                    )[0]
+                                                )}
+                                            </span>
+                                        </div>
+                                    )}
                                 {task.recurrence_type &&
                                     task.recurrence_type !== 'none' && (
                                         <div
@@ -565,6 +580,17 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                     <span>{formatDueDate(task.due_date)}</span>
                                 </div>
                             )}
+                            {isTaskCompleted(task.status) &&
+                                task.completed_at && (
+                                    <div className="flex items-center whitespace-nowrap">
+                                        <CheckIcon className="h-3 w-3 mr-1" />
+                                        <span>
+                                            {formatDueDate(
+                                                task.completed_at.split('T')[0]
+                                            )}
+                                        </span>
+                                    </div>
+                                )}
                             {task.recurrence_type &&
                                 task.recurrence_type !== 'none' && (
                                     <div

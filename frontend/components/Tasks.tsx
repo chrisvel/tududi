@@ -482,6 +482,14 @@ const Tasks: React.FC = () => {
         { value: 'priority:desc', label: t('sort.priority', 'Priority') },
         { value: 'status:desc', label: t('sort.status', 'Status') },
         { value: 'created_at:desc', label: t('sort.created_at', 'Created At') },
+        ...(status === 'done'
+            ? [
+                  {
+                      value: 'completed_at:desc',
+                      label: t('sort.completed_at', 'Completed At'),
+                  },
+              ]
+            : []),
     ];
 
     const description = getDescription(query, projects, t, location.pathname);
