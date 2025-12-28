@@ -164,6 +164,7 @@ async function filterTasksByParams(
                 parent_task_id: null,
                 [Op.or]: [
                     {
+                        // Non-recurring tasks with due dates in the next 7 days
                         [Op.and]: [
                             { recurring_parent_id: null },
                             {
@@ -183,6 +184,27 @@ async function filterTasksByParams(
                         ],
                     },
                     {
+                        // Non-recurring tasks with defer_until dates in the next 7 days
+                        [Op.and]: [
+                            { recurring_parent_id: null },
+                            {
+                                [Op.or]: [
+                                    { recurrence_type: 'none' },
+                                    { recurrence_type: null },
+                                ],
+                            },
+                            {
+                                defer_until: {
+                                    [Op.between]: [
+                                        upcomingRange.start,
+                                        upcomingRange.end,
+                                    ],
+                                },
+                            },
+                        ],
+                    },
+                    {
+                        // All recurring parent tasks
                         [Op.and]: [
                             { recurring_parent_id: null },
                             { recurrence_type: { [Op.ne]: 'none' } },
