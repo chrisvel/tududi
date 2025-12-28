@@ -17,6 +17,7 @@ import CalendarWeekView from './Calendar/CalendarWeekView';
 import CalendarDayView from './Calendar/CalendarDayView';
 import { getApiPath } from '../config/paths';
 import { Link, useNavigate } from 'react-router-dom';
+import { parseDateString } from '../utils/dateUtils';
 
 const getLocale = (language: string) => {
     switch (language) {
@@ -128,16 +129,18 @@ const Calendar: React.FC = () => {
 
             // Add tasks with due dates
             if (task.due_date) {
-                const dueDate = new Date(task.due_date);
-                const taskEvent = {
-                    id: `task-${task.id}`,
-                    title: task.name || task.title || `Task ${task.id}`,
-                    start: dueDate,
-                    end: new Date(dueDate.getTime() + 60 * 60 * 1000), // 1 hour duration
-                    type: 'task' as const,
-                    color: task.completed_at ? '#22c55e' : '#3b82f6', // Green if completed, blue if not
-                };
-                taskEvents.push(taskEvent);
+                const dueDate = parseDateString(task.due_date);
+                if (dueDate) {
+                    const taskEvent = {
+                        id: `task-${task.id}`,
+                        title: task.name || task.title || `Task ${task.id}`,
+                        start: dueDate,
+                        end: new Date(dueDate.getTime() + 60 * 60 * 1000), // 1 hour duration
+                        type: 'task' as const,
+                        color: task.completed_at ? '#22c55e' : '#3b82f6', // Green if completed, blue if not
+                    };
+                    taskEvents.push(taskEvent);
+                }
             }
 
             // Add tasks scheduled for today (if they don't have defer_until or due_date)
@@ -299,13 +302,17 @@ const Calendar: React.FC = () => {
         } else {
             // If no hour specified (month view), keep the original time or set to start of day
             if (task.due_date) {
-                const originalTime = new Date(task.due_date);
-                newDateTime.setHours(
-                    originalTime.getHours(),
-                    originalTime.getMinutes(),
-                    0,
-                    0
-                );
+                const originalTime = parseDateString(task.due_date);
+                if (originalTime) {
+                    newDateTime.setHours(
+                        originalTime.getHours(),
+                        originalTime.getMinutes(),
+                        0,
+                        0
+                    );
+                } else {
+                    newDateTime.setHours(0, 0, 0, 0);
+                }
             } else {
                 newDateTime.setHours(0, 0, 0, 0);
             }
@@ -558,9 +565,14 @@ const TaskEventModal: React.FC<TaskEventModalProps> = ({
                                 {t('calendar.dueDate')}
                             </label>
                             <p className="text-gray-900 dark:text-gray-100">
-                                {format(new Date(task.due_date), 'PPP', {
-                                    locale: locale,
-                                })}
+                                {parseDateString(task.due_date) &&
+                                    format(
+                                        parseDateString(task.due_date) as Date,
+                                        'PPP',
+                                        {
+                                            locale: locale,
+                                        }
+                                    )}
                             </p>
                         </div>
                     )}

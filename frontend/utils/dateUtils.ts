@@ -23,6 +23,21 @@ export const setUserTimezone = (timezone: string): void => {
     userTimezone = timezone;
 };
 
+/**
+ * Parses a date string (YYYY-MM-DD) as local midnight.
+ * This avoids the timezone bug where `new Date('2025-12-11')` is interpreted as
+ * midnight UTC, which displays as the previous day in timezones behind UTC.
+ *
+ * @param dateString - Date string in YYYY-MM-DD format
+ * @returns Date object at local midnight, or null if invalid
+ */
+export const parseDateString = (dateString: string | null | undefined): Date | null => {
+    if (!dateString) return null;
+    // Adding T00:00:00 makes JavaScript interpret the date as local time
+    const date = new Date(dateString + 'T00:00:00');
+    return isNaN(date.getTime()) ? null : date;
+};
+
 export const getUserTimezone = (): string => {
     return userTimezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
 };
@@ -77,7 +92,9 @@ export const isTaskPastDue = (task: {
     }
 
     // Check if due date is in the past
-    const dueDate = new Date(task.due_date);
+    const dueDate = parseDateString(task.due_date);
+    if (!dueDate) return false;
+
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Start of today
     dueDate.setHours(0, 0, 0, 0); // Start of due date

@@ -15,6 +15,7 @@ import { Task } from '../../entities/Task';
 import { fetchSubtasks } from '../../utils/tasksService';
 import { isTaskCompleted, isTaskInProgress } from '../../constants/taskStatus';
 import TaskStatusControl from './TaskStatusControl';
+import { parseDateString } from '../../utils/dateUtils';
 
 interface TaskHeaderProps {
     task: Task;
@@ -102,7 +103,9 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
         if (dueDate === yesterday)
             return t('dateIndicators.yesterday', 'YESTERDAY');
 
-        return new Date(dueDate).toLocaleDateString(undefined, {
+        const date = parseDateString(dueDate);
+        if (!date) return dueDate;
+        return date.toLocaleDateString(undefined, {
             year: 'numeric',
             month: 'short',
             day: 'numeric',
