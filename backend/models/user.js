@@ -216,7 +216,8 @@ module.exports = (sequelize) => {
                 type: DataTypes.JSON,
                 allowNull: true,
                 defaultValue: null,
-                comment: 'User-configurable keyboard shortcuts for quick actions',
+                comment:
+                    'User-configurable keyboard shortcuts for quick actions',
             },
             email_verified: {
                 type: DataTypes.BOOLEAN,
