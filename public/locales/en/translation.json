@@ -310,6 +310,25 @@
     "productivityAssistant": "Productivity Assistant",
     "productivityAssistantDescription": "Show productivity insights that help identify stalled projects, vague tasks, and workflow improvements on your Today page.",
     "enableProductivityAssistant": "Enable Productivity Insights",
+    "keyboardShortcuts": "Keyboard Shortcuts",
+    "shortcuts": {
+      "enableShortcuts": "Enable Keyboard Shortcuts",
+      "enableDescription": "Turn keyboard shortcuts on or off globally.",
+      "duplicateWarning": "Duplicate shortcuts detected:",
+      "pressKeys": "Press keys...",
+      "duplicateWith": "Conflicts with {{action}}",
+      "record": "Record",
+      "resetToDefaults": "Reset to Defaults",
+      "info": "Keyboard shortcuts help you navigate quickly. Changes are saved when you click \"Save Changes\" at the bottom of the page. Shortcuts are disabled when typing in text fields.",
+      "actions": {
+        "inbox": "Create new Inbox item",
+        "task": "Create new Task",
+        "project": "Create new Project",
+        "note": "Create new Note",
+        "area": "Create new Area",
+        "tag": "Create new Tag"
+      }
+    },
     "nextTaskSuggestion": "Next Task Suggestion",
     "nextTaskSuggestionDescription": "Automatically suggest the next best task to work on when you have nothing in progress, prioritizing due today tasks, then suggested tasks from your Today page.",
     "enableNextTaskSuggestion": "Enable Next Task Suggestions",
