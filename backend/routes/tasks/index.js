@@ -849,13 +849,15 @@ router.get('/task/:uid/next-iterations', async (req, res) => {
             return res.status(400).json({ error: 'Invalid UID' });
         }
 
-        const task = await taskRepository.findByUidAndUser(
-            req.params.uid,
-            req.currentUser.id
-        );
+        const task = await taskRepository.findByUid(req.params.uid);
 
         if (!task) {
             return res.status(404).json({ error: 'Task not found' });
+        }
+
+        // Verify user owns this task
+        if (task.user_id !== req.currentUser.id) {
+            return res.status(403).json({ error: 'Access denied' });
         }
 
         if (!task.recurrence_type || task.recurrence_type === 'none') {

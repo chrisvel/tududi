@@ -138,12 +138,6 @@ const RecurrenceDisplay: React.FC<RecurrenceDisplayProps> = ({
         return null;
     }
 
-    console.log('RecurrenceDisplay rendering:', {
-        recurrenceType,
-        recurrenceWeekdays,
-        recurrenceInterval,
-    });
-
     return (
         <div className={`${compact ? 'space-y-2' : 'space-y-3'}`}>
             {/* Main recurrence info */}

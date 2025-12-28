@@ -398,7 +398,14 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                 )}
                                 {task.recurrence_type &&
                                     task.recurrence_type !== 'none' && (
-                                        <div className="flex items-center">
+                                        <div
+                                            className="flex items-center"
+                                            title={
+                                                task.due_date
+                                                    ? `${t('next', 'Next')}: ${formatDueDate(task.due_date)}`
+                                                    : undefined
+                                            }
+                                        >
                                             <ArrowPathIcon className="h-3 w-3 mr-1" />
                                             <span>
                                                 {formatRecurrence(
@@ -560,7 +567,14 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                             )}
                             {task.recurrence_type &&
                                 task.recurrence_type !== 'none' && (
-                                    <div className="flex items-center">
+                                    <div
+                                        className="flex items-center"
+                                        title={
+                                            task.due_date
+                                                ? `${t('next', 'Next')}: ${formatDueDate(task.due_date)}`
+                                                : undefined
+                                        }
+                                    >
                                         <ArrowPathIcon className="h-3 w-3 mr-1" />
                                         <span>
                                             {formatRecurrence(

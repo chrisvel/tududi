@@ -184,10 +184,20 @@ const TaskDetails: React.FC = () => {
     };
 
     const handleRecurrenceChange = (field: string, value: any) => {
-        setRecurrenceForm((prev) => ({
-            ...prev,
-            [field]: value,
-        }));
+        setRecurrenceForm((prev) => {
+            const updated = { ...prev, [field]: value };
+
+            // Set default values when switching to monthly recurrence
+            if (
+                field === 'recurrence_type' &&
+                value === 'monthly' &&
+                !prev.recurrence_month_day
+            ) {
+                updated.recurrence_month_day = new Date().getDate();
+            }
+
+            return updated;
+        });
     };
 
     const handleSaveRecurrence = async () => {
