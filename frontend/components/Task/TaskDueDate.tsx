@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { parseDateString } from '../../utils/dateUtils';
 
 interface TaskDueDateProps {
     dueDate: string;
@@ -35,7 +36,9 @@ const TaskDueDate: React.FC<TaskDueDateProps> = ({ dueDate, className }) => {
         if (dueDate === yesterday)
             return t('dateIndicators.yesterday', 'YESTERDAY');
 
-        return new Date(dueDate).toLocaleDateString(undefined, {
+        const date = parseDateString(dueDate);
+        if (!date) return dueDate;
+        return date.toLocaleDateString(undefined, {
             year: 'numeric',
             month: 'short',
             day: 'numeric',
