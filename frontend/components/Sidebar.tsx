@@ -12,6 +12,7 @@ import SidebarProjects from './Sidebar/SidebarProjects';
 import SidebarTags from './Sidebar/SidebarTags';
 import SidebarViews from './Sidebar/SidebarViews';
 import { getFeatureFlags, FeatureFlags } from '../utils/featureFlags';
+import { KeyboardShortcutsConfig } from '../utils/keyboardShortcutsService';
 
 interface SidebarProps {
     isSidebarOpen: boolean;
@@ -28,6 +29,7 @@ interface SidebarProps {
     notes: Note[];
     areas: Area[];
     tags: Tag[];
+    keyboardShortcuts?: KeyboardShortcutsConfig | null;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -45,6 +47,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     notes,
     areas,
     tags,
+    keyboardShortcuts,
 }) => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -149,6 +152,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                         openNoteModal={openNoteModal}
                         openAreaModal={openAreaModal}
                         openTagModal={openTagModal}
+                        keyboardShortcuts={keyboardShortcuts}
                     />
                 </div>
             )}

@@ -212,6 +212,12 @@ module.exports = (sequelize) => {
                     },
                 },
             },
+            keyboard_shortcuts: {
+                type: DataTypes.JSON,
+                allowNull: true,
+                defaultValue: null,
+                comment: 'User-configurable keyboard shortcuts for quick actions',
+            },
             email_verified: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,

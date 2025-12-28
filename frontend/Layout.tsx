@@ -25,6 +25,8 @@ import {
 } from './utils/projectsService';
 import { isAuthError } from './utils/authUtils';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { getApiPath } from './config/paths';
+import { KeyboardShortcutsConfig } from './utils/keyboardShortcutsService';
 
 interface LayoutProps {
     currentUser: User;
@@ -58,6 +60,25 @@ const Layout: React.FC<LayoutProps> = ({
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const [selectedArea, setSelectedArea] = useState<Area | null>(null);
     const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
+    const [keyboardShortcuts, setKeyboardShortcuts] = useState<KeyboardShortcutsConfig | null>(null);
+
+    // Fetch keyboard shortcuts from profile
+    useEffect(() => {
+        const fetchKeyboardShortcuts = async () => {
+            try {
+                const response = await fetch(getApiPath('profile'));
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.keyboard_shortcuts) {
+                        setKeyboardShortcuts(data.keyboard_shortcuts);
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching keyboard shortcuts:', error);
+            }
+        };
+        fetchKeyboardShortcuts();
+    }, []);
 
     const {
         notesStore: { notes, isLoading: isNotesLoading, isError: isNotesError },
@@ -354,6 +375,7 @@ const Layout: React.FC<LayoutProps> = ({
                     notes={notes}
                     areas={areas}
                     tags={tags}
+                    keyboardShortcuts={keyboardShortcuts}
                 />
                 <div
                     className={`flex-1 flex items-center justify-center bg-gray-100 dark:bg-gray-800 transition-all duration-300 ease-in-out ${mainContentMarginLeft}`}
@@ -392,6 +414,7 @@ const Layout: React.FC<LayoutProps> = ({
                     notes={notes}
                     areas={areas}
                     tags={tags}
+                    keyboardShortcuts={keyboardShortcuts}
                 />
                 <div
                     className={`flex-1 flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800 transition-all duration-300 ease-in-out ${mainContentMarginLeft}`}
@@ -430,6 +453,7 @@ const Layout: React.FC<LayoutProps> = ({
                     notes={notes}
                     areas={areas}
                     tags={tags}
+                    keyboardShortcuts={keyboardShortcuts}
                 />
 
                 <div
