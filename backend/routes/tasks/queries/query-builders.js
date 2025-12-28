@@ -326,6 +326,7 @@ async function filterTasksByParams(
             'priority',
             'status',
             'due_date',
+            'completed_at',
         ];
 
         if (!allowedColumns.includes(orderColumn)) {
