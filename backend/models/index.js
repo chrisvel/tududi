@@ -19,6 +19,37 @@ dbConfig = {
 
 const sequelize = new Sequelize(dbConfig);
 
+// SQLite performance optimizations for slow I/O systems (e.g., Synology NAS with HDDs)
+if (dbConfig.dialect === 'sqlite') {
+    const pragmas = [
+        // WAL mode: sequential writes instead of random I/O, better for Btrfs COW
+        'PRAGMA journal_mode=WAL;',
+        // Relaxed sync: faster writes with minimal durability risk for single-user app
+        'PRAGMA synchronous=NORMAL;',
+        // 5 second busy timeout: prevents "database is locked" errors under load
+        'PRAGMA busy_timeout=5000;',
+        // 64MB cache: keeps more data in memory, reduces disk reads
+        'PRAGMA cache_size=-64000;',
+        // Store temp tables in memory instead of disk
+        'PRAGMA temp_store=MEMORY;',
+        // Enable memory-mapped I/O (256MB): faster reads on large databases
+        'PRAGMA mmap_size=268435456;',
+    ];
+
+    (async () => {
+        try {
+            for (const pragma of pragmas) {
+                await sequelize.query(pragma);
+            }
+            if (config.environment === 'development') {
+                console.log('SQLite performance optimizations enabled');
+            }
+        } catch (err) {
+            console.error('Failed to set SQLite PRAGMAs:', err.message);
+        }
+    })();
+}
+
 const User = require('./user')(sequelize);
 const Area = require('./area')(sequelize);
 const Project = require('./project')(sequelize);

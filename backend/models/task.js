@@ -209,6 +209,39 @@ module.exports = (sequelize) => {
                     name: 'tasks_parent_task_id_order',
                     fields: ['parent_task_id', 'order'],
                 },
+                // Performance indexes for slow I/O systems (e.g., Synology NAS)
+                {
+                    name: 'tasks_status_idx',
+                    fields: ['status'],
+                },
+                {
+                    name: 'tasks_due_date_idx',
+                    fields: ['due_date'],
+                },
+                {
+                    name: 'tasks_recurring_parent_id_idx',
+                    fields: ['recurring_parent_id'],
+                },
+                {
+                    name: 'tasks_completed_at_idx',
+                    fields: ['completed_at'],
+                },
+                {
+                    name: 'tasks_user_id_status_idx',
+                    fields: ['user_id', 'status'],
+                },
+                {
+                    name: 'tasks_user_status_parent_idx',
+                    fields: ['user_id', 'status', 'parent_task_id'],
+                },
+                {
+                    name: 'tasks_user_due_date_status_idx',
+                    fields: ['user_id', 'due_date', 'status'],
+                },
+                {
+                    name: 'tasks_user_completed_at_status_idx',
+                    fields: ['user_id', 'completed_at', 'status'],
+                },
             ],
         }
     );

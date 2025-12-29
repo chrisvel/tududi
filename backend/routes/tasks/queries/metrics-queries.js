@@ -5,7 +5,7 @@ const {
     getSafeTimezone,
     getTodayBoundsInUTC,
 } = require('../../../utils/timezone-utils');
-const { getTaskIncludeConfig } = require('./query-builders');
+const { getTaskIncludeConfigLight } = require('./query-builders');
 
 // Statuses that indicate a task is in the "today plan" (actively being worked on)
 // Used to exclude from overdue/due-today sections to avoid duplicates
@@ -31,6 +31,7 @@ async function countTotalOpenTasks(visibleTasksWhere) {
             parent_task_id: null,
             recurring_parent_id: null,
         },
+        raw: true,
     });
 }
 
@@ -44,6 +45,7 @@ async function countTasksPendingOverMonth(visibleTasksWhere) {
             parent_task_id: null,
             recurring_parent_id: null,
         },
+        raw: true,
     });
 }
 
@@ -55,7 +57,7 @@ async function fetchTasksInProgress(visibleTasksWhere) {
             parent_task_id: null,
             recurring_parent_id: null,
         },
-        include: getTaskIncludeConfig(),
+        include: getTaskIncludeConfigLight(),
         order: [
             ['priority', 'DESC'],
             ['due_date', 'ASC'],
@@ -117,7 +119,7 @@ async function fetchTodayPlanTasks(visibleTasksWhere) {
                 },
             ],
         },
-        include: getTaskIncludeConfig(),
+        include: getTaskIncludeConfigLight(),
         order: [
             ['priority', 'DESC'],
             ['due_date', 'ASC'],
@@ -165,7 +167,7 @@ async function fetchTasksDueToday(visibleTasksWhere, userTimezone) {
                 },
             ],
         },
-        include: getTaskIncludeConfig(),
+        include: getTaskIncludeConfigLight(),
         order: [
             ['priority', 'DESC'],
             ['due_date', 'ASC'],
@@ -206,7 +208,7 @@ async function fetchOverdueTasks(visibleTasksWhere, userTimezone) {
                 },
             ],
         },
-        include: getTaskIncludeConfig(),
+        include: getTaskIncludeConfigLight(),
         order: [
             ['priority', 'DESC'],
             ['due_date', 'ASC'],
@@ -246,7 +248,7 @@ async function fetchNonProjectTasks(
             parent_task_id: null,
             recurring_parent_id: null,
         },
-        include: getTaskIncludeConfig(),
+        include: getTaskIncludeConfigLight(),
         order: [
             ['priority', 'DESC'],
             ['due_date', 'ASC'],
@@ -282,7 +284,7 @@ async function fetchProjectTasks(
             parent_task_id: null,
             recurring_parent_id: null,
         },
-        include: getTaskIncludeConfig(),
+        include: getTaskIncludeConfigLight(),
         order: [
             ['priority', 'DESC'],
             ['due_date', 'ASC'],
@@ -320,7 +322,7 @@ async function fetchSomedayFallbackTasks(
             parent_task_id: null,
             recurring_parent_id: null,
         },
-        include: getTaskIncludeConfig(),
+        include: getTaskIncludeConfigLight(),
         order: [
             ['priority', 'DESC'],
             ['due_date', 'ASC'],
@@ -362,7 +364,7 @@ async function fetchTasksCompletedToday(userId, userTimezone) {
                 [Op.lte]: todayBounds.end,
             },
         },
-        include: getTaskIncludeConfig(),
+        include: getTaskIncludeConfigLight(),
     });
 
     // Fetch recurring tasks completed today via recurring_completions table
@@ -383,7 +385,7 @@ async function fetchTasksCompletedToday(userId, userTimezone) {
                     user_id: userId,
                     parent_task_id: null,
                 },
-                include: getTaskIncludeConfig(),
+                include: getTaskIncludeConfigLight(),
             },
         ],
     });

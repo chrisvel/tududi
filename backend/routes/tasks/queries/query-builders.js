@@ -415,7 +415,25 @@ function getTaskIncludeConfig() {
     ];
 }
 
+// Lightweight include config for dashboard lists (no subtasks needed)
+function getTaskIncludeConfigLight() {
+    return [
+        {
+            model: Tag,
+            attributes: ['id', 'name', 'uid'],
+            through: { attributes: [] },
+            required: false,
+        },
+        {
+            model: Project,
+            attributes: ['id', 'name', 'status', 'uid'],
+            required: false,
+        },
+    ];
+}
+
 module.exports = {
     filterTasksByParams,
     getTaskIncludeConfig,
+    getTaskIncludeConfigLight,
 };
