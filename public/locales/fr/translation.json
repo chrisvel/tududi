@@ -545,7 +545,9 @@
     "telegramConnected": "Telegram connecté et en cours de sondage",
     "telegramConnectionProblem": "Problème de connexion à Telegram",
     "completed": "Terminé",
-    "waiting": "En attente"
+    "waiting": "En attente",
+    "planned": "Planifié",
+    "cancelled": "Annulé"
   },
   "project": {
     "name": "Nom du projet",
