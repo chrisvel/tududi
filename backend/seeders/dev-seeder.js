@@ -626,7 +626,7 @@ async function seedDatabase() {
         const {
             logTaskCreated,
             logStatusChange,
-        } = require('../services/taskEventService');
+        } = require('../modules/tasks/taskEventService');
 
         // Create events for completed tasks to show user patterns
         const completedTasks = tasks.filter((t) => t.status === 2);

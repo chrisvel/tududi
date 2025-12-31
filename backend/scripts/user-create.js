@@ -12,7 +12,7 @@ const {
     createOrUpdateUser,
     validateEmail,
     validatePassword,
-} = require('../services/userService');
+} = require('../modules/users/userService');
 const { Role } = require('../models');
 
 async function createUser() {

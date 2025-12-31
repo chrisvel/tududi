@@ -2,7 +2,7 @@ const { Task, Project } = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
 const {
     getTaskMetrics,
-} = require('../../routes/tasks/queries/metrics-computation');
+} = require('../../modules/tasks/queries/metrics-computation');
 
 const dayFromNow = (days) => new Date(Date.now() + days * 24 * 60 * 60 * 1000);
 

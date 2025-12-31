@@ -48,11 +48,11 @@ async function main() {
         // Step 4: Generate notifications
         console.log('4️⃣  Generating notifications...');
 
-        const { checkDueTasks } = require('../services/dueTaskService');
+        const { checkDueTasks } = require('../modules/tasks/dueTaskService');
         const {
             checkDeferredTasks,
-        } = require('../services/deferredTaskService');
-        const { checkDueProjects } = require('../services/dueProjectService');
+        } = require('../modules/tasks/deferredTaskService');
+        const { checkDueProjects } = require('../modules/projects/dueProjectService');
 
         const dueTasksResult = await checkDueTasks();
         const deferredTasksResult = await checkDeferredTasks();
