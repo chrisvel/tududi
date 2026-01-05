@@ -1,0 +1,13 @@
+baseURL = 'https://tududi.com/'
+languageCode = 'en-us'
+title = 'tududi - Self-Hosted Task & Project Management'
+publishDir = '../docs'
+
+[params]
+  description = 'Self-hosted task management with functional programming architecture, hierarchical organization, and multi-language support.'
+  author = 'tududi'
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true  # Allow HTML in markdown

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
-const path = require('path');
 const { getConfig } = require('../config/config');
 const { sequelize } = require('../models');
+const { seedDatabase } = require('../seeders');
 
 /**
  * Reset database and seed with comprehensive test data
@@ -39,11 +39,10 @@ async function main() {
         await sequelize.sync({ force: true });
         console.log('   ✅ Database created\n');
 
-        // Step 3: Seed basic development data
-        console.log('3️⃣  Seeding basic development data...');
-        const { seedDatabase } = require('../seeders/dev-seeder');
+        // Step 3: Seed curated development data
+        console.log('3️⃣  Seeding curated development data...');
         await seedDatabase();
-        console.log('   ✅ Basic data seeded\n');
+        console.log('   ✅ Demo data seeded\n');
 
         // Step 4: Generate notifications
         console.log('4️⃣  Generating notifications...');
