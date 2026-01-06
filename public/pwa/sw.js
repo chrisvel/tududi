@@ -16,9 +16,6 @@ self.addEventListener("install", (event) => {
       // Cache offline page first (critical)
       const offlinePromise = cache
         .add(OFFLINE_PAGE)
-        .then(() => {
-          console.log(`✓ Cached: ${OFFLINE_PAGE}`);
-        })
         .catch((error) => {
           console.warn(`✗ Failed to cache ${OFFLINE_PAGE}:`, error.message);
         });
@@ -28,9 +25,6 @@ self.addEventListener("install", (event) => {
         staticAssets.map((url) => {
           return cache
             .add(url)
-            .then(() => {
-              console.log(`✓ Cached: ${url}`);
-            })
             .catch((error) => {
               console.warn(`✗ Failed to cache ${url}:`, error.message);
               // Continue even if this asset fails
@@ -135,7 +129,6 @@ self.addEventListener("fetch", (event) => {
             const responseToCache = response.clone();
             caches.open(CACHE_NAME).then((cache) => {
               cache.put(event.request, responseToCache);
-              console.log(`💾 Cached API response: ${pathname}`);
             });
           }
           return response;
@@ -144,7 +137,6 @@ self.addEventListener("fetch", (event) => {
           // Network failed, try cache
           return caches.match(event.request).then((cachedResponse) => {
             if (cachedResponse) {
-              console.log(`📦 Serving cached API response: ${pathname}`);
               return cachedResponse;
             }
             // Both network and cache failed - return error
