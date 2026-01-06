@@ -2,18 +2,18 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const { getConfig } = require('../config/config');
+const { getConfig } = require('../../config/config');
 const config = getConfig();
-const { TaskAttachment, Task } = require('../models');
-const { uid } = require('../utils/uid');
-const { logError } = require('../services/logService');
+const { TaskAttachment, Task } = require('../../models');
+const { uid } = require('../../utils/uid');
+const { logError } = require('../../services/logService');
 const {
     validateFileType,
     deleteFileFromDisk,
     getFileUrl,
-} = require('../utils/attachment-utils');
-const { getAuthenticatedUserId } = require('../utils/request-utils');
-const permissionsService = require('../services/permissionsService');
+} = require('../../utils/attachment-utils');
+const { getAuthenticatedUserId } = require('../../utils/request-utils');
+const permissionsService = require('../../services/permissionsService');
 
 const router = express.Router();
 

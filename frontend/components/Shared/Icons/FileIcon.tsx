@@ -7,7 +7,7 @@ import {
     ArchiveBoxIcon,
     PaperClipIcon,
 } from '@heroicons/react/24/outline';
-import { getAttachmentType } from '../../utils/attachmentsService';
+import { getAttachmentType } from '../../../utils/attachmentsService';
 
 interface FileIconProps {
     mimeType: string;

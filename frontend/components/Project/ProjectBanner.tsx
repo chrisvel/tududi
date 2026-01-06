@@ -22,7 +22,7 @@ interface ProjectBannerProps {
     project: Project;
     areas: Area[];
     t: TFunction;
-    getStateIcon: (state: string) => React.ReactNode;
+    getStatusIcon: (status: string) => React.ReactNode;
     onDeleteClick: () => void;
     editButtonRef: RefObject<HTMLButtonElement>;
     onEditBannerClick?: () => void;
@@ -32,7 +32,7 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
     project,
     areas,
     t,
-    getStateIcon,
+    getStatusIcon,
     onDeleteClick,
     editButtonRef,
     onEditBannerClick,
@@ -76,11 +76,11 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                 </div>
 
                 <div className="absolute bottom-2 left-2 right-14 flex items-center flex-wrap gap-2">
-                    {project.state && (
+                    {project.status && (
                         <BannerBadge>
-                            {getStateIcon(project.state)}
+                            {getStatusIcon(project.status)}
                             <span className="text-xs text-white/90 font-medium">
-                                {t(`projects.states.${project.state}`)}
+                                {t(`projectStatus.${project.status}`)}
                             </span>
                         </BannerBadge>
                     )}

@@ -22,6 +22,34 @@ const { uid } = require('../utils/uid');
 const { logError } = require('../services/logService');
 const router = express.Router();
 const { getAuthenticatedUserId } = require('../utils/request-utils');
+const { sortTags } = require('./tasks/core/serializers');
+
+// Helper function to serialize a project with sorted tags (including nested tasks and notes)
+function serializeProjectWithSortedTags(project) {
+    const projectJson = project.toJSON ? project.toJSON() : project;
+    return {
+        ...projectJson,
+        Tags: sortTags(projectJson.Tags),
+        Tasks: projectJson.Tasks
+            ? projectJson.Tasks.map((task) => ({
+                  ...task,
+                  Tags: sortTags(task.Tags),
+                  Subtasks: task.Subtasks
+                      ? task.Subtasks.map((subtask) => ({
+                            ...subtask,
+                            Tags: sortTags(subtask.Tags),
+                        }))
+                      : [],
+              }))
+            : [],
+        Notes: projectJson.Notes
+            ? projectJson.Notes.map((note) => ({
+                  ...note,
+                  Tags: sortTags(note.Tags),
+              }))
+            : [],
+    };
+}
 
 router.use((req, res, next) => {
     const userId = getAuthenticatedUserId(req);
@@ -158,7 +186,10 @@ router.post(
 
 router.get('/projects', async (req, res) => {
     try {
-        const { state, active, pin_to_sidebar, area_id, area } = req.query;
+        const { status, state, active, pin_to_sidebar, area_id, area } =
+            req.query;
+        // Support both 'status' (new) and 'state' (legacy) query params
+        const statusFilter = status || state;
 
         // Base: owned or shared projects
         const ownedOrShared =
@@ -168,22 +199,22 @@ router.get('/projects', async (req, res) => {
             );
         let whereClause = ownedOrShared;
 
-        // Filter by state (new primary filter)
-        if (state && state !== 'all') {
-            if (Array.isArray(state)) {
-                whereClause.state = { [Op.in]: state };
+        // Filter by status
+        if (statusFilter && statusFilter !== 'all') {
+            if (Array.isArray(statusFilter)) {
+                whereClause.status = { [Op.in]: statusFilter };
             } else {
-                whereClause.state = state;
+                whereClause.status = statusFilter;
             }
         }
 
-        // Legacy support for active filter - map to states
+        // Legacy support for active filter - map to statuses
         if (active === 'true') {
-            whereClause.state = {
-                [Op.in]: ['planned', 'in_progress', 'blocked'],
+            whereClause.status = {
+                [Op.in]: ['planned', 'in_progress', 'waiting'],
             };
         } else if (active === 'false') {
-            whereClause.state = { [Op.in]: ['idea', 'completed'] };
+            whereClause.status = { [Op.in]: ['not_started', 'done'] };
         }
 
         // Filter by pinned status
@@ -298,7 +329,7 @@ router.get('/projects', async (req, res) => {
 
             return {
                 ...projectJson,
-                tags: projectJson.Tags || [], // Normalize Tags to tags
+                tags: sortTags(projectJson.Tags), // Normalize Tags to tags with sorting
                 due_date_at: formatDate(project.due_date_at),
                 task_status: taskStatus,
                 completion_percentage:
@@ -424,8 +455,11 @@ router.get(
                 ? projectJson.Tasks.map((task) => {
                       const normalizedTask = {
                           ...task,
-                          tags: task.Tags || [],
-                          subtasks: task.Subtasks || [],
+                          tags: sortTags(task.Tags),
+                          subtasks: (task.Subtasks || []).map((subtask) => ({
+                              ...subtask,
+                              tags: sortTags(subtask.Tags),
+                          })),
                           due_date: task.due_date
                               ? typeof task.due_date === 'string'
                                   ? task.due_date.split('T')[0]
@@ -443,7 +477,7 @@ router.get(
                 ? projectJson.Notes.map((note) => {
                       const normalizedNote = {
                           ...note,
-                          tags: note.Tags || [],
+                          tags: sortTags(note.Tags),
                       };
                       delete normalizedNote.Tags;
                       return normalizedNote;
@@ -464,7 +498,7 @@ router.get(
 
             const result = {
                 ...projectJson,
-                tags: projectJson.Tags || [],
+                tags: sortTags(projectJson.Tags),
                 Tasks: normalizedTasks,
                 Notes: normalizedNotes,
                 due_date_at: formatDate(project.due_date_at),
@@ -490,7 +524,8 @@ router.post('/project', async (req, res) => {
             priority,
             due_date_at,
             image_url,
-            state,
+            status,
+            state, // Legacy support
             tags,
             Tags,
         } = req.body;
@@ -514,7 +549,7 @@ router.post('/project', async (req, res) => {
             priority: priority || null,
             due_date_at: due_date_at || null,
             image_url: image_url || null,
-            state: state || 'idea',
+            status: status || state || 'not_started',
             user_id: req.authUserId,
         };
 
@@ -578,7 +613,8 @@ router.patch(
                 priority,
                 due_date_at,
                 image_url,
-                state,
+                status,
+                state, // Legacy support
                 tags,
                 Tags,
             } = req.body;
@@ -595,7 +631,9 @@ router.patch(
             if (priority !== undefined) updateData.priority = priority;
             if (due_date_at !== undefined) updateData.due_date_at = due_date_at;
             if (image_url !== undefined) updateData.image_url = image_url;
-            if (state !== undefined) updateData.state = state;
+            // Support both status (new) and state (legacy)
+            if (status !== undefined) updateData.status = status;
+            else if (state !== undefined) updateData.status = state;
 
             await project.update(updateData);
             await updateProjectTags(project, tagsData, req.authUserId);
@@ -620,7 +658,7 @@ router.patch(
 
             res.json({
                 ...projectJson,
-                tags: projectJson.Tags || [],
+                tags: sortTags(projectJson.Tags),
                 due_date_at: formatDate(projectWithAssociations.due_date_at),
             });
         } catch (error) {

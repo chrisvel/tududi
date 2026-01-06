@@ -16,19 +16,9 @@ module.exports = (sequelize) => {
                 unique: true,
                 defaultValue: uid,
             },
-            uuid: {
-                type: DataTypes.UUID,
-                allowNull: false,
-                unique: true,
-                defaultValue: DataTypes.UUIDV4,
-            },
             name: {
                 type: DataTypes.STRING,
                 allowNull: false,
-            },
-            description: {
-                type: DataTypes.TEXT,
-                allowNull: true,
             },
             due_date: {
                 type: DataTypes.DATE,
@@ -37,11 +27,6 @@ module.exports = (sequelize) => {
             defer_until: {
                 type: DataTypes.DATE,
                 allowNull: true,
-            },
-            today: {
-                type: DataTypes.BOOLEAN,
-                allowNull: false,
-                defaultValue: false,
             },
             priority: {
                 type: DataTypes.INTEGER,

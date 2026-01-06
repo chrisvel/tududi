@@ -151,7 +151,9 @@
     "open": "開く",
     "completed": "完了",
     "noCompletedTasksToday": "本日完了したタスクはありません。",
-    "markAsDone": "Mark as done"
+    "markAsDone": "Mark as done",
+    "notStarted": "未開始",
+    "done": "完了"
   },
   "timeline": {
     "activityTimeline": "アクティビティタイムライン",
@@ -589,7 +591,8 @@
       "active": "有効",
       "inactive": "無効",
       "all": "すべて",
-      "allAreas": "すべてのエリア"
+      "allAreas": "すべてのエリア",
+      "notCompleted": "未完了"
     },
     "active": "アクティブ",
     "inactive": "非アクティブ",
@@ -1342,5 +1345,19 @@
       "title": "注意:",
       "message": "メールおよびプッシュ通知は近日中に提供予定です。アプリ内およびTelegram通知は現在利用可能です。"
     }
+  },
+  "projectStatus": {
+    "not_started": "未開始",
+    "not_started_desc": "キャプチャされたが、まだ開始されていません",
+    "planned": "計画中",
+    "planned_desc": "スコープが決まり、開始準備が整いました",
+    "in_progress": "進行中",
+    "in_progress_desc": "アクティブな作業が行われています",
+    "waiting": "待機中",
+    "waiting_desc": "外部の入力を待っています",
+    "done": "完了",
+    "done_desc": "終了しました",
+    "cancelled": "キャンセル",
+    "cancelled_desc": "完了しません"
   }
 }

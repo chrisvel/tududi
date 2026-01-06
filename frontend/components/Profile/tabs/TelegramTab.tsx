@@ -5,7 +5,7 @@ import {
     CogIcon,
     ClipboardDocumentListIcon,
 } from '@heroicons/react/24/outline';
-import TelegramIcon from '../../Icons/TelegramIcon';
+import TelegramIcon from '../../Shared/Icons/TelegramIcon';
 import type { Profile, ProfileFormData, TelegramBotInfo } from '../types';
 
 interface TelegramTabProps {

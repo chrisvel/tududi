@@ -112,6 +112,52 @@ describe('Timezone Fixes Integration Tests', () => {
             expect(taskNames).not.toContain('Due Next Week');
         });
 
+        it('should return tasks with defer_until within 7 days in user timezone', async () => {
+            const userTimezone = 'America/New_York';
+            await testUser.update({ timezone: userTimezone });
+
+            // Create tasks with different defer_until dates
+            const tomorrow = moment
+                .tz(userTimezone)
+                .add(1, 'day')
+                .format('YYYY-MM-DDTHH:mm:ss');
+            const in5Days = moment
+                .tz(userTimezone)
+                .add(5, 'days')
+                .format('YYYY-MM-DDTHH:mm:ss');
+            const in10Days = moment
+                .tz(userTimezone)
+                .add(10, 'days')
+                .format('YYYY-MM-DDTHH:mm:ss');
+
+            // Create tasks with defer_until dates (no due_date)
+            await agent
+                .post('/api/task')
+                .send({ name: 'Deferred Tomorrow', defer_until: tomorrow });
+
+            await agent
+                .post('/api/task')
+                .send({ name: 'Deferred 5 Days', defer_until: in5Days });
+
+            await agent
+                .post('/api/task')
+                .send({ name: 'Deferred 10 Days', defer_until: in10Days });
+
+            // Fetch upcoming tasks
+            const upcomingRes = await agent.get('/api/tasks?type=upcoming');
+
+            expect(upcomingRes.statusCode).toBe(200);
+
+            const upcomingTasks = upcomingRes.body.tasks;
+            const taskNames = upcomingTasks.map((task) => task.name);
+
+            // Should include tasks with defer_until in next 7 days
+            expect(taskNames).toContain('Deferred Tomorrow');
+            expect(taskNames).toContain('Deferred 5 Days');
+            // Should NOT include task with defer_until beyond 7 days
+            expect(taskNames).not.toContain('Deferred 10 Days');
+        });
+
         it('should handle DST transitions correctly', async () => {
             await testUser.update({ timezone: 'America/New_York' });
 

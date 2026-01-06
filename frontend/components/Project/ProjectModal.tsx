@@ -45,7 +45,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             name: '',
             description: '',
             area_id: null,
-            state: 'idea',
+            status: 'not_started',
             tags: [],
             priority: null,
             due_date_at: null,
@@ -71,7 +71,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
     // Collapsible sections state
     const [expandedSections, setExpandedSections] = useState({
-        state: false,
+        status: false,
         tags: false,
         area: false,
         priority: false,
@@ -128,7 +128,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 name: '',
                 description: '',
                 area_id: null,
-                state: 'idea',
+                status: 'not_started',
                 tags: [],
                 priority: null,
                 due_date_at: null,
@@ -328,7 +328,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 formData.name.trim() !== '' ||
                 formData.description?.trim() !== '' ||
                 formData.area_id !== null ||
-                formData.state !== 'idea' ||
+                formData.status !== 'not_started' ||
                 tags.length > 0 ||
                 formData.priority !== null ||
                 formData.due_date_at !== null
@@ -340,7 +340,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             formData.name !== project.name ||
             formData.description !== project.description ||
             formData.area_id !== project.area_id ||
-            formData.state !== project.state ||
+            formData.status !== project.status ||
             formData.priority !== project.priority ||
             formData.due_date_at !== project.due_date_at;
 
@@ -511,25 +511,25 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                             </div>
 
                                             {/* Expandable Sections - Only show when expanded */}
-                                            {/* State Section - First */}
-                                            {expandedSections.state && (
+                                            {/* Status Section - First */}
+                                            {expandedSections.status && (
                                                 <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4">
                                                     <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                                                         {t(
-                                                            'projects.state',
-                                                            'Project State'
+                                                            'projects.status',
+                                                            'Project Status'
                                                         )}
                                                     </h3>
                                                     <ProjectStateDropdown
                                                         value={
-                                                            formData.state ||
-                                                            'idea'
+                                                            formData.status ||
+                                                            'not_started'
                                                         }
-                                                        onChange={(state) =>
+                                                        onChange={(status) =>
                                                             setFormData(
                                                                 (prev) => ({
                                                                     ...prev,
-                                                                    state,
+                                                                    status,
                                                                 })
                                                             )
                                                         }
@@ -646,25 +646,26 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                 <div className="flex items-center justify-between">
                                     {/* Left side: Section icons */}
                                     <div className="flex items-center space-x-1">
-                                        {/* State Toggle - First */}
+                                        {/* Status Toggle - First */}
                                         <button
                                             type="button"
                                             onClick={() =>
-                                                toggleSection('state')
+                                                toggleSection('status')
                                             }
                                             className={`relative p-2 rounded-full transition-colors ${
-                                                expandedSections.state
+                                                expandedSections.status
                                                     ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
                                                     : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
                                             }`}
                                             title={t(
-                                                'projects.state',
-                                                'Project State'
+                                                'projects.status',
+                                                'Project Status'
                                             )}
                                         >
                                             <PlayIcon className="h-5 w-5" />
-                                            {formData.state &&
-                                                formData.state !== 'idea' && (
+                                            {formData.status &&
+                                                formData.status !==
+                                                    'not_started' && (
                                                     <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
                                                 )}
                                         </button>

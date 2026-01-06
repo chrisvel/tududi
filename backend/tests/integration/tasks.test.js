@@ -58,7 +58,7 @@ describe('Tasks Routes', () => {
             console.error = jest.fn();
 
             const taskData = {
-                description: 'Test Description',
+                note: 'Test Note',
             };
 
             const response = await agent.post('/api/task').send(taskData);
@@ -76,16 +76,14 @@ describe('Tasks Routes', () => {
         beforeEach(async () => {
             task1 = await Task.create({
                 name: 'Task 1',
-                description: 'Description 1',
                 user_id: user.id,
-                today: true,
+                status: Task.STATUS.IN_PROGRESS, // Active status shows in today view
             });
 
             task2 = await Task.create({
                 name: 'Task 2',
-                description: 'Description 2',
                 user_id: user.id,
-                today: false,
+                status: Task.STATUS.NOT_STARTED, // Not active, won't show in today view
             });
         });
 
@@ -99,7 +97,7 @@ describe('Tasks Routes', () => {
             expect(response.body.tasks.map((t) => t.id)).toContain(task2.id);
         });
 
-        it('should filter today tasks (returns only tasks with today=true)', async () => {
+        it('should filter today tasks (returns tasks with active status)', async () => {
             const response = await agent.get('/api/tasks?type=today');
 
             expect(response.status).toBe(200);
@@ -124,7 +122,6 @@ describe('Tasks Routes', () => {
         beforeEach(async () => {
             task = await Task.create({
                 name: 'Test Task',
-                description: 'Test Description',
                 priority: 0,
                 status: 0,
                 user_id: user.id,

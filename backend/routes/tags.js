@@ -12,7 +12,7 @@ router.get('/tags', async (req, res) => {
         const tags = await Tag.findAll({
             where: { user_id: req.currentUser.id },
             attributes: ['name', 'uid'],
-            order: [['name', 'ASC']],
+            order: [[sequelize.fn('LOWER', sequelize.col('name')), 'ASC']],
         });
         res.json(tags);
     } catch (error) {

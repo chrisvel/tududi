@@ -20,16 +20,14 @@ import {
     QueueListIcon,
     ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
-import {
-    fetchTasks,
-    updateTask,
-    deleteTask,
-    toggleTaskToday,
-} from '../../utils/tasksService';
+import { fetchTasks, updateTask, deleteTask } from '../../utils/tasksService';
 import {
     isTaskDone,
     isTaskActive,
     isHabitArchived,
+    isTaskInProgress,
+    isTaskPlanned,
+    isTaskWaiting,
 } from '../../constants/taskStatus';
 import { fetchProjects } from '../../utils/projectsService';
 import { Task } from '../../entities/Task';
@@ -172,29 +170,43 @@ const TasksToday: React.FC = () => {
         useState(20);
     const [habitActionUid, setHabitActionUid] = useState<string | null>(null);
 
-    const plannedTasks = useMemo(() => {
-        // Only use today_plan_tasks from backend - it already filters by status
-        // (in_progress, planned, waiting) regardless of the 'today' field
-        return filterNonHabitTasks(metrics.today_plan_tasks || []);
-    }, [metrics.today_plan_tasks]);
-    const completedTasksList = useMemo(
-        () => filterNonHabitTasks(metrics.tasks_completed_today || []),
-        [metrics.tasks_completed_today]
+    // Helper to get current task data from global store
+    // Metrics provides section membership (task IDs), store provides current data
+    const getTasksFromStore = useCallback(
+        (metricsTasks: Task[]) => {
+            const taskIds = new Set(metricsTasks.map((t) => t.id));
+            return storeTasks.filter((t: Task) => taskIds.has(t.id));
+        },
+        [storeTasks]
     );
 
+    const plannedTasks = useMemo(() => {
+        // Get current task data from store, filtered by section membership from metrics
+        const tasks = getTasksFromStore(metrics.today_plan_tasks || []);
+        return filterNonHabitTasks(tasks);
+    }, [metrics.today_plan_tasks, getTasksFromStore]);
+
+    const completedTasksList = useMemo(() => {
+        const tasks = getTasksFromStore(metrics.tasks_completed_today || []);
+        return filterNonHabitTasks(tasks);
+    }, [metrics.tasks_completed_today, getTasksFromStore]);
+
     // Sort tasks using multi-criteria sorting (Priority → Due Date → Project) for consistency
-    const sortedSuggestedTasks = useMemo(
-        () => sortTasksByPriorityDueDateProject(metrics.suggested_tasks || []),
-        [metrics.suggested_tasks]
-    );
-    const sortedDueTodayTasks = useMemo(
-        () => sortTasksByPriorityDueDateProject(metrics.tasks_due_today || []),
-        [metrics.tasks_due_today]
-    );
-    const sortedOverdueTasks = useMemo(
-        () => sortTasksByPriorityDueDateProject(metrics.tasks_overdue || []),
-        [metrics.tasks_overdue]
-    );
+    // Task data comes from global store so priority changes are immediately reflected
+    const sortedSuggestedTasks = useMemo(() => {
+        const tasks = getTasksFromStore(metrics.suggested_tasks || []);
+        return sortTasksByPriorityDueDateProject(tasks);
+    }, [metrics.suggested_tasks, getTasksFromStore]);
+
+    const sortedDueTodayTasks = useMemo(() => {
+        const tasks = getTasksFromStore(metrics.tasks_due_today || []);
+        return sortTasksByPriorityDueDateProject(tasks);
+    }, [metrics.tasks_due_today, getTasksFromStore]);
+
+    const sortedOverdueTasks = useMemo(() => {
+        const tasks = getTasksFromStore(metrics.tasks_overdue || []);
+        return sortTasksByPriorityDueDateProject(tasks);
+    }, [metrics.tasks_overdue, getTasksFromStore]);
 
     // Helper function to get completion trend vs average
     const getCompletionTrend = () => {
@@ -499,7 +511,26 @@ const TasksToday: React.FC = () => {
                             result.tasks_completed_today || [],
                     } as any);
 
-                    useStore.getState().tasksStore.setTasks(result.tasks);
+                    // Merge all section tasks into the global store
+                    // This ensures getTasksFromStore can find all tasks
+                    const allSectionTasks = [
+                        ...(result.tasks_in_progress || []),
+                        ...(result.tasks_due_today || []),
+                        ...(result.tasks_overdue || []),
+                        ...(result.tasks_today_plan || []),
+                        ...(result.suggested_tasks || []),
+                        ...(result.tasks_completed_today || []),
+                    ];
+                    const taskMap = new Map<number, Task>();
+                    // Add result.tasks first
+                    (result.tasks || []).forEach((t: Task) =>
+                        taskMap.set(t.id!, t)
+                    );
+                    // Then add section tasks (may override with more complete data)
+                    allSectionTasks.forEach((t: Task) => taskMap.set(t.id!, t));
+                    useStore
+                        .getState()
+                        .tasksStore.setTasks(Array.from(taskMap.values()));
                     setIsError(false);
                 }
 
@@ -726,18 +757,9 @@ const TasksToday: React.FC = () => {
                                 ? {
                                       ...task,
                                       ...taskToProcess,
-                                      // Explicitly preserve subtasks data
                                       subtasks:
                                           taskToProcess.subtasks ||
-                                          taskToProcess.Subtasks ||
                                           task.subtasks ||
-                                          task.Subtasks ||
-                                          [],
-                                      Subtasks:
-                                          taskToProcess.subtasks ||
-                                          taskToProcess.Subtasks ||
-                                          task.subtasks ||
-                                          task.Subtasks ||
                                           [],
                                   }
                                 : task
@@ -788,10 +810,12 @@ const TasksToday: React.FC = () => {
                     }
                 } else {
                     // If not completed, add to relevant active lists
-                    if (
-                        updatedTask.today &&
-                        updatedTask.status !== 'cancelled'
-                    ) {
+                    // Check if task has "today plan" status (in_progress, planned, or waiting)
+                    const isInTodayPlan =
+                        isTaskInProgress(updatedTask.status) ||
+                        isTaskPlanned(updatedTask.status) ||
+                        isTaskWaiting(updatedTask.status);
+                    if (isInTodayPlan && updatedTask.status !== 'cancelled') {
                         newMetrics.today_plan_tasks = updateOrAddTask(
                             newMetrics.today_plan_tasks,
                             updatedTask
@@ -835,8 +859,13 @@ const TasksToday: React.FC = () => {
                             );
                         }
                     }
+                    // Task is suggested if not in today plan, no project, and no due date
+                    const notInTodayPlan =
+                        !isTaskInProgress(updatedTask.status) &&
+                        !isTaskPlanned(updatedTask.status) &&
+                        !isTaskWaiting(updatedTask.status);
                     const isSuggested =
-                        !updatedTask.today &&
+                        notInTodayPlan &&
                         !updatedTask.project_id &&
                         !updatedTask.due_date;
                     const isActive = isTaskActive(updatedTask.status);
@@ -895,15 +924,7 @@ const TasksToday: React.FC = () => {
                                       ...updatedTaskFromServer,
                                       subtasks:
                                           updatedTaskFromServer.subtasks ||
-                                          updatedTaskFromServer.Subtasks ||
                                           task.subtasks ||
-                                          task.Subtasks ||
-                                          [],
-                                      Subtasks:
-                                          updatedTaskFromServer.subtasks ||
-                                          updatedTaskFromServer.Subtasks ||
-                                          task.subtasks ||
-                                          task.Subtasks ||
                                           [],
                                   }
                                 : task
@@ -982,35 +1003,6 @@ const TasksToday: React.FC = () => {
                 }
             } catch (error) {
                 console.error('Error deleting task:', error);
-            }
-        },
-        []
-    );
-
-    const handleToggleToday = useCallback(
-        async (taskId: number, task?: Task): Promise<void> => {
-            if (!isMounted.current) return;
-
-            try {
-                await toggleTaskToday(taskId, task);
-
-                // Reload tasks to reflect the change
-                const result = await fetchTasks('?type=today');
-                if (isMounted.current) {
-                    useStore.getState().tasksStore.setTasks(result.tasks);
-                    setMetrics({
-                        ...result.metrics,
-                        tasks_in_progress: result.tasks_in_progress || [],
-                        tasks_due_today: result.tasks_due_today || [],
-                        tasks_overdue: result.tasks_overdue || [],
-                        today_plan_tasks: result.tasks_today_plan || [],
-                        suggested_tasks: result.suggested_tasks || [],
-                        tasks_completed_today:
-                            result.tasks_completed_today || [],
-                    } as any);
-                }
-            } catch (error) {
-                console.error('Error toggling task today status:', error);
             }
         },
         []
@@ -1237,12 +1229,12 @@ const TasksToday: React.FC = () => {
                                         {Array.isArray(localProjects)
                                             ? localProjects.filter(
                                                   (project) =>
-                                                      project.state &&
+                                                      project.status &&
                                                       [
                                                           'planned',
                                                           'in_progress',
-                                                          'blocked',
-                                                      ].includes(project.state)
+                                                          'waiting',
+                                                      ].includes(project.status)
                                               ).length
                                             : 0}
                                     </p>
@@ -1256,7 +1248,7 @@ const TasksToday: React.FC = () => {
                                             {t('tasks.dueToday')}
                                         </p>
                                     </div>
-                                    <p className="text-sm font-semibold">
+                                    <p className={`text-sm font-semibold ${metrics.tasks_due_today.length > 0 ? 'text-red-500' : ''}`}>
                                         {metrics.tasks_due_today.length}
                                     </p>
                                 </div>
@@ -1269,7 +1261,7 @@ const TasksToday: React.FC = () => {
                                             {t('tasks.overdue', 'Overdue')}
                                         </p>
                                     </div>
-                                    <p className="text-sm font-semibold">
+                                    <p className={`text-sm font-semibold ${metrics.tasks_overdue.length > 0 ? 'text-red-500' : ''}`}>
                                         {metrics.tasks_overdue.length}
                                     </p>
                                 </div>
@@ -1339,7 +1331,7 @@ const TasksToday: React.FC = () => {
                                                             </div>
                                                         </div>
                                                     )}
-                                                    <p className="text-sm font-semibold">
+                                                    <p className={`text-sm font-semibold ${metrics.tasks_completed_today.length > 0 ? 'text-green-500' : ''}`}>
                                                         {
                                                             metrics
                                                                 .tasks_completed_today
@@ -1443,7 +1435,7 @@ const TasksToday: React.FC = () => {
                                         onTaskUpdate={handleTaskUpdate}
                                         onTaskDelete={handleTaskDelete}
                                         projects={localProjects}
-                                        onToggleToday={handleToggleToday}
+                                        onToggleToday={undefined}
                                         onTaskCompletionToggle={
                                             handleTaskCompletionToggle
                                         }
@@ -1537,7 +1529,7 @@ const TasksToday: React.FC = () => {
                                             projects={localProjects}
                                             onTaskUpdate={handleTaskUpdate}
                                             onTaskDelete={handleTaskDelete}
-                                            onToggleToday={handleToggleToday}
+                                            onToggleToday={undefined}
                                             onTaskCompletionToggle={
                                                 handleTaskCompletionToggle
                                             }
@@ -1632,7 +1624,7 @@ const TasksToday: React.FC = () => {
                                         onTaskUpdate={handleTaskUpdate}
                                         onTaskDelete={handleTaskDelete}
                                         projects={localProjects}
-                                        onToggleToday={handleToggleToday}
+                                        onToggleToday={undefined}
                                         onTaskCompletionToggle={
                                             handleTaskCompletionToggle
                                         }
@@ -1734,7 +1726,7 @@ const TasksToday: React.FC = () => {
                                     }
                                     onTaskDelete={handleTaskDelete}
                                     projects={localProjects}
-                                    onToggleToday={handleToggleToday}
+                                    onToggleToday={undefined}
                                 />
 
                                 {suggestedDisplayLimit <
@@ -1819,7 +1811,7 @@ const TasksToday: React.FC = () => {
                                             onTaskUpdate={handleTaskUpdate}
                                             onTaskDelete={handleTaskDelete}
                                             projects={localProjects}
-                                            onToggleToday={handleToggleToday}
+                                            onToggleToday={undefined}
                                             showCompletedTasks={true}
                                         />
 

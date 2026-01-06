@@ -17,7 +17,7 @@ interface SidebarNavProps {
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
     location: Location;
     isDarkMode: boolean;
-    openTaskModal: (type?: 'simplified' | 'full') => void;
+    openTaskModal: () => void;
 }
 
 const SidebarNav: React.FC<SidebarNavProps> = ({
@@ -116,6 +116,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                             onClick={() =>
                                 handleNavClick(link.path, link.title, link.icon)
                             }
+                            data-testid={`sidebar-nav-${link.path.replace(/^\//, '').replace(/\?.*$/, '')}`}
                             className={`w-full text-left px-4 py-1 flex items-center justify-between rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 ${isActive(
                                 link.path,
                                 link.query
@@ -140,7 +141,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                                         tabIndex={0}
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            openTaskModal('full');
+                                            openTaskModal();
                                         }}
                                         onKeyDown={(e) => {
                                             if (
@@ -149,7 +150,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                                             ) {
                                                 e.stopPropagation();
                                                 e.preventDefault();
-                                                openTaskModal('full');
+                                                openTaskModal();
                                             }
                                         }}
                                         className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none cursor-pointer"

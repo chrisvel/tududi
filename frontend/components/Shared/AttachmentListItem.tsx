@@ -9,7 +9,7 @@ import {
     formatFileSize,
     canPreviewInline,
 } from '../../utils/attachmentsService';
-import FileIcon from './FileIcon';
+import FileIcon from './Icons/FileIcon';
 
 interface AttachmentListItemProps {
     attachment: Attachment;

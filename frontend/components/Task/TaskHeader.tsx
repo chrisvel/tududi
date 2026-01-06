@@ -6,15 +6,17 @@ import {
     ArrowPathIcon,
     ListBulletIcon,
     ChevronDownIcon,
+    CheckIcon,
 } from '@heroicons/react/24/outline';
 import { TagIcon, FolderIcon, FireIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
-import TaskPriorityIcon from './TaskPriorityIcon';
+import TaskPriorityIcon from '../Shared/Icons/TaskPriorityIcon';
 import { Project } from '../../entities/Project';
 import { Task } from '../../entities/Task';
 import { fetchSubtasks } from '../../utils/tasksService';
 import { isTaskCompleted, isTaskInProgress } from '../../constants/taskStatus';
 import TaskStatusControl from './TaskStatusControl';
+import { parseDateString } from '../../utils/dateUtils';
 
 interface TaskHeaderProps {
     task: Task;
@@ -102,7 +104,9 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
         if (dueDate === yesterday)
             return t('dateIndicators.yesterday', 'YESTERDAY');
 
-        return new Date(dueDate).toLocaleDateString(undefined, {
+        const date = parseDateString(dueDate);
+        if (!date) return dueDate;
+        return date.toLocaleDateString(undefined, {
             year: 'numeric',
             month: 'short',
             day: 'numeric',
@@ -150,11 +154,12 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
         ? formatDeferUntil(task.defer_until)
         : null;
 
-    // Check if task has metadata (project, tags, due_date, recurrence_type, recurring_parent_id, or defer_until)
+    // Check if task has metadata (project, tags, due_date, completed_at, recurrence_type, recurring_parent_id, or defer_until)
     const hasMetadata =
         (project && !hideProjectName) ||
         (task.tags && task.tags.length > 0) ||
         task.due_date ||
+        (isTaskCompleted(task.status) && task.completed_at) ||
         (task.recurrence_type && task.recurrence_type !== 'none') ||
         task.recurring_parent_id ||
         !!formattedDeferUntil;
@@ -393,9 +398,29 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                         </span>
                                     </div>
                                 )}
+                                {isTaskCompleted(task.status) &&
+                                    task.completed_at && (
+                                        <div className="flex items-center whitespace-nowrap">
+                                            <CheckIcon className="h-3 w-3 mr-1" />
+                                            <span>
+                                                {formatDueDate(
+                                                    task.completed_at.split(
+                                                        'T'
+                                                    )[0]
+                                                )}
+                                            </span>
+                                        </div>
+                                    )}
                                 {task.recurrence_type &&
                                     task.recurrence_type !== 'none' && (
-                                        <div className="flex items-center">
+                                        <div
+                                            className="flex items-center"
+                                            title={
+                                                task.due_date
+                                                    ? `${t('next', 'Next')}: ${formatDueDate(task.due_date)}`
+                                                    : undefined
+                                            }
+                                        >
                                             <ArrowPathIcon className="h-3 w-3 mr-1" />
                                             <span>
                                                 {formatRecurrence(
@@ -555,9 +580,27 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                     <span>{formatDueDate(task.due_date)}</span>
                                 </div>
                             )}
+                            {isTaskCompleted(task.status) &&
+                                task.completed_at && (
+                                    <div className="flex items-center whitespace-nowrap">
+                                        <CheckIcon className="h-3 w-3 mr-1" />
+                                        <span>
+                                            {formatDueDate(
+                                                task.completed_at.split('T')[0]
+                                            )}
+                                        </span>
+                                    </div>
+                                )}
                             {task.recurrence_type &&
                                 task.recurrence_type !== 'none' && (
-                                    <div className="flex items-center">
+                                    <div
+                                        className="flex items-center"
+                                        title={
+                                            task.due_date
+                                                ? `${t('next', 'Next')}: ${formatDueDate(task.due_date)}`
+                                                : undefined
+                                        }
+                                    >
                                         <ArrowPathIcon className="h-3 w-3 mr-1" />
                                         <span>
                                             {formatRecurrence(
@@ -691,11 +734,11 @@ const TaskWithSubtasks: React.FC<TaskWithSubtasksProps> = (props) => {
     const [loadingSubtasks, setLoadingSubtasks] = useState(false);
 
     const loadSubtasks = useCallback(async () => {
-        if (!props.task.id) return;
+        if (!props.task.uid) return;
 
         setLoadingSubtasks(true);
         try {
-            const subtasksData = await fetchSubtasks(props.task.id);
+            const subtasksData = await fetchSubtasks(props.task.uid);
             setSubtasks(subtasksData);
             setShowSubtasks(subtasksData.length > 0);
         } catch (error) {
@@ -708,7 +751,7 @@ const TaskWithSubtasks: React.FC<TaskWithSubtasksProps> = (props) => {
     }, [props.task.id]);
 
     useEffect(() => {
-        const subtasksData = props.task.subtasks || props.task.Subtasks || [];
+        const subtasksData = props.task.subtasks || [];
         const hasSubtasksFromData = subtasksData.length > 0;
         setSubtasks(subtasksData);
         setShowSubtasks(hasSubtasksFromData);
@@ -716,7 +759,7 @@ const TaskWithSubtasks: React.FC<TaskWithSubtasksProps> = (props) => {
         if (!hasSubtasksFromData) {
             void loadSubtasks();
         }
-    }, [props.task.id, props.task.subtasks, props.task.Subtasks, loadSubtasks]);
+    }, [props.task.id, props.task.subtasks, loadSubtasks]);
 
     return (
         <>

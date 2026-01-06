@@ -6,6 +6,7 @@ import {
 } from '@heroicons/react/24/outline';
 import TaskDueDateSection from '../TaskForm/TaskDueDateSection';
 import { Task } from '../../../entities/Task';
+import { parseDateString } from '../../../utils/dateUtils';
 
 interface TaskDueDateCardProps {
     task: Task;
@@ -29,8 +30,8 @@ const TaskDueDateCard: React.FC<TaskDueDateCardProps> = ({
     const { t, i18n } = useTranslation();
 
     const getDueDateDisplay = (dueDate: string) => {
-        const date = new Date(dueDate);
-        if (Number.isNaN(date.getTime())) return null;
+        const date = parseDateString(dueDate);
+        if (!date) return null;
 
         const formattedDate = date.toLocaleDateString(i18n.language, {
             day: '2-digit',
@@ -76,7 +77,8 @@ const TaskDueDateCard: React.FC<TaskDueDateCardProps> = ({
                 className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 p-4 transition-colors ${
                     task.due_date &&
                     (() => {
-                        const dueDate = new Date(task.due_date);
+                        const dueDate = parseDateString(task.due_date);
+                        if (!dueDate) return false;
                         const today = new Date();
                         today.setHours(0, 0, 0, 0);
                         dueDate.setHours(0, 0, 0, 0);
@@ -129,7 +131,8 @@ const TaskDueDateCard: React.FC<TaskDueDateCardProps> = ({
                                     task.due_date
                                 );
                                 if (!display) return null;
-                                const dueDate = new Date(task.due_date);
+                                const dueDate = parseDateString(task.due_date);
+                                if (!dueDate) return null;
                                 const today = new Date();
                                 today.setHours(0, 0, 0, 0);
                                 dueDate.setHours(0, 0, 0, 0);

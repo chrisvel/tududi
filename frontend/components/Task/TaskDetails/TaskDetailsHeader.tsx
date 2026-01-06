@@ -22,7 +22,6 @@ interface TaskDetailsHeaderProps {
     onTitleUpdate: (newTitle: string) => Promise<void>;
     onStatusUpdate: (newStatus: number) => Promise<void>;
     onPriorityUpdate: (newPriority: PriorityType) => Promise<void>;
-    onEdit: () => void;
     onDelete: () => void;
     getProjectLink?: (project: any) => string;
     getTagLink?: (tag: any) => string;
@@ -43,7 +42,6 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
     onTitleUpdate,
     onStatusUpdate,
     onPriorityUpdate,
-    onEdit,
     onDelete,
     getProjectLink,
     getTagLink,
@@ -496,9 +494,9 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                             </Link>
                                         )}
                                         {task.tags && task.tags.length > 0 && (
-                                            <div className="flex items-center gap-1 flex-wrap">
-                                                <TagIcon className="h-4 w-4" />
-                                                <div className="flex flex-wrap">
+                                            <div className="flex items-center">
+                                                <TagIcon className="h-4 w-4 mr-1" />
+                                                <span>
                                                     {task.tags.map(
                                                         (
                                                             tag: any,
@@ -531,15 +529,12 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                                                 {index <
                                                                     task.tags!
                                                                         .length -
-                                                                        1 && (
-                                                                    <span>
-                                                                        {', '}
-                                                                    </span>
-                                                                )}
+                                                                        1 &&
+                                                                    ', '}
                                                             </React.Fragment>
                                                         )
                                                     )}
-                                                </div>
+                                                </span>
                                             </div>
                                         )}
                                     </div>
@@ -713,18 +708,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                 {actionsMenuOpen && (
                                     <div className="absolute right-0 top-full translate-y-2 w-40 rounded-lg shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 z-30">
                                         <button
-                                            className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-t-lg"
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                setActionsMenuOpen(false);
-                                                onEdit();
-                                            }}
-                                        >
-                                            {t('common.edit', 'Edit')}
-                                        </button>
-                                        <button
-                                            className="w-full text-left px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-b-lg"
+                                            className="w-full text-left px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();

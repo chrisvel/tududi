@@ -3,11 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     MagnifyingGlassIcon,
-    LightBulbIcon,
+    EllipsisHorizontalCircleIcon,
     ClipboardDocumentListIcon,
     PlayIcon,
-    ExclamationTriangleIcon,
+    ClockIcon,
     CheckCircleIcon,
+    XCircleIcon,
     ChartBarIcon,
     CheckIcon,
 } from '@heroicons/react/24/outline';
@@ -25,11 +26,7 @@ import {
     deleteProject,
     fetchProjects,
 } from '../../utils/projectsService';
-import {
-    createTask,
-    deleteTask,
-    toggleTaskToday,
-} from '../../utils/tasksService';
+import { createTask, deleteTask } from '../../utils/tasksService';
 import {
     updateNote,
     deleteNote as apiDeleteNote,
@@ -317,17 +314,7 @@ const ProjectDetails: React.FC = () => {
                               ...task,
                               ...updatedTask,
                               subtasks:
-                                  updatedTask.subtasks ||
-                                  updatedTask.Subtasks ||
-                                  task.subtasks ||
-                                  task.Subtasks ||
-                                  [],
-                              Subtasks:
-                                  updatedTask.subtasks ||
-                                  updatedTask.Subtasks ||
-                                  task.subtasks ||
-                                  task.Subtasks ||
-                                  [],
+                                  updatedTask.subtasks || task.subtasks || [],
                           }
                         : task
                 )
@@ -358,19 +345,8 @@ const ProjectDetails: React.FC = () => {
                               ...savedTask,
                               subtasks:
                                   savedTask.subtasks ||
-                                  savedTask.Subtasks ||
                                   updatedTask.subtasks ||
-                                  updatedTask.Subtasks ||
                                   task.subtasks ||
-                                  task.Subtasks ||
-                                  [],
-                              Subtasks:
-                                  savedTask.subtasks ||
-                                  savedTask.Subtasks ||
-                                  updatedTask.subtasks ||
-                                  updatedTask.Subtasks ||
-                                  task.subtasks ||
-                                  task.Subtasks ||
                                   [],
                           }
                         : task
@@ -393,56 +369,11 @@ const ProjectDetails: React.FC = () => {
                     ? {
                           ...task,
                           ...updatedTask,
-                          subtasks:
-                              updatedTask.subtasks ||
-                              updatedTask.Subtasks ||
-                              task.subtasks ||
-                              task.Subtasks ||
-                              [],
-                          Subtasks:
-                              updatedTask.subtasks ||
-                              updatedTask.Subtasks ||
-                              task.subtasks ||
-                              task.Subtasks ||
-                              [],
+                          subtasks: updatedTask.subtasks || task.subtasks || [],
                       }
                     : task
             )
         );
-    };
-
-    const handleToggleToday = async (taskId: number, task?: Task) => {
-        try {
-            const updatedTask = await toggleTaskToday(taskId, task);
-            setTasks((prev) =>
-                prev.map((t) =>
-                    t.id === taskId
-                        ? {
-                              ...t,
-                              today: updatedTask.today,
-                              today_move_count: updatedTask.today_move_count,
-                          }
-                        : t
-                )
-            );
-        } catch {
-            if (!uidSlug) return;
-            try {
-                const projectData = await fetchProjectBySlug(uidSlug);
-                setProject(projectData);
-                setTasks(projectData.tasks || projectData.Tasks || []);
-                const fetchedNotes =
-                    projectData.notes || projectData.Notes || [];
-                setNotes(
-                    fetchedNotes.map((note) => {
-                        if (note.Tags && !note.tags) note.tags = note.Tags;
-                        return note;
-                    })
-                );
-            } catch {
-                // silent
-            }
-        }
     };
 
     const handleSaveProject = async (updatedProject: Project) => {
@@ -770,32 +701,35 @@ const ProjectDetails: React.FC = () => {
         monthlyCompleted,
     } = useProjectMetrics(tasks, handleTaskUpdate, t, showSuccessToast);
 
-    const getStateIcon = (state: string) => {
-        switch (state) {
-            case 'idea':
+    const getStatusIcon = (status: string) => {
+        switch (status) {
+            case 'not_started':
                 return (
-                    <LightBulbIcon className="h-3 w-3 text-yellow-500 flex-shrink-0 mt-0.5" />
+                    <EllipsisHorizontalCircleIcon className="h-3 w-3 text-gray-500 flex-shrink-0 mt-0.5" />
                 );
             case 'planned':
                 return (
                     <ClipboardDocumentListIcon className="h-3 w-3 text-blue-500 flex-shrink-0 mt-0.5" />
                 );
             case 'in_progress':
-            case 'active':
                 return (
                     <PlayIcon className="h-3 w-3 text-green-500 flex-shrink-0 mt-0.5" />
                 );
-            case 'blocked':
+            case 'waiting':
                 return (
-                    <ExclamationTriangleIcon className="h-3 w-3 text-red-500 flex-shrink-0 mt-0.5" />
+                    <ClockIcon className="h-3 w-3 text-yellow-500 flex-shrink-0 mt-0.5" />
                 );
-            case 'completed':
+            case 'done':
                 return (
-                    <CheckCircleIcon className="h-3 w-3 text-gray-500 flex-shrink-0 mt-0.5" />
+                    <CheckCircleIcon className="h-3 w-3 text-green-600 flex-shrink-0 mt-0.5" />
+                );
+            case 'cancelled':
+                return (
+                    <XCircleIcon className="h-3 w-3 text-red-500 flex-shrink-0 mt-0.5" />
                 );
             default:
                 return (
-                    <PlayIcon className="h-3 w-3 text-white/70 flex-shrink-0 mt-0.5" />
+                    <EllipsisHorizontalCircleIcon className="h-3 w-3 text-white/70 flex-shrink-0 mt-0.5" />
                 );
         }
     };
@@ -904,7 +838,7 @@ const ProjectDetails: React.FC = () => {
                 project={project}
                 areas={areas}
                 t={t}
-                getStateIcon={getStateIcon}
+                getStatusIcon={getStatusIcon}
                 onDeleteClick={() => {
                     setNoteToDelete(null);
                     setIsConfirmDialogOpen(true);
@@ -1091,7 +1025,7 @@ const ProjectDetails: React.FC = () => {
                                                 handleTaskCompletionToggle
                                             }
                                             onTaskDelete={handleTaskDelete}
-                                            onToggleToday={handleToggleToday}
+                                            onToggleToday={undefined}
                                             allProjects={allProjects}
                                             showCompleted={
                                                 taskStatusFilter !== 'active'

@@ -310,6 +310,25 @@
     "productivityAssistant": "Productivity Assistant",
     "productivityAssistantDescription": "Show productivity insights that help identify stalled projects, vague tasks, and workflow improvements on your Today page.",
     "enableProductivityAssistant": "Enable Productivity Insights",
+    "keyboardShortcuts": "Keyboard Shortcuts",
+    "shortcuts": {
+      "enableShortcuts": "Enable Keyboard Shortcuts",
+      "enableDescription": "Turn keyboard shortcuts on or off globally.",
+      "duplicateWarning": "Duplicate shortcuts detected:",
+      "pressKeys": "Press keys...",
+      "duplicateWith": "Conflicts with {{action}}",
+      "record": "Record",
+      "resetToDefaults": "Reset to Defaults",
+      "info": "Keyboard shortcuts help you navigate quickly. Changes are saved when you click \"Save Changes\" at the bottom of the page. Shortcuts are disabled when typing in text fields.",
+      "actions": {
+        "inbox": "Create new Inbox item",
+        "task": "Create new Task",
+        "project": "Create new Project",
+        "note": "Create new Note",
+        "area": "Create new Area",
+        "tag": "Create new Tag"
+      }
+    },
     "nextTaskSuggestion": "Next Task Suggestion",
     "nextTaskSuggestionDescription": "Automatically suggest the next best task to work on when you have nothing in progress, prioritizing due today tasks, then suggested tasks from your Today page.",
     "enableNextTaskSuggestion": "Enable Next Task Suggestions",
@@ -812,26 +831,6 @@
     "metrics": "Projects",
     "selectState": "Select State",
     "state": "Project State",
-    "filters": {
-      "active": "Active",
-      "inactive": "Inactive",
-      "all": "All",
-      "allAreas": "All Areas"
-    },
-    "states": {
-      "idea": "Idea",
-      "planned": "Planned",
-      "in_progress": "In Progress",
-      "active": "In Progress",
-      "blocked": "Blocked",
-      "completed": "Completed",
-      "idea_desc": "Captured but not planned yet",
-      "planned_desc": "Scoped and ready to start",
-      "in_progress_desc": "Active work happening",
-      "active_desc": "Active work happening",
-      "blocked_desc": "Temporarily paused or stuck",
-      "completed_desc": "Finished and done"
-    },
     "showMetrics": "Show metrics",
     "hideMetrics": "Hide metrics",
     "progress": "Progress",
@@ -854,7 +853,28 @@
     "nextUp": "Next best action",
     "focusTask": "Most impactful task",
     "focusHint": "Shifts this task to in progress and today",
-    "noNextAction": "All clear—no outstanding tasks."
+    "noNextAction": "All clear—no outstanding tasks.",
+    "filters": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "all": "All",
+      "allAreas": "All Areas",
+      "notCompleted": "Not Completed"
+    }
+  },
+  "projectStatus": {
+    "not_started": "Not Started",
+    "not_started_desc": "Captured but not started yet",
+    "planned": "Planned",
+    "planned_desc": "Scoped and ready to start",
+    "in_progress": "In Progress",
+    "in_progress_desc": "Active work happening",
+    "waiting": "Waiting",
+    "waiting_desc": "Waiting on external input",
+    "done": "Completed",
+    "done_desc": "Finished and done",
+    "cancelled": "Cancelled",
+    "cancelled_desc": "Will not be completed"
   },
   "projectItem": {
     "edit": "Edit",

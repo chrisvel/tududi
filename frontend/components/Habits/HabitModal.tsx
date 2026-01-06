@@ -37,10 +37,10 @@ const HabitModal: React.FC<HabitModalProps> = ({
 
     const handleSave = async () => {
         try {
-            // Set today flag for new habits to show in "Planned" section
+            // Set planned status for new habits to show in "Planned" section
             const habitData = { ...formData };
             if (!habit?.uid) {
-                habitData.today = true;
+                habitData.status = 'planned';
             }
 
             if (habit?.uid) {

@@ -260,16 +260,7 @@ router.get('/', async (req, res) => {
                     ),
                     { [Op.gt]: 0 }
                 );
-                const descriptionHasContent = sequelize.where(
-                    sequelize.fn(
-                        'LENGTH',
-                        sequelize.fn('TRIM', sequelize.col('Task.description'))
-                    ),
-                    { [Op.gt]: 0 }
-                );
-                taskExtraConditions.push({
-                    [Op.or]: [noteHasContent, descriptionHasContent],
-                });
+                taskExtraConditions.push(noteHasContent);
             }
 
             if (extrasSet.has('deferred')) {
@@ -441,7 +432,7 @@ router.get('/', async (req, res) => {
                     name: project.name,
                     description: project.description,
                     priority: project.priority,
-                    status: project.state,
+                    status: project.status,
                 }))
             );
         }

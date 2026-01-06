@@ -151,7 +151,9 @@
     "open": "Відкрити",
     "completed": "Завершено",
     "noCompletedTasksToday": "Сьогодні немає завершених завдань.",
-    "markAsDone": "Mark as done"
+    "markAsDone": "Mark as done",
+    "notStarted": "Не розпочато",
+    "done": "Завершено"
   },
   "timeline": {
     "activityTimeline": "Хронологія Активності",
@@ -209,7 +211,8 @@
       "active": "Активні",
       "inactive": "Неактивні",
       "all": "Всі",
-      "allAreas": "Всі області"
+      "allAreas": "Всі області",
+      "notCompleted": "Не завершено"
     },
     "active": "Активні",
     "inactive": "Неактивні",
@@ -1342,5 +1345,19 @@
       "title": "Примітка:",
       "message": "Сповіщення електронною поштою та Push скоро з'являться. Сповіщення в додатку та Telegram наразі доступні."
     }
+  },
+  "projectStatus": {
+    "not_started": "Не розпочато",
+    "not_started_desc": "Зафіксовано, але ще не розпочато",
+    "planned": "Заплановано",
+    "planned_desc": "Окреслено і готово до початку",
+    "in_progress": "В процесі",
+    "in_progress_desc": "Активна робота триває",
+    "waiting": "Очікування",
+    "waiting_desc": "Очікування на зовнішній внесок",
+    "done": "Завершено",
+    "done_desc": "Закінчено і виконано",
+    "cancelled": "Скасовано",
+    "cancelled_desc": "Не буде завершено"
   }
 }

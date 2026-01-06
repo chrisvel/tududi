@@ -151,7 +151,9 @@
     "open": "Åpne",
     "completed": "Fullført",
     "noCompletedTasksToday": "Ingen fullførte oppgaver i dag.",
-    "markAsDone": "Mark as done"
+    "markAsDone": "Mark as done",
+    "notStarted": "Ikke startet",
+    "done": "Ferdig"
   },
   "timeline": {
     "activityTimeline": "Aktivitetslinje",
@@ -820,7 +822,8 @@
       "active": "Aktiv",
       "inactive": "Inaktiv",
       "all": "Alle",
-      "allAreas": "Alle områder"
+      "allAreas": "Alle områder",
+      "notCompleted": "Ikke fullført"
     },
     "selectState": "Velg tilstand",
     "state": "Prosjektstatus",
@@ -1342,5 +1345,19 @@
       "title": "Merk:",
       "message": "E-post og Push-varsler kommer snart. Varsler i appen og Telegram er for øyeblikket tilgjengelige."
     }
+  },
+  "projectStatus": {
+    "not_started": "Ikke startet",
+    "not_started_desc": "Registrert, men ikke startet ennå",
+    "planned": "Planlagt",
+    "planned_desc": "Avgrenset og klar til å starte",
+    "in_progress": "Pågår",
+    "in_progress_desc": "Aktivt arbeid pågår",
+    "waiting": "Venter",
+    "waiting_desc": "Venter på ekstern input",
+    "done": "Fullført",
+    "done_desc": "Ferdig og avsluttet",
+    "cancelled": "Avbrutt",
+    "cancelled_desc": "Vil ikke bli fullført"
   }
 }

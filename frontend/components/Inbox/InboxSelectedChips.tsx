@@ -39,6 +39,8 @@ const InboxSelectedChips: React.FC<InboxSelectedChipsProps> = ({
             return (
                 <span
                     key={`${tagName}-${index}`}
+                    data-testid={`selected-tag-${tagName}`}
+                    data-tag-exists="true"
                     className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 dark:bg-blue-900/20 rounded text-blue-600 dark:text-blue-400"
                 >
                     {tagPath ? (
@@ -66,6 +68,8 @@ const InboxSelectedChips: React.FC<InboxSelectedChipsProps> = ({
         return (
             <span
                 key={`${tagName}-${index}`}
+                data-testid={`selected-tag-${tagName}`}
+                data-tag-exists="false"
                 className="inline-flex items-center gap-1 px-2 py-1 bg-orange-50 dark:bg-orange-900/20 rounded text-orange-500 dark:text-orange-400"
             >
                 {tagName}
@@ -89,6 +93,8 @@ const InboxSelectedChips: React.FC<InboxSelectedChipsProps> = ({
             return (
                 <span
                     key={`${projectName}-${index}`}
+                    data-testid={`selected-project-${projectName}`}
+                    data-project-exists="true"
                     className="inline-flex items-center gap-1 px-2 py-1 bg-green-50 dark:bg-green-900/20 rounded text-green-600 dark:text-green-400"
                 >
                     <Link
@@ -112,6 +118,8 @@ const InboxSelectedChips: React.FC<InboxSelectedChipsProps> = ({
         return (
             <span
                 key={`${projectName}-${index}`}
+                data-testid={`selected-project-${projectName}`}
+                data-project-exists="false"
                 className="inline-flex items-center gap-1 px-2 py-1 bg-orange-50 dark:bg-orange-900/20 rounded text-orange-500 dark:text-orange-400"
             >
                 {projectName}
@@ -129,7 +137,10 @@ const InboxSelectedChips: React.FC<InboxSelectedChipsProps> = ({
     return (
         <>
             {selectedTags.length > 0 && (
-                <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1 flex-wrap gap-1">
+                <div
+                    data-testid="selected-tags-container"
+                    className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1 flex-wrap gap-1"
+                >
                     <TagIcon className="h-3 w-3 mr-1" />
                     <div className="flex flex-wrap gap-1">
                         {selectedTags.map((tagName, index) =>
@@ -140,7 +151,10 @@ const InboxSelectedChips: React.FC<InboxSelectedChipsProps> = ({
             )}
 
             {selectedProjects.length > 0 && (
-                <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1 flex-wrap gap-1">
+                <div
+                    data-testid="selected-projects-container"
+                    className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1 flex-wrap gap-1"
+                >
                     <FolderIcon className="h-3 w-3 mr-1" />
                     <div className="flex flex-wrap gap-1">
                         {selectedProjects.map((projectName, index) =>

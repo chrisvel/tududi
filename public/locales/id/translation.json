@@ -151,7 +151,9 @@
     "open": "Buka",
     "completed": "Selesai",
     "noCompletedTasksToday": "Tidak ada tugas yang diselesaikan hari ini.",
-    "markAsDone": "Mark as done"
+    "markAsDone": "Mark as done",
+    "notStarted": "Belum Dimulai",
+    "done": "Selesai"
   },
   "timeline": {
     "activityTimeline": "Garis Waktu Aktivitas",
@@ -820,7 +822,8 @@
       "active": "Aktif",
       "inactive": "Tidak Aktif",
       "all": "Semua",
-      "allAreas": "Semua Area"
+      "allAreas": "Semua Area",
+      "notCompleted": "Belum Selesai"
     },
     "selectState": "Pilih Status",
     "state": "Status Proyek",
@@ -1342,5 +1345,19 @@
       "title": "Catatan:",
       "message": "Notifikasi Email dan Push akan segera hadir. Notifikasi di dalam aplikasi dan Telegram saat ini tersedia."
     }
+  },
+  "projectStatus": {
+    "not_started": "Belum Dimulai",
+    "not_started_desc": "Tercatat tetapi belum dimulai",
+    "planned": "Direncanakan",
+    "planned_desc": "Sudah ditentukan dan siap untuk dimulai",
+    "in_progress": "Sedang Berlangsung",
+    "in_progress_desc": "Pekerjaan aktif sedang berlangsung",
+    "waiting": "Menunggu",
+    "waiting_desc": "Menunggu masukan eksternal",
+    "done": "Selesai",
+    "done_desc": "Telah selesai dan selesai",
+    "cancelled": "Dibatalkan",
+    "cancelled_desc": "Tidak akan diselesaikan"
   }
 }

@@ -24,7 +24,7 @@ describe('Recurring Tasks', () => {
         describe('Daily Recurrence', () => {
             it('should set correct due date for daily recurring task', async () => {
                 const today = new Date();
-                today.setHours(0, 0, 0, 0);
+                today.setUTCHours(0, 0, 0, 0);
                 const tomorrow = new Date(today);
                 tomorrow.setDate(tomorrow.getDate() + 1);
 
@@ -51,7 +51,7 @@ describe('Recurring Tasks', () => {
 
             it('should handle daily recurrence with interval of 2', async () => {
                 const today = new Date();
-                today.setHours(0, 0, 0, 0);
+                today.setUTCHours(0, 0, 0, 0);
 
                 const taskData = {
                     name: 'Every Other Day Task',
@@ -73,7 +73,7 @@ describe('Recurring Tasks', () => {
                     new Date(task.due_date)
                 );
                 const expectedDate = new Date(today);
-                expectedDate.setDate(expectedDate.getDate() + 2);
+                expectedDate.setUTCDate(expectedDate.getUTCDate() + 2);
 
                 expect(nextDate.toISOString().split('T')[0]).toBe(
                     expectedDate.toISOString().split('T')[0]
@@ -82,7 +82,7 @@ describe('Recurring Tasks', () => {
 
             it('should handle daily recurrence with interval of 7', async () => {
                 const today = new Date();
-                today.setHours(0, 0, 0, 0);
+                today.setUTCHours(0, 0, 0, 0);
 
                 const taskData = {
                     name: 'Weekly via Daily',
@@ -101,7 +101,7 @@ describe('Recurring Tasks', () => {
                     new Date(task.due_date)
                 );
                 const expectedDate = new Date(today);
-                expectedDate.setDate(expectedDate.getDate() + 7);
+                expectedDate.setUTCDate(expectedDate.getUTCDate() + 7);
 
                 expect(nextDate.toISOString().split('T')[0]).toBe(
                     expectedDate.toISOString().split('T')[0]
@@ -112,8 +112,8 @@ describe('Recurring Tasks', () => {
         describe('Weekly Recurrence', () => {
             it('should set correct due date for weekly recurring task', async () => {
                 const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                const todayWeekday = today.getDay();
+                today.setUTCHours(0, 0, 0, 0);
+                const todayWeekday = today.getUTCDay();
 
                 const taskData = {
                     name: 'Weekly Meeting',
@@ -135,8 +135,8 @@ describe('Recurring Tasks', () => {
 
             it('should calculate next week for weekly recurrence', async () => {
                 const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                const todayWeekday = today.getDay();
+                today.setUTCHours(0, 0, 0, 0);
+                const todayWeekday = today.getUTCDay();
 
                 const taskData = {
                     name: 'Weekly Review',
@@ -154,7 +154,7 @@ describe('Recurring Tasks', () => {
                     new Date(task.due_date)
                 );
                 const expectedDate = new Date(today);
-                expectedDate.setDate(expectedDate.getDate() + 7);
+                expectedDate.setUTCDate(expectedDate.getUTCDate() + 7);
 
                 expect(nextDate.toISOString().split('T')[0]).toBe(
                     expectedDate.toISOString().split('T')[0]
@@ -163,8 +163,8 @@ describe('Recurring Tasks', () => {
 
             it('should handle bi-weekly recurrence', async () => {
                 const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                const todayWeekday = today.getDay();
+                today.setUTCHours(0, 0, 0, 0);
+                const todayWeekday = today.getUTCDay();
 
                 const taskData = {
                     name: 'Bi-weekly Task',
@@ -182,7 +182,7 @@ describe('Recurring Tasks', () => {
                     new Date(task.due_date)
                 );
                 const expectedDate = new Date(today);
-                expectedDate.setDate(expectedDate.getDate() + 14);
+                expectedDate.setUTCDate(expectedDate.getUTCDate() + 14);
 
                 expect(nextDate.toISOString().split('T')[0]).toBe(
                     expectedDate.toISOString().split('T')[0]
@@ -191,8 +191,8 @@ describe('Recurring Tasks', () => {
 
             it('should handle weekly recurrence on a different weekday', async () => {
                 const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                const todayWeekday = today.getDay();
+                today.setUTCHours(0, 0, 0, 0);
+                const todayWeekday = today.getUTCDay();
                 // Target a different weekday (e.g., if today is Monday (1), target Friday (5))
                 const targetWeekday = (todayWeekday + 4) % 7;
 
@@ -211,7 +211,7 @@ describe('Recurring Tasks', () => {
                     task,
                     new Date(task.due_date)
                 );
-                expect(nextDate.getDay()).toBe(targetWeekday);
+                expect(nextDate.getUTCDay()).toBe(targetWeekday);
             });
         });
 
@@ -303,6 +303,36 @@ describe('Recurring Tasks', () => {
                 expect(nextDate.getUTCDate()).toBe(expectedDate.getUTCDate());
             });
 
+            it('should not skip months for monthly_last_day when starting from 31st', async () => {
+                // Bug fix: Jan 31 -> should go to Feb 28, not March 31
+                const jan31 = new Date(Date.UTC(2025, 0, 31, 0, 0, 0, 0));
+
+                const taskData = {
+                    name: 'End of Month Task',
+                    recurrence_type: 'monthly_last_day',
+                    recurrence_interval: 1,
+                    due_date: jan31.toISOString().split('T')[0],
+                };
+
+                const response = await agent.post('/api/task').send(taskData);
+                const task = await Task.findByPk(response.body.id);
+
+                // First occurrence: Jan 31 -> Feb 28
+                const nextDate1 = calculateNextDueDate(task, jan31);
+                expect(nextDate1.getUTCMonth()).toBe(1); // February
+                expect(nextDate1.getUTCDate()).toBe(28);
+
+                // Second occurrence: Feb 28 -> Mar 31
+                const nextDate2 = calculateNextDueDate(task, nextDate1);
+                expect(nextDate2.getUTCMonth()).toBe(2); // March
+                expect(nextDate2.getUTCDate()).toBe(31);
+
+                // Third occurrence: Mar 31 -> Apr 30
+                const nextDate3 = calculateNextDueDate(task, nextDate2);
+                expect(nextDate3.getUTCMonth()).toBe(3); // April
+                expect(nextDate3.getUTCDate()).toBe(30);
+            });
+
             it('should handle monthly recurrence when day does not exist in target month', async () => {
                 // Create a task for Jan 31
                 const jan31 = new Date(Date.UTC(2024, 0, 31, 0, 0, 0, 0));
@@ -383,7 +413,7 @@ describe('Recurring Tasks', () => {
     describe('Due Date Refresh on Completion', () => {
         it('should advance due date when daily recurring task is completed', async () => {
             const today = new Date();
-            today.setHours(0, 0, 0, 0);
+            today.setUTCHours(0, 0, 0, 0);
 
             // Create a daily recurring task
             const task = await Task.create({
@@ -414,7 +444,7 @@ describe('Recurring Tasks', () => {
             // Due date should be advanced by 1 day
             const newDueDate = new Date(task.due_date);
             const expectedDate = new Date(originalDueDate);
-            expectedDate.setDate(expectedDate.getDate() + 1);
+            expectedDate.setUTCDate(expectedDate.getUTCDate() + 1);
 
             expect(newDueDate.toISOString().split('T')[0]).toBe(
                 expectedDate.toISOString().split('T')[0]
@@ -430,8 +460,8 @@ describe('Recurring Tasks', () => {
 
         it('should advance due date when weekly recurring task is completed', async () => {
             const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const todayWeekday = today.getDay();
+            today.setUTCHours(0, 0, 0, 0);
+            const todayWeekday = today.getUTCDay();
 
             const task = await Task.create({
                 name: 'Weekly Task',
@@ -455,7 +485,7 @@ describe('Recurring Tasks', () => {
             // Due date should be advanced by 1 week
             const newDueDate = new Date(task.due_date);
             const expectedDate = new Date(originalDueDate);
-            expectedDate.setDate(expectedDate.getDate() + 7);
+            expectedDate.setUTCDate(expectedDate.getUTCDate() + 7);
 
             expect(newDueDate.toISOString().split('T')[0]).toBe(
                 expectedDate.toISOString().split('T')[0]
@@ -506,7 +536,7 @@ describe('Recurring Tasks', () => {
 
         it('should track multiple completions in RecurringCompletion table', async () => {
             const today = new Date();
-            today.setHours(0, 0, 0, 0);
+            today.setUTCHours(0, 0, 0, 0);
 
             const task = await Task.create({
                 name: 'Daily Task',
@@ -609,7 +639,7 @@ describe('Recurring Tasks', () => {
             // Next due date should be 2 days ago (original due date + 1 day)
             const newDueDate = new Date(task.due_date);
             const expectedDate = new Date(originalDueDate);
-            expectedDate.setDate(expectedDate.getDate() + 1);
+            expectedDate.setUTCDate(expectedDate.getUTCDate() + 1);
 
             expect(newDueDate.toISOString().split('T')[0]).toBe(
                 expectedDate.toISOString().split('T')[0]
@@ -737,7 +767,7 @@ describe('Recurring Tasks', () => {
 
         it('should handle interval > 1 with completion_based', async () => {
             const today = new Date();
-            today.setHours(0, 0, 0, 0);
+            today.setUTCHours(0, 0, 0, 0);
 
             const task = await Task.create({
                 name: 'Every 3 Days Completion Based',
@@ -769,7 +799,7 @@ describe('Recurring Tasks', () => {
 
         it('should respect updated completion_based flag', async () => {
             const today = new Date();
-            today.setHours(0, 0, 0, 0);
+            today.setUTCHours(0, 0, 0, 0);
 
             // Create task with completion_based = false
             const task = await Task.create({
@@ -810,7 +840,7 @@ describe('Recurring Tasks', () => {
 
         it('should handle multiple rapid completions with completion_based', async () => {
             const today = new Date();
-            today.setHours(0, 0, 0, 0);
+            today.setUTCHours(0, 0, 0, 0);
 
             const task = await Task.create({
                 name: 'Rapid Completions',
@@ -871,7 +901,7 @@ describe('Recurring Tasks', () => {
     describe('Recurrence End Date', () => {
         it('should stop recurring when end date is reached', async () => {
             const today = new Date();
-            today.setHours(0, 0, 0, 0);
+            today.setUTCHours(0, 0, 0, 0);
             const tomorrow = new Date(today);
             tomorrow.setDate(tomorrow.getDate() + 1);
             const dayAfterTomorrow = new Date(today);
@@ -933,7 +963,7 @@ describe('Recurring Tasks', () => {
 
         it('should allow recurring tasks without end date to continue indefinitely', async () => {
             const today = new Date();
-            today.setHours(0, 0, 0, 0);
+            today.setUTCHours(0, 0, 0, 0);
 
             const task = await Task.create({
                 name: 'Infinite Task',
@@ -965,7 +995,7 @@ describe('Recurring Tasks', () => {
     describe('Edge Cases', () => {
         it('should handle completing a task multiple times in quick succession', async () => {
             const today = new Date();
-            today.setHours(0, 0, 0, 0);
+            today.setUTCHours(0, 0, 0, 0);
 
             const task = await Task.create({
                 name: 'Quick Complete Task',
@@ -999,7 +1029,7 @@ describe('Recurring Tasks', () => {
 
             // Second due date should be one day after first
             const expectedDate = new Date(dueDateAfterFirst);
-            expectedDate.setDate(expectedDate.getDate() + 1);
+            expectedDate.setUTCDate(expectedDate.getUTCDate() + 1);
             expect(dueDateAfterSecond.toISOString().split('T')[0]).toBe(
                 expectedDate.toISOString().split('T')[0]
             );
@@ -1007,7 +1037,7 @@ describe('Recurring Tasks', () => {
 
         it('should handle uncompleting a recurring task', async () => {
             const today = new Date();
-            today.setHours(0, 0, 0, 0);
+            today.setUTCHours(0, 0, 0, 0);
 
             const task = await Task.create({
                 name: 'Uncomplete Task',
@@ -1094,7 +1124,7 @@ describe('Recurring Tasks', () => {
 
             const dueDate = new Date(task.due_date);
             const today = new Date();
-            today.setHours(0, 0, 0, 0);
+            today.setUTCHours(0, 0, 0, 0);
             const tomorrow = new Date(today);
             tomorrow.setDate(tomorrow.getDate() + 1);
 

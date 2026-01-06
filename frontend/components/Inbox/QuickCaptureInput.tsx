@@ -1065,7 +1065,7 @@ const QuickCaptureInput = React.forwardRef<
                 try {
                     await createProject({
                         name: projectName,
-                        state: 'planned',
+                        status: 'planned',
                     });
                 } catch (error) {
                     console.error(
@@ -1326,10 +1326,14 @@ const QuickCaptureInput = React.forwardRef<
                                             status: 'not_started',
                                             priority: null,
                                             tags: taskTags,
-                                            project_uid: projectUid,
+                                            Project: projectUid
+                                                ? ({
+                                                      uid: projectUid,
+                                                  } as Project)
+                                                : undefined,
                                             completed_at: null,
                                         };
-                                        openTaskModal(newTask);
+                                        void openTaskModal(newTask);
                                         composerFooterContext.clearText();
                                     }}
                                     className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-700 dark:text-blue-200 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-200 dark:focus:ring-offset-gray-900"
@@ -1407,7 +1411,7 @@ const QuickCaptureInput = React.forwardRef<
                                         const newProject: Project = {
                                             name: cleaned,
                                             description: '',
-                                            state: 'planned',
+                                            status: 'planned',
                                             tags: buildTagObjects(
                                                 composerFooterContext.hashtags
                                             ),
@@ -1683,6 +1687,7 @@ const QuickCaptureInput = React.forwardRef<
                                             inputRef.current = el;
                                         }}
                                         type="text"
+                                        data-testid="quick-capture-input"
                                         value={inputText}
                                         onChange={handleChange}
                                         onSelect={(e) => {

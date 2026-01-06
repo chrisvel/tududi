@@ -164,8 +164,8 @@ export const fetchTaskByUid = async (uid: string): Promise<Task> => {
     return await response.json();
 };
 
-export const fetchSubtasks = async (parentTaskId: number): Promise<Task[]> => {
-    const response = await fetch(getApiPath(`task/${parentTaskId}/subtasks`), {
+export const fetchSubtasks = async (parentTaskUid: string): Promise<Task[]> => {
+    const response = await fetch(getApiPath(`task/${parentTaskUid}/subtasks`), {
         credentials: 'include',
         headers: getDefaultHeaders(),
     });
@@ -174,34 +174,20 @@ export const fetchSubtasks = async (parentTaskId: number): Promise<Task[]> => {
     return await response.json();
 };
 
-export const toggleTaskToday = async (
-    taskId: number,
-    currentTask?: Task
-): Promise<Task> => {
-    if (!currentTask) {
-        currentTask = await fetchTaskById(taskId);
-    }
-
-    return await updateTask(currentTask.uid!, {
-        ...currentTask,
-        today: !currentTask.today,
-    });
-};
-
 export interface TaskIteration {
     date: string;
     utc_date: string;
 }
 
 export const fetchTaskNextIterations = async (
-    taskId: number,
+    taskUid: string,
     startFromDate?: string
 ): Promise<TaskIteration[]> => {
     const url = startFromDate
         ? getApiPath(
-              `task/${taskId}/next-iterations?startFromDate=${startFromDate}`
+              `task/${taskUid}/next-iterations?startFromDate=${startFromDate}`
           )
-        : getApiPath(`task/${taskId}/next-iterations`);
+        : getApiPath(`task/${taskUid}/next-iterations`);
 
     const response = await fetch(url, {
         credentials: 'include',

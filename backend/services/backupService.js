@@ -364,7 +364,7 @@ async function importUserData(userId, backupData, options = { merge: true }) {
                             task_show_completed:
                                 projectData.task_show_completed,
                             task_sort_order: projectData.task_sort_order,
-                            state: projectData.state,
+                            status: projectData.status || projectData.state,
                             user_id: userId,
                             area_id: areaId,
                         },
@@ -415,12 +415,9 @@ async function importUserData(userId, backupData, options = { merge: true }) {
                     const newTask = await Task.create(
                         {
                             uid: taskData.uid,
-                            uuid: taskData.uuid,
                             name: taskData.name,
-                            description: taskData.description,
                             due_date: taskData.due_date,
                             defer_until: taskData.defer_until,
-                            today: taskData.today,
                             priority: taskData.priority,
                             status: taskData.status,
                             note: taskData.note,

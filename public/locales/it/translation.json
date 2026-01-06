@@ -151,7 +151,9 @@
     "open": "Apri",
     "completed": "Completato",
     "noCompletedTasksToday": "Nessuna attività completata oggi.",
-    "markAsDone": "Mark as done"
+    "markAsDone": "Mark as done",
+    "notStarted": "Non Iniziato",
+    "done": "Fatto"
   },
   "timeline": {
     "activityTimeline": "Timeline delle Attività",
@@ -820,7 +822,8 @@
       "active": "Attivo",
       "inactive": "Inattivo",
       "all": "Tutti",
-      "allAreas": "Tutte le Aree"
+      "allAreas": "Tutte le Aree",
+      "notCompleted": "Non Completato"
     },
     "selectState": "Seleziona Stato",
     "state": "Stato del Progetto",
@@ -1342,5 +1345,19 @@
       "title": "Nota:",
       "message": "Le notifiche via Email e Push arriveranno presto. Le notifiche in-app e su Telegram sono attualmente disponibili."
     }
+  },
+  "projectStatus": {
+    "not_started": "Non Iniziato",
+    "not_started_desc": "Catturato ma non ancora iniziato",
+    "planned": "Pianificato",
+    "planned_desc": "Definito e pronto per iniziare",
+    "in_progress": "In Corso",
+    "in_progress_desc": "Lavoro attivo in corso",
+    "waiting": "In Attesa",
+    "waiting_desc": "In attesa di input esterno",
+    "done": "Completato",
+    "done_desc": "Finito e completato",
+    "cancelled": "Annullato",
+    "cancelled_desc": "Non sarà completato"
   }
 }

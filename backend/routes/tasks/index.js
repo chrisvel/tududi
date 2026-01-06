@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
+// Import sub-routers for task-related routes
+const attachmentsRouter = require('./attachments');
+const eventsRouter = require('./events');
+
 const {
     Task,
     TaskEvent,
@@ -29,6 +33,7 @@ const {
     getSafeTimezone,
     getTodayBoundsInUTC,
 } = require('../../utils/timezone-utils');
+const { isValidUid } = require('../../utils/slug-utils');
 
 const {
     validateProjectAccess,
@@ -452,7 +457,6 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
             tags,
             Tags,
             subtasks,
-            today,
             recurrence_type,
             recurrence_interval,
             recurrence_end_date,
@@ -532,15 +536,6 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
             validateDeferUntilAndDueDate(finalDeferUntil, finalDueDate);
         } catch (error) {
             return res.status(400).json({ error: error.message });
-        }
-
-        if (
-            today !== undefined &&
-            task.today === true &&
-            today === false &&
-            task.status === Task.STATUS.IN_PROGRESS
-        ) {
-            taskAttributes.status = Task.STATUS.NOT_STARTED;
         }
 
         await handleCompletionStatus(taskAttributes, status, task);
@@ -724,22 +719,6 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
             req.currentUser.id
         );
 
-        if (today !== undefined && today !== oldValues.today) {
-            try {
-                await logEvent({
-                    taskId: task.id,
-                    userId: req.currentUser.id,
-                    eventType: 'today_changed',
-                    fieldName: 'today',
-                    oldValue: oldValues.today,
-                    newValue: today,
-                    metadata: { source: 'web', action: 'update_today' },
-                });
-            } catch (eventError) {
-                logError('Error logging today change event:', eventError);
-            }
-        }
-
         const taskWithAssociations = await taskRepository.findById(task.id, {
             include: TASK_INCLUDES,
         });
@@ -832,10 +811,19 @@ router.delete('/task/:uid', requireTaskWriteAccess, async (req, res) => {
     }
 });
 
-router.get('/task/:id/subtasks', async (req, res) => {
+router.get('/task/:uid/subtasks', async (req, res) => {
     try {
+        if (!isValidUid(req.params.uid)) {
+            return res.status(400).json({ error: 'Invalid UID' });
+        }
+
+        const task = await taskRepository.findByUid(req.params.uid);
+        if (!task) {
+            return res.json([]);
+        }
+
         const result = await getSubtasks(
-            req.params.id,
+            task.id,
             req.currentUser.id,
             req.currentUser.timezone
         );
@@ -855,17 +843,21 @@ router.get('/task/:id/subtasks', async (req, res) => {
     }
 });
 
-router.get('/task/:id/next-iterations', async (req, res) => {
+router.get('/task/:uid/next-iterations', async (req, res) => {
     try {
-        const taskId = parseInt(req.params.id);
+        if (!isValidUid(req.params.uid)) {
+            return res.status(400).json({ error: 'Invalid UID' });
+        }
 
-        const task = await taskRepository.findByIdAndUser(
-            taskId,
-            req.currentUser.id
-        );
+        const task = await taskRepository.findByUid(req.params.uid);
 
         if (!task) {
             return res.status(404).json({ error: 'Task not found' });
+        }
+
+        // Verify user owns this task
+        if (task.user_id !== req.currentUser.id) {
+            return res.status(403).json({ error: 'Access denied' });
         }
 
         if (!task.recurrence_type || task.recurrence_type === 'none') {
@@ -884,5 +876,9 @@ router.get('/task/:id/next-iterations', async (req, res) => {
         res.status(500).json({ error: 'Failed to get next iterations' });
     }
 });
+
+// Mount sub-routers for task-related routes
+router.use(attachmentsRouter);
+router.use(eventsRouter);
 
 module.exports = router;

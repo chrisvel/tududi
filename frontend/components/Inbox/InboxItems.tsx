@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import { Note } from '../../entities/Note';
@@ -15,7 +15,6 @@ import { useToast } from '../Shared/ToastContext';
 import { useTranslation } from 'react-i18next';
 import { InboxIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
 import LoadingScreen from '../Shared/LoadingScreen';
-import TaskModal from '../Task/TaskModal';
 import ProjectModal from '../Project/ProjectModal';
 import NoteModal from '../Note/NoteModal';
 import QuickCaptureInput from './QuickCaptureInput';
@@ -31,6 +30,7 @@ const InboxItems: React.FC = () => {
     const { t } = useTranslation();
     const { showSuccessToast, showErrorToast } = useToast();
     const [searchParams, setSearchParams] = useSearchParams();
+    const navigate = useNavigate();
 
     const [hasInitialized, setHasInitialized] = useState(false);
 
@@ -50,28 +50,16 @@ const InboxItems: React.FC = () => {
 
     const [projects, setProjects] = useState<Project[]>([]);
 
-    const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
     const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
     const [isInfoExpanded, setIsInfoExpanded] = useState(false);
 
-    const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
     const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
     const [noteToEdit, setNoteToEdit] = useState<Note | null>(null);
 
     const [currentConversionItemUid, setCurrentConversionItemUid] = useState<
         string | null
     >(null);
-
-    const defaultTask = useMemo(
-        () => ({
-            name: '',
-            status: 'not_started' as const,
-            priority: null,
-            completed_at: null,
-        }),
-        []
-    );
 
     useEffect(() => {
         const urlPageSize = searchParams.get('loaded');
@@ -224,28 +212,64 @@ const InboxItems: React.FC = () => {
         }
     };
 
-    const handleOpenTaskModal = async (task: Task, inboxItemUid?: string) => {
+    const createTaskAndHandleConversion = async (
+        taskData: Task,
+        options: { inboxItemUid?: string; navigateAfterCreate?: boolean } = {}
+    ) => {
         try {
-            try {
-                const projectData = await fetchProjects();
-                setProjects(Array.isArray(projectData) ? projectData : []);
-            } catch (error) {
-                console.error('Failed to load projects:', error);
-                showErrorToast(
-                    t('project.loadError', 'Failed to load projects')
-                );
-                setProjects([]);
+            const createdTask = await createTask(taskData);
+            const taskLink = (
+                <span>
+                    {t('task.created', 'Task')}{' '}
+                    <a
+                        href={`/task/${createdTask.uid}`}
+                        className="text-green-200 underline hover:text-green-100"
+                    >
+                        {createdTask.name}
+                    </a>{' '}
+                    {t('task.createdSuccessfully', 'created successfully!')}
+                </span>
+            );
+            showSuccessToast(taskLink);
+
+            const inboxUid =
+                options.inboxItemUid ?? currentConversionItemUid ?? undefined;
+
+            if (inboxUid) {
+                await handleProcessItem(inboxUid, false);
+                if (!options.inboxItemUid) {
+                    setCurrentConversionItemUid(null);
+                }
             }
 
-            setTaskToEdit(task);
-
-            if (inboxItemUid) {
-                setCurrentConversionItemUid(inboxItemUid);
+            if (options.navigateAfterCreate && createdTask.uid) {
+                navigate(`/task/${createdTask.uid}`);
             }
 
-            setIsTaskModalOpen(true);
+            return createdTask;
         } catch (error) {
-            console.error('Failed to open task modal:', error);
+            console.error('Failed to create task:', error);
+            showErrorToast(t('task.createError'));
+            throw error;
+        } finally {
+            if (options.inboxItemUid) {
+                setCurrentConversionItemUid(null);
+            }
+        }
+    };
+
+    const handleOpenTaskModal = async (task: Task, inboxItemUid?: string) => {
+        if (inboxItemUid) {
+            setCurrentConversionItemUid(inboxItemUid);
+        }
+
+        try {
+            await createTaskAndHandleConversion(task, {
+                inboxItemUid,
+                navigateAfterCreate: true,
+            });
+        } catch {
+            // Errors are already reported via toast notifications
         }
     };
 
@@ -297,32 +321,7 @@ const InboxItems: React.FC = () => {
     };
 
     const handleSaveTask = async (task: Task) => {
-        try {
-            const createdTask = await createTask(task);
-            const taskLink = (
-                <span>
-                    {t('task.created', 'Task')}{' '}
-                    <a
-                        href={`/task/${createdTask.uid}`}
-                        className="text-green-200 underline hover:text-green-100"
-                    >
-                        {createdTask.name}
-                    </a>{' '}
-                    {t('task.createdSuccessfully', 'created successfully!')}
-                </span>
-            );
-            showSuccessToast(taskLink);
-
-            if (currentConversionItemUid !== null) {
-                await handleProcessItem(currentConversionItemUid, false);
-                setCurrentConversionItemUid(null);
-            }
-
-            setIsTaskModalOpen(false);
-        } catch (error) {
-            console.error('Failed to create task:', error);
-            showErrorToast(t('task.createError'));
-        }
+        await createTaskAndHandleConversion(task);
     };
 
     const handleSaveProject = async (project: Project) => {
@@ -375,7 +374,7 @@ const InboxItems: React.FC = () => {
 
     const handleCreateProject = async (name: string): Promise<Project> => {
         try {
-            const project = await createProject({ name, state: 'planned' });
+            const project = await createProject({ name, status: 'planned' });
             showSuccessToast(t('project.createSuccess'));
             return project;
         } catch (error) {
@@ -535,31 +534,6 @@ const InboxItems: React.FC = () => {
                         )}
                     </div>
                 )}
-
-                {(() => {
-                    try {
-                        return (
-                            <TaskModal
-                                isOpen={isTaskModalOpen}
-                                onClose={() => {
-                                    setIsTaskModalOpen(false);
-                                    setTaskToEdit(null);
-                                }}
-                                task={taskToEdit || defaultTask}
-                                onSave={handleSaveTask}
-                                onDelete={async () => {}}
-                                projects={
-                                    Array.isArray(projects) ? projects : []
-                                }
-                                onCreateProject={handleCreateProject}
-                                showToast={false}
-                            />
-                        );
-                    } catch (error) {
-                        console.error('TaskModal rendering error:', error);
-                        return null;
-                    }
-                })()}
 
                 {(() => {
                     return (

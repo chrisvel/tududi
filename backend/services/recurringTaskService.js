@@ -52,7 +52,7 @@ const calculateNextDueDate = (task, fromDate) => {
 
 const calculateDailyRecurrence = (fromDate, interval) => {
     const nextDate = new Date(fromDate);
-    nextDate.setDate(nextDate.getDate() + interval);
+    nextDate.setUTCDate(nextDate.getUTCDate() + interval);
     return nextDate;
 };
 
@@ -60,22 +60,22 @@ const calculateWeeklyRecurrence = (fromDate, interval, weekday) => {
     const nextDate = new Date(fromDate);
 
     if (weekday !== null && weekday !== undefined) {
-        const currentWeekday = nextDate.getDay();
+        const currentWeekday = nextDate.getUTCDay();
         const daysUntilTarget = (weekday - currentWeekday + 7) % 7;
 
         if (
             daysUntilTarget === 0 &&
             nextDate.getTime() === fromDate.getTime()
         ) {
-            nextDate.setDate(nextDate.getDate() + interval * 7);
+            nextDate.setUTCDate(nextDate.getUTCDate() + interval * 7);
         } else {
-            nextDate.setDate(nextDate.getDate() + daysUntilTarget);
+            nextDate.setUTCDate(nextDate.getUTCDate() + daysUntilTarget);
             if (nextDate <= fromDate) {
-                nextDate.setDate(nextDate.getDate() + interval * 7);
+                nextDate.setUTCDate(nextDate.getUTCDate() + interval * 7);
             }
         }
     } else {
-        nextDate.setDate(nextDate.getDate() + interval * 7);
+        nextDate.setUTCDate(nextDate.getUTCDate() + interval * 7);
     }
 
     return nextDate;
@@ -145,12 +145,29 @@ const calculateMonthlyWeekdayRecurrence = (
 };
 
 const calculateMonthlyLastDayRecurrence = (fromDate, interval) => {
-    const nextDate = new Date(fromDate);
-    nextDate.setUTCMonth(nextDate.getUTCMonth() + interval);
+    // Calculate target year and month directly to avoid date overflow
+    // (e.g., Jan 31 + 1 month via setUTCMonth would overflow to March)
+    const currentMonth = fromDate.getUTCMonth();
+    const currentYear = fromDate.getUTCFullYear();
 
-    nextDate.setUTCMonth(nextDate.getUTCMonth() + 1, 0);
+    const totalMonths = currentMonth + interval;
+    const targetYear = currentYear + Math.floor(totalMonths / 12);
+    const targetMonth = totalMonths % 12;
 
-    return nextDate;
+    // Get last day of target month by creating date at day 0 of following month
+    const lastDayOfMonth = new Date(
+        Date.UTC(
+            targetYear,
+            targetMonth + 1, // next month
+            0, // day 0 = last day of previous month
+            fromDate.getUTCHours(),
+            fromDate.getUTCMinutes(),
+            fromDate.getUTCSeconds(),
+            fromDate.getUTCMilliseconds()
+        )
+    );
+
+    return lastDayOfMonth;
 };
 
 const getFirstWeekdayOfMonth = (year, month, weekday) => {

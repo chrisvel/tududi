@@ -151,7 +151,9 @@
     "open": "Öppna",
     "completed": "Avslutad",
     "noCompletedTasksToday": "Inga slutförda uppgifter idag.",
-    "markAsDone": "Mark as done"
+    "markAsDone": "Mark as done",
+    "notStarted": "Ej påbörjad",
+    "done": "Utförd"
   },
   "timeline": {
     "activityTimeline": "Aktivitetslinje",
@@ -820,7 +822,8 @@
       "active": "Aktiva",
       "inactive": "Inaktiva",
       "all": "Alla",
-      "allAreas": "Alla områden"
+      "allAreas": "Alla områden",
+      "notCompleted": "Ej slutförd"
     },
     "selectState": "Välj status",
     "state": "Projektstatus",
@@ -1342,5 +1345,19 @@
       "title": "Notera:",
       "message": "E-post och push-notifikationer kommer snart. In-app och Telegram-notifikationer är för närvarande tillgängliga."
     }
+  },
+  "projectStatus": {
+    "not_started": "Ej påbörjad",
+    "not_started_desc": "Fångad men ej påbörjad än",
+    "planned": "Planerad",
+    "planned_desc": "Definierad och redo att starta",
+    "in_progress": "Pågående",
+    "in_progress_desc": "Aktivt arbete pågår",
+    "waiting": "Väntar",
+    "waiting_desc": "Väntar på extern input",
+    "done": "Slutförd",
+    "done_desc": "Avslutad och klar",
+    "cancelled": "Avbruten",
+    "cancelled_desc": "Kommer inte att slutföras"
   }
 }

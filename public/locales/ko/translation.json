@@ -151,7 +151,9 @@
     "open": "열기",
     "completed": "완료됨",
     "noCompletedTasksToday": "오늘 완료된 작업이 없습니다.",
-    "markAsDone": "Mark as done"
+    "markAsDone": "Mark as done",
+    "notStarted": "시작되지 않음",
+    "done": "완료됨"
   },
   "timeline": {
     "activityTimeline": "활동 타임라인",
@@ -820,7 +822,8 @@
       "active": "활성",
       "inactive": "비활성",
       "all": "모두",
-      "allAreas": "모든 영역"
+      "allAreas": "모든 영역",
+      "notCompleted": "완료되지 않음"
     },
     "selectState": "상태 선택",
     "state": "프로젝트 상태",
@@ -1342,5 +1345,19 @@
       "title": "참고:",
       "message": "이메일 및 푸시 알림이 곧 제공됩니다. 현재 앱 내 및 텔레그램 알림이 가능합니다."
     }
+  },
+  "projectStatus": {
+    "not_started": "시작되지 않음",
+    "not_started_desc": "포착되었지만 아직 시작되지 않음",
+    "planned": "계획됨",
+    "planned_desc": "범위가 정해지고 시작할 준비가 됨",
+    "in_progress": "진행 중",
+    "in_progress_desc": "활동적인 작업 진행 중",
+    "waiting": "대기 중",
+    "waiting_desc": "외부 입력 대기 중",
+    "done": "완료됨",
+    "done_desc": "끝났고 완료됨",
+    "cancelled": "취소됨",
+    "cancelled_desc": "완료되지 않을 것임"
   }
 }

@@ -28,7 +28,6 @@ function buildTaskAttributes(body, userId, timezone, isUpdate = false) {
         defer_until: processDeferUntilForStorage(body.defer_until, timezone),
         status: parseStatus(body.status),
         note: body.note,
-        today: body.today !== undefined ? body.today : false,
         recurrence_type: recurrenceType,
         recurrence_interval: body.recurrence_interval || null,
         recurrence_end_date: body.recurrence_end_date || null,
@@ -81,7 +80,6 @@ function buildUpdateAttributes(body, task, timezone) {
                 ? parseStatus(body.status)
                 : Task.STATUS.NOT_STARTED,
         note: body.note,
-        today: body.today !== undefined ? body.today : task.today,
         recurrence_type: recurrenceType,
         recurrence_interval:
             body.recurrence_interval !== undefined

@@ -1,18 +1,19 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
     ChevronDownIcon,
-    LightBulbIcon,
     ClipboardDocumentListIcon,
     PlayIcon,
-    ExclamationTriangleIcon,
     CheckCircleIcon,
+    ClockIcon,
+    XCircleIcon,
+    EllipsisHorizontalCircleIcon,
 } from '@heroicons/react/24/outline';
-import { ProjectState } from '../../entities/Project';
+import { ProjectStatus } from '../../entities/Project';
 import { useTranslation } from 'react-i18next';
 
 interface ProjectStateDropdownProps {
-    value: ProjectState;
-    onChange: (value: ProjectState) => void;
+    value: ProjectStatus;
+    onChange: (value: ProjectStatus) => void;
 }
 
 const ProjectStateDropdown: React.FC<ProjectStateDropdownProps> = ({
@@ -23,19 +24,21 @@ const ProjectStateDropdown: React.FC<ProjectStateDropdownProps> = ({
 
     const states = [
         {
-            value: 'idea' as ProjectState,
-            label: t('projects.states.idea', 'Idea'),
+            value: 'not_started' as ProjectStatus,
+            label: t('projectStatus.not_started', 'Not Started'),
             description: t(
-                'projects.states.idea_desc',
-                'captured but not planned yet'
+                'projectStatus.not_started_desc',
+                'captured but not started yet'
             ),
-            icon: <LightBulbIcon className="w-5 h-5 text-yellow-500" />,
+            icon: (
+                <EllipsisHorizontalCircleIcon className="w-5 h-5 text-gray-500" />
+            ),
         },
         {
-            value: 'planned' as ProjectState,
-            label: t('projects.states.planned', 'Planned'),
+            value: 'planned' as ProjectStatus,
+            label: t('projectStatus.planned', 'Planned'),
             description: t(
-                'projects.states.planned_desc',
+                'projectStatus.planned_desc',
                 'scoped and ready to start'
             ),
             icon: (
@@ -43,31 +46,37 @@ const ProjectStateDropdown: React.FC<ProjectStateDropdownProps> = ({
             ),
         },
         {
-            value: 'in_progress' as ProjectState,
-            label: t('projects.states.in_progress', 'In Progress'),
+            value: 'in_progress' as ProjectStatus,
+            label: t('projectStatus.in_progress', 'In Progress'),
             description: t(
-                'projects.states.in_progress_desc',
+                'projectStatus.in_progress_desc',
                 'active work happening'
             ),
             icon: <PlayIcon className="w-5 h-5 text-green-500" />,
         },
         {
-            value: 'blocked' as ProjectState,
-            label: t('projects.states.blocked', 'Blocked'),
+            value: 'waiting' as ProjectStatus,
+            label: t('projectStatus.waiting', 'Waiting'),
             description: t(
-                'projects.states.blocked_desc',
-                'temporarily paused or stuck'
+                'projectStatus.waiting_desc',
+                'waiting on external input'
             ),
-            icon: <ExclamationTriangleIcon className="w-5 h-5 text-red-500" />,
+            icon: <ClockIcon className="w-5 h-5 text-yellow-500" />,
         },
         {
-            value: 'completed' as ProjectState,
-            label: t('projects.states.completed', 'Completed'),
+            value: 'done' as ProjectStatus,
+            label: t('projectStatus.done', 'Completed'),
+            description: t('projectStatus.done_desc', 'finished and done'),
+            icon: <CheckCircleIcon className="w-5 h-5 text-green-600" />,
+        },
+        {
+            value: 'cancelled' as ProjectStatus,
+            label: t('projectStatus.cancelled', 'Cancelled'),
             description: t(
-                'projects.states.completed_desc',
-                'finished and done'
+                'projectStatus.cancelled_desc',
+                'will not be completed'
             ),
-            icon: <CheckCircleIcon className="w-5 h-5 text-gray-500" />,
+            icon: <XCircleIcon className="w-5 h-5 text-red-500" />,
         },
     ];
 
@@ -110,8 +119,8 @@ const ProjectStateDropdown: React.FC<ProjectStateDropdownProps> = ({
         }
     };
 
-    const handleSelect = (state: ProjectState) => {
-        onChange(state);
+    const handleSelect = (status: ProjectStatus) => {
+        onChange(status);
         setIsOpen(false);
     };
 
@@ -182,7 +191,7 @@ const ProjectStateDropdown: React.FC<ProjectStateDropdownProps> = ({
                     {selectedState ? (
                         selectedState.icon
                     ) : (
-                        <LightBulbIcon className="w-5 h-5 text-gray-400" />
+                        <EllipsisHorizontalCircleIcon className="w-5 h-5 text-gray-400" />
                     )}
                     <span>
                         {selectedState

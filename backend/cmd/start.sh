@@ -2,6 +2,10 @@
 # Start script for production and Docker
 set -eu
 
+# Default DB_FILE based on NODE_ENV (matches config/config.js behavior)
+: "${NODE_ENV:=production}"
+: "${DB_FILE:=db/${NODE_ENV}.sqlite3}"
+
 backup_db() {
   db_dir=$(dirname "$DB_FILE")
   today=$(date +"%Y%m%d")

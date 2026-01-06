@@ -83,7 +83,7 @@ async function filterTasksByParams(
         },
         {
             model: Project,
-            attributes: ['id', 'name', 'state', 'uid'],
+            attributes: ['id', 'name', 'status', 'uid'],
             required: false,
         },
         {
@@ -106,16 +106,19 @@ async function filterTasksByParams(
             const safeTimezone = getSafeTimezone(userTimezone);
             const todayBounds = getTodayBoundsInUTC(safeTimezone);
 
-            whereClause.status = {
-                [Op.notIn]: [
-                    Task.STATUS.DONE,
-                    Task.STATUS.ARCHIVED,
-                    'done',
-                    'archived',
-                ],
-            };
+            // Tasks in today view are those with active statuses (in_progress, planned, waiting)
+            const todayPlanStatuses = [
+                Task.STATUS.IN_PROGRESS,
+                Task.STATUS.WAITING,
+                Task.STATUS.PLANNED,
+                'in_progress',
+                'waiting',
+                'planned',
+            ];
+
             whereClause[Op.or] = [
                 {
+                    // Non-recurring tasks with active status
                     [Op.and]: [
                         {
                             [Op.or]: [
@@ -124,18 +127,20 @@ async function filterTasksByParams(
                             ],
                         },
                         { recurring_parent_id: null },
-                        { today: true },
+                        { status: { [Op.in]: todayPlanStatuses } },
                     ],
                 },
                 {
+                    // Recurring parent tasks with active status
                     [Op.and]: [
                         { recurrence_type: { [Op.ne]: 'none' } },
                         { recurrence_type: { [Op.ne]: null } },
                         { recurring_parent_id: null },
-                        { today: true },
+                        { status: { [Op.in]: todayPlanStatuses } },
                     ],
                 },
                 {
+                    // Recurring instances due today
                     [Op.and]: [
                         { recurring_parent_id: { [Op.ne]: null } },
                         {
@@ -159,6 +164,7 @@ async function filterTasksByParams(
                 parent_task_id: null,
                 [Op.or]: [
                     {
+                        // Non-recurring tasks with due dates in the next 7 days
                         [Op.and]: [
                             { recurring_parent_id: null },
                             {
@@ -178,6 +184,27 @@ async function filterTasksByParams(
                         ],
                     },
                     {
+                        // Non-recurring tasks with defer_until dates in the next 7 days
+                        [Op.and]: [
+                            { recurring_parent_id: null },
+                            {
+                                [Op.or]: [
+                                    { recurrence_type: 'none' },
+                                    { recurrence_type: null },
+                                ],
+                            },
+                            {
+                                defer_until: {
+                                    [Op.between]: [
+                                        upcomingRange.start,
+                                        upcomingRange.end,
+                                    ],
+                                },
+                            },
+                        ],
+                    },
+                    {
+                        // All recurring parent tasks
                         [Op.and]: [
                             { recurring_parent_id: null },
                             { recurrence_type: { [Op.ne]: 'none' } },
@@ -299,6 +326,7 @@ async function filterTasksByParams(
             'priority',
             'status',
             'due_date',
+            'completed_at',
         ];
 
         if (!allowedColumns.includes(orderColumn)) {
@@ -368,7 +396,7 @@ function getTaskIncludeConfig() {
         },
         {
             model: Project,
-            attributes: ['id', 'name', 'state', 'uid'],
+            attributes: ['id', 'name', 'status', 'uid'],
             required: false,
         },
         {

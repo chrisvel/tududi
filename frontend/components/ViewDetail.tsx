@@ -270,8 +270,8 @@ const ViewDetail: React.FC = () => {
                 matchedProject = projectLookupMap.byId.get(task.project_id);
             }
 
-            if (!matchedProject && task.project_uid) {
-                matchedProject = projectLookupMap.byUid.get(task.project_uid);
+            if (!matchedProject && task.Project?.uid) {
+                matchedProject = projectLookupMap.byUid.get(task.Project.uid);
             }
 
             if (!matchedProject && typeof task.project_id === 'string') {
@@ -564,27 +564,6 @@ const ViewDetail: React.FC = () => {
             }
         } catch (error) {
             console.error('Error deleting task:', error);
-        }
-    };
-
-    const handleToggleToday = async (taskId: number, task?: Task) => {
-        try {
-            const { toggleTaskToday } = await import('../utils/tasksService');
-            const updatedTask = await toggleTaskToday(taskId, task);
-
-            setTasks((prevTasks) =>
-                prevTasks.map((task) =>
-                    task.id === taskId
-                        ? {
-                              ...task,
-                              today: updatedTask.today,
-                              today_move_count: updatedTask.today_move_count,
-                          }
-                        : task
-                )
-            );
-        } catch (error) {
-            console.error('Error toggling today status:', error);
         }
     };
 
@@ -1159,7 +1138,7 @@ const ViewDetail: React.FC = () => {
                                 onTaskDelete={handleTaskDelete}
                                 projects={projectLookupList}
                                 hideProjectName={false}
-                                onToggleToday={handleToggleToday}
+                                onToggleToday={undefined}
                                 showCompletedTasks={showCompletedTasks}
                                 searchQuery={taskSearchQuery}
                             />
@@ -1173,7 +1152,7 @@ const ViewDetail: React.FC = () => {
                                 onTaskDelete={handleTaskDelete}
                                 projects={projectLookupList}
                                 hideProjectName={false}
-                                onToggleToday={handleToggleToday}
+                                onToggleToday={undefined}
                                 showCompletedTasks={showCompletedTasks}
                             />
                         )}

@@ -17,8 +17,9 @@ import {
     KeyIcon,
     CheckIcon,
     BellIcon,
+    CommandLineIcon,
 } from '@heroicons/react/24/outline';
-import TelegramIcon from '../Icons/TelegramIcon';
+import TelegramIcon from '../Shared/Icons/TelegramIcon';
 import { useToast } from '../Shared/ToastContext';
 import { dispatchTelegramStatusChange } from '../../contexts/TelegramStatusContext';
 import ConfirmDialog from '../Shared/ConfirmDialog';
@@ -43,6 +44,8 @@ import ProductivityTab from './tabs/ProductivityTab';
 import TelegramTab from './tabs/TelegramTab';
 import AiTab from './tabs/AiTab';
 import NotificationsTab from './tabs/NotificationsTab';
+import KeyboardShortcutsTab from './tabs/KeyboardShortcutsTab';
+import { getDefaultConfig } from '../../utils/keyboardShortcutsService';
 import type {
     ProfileSettingsProps,
     Profile,
@@ -85,6 +88,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             'telegram',
             'ai',
             'notifications',
+            'keyboard-shortcuts',
         ];
         return section && validTabs.includes(section) ? section : 'general';
     }, [location.search]);
@@ -117,6 +121,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         next_task_suggestion_enabled: true,
         pomodoro_enabled: true,
         notification_preferences: null,
+        keyboard_shortcuts: null,
         currentPassword: '',
         newPassword: '',
         confirmPassword: '',
@@ -514,6 +519,8 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                             : true,
                     notification_preferences:
                         data.notification_preferences || null,
+                    keyboard_shortcuts:
+                        data.keyboard_shortcuts || getDefaultConfig(),
                 });
 
                 if (data.telegram_bot_token) {
@@ -1122,6 +1129,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             name: t('profile.tabs.ai', 'AI Features'),
             icon: <LightBulbIcon className="w-5 h-5" />,
         },
+        {
+            id: 'keyboard-shortcuts',
+            name: t('profile.tabs.keyboardShortcuts', 'Shortcuts'),
+            icon: <CommandLineIcon className="w-5 h-5" />,
+        },
     ];
 
     return (
@@ -1301,6 +1313,17 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                         setFormData((prev) => ({
                                             ...prev,
                                             [field]: !prev[field],
+                                        }))
+                                    }
+                                />
+
+                                <KeyboardShortcutsTab
+                                    isActive={activeTab === 'keyboard-shortcuts'}
+                                    config={formData.keyboard_shortcuts}
+                                    onChange={(config) =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            keyboard_shortcuts: config,
                                         }))
                                     }
                                 />

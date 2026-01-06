@@ -1,3 +1,5 @@
+import type { KeyboardShortcutsConfig } from '../../utils/keyboardShortcutsService';
+
 export interface ProfileSettingsProps {
     currentUser: { uid: string; email: string };
     isDarkMode?: boolean;
@@ -58,6 +60,7 @@ export interface Profile {
     next_task_suggestion_enabled: boolean;
     pomodoro_enabled: boolean;
     notification_preferences?: NotificationPreferences | null;
+    keyboard_shortcuts?: KeyboardShortcutsConfig | null;
 }
 
 export interface TelegramBotInfo {
