@@ -449,7 +449,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                 setLoading(true);
                 try {
                     const timeoutPromise = new Promise((_, reject) =>
-                        setTimeout(() => reject(new Error('Timeout')), 10000)
+                        setTimeout(() => reject(new Error('Timeout')), 3000)
                     );
 
                     const result = (await Promise.race([
