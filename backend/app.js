@@ -8,8 +8,10 @@ const morgan = require('morgan');
 const session = require('express-session');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const { sequelize } = require('./models');
-const { initializeTelegramPolling } = require('./services/telegramInitializer');
-const taskScheduler = require('./services/taskScheduler');
+const {
+    initializeTelegramPolling,
+} = require('./modules/telegram/telegramInitializer');
+const taskScheduler = require('./modules/tasks/taskScheduler');
 const { setConfig, getConfig } = require('./config/config');
 const config = getConfig();
 const API_VERSION = process.env.API_VERSION || 'v1';
@@ -107,6 +109,30 @@ const {
     authenticatedApiLimiter,
 } = require('./middleware/rateLimiter');
 
+// Error handler for modular architecture
+const errorHandler = require('./shared/middleware/errorHandler');
+
+// Modular routes
+const adminModule = require('./modules/admin');
+const areasModule = require('./modules/areas');
+const authModule = require('./modules/auth');
+const backupModule = require('./modules/backup');
+const featureFlagsModule = require('./modules/feature-flags');
+const habitsModule = require('./modules/habits');
+const inboxModule = require('./modules/inbox');
+const notesModule = require('./modules/notes');
+const notificationsModule = require('./modules/notifications');
+const projectsModule = require('./modules/projects');
+const quotesModule = require('./modules/quotes');
+const searchModule = require('./modules/search');
+const sharesModule = require('./modules/shares');
+const tagsModule = require('./modules/tags');
+const tasksModule = require('./modules/tasks');
+const telegramModule = require('./modules/telegram');
+const urlModule = require('./modules/url');
+const usersModule = require('./modules/users');
+const viewsModule = require('./modules/views');
+
 // Swagger documentation - enabled by default, protected by authentication
 // Mounted on /api-docs to avoid conflicts with API routes
 if (config.swagger.enabled) {
@@ -164,29 +190,28 @@ if (API_VERSION && API_BASE_PATH !== '/api') {
 }
 healthPaths.forEach(registerHealthCheck);
 
-// Routes
 const registerApiRoutes = (basePath) => {
-    app.use(basePath, require('./routes/auth'));
-    app.use(basePath, require('./routes/feature-flags'));
+    app.use(basePath, authModule.routes);
+    app.use(basePath, featureFlagsModule.routes);
 
     app.use(basePath, requireAuth);
-    app.use(basePath, require('./routes/tasks'));
-    app.use(`${basePath}/habits`, require('./routes/habits'));
-    app.use(basePath, require('./routes/projects'));
-    app.use(basePath, require('./routes/admin'));
-    app.use(basePath, require('./routes/shares'));
-    app.use(basePath, require('./routes/areas'));
-    app.use(basePath, require('./routes/notes'));
-    app.use(basePath, require('./routes/tags'));
-    app.use(basePath, require('./routes/users'));
-    app.use(basePath, require('./routes/inbox'));
-    app.use(basePath, require('./routes/url'));
-    app.use(basePath, require('./routes/telegram'));
-    app.use(basePath, require('./routes/quotes'));
-    app.use(`${basePath}/backup`, require('./routes/backup'));
-    app.use(`${basePath}/search`, require('./routes/search'));
-    app.use(`${basePath}/views`, require('./routes/views'));
-    app.use(`${basePath}/notifications`, require('./routes/notifications'));
+    app.use(basePath, tasksModule.routes);
+    app.use(basePath, habitsModule.routes);
+    app.use(basePath, projectsModule.routes);
+    app.use(basePath, adminModule.routes);
+    app.use(basePath, sharesModule.routes);
+    app.use(basePath, areasModule.routes);
+    app.use(basePath, notesModule.routes);
+    app.use(basePath, tagsModule.routes);
+    app.use(basePath, usersModule.routes);
+    app.use(basePath, inboxModule.routes);
+    app.use(basePath, urlModule.routes);
+    app.use(basePath, telegramModule.routes);
+    app.use(basePath, quotesModule.routes);
+    app.use(basePath, backupModule.routes);
+    app.use(basePath, searchModule.routes);
+    app.use(basePath, viewsModule.routes);
+    app.use(basePath, notificationsModule.routes);
 };
 
 // Register routes at both /api and /api/v1 (if versioned) to maintain backwards compatibility
@@ -216,17 +241,8 @@ app.get('*', (req, res) => {
     }
 });
 
-// Error handling fallback.
-// We shouldn't be here normally!
-// Each route should properly handle
-// and log its own errors.
-app.use((err, req, res, next) => {
-    logError(err);
-    res.status(500).json({
-        error: 'Internal Server Error',
-        // message: err.message,
-    });
-});
+// Error handling middleware (handles AppError and Sequelize errors)
+app.use(errorHandler);
 
 // Initialize database and start server
 async function startServer() {
