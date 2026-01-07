@@ -42,9 +42,14 @@ async function updateProjectTags(project, tagsData, userId) {
         return;
     }
 
-    const existingTags = await projectsRepository.findTagsByNames(userId, validTagNames);
+    const existingTags = await projectsRepository.findTagsByNames(
+        userId,
+        validTagNames
+    );
     const existingTagNames = existingTags.map((tag) => tag.name);
-    const newTagNames = validTagNames.filter((name) => !existingTagNames.includes(name));
+    const newTagNames = validTagNames.filter(
+        (name) => !existingTagNames.includes(name)
+    );
 
     const createdTags = await Promise.all(
         newTagNames.map((name) => projectsRepository.createTag(name, userId))
@@ -71,7 +76,15 @@ class ProjectsService {
      * Get all projects for a user with filters.
      */
     async getAll(userId, query) {
-        const { status, state, active, pin_to_sidebar, area_id, area, grouped } = query;
+        const {
+            status,
+            state,
+            active,
+            pin_to_sidebar,
+            area_id,
+            area,
+            grouped,
+        } = query;
         const statusFilter = status || state;
 
         let whereClause = await permissionsService.ownershipOrPermissionWhere(
@@ -88,7 +101,9 @@ class ProjectsService {
         }
 
         if (active === 'true') {
-            whereClause.status = { [Op.in]: ['planned', 'in_progress', 'waiting'] };
+            whereClause.status = {
+                [Op.in]: ['planned', 'in_progress', 'waiting'],
+            };
         } else if (active === 'false') {
             whereClause.status = { [Op.in]: ['not_started', 'done'] };
         }
@@ -104,17 +119,21 @@ class ProjectsService {
             if (uid) {
                 const areaRecord = await projectsRepository.findAreaByUid(uid);
                 if (areaRecord) {
-                    whereClause = { [Op.and]: [whereClause, { area_id: areaRecord.id }] };
+                    whereClause = {
+                        [Op.and]: [whereClause, { area_id: areaRecord.id }],
+                    };
                 }
             }
         } else if (area_id && area_id !== '') {
             whereClause = { [Op.and]: [whereClause, { area_id }] };
         }
 
-        const projects = await projectsRepository.findAllWithFilters(whereClause);
+        const projects =
+            await projectsRepository.findAllWithFilters(whereClause);
 
         const projectUids = projects.map((p) => p.uid).filter(Boolean);
-        const shareCountMap = await projectsRepository.getShareCounts(projectUids);
+        const shareCountMap =
+            await projectsRepository.getShareCounts(projectUids);
 
         const enhancedProjects = projects.map((project) => {
             const taskStatus = calculateTaskStatus(project.Tasks);
@@ -156,7 +175,8 @@ class ProjectsService {
      */
     async getByUid(uid) {
         const validatedUid = validateUid(uid);
-        const project = await projectsRepository.findByUidWithIncludes(validatedUid);
+        const project =
+            await projectsRepository.findByUidWithIncludes(validatedUid);
 
         if (!project) {
             throw new NotFoundError('Project not found');
@@ -302,7 +322,8 @@ class ProjectsService {
         if (name !== undefined) updateData.name = name;
         if (description !== undefined) updateData.description = description;
         if (area_id !== undefined) updateData.area_id = area_id;
-        if (pin_to_sidebar !== undefined) updateData.pin_to_sidebar = pin_to_sidebar;
+        if (pin_to_sidebar !== undefined)
+            updateData.pin_to_sidebar = pin_to_sidebar;
         if (priority !== undefined) updateData.priority = priority;
         if (due_date_at !== undefined) updateData.due_date_at = due_date_at;
         if (image_url !== undefined) updateData.image_url = image_url;
@@ -312,9 +333,8 @@ class ProjectsService {
         await projectsRepository.update(project, updateData);
         await updateProjectTags(project, tagsData, userId);
 
-        const projectWithAssociations = await projectsRepository.findByUidWithTagsAndArea(
-            validatedUid
-        );
+        const projectWithAssociations =
+            await projectsRepository.findByUidWithTagsAndArea(validatedUid);
         const projectJson = projectWithAssociations.toJSON();
 
         return {

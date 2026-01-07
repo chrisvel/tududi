@@ -14,7 +14,10 @@ const habitsController = {
 
     async create(req, res, next) {
         try {
-            const result = await habitsService.create(req.currentUser.id, req.body);
+            const result = await habitsService.create(
+                req.currentUser.id,
+                req.body
+            );
             res.status(201).json(result);
         } catch (error) {
             next(error);
@@ -92,7 +95,10 @@ const habitsController = {
 
     async delete(req, res, next) {
         try {
-            const result = await habitsService.delete(req.currentUser.id, req.params.uid);
+            const result = await habitsService.delete(
+                req.currentUser.id,
+                req.params.uid
+            );
             res.json(result);
         } catch (error) {
             next(error);

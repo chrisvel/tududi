@@ -9,7 +9,9 @@ const urlController = {
             const { url } = req.query;
 
             if (!url) {
-                return res.status(400).json({ error: 'URL parameter is required' });
+                return res
+                    .status(400)
+                    .json({ error: 'URL parameter is required' });
             }
 
             const result = await urlService.getTitle(url);
@@ -25,7 +27,9 @@ const urlController = {
             const { text } = req.body;
 
             if (!text) {
-                return res.status(400).json({ error: 'Text parameter is required' });
+                return res
+                    .status(400)
+                    .json({ error: 'Text parameter is required' });
             }
 
             const result = await urlService.extractFromText(text);

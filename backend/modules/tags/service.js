@@ -25,7 +25,10 @@ class TagsService {
         if (uid) {
             tag = await tagsRepository.findByUid(userId, uid);
         } else if (name) {
-            tag = await tagsRepository.findByName(userId, decodeURIComponent(name));
+            tag = await tagsRepository.findByName(
+                userId,
+                decodeURIComponent(name)
+            );
         }
 
         if (!tag) {
@@ -64,7 +67,10 @@ class TagsService {
      */
     async update(userId, identifier, newName) {
         const decodedIdentifier = decodeURIComponent(identifier);
-        const tag = await tagsRepository.findByIdentifier(userId, decodedIdentifier);
+        const tag = await tagsRepository.findByIdentifier(
+            userId,
+            decodedIdentifier
+        );
 
         if (!tag) {
             throw new NotFoundError('Tag not found');
@@ -99,7 +105,10 @@ class TagsService {
      */
     async delete(userId, identifier) {
         const decodedIdentifier = decodeURIComponent(identifier);
-        const tag = await tagsRepository.findByIdentifier(userId, decodedIdentifier);
+        const tag = await tagsRepository.findByIdentifier(
+            userId,
+            decodedIdentifier
+        );
 
         if (!tag) {
             throw new NotFoundError('Tag not found');

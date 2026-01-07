@@ -9,7 +9,9 @@ const sharesController = {
         try {
             const userId = getAuthenticatedUserId(req);
             if (!userId) {
-                return res.status(401).json({ error: 'Authentication required' });
+                return res
+                    .status(401)
+                    .json({ error: 'Authentication required' });
             }
 
             await sharesService.createShare(userId, req.body);
@@ -33,7 +35,9 @@ const sharesController = {
         try {
             const userId = getAuthenticatedUserId(req);
             if (!userId) {
-                return res.status(401).json({ error: 'Authentication required' });
+                return res
+                    .status(401)
+                    .json({ error: 'Authentication required' });
             }
 
             await sharesService.deleteShare(userId, req.body);
@@ -54,11 +58,17 @@ const sharesController = {
         try {
             const userId = getAuthenticatedUserId(req);
             if (!userId) {
-                return res.status(401).json({ error: 'Authentication required' });
+                return res
+                    .status(401)
+                    .json({ error: 'Authentication required' });
             }
 
             const { resource_type, resource_uid } = req.query;
-            const result = await sharesService.getShares(userId, resource_type, resource_uid);
+            const result = await sharesService.getShares(
+                userId,
+                resource_type,
+                resource_uid
+            );
             res.json(result);
         } catch (error) {
             if (error.statusCode === 400) {

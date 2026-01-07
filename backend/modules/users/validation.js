@@ -31,7 +31,10 @@ function validateFirstDayOfWeek(value) {
  */
 function validatePassword(password, field = 'password') {
     if (password && password.length < 6) {
-        throw new ValidationError('Password must be at least 6 characters', field);
+        throw new ValidationError(
+            'Password must be at least 6 characters',
+            field
+        );
     }
 }
 

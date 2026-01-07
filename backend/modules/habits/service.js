@@ -36,7 +36,11 @@ class HabitsService {
             ? new Date(startDate)
             : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
         const end = endDate ? new Date(endDate) : new Date();
-        const completions = await habitsRepository.findCompletions(habit.id, start, end);
+        const completions = await habitsRepository.findCompletions(
+            habit.id,
+            start,
+            end
+        );
         return { completions };
     }
 
@@ -45,7 +49,10 @@ class HabitsService {
         if (!habit || !habit.habit_mode) {
             throw new NotFoundError('Habit not found');
         }
-        const completion = await habitsRepository.findCompletionById(completionId, habit.id);
+        const completion = await habitsRepository.findCompletionById(
+            completionId,
+            habit.id
+        );
         if (!completion) {
             throw new NotFoundError('Completion not found');
         }

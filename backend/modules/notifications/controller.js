@@ -36,7 +36,10 @@ const notificationsController = {
     async markAsRead(req, res, next) {
         try {
             const userId = requireUserId(req);
-            const result = await notificationsService.markAsRead(userId, req.params.id);
+            const result = await notificationsService.markAsRead(
+                userId,
+                req.params.id
+            );
             res.json(result);
         } catch (error) {
             next(error);
@@ -46,7 +49,10 @@ const notificationsController = {
     async markAsUnread(req, res, next) {
         try {
             const userId = requireUserId(req);
-            const result = await notificationsService.markAsUnread(userId, req.params.id);
+            const result = await notificationsService.markAsUnread(
+                userId,
+                req.params.id
+            );
             res.json(result);
         } catch (error) {
             next(error);
@@ -66,7 +72,10 @@ const notificationsController = {
     async dismiss(req, res, next) {
         try {
             const userId = requireUserId(req);
-            const result = await notificationsService.dismiss(userId, req.params.id);
+            const result = await notificationsService.dismiss(
+                userId,
+                req.params.id
+            );
             res.json(result);
         } catch (error) {
             next(error);

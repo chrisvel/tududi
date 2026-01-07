@@ -4,7 +4,11 @@ const { User } = require('../../models');
 const { logError } = require('../../services/logService');
 const telegramPoller = require('./telegramPoller');
 const { getBotInfo } = require('./telegramApi');
-const { NotFoundError, ValidationError, UnauthorizedError } = require('../../shared/errors');
+const {
+    NotFoundError,
+    ValidationError,
+    UnauthorizedError,
+} = require('../../shared/errors');
 
 async function sendWelcomeMessage(token, chatId) {
     return new Promise((resolve) => {
@@ -128,7 +132,9 @@ class TelegramService {
         } else {
             botInfo = await getBotInfo(token);
             if (!botInfo) {
-                throw new ValidationError('Invalid bot token or bot not accessible.');
+                throw new ValidationError(
+                    'Invalid bot token or bot not accessible.'
+                );
             }
         }
 

@@ -3,7 +3,11 @@
 const _ = require('lodash');
 const notesRepository = require('./repository');
 const { validateUid } = require('./validation');
-const { NotFoundError, ValidationError, ForbiddenError } = require('../../shared/errors');
+const {
+    NotFoundError,
+    ValidationError,
+    ForbiddenError,
+} = require('../../shared/errors');
 const { Tag, Project } = require('../../models');
 const { validateTagName } = require('../tags/tagsService');
 const permissionsService = require('../../services/permissionsService');
@@ -101,9 +105,14 @@ async function resolveProjectWithAccess(userId, projectUid, projectId) {
         throw new NotFoundError('Note project not found');
     }
 
-    const projectAccess = await permissionsService.getAccess(userId, 'project', project.uid);
+    const projectAccess = await permissionsService.getAccess(
+        userId,
+        'project',
+        project.uid
+    );
     const isOwner = project.user_id === userId;
-    const canWrite = isOwner || projectAccess === 'rw' || projectAccess === 'admin';
+    const canWrite =
+        isOwner || projectAccess === 'rw' || projectAccess === 'admin';
 
     if (!canWrite) {
         throw new ForbiddenError('Forbidden');
@@ -120,7 +129,10 @@ class NotesService {
         const { orderBy = 'title:asc', tagFilter } = options;
         const [orderColumn, orderDirection] = orderBy.split(':');
 
-        const whereClause = await permissionsService.ownershipOrPermissionWhere('note', userId);
+        const whereClause = await permissionsService.ownershipOrPermissionWhere(
+            'note',
+            userId
+        );
 
         const notes = await notesRepository.findAllWithIncludes(whereClause, {
             orderColumn,
@@ -157,7 +169,10 @@ class NotesService {
     /**
      * Create a new note.
      */
-    async create(userId, { title, content, project_uid, project_id, tags, color }) {
+    async create(
+        userId,
+        { title, content, project_uid, project_id, tags, color }
+    ) {
         const noteAttributes = { title, content };
 
         if (color !== undefined) {
@@ -165,19 +180,28 @@ class NotesService {
         }
 
         // Handle project assignment with permission check
-        const project = await resolveProjectWithAccess(userId, project_uid, project_id);
+        const project = await resolveProjectWithAccess(
+            userId,
+            project_uid,
+            project_id
+        );
         if (project) {
             noteAttributes.project_id = project.id;
         }
 
-        const note = await notesRepository.createForUser(userId, noteAttributes);
+        const note = await notesRepository.createForUser(
+            userId,
+            noteAttributes
+        );
 
         // Handle tags
         const tagNames = parseTagsFromBody(tags);
         await updateNoteTags(note, tagNames, userId);
 
         // Reload with associations
-        const noteWithAssociations = await notesRepository.findByIdWithIncludes(note.id);
+        const noteWithAssociations = await notesRepository.findByIdWithIncludes(
+            note.id
+        );
         const serialized = serializeNote(noteWithAssociations);
 
         return {
@@ -189,7 +213,11 @@ class NotesService {
     /**
      * Update a note.
      */
-    async update(userId, uid, { title, content, project_uid, project_id, tags, color }) {
+    async update(
+        userId,
+        uid,
+        { title, content, project_uid, project_id, tags, color }
+    ) {
         const validatedUid = validateUid(uid);
         const note = await notesRepository.findOne({ uid: validatedUid });
 
@@ -203,15 +231,21 @@ class NotesService {
         if (color !== undefined) updateData.color = color;
 
         // Handle project assignment
-        const projectIdentifier = project_uid !== undefined ? project_uid : project_id;
+        const projectIdentifier =
+            project_uid !== undefined ? project_uid : project_id;
 
         if (projectIdentifier !== undefined) {
             if (projectIdentifier && projectIdentifier.toString().trim()) {
                 let project;
 
-                if (project_uid !== undefined && typeof project_uid === 'string') {
+                if (
+                    project_uid !== undefined &&
+                    typeof project_uid === 'string'
+                ) {
                     const projectUidValue = project_uid.trim();
-                    project = await Project.findOne({ where: { uid: projectUidValue } });
+                    project = await Project.findOne({
+                        where: { uid: projectUidValue },
+                    });
                 } else if (project_id !== undefined) {
                     project = await Project.findByPk(project_id);
                 }
@@ -226,7 +260,10 @@ class NotesService {
                     project.uid
                 );
                 const isOwner = project.user_id === userId;
-                const canWrite = isOwner || projectAccess === 'rw' || projectAccess === 'admin';
+                const canWrite =
+                    isOwner ||
+                    projectAccess === 'rw' ||
+                    projectAccess === 'admin';
 
                 if (!canWrite) {
                     throw new ForbiddenError('Forbidden');
@@ -247,7 +284,8 @@ class NotesService {
         }
 
         // Reload with associations
-        const noteWithAssociations = await notesRepository.findByIdWithDetailedIncludes(note.id);
+        const noteWithAssociations =
+            await notesRepository.findByIdWithDetailedIncludes(note.id);
         return serializeNote(noteWithAssociations);
     }
 

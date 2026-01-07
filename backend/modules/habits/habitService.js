@@ -257,7 +257,9 @@ class HabitService {
         } else {
             // Strict: check if today matches recurrence pattern
             // Leverage existing recurringTaskService logic
-            const { calculateNextDueDate } = require('../tasks/recurringTaskService');
+            const {
+                calculateNextDueDate,
+            } = require('../tasks/recurringTaskService');
             const nextDue = calculateNextDueDate(
                 task,
                 task.habit_last_completion_at || task.created_at

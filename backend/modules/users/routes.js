@@ -29,7 +29,9 @@ const storage = multer.diskStorage({
 
 const fileFilter = (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|gif|webp/;
-    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const extname = allowedTypes.test(
+        path.extname(file.originalname).toLowerCase()
+    );
     const mimetype = allowedTypes.test(file.mimetype);
 
     if (mimetype && extname) {
@@ -57,15 +59,27 @@ router.get('/profile', usersController.getProfile);
 router.patch('/profile', usersController.updateProfile);
 
 // Avatar routes
-router.post('/profile/avatar', upload.single('avatar'), usersController.uploadAvatar);
+router.post(
+    '/profile/avatar',
+    upload.single('avatar'),
+    usersController.uploadAvatar
+);
 router.delete('/profile/avatar', usersController.deleteAvatar);
 
 // Password change
 router.post('/profile/change-password', usersController.changePassword);
 
 // API keys (with rate limiting)
-router.get('/profile/api-keys', apiKeyManagementLimiter, usersController.listApiKeys);
-router.post('/profile/api-keys', apiKeyManagementLimiter, usersController.createApiKey);
+router.get(
+    '/profile/api-keys',
+    apiKeyManagementLimiter,
+    usersController.listApiKeys
+);
+router.post(
+    '/profile/api-keys',
+    apiKeyManagementLimiter,
+    usersController.createApiKey
+);
 router.post(
     '/profile/api-keys/:id/revoke',
     apiKeyManagementLimiter,
@@ -79,9 +93,18 @@ router.delete(
 
 // Task summary routes
 router.post('/profile/task-summary/toggle', usersController.toggleTaskSummary);
-router.post('/profile/task-summary/frequency', usersController.updateTaskSummaryFrequency);
-router.post('/profile/task-summary/send-now', usersController.sendTaskSummaryNow);
-router.get('/profile/task-summary/status', usersController.getTaskSummaryStatus);
+router.post(
+    '/profile/task-summary/frequency',
+    usersController.updateTaskSummaryFrequency
+);
+router.post(
+    '/profile/task-summary/send-now',
+    usersController.sendTaskSummaryNow
+);
+router.get(
+    '/profile/task-summary/status',
+    usersController.getTaskSummaryStatus
+);
 
 // Settings routes
 router.put('/profile/today-settings', usersController.updateTodaySettings);

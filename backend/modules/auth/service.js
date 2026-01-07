@@ -11,7 +11,12 @@ const {
     verifyUserEmail,
 } = require('./registrationService');
 const packageJson = require('../../../package.json');
-const { ValidationError, NotFoundError, UnauthorizedError, ForbiddenError } = require('../../shared/errors');
+const {
+    ValidationError,
+    NotFoundError,
+    UnauthorizedError,
+    ForbiddenError,
+} = require('../../shared/errors');
 
 class AuthService {
     getVersion() {
@@ -53,13 +58,16 @@ class AuthService {
                     new Error(emailResult.reason),
                     'Email sending failed during registration, rolling back user creation'
                 );
-                throw new Error('Failed to send verification email. Please try again later.');
+                throw new Error(
+                    'Failed to send verification email. Please try again later.'
+                );
             }
 
             await transaction.commit();
 
             return {
-                message: 'Registration successful. Please check your email to verify your account.',
+                message:
+                    'Registration successful. Please check your email to verify your account.',
             };
         } catch (error) {
             if (!transaction.finished) {
@@ -99,7 +107,9 @@ class AuthService {
             }
 
             logError('Email verification error:', error);
-            return { redirect: `${config.frontendUrl}/login?verified=false&error=${errorParam}` };
+            return {
+                redirect: `${config.frontendUrl}/login?verified=false&error=${errorParam}`,
+            };
         }
     }
 
@@ -157,7 +167,9 @@ class AuthService {
         }
 
         if (!user.email_verified) {
-            const error = new ForbiddenError('Please verify your email address before logging in.');
+            const error = new ForbiddenError(
+                'Please verify your email address before logging in.'
+            );
             error.email_not_verified = true;
             throw error;
         }

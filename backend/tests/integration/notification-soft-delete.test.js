@@ -149,7 +149,9 @@ describe('Notification Soft Delete', () => {
             });
 
             // Run the due task service
-            const { checkDueTasks } = require('../../modules/tasks/dueTaskService');
+            const {
+                checkDueTasks,
+            } = require('../../modules/tasks/dueTaskService');
             let result = await checkDueTasks();
 
             // Should create 1 notification

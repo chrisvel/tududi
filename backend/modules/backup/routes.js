@@ -46,7 +46,11 @@ router.use('/backup', checkBackupsEnabled);
 
 router.post('/backup/export', backupController.export);
 router.post('/backup/import', upload.single('backup'), backupController.import);
-router.post('/backup/validate', upload.single('backup'), backupController.validate);
+router.post(
+    '/backup/validate',
+    upload.single('backup'),
+    backupController.validate
+);
 router.get('/backup/list', backupController.list);
 router.get('/backup/:uid/download', backupController.download);
 router.post('/backup/:uid/restore', backupController.restore);

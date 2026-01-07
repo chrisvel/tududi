@@ -102,7 +102,9 @@ const projectsController = {
     async uploadImage(req, res, next) {
         try {
             if (!req.file) {
-                return res.status(400).json({ error: 'No image file provided' });
+                return res
+                    .status(400)
+                    .json({ error: 'No image file provided' });
             }
             const imageUrl = `/api/uploads/projects/${req.file.filename}`;
             res.json({ imageUrl });

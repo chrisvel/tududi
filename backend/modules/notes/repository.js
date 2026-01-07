@@ -3,7 +3,14 @@
 const BaseRepository = require('../../shared/database/BaseRepository');
 const { Note, Tag, Project } = require('../../models');
 
-const PUBLIC_ATTRIBUTES = ['uid', 'title', 'content', 'color', 'createdAt', 'updatedAt'];
+const PUBLIC_ATTRIBUTES = [
+    'uid',
+    'title',
+    'content',
+    'color',
+    'createdAt',
+    'updatedAt',
+];
 
 const TAG_INCLUDE = {
     model: Tag,
@@ -38,7 +45,11 @@ class NotesRepository extends BaseRepository {
      * Find all notes by where clause with includes.
      */
     async findAllWithIncludes(whereClause, options = {}) {
-        const { orderColumn = 'title', orderDirection = 'ASC', tagFilter } = options;
+        const {
+            orderColumn = 'title',
+            orderDirection = 'ASC',
+            tagFilter,
+        } = options;
 
         const includeClause = [
             tagFilter

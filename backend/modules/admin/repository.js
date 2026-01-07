@@ -124,7 +124,10 @@ class AdminRepository {
             }
 
             // Delete all associated data
-            await TaskEvent.destroy({ where: { user_id: userId }, transaction });
+            await TaskEvent.destroy({
+                where: { user_id: userId },
+                transaction,
+            });
 
             const userTasks = await Task.findAll({
                 where: { user_id: userId },
@@ -144,17 +147,32 @@ class AdminRepository {
             await Project.destroy({ where: { user_id: userId }, transaction });
             await Area.destroy({ where: { user_id: userId }, transaction });
             await Tag.destroy({ where: { user_id: userId }, transaction });
-            await InboxItem.destroy({ where: { user_id: userId }, transaction });
+            await InboxItem.destroy({
+                where: { user_id: userId },
+                transaction,
+            });
             await View.destroy({ where: { user_id: userId }, transaction });
-            await Notification.destroy({ where: { user_id: userId }, transaction });
+            await Notification.destroy({
+                where: { user_id: userId },
+                transaction,
+            });
             await ApiToken.destroy({ where: { user_id: userId }, transaction });
-            await Permission.destroy({ where: { user_id: userId }, transaction });
+            await Permission.destroy({
+                where: { user_id: userId },
+                transaction,
+            });
             await Permission.destroy({
                 where: { granted_by_user_id: userId },
                 transaction,
             });
-            await Action.destroy({ where: { actor_user_id: userId }, transaction });
-            await Action.destroy({ where: { target_user_id: userId }, transaction });
+            await Action.destroy({
+                where: { actor_user_id: userId },
+                transaction,
+            });
+            await Action.destroy({
+                where: { target_user_id: userId },
+                transaction,
+            });
             await Role.destroy({ where: { user_id: userId }, transaction });
             await user.destroy({ transaction });
 

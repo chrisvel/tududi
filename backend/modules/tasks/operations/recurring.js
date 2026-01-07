@@ -1,8 +1,6 @@
 const { Task } = require('../../../models');
 const taskRepository = require('../repository');
-const {
-    calculateNextDueDate,
-} = require('../recurringTaskService');
+const { calculateNextDueDate } = require('../recurringTaskService');
 const {
     processDueDateForResponse,
     getSafeTimezone,

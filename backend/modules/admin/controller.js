@@ -20,7 +20,10 @@ const adminController = {
     async setAdminRole(req, res, next) {
         try {
             const requesterId = getRequesterId(req);
-            const result = await adminService.setAdminRole(requesterId, req.body);
+            const result = await adminService.setAdminRole(
+                requesterId,
+                req.body
+            );
             res.json(result);
         } catch (error) {
             next(error);
@@ -94,7 +97,10 @@ const adminController = {
     async toggleRegistration(req, res, next) {
         try {
             const requesterId = getRequesterId(req);
-            const result = await adminService.toggleRegistration(requesterId, req.body);
+            const result = await adminService.toggleRegistration(
+                requesterId,
+                req.body
+            );
             res.json(result);
         } catch (error) {
             next(error);

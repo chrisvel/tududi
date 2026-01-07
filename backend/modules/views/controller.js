@@ -33,7 +33,10 @@ const viewsController = {
 
     async create(req, res, next) {
         try {
-            const view = await viewsService.create(req.currentUser.id, req.body);
+            const view = await viewsService.create(
+                req.currentUser.id,
+                req.body
+            );
             res.status(201).json(view);
         } catch (error) {
             next(error);
@@ -43,7 +46,11 @@ const viewsController = {
     async update(req, res, next) {
         try {
             const uid = decodeURIComponent(req.params.identifier);
-            const view = await viewsService.update(req.currentUser.id, uid, req.body);
+            const view = await viewsService.update(
+                req.currentUser.id,
+                uid,
+                req.body
+            );
             res.json(view);
         } catch (error) {
             next(error);

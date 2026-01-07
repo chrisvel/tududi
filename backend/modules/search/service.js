@@ -48,8 +48,15 @@ class SearchService {
     /**
      * Build task search conditions.
      */
-    buildTaskConditions(userId, params, dueDateCondition, deferDateCondition, nowDate) {
-        const { searchQuery, priority, recurring, extras, excludeSubtasks } = params;
+    buildTaskConditions(
+        userId,
+        params,
+        dueDateCondition,
+        deferDateCondition,
+        nowDate
+    ) {
+        const { searchQuery, priority, recurring, extras, excludeSubtasks } =
+            params;
 
         const conditions = { user_id: userId };
         const extraConditions = [];
@@ -62,12 +69,18 @@ class SearchService {
         if (searchQuery) {
             const lowerQuery = searchQuery.toLowerCase();
             conditions[Op.or] = [
-                sequelize.where(sequelize.fn('LOWER', sequelize.col('Task.name')), {
-                    [Op.like]: `%${lowerQuery}%`,
-                }),
-                sequelize.where(sequelize.fn('LOWER', sequelize.col('Task.note')), {
-                    [Op.like]: `%${lowerQuery}%`,
-                }),
+                sequelize.where(
+                    sequelize.fn('LOWER', sequelize.col('Task.name')),
+                    {
+                        [Op.like]: `%${lowerQuery}%`,
+                    }
+                ),
+                sequelize.where(
+                    sequelize.fn('LOWER', sequelize.col('Task.note')),
+                    {
+                        [Op.like]: `%${lowerQuery}%`,
+                    }
+                ),
             ];
         }
 
@@ -93,7 +106,10 @@ class SearchService {
                     conditions.recurring_parent_id = null;
                     break;
                 case 'non_recurring':
-                    conditions[Op.or] = [{ recurrence_type: 'none' }, { recurrence_type: null }];
+                    conditions[Op.or] = [
+                        { recurrence_type: 'none' },
+                        { recurrence_type: null },
+                    ];
                     conditions.recurring_parent_id = null;
                     break;
                 case 'instances':
@@ -119,7 +135,10 @@ class SearchService {
         if (extras.has('has_content')) {
             extraConditions.push(
                 sequelize.where(
-                    sequelize.fn('LENGTH', sequelize.fn('TRIM', sequelize.col('Task.note'))),
+                    sequelize.fn(
+                        'LENGTH',
+                        sequelize.fn('TRIM', sequelize.col('Task.note'))
+                    ),
                     { [Op.gt]: 0 }
                 )
             );
@@ -178,7 +197,15 @@ class SearchService {
     /**
      * Search tasks.
      */
-    async searchTasks(userId, params, tagIds, dueDateCondition, deferDateCondition, nowDate, timezone) {
+    async searchTasks(
+        userId,
+        params,
+        tagIds,
+        dueDateCondition,
+        deferDateCondition,
+        nowDate,
+        timezone
+    ) {
         const conditions = this.buildTaskConditions(
             userId,
             params,
@@ -186,7 +213,10 @@ class SearchService {
             deferDateCondition,
             nowDate
         );
-        const { include, tagInclude } = this.buildTaskInclude(tagIds, params.extras);
+        const { include, tagInclude } = this.buildTaskInclude(
+            tagIds,
+            params.extras
+        );
 
         let count = 0;
         if (params.hasPagination) {
@@ -219,19 +249,26 @@ class SearchService {
      * Search projects.
      */
     async searchProjects(userId, params, tagIds, dueDateCondition) {
-        const { searchQuery, priority, extras, hasPagination, limit, offset } = params;
+        const { searchQuery, priority, extras, hasPagination, limit, offset } =
+            params;
 
         const conditions = { user_id: userId };
 
         if (searchQuery) {
             const lowerQuery = searchQuery.toLowerCase();
             conditions[Op.or] = [
-                sequelize.where(sequelize.fn('LOWER', sequelize.col('Project.name')), {
-                    [Op.like]: `%${lowerQuery}%`,
-                }),
-                sequelize.where(sequelize.fn('LOWER', sequelize.col('Project.description')), {
-                    [Op.like]: `%${lowerQuery}%`,
-                }),
+                sequelize.where(
+                    sequelize.fn('LOWER', sequelize.col('Project.name')),
+                    {
+                        [Op.like]: `%${lowerQuery}%`,
+                    }
+                ),
+                sequelize.where(
+                    sequelize.fn('LOWER', sequelize.col('Project.description')),
+                    {
+                        [Op.like]: `%${lowerQuery}%`,
+                    }
+                ),
             ];
         }
 
@@ -264,7 +301,12 @@ class SearchService {
             count = await searchRepository.countProjects(conditions, include);
         }
 
-        const projects = await searchRepository.findProjects(conditions, include, limit, offset);
+        const projects = await searchRepository.findProjects(
+            conditions,
+            include,
+            limit,
+            offset
+        );
 
         return {
             count,
@@ -291,12 +333,18 @@ class SearchService {
         if (searchQuery) {
             const lowerQuery = searchQuery.toLowerCase();
             conditions[Op.or] = [
-                sequelize.where(sequelize.fn('LOWER', sequelize.col('Area.name')), {
-                    [Op.like]: `%${lowerQuery}%`,
-                }),
-                sequelize.where(sequelize.fn('LOWER', sequelize.col('Area.description')), {
-                    [Op.like]: `%${lowerQuery}%`,
-                }),
+                sequelize.where(
+                    sequelize.fn('LOWER', sequelize.col('Area.name')),
+                    {
+                        [Op.like]: `%${lowerQuery}%`,
+                    }
+                ),
+                sequelize.where(
+                    sequelize.fn('LOWER', sequelize.col('Area.description')),
+                    {
+                        [Op.like]: `%${lowerQuery}%`,
+                    }
+                ),
             ];
         }
 
@@ -305,7 +353,11 @@ class SearchService {
             count = await searchRepository.countAreas(conditions);
         }
 
-        const areas = await searchRepository.findAreas(conditions, limit, offset);
+        const areas = await searchRepository.findAreas(
+            conditions,
+            limit,
+            offset
+        );
 
         return {
             count,
@@ -330,12 +382,18 @@ class SearchService {
         if (searchQuery) {
             const lowerQuery = searchQuery.toLowerCase();
             conditions[Op.or] = [
-                sequelize.where(sequelize.fn('LOWER', sequelize.col('Note.title')), {
-                    [Op.like]: `%${lowerQuery}%`,
-                }),
-                sequelize.where(sequelize.fn('LOWER', sequelize.col('Note.content')), {
-                    [Op.like]: `%${lowerQuery}%`,
-                }),
+                sequelize.where(
+                    sequelize.fn('LOWER', sequelize.col('Note.title')),
+                    {
+                        [Op.like]: `%${lowerQuery}%`,
+                    }
+                ),
+                sequelize.where(
+                    sequelize.fn('LOWER', sequelize.col('Note.content')),
+                    {
+                        [Op.like]: `%${lowerQuery}%`,
+                    }
+                ),
             ];
         }
 
@@ -355,7 +413,12 @@ class SearchService {
             count = await searchRepository.countNotes(conditions, include);
         }
 
-        const notes = await searchRepository.findNotes(conditions, include, limit, offset);
+        const notes = await searchRepository.findNotes(
+            conditions,
+            include,
+            limit,
+            offset
+        );
 
         return {
             count,
@@ -381,9 +444,12 @@ class SearchService {
         if (searchQuery) {
             const lowerQuery = searchQuery.toLowerCase();
             conditions[Op.and] = [
-                sequelize.where(sequelize.fn('LOWER', sequelize.col('Tag.name')), {
-                    [Op.like]: `%${lowerQuery}%`,
-                }),
+                sequelize.where(
+                    sequelize.fn('LOWER', sequelize.col('Tag.name')),
+                    {
+                        [Op.like]: `%${lowerQuery}%`,
+                    }
+                ),
             ];
         }
 
@@ -414,10 +480,21 @@ class SearchService {
         }
 
         const params = parseSearchParams(query);
-        const { filterTypes, tagNames, due, defer, hasPagination, limit, offset } = params;
+        const {
+            filterTypes,
+            tagNames,
+            due,
+            defer,
+            hasPagination,
+            limit,
+            offset,
+        } = params;
 
         // Find tag IDs if filtering by tags
-        const tagIds = await searchRepository.findTagIdsByNames(userId, tagNames);
+        const tagIds = await searchRepository.findTagIdsByNames(
+            userId,
+            tagNames
+        );
         if (tagNames.length > 0 && tagIds.length === 0) {
             return { results: [] };
         }
@@ -427,8 +504,16 @@ class SearchService {
         const startOfToday = nowMoment.clone().startOf('day');
         const nowDate = nowMoment.toDate();
 
-        const dueDateCondition = this.buildDateCondition(due, startOfToday, 'due_date');
-        const deferDateCondition = this.buildDateCondition(defer, startOfToday, 'defer_until');
+        const dueDateCondition = this.buildDateCondition(
+            due,
+            startOfToday,
+            'due_date'
+        );
+        const deferDateCondition = this.buildDateCondition(
+            defer,
+            startOfToday,
+            'defer_until'
+        );
 
         const results = [];
         let totalCount = 0;

@@ -13,12 +13,9 @@ router.get('/notes', notesController.list);
 // Get a single note (requires read access)
 router.get(
     '/note/:uidSlug',
-    hasAccess(
-        'ro',
-        'note',
-        (req) => notesController.getNoteUidForAuth(req),
-        { notFoundMessage: 'Note not found.' }
-    ),
+    hasAccess('ro', 'note', (req) => notesController.getNoteUidForAuth(req), {
+        notFoundMessage: 'Note not found.',
+    }),
     notesController.getOne
 );
 
@@ -28,24 +25,18 @@ router.post('/note', notesController.create);
 // Update a note (requires write access)
 router.patch(
     '/note/:uid',
-    hasAccess(
-        'rw',
-        'note',
-        (req) => notesController.getNoteUidForAuth(req),
-        { notFoundMessage: 'Note not found.' }
-    ),
+    hasAccess('rw', 'note', (req) => notesController.getNoteUidForAuth(req), {
+        notFoundMessage: 'Note not found.',
+    }),
     notesController.update
 );
 
 // Delete a note (requires write access)
 router.delete(
     '/note/:uid',
-    hasAccess(
-        'rw',
-        'note',
-        (req) => notesController.getNoteUidForAuth(req),
-        { notFoundMessage: 'Note not found.' }
-    ),
+    hasAccess('rw', 'note', (req) => notesController.getNoteUidForAuth(req), {
+        notFoundMessage: 'Note not found.',
+    }),
     notesController.delete
 );
 

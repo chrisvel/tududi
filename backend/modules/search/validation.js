@@ -24,9 +24,7 @@ function parseSearchParams(query) {
         ? filters.split(',').map((f) => f.trim())
         : ['Task', 'Project', 'Area', 'Note', 'Tag'];
 
-    const tagNames = tagsParam
-        ? tagsParam.split(',').map((t) => t.trim())
-        : [];
+    const tagNames = tagsParam ? tagsParam.split(',').map((t) => t.trim()) : [];
 
     const extras =
         extrasParam && typeof extrasParam === 'string'
@@ -65,7 +63,9 @@ function priorityToInt(priorityStr) {
         medium: 1,
         high: 2,
     };
-    return priorityMap[priorityStr] !== undefined ? priorityMap[priorityStr] : null;
+    return priorityMap[priorityStr] !== undefined
+        ? priorityMap[priorityStr]
+        : null;
 }
 
 module.exports = {

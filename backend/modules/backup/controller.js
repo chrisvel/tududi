@@ -9,7 +9,9 @@ const backupController = {
         try {
             const userId = getAuthenticatedUserId(req);
             if (!userId) {
-                return res.status(401).json({ error: 'Authentication required' });
+                return res
+                    .status(401)
+                    .json({ error: 'Authentication required' });
             }
 
             const result = await backupService.exportData(userId);
@@ -27,10 +29,16 @@ const backupController = {
         try {
             const userId = getAuthenticatedUserId(req);
             if (!userId) {
-                return res.status(401).json({ error: 'Authentication required' });
+                return res
+                    .status(401)
+                    .json({ error: 'Authentication required' });
             }
 
-            const result = await backupService.importData(userId, req.file, req.body);
+            const result = await backupService.importData(
+                userId,
+                req.file,
+                req.body
+            );
             res.json(result);
         } catch (error) {
             if (error.statusCode === 400) {
@@ -56,7 +64,9 @@ const backupController = {
         try {
             const userId = getAuthenticatedUserId(req);
             if (!userId) {
-                return res.status(401).json({ error: 'Authentication required' });
+                return res
+                    .status(401)
+                    .json({ error: 'Authentication required' });
             }
 
             const result = await backupService.validateBackup(userId, req.file);
@@ -89,7 +99,9 @@ const backupController = {
         try {
             const userId = getAuthenticatedUserId(req);
             if (!userId) {
-                return res.status(401).json({ error: 'Authentication required' });
+                return res
+                    .status(401)
+                    .json({ error: 'Authentication required' });
             }
 
             const result = await backupService.listBackups(userId);
@@ -107,10 +119,15 @@ const backupController = {
         try {
             const userId = getAuthenticatedUserId(req);
             if (!userId) {
-                return res.status(401).json({ error: 'Authentication required' });
+                return res
+                    .status(401)
+                    .json({ error: 'Authentication required' });
             }
 
-            const result = await backupService.downloadBackup(userId, req.params.uid);
+            const result = await backupService.downloadBackup(
+                userId,
+                req.params.uid
+            );
 
             res.setHeader('Content-Type', result.contentType);
             res.setHeader(
@@ -136,10 +153,16 @@ const backupController = {
         try {
             const userId = getAuthenticatedUserId(req);
             if (!userId) {
-                return res.status(401).json({ error: 'Authentication required' });
+                return res
+                    .status(401)
+                    .json({ error: 'Authentication required' });
             }
 
-            const result = await backupService.restoreBackup(userId, req.params.uid, req.body);
+            const result = await backupService.restoreBackup(
+                userId,
+                req.params.uid,
+                req.body
+            );
             res.json(result);
         } catch (error) {
             if (error.statusCode === 400) {
@@ -161,10 +184,15 @@ const backupController = {
         try {
             const userId = getAuthenticatedUserId(req);
             if (!userId) {
-                return res.status(401).json({ error: 'Authentication required' });
+                return res
+                    .status(401)
+                    .json({ error: 'Authentication required' });
             }
 
-            const result = await backupService.deleteBackup(userId, req.params.uid);
+            const result = await backupService.deleteBackup(
+                userId,
+                req.params.uid
+            );
             res.json(result);
         } catch (error) {
             logError('Error deleting backup:', error);

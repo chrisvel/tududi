@@ -60,9 +60,14 @@ class BackupService {
 
         let backupData;
         try {
-            backupData = await parseUploadedBackup(file.buffer, file.originalname);
+            backupData = await parseUploadedBackup(
+                file.buffer,
+                file.originalname
+            );
         } catch (parseError) {
-            throw new ValidationError(`Invalid backup file: ${parseError.message}`);
+            throw new ValidationError(
+                `Invalid backup file: ${parseError.message}`
+            );
         }
 
         const validation = validateBackupData(backupData);
@@ -100,7 +105,10 @@ class BackupService {
 
         let backupData;
         try {
-            backupData = await parseUploadedBackup(file.buffer, file.originalname);
+            backupData = await parseUploadedBackup(
+                file.buffer,
+                file.originalname
+            );
         } catch (parseError) {
             const error = new ValidationError('Invalid backup file');
             error.parseMessage = parseError.message;
@@ -166,7 +174,9 @@ class BackupService {
         const fileBuffer = await fs.readFile(filePath);
         const isCompressed = backup.file_path.endsWith('.gz');
         const filename = `tududi-backup-${new Date().toISOString().split('T')[0]}${isCompressed ? '.json.gz' : '.json'}`;
-        const contentType = isCompressed ? 'application/gzip' : 'application/json';
+        const contentType = isCompressed
+            ? 'application/gzip'
+            : 'application/json';
 
         return {
             fileBuffer,

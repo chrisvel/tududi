@@ -3,42 +3,65 @@
 const sharesRepository = require('./repository');
 const { execAction } = require('../../services/execAction');
 const { isAdmin } = require('../../services/rolesService');
-const { ValidationError, NotFoundError, ForbiddenError } = require('../../shared/errors');
+const {
+    ValidationError,
+    NotFoundError,
+    ForbiddenError,
+} = require('../../shared/errors');
 
 class SharesService {
     async isResourceOwner(userId, resourceType, resourceUid) {
-        const resource = await sharesRepository.findResourceOwner(resourceType, resourceUid);
+        const resource = await sharesRepository.findResourceOwner(
+            resourceType,
+            resourceUid
+        );
         return resource && resource.user_id === userId;
     }
 
     async createShare(userId, data) {
-        const { resource_type, resource_uid, target_user_email, access_level } = data;
+        const { resource_type, resource_uid, target_user_email, access_level } =
+            data;
 
-        if (!resource_type || !resource_uid || !target_user_email || !access_level) {
+        if (
+            !resource_type ||
+            !resource_uid ||
+            !target_user_email ||
+            !access_level
+        ) {
             throw new ValidationError('Missing parameters');
         }
 
         // Only owner (or admin) can grant shares
         const userIsAdmin = await isAdmin(userId);
-        const userIsOwner = await this.isResourceOwner(userId, resource_type, resource_uid);
+        const userIsOwner = await this.isResourceOwner(
+            userId,
+            resource_type,
+            resource_uid
+        );
         if (!userIsAdmin && !userIsOwner) {
             throw new ForbiddenError('Forbidden');
         }
 
-        const target = await sharesRepository.findUserByEmail(target_user_email);
+        const target =
+            await sharesRepository.findUserByEmail(target_user_email);
         if (!target) {
             throw new NotFoundError('Target user not found');
         }
 
         // Get resource to check owner
-        const resource = await sharesRepository.findResourceOwner(resource_type, resource_uid);
+        const resource = await sharesRepository.findResourceOwner(
+            resource_type,
+            resource_uid
+        );
         if (!resource) {
             throw new NotFoundError('Resource not found');
         }
 
         // Prevent sharing with the owner (owner already has full access)
         if (resource.user_id === target.id) {
-            throw new ValidationError('Cannot grant permissions to the owner. Owner already has full access.');
+            throw new ValidationError(
+                'Cannot grant permissions to the owner. Owner already has full access.'
+            );
         }
 
         await execAction({
@@ -62,15 +85,24 @@ class SharesService {
 
         // Only owner (or admin) can revoke shares
         const userIsAdmin = await isAdmin(userId);
-        const userIsOwner = await this.isResourceOwner(userId, resource_type, resource_uid);
+        const userIsOwner = await this.isResourceOwner(
+            userId,
+            resource_type,
+            resource_uid
+        );
         if (!userIsAdmin && !userIsOwner) {
             throw new ForbiddenError('Forbidden');
         }
 
         // Prevent revoking permissions from the owner
-        const resource = await sharesRepository.findResourceOwner(resource_type, resource_uid);
+        const resource = await sharesRepository.findResourceOwner(
+            resource_type,
+            resource_uid
+        );
         if (resource && resource.user_id === Number(target_user_id)) {
-            throw new ValidationError('Cannot revoke permissions from the owner.');
+            throw new ValidationError(
+                'Cannot revoke permissions from the owner.'
+            );
         }
 
         await execAction({
@@ -91,14 +123,21 @@ class SharesService {
 
         // Only owner (or admin) can view shares
         const userIsAdmin = await isAdmin(userId);
-        const userIsOwner = await this.isResourceOwner(userId, resourceType, resourceUid);
+        const userIsOwner = await this.isResourceOwner(
+            userId,
+            resourceType,
+            resourceUid
+        );
         if (!userIsAdmin && !userIsOwner) {
             throw new ForbiddenError('Forbidden');
         }
 
         // Get resource owner information
         let ownerInfo = null;
-        const resource = await sharesRepository.findResourceOwner(resourceType, resourceUid);
+        const resource = await sharesRepository.findResourceOwner(
+            resourceType,
+            resourceUid
+        );
 
         if (resource) {
             const owner = await sharesRepository.findUserById(resource.user_id);
@@ -114,10 +153,15 @@ class SharesService {
             }
         }
 
-        const rows = await sharesRepository.findPermissions(resourceType, resourceUid);
+        const rows = await sharesRepository.findPermissions(
+            resourceType,
+            resourceUid
+        );
 
         // Attach emails and avatar images for display
-        const userIds = Array.from(new Set(rows.map((r) => r.user_id))).filter(Boolean);
+        const userIds = Array.from(new Set(rows.map((r) => r.user_id))).filter(
+            Boolean
+        );
         let usersById = {};
         if (userIds.length) {
             const users = await sharesRepository.findUsersByIds(userIds);

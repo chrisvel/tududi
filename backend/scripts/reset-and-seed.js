@@ -52,7 +52,9 @@ async function main() {
         const {
             checkDeferredTasks,
         } = require('../modules/tasks/deferredTaskService');
-        const { checkDueProjects } = require('../modules/projects/dueProjectService');
+        const {
+            checkDueProjects,
+        } = require('../modules/projects/dueProjectService');
 
         const dueTasksResult = await checkDueTasks();
         const deferredTasksResult = await checkDeferredTasks();

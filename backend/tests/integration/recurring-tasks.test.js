@@ -2,7 +2,9 @@ const request = require('supertest');
 const app = require('../../app');
 const { Task, RecurringCompletion, sequelize } = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
-const { calculateNextDueDate } = require('../../modules/tasks/recurringTaskService');
+const {
+    calculateNextDueDate,
+} = require('../../modules/tasks/recurringTaskService');
 
 describe('Recurring Tasks', () => {
     let user, agent;

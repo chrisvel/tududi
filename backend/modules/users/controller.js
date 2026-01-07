@@ -134,7 +134,11 @@ const usersController = {
         try {
             const userId = requireUserId(req);
             const { name, expires_at } = req.body || {};
-            const result = await usersService.createApiKey(userId, name, expires_at);
+            const result = await usersService.createApiKey(
+                userId,
+                name,
+                expires_at
+            );
             res.status(201).json(result);
         } catch (error) {
             next(error);
@@ -148,7 +152,10 @@ const usersController = {
     async revokeApiKey(req, res, next) {
         try {
             const userId = requireUserId(req);
-            const result = await usersService.revokeApiKey(userId, req.params.id);
+            const result = await usersService.revokeApiKey(
+                userId,
+                req.params.id
+            );
             res.json(result);
         } catch (error) {
             next(error);
@@ -191,7 +198,10 @@ const usersController = {
         try {
             const userId = requireUserId(req);
             const { frequency } = req.body;
-            const result = await usersService.updateTaskSummaryFrequency(userId, frequency);
+            const result = await usersService.updateTaskSummaryFrequency(
+                userId,
+                frequency
+            );
             res.json(result);
         } catch (error) {
             next(error);
@@ -233,7 +243,10 @@ const usersController = {
     async updateTodaySettings(req, res, next) {
         try {
             const userId = requireUserId(req);
-            const result = await usersService.updateTodaySettings(userId, req.body);
+            const result = await usersService.updateTodaySettings(
+                userId,
+                req.body
+            );
             res.json(result);
         } catch (error) {
             next(error);
@@ -247,7 +260,10 @@ const usersController = {
     async updateSidebarSettings(req, res, next) {
         try {
             const userId = requireUserId(req);
-            const result = await usersService.updateSidebarSettings(userId, req.body);
+            const result = await usersService.updateSidebarSettings(
+                userId,
+                req.body
+            );
             res.json(result);
         } catch (error) {
             next(error);
@@ -261,7 +277,10 @@ const usersController = {
     async updateUiSettings(req, res, next) {
         try {
             const userId = requireUserId(req);
-            const result = await usersService.updateUiSettings(userId, req.body);
+            const result = await usersService.updateUiSettings(
+                userId,
+                req.body
+            );
             res.json(result);
         } catch (error) {
             next(error);

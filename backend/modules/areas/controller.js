@@ -56,7 +56,10 @@ const areasController = {
         try {
             const userId = requireUserId(req);
             const { name, description } = req.body;
-            const area = await areasService.create(userId, { name, description });
+            const area = await areasService.create(userId, {
+                name,
+                description,
+            });
             res.status(201).json(area);
         } catch (error) {
             next(error);

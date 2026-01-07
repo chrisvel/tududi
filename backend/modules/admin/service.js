@@ -76,7 +76,10 @@ class AdminService {
             throw new ValidationError('Invalid user_id');
         }
 
-        const [role] = await adminRepository.findOrCreateRole(user_id, makeAdmin);
+        const [role] = await adminRepository.findOrCreateRole(
+            user_id,
+            makeAdmin
+        );
         if (role.is_admin !== makeAdmin) {
             role.is_admin = makeAdmin;
             await role.save();
@@ -111,7 +114,8 @@ class AdminService {
     async createUser(requesterId, body) {
         await this.verifyAdmin(requesterId);
 
-        const { email, password, name, surname, role } = validateCreateUser(body);
+        const { email, password, name, surname, role } =
+            validateCreateUser(body);
 
         const userData = { email, password };
         if (name) userData.name = name;
@@ -129,10 +133,8 @@ class AdminService {
 
         const makeAdmin = role === 'admin';
         if (makeAdmin) {
-            const [userRole, roleCreated] = await adminRepository.findOrCreateRole(
-                user.id,
-                true
-            );
+            const [userRole, roleCreated] =
+                await adminRepository.findOrCreateRole(user.id, true);
             if (!roleCreated && !userRole.is_admin) {
                 userRole.is_admin = true;
                 await userRole.save();
@@ -187,7 +189,10 @@ class AdminService {
 
         if (role !== undefined) {
             const makeAdmin = role === 'admin';
-            const [userRole] = await adminRepository.findOrCreateRole(user.id, makeAdmin);
+            const [userRole] = await adminRepository.findOrCreateRole(
+                user.id,
+                makeAdmin
+            );
             if (userRole.is_admin !== makeAdmin) {
                 userRole.is_admin = makeAdmin;
                 await userRole.save();
@@ -218,7 +223,10 @@ class AdminService {
             throw new ValidationError('Cannot delete your own account');
         }
 
-        const result = await adminRepository.deleteUserWithData(id, requesterId);
+        const result = await adminRepository.deleteUserWithData(
+            id,
+            requesterId
+        );
 
         if (!result.success) {
             if (result.status === 404) {
@@ -238,7 +246,9 @@ class AdminService {
 
         const { enabled } = validateToggleRegistration(body);
 
-        const { setRegistrationEnabled } = require('../auth/registrationService');
+        const {
+            setRegistrationEnabled,
+        } = require('../auth/registrationService');
         await setRegistrationEnabled(enabled);
 
         return { enabled };

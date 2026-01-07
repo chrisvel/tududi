@@ -30,7 +30,10 @@ const authController = {
             if (error.statusCode === 400) {
                 return res.status(400).json({ error: error.message });
             }
-            if (error.message === 'Failed to send verification email. Please try again later.') {
+            if (
+                error.message ===
+                'Failed to send verification email. Please try again later.'
+            ) {
                 return res.status(500).json({ error: error.message });
             }
             logError('Registration error:', error);
@@ -63,7 +66,11 @@ const authController = {
     async login(req, res, next) {
         try {
             const { email, password } = req.body;
-            const result = await authService.login(email, password, req.session);
+            const result = await authService.login(
+                email,
+                password,
+                req.session
+            );
             res.json(result);
         } catch (error) {
             if (error.statusCode === 400) {

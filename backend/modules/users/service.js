@@ -114,13 +114,15 @@ class UsersService {
             validateFirstDayOfWeek(first_day_of_week);
             allowedUpdates.first_day_of_week = first_day_of_week;
         }
-        if (avatar_image !== undefined) allowedUpdates.avatar_image = avatar_image;
+        if (avatar_image !== undefined)
+            allowedUpdates.avatar_image = avatar_image;
         if (telegram_bot_token !== undefined)
             allowedUpdates.telegram_bot_token = telegram_bot_token;
         if (telegram_allowed_users !== undefined)
             allowedUpdates.telegram_allowed_users = telegram_allowed_users;
         if (task_intelligence_enabled !== undefined)
-            allowedUpdates.task_intelligence_enabled = task_intelligence_enabled;
+            allowedUpdates.task_intelligence_enabled =
+                task_intelligence_enabled;
         if (task_summary_enabled !== undefined)
             allowedUpdates.task_summary_enabled = task_summary_enabled;
         if (task_summary_frequency !== undefined)
@@ -129,9 +131,11 @@ class UsersService {
             allowedUpdates.auto_suggest_next_actions_enabled =
                 auto_suggest_next_actions_enabled;
         if (productivity_assistant_enabled !== undefined)
-            allowedUpdates.productivity_assistant_enabled = productivity_assistant_enabled;
+            allowedUpdates.productivity_assistant_enabled =
+                productivity_assistant_enabled;
         if (next_task_suggestion_enabled !== undefined)
-            allowedUpdates.next_task_suggestion_enabled = next_task_suggestion_enabled;
+            allowedUpdates.next_task_suggestion_enabled =
+                next_task_suggestion_enabled;
         if (pomodoro_enabled !== undefined)
             allowedUpdates.pomodoro_enabled = pomodoro_enabled;
         if (ui_settings !== undefined) allowedUpdates.ui_settings = ui_settings;
@@ -149,7 +153,10 @@ class UsersService {
                 user.password_digest
             );
             if (!isValidPassword) {
-                throw new ValidationError('Current password is incorrect', 'currentPassword');
+                throw new ValidationError(
+                    'Current password is incorrect',
+                    'currentPassword'
+                );
             }
 
             const hashedNewPassword = await User.hashPassword(newPassword);
@@ -222,7 +229,9 @@ class UsersService {
      */
     async changePassword(userId, currentPassword, newPassword) {
         if (!currentPassword || !newPassword) {
-            throw new ValidationError('Current password and new password are required');
+            throw new ValidationError(
+                'Current password and new password are required'
+            );
         }
 
         validatePassword(newPassword, 'newPassword');
@@ -237,11 +246,16 @@ class UsersService {
             user.password_digest
         );
         if (!isValidPassword) {
-            throw new ValidationError('Current password is incorrect', 'currentPassword');
+            throw new ValidationError(
+                'Current password is incorrect',
+                'currentPassword'
+            );
         }
 
         const hashedNewPassword = await User.hashPassword(newPassword);
-        await usersRepository.update(user, { password_digest: hashedNewPassword });
+        await usersRepository.update(user, {
+            password_digest: hashedNewPassword,
+        });
 
         return { message: 'Password changed successfully' };
     }
@@ -329,7 +343,9 @@ class UsersService {
             throw new NotFoundError('User not found.');
         }
 
-        await usersRepository.update(user, { task_summary_frequency: validatedFrequency });
+        await usersRepository.update(user, {
+            task_summary_frequency: validatedFrequency,
+        });
 
         return {
             success: true,
@@ -348,7 +364,9 @@ class UsersService {
         }
 
         if (!user.telegram_bot_token || !user.telegram_chat_id) {
-            throw new ValidationError('Telegram bot is not properly configured.');
+            throw new ValidationError(
+                'Telegram bot is not properly configured.'
+            );
         }
 
         const success = await taskSummaryService.sendSummaryToUser(user.id);
@@ -442,7 +460,8 @@ class UsersService {
             profileUpdates.productivity_assistant_enabled = showProductivity;
         }
         if (showNextTaskSuggestion !== undefined) {
-            profileUpdates.next_task_suggestion_enabled = showNextTaskSuggestion;
+            profileUpdates.next_task_suggestion_enabled =
+                showNextTaskSuggestion;
         }
 
         await usersRepository.update(user, profileUpdates);
@@ -462,7 +481,9 @@ class UsersService {
         const { pinnedViewsOrder } = validateSidebarSettings(data);
         const sidebarSettings = { pinnedViewsOrder };
 
-        await usersRepository.update(user, { sidebar_settings: sidebarSettings });
+        await usersRepository.update(user, {
+            sidebar_settings: sidebarSettings,
+        });
 
         return { success: true, sidebar_settings: sidebarSettings };
     }
@@ -489,7 +510,9 @@ class UsersService {
                 ...(currentSettings.project || {}),
                 ...(project || {}),
                 details: {
-                    ...((currentSettings.project && currentSettings.project.details) || {}),
+                    ...((currentSettings.project &&
+                        currentSettings.project.details) ||
+                        {}),
                     ...((project && project.details) || {}),
                 },
             },

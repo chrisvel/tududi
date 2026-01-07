@@ -47,7 +47,11 @@ class SharesRepository {
 
     async findPermissions(resourceType, resourceUid) {
         return Permission.findAll({
-            where: { resource_type: resourceType, resource_uid: resourceUid, propagation: 'direct' },
+            where: {
+                resource_type: resourceType,
+                resource_uid: resourceUid,
+                propagation: 'direct',
+            },
             attributes: ['user_id', 'access_level', 'created_at'],
             raw: true,
         });

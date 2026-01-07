@@ -229,7 +229,9 @@ class ProjectsRepository extends BaseRepository {
 
                 await project.destroy({ transaction });
             } finally {
-                await sequelize.query('PRAGMA foreign_keys = ON', { transaction });
+                await sequelize.query('PRAGMA foreign_keys = ON', {
+                    transaction,
+                });
             }
         });
     }
