@@ -1,7 +1,7 @@
 const request = require('supertest');
 const app = require('../../app');
 const { User, InboxItem, sequelize } = require('../../models');
-const telegramPoller = require('../../services/telegramPoller');
+const telegramPoller = require('../../modules/telegram/telegramPoller');
 
 describe('Telegram Duplicate Prevention Integration Tests', () => {
     let testUser;

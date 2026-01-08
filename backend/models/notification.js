@@ -237,7 +237,7 @@ module.exports = (sequelize) => {
         NotificationModel
     ) {
         try {
-            const telegramService = require('../services/telegramNotificationService');
+            const telegramService = require('../modules/telegram/telegramNotificationService');
 
             if (!message) {
                 return;

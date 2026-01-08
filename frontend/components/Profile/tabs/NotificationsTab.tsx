@@ -371,7 +371,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
         setTestMessage('');
 
         try {
-            const response = await fetch('/api/test-notifications/trigger', {
+            const response = await fetch('/api/notifications/test/trigger', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

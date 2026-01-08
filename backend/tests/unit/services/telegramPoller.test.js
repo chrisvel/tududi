@@ -1,5 +1,5 @@
 const { User, InboxItem } = require('../../../models');
-const telegramPoller = require('../../../services/telegramPoller');
+const telegramPoller = require('../../../modules/telegram/telegramPoller');
 const https = require('https');
 
 // Mock the database models

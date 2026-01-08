@@ -4,7 +4,7 @@ const { Task } = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
 const {
     calculateNextIterations,
-} = require('../../routes/tasks/operations/recurring');
+} = require('../../modules/tasks/operations/recurring');
 
 describe('Monthly Recurrence - Current Month Bug Fix', () => {
     let user, agent;

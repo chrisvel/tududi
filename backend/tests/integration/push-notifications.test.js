@@ -308,7 +308,7 @@ describe('Push Notifications API', () => {
 
             // Trigger test notification
             const response = await agent
-                .post('/api/test-notifications/trigger')
+                .post('/api/notifications/test/trigger')
                 .send({ type: 'task_due_soon' });
 
             expect(response.status).toBe(200);
@@ -365,7 +365,7 @@ describe('Push Notifications API', () => {
 
             // Trigger test notification
             const response = await agent
-                .post('/api/test-notifications/trigger')
+                .post('/api/notifications/test/trigger')
                 .send({ type: 'task_due_soon' });
 
             expect(response.status).toBe(200);
@@ -413,7 +413,7 @@ describe('Push Notifications API', () => {
 
             // Trigger test notification
             const response = await agent
-                .post('/api/test-notifications/trigger')
+                .post('/api/notifications/test/trigger')
                 .send({ type: 'task_due_soon' });
 
             expect(response.status).toBe(200);

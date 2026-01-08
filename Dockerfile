@@ -75,26 +75,28 @@ COPY --chown=app:app package.json package-lock.json /app/
 # Install production dependencies only
 RUN npm install --omit=dev --no-audit --no-fund && \
     npm cache clean --force && \
+
+    ln -s /app/node_modules /app/backend/node_modules && \
     # Remove unnecessary files from node_modules to reduce size
     find /app/node_modules -type f \( \
-        -name "*.md" -o \
-        -name "*.ts" -o \
-        -name "*.map" -o \
-        -name "LICENSE*" -o \
-        -name "CHANGELOG*" -o \
-        -name "README*" -o \
-        -name ".*.yml" -o \
-        -name "*.txt" \
+    -name "*.md" -o \
+    -name "*.ts" -o \
+    -name "*.map" -o \
+    -name "LICENSE*" -o \
+    -name "CHANGELOG*" -o \
+    -name "README*" -o \
+    -name ".*.yml" -o \
+    -name "*.txt" \
     \) -delete && \
     find /app/node_modules -type d \( \
-        -name "test" -o \
-        -name "tests" -o \
-        -name "__tests__" -o \
-        -name "docs" -o \
-        -name "examples" -o \
-        -name "example" -o \
-        -name "coverage" -o \
-        -name ".github" \
+    -name "test" -o \
+    -name "tests" -o \
+    -name "__tests__" -o \
+    -name "docs" -o \
+    -name "examples" -o \
+    -name "example" -o \
+    -name "coverage" -o \
+    -name ".github" \
     \) -exec rm -rf {} + 2>/dev/null || true
 
 # Copy frontend

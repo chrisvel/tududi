@@ -1,7 +1,7 @@
-const taskScheduler = require('../../../services/taskScheduler');
-const telegramPoller = require('../../../services/telegramPoller');
-const quotesService = require('../../../services/quotesService');
-const taskSummaryService = require('../../../services/taskSummaryService');
+const taskScheduler = require('../../../modules/tasks/taskScheduler');
+const telegramPoller = require('../../../modules/telegram/telegramPoller');
+const quotesService = require('../../../modules/quotes/quotesService');
+const taskSummaryService = require('../../../modules/tasks/taskSummaryService');
 
 describe('Functional Services', () => {
     describe('TaskScheduler', () => {
