@@ -3,6 +3,7 @@ const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin'
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
+const swTemplate = require('./scripts/sw-template');
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 const frontendPort = parseInt(process.env.FRONTEND_PORT || '8080', 10);
@@ -67,6 +68,23 @@ module.exports = {
             devServer.app.get('/locales/*', (req, res, next) => {
                 console.log('Translation file requested:', req.path);
                 next();
+            });
+
+            // In development, serve a SW that caches the dev bundle
+            devServer.app.get('/pwa/sw.js', (req, res) => {
+                const staticAssets = [
+                  "/index.html",
+                  "/offline.html",
+                  "/manifest.json",
+                  "/favicon.png",
+                  "/icon-logo.png",
+                  "/wide-logo-dark.png",
+                  "/wide-logo-light.png"
+                ];
+                const swContent = swTemplate('pwa-assets-dev', staticAssets);
+                // Allow SW to control root scope even though it's served from /pwa/
+                res.set('Service-Worker-Allowed', '/');
+                res.type('application/javascript').send(swContent);
             });
 
             return middlewares;
