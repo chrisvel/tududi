@@ -14,9 +14,11 @@ module.exports = {
         await safeAddColumns(queryInterface, 'users', [
             {
                 name: 'keyboard_shortcuts',
-                type: Sequelize.JSON,
-                allowNull: true,
-                defaultValue: null,
+                definition: {
+                    type: Sequelize.JSON,
+                    allowNull: true,
+                    defaultValue: null,
+                },
             },
         ]);
     },
