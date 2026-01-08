@@ -1,6 +1,6 @@
 {
   "name": "tududi",
-  "version": "v0.88.3-dev.4",
+  "version": "v0.88.3-dev.5",
   "description": "Self-hosted task management with hierarchical organization, multi-language support, and Telegram integration.",
   "directories": {
     "test": "test"
