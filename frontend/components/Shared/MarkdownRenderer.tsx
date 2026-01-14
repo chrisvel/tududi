@@ -116,7 +116,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                             />
                         ) : (
                             <h1
-                                className={`text-3xl font-bold mb-4 ${!noteColor ? 'text-gray-900 dark:text-gray-100' : ''}`}
+                                className={`text-3xl font-bold mt-6 first:mt-0 mb-4 ${!noteColor ? 'text-gray-900 dark:text-gray-100' : ''}`}
                                 style={{
                                     color: textColor,
                                 }}
@@ -134,7 +134,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                             />
                         ) : (
                             <h2
-                                className={`text-2xl font-semibold mb-3 ${!noteColor ? 'text-gray-900 dark:text-gray-100' : ''}`}
+                                className={`text-2xl font-semibold mt-5 first:mt-0 mb-3 ${!noteColor ? 'text-gray-900 dark:text-gray-100' : ''}`}
                                 style={{
                                     color: textColor,
                                 }}
@@ -152,7 +152,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                             />
                         ) : (
                             <h3
-                                className={`text-xl font-medium mb-2 ${!noteColor ? 'text-gray-900 dark:text-gray-100' : ''}`}
+                                className={`text-xl font-medium mt-4 first:mt-0 mb-2 ${!noteColor ? 'text-gray-900 dark:text-gray-100' : ''}`}
                                 style={{
                                     color: textColor,
                                 }}
@@ -170,7 +170,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                             />
                         ) : (
                             <h4
-                                className={`text-lg font-medium mb-2 ${!noteColor ? 'text-gray-900 dark:text-gray-100' : ''}`}
+                                className={`text-lg font-medium mt-4 first:mt-0 mb-2 ${!noteColor ? 'text-gray-900 dark:text-gray-100' : ''}`}
                                 style={{
                                     color: textColor,
                                 }}
@@ -188,7 +188,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                             />
                         ) : (
                             <h5
-                                className={`text-base font-medium mb-2 ${!noteColor ? 'text-gray-900 dark:text-gray-100' : ''}`}
+                                className={`text-base font-medium mt-4 first:mt-0 mb-2 ${!noteColor ? 'text-gray-900 dark:text-gray-100' : ''}`}
                                 style={{
                                     color: textColor,
                                 }}
@@ -206,7 +206,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                             />
                         ) : (
                             <h6
-                                className={`text-sm font-medium mb-2 ${!noteColor ? 'text-gray-900 dark:text-gray-100' : ''}`}
+                                className={`text-sm font-medium mt-4 first:mt-0 mb-2 ${!noteColor ? 'text-gray-900 dark:text-gray-100' : ''}`}
                                 style={{
                                     color: textColor,
                                 }}
