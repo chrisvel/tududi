@@ -1,6 +1,6 @@
 const {
     _isAuthorizedTelegramUser,
-} = require('../../../services/telegramPoller');
+} = require('../../../modules/telegram/telegramPoller');
 
 describe('Telegram Authorization', () => {
     describe('isAuthorizedTelegramUser', () => {

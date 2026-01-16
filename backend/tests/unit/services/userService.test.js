@@ -1,7 +1,7 @@
 const {
     validateEmail,
     validatePassword,
-} = require('../../../services/userService');
+} = require('../../../modules/users/userService');
 
 describe('userService validation functions', () => {
     describe('validateEmail', () => {

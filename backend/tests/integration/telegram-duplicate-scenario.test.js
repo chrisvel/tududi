@@ -1,5 +1,5 @@
 const { User, InboxItem, sequelize } = require('../../models');
-const telegramPoller = require('../../services/telegramPoller');
+const telegramPoller = require('../../modules/telegram/telegramPoller');
 
 // Mock the HTTPS module to simulate Telegram API responses
 jest.mock('https', () => {

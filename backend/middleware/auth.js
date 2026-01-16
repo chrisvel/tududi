@@ -1,5 +1,5 @@
 const { User } = require('../models');
-const { findValidTokenByValue } = require('../services/apiTokenService');
+const { findValidTokenByValue } = require('../modules/users/apiTokenService');
 
 const getBearerToken = (req) => {
     const authHeader = req.headers?.authorization || '';
