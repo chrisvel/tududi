@@ -27,7 +27,7 @@ async function checkDueProjects() {
                     [Op.not]: null,
                     [Op.lte]: tomorrow,
                 },
-                state: {
+                status: {
                     [Op.notIn]: ['completed'],
                 },
             },
