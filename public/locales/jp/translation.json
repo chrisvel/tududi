@@ -357,7 +357,26 @@
     "avatarUploadFailed": "Failed to upload avatar",
     "avatarRemoveFailed": "Failed to remove avatar",
     "notificationsDescription": "重要なイベントについて通知を受け取る方法を選択してください。",
-    "aiFeatures": "AI機能"
+    "aiFeatures": "AI機能",
+    "keyboardShortcuts": "キーボードショートカット",
+    "shortcuts": {
+      "enableShortcuts": "キーボードショートカットを有効にする",
+      "enableDescription": "キーボードショートカットを全体でオンまたはオフにします。",
+      "duplicateWarning": "重複したショートカットが検出されました:",
+      "pressKeys": "キーを押してください...",
+      "duplicateWith": "{{action}}と競合しています",
+      "record": "記録",
+      "resetToDefaults": "デフォルトにリセット",
+      "info": "キーボードショートカットを使用すると、迅速にナビゲートできます。変更はページの下部にある「変更を保存」をクリックすると保存されます。テキストフィールドに入力しているときはショートカットが無効になります。",
+      "actions": {
+        "inbox": "新しい受信トレイアイテムを作成",
+        "task": "新しいタスクを作成",
+        "project": "新しいプロジェクトを作成",
+        "note": "新しいノートを作成",
+        "area": "新しいエリアを作成",
+        "tag": "新しいタグを作成"
+      }
+    }
   },
   "nextTask": {
     "suggestion": "進行中のものがないので、こちらから始めてみませんか",
@@ -858,7 +877,9 @@
       "archived": "アーカイブ済み",
       "unknown": "進行中",
       "waiting": "待機中",
-      "setAsDone": "完了として設定"
+      "setAsDone": "完了として設定",
+      "planned": "計画中",
+      "cancelled": "キャンセル済み"
     },
     "noSubtasksClickToAdd": "まだサブタスクはありません。クリックして追加",
     "project": "プロジェクト",

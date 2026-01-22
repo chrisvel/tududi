@@ -357,7 +357,26 @@
     "avatarUploadFailed": "Failed to upload avatar",
     "avatarRemoveFailed": "Failed to remove avatar",
     "notificationsDescription": "Valitse, miten haluat saada ilmoituksia tärkeistä tapahtumista.",
-    "aiFeatures": "AI-ominaisuudet"
+    "aiFeatures": "AI-ominaisuudet",
+    "keyboardShortcuts": "Pikanäppäimet",
+    "shortcuts": {
+      "enableShortcuts": "Ota pikanäppäimet käyttöön",
+      "enableDescription": "Ota pikanäppäimet käyttöön tai pois käytöstä globaalisti.",
+      "duplicateWarning": "Havaitut kaksoispikanäppäimet:",
+      "pressKeys": "Paina näppäimiä...",
+      "duplicateWith": "Ristiriita {{action}} kanssa",
+      "record": "Tallenna",
+      "resetToDefaults": "Palauta oletuksiin",
+      "info": "Pikanäppäimet auttavat sinua navigoimaan nopeasti. Muutokset tallennetaan, kun napsautat \"Tallenna muutokset\" sivun alareunassa. Pikanäppäimet ovat pois käytöstä kirjoitettaessa tekstikenttiin.",
+      "actions": {
+        "inbox": "Luo uusi Saapuneet-kohde",
+        "task": "Luo uusi Tehtävä",
+        "project": "Luo uusi Projekti",
+        "note": "Luo uusi Muistio",
+        "area": "Luo uusi Alue",
+        "tag": "Luo uusi Tagi"
+      }
+    }
   },
   "productivity": {
     "stalledProjects": "Jumiutuneet projektit",
@@ -760,7 +779,9 @@
       "archived": "arkistoitu",
       "unknown": "käynnissä",
       "waiting": "Odottaa",
-      "setAsDone": "Merkitse valmiiksi"
+      "setAsDone": "Merkitse valmiiksi",
+      "planned": "Suunniteltu",
+      "cancelled": "Peruttu"
     },
     "noSubtasksClickToAdd": "Ei alitehtäviä vielä, napsauta lisätäksesi",
     "project": "Projekti",

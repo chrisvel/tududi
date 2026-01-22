@@ -357,7 +357,26 @@
     "avatarUploadFailed": "Failed to upload avatar",
     "avatarRemoveFailed": "Failed to remove avatar",
     "notificationsDescription": "Vælg hvordan du ønsker at blive underrettet om vigtige begivenheder.",
-    "aiFeatures": "AI-funktioner"
+    "aiFeatures": "AI-funktioner",
+    "keyboardShortcuts": "Tastaturgenveje",
+    "shortcuts": {
+      "enableShortcuts": "Aktivér tastaturgenveje",
+      "enableDescription": "Tænd eller sluk for tastaturgenveje globalt.",
+      "duplicateWarning": "Duplikerede genveje registreret:",
+      "pressKeys": "Tryk på taster...",
+      "duplicateWith": "Konflikter med {{action}}",
+      "record": "Optag",
+      "resetToDefaults": "Nulstil til standard",
+      "info": "Tastaturgenveje hjælper dig med at navigere hurtigt. Ændringer gemmes, når du klikker på \"Gem ændringer\" nederst på siden. Genveje er deaktiveret, når du skriver i tekstfelter.",
+      "actions": {
+        "inbox": "Opret nyt indbakkeelement",
+        "task": "Opret ny opgave",
+        "project": "Opret nyt projekt",
+        "note": "Opret ny note",
+        "area": "Opret nyt område",
+        "tag": "Opret ny tag"
+      }
+    }
   },
   "productivity": {
     "stalledProjects": "Stagnerede Projekter",
@@ -760,7 +779,9 @@
       "archived": "arkiveret",
       "unknown": "gående",
       "waiting": "Venter",
-      "setAsDone": "Sæt som færdig"
+      "setAsDone": "Sæt som færdig",
+      "planned": "Planlagt",
+      "cancelled": "Aflyst"
     },
     "noSubtasksClickToAdd": "Ingen underopgaver endnu, klik for at tilføje",
     "project": "Projekt",

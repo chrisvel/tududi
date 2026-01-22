@@ -357,7 +357,26 @@
     "avatarUploadFailed": "Failed to upload avatar",
     "avatarRemoveFailed": "Failed to remove avatar",
     "notificationsDescription": "Pilih bagaimana Anda ingin diberi tahu tentang peristiwa penting.",
-    "aiFeatures": "Fitur AI"
+    "aiFeatures": "Fitur AI",
+    "keyboardShortcuts": "Pintasan Keyboard",
+    "shortcuts": {
+      "enableShortcuts": "Aktifkan Pintasan Keyboard",
+      "enableDescription": "Nyalakan atau matikan pintasan keyboard secara global.",
+      "duplicateWarning": "Pintasan duplikat terdeteksi:",
+      "pressKeys": "Tekan tombol...",
+      "duplicateWith": "Bertentangan dengan {{action}}",
+      "record": "Rekam",
+      "resetToDefaults": "Reset ke Pengaturan Awal",
+      "info": "Pintasan keyboard membantu Anda bernavigasi dengan cepat. Perubahan disimpan ketika Anda mengklik \"Simpan Perubahan\" di bagian bawah halaman. Pintasan dinonaktifkan saat mengetik di kolom teks.",
+      "actions": {
+        "inbox": "Buat item Kotak Masuk baru",
+        "task": "Buat Tugas baru",
+        "project": "Buat Proyek baru",
+        "note": "Buat Catatan baru",
+        "area": "Buat Area baru",
+        "tag": "Buat Tag baru"
+      }
+    }
   },
   "productivity": {
     "stalledProjects": "Proyek Terhenti",
@@ -760,7 +779,9 @@
       "archived": "diarsipkan",
       "unknown": "berlangsung",
       "waiting": "Menunggu",
-      "setAsDone": "Tandai sebagai selesai"
+      "setAsDone": "Tandai sebagai selesai",
+      "planned": "Direncanakan",
+      "cancelled": "Dibatalkan"
     },
     "noSubtasksClickToAdd": "Belum ada subtugas, klik untuk menambah",
     "project": "Proyek",

@@ -357,7 +357,26 @@
     "avatarUploadFailed": "Failed to upload avatar",
     "avatarRemoveFailed": "Failed to remove avatar",
     "notificationsDescription": "Velg hvordan du vil bli varslet om viktige hendelser.",
-    "aiFeatures": "AI-funksjoner"
+    "aiFeatures": "AI-funksjoner",
+    "keyboardShortcuts": "Tastatursnarveier",
+    "shortcuts": {
+      "enableShortcuts": "Aktiver tastatursnarveier",
+      "enableDescription": "Slå tastatursnarveier av eller på globalt.",
+      "duplicateWarning": "Dupliserte snarveier oppdaget:",
+      "pressKeys": "Trykk på taster...",
+      "duplicateWith": "Konflikter med {{action}}",
+      "record": "Registrer",
+      "resetToDefaults": "Tilbakestill til standardinnstillinger",
+      "info": "Tastatursnarveier hjelper deg med å navigere raskt. Endringer lagres når du klikker \"Lagre endringer\" nederst på siden. Snarveier er deaktivert når du skriver i tekstfelt.",
+      "actions": {
+        "inbox": "Opprett nytt innboks-element",
+        "task": "Opprett ny oppgave",
+        "project": "Opprett nytt prosjekt",
+        "note": "Opprett ny notat",
+        "area": "Opprett nytt område",
+        "tag": "Opprett ny etikett"
+      }
+    }
   },
   "productivity": {
     "stalledProjects": "Stagnerte prosjekter",
@@ -766,7 +785,9 @@
       "archived": "arkivert",
       "unknown": "pågående",
       "waiting": "Venter",
-      "setAsDone": "Sett som fullført"
+      "setAsDone": "Sett som fullført",
+      "planned": "Planlagt",
+      "cancelled": "Avlyst"
     },
     "noSubtasksClickToAdd": "Ingen deloppgaver ennå, klikk for å legge til",
     "noProject": "Ingen prosjekt - Klikk for å tildele",

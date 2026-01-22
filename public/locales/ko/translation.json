@@ -357,7 +357,26 @@
     "avatarUploadFailed": "Failed to upload avatar",
     "avatarRemoveFailed": "Failed to remove avatar",
     "notificationsDescription": "중요한 이벤트에 대한 알림 방식을 선택하세요.",
-    "aiFeatures": "AI 기능"
+    "aiFeatures": "AI 기능",
+    "keyboardShortcuts": "키보드 단축키",
+    "shortcuts": {
+      "enableShortcuts": "키보드 단축키 활성화",
+      "enableDescription": "전역적으로 키보드 단축키를 켜거나 끌 수 있습니다.",
+      "duplicateWarning": "중복된 단축키가 감지되었습니다:",
+      "pressKeys": "키를 누르세요...",
+      "duplicateWith": "{{action}}와(과) 충돌",
+      "record": "기록",
+      "resetToDefaults": "기본값으로 재설정",
+      "info": "키보드 단축키는 빠르게 탐색하는 데 도움이 됩니다. 페이지 하단의 \"변경 사항 저장\"을 클릭하면 변경 사항이 저장됩니다. 텍스트 필드에 입력할 때는 단축키가 비활성화됩니다.",
+      "actions": {
+        "inbox": "새로운 받은 편지함 항목 만들기",
+        "task": "새로운 작업 만들기",
+        "project": "새로운 프로젝트 만들기",
+        "note": "새로운 메모 만들기",
+        "area": "새로운 영역 만들기",
+        "tag": "새로운 태그 만들기"
+      }
+    }
   },
   "productivity": {
     "stalledProjects": "정체된 프로젝트",
@@ -760,7 +779,9 @@
       "archived": "보관됨",
       "unknown": "진행 중",
       "waiting": "대기 중",
-      "setAsDone": "완료로 설정"
+      "setAsDone": "완료로 설정",
+      "planned": "계획됨",
+      "cancelled": "취소됨"
     },
     "noSubtasksClickToAdd": "아직 하위 작업이 없습니다. 클릭하여 추가하세요",
     "project": "프로젝트",

@@ -357,7 +357,26 @@
     "avatarUploadFailed": "Failed to upload avatar",
     "avatarRemoveFailed": "Failed to remove avatar",
     "notificationsDescription": "اختر كيف تريد أن تتلقى إشعارات حول الأحداث المهمة.",
-    "aiFeatures": "ميزات الذكاء الاصطناعي"
+    "aiFeatures": "ميزات الذكاء الاصطناعي",
+    "keyboardShortcuts": "اختصارات لوحة المفاتيح",
+    "shortcuts": {
+      "enableShortcuts": "تفعيل اختصارات لوحة المفاتيح",
+      "enableDescription": "قم بتشغيل أو إيقاف اختصارات لوحة المفاتيح على مستوى العالم.",
+      "duplicateWarning": "تم الكشف عن اختصارات مكررة:",
+      "pressKeys": "اضغط على المفاتيح...",
+      "duplicateWith": "يتعارض مع {{action}}",
+      "record": "تسجيل",
+      "resetToDefaults": "إعادة تعيين إلى الإعدادات الافتراضية",
+      "info": "تساعدك اختصارات لوحة المفاتيح على التنقل بسرعة. يتم حفظ التغييرات عند النقر على \"حفظ التغييرات\" في أسفل الصفحة. يتم تعطيل الاختصارات عند الكتابة في حقول النص.",
+      "actions": {
+        "inbox": "إنشاء عنصر جديد في صندوق الوارد",
+        "task": "إنشاء مهمة جديدة",
+        "project": "إنشاء مشروع جديد",
+        "note": "إنشاء ملاحظة جديدة",
+        "area": "إنشاء منطقة جديدة",
+        "tag": "إنشاء علامة جديدة"
+      }
+    }
   },
   "productivity": {
     "stalledProjects": "المشاريع المتوقفة",
@@ -740,7 +759,9 @@
       "archived": "مؤرشف",
       "unknown": "جارية",
       "waiting": "في الانتظار",
-      "setAsDone": "تعيين كمنجز"
+      "setAsDone": "تعيين كمنجز",
+      "planned": "مخطط",
+      "cancelled": "ملغى"
     },
     "noSubtasksClickToAdd": "أضف مهام فرعية",
     "project": "المشروع",

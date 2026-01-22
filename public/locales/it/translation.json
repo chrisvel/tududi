@@ -357,7 +357,26 @@
     "avatarUploadFailed": "Failed to upload avatar",
     "avatarRemoveFailed": "Failed to remove avatar",
     "notificationsDescription": "Scegli come desideri essere avvisato riguardo eventi importanti.",
-    "aiFeatures": "Funzionalità AI"
+    "aiFeatures": "Funzionalità AI",
+    "keyboardShortcuts": "Scorciatoie da tastiera",
+    "shortcuts": {
+      "enableShortcuts": "Abilita le scorciatoie da tastiera",
+      "enableDescription": "Attiva o disattiva le scorciatoie da tastiera globalmente.",
+      "duplicateWarning": "Scorciatoie duplicate rilevate:",
+      "pressKeys": "Premi i tasti...",
+      "duplicateWith": "Conflitti con {{action}}",
+      "record": "Registra",
+      "resetToDefaults": "Ripristina ai valori predefiniti",
+      "info": "Le scorciatoie da tastiera ti aiutano a navigare rapidamente. Le modifiche vengono salvate quando fai clic su \"Salva modifiche\" in fondo alla pagina. Le scorciatoie sono disabilitate durante la digitazione nei campi di testo.",
+      "actions": {
+        "inbox": "Crea un nuovo elemento nella Posta in arrivo",
+        "task": "Crea un nuovo Compito",
+        "project": "Crea un nuovo Progetto",
+        "note": "Crea una nuova Nota",
+        "area": "Crea una nuova Area",
+        "tag": "Crea un nuovo Tag"
+      }
+    }
   },
   "productivity": {
     "stalledProjects": "Progetti Bloccati",
@@ -760,7 +779,9 @@
       "archived": "archiviato",
       "unknown": "in corso",
       "waiting": "In attesa",
-      "setAsDone": "Segna come completato"
+      "setAsDone": "Segna come completato",
+      "planned": "Pianificato",
+      "cancelled": "Annullato"
     },
     "noSubtasksClickToAdd": "Nessuna sottocompito ancora, clicca per aggiungere",
     "project": "Progetto",

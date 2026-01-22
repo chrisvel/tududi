@@ -357,7 +357,26 @@
     "avatarUploadFailed": "Failed to upload avatar",
     "avatarRemoveFailed": "Failed to remove avatar",
     "notificationsDescription": "Escolha como deseja ser notificado sobre eventos importantes.",
-    "aiFeatures": "Recursos de IA"
+    "aiFeatures": "Recursos de IA",
+    "keyboardShortcuts": "Atalhos de Teclado",
+    "shortcuts": {
+      "enableShortcuts": "Ativar Atalhos de Teclado",
+      "enableDescription": "Ative ou desative os atalhos de teclado globalmente.",
+      "duplicateWarning": "Atalhos duplicados detectados:",
+      "pressKeys": "Pressione as teclas...",
+      "duplicateWith": "Conflitos com {{action}}",
+      "record": "Gravar",
+      "resetToDefaults": "Restaurar para Padrões",
+      "info": "Os atalhos de teclado ajudam você a navegar rapidamente. As alterações são salvas quando você clica em \"Salvar Alterações\" na parte inferior da página. Os atalhos estão desativados ao digitar em campos de texto.",
+      "actions": {
+        "inbox": "Criar novo item na Caixa de Entrada",
+        "task": "Criar nova Tarefa",
+        "project": "Criar novo Projeto",
+        "note": "Criar nova Nota",
+        "area": "Criar nova Área",
+        "tag": "Criar nova Tag"
+      }
+    }
   },
   "productivity": {
     "stalledProjects": "Projetos Parados",
@@ -782,7 +801,9 @@
       "archived": "arquivado",
       "unknown": "em andamento",
       "waiting": "Aguardando",
-      "setAsDone": "Marcar como concluído"
+      "setAsDone": "Marcar como concluído",
+      "planned": "Planejado",
+      "cancelled": "Cancelado"
     },
     "noSubtasksClickToAdd": "Nenhuma subtarefa ainda, clique para adicionar",
     "noDueDate": "Sem data de vencimento",

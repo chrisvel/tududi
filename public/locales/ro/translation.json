@@ -357,7 +357,26 @@
     "avatarUploadFailed": "Failed to upload avatar",
     "avatarRemoveFailed": "Failed to remove avatar",
     "notificationsDescription": "Alege cum dorești să fii notificat despre evenimente importante.",
-    "aiFeatures": "Funcții AI"
+    "aiFeatures": "Funcții AI",
+    "keyboardShortcuts": "Comenzi rapide de la tastatură",
+    "shortcuts": {
+      "enableShortcuts": "Activare comenzi rapide de la tastatură",
+      "enableDescription": "Activează sau dezactivează comenzile rapide la nivel global.",
+      "duplicateWarning": "Comenzi rapide duplicate detectate:",
+      "pressKeys": "Apasă tastele...",
+      "duplicateWith": "Conflicte cu {{action}}",
+      "record": "Înregistrare",
+      "resetToDefaults": "Resetare la valorile implicite",
+      "info": "Comenzile rapide de la tastatură te ajută să navighezi rapid. Modificările sunt salvate când faci clic pe \"Salvează modificările\" la baza paginii. Comenzile rapide sunt dezactivate atunci când scrii în câmpurile de text.",
+      "actions": {
+        "inbox": "Creează un nou element în Inbox",
+        "task": "Creează o nouă sarcină",
+        "project": "Creează un nou proiect",
+        "note": "Creează o nouă notă",
+        "area": "Creează o nouă zonă",
+        "tag": "Creează un nou etichetă"
+      }
+    }
   },
   "productivity": {
     "stalledProjects": "Proiecte Blocate",
@@ -782,7 +801,9 @@
       "archived": "archivat",
       "unknown": "în desfășurare",
       "waiting": "Așteptare",
-      "setAsDone": "Marchează ca finalizat"
+      "setAsDone": "Marchează ca finalizat",
+      "planned": "Planificat",
+      "cancelled": "Anulat"
     },
     "noSubtasksClickToAdd": "Nu există subtasks încă, dă click pentru a adăuga",
     "noDueDate": "Fără dată limită",
