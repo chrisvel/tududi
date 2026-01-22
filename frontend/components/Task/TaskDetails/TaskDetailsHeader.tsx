@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     CheckIcon,
@@ -60,9 +60,13 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [editedTitle, setEditedTitle] = useState(task.name);
     const [actionsMenuOpen, setActionsMenuOpen] = useState(false);
+    const [actionsMenuStyle, setActionsMenuStyle] =
+        useState<React.CSSProperties>({});
+    const [actionsMenuReady, setActionsMenuReady] = useState(false);
     const [priorityDropdownOpen, setPriorityDropdownOpen] = useState(false);
     const titleInputRef = useRef<HTMLInputElement>(null);
     const actionsMenuRef = useRef<HTMLDivElement>(null);
+    const actionsMenuDropdownRef = useRef<HTMLDivElement>(null);
     const priorityDropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -75,6 +79,54 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
             titleInputRef.current.select();
         }
     }, [isEditingTitle]);
+
+    useLayoutEffect(() => {
+        if (!actionsMenuOpen) {
+            setActionsMenuStyle({});
+            setActionsMenuReady(false);
+            return;
+        }
+
+        const updateMenuPosition = () => {
+            const triggerRect = actionsMenuRef.current?.getBoundingClientRect();
+            const menuRect =
+                actionsMenuDropdownRef.current?.getBoundingClientRect();
+
+            if (!triggerRect || !menuRect) {
+                return;
+            }
+
+            const padding = 8;
+            const gap = 8;
+            let top = triggerRect.bottom + gap;
+            if (top + menuRect.height + padding > window.innerHeight) {
+                top = triggerRect.top - menuRect.height - gap;
+            }
+            top = Math.min(
+                Math.max(top, padding),
+                window.innerHeight - menuRect.height - padding
+            );
+
+            let left = triggerRect.right - menuRect.width;
+            left = Math.min(
+                Math.max(left, padding),
+                window.innerWidth - menuRect.width - padding
+            );
+
+            setActionsMenuStyle({
+                position: 'fixed',
+                top,
+                left,
+            });
+            setActionsMenuReady(true);
+        };
+
+        updateMenuPosition();
+        window.addEventListener('resize', updateMenuPosition);
+        return () => {
+            window.removeEventListener('resize', updateMenuPosition);
+        };
+    }, [actionsMenuOpen]);
 
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
@@ -264,7 +316,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                         {task.name}
                                     </h2>
 
-                                    <div className="flex items-center gap-2 flex-wrap flex-shrink-0">
+                                    <div className="flex items-center gap-2 flex-wrap min-w-0">
                                         <TaskStatusControl
                                             task={task}
                                             onToggleCompletion={
@@ -458,7 +510,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                         )}
 
                                         {formattedUpdatedAt && (
-                                            <span className="text-xs text-gray-400 dark:text-gray-600 sm:pl-1 mt-1 sm:mt-0">
+                                            <span className="text-xs text-gray-400 dark:text-gray-600 sm:pl-1 mt-1 sm:mt-0 break-words">
                                                 {t(
                                                     'task.updatedAt',
                                                     'Updated at'
@@ -706,7 +758,16 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                     </span>
                                 </button>
                                 {actionsMenuOpen && (
-                                    <div className="absolute right-0 top-full translate-y-2 w-40 rounded-lg shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 z-30">
+                                    <div
+                                        ref={actionsMenuDropdownRef}
+                                        style={{
+                                            ...actionsMenuStyle,
+                                            visibility: actionsMenuReady
+                                                ? 'visible'
+                                                : 'hidden',
+                                        }}
+                                        className="z-30 w-40 rounded-lg shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700"
+                                    >
                                         <button
                                             className="w-full text-left px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
                                             onClick={(e) => {
