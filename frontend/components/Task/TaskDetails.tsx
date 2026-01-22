@@ -737,58 +737,40 @@ const TaskDetails: React.FC = () => {
         [parentTask?.id, parentTask?.recurrence_type]
     );
 
-    const handleQuickStatusToggle = async () => {
+    const handleCompletionToggle = async () => {
         if (!task?.uid) {
             return;
         }
 
-        const isCurrentlyInProgress =
-            task.status === 'in_progress' || task.status === 1;
-        const isToggleable =
-            task.status === 'not_started' ||
-            task.status === 0 ||
-            isCurrentlyInProgress;
-
-        if (!isToggleable) {
-            return;
-        }
-
         try {
-            const nextStatusPayload: Task = {
+            const updatedTaskResponse = await toggleTaskCompletion(
+                task.uid,
+                task
+            );
+            const mergedTask = {
                 ...task,
-                status: isCurrentlyInProgress ? 0 : 1, // 0=not_started, 1=in_progress
+                ...updatedTaskResponse,
+                subtasks: updatedTaskResponse.subtasks || task.subtasks || [],
             };
 
-            await updateTask(task.uid, nextStatusPayload);
-
-            let latestTaskData: Task | null = null;
-
             if (uid) {
-                const updatedTaskFromServer = await fetchTaskByUid(uid);
-                latestTaskData = updatedTaskFromServer;
                 const existingIndex = tasksStore.tasks.findIndex(
                     (t: Task) => t.uid === uid
                 );
                 if (existingIndex >= 0) {
                     const updatedTasks = [...tasksStore.tasks];
-                    updatedTasks[existingIndex] = updatedTaskFromServer;
+                    updatedTasks[existingIndex] = mergedTask;
                     tasksStore.setTasks(updatedTasks);
                 }
             }
 
-            if (!latestTaskData) {
-                latestTaskData = nextStatusPayload;
-            }
-
-            await refreshRecurringSetup(latestTaskData);
+            await refreshRecurringSetup(mergedTask);
             setTimelineRefreshKey((prev) => prev + 1);
             showSuccessToast(
-                isCurrentlyInProgress
-                    ? t('tasks.setNotStarted', 'Set to not started')
-                    : t('tasks.setInProgress', 'Set in progress')
+                t('task.statusUpdated', 'Status updated successfully')
             );
         } catch (error) {
-            console.error('Error toggling in-progress status:', error);
+            console.error('Error toggling task completion:', error);
             showErrorToast(
                 t('task.statusUpdateError', 'Failed to update status')
             );
@@ -1105,7 +1087,7 @@ const TaskDetails: React.FC = () => {
                     onOverdueIconClick={handleOverdueIconClick}
                     isOverdueAlertVisible={isOverdue && isOverdueBubbleVisible}
                     onDismissOverdueAlert={handleDismissOverdueAlert}
-                    onQuickStatusToggle={handleQuickStatusToggle}
+                    onQuickStatusToggle={handleCompletionToggle}
                     attachmentCount={attachmentCount}
                     subtasksCount={subtasks.length}
                 />
