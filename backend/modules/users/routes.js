@@ -3,21 +3,21 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs').promises;
+const fs = require('fs');
+const { getConfig } = require('../../config/config');
+const config = getConfig();
 const router = express.Router();
 const usersController = require('./controller');
 const { apiKeyManagementLimiter } = require('../../middleware/rateLimiter');
 
 // Configure multer for avatar uploads
 const storage = multer.diskStorage({
-    destination: async (req, file, cb) => {
-        const uploadDir = path.join(__dirname, '../../uploads/avatars');
-        try {
-            await fs.mkdir(uploadDir, { recursive: true });
-            cb(null, uploadDir);
-        } catch (error) {
-            cb(error, uploadDir);
+    destination: function (req, file, cb) {
+        const uploadDir = path.join(config.uploadPath, 'avatars');
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
         }
+        cb(null, uploadDir);
     },
     filename: (req, file, cb) => {
         const userId = req.currentUser?.id || req.session?.userId;
