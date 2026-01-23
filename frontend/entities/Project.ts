@@ -11,6 +11,13 @@ export type ProjectStatus =
     | 'done'
     | 'cancelled';
 
+export interface ProjectTaskStatus {
+    total: number;
+    done: number;
+    in_progress: number;
+    not_started: number;
+}
+
 export interface Project {
     id?: number;
     uid?: string;
@@ -35,4 +42,7 @@ export interface Project {
     updated_at?: string;
     share_count?: number;
     is_shared?: boolean;
+    task_status?: ProjectTaskStatus;
+    completion_percentage?: number;
+    is_stalled?: boolean;
 }
