@@ -140,6 +140,13 @@ class ProjectsService {
             const projectJson = project.toJSON();
             const shareCount = shareCountMap[project.uid] || 0;
 
+            const isActiveStatus =
+                project.status === 'planned' ||
+                project.status === 'in_progress';
+            const activeTaskCount =
+                taskStatus.in_progress + taskStatus.not_started;
+            const isStalled = isActiveStatus && activeTaskCount === 0;
+
             return {
                 ...projectJson,
                 tags: sortTags(projectJson.Tags),
@@ -152,6 +159,7 @@ class ProjectsService {
                 user_uid: projectJson.User?.uid,
                 share_count: shareCount,
                 is_shared: shareCount > 0,
+                is_stalled: isStalled,
             };
         });
 

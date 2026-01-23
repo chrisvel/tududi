@@ -71,10 +71,7 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
 
             // 1. Stalled Projects (no tasks/actions)
             const stalledProjects = projects.filter(
-                (project) =>
-                    (project.status === 'planned' ||
-                        project.status === 'in_progress') &&
-                    !activeTasks.some((task) => task.project_id === project.id)
+                (project) => project.is_stalled === true
             );
 
             if (stalledProjects.length > 0) {
