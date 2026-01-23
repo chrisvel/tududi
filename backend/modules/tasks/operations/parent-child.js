@@ -128,25 +128,7 @@ async function handleParentChildOnStatusChange(
         task.Subtasks = directSubtasksQuery;
     }
 
-    if (task.parent_task_id) {
-        if (newStatus === Task.STATUS.DONE || newStatus === 'done') {
-            const parentUpdated = await checkAndUpdateParentTaskCompletion(
-                task.parent_task_id,
-                userId
-            );
-            if (parentUpdated) {
-                parentChildLogicExecuted = true;
-            }
-        } else if (oldStatus === Task.STATUS.DONE || oldStatus === 'done') {
-            const parentUpdated = await undoneParentTaskIfNeeded(
-                task.parent_task_id,
-                userId
-            );
-            if (parentUpdated) {
-                parentChildLogicExecuted = true;
-            }
-        }
-    } else if (task.Subtasks && task.Subtasks.length > 0) {
+    if (task.Subtasks && task.Subtasks.length > 0) {
         if (newStatus === Task.STATUS.DONE) {
             const subtasksUpdated = await completeAllSubtasks(task.id, userId);
             if (subtasksUpdated) {
