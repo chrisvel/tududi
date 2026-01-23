@@ -275,9 +275,10 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
     };
 
     const handleItemClick = (item: Task | Project) => {
-        const isTask = 'status' in item;
+        // Projects have task_status from backend, tasks don't
+        const isProject = 'task_status' in item || 'is_stalled' in item;
 
-        if (isTask) {
+        if (!isProject) {
             // Handle task click - navigate to task details page
             if (item.uid) {
                 navigate(`/task/${item.uid}`);
