@@ -87,7 +87,7 @@ For detailed setup instructions, configuration options, and getting started guid
 
 - **[Installation Guide](https://docs.tududi.com/getting-started/installation)** - Docker, development setup, and deployment
 - **[Configuration](https://docs.tududi.com/getting-started/configuration)** - Environment variables and advanced settings
-- **[First Steps](https://docs.tududi.com/first-steps)** - Learn the basics and get productive
+- **[First Steps](https://docs.tududi.com/getting-started/first-steps)** - Learn the basics and get productive
 - **[Project Sharing](https://docs.tududi.com/features/project-sharing)** - Collaborate with your team
 
 ## 🚧 Development
