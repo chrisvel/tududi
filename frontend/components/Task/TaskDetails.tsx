@@ -10,6 +10,7 @@ import {
     deleteTask,
     fetchTaskByUid,
     fetchTaskNextIterations,
+    fetchSubtasks,
     TaskIteration,
     toggleTaskCompletion,
 } from '../../utils/tasksService';
@@ -57,8 +58,7 @@ const TaskDetails: React.FC = () => {
     const [loadingIterations, setLoadingIterations] = useState(false);
     const [parentTask, setParentTask] = useState<Task | null>(null);
     const [loadingParent, setLoadingParent] = useState(false);
-    const [isEditingSubtasks, setIsEditingSubtasks] = useState(false);
-    const [editedSubtasks, setEditedSubtasks] = useState<Task[]>([]);
+    const [pendingSubtasks, setPendingSubtasks] = useState<Task[]>([]);
     const [actionsMenuOpen, setActionsMenuOpen] = useState(false);
     const actionsMenuRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
@@ -116,6 +116,7 @@ const TaskDetails: React.FC = () => {
     });
     const [activePill, setActivePill] = useState('overview');
     const [attachmentCount, setAttachmentCount] = useState(0);
+    const [hasLoadedSubtasks, setHasLoadedSubtasks] = useState(false);
 
     useEffect(() => {
         setEditedDueDate(task?.due_date || '');
@@ -187,7 +188,6 @@ const TaskDetails: React.FC = () => {
         setRecurrenceForm((prev) => {
             const updated = { ...prev, [field]: value };
 
-            // Set default values when switching to monthly recurrence
             if (
                 field === 'recurrence_type' &&
                 value === 'monthly' &&
@@ -307,7 +307,6 @@ const TaskDetails: React.FC = () => {
             }
         }
 
-        // Check if due date is in the past
         if (editedDueDate) {
             const dueDate = new Date(editedDueDate);
             const today = new Date();
@@ -463,7 +462,6 @@ const TaskDetails: React.FC = () => {
         fetchTaskData();
     }, [uid, task, tasksStore]);
 
-    // Load attachment count when task is loaded
     useEffect(() => {
         const loadAttachmentCount = async () => {
             if (task?.uid) {
@@ -480,6 +478,49 @@ const TaskDetails: React.FC = () => {
     }, [task?.uid]);
 
     useEffect(() => {
+        setHasLoadedSubtasks(false);
+    }, [uid]);
+
+    useEffect(() => {
+        const loadSubtasks = async () => {
+            const subtasksAlreadyLoaded = task?.subtasks && task.subtasks.length > 0;
+
+            if (
+                activePill === 'subtasks' &&
+                task?.uid &&
+                !hasLoadedSubtasks &&
+                !subtasksAlreadyLoaded
+            ) {
+                try {
+                    const fetchedSubtasks = await fetchSubtasks(task.uid);
+                    setHasLoadedSubtasks(true);
+
+                    const existingIndex = tasksStore.tasks.findIndex(
+                        (t: Task) => t.uid === task.uid
+                    );
+                    if (existingIndex >= 0) {
+                        const updatedTasks = [...tasksStore.tasks];
+                        updatedTasks[existingIndex] = {
+                            ...task,
+                            subtasks: fetchedSubtasks,
+                        };
+                        tasksStore.setTasks(updatedTasks);
+                    }
+                } catch (error) {
+                    console.error('Error loading subtasks:', error);
+                    setHasLoadedSubtasks(true);
+                }
+            }
+        };
+
+        loadSubtasks();
+    }, [activePill, task?.uid, task?.subtasks, hasLoadedSubtasks, tasksStore]);
+
+    useEffect(() => {
+        setPendingSubtasks(subtasks);
+    }, [subtasks]);
+
+    useEffect(() => {
         const loadNextIterations = async () => {
             if (
                 task?.id &&
@@ -488,7 +529,6 @@ const TaskDetails: React.FC = () => {
             ) {
                 try {
                     setLoadingIterations(true);
-                    // Don't pass startFromDate - let backend default to today
                     const iterations = await fetchTaskNextIterations(
                         task.uid!
                     );
@@ -508,7 +548,6 @@ const TaskDetails: React.FC = () => {
                 try {
                     setLoadingIterations(true);
 
-                    // Don't pass startFromDate - let backend default to today
                     const iterations = await fetchTaskNextIterations(
                         parentTask.uid
                     );
@@ -559,20 +598,29 @@ const TaskDetails: React.FC = () => {
         loadParentTask();
     }, [task?.recurring_parent_uid]);
 
-    const handleStartSubtasksEdit = () => {
-        setIsEditingSubtasks(true);
-        setEditedSubtasks([...subtasks]);
-    };
-
-    const handleSaveSubtasks = async () => {
+    const handleSaveSubtasks = async (subtasksToSave: Task[]) => {
         if (!task?.uid) {
-            setIsEditingSubtasks(false);
-            setEditedSubtasks([]);
+            return;
+        }
+
+        const hasChanges =
+            subtasksToSave.length !== subtasks.length ||
+            subtasksToSave.some(
+                (ps, i) =>
+                    !subtasks[i] ||
+                    ps.name !== subtasks[i].name ||
+                    ps.status !== subtasks[i].status ||
+                    (ps as any)._isNew ||
+                    (ps as any)._isEdited ||
+                    (ps as any)._statusChanged
+            );
+
+        if (!hasChanges) {
             return;
         }
 
         try {
-            await updateTask(task.uid, { ...task, subtasks: editedSubtasks });
+            await updateTask(task.uid, { ...task, subtasks: subtasksToSave });
 
             if (uid) {
                 const updatedTask = await fetchTaskByUid(uid);
@@ -585,11 +633,6 @@ const TaskDetails: React.FC = () => {
                     tasksStore.setTasks(updatedTasks);
                 }
             }
-
-            showSuccessToast(
-                t('task.subtasksUpdated', 'Subtasks updated successfully')
-            );
-            setIsEditingSubtasks(false);
 
             setTimelineRefreshKey((prev) => prev + 1);
         } catch (error) {
@@ -597,34 +640,7 @@ const TaskDetails: React.FC = () => {
             showErrorToast(
                 t('task.subtasksUpdateError', 'Failed to update subtasks')
             );
-            setEditedSubtasks([...subtasks]);
-            setIsEditingSubtasks(false);
-        }
-    };
-
-    const handleCancelSubtasksEdit = () => {
-        setIsEditingSubtasks(false);
-        setEditedSubtasks([]);
-    };
-
-    const handleToggleSubtaskCompletion = async (subtask: Task) => {
-        if (!subtask.uid) return;
-        try {
-            await toggleTaskCompletion(subtask.uid, subtask);
-            if (uid) {
-                const updatedTask = await fetchTaskByUid(uid);
-                const existingIndex = tasksStore.tasks.findIndex(
-                    (t: Task) => t.uid === uid
-                );
-                if (existingIndex >= 0) {
-                    const updatedTasks = [...tasksStore.tasks];
-                    updatedTasks[existingIndex] = updatedTask;
-                    tasksStore.setTasks(updatedTasks);
-                }
-            }
-            setTimelineRefreshKey((prev) => prev + 1);
-        } catch (error) {
-            console.error('Error toggling subtask completion:', error);
+            setPendingSubtasks([...subtasks]);
         }
     };
 
@@ -715,13 +731,11 @@ const TaskDetails: React.FC = () => {
             try {
                 setLoadingIterations(true);
                 if (isTemplateTask) {
-                    // Don't pass startFromDate - let backend default to today
                     const iterations = await fetchTaskNextIterations(
                         latestTask.uid!
                     );
                     setNextIterations(iterations);
                 } else if (canUseParentIterations && parentTask?.uid) {
-                    // Don't pass startFromDate - let backend default to today
                     const iterations = await fetchTaskNextIterations(
                         parentTask.uid
                     );
@@ -1071,7 +1085,6 @@ const TaskDetails: React.FC = () => {
     return (
         <div className="px-4 lg:px-6 pt-4">
             <div className="w-full">
-                {/* Header Section with Title and Action Buttons */}
                 <TaskDetailsHeader
                     task={task}
                     onTitleUpdate={handleTitleUpdate}
@@ -1092,12 +1105,9 @@ const TaskDetails: React.FC = () => {
                     subtasksCount={subtasks.length}
                 />
 
-                {/* Content - Full width layout */}
                 <div className="mb-6 mt-6">
-                    {/* Overview Pill */}
                     {activePill === 'overview' && (
                         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                            {/* Left Column - Main Content */}
                             <div className="lg:col-span-3 space-y-8">
                                 <TaskContentCard
                                     content={task.note || ''}
@@ -1105,7 +1115,6 @@ const TaskDetails: React.FC = () => {
                                 />
                             </div>
 
-                            {/* Right Column - Project and Tags */}
                             <div className="space-y-6">
                                 <TaskProjectCard
                                     task={task}
@@ -1151,7 +1160,6 @@ const TaskDetails: React.FC = () => {
                         </div>
                     )}
 
-                    {/* Recurrence Pill */}
                     {activePill === 'recurrence' && (
                         <div className="grid grid-cols-1">
                             <TaskRecurrenceCard
@@ -1171,26 +1179,17 @@ const TaskDetails: React.FC = () => {
                         </div>
                     )}
 
-                    {/* Subtasks Pill */}
                     {activePill === 'subtasks' && (
                         <div className="grid grid-cols-1">
                             <TaskSubtasksCard
                                 task={task}
-                                subtasks={subtasks}
-                                isEditing={isEditingSubtasks}
-                                editedSubtasks={editedSubtasks}
-                                onSubtasksChange={setEditedSubtasks}
-                                onStartEdit={handleStartSubtasksEdit}
+                                subtasks={pendingSubtasks}
+                                onSubtasksChange={setPendingSubtasks}
                                 onSave={handleSaveSubtasks}
-                                onCancel={handleCancelSubtasksEdit}
-                                onToggleSubtaskCompletion={
-                                    handleToggleSubtaskCompletion
-                                }
                             />
                         </div>
                     )}
 
-                    {/* Attachments Pill */}
                     {activePill === 'attachments' && (
                         <div className="grid grid-cols-1">
                             <TaskAttachmentsCard
@@ -1200,7 +1199,6 @@ const TaskDetails: React.FC = () => {
                         </div>
                     )}
 
-                    {/* Activity Pill */}
                     {activePill === 'activity' && (
                         <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 p-6">
                             <TaskTimeline
@@ -1210,9 +1208,7 @@ const TaskDetails: React.FC = () => {
                         </div>
                     )}
                 </div>
-                {/* End of main content sections */}
 
-                {/* Confirm Delete Dialog */}
                 {isConfirmDialogOpen && taskToDelete && (
                     <ConfirmDialog
                         title={t('task.deleteConfirmTitle', 'Delete Task')}
