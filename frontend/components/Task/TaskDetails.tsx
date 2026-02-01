@@ -61,6 +61,7 @@ const TaskDetails: React.FC = () => {
     const [pendingSubtasks, setPendingSubtasks] = useState<Task[]>([]);
     const [actionsMenuOpen, setActionsMenuOpen] = useState(false);
     const actionsMenuRef = useRef<HTMLDivElement>(null);
+    const lastKnownSubtaskCount = useRef<number>(0);
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
             const target = e.target as Node;
@@ -479,21 +480,24 @@ const TaskDetails: React.FC = () => {
 
     useEffect(() => {
         setHasLoadedSubtasks(false);
+        lastKnownSubtaskCount.current = 0;
     }, [uid]);
 
     useEffect(() => {
         const loadSubtasks = async () => {
-            const subtasksAlreadyLoaded = task?.subtasks && task.subtasks.length > 0;
+            if (activePill !== 'subtasks' || !task?.uid) {
+                return;
+            }
 
-            if (
-                activePill === 'subtasks' &&
-                task?.uid &&
-                !hasLoadedSubtasks &&
-                !subtasksAlreadyLoaded
-            ) {
+            const currentCount = task?.subtasks?.length || 0;
+            const subtasksDisappeared = lastKnownSubtaskCount.current > 0 && currentCount === 0;
+            const needsInitialLoad = !hasLoadedSubtasks && currentCount === 0;
+
+            if (needsInitialLoad || subtasksDisappeared) {
                 try {
                     const fetchedSubtasks = await fetchSubtasks(task.uid);
                     setHasLoadedSubtasks(true);
+                    lastKnownSubtaskCount.current = fetchedSubtasks.length;
 
                     const existingIndex = tasksStore.tasks.findIndex(
                         (t: Task) => t.uid === task.uid
@@ -510,6 +514,8 @@ const TaskDetails: React.FC = () => {
                     console.error('Error loading subtasks:', error);
                     setHasLoadedSubtasks(true);
                 }
+            } else if (currentCount > 0) {
+                lastKnownSubtaskCount.current = currentCount;
             }
         };
 
@@ -624,6 +630,7 @@ const TaskDetails: React.FC = () => {
 
             if (uid) {
                 const updatedTask = await fetchTaskByUid(uid);
+                lastKnownSubtaskCount.current = updatedTask.subtasks?.length || 0;
                 const existingIndex = tasksStore.tasks.findIndex(
                     (t: Task) => t.uid === uid
                 );
