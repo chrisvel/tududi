@@ -31,7 +31,11 @@ import {
     TaskDeferUntilCard,
     TaskAttachmentsCard,
 } from './TaskDetails/';
-import { isTaskOverdueInTodayPlan, isTaskPastDue } from '../../utils/dateUtils';
+import {
+    isTaskOverdueInTodayPlan,
+    isTaskPastDue,
+    getTodayDateString,
+} from '../../utils/dateUtils';
 
 const TaskDetails: React.FC = () => {
     const { uid } = useParams<{ uid: string }>();
@@ -309,12 +313,10 @@ const TaskDetails: React.FC = () => {
         }
 
         if (editedDueDate) {
-            const dueDate = new Date(editedDueDate);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            dueDate.setHours(0, 0, 0, 0);
+            const todayStr = getTodayDateString();
+            const dueDateStr = editedDueDate.split('T')[0];
 
-            if (!isNaN(dueDate.getTime()) && dueDate < today) {
+            if (dueDateStr < todayStr) {
                 showErrorToast(
                     t(
                         'task.dueDateInPastWarning',
@@ -490,7 +492,8 @@ const TaskDetails: React.FC = () => {
             }
 
             const currentCount = task?.subtasks?.length || 0;
-            const subtasksDisappeared = lastKnownSubtaskCount.current > 0 && currentCount === 0;
+            const subtasksDisappeared =
+                lastKnownSubtaskCount.current > 0 && currentCount === 0;
             const needsInitialLoad = !hasLoadedSubtasks && currentCount === 0;
 
             if (needsInitialLoad || subtasksDisappeared) {
@@ -535,9 +538,7 @@ const TaskDetails: React.FC = () => {
             ) {
                 try {
                     setLoadingIterations(true);
-                    const iterations = await fetchTaskNextIterations(
-                        task.uid!
-                    );
+                    const iterations = await fetchTaskNextIterations(task.uid!);
                     setNextIterations(iterations);
                 } catch (error) {
                     console.error('Error loading next iterations:', error);
@@ -630,7 +631,8 @@ const TaskDetails: React.FC = () => {
 
             if (uid) {
                 const updatedTask = await fetchTaskByUid(uid);
-                lastKnownSubtaskCount.current = updatedTask.subtasks?.length || 0;
+                lastKnownSubtaskCount.current =
+                    updatedTask.subtasks?.length || 0;
                 const existingIndex = tasksStore.tasks.findIndex(
                     (t: Task) => t.uid === uid
                 );

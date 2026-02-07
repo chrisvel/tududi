@@ -7,6 +7,7 @@ import {
     isTaskPlanned,
     isTaskWaiting,
 } from '../../constants/taskStatus';
+import { parseDateString, getTodayDateString } from '../../utils/dateUtils';
 
 // Check if task is in today's plan (has active status)
 const isTaskInTodayPlan = (task: Task): boolean =>
@@ -30,14 +31,14 @@ export const useProjectMetrics = (
             dueSoon: 0,
         };
 
-        const today = new Date();
-        const startOfToday = new Date(
-            today.getFullYear(),
-            today.getMonth(),
-            today.getDate()
-        );
-        const soonBoundary = new Date(startOfToday);
-        soonBoundary.setDate(startOfToday.getDate() + 7);
+        const todayStr = getTodayDateString();
+        const soonBoundary = new Date();
+        soonBoundary.setHours(0, 0, 0, 0);
+        soonBoundary.setDate(soonBoundary.getDate() + 7);
+        const soonYear = soonBoundary.getFullYear();
+        const soonMonth = String(soonBoundary.getMonth() + 1).padStart(2, '0');
+        const soonDay = String(soonBoundary.getDate()).padStart(2, '0');
+        const soonStr = `${soonYear}-${soonMonth}-${soonDay}`;
 
         const isCompleted = (status: Task['status']) =>
             status === 'done' ||
@@ -65,13 +66,11 @@ export const useProjectMetrics = (
             }
 
             if (!isCompleted(status) && task.due_date) {
-                const dueDate = new Date(task.due_date);
-                if (!Number.isNaN(dueDate.getTime())) {
-                    if (dueDate < startOfToday) {
-                        stats.overdue += 1;
-                    } else if (dueDate <= soonBoundary) {
-                        stats.dueSoon += 1;
-                    }
+                const dueDateStr = task.due_date.split('T')[0];
+                if (dueDateStr < todayStr) {
+                    stats.overdue += 1;
+                } else if (dueDateStr <= soonStr) {
+                    stats.dueSoon += 1;
                 }
             }
         });
@@ -125,16 +124,18 @@ export const useProjectMetrics = (
             unscheduled: [] as Task[],
         };
 
-        const now = new Date();
-        const startOfToday = new Date(
-            now.getFullYear(),
-            now.getMonth(),
-            now.getDate()
-        );
-        const weekBoundary = new Date(startOfToday);
-        weekBoundary.setDate(startOfToday.getDate() + 7);
-        const monthBoundary = new Date(startOfToday);
-        monthBoundary.setDate(startOfToday.getDate() + 30);
+        const todayStr = getTodayDateString();
+        const toDateStr = (offsetDays: number): string => {
+            const d = new Date();
+            d.setHours(0, 0, 0, 0);
+            d.setDate(d.getDate() + offsetDays);
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            return `${y}-${m}-${dd}`;
+        };
+        const weekStr = toDateStr(7);
+        const monthStr = toDateStr(30);
 
         const isCompleted = (status: Task['status']) =>
             status === 'done' ||
@@ -150,17 +151,17 @@ export const useProjectMetrics = (
                 return;
             }
 
-            const due = new Date(task.due_date);
-            if (Number.isNaN(due.getTime())) {
+            const dueDateStr = task.due_date.split('T')[0];
+            if (!dueDateStr) {
                 buckets.unscheduled.push(task);
                 return;
             }
 
-            if (due < startOfToday) {
+            if (dueDateStr < todayStr) {
                 buckets.overdue.push(task);
-            } else if (due <= weekBoundary) {
+            } else if (dueDateStr <= weekStr) {
                 buckets.week.push(task);
-            } else if (due <= monthBoundary) {
+            } else if (dueDateStr <= monthStr) {
                 buckets.month.push(task);
             } else {
                 buckets.unscheduled.push(task);
@@ -262,7 +263,9 @@ export const useProjectMetrics = (
 
         tasks.forEach((task) => {
             if (!task.due_date || isCompleted(task.status)) return;
-            const key = new Date(task.due_date).toISOString().split('T')[0];
+            // Use the due_date string directly as key (YYYY-MM-DD format)
+            // This avoids timezone conversion issues with new Date().toISOString()
+            const key = task.due_date.split('T')[0];
             if (counts[key] !== undefined) {
                 counts[key] += 1;
             }
@@ -344,15 +347,17 @@ export const useProjectMetrics = (
                 }
 
                 if (task.due_date) {
-                    const due = new Date(task.due_date);
-                    const diffDays = Math.floor(
-                        (due.getTime() - startOfToday.getTime()) /
-                            (1000 * 60 * 60 * 24)
-                    );
-                    if (diffDays < 0) score -= 25;
-                    else if (diffDays === 0) score -= 20;
-                    else if (diffDays <= 2) score -= 15;
-                    else if (diffDays <= 7) score -= 10;
+                    const due = parseDateString(task.due_date);
+                    if (due) {
+                        const diffDays = Math.floor(
+                            (due.getTime() - startOfToday.getTime()) /
+                                (1000 * 60 * 60 * 24)
+                        );
+                        if (diffDays < 0) score -= 25;
+                        else if (diffDays === 0) score -= 20;
+                        else if (diffDays <= 2) score -= 15;
+                        else if (diffDays <= 7) score -= 10;
+                    }
                 }
 
                 score += getPriorityScore(task.priority);
@@ -392,9 +397,8 @@ export const useProjectMetrics = (
                 now.getMonth(),
                 now.getDate()
             );
-            const due = new Date(task.due_date);
-            if (Number.isNaN(due.getTime()))
-                return t('tasks.noDue', 'No due date') as string;
+            const due = parseDateString(task.due_date);
+            if (!due) return t('tasks.noDue', 'No due date') as string;
 
             const diffDays = Math.floor(
                 (due.getTime() - startOfToday.getTime()) / (1000 * 60 * 60 * 24)
