@@ -17,6 +17,14 @@ export const isTaskInTodayPlan = (
 ): boolean =>
     isTaskInProgress(status) || isTaskPlanned(status) || isTaskWaiting(status);
 
+export const getTodayDateString = (): string => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
+
 let userTimezone: string | null = null;
 
 export const setUserTimezone = (timezone: string): void => {
@@ -31,7 +39,9 @@ export const setUserTimezone = (timezone: string): void => {
  * @param dateString - Date string in YYYY-MM-DD format
  * @returns Date object at local midnight, or null if invalid
  */
-export const parseDateString = (dateString: string | null | undefined): Date | null => {
+export const parseDateString = (
+    dateString: string | null | undefined
+): Date | null => {
     if (!dateString) return null;
     // Adding T00:00:00 makes JavaScript interpret the date as local time
     const date = new Date(dateString + 'T00:00:00');
@@ -91,15 +101,10 @@ export const isTaskPastDue = (task: {
         return false;
     }
 
-    // Check if due date is in the past
-    const dueDate = parseDateString(task.due_date);
-    if (!dueDate) return false;
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Start of today
-    dueDate.setHours(0, 0, 0, 0); // Start of due date
-
-    return dueDate < today;
+    // Check if due date is in the past using string comparison (YYYY-MM-DD)
+    const todayStr = getTodayDateString();
+    const dueDateStr = task.due_date.split('T')[0];
+    return dueDateStr < todayStr;
 };
 
 /**
