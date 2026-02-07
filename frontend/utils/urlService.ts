@@ -1,6 +1,3 @@
-/**
- * Service for URL-related operations like extracting titles from web pages
- */
 import { handleAuthResponse } from './authUtils';
 import { getApiPath } from '../config/paths';
 
@@ -13,11 +10,6 @@ export interface UrlTitleResult {
     error?: string;
 }
 
-/**
- * Extract the title of a web page from its URL
- * @param url The URL to extract the title from
- * @returns Promise resolving to the page title or null if not found
- */
 export const extractUrlTitle = async (url: string): Promise<UrlTitleResult> => {
     try {
         const response = await fetch(
@@ -38,11 +30,6 @@ export const extractUrlTitle = async (url: string): Promise<UrlTitleResult> => {
     }
 };
 
-/**
- * Extract a URL and its title from arbitrary text
- * @param text The text that might contain a URL
- * @returns Promise resolving to the URL and title if found
- */
 export const extractTitleFromText = async (
     text: string
 ): Promise<UrlTitleResult | null> => {
@@ -71,14 +58,14 @@ export const extractTitleFromText = async (
     }
 };
 
-/**
- * Check if a string is likely a URL
- * @param text The text to check
- * @returns True if the text appears to be a URL
- */
 export const isUrl = (text: string): boolean => {
-    // Basic URL validation regex
+    const trimmed = text.trim();
+
+    if (!trimmed || trimmed.length > 2000 || !trimmed.includes('.')) {
+        return false;
+    }
+
     const urlRegex =
-        /^(https?:\/\/)?[a-z0-9]+([-.]?[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
-    return urlRegex.test(text.trim());
+        /^(https?:\/\/)?[a-z0-9][a-z0-9.-]*\.[a-z]{2,}(:[0-9]+)?(\/\S*)?$/i;
+    return urlRegex.test(trimmed);
 };
