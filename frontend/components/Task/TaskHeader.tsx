@@ -16,7 +16,7 @@ import { Task } from '../../entities/Task';
 import { fetchSubtasks } from '../../utils/tasksService';
 import { isTaskCompleted, isTaskInProgress } from '../../constants/taskStatus';
 import TaskStatusControl from './TaskStatusControl';
-import { parseDateString } from '../../utils/dateUtils';
+import { parseDateString, getTodayDateString, getTomorrowDateString, getYesterdayDateString } from '../../utils/dateUtils';
 
 interface TaskHeaderProps {
     task: Task;
@@ -90,13 +90,9 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
     };
 
     const formatDueDate = (dueDate: string) => {
-        const today = new Date().toISOString().split('T')[0];
-        const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000)
-            .toISOString()
-            .split('T')[0];
-        const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000)
-            .toISOString()
-            .split('T')[0];
+        const today = getTodayDateString();
+        const tomorrow = getTomorrowDateString();
+        const yesterday = getYesterdayDateString();
 
         if (dueDate === today) return t('dateIndicators.today', 'TODAY');
         if (dueDate === tomorrow)

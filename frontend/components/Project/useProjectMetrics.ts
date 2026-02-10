@@ -7,7 +7,7 @@ import {
     isTaskPlanned,
     isTaskWaiting,
 } from '../../constants/taskStatus';
-import { parseDateString, getTodayDateString } from '../../utils/dateUtils';
+import { parseDateString, getTodayDateString, toLocalDateString } from '../../utils/dateUtils';
 
 // Check if task is in today's plan (has active status)
 const isTaskInTodayPlan = (task: Task): boolean =>
@@ -181,7 +181,7 @@ export const useProjectMetrics = (
         for (let i = days - 1; i >= 0; i--) {
             const d = new Date(today);
             d.setDate(today.getDate() - i);
-            const key = d.toISOString().split('T')[0];
+            const key = toLocalDateString(d);
             labels.push({
                 dateKey: key,
                 label: `${d.getMonth() + 1}/${d.getDate()}`,
@@ -193,7 +193,7 @@ export const useProjectMetrics = (
 
         tasks.forEach((task) => {
             if (!task.completed_at) return;
-            const key = new Date(task.completed_at).toISOString().split('T')[0];
+            const key = toLocalDateString(new Date(task.completed_at));
             if (counts[key] !== undefined) {
                 counts[key] += 1;
             }
@@ -213,7 +213,7 @@ export const useProjectMetrics = (
         for (let i = days - 1; i >= 0; i--) {
             const d = new Date(today);
             d.setDate(today.getDate() - i);
-            const key = d.toISOString().split('T')[0];
+            const key = toLocalDateString(d);
             labels.push({
                 dateKey: key,
                 label: `${d.getMonth() + 1}/${d.getDate()}`,
@@ -225,7 +225,7 @@ export const useProjectMetrics = (
 
         tasks.forEach((task) => {
             if (!task.created_at) return;
-            const key = new Date(task.created_at).toISOString().split('T')[0];
+            const key = toLocalDateString(new Date(task.created_at));
             if (counts[key] !== undefined) {
                 counts[key] += 1;
             }
@@ -245,7 +245,7 @@ export const useProjectMetrics = (
         for (let i = 0; i < days; i++) {
             const d = new Date(today);
             d.setDate(today.getDate() + i);
-            const key = d.toISOString().split('T')[0];
+            const key = toLocalDateString(d);
             labels.push({
                 dateKey: key,
                 label: `${d.getMonth() + 1}/${d.getDate()}`,

@@ -11,6 +11,7 @@ import {
     ExclamationTriangleIcon,
     SparklesIcon,
 } from '@heroicons/react/24/outline';
+import { getTodayDateString, getTomorrowDateString, getYesterdayDateString } from '../../utils/dateUtils';
 
 interface TaskTimelineProps {
     taskUid: string | undefined;
@@ -177,15 +178,11 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskUid, refreshKey }) => {
         // Handle ISO date strings (e.g., "2025-07-15T00:00:00.000Z")
         const date = new Date(dateString);
 
-        // Check if it's today, tomorrow, or yesterday
-        const today = new Date().toISOString().split('T')[0];
-        const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000)
-            .toISOString()
-            .split('T')[0];
-        const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000)
-            .toISOString()
-            .split('T')[0];
-        const dateOnly = date.toISOString().split('T')[0];
+        // Check if it's today, tomorrow, or yesterday using local time
+        const today = getTodayDateString();
+        const tomorrow = getTomorrowDateString();
+        const yesterday = getYesterdayDateString();
+        const dateOnly = dateString.split('T')[0];
 
         if (dateOnly === today) return t('dateIndicators.today');
         if (dateOnly === tomorrow) return t('dateIndicators.tomorrow');
