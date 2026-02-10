@@ -19,6 +19,10 @@ const API_BASE_PATH = `/api/${API_VERSION}`;
 
 const app = express();
 
+if (config.trustProxy !== false) {
+    app.set('trust proxy', config.trustProxy);
+}
+
 // Session store
 const sessionStore = new SequelizeStore({
     db: sequelize,

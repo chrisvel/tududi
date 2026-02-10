@@ -122,6 +122,7 @@ ENV NODE_ENV=production \
     TUDUDI_SESSION_SECRET="" \
     TUDUDI_USER_EMAIL="" \
     TUDUDI_USER_PASSWORD="" \
+    TUDUDI_TRUST_PROXY=false \
     DISABLE_TELEGRAM=false \
     DISABLE_SCHEDULER=false \
     TUDUDI_UPLOAD_PATH="/app/backend/uploads" \

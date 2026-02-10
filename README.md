@@ -79,6 +79,24 @@ docker run \
 
 Navigate to [http://localhost:3002](http://localhost:3002) and login with your credentials.
 
+### Reverse Proxy Setup
+
+When running behind a reverse proxy (Caddy, Nginx, Traefik, etc.), set `TUDUDI_TRUST_PROXY` so that Express correctly reads client IPs from `X-Forwarded-For` headers. Without this, `express-rate-limit` will log a validation error.
+
+```bash
+docker run \
+  -e TUDUDI_TRUST_PROXY=true \
+  -e TUDUDI_ALLOWED_ORIGINS=https://your-domain.com \
+  ...
+```
+
+| Value | Meaning |
+|-------|---------|
+| `true` | Trust all proxies (simplest option for single-proxy setups) |
+| `1` | Trust the first hop only |
+| `loopback` | Trust loopback addresses (127.0.0.1/::1) |
+| `172.16.0.0/12` | Trust a specific subnet |
+
 ### 📚 Documentation
 
 For detailed setup instructions, configuration options, and getting started guides, visit:
