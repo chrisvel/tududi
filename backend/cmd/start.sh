@@ -96,6 +96,8 @@ else
 fi
 
 if [ -n "${TUDUDI_USER_EMAIL:-}" ] && [ -n "${TUDUDI_USER_PASSWORD:-}" ]; then
+  # Trim whitespace/carriage returns that may come from docker-compose env vars
+  TUDUDI_USER_EMAIL=$(printf '%s' "$TUDUDI_USER_EMAIL" | tr -d '[:space:]')
   node scripts/user-create.js "$TUDUDI_USER_EMAIL" "$TUDUDI_USER_PASSWORD" true || exit 1
 fi
 
