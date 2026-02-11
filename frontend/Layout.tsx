@@ -463,7 +463,7 @@ const Layout: React.FC<LayoutProps> = ({
                         <div
                             className={`flex-1 flex flex-col py-0 px-0 transition-all duration-300 ${
                                 isMobileSearchOpen ? 'pt-32' : 'pt-20'
-                            } md:pt-20 ${isUpcomingView ? '' : 'md:px-4'} overflow-hidden`}
+                            } md:pt-20 ${isUpcomingView ? 'md:px-6 lg:px-8' : 'md:px-4'} overflow-hidden`}
                         >
                             <div className="w-full h-full overflow-auto">
                                 {children}
