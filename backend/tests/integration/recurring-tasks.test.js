@@ -215,6 +215,116 @@ describe('Recurring Tasks', () => {
                 );
                 expect(nextDate.getUTCDay()).toBe(targetWeekday);
             });
+
+            it('should advance to next selected weekday with multiple weekdays (Issue #715)', async () => {
+                // Use a fixed Tuesday: 2026-02-10
+                const tuesday = new Date(Date.UTC(2026, 1, 10, 0, 0, 0, 0));
+                expect(tuesday.getUTCDay()).toBe(2); // Sanity: Tuesday
+
+                const task = await Task.create({
+                    name: 'Tue/Thu Task',
+                    recurrence_type: 'weekly',
+                    recurrence_interval: 1,
+                    recurrence_weekdays: [2, 4], // Tuesday, Thursday
+                    due_date: tuesday,
+                    user_id: user.id,
+                    status: Task.STATUS.NOT_STARTED,
+                });
+
+                // Completing on Tuesday should advance to Thursday (2 days), not next Tuesday (7 days)
+                const nextDate = calculateNextDueDate(task, tuesday);
+                expect(nextDate.getUTCDay()).toBe(4); // Thursday
+                expect(nextDate.toISOString().split('T')[0]).toBe('2026-02-12');
+            });
+
+            it('should wrap around to next week when completing on last selected weekday', async () => {
+                // Use a fixed Thursday: 2026-02-12
+                const thursday = new Date(Date.UTC(2026, 1, 12, 0, 0, 0, 0));
+                expect(thursday.getUTCDay()).toBe(4); // Sanity: Thursday
+
+                const task = await Task.create({
+                    name: 'Tue/Thu Task',
+                    recurrence_type: 'weekly',
+                    recurrence_interval: 1,
+                    recurrence_weekdays: [2, 4], // Tuesday, Thursday
+                    due_date: thursday,
+                    user_id: user.id,
+                    status: Task.STATUS.NOT_STARTED,
+                });
+
+                // Completing on Thursday should wrap to next Tuesday (5 days)
+                const nextDate = calculateNextDueDate(task, thursday);
+                expect(nextDate.getUTCDay()).toBe(2); // Tuesday
+                expect(nextDate.toISOString().split('T')[0]).toBe('2026-02-17');
+            });
+
+            it('should advance due date correctly on completion with multiple weekdays via API', async () => {
+                // Use a fixed Tuesday: 2026-02-10
+                const tuesday = new Date(Date.UTC(2026, 1, 10, 0, 0, 0, 0));
+
+                const task = await Task.create({
+                    name: 'Tue/Thu Via API',
+                    recurrence_type: 'weekly',
+                    recurrence_interval: 1,
+                    recurrence_weekdays: [2, 4], // Tuesday, Thursday
+                    due_date: tuesday,
+                    user_id: user.id,
+                    status: Task.STATUS.NOT_STARTED,
+                });
+
+                // Complete the task on Tuesday
+                await agent
+                    .patch(`/api/task/${task.uid}`)
+                    .send({ status: Task.STATUS.DONE });
+                await task.reload();
+
+                // Should advance to Thursday, not next Tuesday
+                expect(task.status).toBe(Task.STATUS.NOT_STARTED);
+                const newDueDate = new Date(task.due_date);
+                expect(newDueDate.getUTCDay()).toBe(4); // Thursday
+
+                // Complete again on Thursday
+                await agent
+                    .patch(`/api/task/${task.uid}`)
+                    .send({ status: Task.STATUS.DONE });
+                await task.reload();
+
+                // Should wrap to next Tuesday
+                expect(task.status).toBe(Task.STATUS.NOT_STARTED);
+                const nextDueDate = new Date(task.due_date);
+                expect(nextDueDate.getUTCDay()).toBe(2); // Tuesday
+            });
+
+            it('should handle three weekdays (Mon/Wed/Fri)', async () => {
+                // Use a fixed Monday: 2026-02-09
+                const monday = new Date(Date.UTC(2026, 1, 9, 0, 0, 0, 0));
+                expect(monday.getUTCDay()).toBe(1); // Sanity: Monday
+
+                const task = await Task.create({
+                    name: 'MWF Task',
+                    recurrence_type: 'weekly',
+                    recurrence_interval: 1,
+                    recurrence_weekdays: [1, 3, 5], // Mon, Wed, Fri
+                    due_date: monday,
+                    user_id: user.id,
+                    status: Task.STATUS.NOT_STARTED,
+                });
+
+                // Monday -> Wednesday
+                const next1 = calculateNextDueDate(task, monday);
+                expect(next1.getUTCDay()).toBe(3);
+                expect(next1.toISOString().split('T')[0]).toBe('2026-02-11');
+
+                // Wednesday -> Friday
+                const next2 = calculateNextDueDate(task, next1);
+                expect(next2.getUTCDay()).toBe(5);
+                expect(next2.toISOString().split('T')[0]).toBe('2026-02-13');
+
+                // Friday -> next Monday
+                const next3 = calculateNextDueDate(task, next2);
+                expect(next3.getUTCDay()).toBe(1);
+                expect(next3.toISOString().split('T')[0]).toBe('2026-02-16');
+            });
         });
 
         describe('Monthly Recurrence', () => {

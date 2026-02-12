@@ -7,6 +7,10 @@ const { NotFoundError, ValidationError } = require('../../shared/errors');
 const { validateTagName } = require('../tags/tagsService');
 const permissionsService = require('../../services/permissionsService');
 const { sortTags } = require('../tasks/core/serializers');
+const {
+    getSafeTimezone,
+    processDueDateForResponse,
+} = require('../../utils/timezone-utils');
 const { uid: generateUid } = require('../../utils/uid');
 const { extractUidFromSlug } = require('../../utils/slug-utils');
 const { logError } = require('../../services/logService');
@@ -181,7 +185,7 @@ class ProjectsService {
     /**
      * Get project by UID.
      */
-    async getByUid(uid) {
+    async getByUid(uid, userTimezone) {
         const validatedUid = validateUid(uid);
         const project =
             await projectsRepository.findByUidWithIncludes(validatedUid);
@@ -190,6 +194,7 @@ class ProjectsService {
             throw new NotFoundError('Project not found');
         }
 
+        const safeTimezone = getSafeTimezone(userTimezone);
         const projectJson = project.toJSON();
 
         const normalizedTasks = projectJson.Tasks
@@ -201,11 +206,10 @@ class ProjectsService {
                           ...subtask,
                           tags: sortTags(subtask.Tags),
                       })),
-                      due_date: task.due_date
-                          ? typeof task.due_date === 'string'
-                              ? task.due_date.split('T')[0]
-                              : task.due_date.toISOString().split('T')[0]
-                          : null,
+                      due_date: processDueDateForResponse(
+                          task.due_date,
+                          safeTimezone
+                      ),
                   };
                   delete normalizedTask.Tags;
                   delete normalizedTask.Subtasks;
