@@ -164,7 +164,9 @@
     "swagger-ui-express": "^5.0.1",
     "use-debounce": "^10.0.6",
     "uuid": "~11.1.0",
-    "web-push": "^3.6.7"
+    "web-push": "^3.6.7",
+    "@modelcontextprotocol/sdk": "^1.26.0",
+    "zod": "^3.23.0"
   },
   "lint-staged": {
     "frontend/**/*.{js,jsx,ts,tsx}": [

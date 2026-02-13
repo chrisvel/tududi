@@ -136,6 +136,11 @@ const telegramModule = require('./modules/telegram');
 const urlModule = require('./modules/url');
 const usersModule = require('./modules/users');
 const viewsModule = require('./modules/views');
+const mcpModule = require('./modules/mcp');
+const {
+    requireMcpBearer,
+    mcpOriginCheck,
+} = require('./modules/mcp/middleware');
 
 // Swagger documentation - enabled by default, protected by authentication
 // Mounted on /api-docs to avoid conflicts with API routes
@@ -225,6 +230,15 @@ if (API_VERSION && API_BASE_PATH !== '/api') {
     routeBases.add(API_BASE_PATH);
 }
 routeBases.forEach(registerApiRoutes);
+
+// MCP (Model Context Protocol) Streamable HTTP at /mcp
+// Same API key (Bearer) auth as the API; tools mirror REST operations
+app.use('/mcp', apiLimiter);
+app.use('/mcp', authenticatedApiLimiter);
+app.use('/mcp', requireAuth);
+app.use('/mcp', requireMcpBearer);
+app.use('/mcp', mcpOriginCheck);
+app.use('/mcp', mcpModule.createMcpHandler(app));
 
 // SPA fallback
 app.get('*', (req, res) => {

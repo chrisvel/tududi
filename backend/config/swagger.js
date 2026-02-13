@@ -1,6 +1,8 @@
 const swaggerJsdoc = require('swagger-jsdoc');
 const path = require('path');
 
+const config = require('./config');
+
 const API_VERSION = process.env.API_VERSION || 'v1';
 const API_BASE_PATH = `/api/${API_VERSION}`;
 
@@ -22,11 +24,11 @@ const options = {
         },
         servers: [
             {
-                url: 'http://localhost:3002',
+                url: config.backendUrl,
                 description: `Backend server (base path ${API_BASE_PATH})`,
             },
             {
-                url: 'http://localhost:8080',
+                url: config.frontendUrl,
                 description: `Frontend dev server (proxy to ${API_BASE_PATH})`,
             },
         ],
@@ -346,5 +348,7 @@ if (swaggerSpec?.paths) {
 
     swaggerSpec.paths = updatedPaths;
 }
+
+swaggerSpec.API_BASE_PATH = API_BASE_PATH;
 
 module.exports = swaggerSpec;

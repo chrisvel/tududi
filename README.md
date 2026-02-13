@@ -53,6 +53,7 @@ For the thinking behind tududi, read:
     - Receive daily digests of your tasks
     - Quick capture of ideas and todos on the go
 - **Open API & Access Tokens**: Versioned Swagger docs exposed at `/api/v1` plus personal API keys for integrating tududi with your own tooling or automations.
+- **MCP (Model Context Protocol)**: Streamable HTTP MCP server at `/mcp` for AI assistants and MCP clients. Uses the same API key (Bearer) as the REST API and exposes all API operations as MCP tools.
 
 ## 🗺️ Roadmap
 

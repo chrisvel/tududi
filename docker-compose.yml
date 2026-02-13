@@ -1,17 +1,22 @@
 services:
   tududi:
-    image: chrisvel/tududi:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: tududi
     environment:
-      - TUDUDI_USER_EMAIL=admin@example.com
-      - TUDUDI_USER_PASSWORD=your-secure-password
-      - TUDUDI_SESSION_SECRET=changeme-please-use-openssl
-      - TUDUDI_ALLOWED_ORIGINS=http://localhost:3002
-      - TUDUDI_TRUST_PROXY=false
-      - TUDUDI_UPLOAD_PATH=/app/backend/uploads
+      - TUDUDI_USER_EMAIL=${TUDUDI_USER_EMAIL:-admin@example.com}
+      - TUDUDI_USER_PASSWORD=${TUDUDI_USER_PASSWORD:-your-secure-password}
+      - TUDUDI_SESSION_SECRET=${TUDUDI_SESSION_SECRET:-changeme-please-use-openssl}
+      - TUDUDI_ALLOWED_ORIGINS=${TUDUDI_ALLOWED_ORIGINS:-http://localhost:3002}
+      - TUDUDI_TRUST_PROXY=${TUDUDI_TRUST_PROXY:-false}
+      - TUDUDI_UPLOAD_PATH=${TUDUDI_UPLOAD_PATH:-/app/backend/uploads}
+      # Other environment variables
+      - BACKEND_URL=${BACKEND_URL:-http://localhost:3002}
+      - SWAGGER_ENABLED=${SWAGGER_ENABLED:-false}
       # Runtime UID/GID configuration - set these to match your host user/group
-      - PUID=1001
-      - PGID=1001
+      - PUID=${PUID:-1001}
+      - PGID=${PGID:-1001}
     volumes:
       - ./tududi_db:/app/backend/db
       - ./uploads:/app/backend/uploads
