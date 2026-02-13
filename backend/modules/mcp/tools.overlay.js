@@ -8,12 +8,21 @@
  *
  * Only operations that need name or description fixes are listed.
  * Any Swagger operation not listed here gets a default MCP tool automatically.
+ *
+ * Paths use API_BASE_PATH from the Swagger config (same as registry.js) for maintainability.
  */
+const swaggerSpec = require('../../config/swagger');
+const API_BASE_PATH = swaggerSpec.API_BASE_PATH || '/api/v1';
+
+function path(relative) {
+    return relative ? `${API_BASE_PATH}/${relative}` : API_BASE_PATH;
+}
+
 module.exports = {
     /* ------------------------------------------------------------------ */
     /*  INBOX                                                              */
     /* ------------------------------------------------------------------ */
-    '/api/v1/inbox': {
+    [path('inbox')]: {
         GET: {
             name: 'inbox_list',
             description:
@@ -36,7 +45,7 @@ module.exports = {
     /* ------------------------------------------------------------------ */
     /*  NOTES                                                              */
     /* ------------------------------------------------------------------ */
-    '/api/v1/notes': {
+    [path('notes')]: {
         GET: {
             name: 'notes_list',
             description:
@@ -46,7 +55,7 @@ module.exports = {
                 'Returns Note[] with id, uid, title, content (Markdown), color (hex), project_id, tags, created_at, updated_at.',
         },
     },
-    '/api/v1/note': {
+    [path('note')]: {
         POST: {
             name: 'note_create',
             description:
@@ -56,7 +65,7 @@ module.exports = {
                 'Returns the created Note. Use project_uid (not project_id) to link to a project.',
         },
     },
-    '/api/v1/note/{uid}': {
+    [path('note/{uid}')]: {
         PATCH: {
             name: 'note_update',
             description:
@@ -76,7 +85,7 @@ module.exports = {
     /* ------------------------------------------------------------------ */
     /*  PROJECTS                                                           */
     /* ------------------------------------------------------------------ */
-    '/api/v1/projects': {
+    [path('projects')]: {
         GET: {
             name: 'projects_list',
             description:
@@ -87,7 +96,7 @@ module.exports = {
                 'Call this first whenever you need a project_id or project_uid for other operations.',
         },
     },
-    '/api/v1/project': {
+    [path('project')]: {
         POST: {
             name: 'project_create',
             description:
@@ -97,7 +106,7 @@ module.exports = {
                 'Defaults: status="not_started", priority="medium". Returns the created Project.',
         },
     },
-    '/api/v1/project/{uid}': {
+    [path('project/{uid}')]: {
         PATCH: {
             name: 'project_update',
             description:
@@ -118,7 +127,7 @@ module.exports = {
     /* ------------------------------------------------------------------ */
     /*  TAGS                                                               */
     /* ------------------------------------------------------------------ */
-    '/api/v1/tags': {
+    [path('tags')]: {
         GET: {
             name: 'tags_list',
             description:
@@ -128,7 +137,7 @@ module.exports = {
                 'Call this before creating a duplicate tag.',
         },
     },
-    '/api/v1/tag': {
+    [path('tag')]: {
         POST: {
             name: 'tag_create',
             description:
@@ -141,7 +150,7 @@ module.exports = {
     /* ------------------------------------------------------------------ */
     /*  TASKS                                                              */
     /* ------------------------------------------------------------------ */
-    '/api/v1/tasks': {
+    [path('tasks')]: {
         GET: {
             name: 'tasks_list',
             description:
@@ -154,11 +163,11 @@ module.exports = {
                 '  groupBy: "day" | "project" (when "day", response includes groupedTasks object keyed by date), ' +
                 '  order_by: string (e.g. "due_date:asc", "created_at:desc", "priority:desc"). ' +
                 'Returns { tasks: Task[], groupedTasks?: { [date]: Task[] } }. ' +
-                'Each Task has id, uid, name, note, status, priority (low | medium | high), due_date, project_id, tags, subtasks, today (bool), recurrence fields, created_at, updated_at. ' +
+                'Each Task has id, uid, name, note, status, priority (low | medium | high), due_date, project_id, tags, subtasks, recurrence fields, created_at, updated_at. Today plan is determined by status (planned, in_progress, waiting). ' +
                 'Use type="today" specifically when user asks about today\'s plan or daily tasks.',
         },
     },
-    '/api/v1/tasks/metrics': {
+    [path('tasks/metrics')]: {
         GET: {
             name: 'tasks_metrics',
             description:
@@ -168,7 +177,7 @@ module.exports = {
                 'To get actual task data, use tasks_list instead.',
         },
     },
-    '/api/v1/task': {
+    [path('task')]: {
         POST: {
             name: 'task_create',
             description:
@@ -181,7 +190,6 @@ module.exports = {
                 '  project_id: int (look up with projects_list if user names a project), ' +
                 '  note: string (Markdown description), ' +
                 '  tags: [{ name: string }], ' +
-                '  today: bool (true = add to today\'s plan immediately), ' +
                 '  recurrence_type: "none" | "daily" | "weekly" | "monthly" | "yearly", ' +
                 '  recurrence_interval: int (e.g. 2 = every 2 days/weeks/months), ' +
                 '  recurrence_end_date: ISO datetime ' +
@@ -189,7 +197,7 @@ module.exports = {
                 'Returns the created Task. If user mentions a project by name, resolve it to project_id first.',
         },
     },
-    '/api/v1/task/{id}': {
+    [path('task/{id}')]: {
         GET: {
             name: 'task_get',
             description:
@@ -202,10 +210,10 @@ module.exports = {
             name: 'task_update',
             description:
                 'Update an existing task by its id or uid. ' +
-                'Use when the user says "update task", "change due date", "move to project", "set priority", "rename task", "add to today", or any modification request. ' +
+                'Use when the user says "update task", "change due date", "move to project", "set priority", "rename task", "add to today\'s plan (set status to planned)", or any modification request. ' +
                 'Path param: id (integer id or string uid). ' +
-                'Body: any subset of { name, note, priority, status, due_date, project_id, tags: [{ name }], today: bool, recurrence_type, recurrence_interval, recurrence_end_date }. ' +
-                'Only include fields that change. Set today: true/false to add/remove from today\'s plan. ' +
+                'Body: any subset of { name, note, priority, status, due_date, project_id, tags: [{ name }], recurrence_type, recurrence_interval, recurrence_end_date }. ' +
+                'Only include fields that change. To add/remove from today\'s plan, set status to planned (or in_progress/waiting) or to not_started/done/archived. ' +
                 'Returns the updated Task.',
         },
         DELETE: {
@@ -217,7 +225,7 @@ module.exports = {
                 'For recurring tasks, this deletes only this instance. Confirm with the user before deleting. This action is irreversible.',
         },
     },
-    '/api/v1/task/{id}/toggle_completion': {
+    [path('task/{id}/toggle_completion')]: {
         PATCH: {
             name: 'task_toggle_completion',
             description:
@@ -228,7 +236,7 @@ module.exports = {
                 'Prefer this over task_update when the only change is completion state, because it handles recurring task logic automatically.',
         },
     },
-    '/api/v1/task/{id}/subtasks': {
+    [path('task/{id}/subtasks')]: {
         POST: {
             name: 'task_subtask_create',
             description:
@@ -240,7 +248,7 @@ module.exports = {
                 'Returns the created subtask. The subtask inherits the parent\'s project_id.',
         },
     },
-    '/api/v1/tasks/generate-recurring': {
+    [path('tasks/generate-recurring')]: {
         POST: {
             name: 'tasks_generate_recurring',
             description:

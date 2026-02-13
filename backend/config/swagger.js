@@ -101,10 +101,42 @@ const options = {
                             type: 'integer',
                             description: 'Associated project ID',
                         },
-                        recurring_pattern: {
+                        recurrence_type: {
                             type: 'string',
-                            enum: ['daily', 'weekly', 'monthly', 'yearly'],
+                            enum: ['none', 'daily', 'weekly', 'monthly', 'yearly'],
                             description: 'Recurring pattern',
+                        },
+                        recurrence_interval: {
+                            type: 'integer',
+                            description: 'Interval for recurrence (e.g. every 2 days)',
+                        },
+                        recurrence_end_date: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'When to stop creating recurring instances',
+                        },
+                        subtasks: {
+                            type: 'array',
+                            description: 'Child tasks',
+                            items: {
+                                type: 'object',
+                                properties: {
+                                    id: { type: 'integer', description: 'Subtask ID' },
+                                    uid: { type: 'string', description: 'Subtask UID' },
+                                    name: { type: 'string', description: 'Subtask name' },
+                                    note: { type: 'string', description: 'Subtask description' },
+                                    status: { type: 'string', enum: ['pending', 'completed', 'archived'] },
+                                    priority: { type: 'string', enum: ['low', 'medium', 'high'] },
+                                    due_date: { type: 'string', format: 'date-time' },
+                                    defer_until: { type: 'string', format: 'date-time' },
+                                    completed_at: { type: 'string', format: 'date-time' },
+                                    tags: {
+                                        type: 'array',
+                                        items: { type: 'object', properties: { name: { type: 'string' } } },
+                                    },
+                                    order: { type: 'integer', description: 'Order position' },
+                                },
+                            },
                         },
                         created_at: {
                             type: 'string',
@@ -188,6 +220,11 @@ const options = {
                         project_id: {
                             type: 'integer',
                             description: 'Associated project ID',
+                        },
+                        Tags: {
+                            type: 'array',
+                            description: 'Tags associated with the note',
+                            items: { $ref: '#/components/schemas/Tag' },
                         },
                         created_at: {
                             type: 'string',

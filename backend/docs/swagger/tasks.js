@@ -283,6 +283,13 @@
  *                 type: string
  *                 enum: [none, daily, weekly, monthly, yearly]
  *                 description: Recurring pattern
+ *               recurrence_interval:
+ *                 type: integer
+ *                 description: Interval for recurrence (e.g. every 2 days)
+ *               recurrence_end_date:
+ *                 type: string
+ *                 format: date-time
+ *                 description: When to stop creating recurring instances
  *     responses:
  *       200:
  *         description: Task updated successfully
