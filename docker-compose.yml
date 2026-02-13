@@ -5,6 +5,7 @@ services:
       dockerfile: Dockerfile
     container_name: tududi
     environment:
+<<<<<<< HEAD
       - TUDUDI_USER_EMAIL=${TUDUDI_USER_EMAIL:-admin@example.com}
       - TUDUDI_USER_PASSWORD=${TUDUDI_USER_PASSWORD:-your-secure-password}
       - TUDUDI_SESSION_SECRET=${TUDUDI_SESSION_SECRET:-changeme-please-use-openssl}
@@ -14,6 +15,17 @@ services:
       # Other environment variables
       - BACKEND_URL=${BACKEND_URL:-http://localhost:3002}
       - SWAGGER_ENABLED=${SWAGGER_ENABLED:-false}
+=======
+      - TUDUDI_USER_EMAIL=admin@example.com
+      - TUDUDI_USER_PASSWORD=your-secure-password
+      - TUDUDI_SESSION_SECRET=changeme-please-use-openssl
+      - TUDUDI_ALLOWED_ORIGINS=http://localhost:3002
+      - TUDUDI_UPLOAD_PATH=/app/backend/uploads
+      # Push Notifications (optional) - generate with: npm run vapid:generate
+      - VAPID_PUBLIC_KEY=
+      - VAPID_PRIVATE_KEY=
+      - VAPID_SUBJECT=mailto:admin@example.com
+>>>>>>> pr-762-temp-branch
       # Runtime UID/GID configuration - set these to match your host user/group
       - PUID=${PUID:-1001}
       - PGID=${PGID:-1001}

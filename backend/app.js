@@ -76,6 +76,12 @@ app.use(
     })
 );
 
+// Service Worker scope header - allow SW at /pwa/sw.js to control root scope
+app.get('/pwa/sw.js', (req, res, next) => {
+    res.set('Service-Worker-Allowed', '/');
+    next();
+});
+
 // Static files
 if (config.production) {
     app.use(express.static(path.join(__dirname, 'dist')));

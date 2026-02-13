@@ -14,6 +14,23 @@ interface NotificationsTabProps {
     isActive: boolean;
     notificationPreferences: NotificationPreferences | null | undefined;
     onChange: (preferences: NotificationPreferences) => void;
+    onSave?: (resetFn: () => void) => void; // Child registers reset function for parent to call after save
+}
+
+// Convert VAPID key from base64 to Uint8Array
+function urlBase64ToUint8Array(base64String: string): Uint8Array<ArrayBuffer> {
+    const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding)
+        .replace(/-/g, '+')
+        .replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(
+        rawData.length
+    ) as Uint8Array<ArrayBuffer>;
+    for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
 }
 
 const DEFAULT_PREFERENCES: NotificationPreferences = {
@@ -44,6 +61,7 @@ interface NotificationTypeRowProps {
         value: boolean
     ) => void;
     telegramConfigured: boolean;
+    pushConfigured: boolean;
 }
 
 const NotificationTypeRow: React.FC<NotificationTypeRowProps> = ({
@@ -53,6 +71,7 @@ const NotificationTypeRow: React.FC<NotificationTypeRowProps> = ({
     preferences,
     onToggle,
     telegramConfigured,
+    pushConfigured,
 }) => {
     const renderToggle = (
         channel: 'inApp' | 'email' | 'push' | 'telegram',
@@ -103,7 +122,7 @@ const NotificationTypeRow: React.FC<NotificationTypeRowProps> = ({
                 {renderToggle('email', preferences.email, false)}
             </td>
             <td className="py-4 px-4 text-center">
-                {renderToggle('push', preferences.push, false)}
+                {renderToggle('push', preferences.push, pushConfigured)}
             </td>
             <td className="py-4 px-4 text-center">
                 {renderToggle(
@@ -120,6 +139,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
     isActive,
     notificationPreferences,
     onChange,
+    onSave,
 }) => {
     const { t } = useTranslation();
     const [profile, setProfile] = React.useState<any>(null);
@@ -127,6 +147,169 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
         React.useState<string>('task_due_soon');
     const [testLoading, setTestLoading] = React.useState<boolean>(false);
     const [testMessage, setTestMessage] = React.useState<string>('');
+    const [pushSupported, setPushSupported] = React.useState<boolean>(false);
+    const [hasUnsavedChanges, setHasUnsavedChanges] =
+        React.useState<boolean>(false);
+    const testMessageTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
+    // Register reset function with parent on mount
+    React.useEffect(() => {
+        if (onSave) {
+            onSave(() => setHasUnsavedChanges(false));
+        }
+    }, [onSave]);
+    const [pushSubscribed, setPushSubscribed] = React.useState<boolean>(false);
+    const [pushLoading, setPushLoading] = React.useState<boolean>(false);
+
+    // Check push notification support and subscription status
+    React.useEffect(() => {
+        const checkPushStatus = async () => {
+            if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+                setPushSupported(false);
+                return;
+            }
+            setPushSupported(true);
+
+            try {
+                // Try to get registration with timeout fallback
+                const registration = await Promise.race([
+                    navigator.serviceWorker.ready,
+                    new Promise<ServiceWorkerRegistration | undefined>(
+                        (resolve) =>
+                            setTimeout(async () => {
+                                const reg =
+                                    await navigator.serviceWorker.getRegistration(
+                                        '/'
+                                    );
+                                resolve(reg);
+                            }, 2000)
+                    ),
+                ]);
+                if (registration) {
+                    const subscription =
+                        await registration.pushManager.getSubscription();
+                    setPushSubscribed(!!subscription);
+                }
+            } catch (err) {
+                console.error('Error checking push subscription:', err);
+            }
+        };
+        if (isActive) checkPushStatus();
+    }, [isActive]);
+
+    // Subscribe to push notifications
+    const subscribeToPush = async () => {
+        setPushLoading(true);
+        try {
+            // Get VAPID public key from server
+            const keyResponse = await fetch(
+                '/api/notifications/push/vapid-key'
+            );
+            if (!keyResponse.ok) {
+                throw new Error('Push notifications not configured on server');
+            }
+            const { publicKey } = await keyResponse.json();
+
+            // Request permission
+            const permission = await Notification.requestPermission();
+            if (permission !== 'granted') {
+                throw new Error('Notification permission denied');
+            }
+
+            // Get SW registration - try ready first, fall back to getRegistration
+            let registration = await Promise.race([
+                navigator.serviceWorker.ready,
+                new Promise<ServiceWorkerRegistration | undefined>((resolve) =>
+                    setTimeout(async () => {
+                        // Fallback: try to get registration directly
+                        const reg =
+                            await navigator.serviceWorker.getRegistration('/');
+                        resolve(reg);
+                    }, 3000)
+                ),
+            ]);
+
+            if (!registration) {
+                // Try to register SW if not found
+                registration = await navigator.serviceWorker.register(
+                    '/pwa/sw.js',
+                    { scope: '/' }
+                );
+                await registration.update();
+                // Wait for it to activate
+                await new Promise<void>((resolve) => {
+                    if (registration!.active) {
+                        resolve();
+                    } else {
+                        registration!.addEventListener('updatefound', () => {
+                            registration!.installing?.addEventListener(
+                                'statechange',
+                                (e) => {
+                                    if (
+                                        (e.target as ServiceWorker).state ===
+                                        'activated'
+                                    ) {
+                                        resolve();
+                                    }
+                                }
+                            );
+                        });
+                        setTimeout(resolve, 5000); // Max wait 5s
+                    }
+                });
+            }
+            const subscription = await registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(publicKey),
+            });
+
+            // Send subscription to server
+            const subResponse = await fetch(
+                '/api/notifications/push/subscribe',
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        subscription: subscription.toJSON(),
+                    }),
+                }
+            );
+            if (!subResponse.ok) {
+                const err = await subResponse.json();
+                throw new Error(err.error || 'Failed to save subscription');
+            }
+
+            setPushSubscribed(true);
+        } catch (err) {
+            console.error('Failed to subscribe to push:', err);
+            alert(err.message || 'Failed to enable push notifications');
+        } finally {
+            setPushLoading(false);
+        }
+    };
+
+    // Unsubscribe from push notifications
+    const unsubscribeFromPush = async () => {
+        setPushLoading(true);
+        try {
+            const registration = await navigator.serviceWorker.ready;
+            const subscription =
+                await registration.pushManager.getSubscription();
+            if (subscription) {
+                await fetch('/api/notifications/push/unsubscribe', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ endpoint: subscription.endpoint }),
+                });
+                await subscription.unsubscribe();
+            }
+            setPushSubscribed(false);
+        } catch (err) {
+            console.error('Failed to unsubscribe from push:', err);
+        } finally {
+            setPushLoading(false);
+        }
+    };
 
     // Fetch profile data to check telegram configuration
     React.useEffect(() => {
@@ -164,14 +347,31 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
             },
         };
         onChange(updatedPreferences);
+        setHasUnsavedChanges(true);
     };
 
     const handleTestNotification = async () => {
+        // Clear any existing timeout
+        if (testMessageTimeoutRef.current) {
+            clearTimeout(testMessageTimeoutRef.current);
+        }
+
+        if (hasUnsavedChanges) {
+            setTestMessage(
+                '⚠️ You have unsaved changes. Save your preferences first to test with the new settings.'
+            );
+            testMessageTimeoutRef.current = setTimeout(
+                () => setTestMessage(''),
+                5000
+            );
+            return;
+        }
+
         setTestLoading(true);
         setTestMessage('');
 
         try {
-            const response = await fetch('/api/test-notifications/trigger', {
+            const response = await fetch('/api/notifications/test/trigger', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -196,7 +396,10 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
         } finally {
             setTestLoading(false);
             // Clear message after 5 seconds
-            setTimeout(() => setTestMessage(''), 5000);
+            testMessageTimeoutRef.current = setTimeout(
+                () => setTestMessage(''),
+                5000
+            );
         }
     };
 
@@ -212,6 +415,52 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                     'Choose how you want to be notified about important events.'
                 )}
             </p>
+
+            {/* Push Notification Setup */}
+            {pushSupported && (
+                <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h4 className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                                {t(
+                                    'notifications.push.title',
+                                    'Browser Push Notifications'
+                                )}
+                            </h4>
+                            <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                                {pushSubscribed
+                                    ? t(
+                                          'notifications.push.enabled',
+                                          'Push notifications are enabled for this browser.'
+                                      )
+                                    : t(
+                                          'notifications.push.disabled',
+                                          'Enable to receive notifications even when the app is closed.'
+                                      )}
+                            </p>
+                        </div>
+                        <button
+                            onClick={
+                                pushSubscribed
+                                    ? unsubscribeFromPush
+                                    : subscribeToPush
+                            }
+                            disabled={pushLoading}
+                            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                                pushSubscribed
+                                    ? 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-300'
+                                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                            } disabled:opacity-50`}
+                        >
+                            {pushLoading
+                                ? t('common.loading', 'Loading...')
+                                : pushSubscribed
+                                  ? t('notifications.push.disable', 'Disable')
+                                  : t('notifications.push.enable', 'Enable')}
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* Telegram Not Configured Warning */}
             {!telegramConfigured && (
@@ -255,13 +504,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 </div>
                             </th>
                             <th className="py-3 px-4 text-center text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                <div className="flex items-center justify-center gap-1">
-                                    {t('notifications.channels.push', 'Push')}
-                                    <span className="text-[10px] text-gray-500 dark:text-gray-500 font-normal">
-                                        ({t('common.comingSoon', 'Coming Soon')}
-                                        )
-                                    </span>
-                                </div>
+                                {t('notifications.channels.push', 'Push')}
                             </th>
                             <th className="py-3 px-4 text-center text-sm font-semibold text-gray-700 dark:text-gray-300">
                                 {t(
@@ -287,6 +530,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 handleToggle('dueTasks', channel, value)
                             }
                             telegramConfigured={telegramConfigured}
+                            pushConfigured={pushSubscribed}
                         />
                         <NotificationTypeRow
                             icon={ExclamationTriangleIcon}
@@ -303,6 +547,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 handleToggle('overdueTasks', channel, value)
                             }
                             telegramConfigured={telegramConfigured}
+                            pushConfigured={pushSubscribed}
                         />
                         <NotificationTypeRow
                             icon={ClockIcon}
@@ -319,6 +564,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 handleToggle('deferUntil', channel, value)
                             }
                             telegramConfigured={telegramConfigured}
+                            pushConfigured={pushSubscribed}
                         />
                         <NotificationTypeRow
                             icon={FolderIcon}
@@ -335,6 +581,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 handleToggle('dueProjects', channel, value)
                             }
                             telegramConfigured={telegramConfigured}
+                            pushConfigured={pushSubscribed}
                         />
                         <NotificationTypeRow
                             icon={FolderOpenIcon}
@@ -351,6 +598,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 handleToggle('overdueProjects', channel, value)
                             }
                             telegramConfigured={telegramConfigured}
+                            pushConfigured={pushSubscribed}
                         />
                     </tbody>
                 </table>
@@ -400,6 +648,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                         </option>
                     </select>
                     <button
+                        type="button"
                         onClick={handleTestNotification}
                         disabled={testLoading}
                         className="px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 disabled:cursor-not-allowed rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors"
@@ -448,7 +697,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                     </span>{' '}
                     {t(
                         'notifications.info.message',
-                        'Email and Push notifications are coming soon. In-app and Telegram notifications are currently available.'
+                        'Email notifications are coming soon. In-app, Push, and Telegram notifications are currently available.'
                     )}
                 </p>
             </div>

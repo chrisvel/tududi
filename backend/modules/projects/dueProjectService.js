@@ -4,7 +4,8 @@ const { logError } = require('../../services/logService');
 const {
     shouldSendInAppNotification,
     shouldSendTelegramNotification,
-} = require('../../utils/notificationPreferences');
+    shouldSendPushNotification,
+} = require('../../../utils/notificationPreferences');
 
 /**
  * Service to check for due and overdue projects
@@ -112,6 +113,11 @@ async function checkDueProjects() {
                     )
                 ) {
                     sources.push('telegram');
+                }
+                if (
+                    shouldSendPushNotification(project.User, notificationType)
+                ) {
+                    sources.push('push');
                 }
 
                 await Notification.createNotification({
