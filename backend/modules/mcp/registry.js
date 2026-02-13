@@ -34,7 +34,7 @@ const METHOD_TO_ACTION = {
 
 /**
  * Convert OpenAPI path and method to a stable MCP tool name (alphanumeric, underscore).
- * e.g. /api/v1/tasks + get -> tasks_list, /api/v1/task/{id} + get -> task_get
+ * e.g. /api/v1/tasks + get -> tasks_list, /api/v1/task/{uid} + get -> task_get
  */
 function pathMethodToToolName(path, method) {
     const base = path.replace(/^\/api(\/v\d+)?/, '') || '/';
@@ -100,7 +100,7 @@ function buildInputSchema(operation) {
 }
 
 /**
- * Extract path parameter names from OpenAPI path string (e.g. /task/{id} -> ['id']).
+ * Extract path parameter names from OpenAPI path string (e.g. /task/{uid} -> ['uid']).
  */
 function getPathParamNames(path) {
     const names = [];

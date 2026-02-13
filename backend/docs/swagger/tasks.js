@@ -199,20 +199,20 @@
 
 /**
  * @swagger
- * /api/task/{id}:
+ * /api/task/{uid}:
  *   get:
- *     summary: Get a specific task by ID or UID
+ *     summary: Get a specific task by UID
  *     tags: [Tasks]
  *     security:
  *       - cookieAuth: []
  *       - BearerAuth: []
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: uid
  *         required: true
  *         schema:
  *           type: string
- *         description: Task ID (integer) or UID (string)
+ *         description: Task UID (string)
  *     responses:
  *       200:
  *         description: Task details
@@ -235,11 +235,11 @@
  *       - BearerAuth: []
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: uid
  *         required: true
  *         schema:
  *           type: string
- *         description: Task ID (integer) or UID (string)
+ *         description: Task UID (string)
  *     requestBody:
  *       required: true
  *       content:
@@ -314,11 +314,11 @@
  *       - BearerAuth: []
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: uid
  *         required: true
  *         schema:
  *           type: string
- *         description: Task ID (integer) or UID (string)
+ *         description: Task UID (string)
  *     responses:
  *       200:
  *         description: Task deleted successfully
@@ -332,38 +332,7 @@
 
 /**
  * @swagger
- * /api/task/{id}/toggle_completion:
- *   patch:
- *     summary: Toggle task completion status
- *     tags: [Tasks]
- *     security:
- *       - cookieAuth: []
- *       - BearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: Task ID
- *     responses:
- *       200:
- *         description: Task completion toggled successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Task'
- *       401:
- *         description: Unauthorized
- *       403:
- *         description: Forbidden
- *       404:
- *         description: Task not found
- */
-
-/**
- * @swagger
- * /api/task/{id}/subtasks:
+ * /api/task/{uid}/subtasks:
  *   post:
  *     summary: Add a subtask to a parent task
  *     tags: [Tasks]
@@ -372,11 +341,11 @@
  *       - BearerAuth: []
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: uid
  *         required: true
  *         schema:
- *           type: integer
- *         description: Parent task ID
+ *           type: string
+ *         description: Parent task UID (string)
  *     requestBody:
  *       required: true
  *       content:

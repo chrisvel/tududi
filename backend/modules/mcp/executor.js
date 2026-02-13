@@ -20,7 +20,7 @@ function getSupertest() {
 }
 
 /**
- * Build request path from template (e.g. /api/v1/task/{id}) and args (e.g. { id: 'abc-123' }).
+ * Build request path from template (e.g. /api/v1/task/{uid}) and args (e.g. { uid: 'abc-123' }).
  */
 function buildPath(pathTemplate, args) {
     let path = pathTemplate;

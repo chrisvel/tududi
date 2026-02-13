@@ -197,52 +197,41 @@ module.exports = {
                 'Returns the created Task. If user mentions a project by name, resolve it to project_id first.',
         },
     },
-    [path('task/{id}')]: {
+    [path('task/{uid}')]: {
         GET: {
             name: 'task_get',
             description:
-                'Get full details of a single task by its numeric id or string uid. ' +
+                'Get full details of a single task by its uid. ' +
                 'Use when the user says "show task", "details of task", "what\'s the status of...", or when you need to read a task before updating or deleting it. ' +
-                'Path param: id (integer id or string uid, both accepted). ' +
+                'Path param: uid (string). ' +
                 'Returns full Task object including subtasks, tags, recurrence settings, and time tracking data.',
         },
         PATCH: {
             name: 'task_update',
             description:
-                'Update an existing task by its id or uid. ' +
-                'Use when the user says "update task", "change due date", "move to project", "set priority", "rename task", "add to today\'s plan (set status to planned)", or any modification request. ' +
-                'Path param: id (integer id or string uid). ' +
+                'Update an existing task by its uid. ' +
+                'Use when the user says "update task", "change due date", "move to project", "set priority", "rename task", "add to today\'s plan (set status to planned)", "complete task", "mark as done", or any modification request. ' +
+                'Path param: uid (string). ' +
                 'Body: any subset of { name, note, priority, status, due_date, project_id, tags: [{ name }], recurrence_type, recurrence_interval, recurrence_end_date }. ' +
-                'Only include fields that change. To add/remove from today\'s plan, set status to planned (or in_progress/waiting) or to not_started/done/archived. ' +
+                'Only include fields that change. To complete/uncomplete use status: "done" or "not_started". To add/remove from today\'s plan, set status to planned (or in_progress/waiting) or to not_started/done/archived. ' +
                 'Returns the updated Task.',
         },
         DELETE: {
             name: 'task_delete',
             description:
-                'Permanently delete a task by its id or uid. ' +
+                'Permanently delete a task by its uid. ' +
                 'Use when the user says "delete task", "remove task". ' +
-                'Path param: id (integer id or string uid). ' +
+                'Path param: uid (string). ' +
                 'For recurring tasks, this deletes only this instance. Confirm with the user before deleting. This action is irreversible.',
         },
     },
-    [path('task/{id}/toggle_completion')]: {
-        PATCH: {
-            name: 'task_toggle_completion',
-            description:
-                'Toggle a task between pending and completed status. ' +
-                'Use when the user says "complete task", "mark as done", "finish task", "uncomplete task", "reopen task", or "mark as pending". ' +
-                'Path param: id (integer id or string uid). ' +
-                'Returns the updated Task with new status. ' +
-                'Prefer this over task_update when the only change is completion state, because it handles recurring task logic automatically.',
-        },
-    },
-    [path('task/{id}/subtasks')]: {
+    [path('task/{uid}/subtasks')]: {
         POST: {
             name: 'task_subtask_create',
             description:
                 'Create a subtask under a parent task. ' +
                 'Use when the user says "add subtask", "break this down", "add a step to task", or needs to decompose a task into smaller pieces. ' +
-                'Path param: id (integer id or string uid of the parent task). ' +
+                'Path param: uid (string, parent task uid). ' +
                 'Required body: { name: string }. ' +
                 'Optional: { priority: "low" | "medium" | "high", status: "pending" | "completed" | "archived", due_date: ISO datetime }. ' +
                 'Returns the created subtask. The subtask inherits the parent\'s project_id.',
