@@ -461,6 +461,7 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
             recurrence_interval,
             recurrence_end_date,
             recurrence_weekday,
+            recurrence_weekdays,
             recurrence_month_day,
             recurrence_week_of_month,
             completion_based,
@@ -504,6 +505,10 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
                         recurrence_weekday !== undefined
                             ? recurrence_weekday
                             : parentTask.recurrence_weekday,
+                    recurrence_weekdays:
+                        recurrence_weekdays !== undefined
+                            ? recurrence_weekdays
+                            : parentTask.recurrence_weekdays,
                     recurrence_month_day:
                         recurrence_month_day !== undefined
                             ? recurrence_month_day

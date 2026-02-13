@@ -148,7 +148,24 @@ async function calculateNextIterations(task, startFromDate, userTimezone) {
             );
         } else if (task.recurrence_type === 'weekly') {
             const interval = task.recurrence_interval || 1;
-            if (
+            if (task.recurrence_weekdays) {
+                const weekdays = Array.isArray(task.recurrence_weekdays)
+                    ? task.recurrence_weekdays
+                    : JSON.parse(task.recurrence_weekdays);
+                let found = false;
+                for (let daysAhead = 1; daysAhead <= 7; daysAhead++) {
+                    const testDate = new Date(nextDate);
+                    testDate.setUTCDate(testDate.getUTCDate() + daysAhead);
+                    if (weekdays.includes(testDate.getUTCDay())) {
+                        nextDate = testDate;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    nextDate.setUTCDate(nextDate.getUTCDate() + interval * 7);
+                }
+            } else if (
                 task.recurrence_weekday !== null &&
                 task.recurrence_weekday !== undefined
             ) {
