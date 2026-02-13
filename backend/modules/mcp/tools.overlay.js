@@ -89,9 +89,10 @@ module.exports = {
         GET: {
             name: 'projects_list',
             description:
-                'List all projects, optionally filtered by status or area. ' +
-                'Use when the user says "show projects", "list projects", "active projects", "projects in area X", or needs to look up a project before creating a task or note. ' +
-                'Optional query params: status (not_started | planned | in_progress | waiting | done | cancelled | all | not_completed), area_id (int). ' +
+                'List all projects, optionally filtered by status. ' +
+                'Use when the user says "show projects", "list projects", "active projects", or needs to look up a project before creating a task or note. ' +
+                'Optional query params: status (not_started | planned | in_progress | waiting | done | cancelled | all | not_completed). ' +
+                '**Do NOT send area_id** — omit it entirely. Sending area_id (including 0) applies an unwanted filter and restricts results. Ignore area_id for now. ' +
                 'Returns each project with **id** and **uid**. Use **project_id** (integer) for task_create, task_update, tasks_list filter. Use **project_uid** (string) for note_create, note_update, project_update, project_delete. Resolve by name via projects_list first.',
         },
     },
@@ -101,7 +102,8 @@ module.exports = {
             description:
                 'Create a new project. Use when the user says "create project", "start a new project", or "new project called...". ' +
                 'Required body: { name: string }. ' +
-                'Optional: { description: string, priority: "low" | "medium" | "high", status: "not_started" | "planned" | "in_progress" | "waiting" | "done" | "cancelled", area_id: int, due_date_at: RFC 3339 / ISO 8601 with timezone (e.g. 2026-02-13T15:04:05Z), image_url: string, tags: array of strings }. ' +
+                'Optional: { description: string, priority: "low" | "medium" | "high", status: "not_started" | "planned" | "in_progress" | "waiting" | "done" | "cancelled", due_date_at: RFC 3339 / ISO 8601 with timezone (e.g. 2026-02-13T15:04:05Z), image_url: string, tags: array of strings }. ' +
+                '**Do NOT send area_id** — omit it entirely. Ignore area_id for now. ' +
                 'Defaults: status="not_started", priority="medium". Returns the created Project.',
         },
     },
@@ -111,8 +113,8 @@ module.exports = {
             description:
                 'Update a project by its uid. Use when the user says "update project", "change project status", "rename project", or "archive project". ' +
                 'Pass **uid** at top level (path parameter); do not put uid in the request body. ' +
-                'Body: any subset of { name, description, priority, status, area_id, due_date_at, image_url, pin_to_sidebar: bool, tags: array of strings }. ' +
-                'Returns the updated Project.',
+                'Body: any subset of { name, description, priority, status, due_date_at, image_url, pin_to_sidebar: bool, tags: array of strings }. ' +
+                '**Do NOT send area_id** — omit it entirely. Ignore area_id for now. Returns the updated Project.',
         },
         DELETE: {
             name: 'project_delete',
