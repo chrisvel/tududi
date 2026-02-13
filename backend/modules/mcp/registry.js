@@ -56,8 +56,10 @@ function pathMethodToToolName(path, method) {
 
 /**
  * Build JSON Schema for tool input from OpenAPI parameters and requestBody.
+ * @param {object} operation - OpenAPI operation object
+ * @param {{ method?: string }} opts - Optional; method used to set additionalProperties: false for write operations
  */
-function buildInputSchema(operation) {
+function buildInputSchema(operation, opts = {}) {
     const properties = {};
     const required = [];
 
@@ -74,15 +76,19 @@ function buildInputSchema(operation) {
     }
 
     const body = operation.requestBody?.content?.['application/json']?.schema;
+    const hasRequestBody = !!body?.properties;
     if (body && body.properties) {
         for (const [key, prop] of Object.entries(body.properties)) {
             if (properties[key]) continue;
-            properties[key] = {
+            const propSchema = {
                 type: prop.type || 'string',
                 description: prop.description,
                 enum: prop.enum,
                 format: prop.format,
             };
+            if (prop.items) propSchema.items = prop.items;
+            if (prop.additionalProperties !== undefined) propSchema.additionalProperties = prop.additionalProperties;
+            properties[key] = propSchema;
         }
         if (Array.isArray(body.required)) {
             for (const r of body.required) {
@@ -91,11 +97,14 @@ function buildInputSchema(operation) {
         }
     }
 
+    const method = (opts.method || '').toUpperCase();
+    const isWriteOp = ['POST', 'PUT', 'PATCH'].includes(method) && hasRequestBody;
+
     return {
         type: 'object',
         properties: Object.keys(properties).length ? properties : { _: { type: 'string', description: 'Unused' } },
         required: required.length ? required : undefined,
-        additionalProperties: true,
+        additionalProperties: isWriteOp ? false : true,
     };
 }
 
@@ -146,7 +155,7 @@ function buildToolRegistry() {
             const derivedName = pathMethodToToolName(path, method);
             let description =
                 op.summary || op.description || `${methodUpper} ${path}`;
-            let inputSchema = buildInputSchema(op);
+            let inputSchema = buildInputSchema(op, { method: methodUpper });
 
             const overlayEntry = getOverlayEntry(path, methodUpper);
             let name = derivedName;

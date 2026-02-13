@@ -61,8 +61,8 @@ module.exports = {
             description:
                 'Create a new note. Use when the user says "write a note", "save this as a note", or "take notes on...". ' +
                 'Required body: { title: string, content: string } (content supports Markdown). ' +
-                'Optional: { color: string (hex, e.g. "#B71C1C"), project_uid: string, tags: string[] }. ' +
-                'Returns the created Note. Use project_uid (not project_id) to link to a project.',
+                'Optional: { color: string (hex, e.g. "#B71C1C"), project_uid: string, tags: array of strings (tag names) }. ' +
+                'Returns the created Note. Use project_uid here; for tasks use project_id.',
         },
     },
     [path('note/{uid}')]: {
@@ -70,15 +70,15 @@ module.exports = {
             name: 'note_update',
             description:
                 'Update an existing note by its uid. Use when the user says "edit note", "update note", or "change the note about...". ' +
-                'Path param: uid (string). ' +
-                'Body: any subset of { title, content, color, project_uid, tags: string[] }. Only include fields that change. ' +
+                'Pass **uid** at top level (path parameter); do not put uid in the request body. ' +
+                'Body: any subset of { title, content, color, project_uid, tags: array of strings (tag names) }. Only include fields that change. ' +
                 'Returns the updated Note.',
         },
         DELETE: {
             name: 'note_delete',
             description:
                 'Permanently delete a note by its uid. Use when the user says "delete note", "remove that note". ' +
-                'Path param: uid (string). This action is irreversible.',
+                'Pass **uid** at top level (path parameter). This action is irreversible.',
         },
     },
 
@@ -90,10 +90,9 @@ module.exports = {
             name: 'projects_list',
             description:
                 'List all projects, optionally filtered by status or area. ' +
-                'Use when the user says "show projects", "list projects", "active projects", "projects in area X", or needs to look up a project_id before creating a task. ' +
+                'Use when the user says "show projects", "list projects", "active projects", "projects in area X", or needs to look up a project before creating a task or note. ' +
                 'Optional query params: status (not_started | planned | in_progress | waiting | done | cancelled | all | not_completed), area_id (int). ' +
-                'Returns Project[] with id, uid, name, description, status, priority (low | medium | high), area_id, due_date_at, tags, pin_to_sidebar, created_at, updated_at. ' +
-                'Call this first whenever you need a project_id or project_uid for other operations.',
+                'Returns each project with **id** and **uid**. Use **project_id** (integer) for task_create, task_update, tasks_list filter. Use **project_uid** (string) for note_create, note_update, project_update, project_delete. Resolve by name via projects_list first.',
         },
     },
     [path('project')]: {
@@ -102,7 +101,7 @@ module.exports = {
             description:
                 'Create a new project. Use when the user says "create project", "start a new project", or "new project called...". ' +
                 'Required body: { name: string }. ' +
-                'Optional: { description: string, priority: "low" | "medium" | "high", status: "not_started" | "planned" | "in_progress" | "waiting" | "done" | "cancelled", area_id: int, due_date_at: ISO datetime, image_url: string, tags: string[] }. ' +
+                'Optional: { description: string, priority: "low" | "medium" | "high", status: "not_started" | "planned" | "in_progress" | "waiting" | "done" | "cancelled", area_id: int, due_date_at: RFC 3339 / ISO 8601 with timezone (e.g. 2026-02-13T15:04:05Z), image_url: string, tags: array of strings }. ' +
                 'Defaults: status="not_started", priority="medium". Returns the created Project.',
         },
     },
@@ -111,15 +110,15 @@ module.exports = {
             name: 'project_update',
             description:
                 'Update a project by its uid. Use when the user says "update project", "change project status", "rename project", or "archive project". ' +
-                'Path param: uid (string). ' +
-                'Body: any subset of { name, description, priority, status, area_id, due_date_at, image_url, pin_to_sidebar: bool, tags: string[] }. ' +
+                'Pass **uid** at top level (path parameter); do not put uid in the request body. ' +
+                'Body: any subset of { name, description, priority, status, area_id, due_date_at, image_url, pin_to_sidebar: bool, tags: array of strings }. ' +
                 'Returns the updated Project.',
         },
         DELETE: {
             name: 'project_delete',
             description:
                 'Permanently delete a project by its uid. Use when the user says "delete project" or "remove project". ' +
-                'Path param: uid (string). ' +
+                'Pass **uid** at top level (path parameter). ' +
                 'Warning: this does not automatically delete or reassign the project\'s tasks. Confirm with the user and consider moving tasks first.',
         },
     },
@@ -133,7 +132,7 @@ module.exports = {
             description:
                 'List all available tags. ' +
                 'Use when the user says "show tags", "what tags exist", or when you need to verify a tag name before applying it to a task or note. ' +
-                'Returns Tag[] with id, uid, name, created_at, updated_at. ' +
+                'Returns Tag[] with id, uid, name, created_at, updated_at. Use tag names as strings for notes; use objects { name } for tasks. ' +
                 'Call this before creating a duplicate tag.',
         },
     },
@@ -157,14 +156,14 @@ module.exports = {
                 'List tasks with filtering, sorting, and grouping. This is the primary task query tool. ' +
                 'Use when the user says "show my tasks", "what\'s due today", "upcoming tasks", "completed tasks", "tasks for project X", or any task listing request. ' +
                 'Optional query params: ' +
-                '  type: "today" | "upcoming" | "completed" | "archived" | "all" (defaults to pending tasks if omitted), ' +
-                '  status: "pending" | "completed" | "archived", ' +
+                '  type: "today" | "upcoming" | "completed" | "archived" | "all" (default when omitted: open tasks, excludes done/archived/cancelled), ' +
+                '  status: "not_started" | "in_progress" | "waiting" | "done" | "archived" | "cancelled" | "planned", ' +
                 '  project_id: int, ' +
-                '  groupBy: "day" | "project" (when "day", response includes groupedTasks object keyed by date), ' +
+                '  groupBy (camelCase): "day" | "project" (when "day", response includes groupedTasks keyed by date), ' +
                 '  order_by: string (e.g. "due_date:asc", "created_at:desc", "priority:desc"). ' +
                 'Returns { tasks: Task[], groupedTasks?: { [date]: Task[] } }. ' +
-                'Each Task has id, uid, name, note, status, priority (low | medium | high), due_date, project_id, tags, subtasks, recurrence fields, created_at, updated_at. Today plan is determined by status (planned, in_progress, waiting). ' +
-                'Use type="today" specifically when user asks about today\'s plan or daily tasks.',
+                'Today plan (type=today) shows tasks with status in **planned**, **in_progress**, **waiting**. Exact defaults follow server behavior; when in doubt, pass explicitly. ' +
+                'Use type="today" when user asks about today\'s plan or daily tasks.',
         },
     },
     [path('tasks/metrics')]: {
@@ -185,14 +184,15 @@ module.exports = {
                 'Required body: { name: string }. ' +
                 'Optional: { ' +
                 '  priority: "low" | "medium" | "high" (default "medium"), ' +
-                '  status: "pending" | "completed" | "archived" (default "pending"), ' +
-                '  due_date: ISO 8601 datetime, ' +
+                '  status: "not_started" | "in_progress" | "waiting" | "done" | "archived" | "cancelled" | "planned" (default "not_started"), ' +
+                '  due_date: RFC 3339 / ISO 8601 with timezone (e.g. 2026-02-13T15:04:05Z), ' +
                 '  project_id: int (look up with projects_list if user names a project), ' +
                 '  note: string (Markdown description), ' +
-                '  tags: [{ name: string }], ' +
+                '  tags: array of objects with **name** (e.g. [{ name: "tag1" }]; for notes, tags are strings), ' +
                 '  recurrence_type: "none" | "daily" | "weekly" | "monthly" | "yearly", ' +
                 '  recurrence_interval: int (e.g. 2 = every 2 days/weeks/months), ' +
-                '  recurrence_end_date: ISO datetime ' +
+                '  recurrence_end_date: RFC 3339 / ISO 8601 with timezone (e.g. 2026-02-13T15:04:05Z), ' +
+                '  today: boolean (optional pin to today\'s plan) ' +
                 '}. ' +
                 'Returns the created Task. If user mentions a project by name, resolve it to project_id first.',
         },
@@ -203,17 +203,17 @@ module.exports = {
             description:
                 'Get full details of a single task by its uid. ' +
                 'Use when the user says "show task", "details of task", "what\'s the status of...", or when you need to read a task before updating or deleting it. ' +
-                'Path param: uid (string). ' +
+                'Pass **uid** at top level (path parameter). ' +
                 'Returns full Task object including subtasks, tags, recurrence settings, and time tracking data.',
         },
         PATCH: {
             name: 'task_update',
             description:
                 'Update an existing task by its uid. ' +
-                'Use when the user says "update task", "change due date", "move to project", "set priority", "rename task", "add to today\'s plan (set status to planned)", "complete task", "mark as done", or any modification request. ' +
-                'Path param: uid (string). ' +
-                'Body: any subset of { name, note, priority, status, due_date, project_id, tags: [{ name }], recurrence_type, recurrence_interval, recurrence_end_date }. ' +
-                'Only include fields that change. To complete/uncomplete use status: "done" or "not_started". To add/remove from today\'s plan, set status to planned (or in_progress/waiting) or to not_started/done/archived. ' +
+                'Use when the user says "update task", "change due date", "move to project", "set priority", "rename task", "add to today\'s plan", "complete task", "mark as done", or any modification request. ' +
+                'Pass **uid** at top level (path parameter); do not put uid in the request body. ' +
+                'Body: any subset of { name, note, priority, status, due_date (RFC 3339 / ISO 8601 with timezone), project_id, tags: [{ name }], recurrence_type, recurrence_interval, recurrence_end_date, today: boolean }. ' +
+                'Only include fields that change. To complete use status: **done**; to uncomplete use status: **not_started**. To add to today\'s plan use status: **planned**, **in_progress**, or **waiting**; to remove use **not_started**, **done**, or **archived**. ' +
                 'Returns the updated Task.',
         },
         DELETE: {
@@ -221,7 +221,7 @@ module.exports = {
             description:
                 'Permanently delete a task by its uid. ' +
                 'Use when the user says "delete task", "remove task". ' +
-                'Path param: uid (string). ' +
+                'Pass **uid** at top level (path parameter). ' +
                 'For recurring tasks, this deletes only this instance. Confirm with the user before deleting. This action is irreversible.',
         },
     },
@@ -231,9 +231,9 @@ module.exports = {
             description:
                 'Create a subtask under a parent task. ' +
                 'Use when the user says "add subtask", "break this down", "add a step to task", or needs to decompose a task into smaller pieces. ' +
-                'Path param: uid (string, parent task uid). ' +
+                'Pass **uid** at top level (path parameter, parent task uid); do not put uid in the request body. ' +
                 'Required body: { name: string }. ' +
-                'Optional: { priority: "low" | "medium" | "high", status: "pending" | "completed" | "archived", due_date: ISO datetime }. ' +
+                'Optional: { priority: "low" | "medium" | "high", status: "not_started" | "in_progress" | "waiting" | "done" | "archived" | "cancelled" | "planned", due_date: RFC 3339 / ISO 8601 with timezone (e.g. 2026-02-13T15:04:05Z) }. ' +
                 'Returns the created subtask. The subtask inherits the parent\'s project_id.',
         },
     },

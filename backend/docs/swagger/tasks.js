@@ -25,7 +25,7 @@
  *         name: status
  *         schema:
  *           type: string
- *           enum: [pending, completed, archived]
+ *           enum: [not_started, in_progress, waiting, done, archived, cancelled, planned]
  *         description: Filter by task status
  *       - in: query
  *         name: project_id
@@ -150,12 +150,12 @@
  *                 description: Task priority
  *               status:
  *                 type: string
- *                 enum: [pending, completed, archived]
+ *                 enum: [not_started, in_progress, waiting, done, archived, cancelled, planned]
  *                 description: Task status
  *               due_date:
  *                 type: string
  *                 format: date-time
- *                 description: Task due date
+ *                 description: Task due date (RFC 3339 / ISO 8601 with timezone, e.g. 2026-02-13T15:04:05Z)
  *               project_id:
  *                 type: integer
  *                 description: Associated project ID
@@ -180,7 +180,7 @@
  *               recurrence_end_date:
  *                 type: string
  *                 format: date-time
- *                 description: When to stop creating recurring instances
+ *                 description: When to stop creating recurring instances (RFC 3339 / ISO 8601 with timezone, e.g. 2026-02-13T15:04:05Z)
  *               today:
  *                 type: boolean
  *                 description: Add task to today's plan
@@ -259,12 +259,12 @@
  *                 description: Task priority
  *               status:
  *                 type: string
- *                 enum: [pending, completed, archived]
+ *                 enum: [not_started, in_progress, waiting, done, archived, cancelled, planned]
  *                 description: Task status
  *               due_date:
  *                 type: string
  *                 format: date-time
- *                 description: Task due date
+ *                 description: Task due date (RFC 3339 / ISO 8601 with timezone, e.g. 2026-02-13T15:04:05Z)
  *               project_id:
  *                 type: integer
  *                 description: Associated project ID
@@ -289,7 +289,7 @@
  *               recurrence_end_date:
  *                 type: string
  *                 format: date-time
- *                 description: When to stop creating recurring instances
+ *                 description: When to stop creating recurring instances (RFC 3339 / ISO 8601 with timezone, e.g. 2026-02-13T15:04:05Z)
  *     responses:
  *       200:
  *         description: Task updated successfully
@@ -363,10 +363,11 @@
  *                 enum: [low, medium, high]
  *               status:
  *                 type: string
- *                 enum: [pending, completed, archived]
+ *                 enum: [not_started, in_progress, waiting, done, archived, cancelled, planned]
  *               due_date:
  *                 type: string
  *                 format: date-time
+ *                 description: RFC 3339 / ISO 8601 with timezone (e.g. 2026-02-13T15:04:05Z)
  *     responses:
  *       201:
  *         description: Subtask created successfully

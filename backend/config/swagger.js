@@ -84,7 +84,7 @@ const options = {
                         },
                         status: {
                             type: 'string',
-                            enum: ['pending', 'completed', 'archived'],
+                            enum: ['not_started', 'in_progress', 'waiting', 'done', 'archived', 'cancelled', 'planned'],
                             description: 'Task status',
                         },
                         priority: {
@@ -95,7 +95,7 @@ const options = {
                         due_date: {
                             type: 'string',
                             format: 'date-time',
-                            description: 'Task due date',
+                            description: 'Task due date (RFC 3339 / ISO 8601 with timezone, e.g. 2026-02-13T15:04:05Z)',
                         },
                         project_id: {
                             type: 'integer',
@@ -113,7 +113,7 @@ const options = {
                         recurrence_end_date: {
                             type: 'string',
                             format: 'date-time',
-                            description: 'When to stop creating recurring instances',
+                            description: 'When to stop creating recurring instances (RFC 3339 / ISO 8601 with timezone, e.g. 2026-02-13T15:04:05Z)',
                         },
                         subtasks: {
                             type: 'array',
@@ -125,11 +125,11 @@ const options = {
                                     uid: { type: 'string', description: 'Subtask UID' },
                                     name: { type: 'string', description: 'Subtask name' },
                                     note: { type: 'string', description: 'Subtask description' },
-                                    status: { type: 'string', enum: ['pending', 'completed', 'archived'] },
+                                    status: { type: 'string', enum: ['not_started', 'in_progress', 'waiting', 'done', 'archived', 'cancelled', 'planned'] },
                                     priority: { type: 'string', enum: ['low', 'medium', 'high'] },
-                                    due_date: { type: 'string', format: 'date-time' },
-                                    defer_until: { type: 'string', format: 'date-time' },
-                                    completed_at: { type: 'string', format: 'date-time' },
+                                    due_date: { type: 'string', format: 'date-time', description: 'RFC 3339 / ISO 8601 with timezone' },
+                                    defer_until: { type: 'string', format: 'date-time', description: 'RFC 3339 / ISO 8601 with timezone' },
+                                    completed_at: { type: 'string', format: 'date-time', description: 'RFC 3339 / ISO 8601 with timezone' },
                                     tags: {
                                         type: 'array',
                                         items: { type: 'object', properties: { name: { type: 'string' } } },
@@ -141,10 +141,12 @@ const options = {
                         created_at: {
                             type: 'string',
                             format: 'date-time',
+                            description: 'RFC 3339 / ISO 8601 with timezone',
                         },
                         updated_at: {
                             type: 'string',
                             format: 'date-time',
+                            description: 'RFC 3339 / ISO 8601 with timezone',
                         },
                     },
                 },
