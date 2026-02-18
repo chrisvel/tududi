@@ -314,16 +314,28 @@ export const useStore = create<StoreState>((set: any) => ({
             );
             const tagsToAdd = newTagNames
                 .filter((name) => !existingTagNames.includes(name))
-                .map((name) => ({ name, id: Date.now() + Math.random() })); // Temporary ID
+                // Temporary ID/optimistic tag. Backend creates the real tag on save.
+                .map((name) => ({ name, id: Date.now() + Math.random() }));
 
-            if (tagsToAdd.length > 0) {
-                set((state) => ({
-                    tagsStore: {
-                        ...state.tagsStore,
-                        tags: [...state.tagsStore.tags, ...tagsToAdd],
-                    },
-                }));
-            }
+            if (tagsToAdd.length === 0) return;
+
+            set((state) => ({
+                tagsStore: {
+                    ...state.tagsStore,
+                    tags: [...state.tagsStore.tags, ...tagsToAdd],
+                },
+            }));
+
+            // Important: ensure store picks up server-generated UIDs ASAP.
+            // Without this, the Tags page can render links without UIDs until a refresh.
+            setTimeout(() => {
+                useStore
+                    .getState()
+                    .tagsStore.refreshTags()
+                    .catch((e) =>
+                        console.error('addNewTags: Failed to refresh tags:', e)
+                    );
+            }, 0);
         },
     },
     tasksStore: {
