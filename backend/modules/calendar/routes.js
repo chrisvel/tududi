@@ -17,6 +17,7 @@ const {
     getUpcomingRangeInUTC,
 } = require('../../utils/timezone-utils');
 const { generateGroupName } = require('../tasks/operations/grouping');
+const { getAuthenticatedUserId } = require('../../utils/request-utils');
 
 /**
  * POST /calendar/sync
@@ -30,9 +31,33 @@ const { generateGroupName } = require('../tasks/operations/grouping');
  * @returns {string} syncedAt - ISO timestamp of sync completion
  */
 router.post('/calendar/sync', async (req, res, next) => {
-    const userId = req.user.id;
+    const userId = getAuthenticatedUserId(req);
+
+    if (!userId) {
+        return res.status(401).json({ error: 'Authentication required' });
+    }
 
     try {
+        const user = await require('../../models').User.findByPk(userId, {
+            attributes: ['id', 'calendar_settings'],
+        });
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found.' });
+        }
+
+        const settings =
+            typeof user.calendar_settings === 'string'
+                ? JSON.parse(user.calendar_settings)
+                : user.calendar_settings;
+
+        if (settings?.enabled !== true || !settings?.icsUrl) {
+            return res.status(400).json({
+                error: 'Calendar not configured',
+                message: 'Calendar is not enabled or ICS URL is not set.',
+            });
+        }
+
         const lockAcquired = await lockUserSync(userId);
 
         if (!lockAcquired) {
@@ -78,7 +103,11 @@ router.post('/calendar/sync', async (req, res, next) => {
  * @returns {Object} { triggered: boolean }
  */
 router.post('/calendar/sync-if-stale', async (req, res, next) => {
-    const userId = req.user.id;
+    const userId = getAuthenticatedUserId(req);
+
+    if (!userId) {
+        return res.status(401).json({ error: 'Authentication required' });
+    }
 
     try {
         const user = await require('../../models').User.findByPk(userId, {
@@ -93,6 +122,13 @@ router.post('/calendar/sync-if-stale', async (req, res, next) => {
             typeof user.calendar_settings === 'string'
                 ? JSON.parse(user.calendar_settings)
                 : user.calendar_settings;
+
+        if (settings?.enabled !== true || !settings?.icsUrl) {
+            return res.status(400).json({
+                error: 'Calendar not configured',
+                message: 'Calendar is not enabled or ICS URL is not set.',
+            });
+        }
 
         const { isUserDueForSync } = require('./calendarSyncService');
         const isDue = isUserDueForSync(settings);

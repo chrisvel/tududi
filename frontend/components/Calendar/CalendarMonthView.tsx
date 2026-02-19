@@ -223,7 +223,8 @@ const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
                                 ))}
                                 {dayEvents.length > 3 && (
                                     <div className="text-xs text-gray-600 dark:text-gray-400 px-1.5 py-0.5 font-medium bg-gray-100 dark:bg-gray-800 rounded-md inline-block">
-                                        +{dayEvents.length - 3} more
+                                        +{dayEvents.length - 3}{' '}
+                                        {t('calendar.moreEvents')}
                                     </div>
                                 )}
                             </div>

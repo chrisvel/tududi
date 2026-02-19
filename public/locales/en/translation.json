@@ -24,7 +24,19 @@
         "discardChanges": "Discard changes?",
         "discardChangesMessage": "You have unsaved changes. Are you sure you want to discard them?",
         "no": "No, keep editing",
-        "yesDiscard": "Yes, discard"
+        "yesDiscard": "Yes, discard",
+        "today": "Today",
+        "tomorrow": "Tomorrow",
+        "copied": "Copied to clipboard",
+        "copyFailed": "Failed to copy",
+        "hide": "Hide",
+        "reveal": "Reveal",
+        "copy": "Copy",
+        "minutes": "minutes",
+        "hour": "hour",
+        "hours": "hours",
+        "syncing": "Syncing...",
+        "showAll": "Show All"
     },
     "sidebar": {
         "dashboard": "Dashboard",
@@ -338,7 +350,18 @@
         "skipNextAction": "Skip for now",
         "nextActionHint": "Think of the smallest, most concrete step you can take right now to move this project forward.",
         "tabs": {
-            "notifications": "Notification Preferences"
+            "notifications": "Notification Preferences",
+            "calendar": "Calendar"
+        },
+        "calendar": {
+            "icsUrl": "ICS Calendar URL",
+            "icsUrlHelp": "Paste your external calendar ICS URL here to sync events.",
+            "syncFrequency": "Sync Frequency",
+            "lastSync": "Last synced",
+            "neverSynced": "Never synced",
+            "syncNow": "Sync Now",
+            "syncInProgress": "Sync already in progress",
+            "syncSuccess": "Calendar synced successfully"
         },
         "security": "Security Settings",
         "changePassword": "Change Password",
@@ -643,8 +666,8 @@
         "short": "MMM d, yyyy",
         "monthYear": "MMMM yyyy",
         "dayMonth": "MMMM d",
-        "time": "h:mm a",
-        "dateTime": "MMM d, yyyy h:mm a",
+        "time": "HH:mm",
+        "dateTime": "MMM d, yyyy HH:mm",
         "todayHeader": "dddd, MMMM do, yyyy"
     },
     "dateIndicators": {

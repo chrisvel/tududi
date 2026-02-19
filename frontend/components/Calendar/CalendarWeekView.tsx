@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     format,
     startOfWeek,
@@ -11,6 +12,7 @@ import {
     getFirstDayOfWeek,
     getLocaleFirstDayOfWeek,
 } from '../../utils/profileService';
+import { formatTime } from '../../utils/dateUtils';
 
 interface CalendarEvent {
     id: string;
@@ -37,6 +39,7 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
     onTimeSlotClick,
     onEventDrop,
 }) => {
+    const { t } = useTranslation();
     const [firstDayOfWeek, setFirstDayOfWeek] = useState(1); // Default to Monday
     const [draggedEventId, setDraggedEventId] = useState<string | null>(null);
 
@@ -121,7 +124,7 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
             {/* Header with days */}
             <div className="grid grid-cols-8 border-b-2 border-gray-200 dark:border-gray-700 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-750 sticky top-0 z-10">
                 <div className="p-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400 border-r border-gray-200 dark:border-gray-700">
-                    Time
+                    {t('calendar.time')}
                 </div>
                 {weekDays.map((day) => (
                     <div
@@ -169,9 +172,8 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
                     >
                         {/* Time column */}
                         <div className="py-3 px-2 text-xs font-medium text-gray-500 dark:text-gray-400 text-center border-r-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
-                            {format(
-                                addHours(new Date().setHours(hour, 0, 0, 0), 0),
-                                'HH:mm'
+                            {formatTime(
+                                addHours(new Date().setHours(hour, 0, 0, 0), 0)
                             )}
                         </div>
 
@@ -236,16 +238,15 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
                                                     top: '0.5rem',
                                                     bottom: '0.5rem',
                                                 }}
-                                                title={`${event.title} - ${format(event.start, 'HH:mm')} to ${format(event.end, 'HH:mm')}`}
+                                                title={`${event.title} - ${formatTime(event.start)} to ${formatTime(event.end)}`}
                                             >
                                                 <div className="flex flex-col gap-0.5 h-full">
                                                     <div className="line-clamp-2 leading-tight font-semibold text-xs">
                                                         {event.title}
                                                     </div>
                                                     <div className="text-xs opacity-80 mt-auto">
-                                                        {format(
-                                                            event.start,
-                                                            'HH:mm'
+                                                        {formatTime(
+                                                            event.start
                                                         )}
                                                     </div>
                                                 </div>

@@ -17,7 +17,12 @@ import CalendarWeekView from './Calendar/CalendarWeekView';
 import CalendarDayView from './Calendar/CalendarDayView';
 import { getApiPath } from '../config/paths';
 import { Link, useNavigate } from 'react-router-dom';
-import { parseDateString } from '../utils/dateUtils';
+import {
+    parseDateString,
+    formatMonthYear,
+    formatLongDate,
+    formatDateTime,
+} from '../utils/dateUtils';
 
 const getLocale = (language: string) => {
     switch (language) {
@@ -380,7 +385,7 @@ const Calendar: React.FC = () => {
                                 {t('sidebar.calendar')}
                             </h2>
                             <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                                {format(currentDate, 'MMMM yyyy', { locale })}
+                                {formatMonthYear(currentDate)}
                             </span>
                         </div>
                     </div>
@@ -566,12 +571,8 @@ const TaskEventModal: React.FC<TaskEventModalProps> = ({
                             </label>
                             <p className="text-gray-900 dark:text-gray-100">
                                 {parseDateString(task.due_date) &&
-                                    format(
-                                        parseDateString(task.due_date) as Date,
-                                        'PPP',
-                                        {
-                                            locale: locale,
-                                        }
+                                    formatLongDate(
+                                        parseDateString(task.due_date) as Date
                                     )}
                             </p>
                         </div>
@@ -630,9 +631,7 @@ const TaskEventModal: React.FC<TaskEventModalProps> = ({
                                 {t('calendar.created')}
                             </label>
                             <p className="text-xs text-gray-500 dark:text-gray-400">
-                                {format(new Date(task.created_at), 'PPp', {
-                                    locale: locale,
-                                })}
+                                {formatDateTime(new Date(task.created_at))}
                             </p>
                         </div>
                     )}

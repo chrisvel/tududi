@@ -1,5 +1,7 @@
 import React from 'react';
 import { format, addHours, isToday } from 'date-fns';
+import { useTranslation } from 'react-i18next';
+import { formatTime } from '../../utils/dateUtils';
 
 interface CalendarEvent {
     id: string;
@@ -25,6 +27,7 @@ const CalendarDayView: React.FC<CalendarDayViewProps> = ({
     onTimeSlotClick,
     onEventDrop,
 }) => {
+    const { t } = useTranslation();
     const hours = Array.from({ length: 24 }, (_, i) => i);
     const [draggedEventId, setDraggedEventId] = React.useState<string | null>(
         null
@@ -129,7 +132,7 @@ const CalendarDayView: React.FC<CalendarDayViewProps> = ({
             {/* All day events */}
             <div className="p-3 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-750">
                 <div className="text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-2">
-                    All day
+                    {t('calendar.allDay')}
                 </div>
                 <div className="space-y-2">
                     {events
@@ -180,12 +183,11 @@ const CalendarDayView: React.FC<CalendarDayViewProps> = ({
                             <div className="flex">
                                 {/* Time column */}
                                 <div className="w-20 py-3 px-2 text-xs font-medium text-gray-500 dark:text-gray-400 text-center border-r-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
-                                    {format(
+                                    {formatTime(
                                         addHours(
                                             new Date().setHours(hour, 0, 0, 0),
                                             0
-                                        ),
-                                        'HH:mm'
+                                        )
                                     )}
                                 </div>
 
@@ -241,18 +243,14 @@ const CalendarDayView: React.FC<CalendarDayViewProps> = ({
                                                     boxShadow:
                                                         '0 3px 6px rgba(0,0,0,0.15)',
                                                 }}
-                                                title={`${event.title} - ${format(event.start, 'HH:mm')} to ${format(event.end, 'HH:mm')}`}
+                                                title={`${event.title} - ${formatTime(event.start)} to ${formatTime(event.end)}`}
                                             >
                                                 <div className="font-semibold">
                                                     {event.title}
                                                 </div>
                                                 <div className="text-xs opacity-90 mt-1">
-                                                    {format(
-                                                        event.start,
-                                                        'HH:mm'
-                                                    )}{' '}
-                                                    -{' '}
-                                                    {format(event.end, 'HH:mm')}
+                                                    {formatTime(event.start)} -{' '}
+                                                    {formatTime(event.end)}
                                                 </div>
                                             </div>
                                         );

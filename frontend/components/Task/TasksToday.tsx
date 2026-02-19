@@ -6,7 +6,11 @@ import i18n from 'i18next';
 import { useNavigate } from 'react-router-dom';
 import { getLocalesPath, getApiPath } from '../../config/paths';
 import { sortTasksByPriorityDueDateProject } from '../../utils/taskSortUtils';
-import { getTodayDateString } from '../../utils/dateUtils';
+import {
+    getTodayDateString,
+    formatTime,
+    formatLongDate,
+} from '../../utils/dateUtils';
 import {
     ClipboardDocumentListIcon,
     ArrowPathIcon,
@@ -453,10 +457,7 @@ const TasksToday: React.FC = () => {
                                 <span>{t('calendar.allDay', 'All day')}</span>
                             ) : (
                                 <span>
-                                    {format(
-                                        new Date(event.start_time),
-                                        'HH:mm'
-                                    )}
+                                    {formatTime(new Date(event.start_time))}
                                 </span>
                             )}
                         </div>
@@ -1212,9 +1213,7 @@ const TasksToday: React.FC = () => {
                                     {t('tasks.today')},
                                 </h2>
                                 <span className="text-lg font-light text-gray-500 dark:text-gray-400 opacity-80">
-                                    {format(new Date(), 'PPP', {
-                                        locale: getLocale(i18n.language),
-                                    })}
+                                    {formatLongDate(new Date())}
                                 </span>
                             </div>
 

@@ -11,9 +11,9 @@ import { isToday, isTomorrow, format, isSameDay, addDays } from 'date-fns';
 import TaskItem from './TaskItem';
 import { Project } from '../../entities/Project';
 import { Task } from '../../entities/Task';
-import { GroupedTasks } from '../../utils/tasksService';
+import { GroupedTasks, updateTask } from '../../utils/tasksService';
 import { CalendarEvent } from '../../utils/calendarService';
-import { getCurrentLocale } from '../../utils/dateUtils';
+import { getCurrentLocale, formatTime } from '../../utils/dateUtils';
 
 interface GroupedTaskListProps {
     tasks: Task[];
@@ -193,9 +193,9 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
             let key = '';
 
             if (isSameDay(currentDay, today)) {
-                key = t('today', 'Today');
+                key = t('common.today', 'Today');
             } else if (isSameDay(currentDay, tomorrow)) {
-                key = t('tomorrow', 'Tomorrow');
+                key = t('common.tomorrow', 'Tomorrow');
             } else {
                 key = format(currentDay, 'EEEE, MMMM d', {
                     locale: getCurrentLocale(),
@@ -250,9 +250,9 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
             let key = '';
 
             if (isSameDay(currentDay, today)) {
-                key = t('today', 'Today');
+                key = t('common.today', 'Today');
             } else if (isSameDay(currentDay, tomorrow)) {
-                key = t('tomorrow', 'Tomorrow');
+                key = t('common.tomorrow', 'Tomorrow');
             } else {
                 key = format(currentDay, 'EEEE, MMMM d', {
                     locale: getCurrentLocale(),
@@ -472,26 +472,24 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
                                                                         event.title
                                                                     }
                                                                 </p>
-                                                                {!event.is_all_day && (
+                                                                {event.is_all_day ? (
                                                                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                                        {format(
+                                                                        {t(
+                                                                            'calendar.allDay'
+                                                                        )}
+                                                                    </p>
+                                                                ) : (
+                                                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                                        {formatTime(
                                                                             new Date(
                                                                                 event.start_time
-                                                                            ),
-                                                                            'p',
-                                                                            {
-                                                                                locale: getCurrentLocale(),
-                                                                            }
+                                                                            )
                                                                         )}
                                                                         {' - '}
-                                                                        {format(
+                                                                        {formatTime(
                                                                             new Date(
                                                                                 event.end_time
-                                                                            ),
-                                                                            'p',
-                                                                            {
-                                                                                locale: getCurrentLocale(),
-                                                                            }
+                                                                            )
                                                                         )}
                                                                     </p>
                                                                 )}
