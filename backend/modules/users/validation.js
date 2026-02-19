@@ -13,6 +13,8 @@ const VALID_FREQUENCIES = [
     '12h',
 ];
 
+const VALID_CALENDAR_SYNC_PRESETS = ['15m', '1h', '6h', '24h'];
+
 /**
  * Validate first day of week.
  */
@@ -95,8 +97,60 @@ function validateSidebarSettings(body) {
     return { pinnedViewsOrder };
 }
 
+/**
+ * Validate calendar sync preset.
+ */
+function validateCalendarSyncPreset(syncPreset) {
+    if (!syncPreset) {
+        throw new ValidationError('Sync preset is required.');
+    }
+    if (!VALID_CALENDAR_SYNC_PRESETS.includes(syncPreset)) {
+        throw new ValidationError(
+            `Invalid sync preset. Must be one of: ${VALID_CALENDAR_SYNC_PRESETS.join(', ')}`
+        );
+    }
+    return syncPreset;
+}
+
+/**
+ * Validate calendar settings.
+ */
+function validateCalendarSettings(body) {
+    const { enabled, icsUrl, syncPreset } = body;
+
+    if (enabled !== undefined && typeof enabled !== 'boolean') {
+        throw new ValidationError('enabled must be a boolean');
+    }
+
+    if (icsUrl !== undefined) {
+        if (typeof icsUrl !== 'string') {
+            throw new ValidationError('icsUrl must be a string');
+        }
+
+        if (icsUrl && icsUrl.trim()) {
+            const urlPattern = /^https?:\/\/.+/i;
+            if (!urlPattern.test(icsUrl.trim())) {
+                throw new ValidationError(
+                    'icsUrl must be a valid http or https URL'
+                );
+            }
+        }
+    }
+
+    if (syncPreset !== undefined) {
+        validateCalendarSyncPreset(syncPreset);
+    }
+
+    return {
+        enabled,
+        icsUrl: icsUrl?.trim(),
+        syncPreset,
+    };
+}
+
 module.exports = {
     VALID_FREQUENCIES,
+    VALID_CALENDAR_SYNC_PRESETS,
     validateFirstDayOfWeek,
     validatePassword,
     validateFrequency,
@@ -104,4 +158,6 @@ module.exports = {
     validateApiKeyName,
     validateExpiresAt,
     validateSidebarSettings,
+    validateCalendarSyncPreset,
+    validateCalendarSettings,
 };

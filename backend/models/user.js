@@ -219,6 +219,19 @@ module.exports = (sequelize) => {
                 comment:
                     'User-configurable keyboard shortcuts for quick actions',
             },
+            calendar_settings: {
+                type: DataTypes.JSON,
+                allowNull: true,
+                defaultValue: {
+                    enabled: false,
+                    icsUrl: '',
+                    syncPreset: '6h',
+                    lastSyncedAt: null,
+                    lastSyncError: null,
+                    etag: null,
+                    lastModified: null,
+                },
+            },
             email_verified: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,

@@ -9,6 +9,7 @@ const {
     validateApiKeyName,
     validateExpiresAt,
     validateSidebarSettings,
+    validateCalendarSettings,
 } = require('./validation');
 const { NotFoundError, ValidationError } = require('../../shared/errors');
 const { User } = require('../../models');
@@ -521,6 +522,96 @@ class UsersService {
         await usersRepository.update(user, { ui_settings: newSettings });
 
         return { success: true, ui_settings: newSettings };
+    }
+
+    /**
+     * Update calendar settings.
+     */
+    async updateCalendarSettings(userId, data) {
+        const user = await usersRepository.findById(userId);
+        if (!user) {
+            throw new NotFoundError('User not found.');
+        }
+
+        const validatedData = validateCalendarSettings(data);
+
+        const currentSettings =
+            user.calendar_settings && typeof user.calendar_settings === 'object'
+                ? user.calendar_settings
+                : {
+                      enabled: false,
+                      icsUrl: '',
+                      syncPreset: '6h',
+                      lastSyncedAt: null,
+                      lastSyncError: null,
+                      etag: null,
+                      lastModified: null,
+                  };
+
+        const newSettings = {
+            ...currentSettings,
+            ...(validatedData.enabled !== undefined && {
+                enabled: validatedData.enabled,
+            }),
+            ...(validatedData.icsUrl !== undefined && {
+                icsUrl: validatedData.icsUrl,
+            }),
+            ...(validatedData.syncPreset !== undefined && {
+                syncPreset: validatedData.syncPreset,
+            }),
+        };
+
+        await usersRepository.update(user, { calendar_settings: newSettings });
+
+        const maskedUrl = this._maskIcsUrl(newSettings.icsUrl);
+        const responseSettings = { ...newSettings, icsUrl: maskedUrl };
+
+        return { success: true, calendar_settings: responseSettings };
+    }
+
+    /**
+     * Reveal calendar settings with full ICS URL.
+     */
+    async revealCalendarSettings(userId) {
+        const user = await usersRepository.findById(userId);
+        if (!user) {
+            throw new NotFoundError('User not found.');
+        }
+
+        const currentSettings =
+            user.calendar_settings && typeof user.calendar_settings === 'object'
+                ? user.calendar_settings
+                : {
+                      enabled: false,
+                      icsUrl: '',
+                      syncPreset: '6h',
+                      lastSyncedAt: null,
+                      lastSyncError: null,
+                      etag: null,
+                      lastModified: null,
+                  };
+
+        return { success: true, calendar_settings: currentSettings };
+    }
+
+    /**
+     * Mask ICS URL for security.
+     */
+    _maskIcsUrl(url) {
+        if (!url || !url.trim()) {
+            return '';
+        }
+
+        const trimmedUrl = url.trim();
+        if (trimmedUrl.length <= 11) {
+            return '***';
+        }
+
+        const extension = trimmedUrl.match(/\.[a-z]{2,4}$/i);
+        const ext = extension ? extension[0] : '';
+        const firstChars = trimmedUrl.substring(0, 8);
+
+        return `${firstChars}***${ext}`;
     }
 }
 

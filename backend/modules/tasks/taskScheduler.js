@@ -33,6 +33,8 @@ const getCronExpression = (frequency) => {
         deferred_tasks: '*/5 * * * *',
         due_tasks: '*/15 * * * *',
         due_projects: '*/15 * * * *',
+        calendar_sync: '*/15 * * * *',
+        calendar_cleanup: '0 2 * * *',
     };
     return expressions[frequency];
 };
@@ -46,6 +48,10 @@ const createJobHandler = (frequency) => async () => {
         await processDueTasks();
     } else if (frequency === 'due_projects') {
         await processDueProjects();
+    } else if (frequency === 'calendar_sync') {
+        await processCalendarSync();
+    } else if (frequency === 'calendar_cleanup') {
+        await processCalendarCleanup();
     } else {
         await processSummariesForFrequency(frequency);
     }
@@ -65,6 +71,8 @@ const createJobEntries = () => {
         'deferred_tasks',
         'due_tasks',
         'due_projects',
+        'calendar_sync',
+        'calendar_cleanup',
     ];
 
     return frequencies.map((frequency) => {
@@ -165,6 +173,49 @@ const processDueProjects = async () => {
     }
 };
 
+const processCalendarSync = async () => {
+    try {
+        const { syncDueUsers } = require('../calendar/calendarSyncService');
+        const result = await syncDueUsers();
+        return result;
+    } catch (error) {
+        throw error;
+    }
+};
+
+const processCalendarCleanup = async () => {
+    try {
+        const { CalendarEvent } = require('../../models');
+        const { Op } = require('sequelize');
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const retentionStart = new Date(today);
+        retentionStart.setDate(today.getDate() - 30);
+
+        const retentionEnd = new Date(today);
+        retentionEnd.setDate(today.getDate() + 90);
+
+        const result = await CalendarEvent.destroy({
+            where: {
+                [Op.or]: [
+                    { starts_at: { [Op.lt]: retentionStart } },
+                    { starts_at: { [Op.gt]: retentionEnd } },
+                ],
+            },
+        });
+
+        console.log(
+            `Calendar cleanup: Removed ${result} events outside retention window`
+        );
+        return result;
+    } catch (error) {
+        console.error('Calendar cleanup error:', error);
+        throw error;
+    }
+};
+
 const initialize = async () => {
     if (schedulerState.isInitialized) {
         return schedulerState;
@@ -220,6 +271,8 @@ module.exports = {
     processDeferredTasks,
     processDueTasks,
     processDueProjects,
+    processCalendarSync,
+    processCalendarCleanup,
     _createSchedulerState: createSchedulerState,
     _shouldDisableScheduler: shouldDisableScheduler,
     _getCronExpression: getCronExpression,

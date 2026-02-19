@@ -18,6 +18,7 @@ import {
     CheckIcon,
     BellIcon,
     CommandLineIcon,
+    CalendarIcon,
 } from '@heroicons/react/24/outline';
 import TelegramIcon from '../Shared/Icons/TelegramIcon';
 import { useToast } from '../Shared/ToastContext';
@@ -41,6 +42,7 @@ import GeneralTab from './tabs/GeneralTab';
 import SecurityTab from './tabs/SecurityTab';
 import ApiKeysTab from './tabs/ApiKeysTab';
 import ProductivityTab from './tabs/ProductivityTab';
+import CalendarTab from './tabs/CalendarTab';
 import TelegramTab from './tabs/TelegramTab';
 import AiTab from './tabs/AiTab';
 import NotificationsTab from './tabs/NotificationsTab';
@@ -85,6 +87,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             'security',
             'api-keys',
             'productivity',
+            'calendar',
             'telegram',
             'ai',
             'notifications',
@@ -122,6 +125,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         pomodoro_enabled: true,
         notification_preferences: null,
         keyboard_shortcuts: null,
+        calendar_settings: null,
         currentPassword: '',
         newPassword: '',
         confirmPassword: '',
@@ -521,6 +525,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                         data.notification_preferences || null,
                     keyboard_shortcuts:
                         data.keyboard_shortcuts || getDefaultConfig(),
+                    calendar_settings: data.calendar_settings || null,
                 });
 
                 if (data.telegram_bot_token) {
@@ -1115,6 +1120,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             icon: <ClockIcon className="w-5 h-5" />,
         },
         {
+            id: 'calendar',
+            name: t('profile.tabs.calendar', 'Calendar'),
+            icon: <CalendarIcon className="w-5 h-5" />,
+        },
+        {
             id: 'notifications',
             name: t('profile.tabs.notifications', 'Notifications'),
             icon: <BellIcon className="w-5 h-5" />,
@@ -1261,6 +1271,17 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                     }
                                 />
 
+                                <CalendarTab
+                                    isActive={activeTab === 'calendar'}
+                                    settings={formData.calendar_settings}
+                                    onChange={(settings) =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            calendar_settings: settings,
+                                        }))
+                                    }
+                                />
+
                                 <NotificationsTab
                                     isActive={activeTab === 'notifications'}
                                     notificationPreferences={
@@ -1318,7 +1339,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                 />
 
                                 <KeyboardShortcutsTab
-                                    isActive={activeTab === 'keyboard-shortcuts'}
+                                    isActive={
+                                        activeTab === 'keyboard-shortcuts'
+                                    }
                                     config={formData.keyboard_shortcuts}
                                     onChange={(config) =>
                                         setFormData((prev) => ({

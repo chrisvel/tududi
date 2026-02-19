@@ -16,6 +16,7 @@ node_modules
 public/js/bundle.js
 .aider*
 .claude*
+.sisyphus/
 
 backend/coverage/
 

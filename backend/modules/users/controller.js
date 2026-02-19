@@ -286,6 +286,37 @@ const usersController = {
             next(error);
         }
     },
+
+    /**
+     * PUT /api/profile/calendar-settings
+     * Update calendar settings.
+     */
+    async updateCalendarSettings(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const result = await usersService.updateCalendarSettings(
+                userId,
+                req.body
+            );
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    /**
+     * POST /api/profile/calendar-settings/reveal
+     * Reveal calendar settings with full ICS URL.
+     */
+    async revealCalendarSettings(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const result = await usersService.revealCalendarSettings(userId);
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    },
 };
 
 module.exports = usersController;

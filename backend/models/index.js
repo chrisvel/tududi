@@ -69,6 +69,7 @@ const RecurringCompletion = require('./recurringCompletion')(sequelize);
 const TaskAttachment = require('./task_attachment')(sequelize);
 const Backup = require('./backup')(sequelize);
 const PushSubscription = require('./push_subscription')(sequelize);
+const CalendarEvent = require('./calendar_event')(sequelize);
 
 User.hasMany(Area, { foreignKey: 'user_id' });
 Area.belongsTo(User, { foreignKey: 'user_id' });
@@ -196,6 +197,10 @@ User.hasMany(PushSubscription, {
 });
 PushSubscription.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 
+// CalendarEvent associations
+User.hasMany(CalendarEvent, { foreignKey: 'user_id', as: 'CalendarEvents' });
+CalendarEvent.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+
 module.exports = {
     sequelize,
     User,
@@ -217,4 +222,5 @@ module.exports = {
     TaskAttachment,
     Backup,
     PushSubscription,
+    CalendarEvent,
 };

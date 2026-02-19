@@ -61,6 +61,15 @@ export interface Profile {
     pomodoro_enabled: boolean;
     notification_preferences?: NotificationPreferences | null;
     keyboard_shortcuts?: KeyboardShortcutsConfig | null;
+    calendar_settings?: CalendarSettings | null;
+}
+
+export interface CalendarSettings {
+    ics_url: string | null;
+    sync_frequency: '15m' | '1h' | '6h' | '24h';
+    last_sync_at: string | null;
+    last_sync_status: 'success' | 'error' | null;
+    last_sync_error: string | null;
 }
 
 export interface TelegramBotInfo {

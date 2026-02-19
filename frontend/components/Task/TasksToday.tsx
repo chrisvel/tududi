@@ -31,6 +31,11 @@ import {
     isTaskWaiting,
 } from '../../constants/taskStatus';
 import { fetchProjects } from '../../utils/projectsService';
+import {
+    fetchTodayEvents,
+    CalendarEvent,
+    syncIfStale,
+} from '../../utils/calendarService';
 import { Task } from '../../entities/Task';
 import { useStore } from '../../store/useStore';
 import TaskList from './TaskList';
@@ -125,6 +130,14 @@ const TasksToday: React.FC = () => {
         return stored === 'true';
     });
     const [isSettingsLoaded, setIsSettingsLoaded] = useState(false);
+
+    const [events, setEvents] = useState<CalendarEvent[]>([]);
+    const [isEventsLoading, setIsEventsLoading] = useState(true);
+    const [isEventsError, setIsEventsError] = useState(false);
+    const [isEventsCollapsed, setIsEventsCollapsed] = useState(() => {
+        const stored = localStorage.getItem('eventsCollapsed');
+        return stored === 'true';
+    });
 
     // Metrics from the API (counts) + task arrays stored locally
     const [metrics, setMetrics] = useState<
@@ -311,6 +324,12 @@ const TasksToday: React.FC = () => {
         localStorage.setItem('dueTodayTasksCollapsed', newState.toString());
     };
 
+    const toggleEventsCollapsed = () => {
+        const newState = !isEventsCollapsed;
+        setIsEventsCollapsed(newState);
+        localStorage.setItem('eventsCollapsed', newState.toString());
+    };
+
     const isHabitCompletedToday = useCallback((habit: Task) => {
         if (!habit.habit_last_completion_at) {
             return false;
@@ -389,6 +408,73 @@ const TasksToday: React.FC = () => {
         },
         [navigate]
     );
+
+    const renderEventsList = useCallback(() => {
+        if (isEventsLoading) {
+            return (
+                <div className="flex justify-center py-4">
+                    <div className="animate-pulse flex space-x-4">
+                        <div className="flex-1 space-y-4 py-1">
+                            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                            <div className="space-y-2">
+                                <div className="h-4 bg-gray-200 rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        if (isEventsError) {
+            return (
+                <div className="text-red-500 text-sm py-2">
+                    {t('errors.failedToLoadEvents', 'Failed to load events')}
+                </div>
+            );
+        }
+
+        if (events.length === 0) {
+            return (
+                <div className="text-gray-500 text-sm py-2 italic">
+                    {t('calendar.noEventsToday', 'No events for today')}
+                </div>
+            );
+        }
+
+        return (
+            <div className="space-y-2">
+                {events.map((event) => (
+                    <div
+                        key={event.id}
+                        className="flex items-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm"
+                    >
+                        <div className="flex-shrink-0 w-16 text-xs text-gray-500 dark:text-gray-400 font-medium">
+                            {event.is_all_day ? (
+                                <span>{t('calendar.allDay', 'All day')}</span>
+                            ) : (
+                                <span>
+                                    {format(
+                                        new Date(event.start_time),
+                                        'HH:mm'
+                                    )}
+                                </span>
+                            )}
+                        </div>
+                        <div className="flex-1 min-w-0 ml-2">
+                            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                {event.title}
+                            </p>
+                            {event.location && (
+                                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                    {event.location}
+                                </p>
+                            )}
+                        </div>
+                    </div>
+                ))}
+            </div>
+        );
+    }, [events, isEventsLoading, isEventsError, t]);
 
     const renderHabitList = useCallback(
         (habitsList: Task[], variant: 'planned' | 'completed') => {
@@ -731,6 +817,30 @@ const TasksToday: React.FC = () => {
             isMounted.current = false;
         };
     }, []); // Empty dependency array - only run once on mount
+
+    useEffect(() => {
+        const loadEvents = async () => {
+            setIsEventsLoading(true);
+            try {
+                await syncIfStale();
+                const eventsData = await fetchTodayEvents();
+                if (isMounted.current) {
+                    setEvents(eventsData);
+                    setIsEventsError(false);
+                }
+            } catch (error) {
+                console.error('Failed to fetch events:', error);
+                if (isMounted.current) {
+                    setIsEventsError(true);
+                }
+            } finally {
+                if (isMounted.current) {
+                    setIsEventsLoading(false);
+                }
+            }
+        };
+        loadEvents();
+    }, []);
 
     // Memoize task handlers to prevent recreating functions on each render
     const handleTaskUpdate = useCallback(
@@ -1498,6 +1608,30 @@ const TasksToday: React.FC = () => {
                             )}
                         </div>
                     )}
+
+                <div className="mb-6" data-testid="events-section">
+                    <div
+                        className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
+                        onClick={toggleEventsCollapsed}
+                        data-testid="events-section-header"
+                    >
+                        <h3 className="text-sm font-medium uppercase flex items-center gap-2">
+                            <CalendarDaysIcon className="h-4 w-4" />
+                            {t('calendar.events', 'Events')}
+                        </h3>
+                        <div className="flex items-center">
+                            <span className="text-sm text-gray-500 mr-2">
+                                {events.length}
+                            </span>
+                            {isEventsCollapsed ? (
+                                <ChevronRightIcon className="h-5 w-5 text-gray-500" />
+                            ) : (
+                                <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+                            )}
+                        </div>
+                    </div>
+                    {!isEventsCollapsed && renderEventsList()}
+                </div>
 
                 {/* Today Plan */}
                 {totalPlannedItems > 0 && (

@@ -3,16 +3,22 @@ import {
     ChevronRightIcon,
     ChevronDownIcon,
     ArrowPathIcon,
+    CalendarIcon,
+    ClockIcon,
 } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
+import { isToday, isTomorrow, format, isSameDay, addDays } from 'date-fns';
 import TaskItem from './TaskItem';
 import { Project } from '../../entities/Project';
 import { Task } from '../../entities/Task';
 import { GroupedTasks } from '../../utils/tasksService';
+import { CalendarEvent } from '../../utils/calendarService';
+import { getCurrentLocale } from '../../utils/dateUtils';
 
 interface GroupedTaskListProps {
     tasks: Task[];
     groupedTasks?: GroupedTasks | null;
+    events?: CalendarEvent[];
     groupBy?: 'none' | 'project';
     onTaskUpdate: (task: Task) => Promise<void>;
     onTaskCompletionToggle?: (task: Task) => void;
@@ -41,6 +47,7 @@ interface ProjectGroup {
 const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
     tasks,
     groupedTasks,
+    events = [],
     groupBy = 'none',
     onTaskUpdate,
     onTaskCompletionToggle,
@@ -59,7 +66,8 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
 
     // If we have day-based groupedTasks from API, use those instead of recurring groups
     const shouldUseDayGrouping =
-        groupedTasks && Object.keys(groupedTasks).length > 0;
+        (groupedTasks && Object.keys(groupedTasks).length > 0) ||
+        (events && events.length > 0);
 
     // Group tasks by recurring template (legacy behavior)
     const { recurringGroups, standaloneTask } = useMemo(() => {
@@ -171,6 +179,112 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
         });
         return filtered;
     }, [groupedTasks, showCompletedTasks, shouldUseDayGrouping, searchQuery]);
+
+    // Group events by day
+    const groupedEvents = useMemo(() => {
+        if (!events || events.length === 0) return {};
+
+        const groups: Record<string, CalendarEvent[]> = {};
+        const today = new Date();
+        const tomorrow = addDays(today, 1);
+
+        for (let i = 0; i < 7; i++) {
+            const currentDay = addDays(today, i);
+            let key = '';
+
+            if (isSameDay(currentDay, today)) {
+                key = t('today', 'Today');
+            } else if (isSameDay(currentDay, tomorrow)) {
+                key = t('tomorrow', 'Tomorrow');
+            } else {
+                key = format(currentDay, 'EEEE, MMMM d', {
+                    locale: getCurrentLocale(),
+                });
+            }
+
+            const dayStart = new Date(currentDay);
+            dayStart.setHours(0, 0, 0, 0);
+            const dayEnd = new Date(currentDay);
+            dayEnd.setHours(23, 59, 59, 999);
+
+            const dayEvents = events.filter((event) => {
+                const eventStart = new Date(event.start_time);
+                const eventEnd = new Date(event.end_time);
+                const matchesDate =
+                    eventStart <= dayEnd && eventEnd >= dayStart;
+
+                if (!matchesDate) return false;
+
+                if (searchQuery.trim()) {
+                    return event.title
+                        .toLowerCase()
+                        .includes(searchQuery.toLowerCase());
+                }
+
+                return true;
+            });
+
+            if (dayEvents.length > 0) {
+                groups[key] = dayEvents;
+            }
+        }
+        return groups;
+    }, [events, t]);
+
+    // Combine tasks and events into display groups
+    const displayGroups = useMemo(() => {
+        if (!shouldUseDayGrouping) return [];
+
+        const groups: {
+            name: string;
+            tasks: Task[];
+            events: CalendarEvent[];
+        }[] = [];
+        const today = new Date();
+        const tomorrow = addDays(today, 1);
+
+        const processedKeys = new Set<string>();
+
+        for (let i = 0; i < 7; i++) {
+            const currentDay = addDays(today, i);
+            let key = '';
+
+            if (isSameDay(currentDay, today)) {
+                key = t('today', 'Today');
+            } else if (isSameDay(currentDay, tomorrow)) {
+                key = t('tomorrow', 'Tomorrow');
+            } else {
+                key = format(currentDay, 'EEEE, MMMM d', {
+                    locale: getCurrentLocale(),
+                });
+            }
+
+            processedKeys.add(key);
+
+            const tasks = filteredGroupedTasks[key] || [];
+            const dayEvents = groupedEvents[key] || [];
+
+            if (tasks.length > 0 || dayEvents.length > 0) {
+                groups.push({
+                    name: key,
+                    tasks,
+                    events: dayEvents,
+                });
+            }
+        }
+
+        Object.keys(filteredGroupedTasks).forEach((key) => {
+            if (!processedKeys.has(key)) {
+                groups.push({
+                    name: key,
+                    tasks: filteredGroupedTasks[key],
+                    events: groupedEvents[key] || [],
+                });
+            }
+        });
+
+        return groups;
+    }, [filteredGroupedTasks, groupedEvents, t, shouldUseDayGrouping]);
 
     // Group tasks by project when requested (only applies to standalone view)
     const groupedByProject = useMemo(() => {
@@ -285,7 +399,7 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
     if (shouldUseDayGrouping) {
         return (
             <div className="task-board-container">
-                {Object.keys(filteredGroupedTasks).length === 0 ? (
+                {displayGroups.length === 0 ? (
                     <div className="flex justify-center items-center mt-4">
                         <div className="w-full max-w bg-black/2 dark:bg-gray-900/25 rounded-l px-10 py-24 flex flex-col items-center opacity-95">
                             <svg
@@ -320,8 +434,12 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
                     <div className="pb-4">
                         {/* Mobile: Stack vertically, Desktop: Horizontal board */}
                         <div className="flex flex-col md:flex-row gap-4 md:gap-6 w-full">
-                            {Object.entries(filteredGroupedTasks).map(
-                                ([groupName, dayTasks]) => {
+                            {displayGroups.map(
+                                ({
+                                    name: groupName,
+                                    tasks: dayTasks,
+                                    events: dayEvents,
+                                }) => {
                                     return (
                                         <div
                                             key={groupName}
@@ -333,6 +451,55 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
                                                     {groupName}
                                                 </h3>
                                             </div>
+
+                                            {dayEvents.length > 0 && (
+                                                <div className="mb-4 space-y-2">
+                                                    {dayEvents.map((event) => (
+                                                        <div
+                                                            key={event.id}
+                                                            className="flex items-start p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800/30"
+                                                        >
+                                                            <div className="flex-shrink-0 mt-0.5 mr-2">
+                                                                {event.is_all_day ? (
+                                                                    <CalendarIcon className="h-4 w-4 text-blue-500" />
+                                                                ) : (
+                                                                    <ClockIcon className="h-4 w-4 text-blue-500" />
+                                                                )}
+                                                            </div>
+                                                            <div className="flex-1 min-w-0">
+                                                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                                                                    {
+                                                                        event.title
+                                                                    }
+                                                                </p>
+                                                                {!event.is_all_day && (
+                                                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                                        {format(
+                                                                            new Date(
+                                                                                event.start_time
+                                                                            ),
+                                                                            'p',
+                                                                            {
+                                                                                locale: getCurrentLocale(),
+                                                                            }
+                                                                        )}
+                                                                        {' - '}
+                                                                        {format(
+                                                                            new Date(
+                                                                                event.end_time
+                                                                            ),
+                                                                            'p',
+                                                                            {
+                                                                                locale: getCurrentLocale(),
+                                                                            }
+                                                                        )}
+                                                                    </p>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
 
                                             {/* Day column tasks */}
                                             <div className="space-y-1.5">
@@ -370,13 +537,15 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
                                                 ))}
 
                                                 {/* Empty state for columns with no tasks */}
-                                                {dayTasks.length === 0 && (
-                                                    <div className="text-center py-8 text-gray-400 dark:text-gray-600">
-                                                        <p className="text-sm">
-                                                            No tasks scheduled
-                                                        </p>
-                                                    </div>
-                                                )}
+                                                {dayTasks.length === 0 &&
+                                                    dayEvents.length === 0 && (
+                                                        <div className="text-center py-8 text-gray-400 dark:text-gray-600">
+                                                            <p className="text-sm">
+                                                                No tasks
+                                                                scheduled
+                                                            </p>
+                                                        </div>
+                                                    )}
                                             </div>
                                         </div>
                                     );

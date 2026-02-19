@@ -110,5 +110,13 @@ router.get(
 router.put('/profile/today-settings', usersController.updateTodaySettings);
 router.put('/profile/sidebar-settings', usersController.updateSidebarSettings);
 router.put('/profile/ui-settings', usersController.updateUiSettings);
+router.put(
+    '/profile/calendar-settings',
+    usersController.updateCalendarSettings
+);
+router.post(
+    '/profile/calendar-settings/reveal',
+    usersController.revealCalendarSettings
+);
 
 module.exports = router;

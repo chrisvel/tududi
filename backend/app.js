@@ -127,6 +127,7 @@ const adminModule = require('./modules/admin');
 const areasModule = require('./modules/areas');
 const authModule = require('./modules/auth');
 const backupModule = require('./modules/backup');
+const calendarModule = require('./modules/calendar');
 const featureFlagsModule = require('./modules/feature-flags');
 const habitsModule = require('./modules/habits');
 const inboxModule = require('./modules/inbox');
@@ -227,6 +228,7 @@ const registerApiRoutes = (basePath) => {
     app.use(basePath, searchModule.routes);
     app.use(basePath, viewsModule.routes);
     app.use(basePath, notificationsModule.routes);
+    app.use(basePath, calendarModule.routes);
 };
 
 // Register routes at both /api and /api/v1 (if versioned) to maintain backwards compatibility

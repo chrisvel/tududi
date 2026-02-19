@@ -9,6 +9,11 @@ import { Task } from '../entities/Task';
 import { getTitleAndIcon } from './Task/getTitleAndIcon';
 import { getDescription } from './Task/getDescription';
 import { createTask, GroupedTasks } from '../utils/tasksService';
+import {
+    CalendarEvent,
+    fetchUpcomingEvents,
+    syncIfStale,
+} from '../utils/calendarService';
 import { useStore } from '../store/useStore';
 import { useToast } from './Shared/ToastContext';
 import { SortOption } from './Shared/SortFilterButton';
@@ -44,6 +49,7 @@ const Tasks: React.FC = () => {
     const [tasks, setTasks] = useState<Task[]>([]);
     const projects = useStore((state: any) => state.projectsStore.projects);
     const [groupedTasks, setGroupedTasks] = useState<GroupedTasks | null>(null);
+    const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
@@ -198,6 +204,11 @@ const Tasks: React.FC = () => {
                 allTasksUrl.set('maxDays', '7');
                 allTasksUrl.set('sidebarOpen', isSidebarOpen.toString());
                 allTasksUrl.set('isMobile', isMobile.toString());
+
+                syncIfStale()
+                    .then(() => fetchUpcomingEvents())
+                    .then(setEvents)
+                    .catch(console.error);
             }
 
             if (!options?.disablePagination && type !== 'upcoming') {
@@ -899,6 +910,7 @@ const Tasks: React.FC = () => {
                                     <GroupedTaskList
                                         tasks={displayTasks}
                                         groupedTasks={groupedTasks}
+                                        events={events}
                                         groupBy="none"
                                         onTaskCreate={handleTaskCreate}
                                         onTaskUpdate={handleTaskUpdate}
