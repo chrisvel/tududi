@@ -116,7 +116,14 @@ function validateCalendarSyncPreset(syncPreset) {
  * Validate calendar settings.
  */
 function validateCalendarSettings(body) {
-    const { enabled, icsUrl, syncPreset } = body;
+    // Normalize snake_case to camelCase to support both formats
+    const normalizedBody = {
+        enabled: body.enabled,
+        icsUrl: body.icsUrl ?? body.ics_url,
+        syncPreset: body.syncPreset ?? body.sync_frequency,
+    };
+
+    const { enabled, icsUrl, syncPreset } = normalizedBody;
 
     if (enabled !== undefined && typeof enabled !== 'boolean') {
         throw new ValidationError('enabled must be a boolean');

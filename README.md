@@ -54,6 +54,7 @@ For the thinking behind tududi, read:
     - Quick capture of ideas and todos on the go
 - **Open API & Access Tokens**: Versioned Swagger docs exposed at `/api/v1` plus personal API keys for integrating tududi with your own tooling or automations.
 - **MCP (Model Context Protocol)**: Streamable HTTP MCP server at `/mcp` for AI assistants and MCP clients. Uses the same API key (Bearer) as the REST API and exposes all API operations as MCP tools.
+- **Calendar Integration**: Sync your external calendars via ICS URL to see events alongside your tasks.
 
 ## 🗺️ Roadmap
 
@@ -91,12 +92,12 @@ docker run \
   ...
 ```
 
-| Value | Meaning |
-|-------|---------|
-| `true` | Trust all proxies (simplest option for single-proxy setups) |
-| `1` | Trust the first hop only |
-| `loopback` | Trust loopback addresses (127.0.0.1/::1) |
-| `172.16.0.0/12` | Trust a specific subnet |
+| Value           | Meaning                                                     |
+| --------------- | ----------------------------------------------------------- |
+| `true`          | Trust all proxies (simplest option for single-proxy setups) |
+| `1`             | Trust the first hop only                                    |
+| `loopback`      | Trust loopback addresses (127.0.0.1/::1)                    |
+| `172.16.0.0/12` | Trust a specific subnet                                     |
 
 ### 📚 Documentation
 
@@ -137,6 +138,7 @@ Tududi provides a comprehensive REST API for integration with external tools and
 **Base URL:** `http://localhost:8080/api/v1`
 
 **Key Features:**
+
 - Complete CRUD operations for tasks, projects, notes, and areas
 - Personal API keys for secure access
 - Swagger documentation available at `/api-docs` (requires authentication)
@@ -146,6 +148,7 @@ Tududi provides a comprehensive REST API for integration with external tools and
 **Authentication:** Uses session cookies or Bearer token authentication. Generate personal API keys through the web interface for programmatic access.
 
 **Quick Example:**
+
 ```bash
 # Get all tasks
 curl -H "Authorization: Bearer YOUR_API_KEY" \
@@ -168,11 +171,13 @@ Tududi supports browser push notifications (PWA) for tasks and project updates.
 ### Setup
 
 **1. Generate VAPID keys:**
+
 ```bash
 npm run vapid:generate
 ```
 
 **2. Development:** Add to `backend/.env`:
+
 ```bash
 VAPID_PUBLIC_KEY=your_public_key_here
 VAPID_PRIVATE_KEY=your_private_key_here
@@ -182,14 +187,16 @@ VAPID_SUBJECT=mailto:your-email@example.com
 **3. Production:** Set environment variables based on your deployment:
 
 **Docker Compose:** Edit `docker-compose.yml`:
+
 ```yaml
 environment:
-  - VAPID_PUBLIC_KEY=your_public_key_here
-  - VAPID_PRIVATE_KEY=your_private_key_here
-  - VAPID_SUBJECT=mailto:your-email@example.com
+    - VAPID_PUBLIC_KEY=your_public_key_here
+    - VAPID_PRIVATE_KEY=your_private_key_here
+    - VAPID_SUBJECT=mailto:your-email@example.com
 ```
 
 **Docker CLI:**
+
 ```bash
 docker run \
   -e VAPID_PUBLIC_KEY=your_public_key_here \
@@ -203,6 +210,21 @@ docker run \
 ### Usage
 
 Once configured, users can enable push notifications in **Settings → Notifications → Browser Push Notifications**.
+
+## 📅 Calendar Integration
+
+Tududi can sync with your external calendars (Google Calendar, Outlook, Apple Calendar, etc.) via ICS URL.
+
+### Configuration
+
+1.  Navigate to **Profile Settings → Calendar**.
+2.  Paste your **ICS URL** (e.g., from Google Calendar's "Secret address in iCal format").
+3.  Choose a **Sync interval** (e.g., every 6 hours).
+4.  Click **Save**.
+5.  Use the **Reveal/Copy** button to verify or copy your URL.
+6.  Click **Sync now** to trigger an immediate update.
+
+Once synced, your calendar events will appear in the **Today** and **Upcoming** views alongside your tasks.
 
 ## 🤝 Contributing
 

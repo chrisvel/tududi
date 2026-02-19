@@ -74,18 +74,26 @@ const CalendarTab: React.FC<CalendarTabProps> = ({
                     headers: {
                         'Content-Type': 'application/json',
                     },
+                    credentials: 'include',
                 }
             );
 
+            const data = await response.json();
+
             if (!response.ok) {
-                throw new Error('Failed to reveal URL');
+                throw new Error(data.message || 'Failed to reveal URL');
             }
 
-            const data = await response.json();
-            setUrlInput(data.url);
-            setIsRevealed(true);
+            if (data.success && data.calendar_settings?.icsUrl) {
+                setUrlInput(data.calendar_settings.icsUrl);
+                setIsRevealed(true);
+            } else {
+                throw new Error('Invalid response format');
+            }
         } catch (error) {
-            showErrorToast('Failed to reveal calendar URL');
+            showErrorToast(
+                (error as Error).message || 'Failed to reveal calendar URL'
+            );
         }
     };
 
@@ -99,12 +107,20 @@ const CalendarTab: React.FC<CalendarTabProps> = ({
                         headers: {
                             'Content-Type': 'application/json',
                         },
+                        credentials: 'include',
                     }
                 );
 
-                if (response.ok) {
-                    const data = await response.json();
-                    await navigator.clipboard.writeText(data.url);
+                const data = await response.json();
+
+                if (
+                    response.ok &&
+                    data.success &&
+                    data.calendar_settings?.icsUrl
+                ) {
+                    await navigator.clipboard.writeText(
+                        data.calendar_settings.icsUrl
+                    );
                     showSuccessToast(t('common.copied', 'Copied to clipboard'));
                     return;
                 }

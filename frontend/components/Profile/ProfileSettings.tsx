@@ -937,6 +937,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
         try {
             const dataToSend = { ...formData };
+            const calendarSettings = dataToSend.calendar_settings;
+            delete dataToSend.calendar_settings;
+
             if (!isPasswordChange) {
                 delete dataToSend.currentPassword;
                 delete dataToSend.newPassword;
@@ -959,6 +962,32 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             }
 
             const updatedProfile: Profile = await response.json();
+
+            if (calendarSettings) {
+                const url = calendarSettings.icsUrl || '';
+                const calendarPayload = {
+                    enabled: Boolean(url.trim()),
+                    icsUrl: url.trim(),
+                    syncPreset: calendarSettings.syncPreset || '6h',
+                };
+
+                const calendarResponse = await fetch(
+                    getApiPath('profile/calendar-settings'),
+                    {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(calendarPayload),
+                    }
+                );
+
+                if (calendarResponse.ok) {
+                    const updatedCalendarSettings =
+                        await calendarResponse.json();
+                    updatedProfile.calendar_settings = updatedCalendarSettings;
+                }
+            }
 
             if (avatarFile) {
                 const avatarUrl = await uploadAvatar(avatarFile);
