@@ -24,43 +24,48 @@ const CalendarTab: React.FC<CalendarTabProps> = ({
 }) => {
     const { t } = useTranslation();
     const { showSuccessToast, showErrorToast } = useToast();
-    const [revealedUrl, setRevealedUrl] = useState<string | null>(null);
-    const [isRevealing, setIsRevealing] = useState(false);
-    const [isSyncing, setIsSyncing] = useState(false);
 
     if (!isActive) return null;
 
     const currentSettings: CalendarSettings = settings || {
-        ics_url: '',
-        sync_frequency: '6h',
-        last_sync_at: null,
-        last_sync_status: null,
-        last_sync_error: null,
+        enabled: false,
+        icsUrl: '',
+        syncPreset: '6h',
+        lastSyncedAt: null,
+        lastSyncStatus: null,
+        lastSyncError: null,
     };
 
+    const [urlInput, setUrlInput] = useState<string>(
+        currentSettings.icsUrl || ''
+    );
+    const [isRevealed, setIsRevealed] = useState(false);
+    const [isSyncing, setIsSyncing] = useState(false);
+
     const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newValue = e.target.value;
+        setUrlInput(newValue);
+        setIsRevealed(true);
         onChange({
             ...currentSettings,
-            ics_url: e.target.value,
+            icsUrl: newValue,
+            enabled: !!newValue,
         });
-        setRevealedUrl(null);
     };
 
     const handleFrequencyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         onChange({
             ...currentSettings,
-            sync_frequency: e.target
-                .value as CalendarSettings['sync_frequency'],
+            syncPreset: e.target.value as CalendarSettings['syncPreset'],
         });
     };
 
     const handleReveal = async () => {
-        if (revealedUrl) {
-            setRevealedUrl(null);
+        if (isRevealed) {
+            setIsRevealed(false);
             return;
         }
 
-        setIsRevealing(true);
         try {
             const response = await fetch(
                 getApiPath('profile/calendar-settings/reveal'),
@@ -77,20 +82,39 @@ const CalendarTab: React.FC<CalendarTabProps> = ({
             }
 
             const data = await response.json();
-            setRevealedUrl(data.url);
+            setUrlInput(data.url);
+            setIsRevealed(true);
         } catch (error) {
             showErrorToast('Failed to reveal calendar URL');
-        } finally {
-            setIsRevealing(false);
         }
     };
 
     const handleCopy = async () => {
-        const urlToCopy = revealedUrl || currentSettings.ics_url;
-        if (!urlToCopy) return;
+        if (!isRevealed) {
+            try {
+                const response = await fetch(
+                    getApiPath('profile/calendar-settings/reveal'),
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                );
+
+                if (response.ok) {
+                    const data = await response.json();
+                    await navigator.clipboard.writeText(data.url);
+                    showSuccessToast(t('common.copied', 'Copied to clipboard'));
+                    return;
+                }
+            } catch (error) {}
+        }
+
+        if (!urlInput) return;
 
         try {
-            await navigator.clipboard.writeText(urlToCopy);
+            await navigator.clipboard.writeText(urlInput);
             showSuccessToast(t('common.copied', 'Copied to clipboard'));
         } catch (err) {
             showErrorToast(t('common.copyFailed', 'Failed to copy'));
@@ -126,9 +150,9 @@ const CalendarTab: React.FC<CalendarTabProps> = ({
 
             onChange({
                 ...currentSettings,
-                last_sync_at: data.syncedAt,
-                last_sync_status: 'success',
-                last_sync_error: null,
+                lastSyncedAt: data.syncedAt,
+                lastSyncStatus: 'success',
+                lastSyncError: null,
             });
 
             showSuccessToast(
@@ -141,8 +165,8 @@ const CalendarTab: React.FC<CalendarTabProps> = ({
             const errorMessage = (error as Error).message;
             onChange({
                 ...currentSettings,
-                last_sync_status: 'error',
-                last_sync_error: errorMessage,
+                lastSyncStatus: 'error',
+                lastSyncError: errorMessage,
             });
             showErrorToast(errorMessage);
         } finally {
@@ -153,6 +177,7 @@ const CalendarTab: React.FC<CalendarTabProps> = ({
     const getMaskedUrl = (url: string | null) => {
         if (!url) return '';
         if (url.length <= 12) return url;
+        if (url.includes('***')) return url;
         return `${url.substring(0, 8)}***${url.substring(url.length - 4)}`;
     };
 
@@ -172,8 +197,7 @@ const CalendarTab: React.FC<CalendarTabProps> = ({
                         <input
                             type="text"
                             value={
-                                revealedUrl ||
-                                getMaskedUrl(currentSettings.ics_url)
+                                isRevealed ? urlInput : getMaskedUrl(urlInput)
                             }
                             onChange={handleUrlChange}
                             className="block w-full rounded-none rounded-l-md border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white px-3 py-2"
@@ -182,10 +206,9 @@ const CalendarTab: React.FC<CalendarTabProps> = ({
                         <button
                             type="button"
                             onClick={handleReveal}
-                            disabled={isRevealing}
                             className="relative -ml-px inline-flex items-center space-x-2 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                         >
-                            {revealedUrl ? (
+                            {isRevealed ? (
                                 <>
                                     <EyeSlashIcon
                                         className="h-5 w-5 text-gray-400"
@@ -228,7 +251,7 @@ const CalendarTab: React.FC<CalendarTabProps> = ({
                         {t('profile.calendar.syncFrequency', 'Sync Frequency')}
                     </label>
                     <select
-                        value={currentSettings.sync_frequency}
+                        value={currentSettings.syncPreset}
                         onChange={handleFrequencyChange}
                         className="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white px-3 py-2"
                     >
@@ -247,17 +270,16 @@ const CalendarTab: React.FC<CalendarTabProps> = ({
 
                 <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
                     <div className="text-sm text-gray-500 dark:text-gray-400">
-                        {currentSettings.last_sync_at ? (
+                        {currentSettings.lastSyncedAt ? (
                             <p>
                                 {t('profile.calendar.lastSync', 'Last synced')}:{' '}
                                 {new Date(
-                                    currentSettings.last_sync_at
+                                    currentSettings.lastSyncedAt
                                 ).toLocaleString()}
-                                {currentSettings.last_sync_status ===
-                                    'error' && (
+                                {currentSettings.lastSyncStatus === 'error' && (
                                     <span className="text-red-500 ml-2">
                                         ({t('common.error', 'Error')}:{' '}
-                                        {currentSettings.last_sync_error})
+                                        {currentSettings.lastSyncError})
                                     </span>
                                 )}
                             </p>

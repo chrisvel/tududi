@@ -65,11 +65,12 @@ export interface Profile {
 }
 
 export interface CalendarSettings {
-    ics_url: string | null;
-    sync_frequency: '15m' | '1h' | '6h' | '24h';
-    last_sync_at: string | null;
-    last_sync_status: 'success' | 'error' | null;
-    last_sync_error: string | null;
+    enabled: boolean;
+    icsUrl: string | null;
+    syncPreset: '15m' | '1h' | '6h' | '24h';
+    lastSyncedAt: string | null;
+    lastSyncStatus: 'success' | 'error' | null;
+    lastSyncError: string | null;
 }
 
 export interface TelegramBotInfo {
