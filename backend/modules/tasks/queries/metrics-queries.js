@@ -87,6 +87,8 @@ async function fetchTodayPlanTasks(visibleTasksWhere) {
         'cancelled',
     ];
 
+    const now = new Date();
+
     return await Task.findAll({
         where: {
             [Op.and]: [
@@ -97,7 +99,16 @@ async function fetchTodayPlanTasks(visibleTasksWhere) {
                         [Op.notIn]: excludedStatuses,
                     },
                     parent_task_id: null,
-                    // Exclude recurring parent tasks - only include non-recurring tasks or recurring instances
+                },
+                // Exclude tasks whose defer_until is still in the future
+                {
+                    [Op.or]: [
+                        { defer_until: null },
+                        { defer_until: { [Op.lte]: now } },
+                    ],
+                },
+                // Exclude recurring parent tasks - only include non-recurring tasks or recurring instances
+                {
                     [Op.or]: [
                         {
                             // Non-recurring tasks

@@ -78,7 +78,7 @@ function buildUpdateAttributes(body, task, timezone) {
         status:
             body.status !== undefined
                 ? parseStatus(body.status)
-                : Task.STATUS.NOT_STARTED,
+                : undefined,
         note: body.note,
         recurrence_type: recurrenceType,
         recurrence_interval:
