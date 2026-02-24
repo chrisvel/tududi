@@ -309,7 +309,10 @@ const sendSummaryToUser = async (userId) => {
                 `MarkdownV2 send failed for user ${userId}, retrying as plain text:`,
                 markdownError.message
             );
-            const plainSummary = summary.replace(/\\([_*\[\]()~`>#+\-=|{}.!\\])/g, '$1');
+            const plainSummary = summary.replace(
+                /\\([_*\[\]()~`>#+\-=|{}.!\\])/g,
+                '$1'
+            );
             await sendTelegramMessage(
                 user.telegram_bot_token,
                 user.telegram_chat_id,
