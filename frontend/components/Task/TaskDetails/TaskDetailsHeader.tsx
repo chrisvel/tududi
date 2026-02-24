@@ -273,37 +273,21 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex-1 min-w-0">
                         {isEditingTitle ? (
-                            <div className="flex items-center space-x-2">
-                                <input
-                                    ref={titleInputRef}
-                                    type="text"
-                                    value={editedTitle}
-                                    onChange={(e) =>
-                                        setEditedTitle(e.target.value)
-                                    }
-                                    onKeyDown={handleTitleKeyDown}
-                                    onBlur={handleSaveTitle}
-                                    className="text-2xl font-normal text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 border-2 border-blue-500 dark:border-blue-400 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 w-full"
-                                    placeholder={t(
-                                        'task.titlePlaceholder',
-                                        'Enter task title'
-                                    )}
-                                />
-                                <button
-                                    onClick={handleSaveTitle}
-                                    className="p-1.5 text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 rounded-full transition-colors duration-200"
-                                    title={t('common.save', 'Save')}
-                                >
-                                    <CheckIcon className="h-5 w-5" />
-                                </button>
-                                <button
-                                    onClick={handleCancelTitleEdit}
-                                    className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 rounded-full transition-colors duration-200"
-                                    title={t('common.cancel', 'Cancel')}
-                                >
-                                    <XMarkIcon className="h-5 w-5" />
-                                </button>
-                            </div>
+                            <input
+                                ref={titleInputRef}
+                                type="text"
+                                value={editedTitle}
+                                onChange={(e) =>
+                                    setEditedTitle(e.target.value)
+                                }
+                                onKeyDown={handleTitleKeyDown}
+                                onBlur={handleSaveTitle}
+                                className="text-2xl font-normal text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 border-2 border-blue-500 dark:border-blue-400 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 w-full"
+                                placeholder={t(
+                                    'task.titlePlaceholder',
+                                    'Enter task title'
+                                )}
+                            />
                         ) : (
                             <>
                                 <div className="flex items-center gap-3 flex-wrap min-w-0">

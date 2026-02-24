@@ -106,6 +106,9 @@ const Layout: React.FC<LayoutProps> = ({
             });
 
             if (newTask?.uid) {
+                if (window.innerWidth < 1024) {
+                    setIsSidebarOpen(false);
+                }
                 navigate(`/task/${newTask.uid}`, { state: { isNew: true } });
             } else {
                 throw new Error('New task missing UID');
