@@ -35,6 +35,7 @@ interface TaskDetailsHeaderProps {
     onQuickStatusToggle?: () => void;
     attachmentCount?: number;
     subtasksCount?: number;
+    autoEditTitle?: boolean;
 }
 
 const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
@@ -55,9 +56,10 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
     onQuickStatusToggle,
     attachmentCount = 0,
     subtasksCount = 0,
+    autoEditTitle = false,
 }) => {
     const { t } = useTranslation();
-    const [isEditingTitle, setIsEditingTitle] = useState(false);
+    const [isEditingTitle, setIsEditingTitle] = useState(autoEditTitle);
     const [editedTitle, setEditedTitle] = useState(task.name);
     const [actionsMenuOpen, setActionsMenuOpen] = useState(false);
     const [actionsMenuStyle, setActionsMenuStyle] =
