@@ -1039,9 +1039,17 @@ const TaskDetails: React.FC = () => {
             );
 
             setTimelineRefreshKey((prev) => prev + 1);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error updating tags:', error);
-            showErrorToast(t('task.tagsUpdateError', 'Failed to update tags'));
+            const details = error?.details;
+            if (details && Array.isArray(details) && details.length > 0) {
+                showErrorToast(details.join('. '));
+            } else {
+                showErrorToast(
+                    error?.message ||
+                        t('task.tagsUpdateError', 'Failed to update tags')
+                );
+            }
             throw error;
         }
     };
