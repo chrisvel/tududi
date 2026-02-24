@@ -50,7 +50,7 @@ const TaskDetails: React.FC = () => {
         if (isNewTask) {
             navigate(location.pathname, { replace: true, state: {} });
         }
-    }, []);  // eslint-disable-line react-hooks/exhaustive-deps
+    }, [isNewTask, navigate, location.pathname]);
 
     const projectsStore = useStore((state: any) => state.projectsStore);
     const tagsStore = useStore((state: any) => state.tagsStore);
