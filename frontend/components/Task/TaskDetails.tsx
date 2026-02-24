@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import ConfirmDialog from '../Shared/ConfirmDialog';
@@ -40,8 +40,17 @@ import {
 const TaskDetails: React.FC = () => {
     const { uid } = useParams<{ uid: string }>();
     const navigate = useNavigate();
+    const location = useLocation();
     const { t } = useTranslation();
+    const isNewTask = location.state?.isNew === true;
     const { showSuccessToast, showErrorToast } = useToast();
+
+    // Clear navigation state so refresh/back doesn't re-trigger edit mode
+    useEffect(() => {
+        if (isNewTask) {
+            navigate(location.pathname, { replace: true, state: {} });
+        }
+    }, []);  // eslint-disable-line react-hooks/exhaustive-deps
 
     const projectsStore = useStore((state: any) => state.projectsStore);
     const tagsStore = useStore((state: any) => state.tagsStore);
@@ -1112,6 +1121,7 @@ const TaskDetails: React.FC = () => {
                     onQuickStatusToggle={handleCompletionToggle}
                     attachmentCount={attachmentCount}
                     subtasksCount={subtasks.length}
+                    autoEditTitle={isNewTask}
                 />
 
                 <div className="mb-6 mt-6">
