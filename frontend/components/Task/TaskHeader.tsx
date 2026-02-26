@@ -34,6 +34,7 @@ interface TaskHeaderProps {
     onEdit?: (e: React.MouseEvent) => void;
     onDelete?: (e: React.MouseEvent) => void;
     isUpcomingView?: boolean;
+    onMenuOpenChange?: (isOpen: boolean) => void;
 }
 
 const TaskHeader: React.FC<TaskHeaderProps> = ({
@@ -51,6 +52,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
     onEdit: _onEdit,
     onDelete: _onDelete,
     isUpcomingView = false,
+    onMenuOpenChange,
 }) => {
     const { t } = useTranslation();
     void _onToggleToday;
@@ -454,6 +456,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                             onTaskUpdate={onTaskUpdate}
                             showMobileVariant={false}
                             className=""
+                            onMenuOpenChange={onMenuOpenChange}
                         />
                     </div>
                 )}
@@ -632,6 +635,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                     onTaskUpdate={onTaskUpdate}
                                     hoverRevealQuickActions={false}
                                     showMobileVariant={false}
+                                    onMenuOpenChange={onMenuOpenChange}
                                 />
                             </div>
                         )}
