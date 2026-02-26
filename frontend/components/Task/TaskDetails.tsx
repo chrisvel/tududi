@@ -30,6 +30,7 @@ import {
     TaskDueDateCard,
     TaskDeferUntilCard,
     TaskAttachmentsCard,
+    TaskMatrixCard,
 } from './TaskDetails/';
 import {
     isTaskOverdueInTodayPlan,
@@ -1165,6 +1166,8 @@ const TaskDetails: React.FC = () => {
                                     onSave={handleSaveDeferUntil}
                                     onCancel={handleCancelDeferUntilEdit}
                                 />
+
+                                <TaskMatrixCard taskId={task.id} />
                             </div>
                         </div>
                     )}

@@ -136,6 +136,7 @@ const telegramModule = require('./modules/telegram');
 const urlModule = require('./modules/url');
 const usersModule = require('./modules/users');
 const viewsModule = require('./modules/views');
+const matricesModule = require('./modules/matrices');
 
 // Swagger documentation - enabled by default, protected by authentication
 // Mounted on /api-docs to avoid conflicts with API routes
@@ -215,6 +216,7 @@ const registerApiRoutes = (basePath) => {
     app.use(basePath, backupModule.routes);
     app.use(basePath, searchModule.routes);
     app.use(basePath, viewsModule.routes);
+    app.use(basePath, matricesModule.routes);
     app.use(basePath, notificationsModule.routes);
 };
 

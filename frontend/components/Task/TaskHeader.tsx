@@ -11,6 +11,7 @@ import {
 import { TagIcon, FolderIcon, FireIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
 import TaskPriorityIcon from '../Shared/Icons/TaskPriorityIcon';
+import QuadrantDot from '../Shared/QuadrantDot';
 import { Project } from '../../entities/Project';
 import { Task } from '../../entities/Task';
 import { fetchSubtasks } from '../../utils/tasksService';
@@ -203,6 +204,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                 title="Habit"
                                             />
                                         )}
+                                        <QuadrantDot taskId={task.id} />
                                         <span className="text-sm font-medium text-gray-900 dark:text-gray-300 tracking-tight truncate">
                                             {task.original_name || task.name}
                                         </span>
@@ -298,6 +300,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                         title="Habit"
                                     />
                                 )}
+                                <QuadrantDot taskId={task.id} />
                                 <span className="text-md font-medium text-gray-900 dark:text-gray-300 truncate">
                                     {task.original_name || task.name}
                                 </span>

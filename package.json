@@ -1,6 +1,6 @@
 {
   "name": "tududi",
-  "version": "v0.88.5",
+  "version": "v1.0.0",
   "description": "Self-hosted task management with hierarchical organization, multi-language support, and Telegram integration.",
   "directories": {
     "test": "test"
@@ -8,6 +8,7 @@
   "scripts": {
     "start": "bash scripts/start-all-dev.sh",
     "dev": "npm run frontend:dev",
+    "dev:local": "bash scripts/start-dev-local.sh",
     "build": "npm run frontend:build",
     "pre-push": "lint-staged",
     "pre-release": "npm run lint:fix && npm run format:fix && npm run test && npm run test:ui",

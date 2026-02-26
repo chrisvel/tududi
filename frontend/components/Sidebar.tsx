@@ -10,6 +10,7 @@ import SidebarNotes from './Sidebar/SidebarNotes';
 import SidebarHabits from './Sidebar/SidebarHabits';
 import SidebarProjects from './Sidebar/SidebarProjects';
 import SidebarTags from './Sidebar/SidebarTags';
+import SidebarMatrices from './Sidebar/SidebarMatrices';
 import SidebarViews from './Sidebar/SidebarViews';
 import { getFeatureFlags, FeatureFlags } from '../utils/featureFlags';
 import { KeyboardShortcutsConfig } from '../utils/keyboardShortcutsService';
@@ -131,6 +132,10 @@ const Sidebar: React.FC<SidebarProps> = ({
                             isDarkMode={isDarkMode}
                             openTagModal={openTagModal}
                             tags={tags}
+                        />
+                        <SidebarMatrices
+                            handleNavClick={handleNavClick}
+                            location={location}
                         />
                         <SidebarViews
                             handleNavClick={handleNavClick}
