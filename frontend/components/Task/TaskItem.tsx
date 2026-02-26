@@ -67,7 +67,7 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
     }
 
     return (
-        <div className="mt-1 space-y-1">
+        <div className="mt-1 space-y-1 relative z-0">
             {subtasks.map((subtask) => {
                 const borderClass = isTaskCompleted(subtask.status)
                     ? 'border-l-4 border-l-green-500'
@@ -175,6 +175,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const { showErrorToast } = useToast();
     const [isAnimatingOut, setIsAnimatingOut] = useState(false);
+
+    // Status menu state
+    const [isStatusMenuOpen, setIsStatusMenuOpen] = useState(false);
 
     // Subtasks state
     const [subtasks, setSubtasks] = useState<Task[]>([]);
@@ -373,7 +376,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
         : getPriorityBorderClassName(task.priority);
 
     return (
-        <>
+        <div className={`relative ${isStatusMenuOpen ? 'z-[10001]' : ''}`}>
             <div
                 className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 relative overflow-visible transition-colors duration-200 ease-in-out hover:ring-1 hover:ring-gray-200 dark:hover:ring-gray-700 ${priorityBorderClass} ${
                     isInProgress
@@ -400,6 +403,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     onEdit={handleEdit}
                     onDelete={handleDeleteClick}
                     isUpcomingView={isUpcomingView}
+                    onMenuOpenChange={setIsStatusMenuOpen}
                 />
 
                 {/* Progress bar at bottom of parent task */}
@@ -450,7 +454,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     onCancel={() => setIsConfirmDialogOpen(false)}
                 />
             )}
-        </>
+        </div>
     );
 };
 
