@@ -439,6 +439,138 @@ describe('Subtasks Completion Logic Integration', () => {
         });
     });
 
+    describe('Parent Task Cancellation Affects Subtasks', () => {
+        it('should cancel all active subtasks when parent task is cancelled', async () => {
+            const parentTask = await Task.create({
+                name: 'Parent Task',
+                user_id: testUser.id,
+                status: Task.STATUS.IN_PROGRESS,
+                priority: Task.PRIORITY.MEDIUM,
+            });
+
+            const subtask1 = await Task.create({
+                name: 'Subtask 1',
+                user_id: testUser.id,
+                parent_task_id: parentTask.id,
+                status: Task.STATUS.NOT_STARTED,
+                priority: Task.PRIORITY.MEDIUM,
+            });
+
+            const subtask2 = await Task.create({
+                name: 'Subtask 2',
+                user_id: testUser.id,
+                parent_task_id: parentTask.id,
+                status: Task.STATUS.IN_PROGRESS,
+                priority: Task.PRIORITY.MEDIUM,
+            });
+
+            const subtask3 = await Task.create({
+                name: 'Subtask 3',
+                user_id: testUser.id,
+                parent_task_id: parentTask.id,
+                status: Task.STATUS.WAITING,
+                priority: Task.PRIORITY.MEDIUM,
+            });
+
+            // Cancel parent task
+            const res = await agent
+                .patch(`/api/task/${parentTask.uid}`)
+                .send({ status: Task.STATUS.CANCELLED });
+            expect(res.status).toBe(200);
+
+            // Verify all subtasks are cancelled
+            const updatedSubtasks = await Task.findAll({
+                where: { parent_task_id: parentTask.id },
+                order: [['id', 'ASC']],
+            });
+
+            expect(updatedSubtasks).toHaveLength(3);
+            updatedSubtasks.forEach((subtask) => {
+                expect(subtask.status).toBe(Task.STATUS.CANCELLED);
+            });
+        });
+
+        it('should not cancel already done or archived subtasks when parent is cancelled', async () => {
+            const parentTask = await Task.create({
+                name: 'Parent Task',
+                user_id: testUser.id,
+                status: Task.STATUS.IN_PROGRESS,
+                priority: Task.PRIORITY.MEDIUM,
+            });
+
+            const subtaskDone = await Task.create({
+                name: 'Done Subtask',
+                user_id: testUser.id,
+                parent_task_id: parentTask.id,
+                status: Task.STATUS.DONE,
+                completed_at: new Date(),
+                priority: Task.PRIORITY.MEDIUM,
+            });
+
+            const subtaskActive = await Task.create({
+                name: 'Active Subtask',
+                user_id: testUser.id,
+                parent_task_id: parentTask.id,
+                status: Task.STATUS.IN_PROGRESS,
+                priority: Task.PRIORITY.MEDIUM,
+            });
+
+            // Cancel parent task
+            const res = await agent
+                .patch(`/api/task/${parentTask.uid}`)
+                .send({ status: Task.STATUS.CANCELLED });
+            expect(res.status).toBe(200);
+
+            // Done subtask should remain done
+            const updatedDone = await Task.findByPk(subtaskDone.id);
+            expect(updatedDone.status).toBe(Task.STATUS.DONE);
+
+            // Active subtask should be cancelled
+            const updatedActive = await Task.findByPk(subtaskActive.id);
+            expect(updatedActive.status).toBe(Task.STATUS.CANCELLED);
+        });
+
+        it('should restore cancelled subtasks when parent is uncancelled', async () => {
+            const parentTask = await Task.create({
+                name: 'Parent Task',
+                user_id: testUser.id,
+                status: Task.STATUS.CANCELLED,
+                priority: Task.PRIORITY.MEDIUM,
+            });
+
+            const subtask1 = await Task.create({
+                name: 'Subtask 1',
+                user_id: testUser.id,
+                parent_task_id: parentTask.id,
+                status: Task.STATUS.CANCELLED,
+                priority: Task.PRIORITY.MEDIUM,
+            });
+
+            const subtask2 = await Task.create({
+                name: 'Subtask 2',
+                user_id: testUser.id,
+                parent_task_id: parentTask.id,
+                status: Task.STATUS.DONE,
+                completed_at: new Date(),
+                priority: Task.PRIORITY.MEDIUM,
+            });
+
+            // Uncancelled parent task back to in_progress
+            const res = await agent
+                .patch(`/api/task/${parentTask.uid}`)
+                .send({ status: Task.STATUS.IN_PROGRESS });
+            expect(res.status).toBe(200);
+
+            // Cancelled subtask should be restored to NOT_STARTED
+            const updatedSubtask1 = await Task.findByPk(subtask1.id);
+            expect(updatedSubtask1.status).toBe(Task.STATUS.NOT_STARTED);
+
+            // Done subtask should remain done
+            const updatedSubtask2 = await Task.findByPk(subtask2.id);
+            expect(updatedSubtask2.status).toBe(Task.STATUS.DONE);
+        });
+    });
+
     describe('Performance Considerations', () => {
         it('should handle many subtasks efficiently without affecting parent', async () => {
             // Create parent task
