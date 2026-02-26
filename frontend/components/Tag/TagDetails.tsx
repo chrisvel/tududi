@@ -220,7 +220,7 @@ const TagDetails: React.FC = () => {
                 const [tasksResponse, notesResponse] = await Promise.all([
                     fetch(
                         getApiPath(
-                            `tasks?tag=${encodeURIComponent(tagData.name)}`
+                            `tasks?tag=${encodeURIComponent(tagData.name)}&status=all`
                         )
                     ),
                     fetch(
