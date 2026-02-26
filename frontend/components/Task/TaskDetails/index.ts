@@ -8,3 +8,4 @@ export { default as TaskRecurrenceCard } from './TaskRecurrenceCard';
 export { default as TaskDueDateCard } from './TaskDueDateCard';
 export { default as TaskDeferUntilCard } from './TaskDeferUntilCard';
 export { default as TaskAttachmentsCard } from './TaskAttachmentsCard';
+export { default as TaskMatrixCard } from './TaskMatrixCard';

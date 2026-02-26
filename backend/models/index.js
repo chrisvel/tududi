@@ -68,6 +68,8 @@ const Notification = require('./notification')(sequelize);
 const RecurringCompletion = require('./recurringCompletion')(sequelize);
 const TaskAttachment = require('./task_attachment')(sequelize);
 const Backup = require('./backup')(sequelize);
+const Matrix = require('./matrix')(sequelize);
+const TaskMatrix = require('./task_matrix')(sequelize);
 
 User.hasMany(Area, { foreignKey: 'user_id' });
 Area.belongsTo(User, { foreignKey: 'user_id' });
@@ -188,6 +190,30 @@ TaskAttachment.belongsTo(Task, { foreignKey: 'task_id' });
 User.hasMany(Backup, { foreignKey: 'user_id', as: 'Backups' });
 Backup.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 
+// Matrix associations
+User.hasMany(Matrix, { foreignKey: 'user_id', as: 'Matrices' });
+Matrix.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+Project.hasMany(Matrix, { foreignKey: 'project_id', as: 'Matrices' });
+Matrix.belongsTo(Project, { foreignKey: 'project_id', as: 'Project' });
+
+Matrix.belongsToMany(Task, {
+    through: TaskMatrix,
+    foreignKey: 'matrix_id',
+    otherKey: 'task_id',
+    as: 'Tasks',
+});
+Task.belongsToMany(Matrix, {
+    through: TaskMatrix,
+    foreignKey: 'task_id',
+    otherKey: 'matrix_id',
+    as: 'Matrices',
+});
+
+TaskMatrix.belongsTo(Task, { foreignKey: 'task_id' });
+TaskMatrix.belongsTo(Matrix, { foreignKey: 'matrix_id' });
+Task.hasMany(TaskMatrix, { foreignKey: 'task_id', as: 'TaskMatrices' });
+Matrix.hasMany(TaskMatrix, { foreignKey: 'matrix_id', as: 'TaskMatrices' });
+
 module.exports = {
     sequelize,
     User,
@@ -208,4 +234,6 @@ module.exports = {
     RecurringCompletion,
     TaskAttachment,
     Backup,
+    Matrix,
+    TaskMatrix,
 };

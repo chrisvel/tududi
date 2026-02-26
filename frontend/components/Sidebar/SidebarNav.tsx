@@ -85,7 +85,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
 
     const isActive = (path: string, query?: string) => {
         if (path === '/inbox' || path === '/today' || path === '/calendar') {
-            const isPathMatch = location.pathname === path;
+            const isPathMatch = location.pathname === path || location.pathname.startsWith(path + '/');
             return isPathMatch
                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
                 : 'text-gray-700 dark:text-gray-300';
