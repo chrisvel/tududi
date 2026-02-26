@@ -299,6 +299,8 @@ async function filterTasksByParams(
                         'archived',
                     ],
                 };
+            } else if (params.status === 'all') {
+                // No status filter — return tasks of all statuses
             } else if (!params.client_side_filtering) {
                 whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
             }
