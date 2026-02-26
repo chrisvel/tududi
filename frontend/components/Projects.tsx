@@ -66,7 +66,10 @@ const Projects: React.FC = () => {
         return saved === 'list' || saved === 'cards' ? saved : 'cards';
     });
     const [isSearchExpanded, setIsSearchExpanded] = useState<boolean>(false);
-    const [orderBy, setOrderBy] = useState<string>('created_at:desc');
+    const [orderBy, setOrderBy] = useState<string>(() => {
+        const saved = localStorage.getItem('projectsSortOrder');
+        return saved || 'created_at:desc';
+    });
 
     const [searchParams, setSearchParams] = useSearchParams();
     const statusFilter = searchParams.get('status') || 'not_completed';
@@ -178,6 +181,11 @@ const Projects: React.FC = () => {
             document.removeEventListener('keydown', handleEscapeKey);
         };
     }, [activeDropdown]);
+
+    // Persist sort order to localStorage
+    useEffect(() => {
+        localStorage.setItem('projectsSortOrder', orderBy);
+    }, [orderBy]);
 
     // Handle sort change
     const handleSortChange = (newOrderBy: string) => {
