@@ -85,6 +85,55 @@ async function completeAllSubtasks(parentTaskId, userId) {
     }
 }
 
+async function cancelAllSubtasks(parentTaskId, userId) {
+    try {
+        const result = await taskRepository.updateChildrenWithConditions(
+            parentTaskId,
+            userId,
+            {
+                status: Task.STATUS.CANCELLED,
+            },
+            {
+                status: {
+                    [Op.notIn]: [
+                        Task.STATUS.DONE,
+                        Task.STATUS.ARCHIVED,
+                        Task.STATUS.CANCELLED,
+                        'done',
+                        'archived',
+                        'cancelled',
+                    ],
+                },
+            }
+        );
+        return result[0] > 0;
+    } catch (error) {
+        logError('Error cancelling all subtasks:', error);
+        return false;
+    }
+}
+
+async function uncancelAllSubtasks(parentTaskId, userId) {
+    try {
+        const result = await taskRepository.updateChildrenWithConditions(
+            parentTaskId,
+            userId,
+            {
+                status: Task.STATUS.NOT_STARTED,
+            },
+            {
+                status: {
+                    [Op.in]: [Task.STATUS.CANCELLED, 'cancelled'],
+                },
+            }
+        );
+        return result[0] > 0;
+    } catch (error) {
+        logError('Error uncancelling all subtasks:', error);
+        return false;
+    }
+}
+
 async function undoneAllSubtasks(parentTaskId, userId) {
     try {
         const result = await taskRepository.updateChildrenWithConditions(
@@ -134,8 +183,21 @@ async function handleParentChildOnStatusChange(
             if (subtasksUpdated) {
                 parentChildLogicExecuted = true;
             }
+        } else if (newStatus === Task.STATUS.CANCELLED) {
+            const subtasksUpdated = await cancelAllSubtasks(task.id, userId);
+            if (subtasksUpdated) {
+                parentChildLogicExecuted = true;
+            }
         } else if (oldStatus === Task.STATUS.DONE || oldStatus === 'done') {
             const subtasksUpdated = await undoneAllSubtasks(task.id, userId);
+            if (subtasksUpdated) {
+                parentChildLogicExecuted = true;
+            }
+        } else if (
+            oldStatus === Task.STATUS.CANCELLED ||
+            oldStatus === 'cancelled'
+        ) {
+            const subtasksUpdated = await uncancelAllSubtasks(task.id, userId);
             if (subtasksUpdated) {
                 parentChildLogicExecuted = true;
             }
@@ -150,5 +212,7 @@ module.exports = {
     undoneParentTaskIfNeeded,
     completeAllSubtasks,
     undoneAllSubtasks,
+    cancelAllSubtasks,
+    uncancelAllSubtasks,
     handleParentChildOnStatusChange,
 };
