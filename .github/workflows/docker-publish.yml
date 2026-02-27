@@ -50,7 +50,7 @@ jobs:
             # Tag as 'latest' for pushes to main branch
             type=raw,value=latest,enable={{is_default_branch}}
             # Tag with git SHA for traceability
-            type=sha,prefix={{branch}}-
+            type=sha,prefix=sha-
             # Tag with version if pushing a tag
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
