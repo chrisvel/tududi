@@ -29,7 +29,21 @@ export const handleAuthResponse = async (
             }
             throw new Error('Authentication required');
         }
-        throw new Error(errorMessage);
+        let details: string[] | undefined;
+        try {
+            const body = await response.json();
+            if (body.details && Array.isArray(body.details)) {
+                details = body.details;
+            }
+            if (body.error) {
+                errorMessage = body.error;
+            }
+        } catch {
+            // response body is not JSON, use fallback errorMessage
+        }
+        const error = new Error(errorMessage);
+        (error as any).details = details;
+        throw error;
     }
     return response;
 };
