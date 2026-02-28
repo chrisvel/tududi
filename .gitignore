@@ -58,3 +58,42 @@ backend/tests/test-files/
 # Temporary files
 tmp/
 *.bak
+
+# Docker - Local Testing
+docker-compose.override.yml
+docker-compose.local.yml
+.dockerignore.local
+
+# Environment Files - NEVER commit real credentials!
+.env.local
+.env.production
+.env.production.local
+.env.development.local
+.env.*.local
+
+# NAS-specific files (if accidentally created locally with real credentials)
+docker-compose.synology.local.yml
+
+# GitHub Actions local testing (act tool)
+.secrets
+
+# IDE and Editor files
+.vscode/settings.json
+.vscode/launch.json
+*.swp
+*.swo
+*~
+
+# OS files
+Thumbs.db
+Desktop.ini
+
+# Personal deployment and workflow documentation (keep local only)
+DEPLOYMENT.md
+QUICKSTART.md
+docker-compose.synology.yml
+docs/FORK_AND_PR_EXPLAINED.md
+docs/PR_SETUP_QUICKSTART.md
+docs/PULL_REQUEST_WORKFLOW.md
+.github/SECURITY_CHECKLIST.md
+scripts/pre-push-check.sh
