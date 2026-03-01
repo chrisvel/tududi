@@ -70,16 +70,14 @@ function buildUpdateAttributes(body, task, timezone) {
         (task.recurrence_type === 'none' || !task.recurrence_type);
 
     const attrs = {
-        name: body.name,
+        name: body.name !== undefined ? body.name : task.name,
         priority:
             body.priority !== undefined
                 ? parsePriority(body.priority)
-                : undefined,
+                : task.priority,
         status:
-            body.status !== undefined
-                ? parseStatus(body.status)
-                : Task.STATUS.NOT_STARTED,
-        note: body.note,
+            body.status !== undefined ? parseStatus(body.status) : task.status,
+        note: body.note !== undefined ? body.note : task.note,
         recurrence_type: recurrenceType,
         recurrence_interval:
             body.recurrence_interval !== undefined
