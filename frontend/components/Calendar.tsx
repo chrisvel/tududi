@@ -16,7 +16,7 @@ import CalendarMonthView from './Calendar/CalendarMonthView';
 import CalendarWeekView from './Calendar/CalendarWeekView';
 import CalendarDayView from './Calendar/CalendarDayView';
 import { getApiPath } from '../config/paths';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { parseDateString } from '../utils/dateUtils';
 
 const getLocale = (language: string) => {
@@ -48,6 +48,7 @@ interface CalendarEvent {
 const Calendar: React.FC = () => {
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
+    const location = useLocation();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [view, setView] = useState<'month' | 'week' | 'day'>('month');
     const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -265,7 +266,7 @@ const Calendar: React.FC = () => {
             setIsEventDetailModalOpen(false);
             const targetUid = selectedTask.uid;
             setSelectedTask(null);
-            navigate(`/task/${targetUid}`);
+            navigate(`/task/${targetUid}`, { state: { from: location.pathname + location.search } });
         }
     };
 
