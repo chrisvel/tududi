@@ -857,7 +857,7 @@ const TaskDetails: React.FC = () => {
                 showSuccessToast(
                     t('task.deleteSuccess', 'Task deleted successfully')
                 );
-                navigate('/today');
+                navigate(location.state?.from || '/today');
             } catch (error) {
                 console.error('Error deleting task:', error);
                 showErrorToast(t('task.deleteError', 'Failed to delete task'));

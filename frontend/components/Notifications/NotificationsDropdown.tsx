@@ -9,7 +9,7 @@ import {
     CheckCircleIcon,
 } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { getApiPath } from '../../config/paths';
 
 interface Notification {
@@ -36,6 +36,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
 }) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const location = useLocation();
     const [isOpen, setIsOpen] = useState(false);
     const [unreadCount, setUnreadCount] = useState(0);
     const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -213,7 +214,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
     const handleNotificationClick = (notification: Notification) => {
         if (notification.data?.taskUid) {
             setIsOpen(false);
-            navigate(`/task/${notification.data.taskUid}`);
+            navigate(`/task/${notification.data.taskUid}`, { state: { from: location.pathname + location.search } });
         } else if (notification.data?.projectUid) {
             setIsOpen(false);
             navigate(`/project/${notification.data.projectUid}`);
