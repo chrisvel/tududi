@@ -68,16 +68,22 @@ const calculateWeeklyRecurrence = (fromDate, interval, weekday, weekdays) => {
         : null;
 
     if (parsedWeekdays && parsedWeekdays.length > 0) {
-        // Find the next matching weekday from tomorrow onward
-        for (let daysAhead = 1; daysAhead <= 7; daysAhead++) {
-            const testDate = new Date(nextDate);
-            testDate.setUTCDate(testDate.getUTCDate() + daysAhead);
-            if (parsedWeekdays.includes(testDate.getUTCDay())) {
-                return testDate;
-            }
+        const sorted = [...parsedWeekdays].sort((a, b) => a - b);
+        const currentDay = nextDate.getUTCDay();
+
+        // Find next weekday later in the current week
+        const laterInWeek = sorted.filter((d) => d > currentDay);
+        if (laterInWeek.length > 0) {
+            nextDate.setUTCDate(
+                nextDate.getUTCDate() + (laterInWeek[0] - currentDay)
+            );
+        } else {
+            // Wrap to first weekday of next cycle (interval weeks ahead)
+            const daysToNextFirst = (7 - currentDay + sorted[0]) % 7 || 7;
+            nextDate.setUTCDate(
+                nextDate.getUTCDate() + daysToNextFirst + (interval - 1) * 7
+            );
         }
-        // Fallback: advance by interval weeks
-        nextDate.setUTCDate(nextDate.getUTCDate() + interval * 7);
     } else if (weekday !== null && weekday !== undefined) {
         const currentWeekday = nextDate.getUTCDay();
         const daysUntilTarget = (weekday - currentWeekday + 7) % 7;

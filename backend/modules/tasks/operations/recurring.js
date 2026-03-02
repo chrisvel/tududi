@@ -152,18 +152,21 @@ async function calculateNextIterations(task, startFromDate, userTimezone) {
                 const weekdays = Array.isArray(task.recurrence_weekdays)
                     ? task.recurrence_weekdays
                     : JSON.parse(task.recurrence_weekdays);
-                let found = false;
-                for (let daysAhead = 1; daysAhead <= 7; daysAhead++) {
-                    const testDate = new Date(nextDate);
-                    testDate.setUTCDate(testDate.getUTCDate() + daysAhead);
-                    if (weekdays.includes(testDate.getUTCDay())) {
-                        nextDate = testDate;
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    nextDate.setUTCDate(nextDate.getUTCDate() + interval * 7);
+                const sorted = [...weekdays].sort((a, b) => a - b);
+                const currentDay = nextDate.getUTCDay();
+                const laterInWeek = sorted.filter((d) => d > currentDay);
+                if (laterInWeek.length > 0) {
+                    nextDate.setUTCDate(
+                        nextDate.getUTCDate() + (laterInWeek[0] - currentDay)
+                    );
+                } else {
+                    const daysToNextFirst =
+                        (7 - currentDay + sorted[0]) % 7 || 7;
+                    nextDate.setUTCDate(
+                        nextDate.getUTCDate() +
+                            daysToNextFirst +
+                            (interval - 1) * 7
+                    );
                 }
             } else if (
                 task.recurrence_weekday !== null &&
@@ -213,28 +216,26 @@ async function calculateNextIterations(task, startFromDate, userTimezone) {
 
             // Handle multiple weekdays
             if (task.recurrence_weekdays) {
-                // Sequelize getter already parses JSON, so it's already an array
                 const weekdays = Array.isArray(task.recurrence_weekdays)
                     ? task.recurrence_weekdays
                     : JSON.parse(task.recurrence_weekdays);
+                const interval = task.recurrence_interval || 1;
+                const sorted = [...weekdays].sort((a, b) => a - b);
+                const currentDay = nextDate.getUTCDay();
+                const laterInWeek = sorted.filter((d) => d > currentDay);
 
-                // Find next matching weekday
-                let found = false;
-                for (let daysAhead = 1; daysAhead <= 7; daysAhead++) {
-                    const testDate = new Date(nextDate);
-                    testDate.setUTCDate(testDate.getUTCDate() + daysAhead);
-                    const testWeekday = testDate.getUTCDay();
-
-                    if (weekdays.includes(testWeekday)) {
-                        nextDate = testDate;
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (!found) {
-                    // Fallback: add 7 days
-                    nextDate.setUTCDate(nextDate.getUTCDate() + 7);
+                if (laterInWeek.length > 0) {
+                    nextDate.setUTCDate(
+                        nextDate.getUTCDate() + (laterInWeek[0] - currentDay)
+                    );
+                } else {
+                    const daysToNextFirst =
+                        (7 - currentDay + sorted[0]) % 7 || 7;
+                    nextDate.setUTCDate(
+                        nextDate.getUTCDate() +
+                            daysToNextFirst +
+                            (interval - 1) * 7
+                    );
                 }
             } else {
                 // Old behavior for single weekday
