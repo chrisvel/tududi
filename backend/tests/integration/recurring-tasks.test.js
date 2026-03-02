@@ -295,6 +295,68 @@ describe('Recurring Tasks', () => {
                 expect(nextDueDate.getUTCDay()).toBe(2); // Tuesday
             });
 
+            it('should respect bi-weekly interval with multiple weekdays (Issue #844)', async () => {
+                // Use a fixed Tuesday: 2026-02-10
+                const tuesday = new Date(Date.UTC(2026, 1, 10, 0, 0, 0, 0));
+                expect(tuesday.getUTCDay()).toBe(2); // Sanity: Tuesday
+
+                const task = await Task.create({
+                    name: 'Bi-weekly Tue/Thu Task',
+                    recurrence_type: 'weekly',
+                    recurrence_interval: 2,
+                    recurrence_weekdays: [2, 4], // Tuesday, Thursday
+                    due_date: tuesday,
+                    user_id: user.id,
+                    status: Task.STATUS.NOT_STARTED,
+                });
+
+                // Tuesday -> Thursday (same cycle week)
+                const next1 = calculateNextDueDate(task, tuesday);
+                expect(next1.getUTCDay()).toBe(4); // Thursday
+                expect(next1.toISOString().split('T')[0]).toBe('2026-02-12');
+
+                // Thursday -> next cycle Tuesday (skip 1 week, land on week 3's Tuesday)
+                const next2 = calculateNextDueDate(task, next1);
+                expect(next2.getUTCDay()).toBe(2); // Tuesday
+                expect(next2.toISOString().split('T')[0]).toBe('2026-02-24');
+
+                // Tuesday (week 3) -> Thursday (week 3, same cycle)
+                const next3 = calculateNextDueDate(task, next2);
+                expect(next3.getUTCDay()).toBe(4); // Thursday
+                expect(next3.toISOString().split('T')[0]).toBe('2026-02-26');
+
+                // Thursday (week 3) -> Tuesday (week 5)
+                const next4 = calculateNextDueDate(task, next3);
+                expect(next4.getUTCDay()).toBe(2); // Tuesday
+                expect(next4.toISOString().split('T')[0]).toBe('2026-03-10');
+            });
+
+            it('should respect tri-weekly interval with single weekday via weekdays array (Issue #844)', async () => {
+                // Use a fixed Monday: 2026-02-09
+                const monday = new Date(Date.UTC(2026, 1, 9, 0, 0, 0, 0));
+                expect(monday.getUTCDay()).toBe(1);
+
+                const task = await Task.create({
+                    name: 'Every 3 weeks on Monday',
+                    recurrence_type: 'weekly',
+                    recurrence_interval: 3,
+                    recurrence_weekdays: [1], // Monday only
+                    due_date: monday,
+                    user_id: user.id,
+                    status: Task.STATUS.NOT_STARTED,
+                });
+
+                // Monday Feb 9 -> Monday Mar 2 (3 weeks later)
+                const next1 = calculateNextDueDate(task, monday);
+                expect(next1.getUTCDay()).toBe(1);
+                expect(next1.toISOString().split('T')[0]).toBe('2026-03-02');
+
+                // Monday Mar 2 -> Monday Mar 23 (3 weeks later)
+                const next2 = calculateNextDueDate(task, next1);
+                expect(next2.getUTCDay()).toBe(1);
+                expect(next2.toISOString().split('T')[0]).toBe('2026-03-23');
+            });
+
             it('should handle three weekdays (Mon/Wed/Fri)', async () => {
                 // Use a fixed Monday: 2026-02-09
                 const monday = new Date(Date.UTC(2026, 1, 9, 0, 0, 0, 0));
