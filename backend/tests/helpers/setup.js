@@ -20,6 +20,8 @@ beforeEach(async () => {
     try {
         // Use raw SQL for faster cleanup
         const tableNames = [
+            'task_matrices',
+            'matrices',
             'users',
             'areas',
             'projects',

@@ -11,6 +11,7 @@ import {
     XCircleIcon,
     ChartBarIcon,
     CheckIcon,
+    Squares2X2Icon,
 } from '@heroicons/react/24/outline';
 import { useToast } from '../Shared/ToastContext';
 import ProjectModal from './ProjectModal';
@@ -43,6 +44,7 @@ import BannerEditModal from './BannerEditModal';
 import ProjectTasksSection from './ProjectTasksSection';
 import ProjectNotesSection from './ProjectNotesSection';
 import { useProjectMetrics } from './useProjectMetrics';
+import { useMatrices } from '../../hooks/useMatrix';
 
 const ProjectDetails: React.FC = () => {
     const UI_OPTIONS_KEY = 'ui_app_options';
@@ -78,6 +80,7 @@ const ProjectDetails: React.FC = () => {
     const [orderBy, setOrderBy] = useState<string>('status:inProgressFirst');
     const [taskSearchQuery, setTaskSearchQuery] = useState('');
     const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+    const { matrices: projectMatrices } = useMatrices(project?.id);
     const {
         isOpen: isModalOpen,
         openModal,
@@ -886,6 +889,39 @@ const ProjectDetails: React.FC = () => {
 
                             {activeTab === 'tasks' && (
                                 <div className="flex items-center justify-end gap-2 sm:gap-4">
+                                    <button
+                                        onClick={() => {
+                                            if (projectMatrices.length > 0) {
+                                                navigate(`/matrices/${projectMatrices[0].id}`);
+                                            } else if (project) {
+                                                navigate('/matrices', { state: { createForProject: project.id } });
+                                            }
+                                        }}
+                                        className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-0 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset rounded-lg p-1.5 sm:p-2 ${
+                                            projectMatrices.length > 0
+                                                ? 'bg-indigo-100 dark:bg-indigo-900/30 shadow-sm'
+                                                : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
+                                        }`}
+                                        aria-label={t('sidebar.matrices', 'Matrices')}
+                                        title={
+                                            projectMatrices.length > 0
+                                                ? t('matrix.openMatrix', 'Open Matrix')
+                                                : t('matrix.createNew', 'Create Matrix')
+                                        }
+                                    >
+                                        <Squares2X2Icon
+                                            className={`h-4 w-4 sm:h-5 sm:w-5 ${
+                                                projectMatrices.length > 0
+                                                    ? 'text-indigo-600 dark:text-indigo-200'
+                                                    : 'text-gray-600 dark:text-gray-200'
+                                            }`}
+                                        />
+                                        {projectMatrices.length > 0 && (
+                                            <span className="ml-1 text-xs text-indigo-600 dark:text-indigo-200 hidden sm:inline">
+                                                {projectMatrices.length}
+                                            </span>
+                                        )}
+                                    </button>
                                     <button
                                         onClick={toggleMetrics}
                                         className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-0 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset rounded-lg p-1.5 sm:p-2 ${

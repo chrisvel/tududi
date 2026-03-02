@@ -54,7 +54,8 @@
     "completed": "Completed",
     "allTasks": "All Tasks",
     "unpinView": "Unpin view",
-    "pinView": "Pin view"
+    "pinView": "Pin view",
+    "matrices": "Matrices"
   },
   "navigation": {
     "home": "Home",
@@ -1345,6 +1346,100 @@
     "info": {
       "title": "Note:",
       "message": "Email and Push notifications are coming soon. In-app and Telegram notifications are currently available."
+    }
+  },
+  "matrix": {
+    "title": "Matrices",
+    "pageDescription": "Prioritize tasks visually with custom 2×2 grids",
+    "create": "Create Matrix",
+    "edit": "Edit Matrix",
+    "settings": "Matrix Settings",
+    "openMatrix": "Open Matrix",
+    "name": "Matrix Name",
+    "namePlaceholder": "e.g., Eisenhower Matrix",
+    "xAxisLeft": "X-Axis Left Label",
+    "xAxisLeftPlaceholder": "e.g., Not Urgent",
+    "xAxisRight": "X-Axis Right Label",
+    "xAxisRightPlaceholder": "e.g., Urgent",
+    "yAxisTop": "Y-Axis Top Label",
+    "yAxisTopPlaceholder": "e.g., Important",
+    "yAxisBottom": "Y-Axis Bottom Label",
+    "yAxisBottomPlaceholder": "e.g., Not Important",
+    "defaultXAxisLeft": "Low Effort",
+    "defaultXAxisRight": "High Effort",
+    "defaultYAxisTop": "High Impact",
+    "defaultYAxisBottom": "Low Impact",
+    "project": "Linked Project",
+    "projectNone": "No project (standalone)",
+    "projectSelect": "Select a project...",
+    "preset": {
+      "label": "Quick Preset",
+      "eisenhower": "Eisenhower",
+      "effortImpact": "Effort / Impact",
+      "riskReward": "Risk / Reward"
+    },
+    "quadrant": {
+      "empty": "Drop tasks here",
+      "topLeft": "Top Left",
+      "topRight": "Top Right",
+      "bottomLeft": "Bottom Left",
+      "bottomRight": "Bottom Right",
+      "quickAdd": "Add task",
+      "taskNamePlaceholder": "Task name..."
+    },
+    "sidebar": {
+      "browseTitle": "Browse Tasks",
+      "categoryProjects": "Projects",
+      "categoryAreas": "Areas",
+      "categoryTags": "Tags",
+      "selectProject": "Select project...",
+      "selectArea": "Select area...",
+      "selectTag": "Select tag...",
+      "selectCategory": "Select a category above to browse tasks",
+      "taskCount": "tasks",
+      "title": "Unassigned Tasks",
+      "empty": "All tasks have been placed",
+      "search": "Search tasks..."
+    },
+    "card": {
+      "taskCount": "{{count}} task",
+      "taskCount_plural": "{{count}} tasks",
+      "noTasks": "No tasks assigned yet",
+      "viewMatrix": "View Matrix"
+    },
+    "actions": {
+      "dragHint": "Drag and drop tasks to prioritize",
+      "assign": "Add to matrix",
+      "remove": "Remove from matrix",
+      "moveToQuadrant": "Move to {{quadrant}}",
+      "pickQuadrant": "Pick a quadrant",
+      "selectMatrix": "Select a matrix",
+      "noMatricesAvailable": "No more matrices available"
+    },
+    "delete": {
+      "title": "Delete Matrix",
+      "confirm": "Delete this matrix?",
+      "description": "Tasks will not be deleted. They will only be removed from this matrix.",
+      "success": "Matrix deleted successfully"
+    },
+    "errors": {
+      "notFound": "Matrix not found",
+      "loadFailed": "Failed to load matrix",
+      "saveFailed": "Failed to save matrix",
+      "assignFailed": "Failed to assign task to matrix",
+      "nameRequired": "Matrix name is required"
+    },
+    "empty": {
+      "title": "No matrices yet",
+      "description": "Create your first 2×2 matrix to start prioritizing tasks visually.",
+      "createFirst": "Create your first matrix"
+    },
+    "toast": {
+      "created": "Matrix \"{{name}}\" created",
+      "updated": "Matrix updated",
+      "taskAdded": "Task added to matrix",
+      "taskMoved": "Task moved to {{quadrant}}",
+      "taskRemoved": "Task removed from matrix"
     }
   }
 }

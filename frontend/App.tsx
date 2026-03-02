@@ -26,6 +26,9 @@ import LoadingScreen from './components/Shared/LoadingScreen';
 import InboxItems from './components/Inbox/InboxItems';
 import Habits from './components/Habits/Habits';
 import HabitDetails from './components/Habits/HabitDetails';
+import MatrixListPage from './components/Matrix/MatrixListPage';
+import MatrixDetailPage from './components/Matrix/MatrixDetailPage';
+import { MatrixPlacementsProvider } from './contexts/MatrixPlacementsContext';
 import { setCurrentUser as setUserInStorage } from './utils/userUtils';
 import { getApiPath, getLocalesPath } from './config/paths';
 // Lazy load Tasks component to prevent issues with tags loading
@@ -177,7 +180,9 @@ const App: React.FC = () => {
                                     isDarkMode={isDarkMode}
                                     toggleDarkMode={toggleDarkMode}
                                 >
-                                    <Outlet />
+                                    <MatrixPlacementsProvider>
+                                        <Outlet />
+                                    </MatrixPlacementsProvider>
                                 </Layout>
                             }
                         >
@@ -246,6 +251,14 @@ const App: React.FC = () => {
                             <Route
                                 path="/views/:uid"
                                 element={<ViewDetail />}
+                            />
+                            <Route
+                                path="/matrices"
+                                element={<MatrixListPage />}
+                            />
+                            <Route
+                                path="/matrices/:matrixId"
+                                element={<MatrixDetailPage />}
                             />
                             <Route path="/notes" element={<Notes />} />
                             <Route path="/notes/:uid" element={<Notes />} />

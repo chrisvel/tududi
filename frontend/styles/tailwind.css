@@ -170,6 +170,30 @@ select:focus {
   display: none; /* Chrome/Safari */
 }
 
+/* Thin minimal scrollbar for matrix views */
+.scrollbar-thin {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgba(156,163,175,0.3) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: rgba(156,163,175,0.3);
+  border-radius: 9999px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(156,163,175,0.5);
+}
+
 @layer utilities {
   .line-clamp-1,
   .line-clamp-2,
