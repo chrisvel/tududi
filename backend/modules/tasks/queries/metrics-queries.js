@@ -94,7 +94,7 @@ async function fetchTodayPlanTasks(visibleTasksWhere) {
         'cancelled',
     ];
 
-    return await Task.findAll({
+    const tasks = await Task.findAll({
         where: {
             [Op.and]: [
                 visibleTasksWhere,
@@ -112,7 +112,7 @@ async function fetchTodayPlanTasks(visibleTasksWhere) {
                         { defer_until: { [Op.lte]: now } },
                     ],
                 },
-                // Exclude recurring parent tasks - only include non-recurring tasks or recurring instances
+                // Include non-recurring tasks, recurring parents, and recurring instances
                 {
                     [Op.or]: [
                         {
@@ -122,8 +122,18 @@ async function fetchTodayPlanTasks(visibleTasksWhere) {
                                     [Op.or]: [
                                         { recurrence_type: 'none' },
                                         { recurrence_type: null },
+                                        { recurrence_type: '' },
                                     ],
                                 },
+                                { recurring_parent_id: null },
+                            ],
+                        },
+                        {
+                            // Recurring parent tasks
+                            [Op.and]: [
+                                { recurrence_type: { [Op.ne]: 'none' } },
+                                { recurrence_type: { [Op.ne]: null } },
+                                { recurrence_type: { [Op.ne]: '' } },
                                 { recurring_parent_id: null },
                             ],
                         },
@@ -142,6 +152,18 @@ async function fetchTodayPlanTasks(visibleTasksWhere) {
             ['project_id', 'ASC'],
         ],
     });
+
+    // Deduplicate: exclude recurring parents that already have instances in the list
+    const parentIdsWithInstances = new Set(
+        tasks
+            .filter((t) => t.recurring_parent_id)
+            .map((t) => t.recurring_parent_id)
+    );
+
+    return tasks.filter(
+        (t) =>
+            !parentIdsWithInstances.has(t.id) || t.recurring_parent_id !== null
+    );
 }
 
 async function fetchTasksDueToday(visibleTasksWhere, userTimezone) {

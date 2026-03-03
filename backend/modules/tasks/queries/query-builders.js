@@ -33,6 +33,7 @@ async function filterTasksByParams(
                     [Op.or]: [
                         { recurrence_type: 'none' },
                         { recurrence_type: null },
+                        { recurrence_type: '' },
                     ],
                 },
                 { recurring_parent_id: null },
@@ -42,6 +43,7 @@ async function filterTasksByParams(
             [Op.and]: [
                 { recurrence_type: { [Op.ne]: 'none' } },
                 { recurrence_type: { [Op.ne]: null } },
+                { recurrence_type: { [Op.ne]: '' } },
                 { recurring_parent_id: null },
                 {
                     [Op.or]: [
@@ -133,6 +135,7 @@ async function filterTasksByParams(
                             [Op.or]: [
                                 { recurrence_type: 'none' },
                                 { recurrence_type: null },
+                                { recurrence_type: '' },
                             ],
                         },
                         { recurring_parent_id: null },
@@ -145,6 +148,7 @@ async function filterTasksByParams(
                     [Op.and]: [
                         { recurrence_type: { [Op.ne]: 'none' } },
                         { recurrence_type: { [Op.ne]: null } },
+                        { recurrence_type: { [Op.ne]: '' } },
                         { recurring_parent_id: null },
                         { status: { [Op.in]: todayPlanStatuses } },
                         notDeferredCondition,
