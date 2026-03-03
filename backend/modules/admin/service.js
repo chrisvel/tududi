@@ -173,6 +173,7 @@ class AdminService {
         if (password && password.trim() !== '') {
             validatePassword(password);
             user.password = password;
+            user.changed('password_digest', true);
         }
 
         if (name !== undefined) user.name = name || null;
