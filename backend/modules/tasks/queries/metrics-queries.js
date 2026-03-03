@@ -162,8 +162,7 @@ async function fetchTodayPlanTasks(visibleTasksWhere) {
 
     return tasks.filter(
         (t) =>
-            !parentIdsWithInstances.has(t.id) ||
-            t.recurring_parent_id !== null
+            !parentIdsWithInstances.has(t.id) || t.recurring_parent_id !== null
     );
 }
 
