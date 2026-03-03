@@ -105,6 +105,7 @@ async function filterTasksByParams(
         case 'today': {
             const safeTimezone = getSafeTimezone(userTimezone);
             const todayBounds = getTodayBoundsInUTC(safeTimezone);
+            const now = new Date();
 
             // Tasks in today view are those with active statuses (in_progress, planned, waiting)
             const todayPlanStatuses = [
@@ -115,6 +116,14 @@ async function filterTasksByParams(
                 'waiting',
                 'planned',
             ];
+
+            // Exclude tasks deferred to the future
+            const notDeferredCondition = {
+                [Op.or]: [
+                    { defer_until: null },
+                    { defer_until: { [Op.lte]: now } },
+                ],
+            };
 
             whereClause[Op.or] = [
                 {
@@ -128,6 +137,7 @@ async function filterTasksByParams(
                         },
                         { recurring_parent_id: null },
                         { status: { [Op.in]: todayPlanStatuses } },
+                        notDeferredCondition,
                     ],
                 },
                 {
@@ -137,6 +147,7 @@ async function filterTasksByParams(
                         { recurrence_type: { [Op.ne]: null } },
                         { recurring_parent_id: null },
                         { status: { [Op.in]: todayPlanStatuses } },
+                        notDeferredCondition,
                     ],
                 },
                 {
@@ -151,6 +162,7 @@ async function filterTasksByParams(
                                 ],
                             },
                         },
+                        notDeferredCondition,
                     ],
                 },
             ];
