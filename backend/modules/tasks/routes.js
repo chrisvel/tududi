@@ -51,7 +51,6 @@ const {
     handleParentChildOnStatusChange,
 } = require('./operations/parent-child');
 const {
-    TASK_INCLUDES,
     TASK_INCLUDES_WITH_SUBTASKS,
 } = require('./utils/constants');
 
@@ -374,7 +373,7 @@ router.post('/task', async (req, res) => {
         await createSubtasks(task.id, subtasks, req.currentUser.id);
 
         const taskWithAssociations = await taskRepository.findById(task.id, {
-            include: TASK_INCLUDES,
+            include: TASK_INCLUDES_WITH_SUBTASKS,
         });
 
         if (!taskWithAssociations) {
@@ -725,7 +724,7 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
         );
 
         const taskWithAssociations = await taskRepository.findById(task.id, {
-            include: TASK_INCLUDES,
+            include: TASK_INCLUDES_WITH_SUBTASKS,
         });
 
         const serializedTask = await serializeTask(
