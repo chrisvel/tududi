@@ -748,6 +748,27 @@ describe('Universal Search Routes', () => {
                 expect(names).not.toContain('Regular Task');
             });
 
+            it('should show recurring task name, not frequency in search results (issue #899)', async () => {
+                const response = await agent.get('/api/search').query({
+                    q: 'Recurring Template',
+                    filters: 'Task',
+                });
+
+                expect(response.status).toBe(200);
+                const tasks = response.body.results.filter(
+                    (r) => r.type === 'Task'
+                );
+                expect(tasks.length).toBeGreaterThanOrEqual(1);
+
+                const recurringTask = tasks.find(
+                    (t) => t.original_name === 'Recurring Template'
+                );
+                expect(recurringTask).toBeDefined();
+                // The name should be the actual task name, not 'Weekly'
+                expect(recurringTask.name).toBe('Recurring Template');
+                expect(recurringTask.name).not.toBe('Weekly');
+            });
+
             it('should return overdue tasks and exclude completed ones', async () => {
                 const response = await agent.get('/api/search').query({
                     filters: 'Task',
