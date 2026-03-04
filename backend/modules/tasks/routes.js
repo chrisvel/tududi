@@ -848,6 +848,56 @@ router.get('/task/:uid/subtasks', async (req, res) => {
     }
 });
 
+router.post('/task/:uid/subtasks', async (req, res) => {
+    try {
+        const { name, priority, status, due_date } = req.body;
+
+        if (!name || name.trim() === '') {
+            return res.status(400).json({ error: 'Subtask name is required.' });
+        }
+
+        // Find the parent task by UID or integer ID
+        let task;
+        if (isValidUid(req.params.uid)) {
+            task = await taskRepository.findByUid(req.params.uid);
+        } else {
+            // Support integer ID for backward compatibility
+            const taskId = parseInt(req.params.uid, 10);
+            if (!isNaN(taskId)) {
+                task = await taskRepository.findById(taskId);
+            }
+        }
+
+        if (!task) {
+            return res.status(404).json({ error: 'Parent task not found' });
+        }
+
+        // Verify user owns this task
+        if (task.user_id !== req.currentUser.id) {
+            return res.status(403).json({ error: 'Access denied' });
+        }
+
+        // Create the subtask using createSubtasks (expects array)
+        await createSubtasks(
+            task.id,
+            [{ name, priority, status, due_date }],
+            req.currentUser.id
+        );
+
+        // Fetch and return the created subtasks
+        const result = await getSubtasks(
+            task.id,
+            req.currentUser.id,
+            req.currentUser.timezone
+        );
+
+        res.status(201).json(result.subtasks);
+    } catch (error) {
+        logError('Error creating subtask:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 router.get('/task/:uid/next-iterations', async (req, res) => {
     try {
         if (!isValidUid(req.params.uid)) {
