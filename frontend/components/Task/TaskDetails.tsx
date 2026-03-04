@@ -264,7 +264,7 @@ const TaskDetails: React.FC = () => {
                 completion_based: recurrenceForm.completion_based,
             };
 
-            await updateTask(task.uid, { ...task, ...recurrencePayload });
+            await updateTask(task.uid, recurrencePayload);
 
             if (uid) {
                 const updatedTask = await fetchTaskByUid(uid);
@@ -658,7 +658,7 @@ const TaskDetails: React.FC = () => {
 
         try {
             taskModifiedRef.current = true;
-            await updateTask(task.uid, { ...task, subtasks: subtasksToSave });
+            await updateTask(task.uid, { subtasks: subtasksToSave });
 
             if (uid) {
                 const updatedTask = await fetchTaskByUid(uid);
@@ -689,7 +689,7 @@ const TaskDetails: React.FC = () => {
 
         try {
             taskModifiedRef.current = true;
-            await updateTask(task.uid, { ...task, project_id: project.id });
+            await updateTask(task.uid, { project_id: project.id });
 
             if (uid) {
                 const updatedTask = await fetchTaskByUid(uid);
@@ -721,7 +721,7 @@ const TaskDetails: React.FC = () => {
 
         try {
             taskModifiedRef.current = true;
-            await updateTask(task.uid, { ...task, project_id: null });
+            await updateTask(task.uid, { project_id: null });
 
             if (uid) {
                 const updatedTask = await fetchTaskByUid(uid);
@@ -927,7 +927,7 @@ const TaskDetails: React.FC = () => {
 
         try {
             taskModifiedRef.current = true;
-            await updateTask(task.uid, { ...task, name: newTitle.trim() });
+            await updateTask(task.uid, { name: newTitle.trim() });
 
             if (uid) {
                 const updatedTask = await fetchTaskByUid(uid);
@@ -968,7 +968,7 @@ const TaskDetails: React.FC = () => {
 
         try {
             taskModifiedRef.current = true;
-            await updateTask(task.uid, { ...task, note: trimmedContent });
+            await updateTask(task.uid, { note: trimmedContent });
 
             if (uid) {
                 const updatedTask = await fetchTaskByUid(uid);
@@ -1005,7 +1005,7 @@ const TaskDetails: React.FC = () => {
 
             projectsStore.setProjects([...projectsStore.projects, newProject]);
 
-            await updateTask(task.uid, { ...task, project_id: newProject.id });
+            await updateTask(task.uid, { project_id: newProject.id });
 
             if (uid) {
                 const updatedTask = await fetchTaskByUid(uid);
