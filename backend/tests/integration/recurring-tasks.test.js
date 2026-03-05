@@ -1443,7 +1443,9 @@ describe('Recurring Tasks', () => {
             });
 
             expect(response.status).toBe(400);
-            expect(response.body.error).toContain('cannot be after the due date');
+            expect(response.body.error).toContain(
+                'cannot be after the due date'
+            );
         });
 
         it('should handle invalid recurring_parent_id gracefully', async () => {
@@ -1456,7 +1458,9 @@ describe('Recurring Tasks', () => {
 
             // Should fall back to strict validation
             expect(response.status).toBe(400);
-            expect(response.body.error).toContain('cannot be after the due date');
+            expect(response.body.error).toContain(
+                'cannot be after the due date'
+            );
         });
     });
 });

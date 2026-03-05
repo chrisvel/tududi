@@ -50,9 +50,7 @@ const { captureOldValues, logTaskChanges } = require('./utils/logging');
 const {
     handleParentChildOnStatusChange,
 } = require('./operations/parent-child');
-const {
-    TASK_INCLUDES_WITH_SUBTASKS,
-} = require('./utils/constants');
+const { TASK_INCLUDES_WITH_SUBTASKS } = require('./utils/constants');
 
 const {
     handleRecurringTasks,
