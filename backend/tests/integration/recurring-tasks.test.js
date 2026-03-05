@@ -1335,4 +1335,128 @@ describe('Recurring Tasks', () => {
             expect(result).toBeNull();
         });
     });
+
+    describe('Recurring Task Defer Until Validation', () => {
+        it('should allow defer_until after due_date for recurring instance with end date', async () => {
+            // Create parent recurring task with end date
+            const parentTask = await Task.create({
+                name: 'Recurring Parent',
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+                recurrence_end_date: new Date('2026-12-31'),
+                due_date: new Date('2026-03-01'),
+                user_id: user.id,
+                status: 0,
+            });
+
+            // Create instance with recurring_parent_id
+            const response = await agent.post('/api/task').send({
+                name: 'Instance Task',
+                due_date: '2026-03-10',
+                defer_until: '2026-03-15', // After due_date but before end_date
+                recurring_parent_id: parentTask.id,
+            });
+
+            expect(response.status).toBe(201);
+            expect(response.body.defer_until).toBeTruthy();
+        });
+
+        it('should reject defer_until after recurrence_end_date', async () => {
+            const parentTask = await Task.create({
+                name: 'Recurring Parent',
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+                recurrence_end_date: new Date('2026-03-20'),
+                due_date: new Date('2026-03-01'),
+                user_id: user.id,
+                status: 0,
+            });
+
+            const response = await agent.post('/api/task').send({
+                name: 'Instance Task',
+                due_date: '2026-03-10',
+                defer_until: '2026-03-25', // After end_date
+                recurring_parent_id: parentTask.id,
+            });
+
+            expect(response.status).toBe(400);
+            expect(response.body.error).toContain('recurring task end date');
+        });
+
+        it('should allow any defer_until for recurring instance with no end date', async () => {
+            const parentTask = await Task.create({
+                name: 'Recurring Parent',
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+                recurrence_end_date: null, // No end date
+                due_date: new Date('2026-03-01'),
+                user_id: user.id,
+                status: 0,
+            });
+
+            const response = await agent.post('/api/task').send({
+                name: 'Instance Task',
+                due_date: '2026-03-10',
+                defer_until: '2027-12-31', // Far in future
+                recurring_parent_id: parentTask.id,
+            });
+
+            expect(response.status).toBe(201);
+            expect(response.body.defer_until).toBeTruthy();
+        });
+
+        it('should update defer_until on recurring instance via PATCH', async () => {
+            const parentTask = await Task.create({
+                name: 'Recurring Parent',
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+                recurrence_end_date: new Date('2026-12-31'),
+                due_date: new Date('2026-03-01'),
+                user_id: user.id,
+                status: 0,
+            });
+
+            const instanceTask = await Task.create({
+                name: 'Instance Task',
+                due_date: new Date('2026-03-10'),
+                recurring_parent_id: parentTask.id,
+                user_id: user.id,
+                status: 0,
+            });
+
+            const response = await agent
+                .patch(`/api/task/${instanceTask.uid}`)
+                .send({
+                    defer_until: '2026-03-15', // After due_date but before end_date
+                });
+
+            expect(response.status).toBe(200);
+            expect(response.body.defer_until).toBeTruthy();
+        });
+
+        it('should still enforce strict validation for non-recurring tasks', async () => {
+            const response = await agent.post('/api/task').send({
+                name: 'Regular Task',
+                due_date: '2026-03-10',
+                defer_until: '2026-03-15', // After due_date
+                recurrence_type: 'none',
+            });
+
+            expect(response.status).toBe(400);
+            expect(response.body.error).toContain('cannot be after the due date');
+        });
+
+        it('should handle invalid recurring_parent_id gracefully', async () => {
+            const response = await agent.post('/api/task').send({
+                name: 'Instance Task',
+                due_date: '2026-03-10',
+                defer_until: '2026-03-15',
+                recurring_parent_id: 999999, // Non-existent parent
+            });
+
+            // Should fall back to strict validation
+            expect(response.status).toBe(400);
+            expect(response.body.error).toContain('cannot be after the due date');
+        });
+    });
 });

@@ -416,14 +416,19 @@ const TaskDetails: React.FC = () => {
             const dueDate = new Date(task.due_date);
 
             if (!isNaN(deferDate.getTime()) && !isNaN(dueDate.getTime())) {
-                if (deferDate > dueDate) {
-                    showErrorToast(
-                        t(
-                            'task.deferAfterDueError',
-                            'Defer until date cannot be after the due date'
-                        )
-                    );
-                    return;
+                // For recurring instances, skip strict frontend validation
+                // Backend will validate against parent's recurrence_end_date
+                if (!task.recurring_parent_id) {
+                    // Only validate for non-recurring tasks
+                    if (deferDate > dueDate) {
+                        showErrorToast(
+                            t(
+                                'task.deferAfterDueError',
+                                'Defer until date cannot be after the due date'
+                            )
+                        );
+                        return;
+                    }
                 }
             }
         }
