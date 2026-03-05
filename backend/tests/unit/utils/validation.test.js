@@ -1,4 +1,7 @@
 const { validateTagName } = require('../../../modules/tags/tagsService');
+const {
+    validateDeferUntilAndDueDate,
+} = require('../../../modules/tasks/utils/validation');
 
 describe('validation utils', () => {
     describe('validateTagName', () => {
@@ -114,6 +117,124 @@ describe('validation utils', () => {
             const result = validateTagName('version-1.2');
             expect(result.valid).toBe(true);
             expect(result.name).toBe('version-1.2');
+        });
+    });
+
+    describe('validateDeferUntilAndDueDate', () => {
+        describe('non-recurring tasks', () => {
+            it('should allow defer_until before due_date', () => {
+                expect(() => {
+                    validateDeferUntilAndDueDate('2026-03-05', '2026-03-10');
+                }).not.toThrow();
+            });
+
+            it('should reject defer_until after due_date', () => {
+                expect(() => {
+                    validateDeferUntilAndDueDate('2026-03-15', '2026-03-10');
+                }).toThrow('Defer until date cannot be after the due date.');
+            });
+
+            it('should allow defer_until equal to due_date', () => {
+                expect(() => {
+                    validateDeferUntilAndDueDate('2026-03-10', '2026-03-10');
+                }).not.toThrow();
+            });
+        });
+
+        describe('recurring task instances', () => {
+            it('should allow defer_until after due_date but before recurrence_end_date', () => {
+                expect(() => {
+                    validateDeferUntilAndDueDate(
+                        '2026-03-15', // defer_until
+                        '2026-03-10', // due_date
+                        '2026-03-20' // recurrence_end_date
+                    );
+                }).not.toThrow();
+            });
+
+            it('should reject defer_until after recurrence_end_date', () => {
+                expect(() => {
+                    validateDeferUntilAndDueDate(
+                        '2026-03-25', // defer_until
+                        '2026-03-10', // due_date
+                        '2026-03-20' // recurrence_end_date
+                    );
+                }).toThrow(
+                    'Defer until date cannot be after the recurring task end date.'
+                );
+            });
+
+            it('should allow any defer_until when no recurrence_end_date', () => {
+                expect(() => {
+                    validateDeferUntilAndDueDate(
+                        '2026-12-31', // defer_until far in future
+                        '2026-03-10', // due_date
+                        null // no end date
+                    );
+                }).not.toThrow();
+            });
+
+            it('should allow defer_until equal to recurrence_end_date', () => {
+                expect(() => {
+                    validateDeferUntilAndDueDate(
+                        '2026-03-20', // defer_until
+                        '2026-03-10', // due_date
+                        '2026-03-20' // recurrence_end_date
+                    );
+                }).not.toThrow();
+            });
+
+            it('should allow defer_until before due_date with recurrence_end_date', () => {
+                expect(() => {
+                    validateDeferUntilAndDueDate(
+                        '2026-03-05', // defer_until before due
+                        '2026-03-10', // due_date
+                        '2026-03-20' // recurrence_end_date
+                    );
+                }).not.toThrow();
+            });
+        });
+
+        describe('edge cases', () => {
+            it('should not throw when defer_until is null', () => {
+                expect(() => {
+                    validateDeferUntilAndDueDate(null, '2026-03-10');
+                }).not.toThrow();
+            });
+
+            it('should not throw when due_date is null', () => {
+                expect(() => {
+                    validateDeferUntilAndDueDate('2026-03-10', null);
+                }).not.toThrow();
+            });
+
+            it('should not throw when both are null', () => {
+                expect(() => {
+                    validateDeferUntilAndDueDate(null, null);
+                }).not.toThrow();
+            });
+
+            it('should not throw for invalid defer_until date string', () => {
+                expect(() => {
+                    validateDeferUntilAndDueDate('invalid', '2026-03-10');
+                }).not.toThrow();
+            });
+
+            it('should not throw for invalid due_date string', () => {
+                expect(() => {
+                    validateDeferUntilAndDueDate('2026-03-10', 'invalid');
+                }).not.toThrow();
+            });
+
+            it('should not throw for invalid recurrence_end_date but still enforce due_date', () => {
+                expect(() => {
+                    validateDeferUntilAndDueDate(
+                        '2026-03-15',
+                        '2026-03-10',
+                        'invalid'
+                    );
+                }).not.toThrow(); // Invalid end date means no end date (infinite)
+            });
         });
     });
 });

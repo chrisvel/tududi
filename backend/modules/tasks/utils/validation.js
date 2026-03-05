@@ -55,7 +55,29 @@ async function validateParentTaskAccess(parentTaskId, userId) {
     return parentTaskId;
 }
 
-function validateDeferUntilAndDueDate(deferUntil, dueDate) {
+/**
+ * Validates that defer_until date is not after the due_date for regular tasks,
+ * or after the recurrence_end_date for recurring task instances.
+ *
+ * @param {string|Date|null} deferUntil - The defer until date
+ * @param {string|Date|null} dueDate - The task due date
+ * @param {string|Date|null|undefined} recurringParentEndDate - The parent task's recurrence end date
+ *        undefined = not a recurring instance (apply strict validation)
+ *        null = recurring instance with no end date (allow any defer_until)
+ *        date = recurring instance with end date (validate against end date)
+ * @throws {Error} If defer_until is after the applicable end date
+ *
+ * Validation rules:
+ * - If no defer_until or due_date: validation passes
+ * - If recurringParentEndDate is undefined (not provided): regular task, defer_until must be <= due_date
+ * - If recurringParentEndDate is null: infinite recurrence, any defer_until is allowed
+ * - If recurringParentEndDate is a date: defer_until must be <= end date
+ */
+function validateDeferUntilAndDueDate(
+    deferUntil,
+    dueDate,
+    recurringParentEndDate = undefined
+) {
     // Both must be present to validate
     if (!deferUntil || !dueDate) {
         return;
@@ -69,6 +91,30 @@ function validateDeferUntilAndDueDate(deferUntil, dueDate) {
         return;
     }
 
+    // Check if this is a recurring instance (parameter was explicitly passed)
+    if (recurringParentEndDate !== undefined) {
+        // If parent has null end date, it's infinite recurrence - allow any defer_until
+        if (recurringParentEndDate === null) {
+            return;
+        }
+
+        // Parent has an end date - validate against it
+        const endDate = new Date(recurringParentEndDate);
+        if (!isNaN(endDate.getTime())) {
+            if (deferDate > endDate) {
+                throw new Error(
+                    'Defer until date cannot be after the recurring task end date.'
+                );
+            }
+            // Validation passes - defer can be after due_date but within recurrence bounds
+            return;
+        }
+
+        // Invalid end date but has parent - treat as infinite recurrence
+        return;
+    }
+
+    // Not a recurring instance - apply strict validation
     // Defer until must be before or equal to due date
     if (deferDate > dueDateObj) {
         throw new Error('Defer until date cannot be after the due date.');

@@ -50,9 +50,7 @@ const { captureOldValues, logTaskChanges } = require('./utils/logging');
 const {
     handleParentChildOnStatusChange,
 } = require('./operations/parent-child');
-const {
-    TASK_INCLUDES_WITH_SUBTASKS,
-} = require('./utils/constants');
+const { TASK_INCLUDES_WITH_SUBTASKS } = require('./utils/constants');
 
 const {
     handleRecurringTasks,
@@ -78,6 +76,33 @@ const {
 
 if (process.env.NODE_ENV === 'development') {
     enableQueryLogging();
+}
+
+/**
+ * Fetches the recurrence end date for a recurring parent task.
+ * Used for validating defer_until dates on recurring task instances.
+ *
+ * @param {number|null|undefined} recurringParentId - The ID of the recurring parent task
+ * @param {number} userId - The user ID for access control
+ * @returns {Promise<Date|null|undefined>} The parent's recurrence_end_date, null (infinite), or undefined (no parent)
+ *          - undefined: no recurring parent (not a recurring instance)
+ *          - null: recurring parent with no end date (infinite recurrence)
+ *          - Date: recurring parent with specific end date
+ */
+async function getRecurringParentEndDate(recurringParentId, userId) {
+    // No parent ID provided - not a recurring instance
+    if (!recurringParentId) return undefined;
+
+    const parent = await taskRepository.findByIdAndUser(
+        recurringParentId,
+        userId
+    );
+
+    // Parent not found or no access - treat as non-recurring (undefined)
+    if (!parent) return undefined;
+
+    // Return the end date (null for infinite, Date for specific end)
+    return parent.recurrence_end_date;
 }
 
 function expandRecurringTasks(tasks, maxDays = 7, statusFilter = null) {
@@ -338,9 +363,16 @@ router.post('/task', async (req, res) => {
         );
 
         try {
+            // Fetch parent end date if this is a recurring instance
+            const recurringParentEndDate = await getRecurringParentEndDate(
+                req.body.recurring_parent_id,
+                req.currentUser.id
+            );
+
             validateDeferUntilAndDueDate(
                 taskAttributes.defer_until,
-                taskAttributes.due_date
+                taskAttributes.due_date,
+                recurringParentEndDate
             );
         } catch (error) {
             return res.status(400).json({ error: error.message });
@@ -537,7 +569,17 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
                     ? taskAttributes.due_date
                     : task.due_date;
 
-            validateDeferUntilAndDueDate(finalDeferUntil, finalDueDate);
+            // Fetch parent end date if this is a recurring instance
+            const recurringParentEndDate = await getRecurringParentEndDate(
+                task.recurring_parent_id,
+                req.currentUser.id
+            );
+
+            validateDeferUntilAndDueDate(
+                finalDeferUntil,
+                finalDueDate,
+                recurringParentEndDate
+            );
         } catch (error) {
             return res.status(400).json({ error: error.message });
         }
