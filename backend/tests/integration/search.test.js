@@ -731,6 +731,28 @@ describe('Universal Search Routes', () => {
                     .filter((r) => r.type === 'Task')
                     .map((task) => task.original_name || task.name);
 
+            it('should include recurring tasks in default search with their original names', async () => {
+                const response = await agent.get('/api/search').query({
+                    q: 'Recurring',
+                    filters: 'Task',
+                });
+
+                expect(response.status).toBe(200);
+                const names = getTaskNames(response);
+                expect(names).toContain('Recurring Template');
+                expect(names).toContain('Recurring Instance');
+
+                // Verify template shows original name, not recurrence type label
+                const template = response.body.results.find(
+                    (r) =>
+                        r.type === 'Task' &&
+                        r.recurrence_type === 'weekly' &&
+                        !r.recurring_parent_id
+                );
+                expect(template).toBeDefined();
+                expect(template.name).toBe('Recurring Template');
+            });
+
             it('should return only recurring tasks when extras contains recurring', async () => {
                 const response = await agent.get('/api/search').query({
                     filters: 'Task',
