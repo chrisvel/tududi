@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     CalendarIcon,
@@ -7,6 +7,7 @@ import {
 import TaskDueDateSection from '../TaskForm/TaskDueDateSection';
 import { Task } from '../../../entities/Task';
 import { parseDateString } from '../../../utils/dateUtils';
+import { resolveUserLocale } from '../../../utils/localeUtils';
 
 interface TaskDueDateCardProps {
     task: Task;
@@ -28,12 +29,16 @@ const TaskDueDateCard: React.FC<TaskDueDateCardProps> = ({
     onCancel,
 }) => {
     const { t, i18n } = useTranslation();
+    const displayLocale = useMemo(
+        () => resolveUserLocale(i18n.language),
+        [i18n.language]
+    );
 
     const getDueDateDisplay = (dueDate: string) => {
         const date = parseDateString(dueDate);
         if (!date) return null;
 
-        const formattedDate = date.toLocaleDateString(i18n.language, {
+        const formattedDate = date.toLocaleDateString(displayLocale, {
             day: '2-digit',
             month: '2-digit',
             year: 'numeric',
