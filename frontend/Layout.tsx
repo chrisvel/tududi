@@ -164,6 +164,15 @@ const Layout: React.FC<LayoutProps> = ({
         loadProjects();
     }, [projects.length, isProjectsLoading, setProjects]);
 
+    useEffect(() => {
+        // Load areas into global store if not already loaded
+        const { hasLoaded, isLoading, loadAreas } =
+            useStore.getState().areasStore;
+        if (!hasLoaded && !isLoading) {
+            loadAreas();
+        }
+    }, []);
+
     const openNoteModal = (note: Note | null = null) => {
         setSelectedNote(note);
         setIsNoteModalOpen(true);
