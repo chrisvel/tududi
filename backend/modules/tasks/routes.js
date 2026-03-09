@@ -9,6 +9,7 @@ const {
     Task,
     TaskEvent,
     RecurringCompletion,
+    Project,
     sequelize,
 } = require('../../models');
 const taskRepository = require('./repository');
@@ -32,7 +33,9 @@ const { filterTasksByParams } = require('./queries/query-builders');
 const {
     getSafeTimezone,
     getTodayBoundsInUTC,
+    getUpcomingRangeInUTC,
 } = require('../../utils/timezone-utils');
+const permissionsService = require('../../services/permissionsService');
 const { isValidUid } = require('../../utils/slug-utils');
 
 const {
@@ -212,6 +215,33 @@ router.get('/tasks', async (req, res) => {
 
         let tasks = await filterTasksByParams(req.query, userId, timezone);
 
+        // Fetch projects with upcoming due dates for the upcoming view
+        let upcomingProjects = [];
+        if (type === 'upcoming') {
+            const safeTimezone = getSafeTimezone(timezone);
+            const upcomingRange = getUpcomingRangeInUTC(safeTimezone, 7);
+            const { Op } = require('sequelize');
+
+            // Get projects owned by user or shared with user
+            const ownedOrShared = await permissionsService.ownershipOrPermissionWhere(
+                'project',
+                userId
+            );
+
+            upcomingProjects = await Project.findAll({
+                where: {
+                    ...ownedOrShared,
+                    due_date_at: {
+                        [Op.between]: [upcomingRange.start, upcomingRange.end],
+                    },
+                    status: {
+                        [Op.notIn]: ['completed', 'archived'],
+                    },
+                },
+                order: [['due_date_at', 'ASC']],
+            });
+        }
+
         if (type === 'upcoming' && groupBy === 'day') {
             console.log('[DEBUG] Expanding recurring tasks for /upcoming');
             console.log('[DEBUG] Total tasks before expansion:', tasks.length);
@@ -297,6 +327,20 @@ router.get('/tasks', async (req, res) => {
         );
         if (serializedGrouped) {
             response.groupedTasks = serializedGrouped;
+        }
+
+        // Add upcoming projects to response
+        if (type === 'upcoming' && upcomingProjects.length > 0) {
+            response.projects = upcomingProjects.map((project) => ({
+                id: project.id,
+                uid: project.uid,
+                name: project.name,
+                status: project.status,
+                priority: project.priority,
+                due_date_at: project.due_date_at,
+                created_at: project.created_at,
+                updated_at: project.updated_at,
+            }));
         }
 
         await addDashboardLists(
