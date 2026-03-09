@@ -223,10 +223,11 @@ router.get('/tasks', async (req, res) => {
             const { Op } = require('sequelize');
 
             // Get projects owned by user or shared with user
-            const ownedOrShared = await permissionsService.ownershipOrPermissionWhere(
-                'project',
-                userId
-            );
+            const ownedOrShared =
+                await permissionsService.ownershipOrPermissionWhere(
+                    'project',
+                    userId
+                );
 
             upcomingProjects = await Project.findAll({
                 where: {
