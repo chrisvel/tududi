@@ -100,6 +100,11 @@ async function filterTasksByParams(
                 },
             ],
             required: false,
+            separate: true, // Required for order to work with associations
+            order: [
+                ['order', 'ASC'],
+                ['created_at', 'ASC'],
+            ],
         },
     ];
 
@@ -429,6 +434,11 @@ function getTaskIncludeConfig() {
                 },
             ],
             required: false,
+            separate: true, // Required for order to work with associations
+            order: [
+                ['order', 'ASC'],
+                ['created_at', 'ASC'],
+            ],
         },
     ];
 }
