@@ -160,14 +160,17 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                                                 subtask.status || 'not_started'
                                             }
                                             onToggleCompletion={async () => {
-                                                if (
+                                                const isPersisted =
                                                     subtask.id &&
-                                                    onSubtaskUpdate &&
+                                                    subtask.uid &&
                                                     !(
                                                         (subtask as any)
                                                             ._isNew ||
                                                         (subtask as any).isNew
-                                                    )
+                                                    );
+                                                if (
+                                                    isPersisted &&
+                                                    onSubtaskUpdate
                                                 ) {
                                                     try {
                                                         const updatedSubtask =
@@ -176,6 +179,20 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                                                             );
                                                         await onSubtaskUpdate(
                                                             updatedSubtask
+                                                        );
+                                                    } catch (error) {
+                                                        console.error(
+                                                            'Error toggling subtask completion:',
+                                                            error
+                                                        );
+                                                    }
+                                                } else if (isPersisted) {
+                                                    try {
+                                                        await toggleTaskCompletion(
+                                                            subtask.uid!
+                                                        );
+                                                        handleToggleNewSubtaskCompletion(
+                                                            index
                                                         );
                                                     } catch (error) {
                                                         console.error(
@@ -231,15 +248,18 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                                                     'not_started'
                                                 }
                                                 onToggleCompletion={async () => {
-                                                    if (
+                                                    const isPersisted =
                                                         subtask.id &&
-                                                        onSubtaskUpdate &&
+                                                        subtask.uid &&
                                                         !(
                                                             (subtask as any)
                                                                 ._isNew ||
                                                             (subtask as any)
                                                                 .isNew
-                                                        )
+                                                        );
+                                                    if (
+                                                        isPersisted &&
+                                                        onSubtaskUpdate
                                                     ) {
                                                         try {
                                                             const updatedSubtask =
@@ -248,6 +268,20 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                                                                 );
                                                             await onSubtaskUpdate(
                                                                 updatedSubtask
+                                                            );
+                                                        } catch (error) {
+                                                            console.error(
+                                                                'Error toggling subtask completion:',
+                                                                error
+                                                            );
+                                                        }
+                                                    } else if (isPersisted) {
+                                                        try {
+                                                            await toggleTaskCompletion(
+                                                                subtask.uid!
+                                                            );
+                                                            handleToggleNewSubtaskCompletion(
+                                                                index
                                                             );
                                                         } catch (error) {
                                                             console.error(
