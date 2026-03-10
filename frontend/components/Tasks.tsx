@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useSidebar } from '../contexts/SidebarContext';
 import TaskList from './Task/TaskList';
 import GroupedTaskList from './Task/GroupedTaskList';
 import NewTask from './Task/NewTask';
@@ -40,7 +39,7 @@ const getSearchPlaceholder = (language: string): string => {
 const Tasks: React.FC = () => {
     const { t, i18n } = useTranslation();
     const { showSuccessToast } = useToast();
-    const { isSidebarOpen } = useSidebar();
+
     const [tasks, setTasks] = useState<Task[]>([]);
     const projects = useStore((state: any) => state.projectsStore.projects);
     const [groupedTasks, setGroupedTasks] = useState<GroupedTasks | null>(null);
@@ -197,7 +196,6 @@ const Tasks: React.FC = () => {
                 allTasksUrl.set('type', 'upcoming');
                 allTasksUrl.set('groupBy', 'day');
                 allTasksUrl.set('maxDays', '7');
-                allTasksUrl.set('sidebarOpen', isSidebarOpen.toString());
                 allTasksUrl.set('isMobile', isMobile.toString());
             }
 
@@ -312,7 +310,7 @@ const Tasks: React.FC = () => {
                   }
                 : undefined
         );
-    }, [location, isSidebarOpen, isMobile, groupBy, isUpcomingView]);
+    }, [location, isMobile, groupBy, isUpcomingView]);
 
     useEffect(() => {
         const handleResize = () => {
