@@ -1,5 +1,12 @@
 const errorHandler = require('../../../shared/middleware/errorHandler');
-const { AppError, NotFoundError, ValidationError, ConflictError, UnauthorizedError, ForbiddenError } = require('../../../shared/errors');
+const {
+    AppError,
+    NotFoundError,
+    ValidationError,
+    ConflictError,
+    UnauthorizedError,
+    ForbiddenError,
+} = require('../../../shared/errors');
 
 describe('errorHandler middleware', () => {
     let req, res, next;
@@ -17,7 +24,10 @@ describe('errorHandler middleware', () => {
         errorHandler(err, req, res, next);
 
         expect(res.status).toHaveBeenCalledWith(404);
-        expect(res.json).toHaveBeenCalledWith({ error: 'Task not found', code: 'NOT_FOUND' });
+        expect(res.json).toHaveBeenCalledWith({
+            error: 'Task not found',
+            code: 'NOT_FOUND',
+        });
     });
 
     it('should handle ValidationError with 400', () => {
@@ -25,7 +35,10 @@ describe('errorHandler middleware', () => {
         errorHandler(err, req, res, next);
 
         expect(res.status).toHaveBeenCalledWith(400);
-        expect(res.json).toHaveBeenCalledWith({ error: 'Title is required', code: 'VALIDATION_ERROR' });
+        expect(res.json).toHaveBeenCalledWith({
+            error: 'Title is required',
+            code: 'VALIDATION_ERROR',
+        });
     });
 
     it('should handle ConflictError with 409', () => {
@@ -33,7 +46,10 @@ describe('errorHandler middleware', () => {
         errorHandler(err, req, res, next);
 
         expect(res.status).toHaveBeenCalledWith(409);
-        expect(res.json).toHaveBeenCalledWith({ error: 'Resource already exists', code: 'CONFLICT' });
+        expect(res.json).toHaveBeenCalledWith({
+            error: 'Resource already exists',
+            code: 'CONFLICT',
+        });
     });
 
     it('should handle UnauthorizedError with 401', () => {
@@ -41,7 +57,10 @@ describe('errorHandler middleware', () => {
         errorHandler(err, req, res, next);
 
         expect(res.status).toHaveBeenCalledWith(401);
-        expect(res.json).toHaveBeenCalledWith({ error: 'Unauthorized', code: 'UNAUTHORIZED' });
+        expect(res.json).toHaveBeenCalledWith({
+            error: 'Unauthorized',
+            code: 'UNAUTHORIZED',
+        });
     });
 
     it('should handle ForbiddenError with 403', () => {
@@ -49,7 +68,10 @@ describe('errorHandler middleware', () => {
         errorHandler(err, req, res, next);
 
         expect(res.status).toHaveBeenCalledWith(403);
-        expect(res.json).toHaveBeenCalledWith({ error: 'Forbidden', code: 'FORBIDDEN' });
+        expect(res.json).toHaveBeenCalledWith({
+            error: 'Forbidden',
+            code: 'FORBIDDEN',
+        });
     });
 
     it('should handle generic AppError with custom status', () => {
@@ -57,7 +79,10 @@ describe('errorHandler middleware', () => {
         errorHandler(err, req, res, next);
 
         expect(res.status).toHaveBeenCalledWith(429);
-        expect(res.json).toHaveBeenCalledWith({ error: 'Rate limited', code: 'RATE_LIMITED' });
+        expect(res.json).toHaveBeenCalledWith({
+            error: 'Rate limited',
+            code: 'RATE_LIMITED',
+        });
     });
 
     // --- Sequelize errors ---

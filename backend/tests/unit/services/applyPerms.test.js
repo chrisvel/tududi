@@ -8,27 +8,39 @@ describe('applyPerms', () => {
     beforeEach(async () => {
         await sequelize.query('DELETE FROM permissions');
         const hash = await bcrypt.hash('pass', 10);
-        owner = await User.create({ email: 'owner@test.com', password_digest: hash });
-        target = await User.create({ email: 'target@test.com', password_digest: hash });
+        owner = await User.create({
+            email: 'owner@test.com',
+            password_digest: hash,
+        });
+        target = await User.create({
+            email: 'target@test.com',
+            password_digest: hash,
+        });
     });
 
     it('should create a new permission on upsert when none exists', async () => {
         await sequelize.transaction(async (tx) => {
             await applyPerms(tx, {
-                upserts: [{
-                    userId: target.id,
-                    resourceType: 'project',
-                    resourceUid: 'proj-uid-1',
-                    accessLevel: 'ro',
-                    propagation: 'direct',
-                    grantedByUserId: owner.id,
-                }],
+                upserts: [
+                    {
+                        userId: target.id,
+                        resourceType: 'project',
+                        resourceUid: 'proj-uid-1',
+                        accessLevel: 'ro',
+                        propagation: 'direct',
+                        grantedByUserId: owner.id,
+                    },
+                ],
                 deletes: [],
             });
         });
 
         const perm = await Permission.findOne({
-            where: { user_id: target.id, resource_type: 'project', resource_uid: 'proj-uid-1' },
+            where: {
+                user_id: target.id,
+                resource_type: 'project',
+                resource_uid: 'proj-uid-1',
+            },
         });
         expect(perm).not.toBeNull();
         expect(perm.access_level).toBe('ro');
@@ -49,19 +61,25 @@ describe('applyPerms', () => {
 
         await sequelize.transaction(async (tx) => {
             await applyPerms(tx, {
-                upserts: [{
-                    userId: target.id,
-                    resourceType: 'project',
-                    resourceUid: 'proj-uid-2',
-                    accessLevel: 'rw',
-                    grantedByUserId: owner.id,
-                }],
+                upserts: [
+                    {
+                        userId: target.id,
+                        resourceType: 'project',
+                        resourceUid: 'proj-uid-2',
+                        accessLevel: 'rw',
+                        grantedByUserId: owner.id,
+                    },
+                ],
                 deletes: [],
             });
         });
 
         const perm = await Permission.findOne({
-            where: { user_id: target.id, resource_type: 'project', resource_uid: 'proj-uid-2' },
+            where: {
+                user_id: target.id,
+                resource_type: 'project',
+                resource_uid: 'proj-uid-2',
+            },
         });
         expect(perm.access_level).toBe('rw');
     });
@@ -78,19 +96,25 @@ describe('applyPerms', () => {
 
         await sequelize.transaction(async (tx) => {
             await applyPerms(tx, {
-                upserts: [{
-                    userId: target.id,
-                    resourceType: 'project',
-                    resourceUid: 'proj-uid-3',
-                    accessLevel: 'ro',
-                    grantedByUserId: owner.id,
-                }],
+                upserts: [
+                    {
+                        userId: target.id,
+                        resourceType: 'project',
+                        resourceUid: 'proj-uid-3',
+                        accessLevel: 'ro',
+                        grantedByUserId: owner.id,
+                    },
+                ],
                 deletes: [],
             });
         });
 
         const perm = await Permission.findOne({
-            where: { user_id: target.id, resource_type: 'project', resource_uid: 'proj-uid-3' },
+            where: {
+                user_id: target.id,
+                resource_type: 'project',
+                resource_uid: 'proj-uid-3',
+            },
         });
         expect(perm.access_level).toBe('rw');
     });
@@ -108,16 +132,22 @@ describe('applyPerms', () => {
         await sequelize.transaction(async (tx) => {
             await applyPerms(tx, {
                 upserts: [],
-                deletes: [{
-                    userId: target.id,
-                    resourceType: 'task',
-                    resourceUid: 'task-uid-1',
-                }],
+                deletes: [
+                    {
+                        userId: target.id,
+                        resourceType: 'task',
+                        resourceUid: 'task-uid-1',
+                    },
+                ],
             });
         });
 
         const perm = await Permission.findOne({
-            where: { user_id: target.id, resource_type: 'task', resource_uid: 'task-uid-1' },
+            where: {
+                user_id: target.id,
+                resource_type: 'task',
+                resource_uid: 'task-uid-1',
+            },
         });
         expect(perm).toBeNull();
     });
@@ -190,14 +220,16 @@ describe('applyPerms', () => {
     it('should set default propagation to direct when not specified', async () => {
         await sequelize.transaction(async (tx) => {
             await applyPerms(tx, {
-                upserts: [{
-                    userId: target.id,
-                    resourceType: 'project',
-                    resourceUid: 'proj-default',
-                    accessLevel: 'ro',
-                    grantedByUserId: owner.id,
-                    // no propagation
-                }],
+                upserts: [
+                    {
+                        userId: target.id,
+                        resourceType: 'project',
+                        resourceUid: 'proj-default',
+                        accessLevel: 'ro',
+                        grantedByUserId: owner.id,
+                        // no propagation
+                    },
+                ],
                 deletes: [],
             });
         });
@@ -212,11 +244,13 @@ describe('applyPerms', () => {
         await sequelize.transaction(async (tx) => {
             await applyPerms(tx, {
                 upserts: [],
-                deletes: [{
-                    userId: target.id,
-                    resourceType: 'project',
-                    resourceUid: 'does-not-exist',
-                }],
+                deletes: [
+                    {
+                        userId: target.id,
+                        resourceType: 'project',
+                        resourceUid: 'does-not-exist',
+                    },
+                ],
             });
         });
         // Should not throw

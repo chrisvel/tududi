@@ -156,7 +156,10 @@ describe('Auth Middleware', () => {
         });
 
         it('should authenticate with a valid Bearer token', async () => {
-            const { rawToken } = await createApiToken({ userId: user.id, name: 'test' });
+            const { rawToken } = await createApiToken({
+                userId: user.id,
+                name: 'test',
+            });
             req.headers = { authorization: `Bearer ${rawToken}` };
 
             await requireAuth(req, res, next);
@@ -172,30 +175,43 @@ describe('Auth Middleware', () => {
             await requireAuth(req, res, next);
 
             expect(res.status).toHaveBeenCalledWith(401);
-            expect(res.json).toHaveBeenCalledWith({ error: 'Invalid or expired API token' });
+            expect(res.json).toHaveBeenCalledWith({
+                error: 'Invalid or expired API token',
+            });
             expect(next).not.toHaveBeenCalled();
         });
 
         it('should return 401 for a revoked token', async () => {
-            const { rawToken, tokenRecord } = await createApiToken({ userId: user.id, name: 'revoked' });
+            const { rawToken, tokenRecord } = await createApiToken({
+                userId: user.id,
+                name: 'revoked',
+            });
             await tokenRecord.update({ revoked_at: new Date() });
             req.headers = { authorization: `Bearer ${rawToken}` };
 
             await requireAuth(req, res, next);
 
             expect(res.status).toHaveBeenCalledWith(401);
-            expect(res.json).toHaveBeenCalledWith({ error: 'Invalid or expired API token' });
+            expect(res.json).toHaveBeenCalledWith({
+                error: 'Invalid or expired API token',
+            });
         });
 
         it('should return 401 for an expired token', async () => {
             const pastDate = new Date(Date.now() - 24 * 60 * 60 * 1000);
-            const { rawToken } = await createApiToken({ userId: user.id, name: 'expired', expiresAt: pastDate });
+            const { rawToken } = await createApiToken({
+                userId: user.id,
+                name: 'expired',
+                expiresAt: pastDate,
+            });
             req.headers = { authorization: `Bearer ${rawToken}` };
 
             await requireAuth(req, res, next);
 
             expect(res.status).toHaveBeenCalledWith(401);
-            expect(res.json).toHaveBeenCalledWith({ error: 'Invalid or expired API token' });
+            expect(res.json).toHaveBeenCalledWith({
+                error: 'Invalid or expired API token',
+            });
         });
 
         it('should return 401 when Authorization header has no token value', async () => {
@@ -220,7 +236,10 @@ describe('Auth Middleware', () => {
             const originalConsoleError = console.error;
             console.error = jest.fn();
 
-            const { rawToken } = await createApiToken({ userId: user.id, name: 'orphan' });
+            const { rawToken } = await createApiToken({
+                userId: user.id,
+                name: 'orphan',
+            });
             // Destroying the user cascade-deletes associated tokens,
             // so the token lookup itself fails rather than the user lookup
             await user.destroy();
@@ -235,9 +254,14 @@ describe('Auth Middleware', () => {
         });
 
         it('should update last_used_at when token has not been used recently', async () => {
-            const { rawToken, tokenRecord } = await createApiToken({ userId: user.id, name: 'fresh' });
+            const { rawToken, tokenRecord } = await createApiToken({
+                userId: user.id,
+                name: 'fresh',
+            });
             // Ensure last_used_at is old enough to trigger update
-            await tokenRecord.update({ last_used_at: new Date(Date.now() - 10 * 60 * 1000) });
+            await tokenRecord.update({
+                last_used_at: new Date(Date.now() - 10 * 60 * 1000),
+            });
             req.headers = { authorization: `Bearer ${rawToken}` };
 
             await requireAuth(req, res, next);
@@ -247,7 +271,9 @@ describe('Auth Middleware', () => {
             await new Promise((r) => setTimeout(r, 100));
             await tokenRecord.reload();
             // last_used_at should be updated to roughly now
-            expect(Date.now() - tokenRecord.last_used_at.getTime()).toBeLessThan(5000);
+            expect(
+                Date.now() - tokenRecord.last_used_at.getTime()
+            ).toBeLessThan(5000);
         });
 
         it('should skip health check even with no session and no token', async () => {

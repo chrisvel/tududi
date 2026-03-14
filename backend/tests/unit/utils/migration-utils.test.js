@@ -1,4 +1,10 @@
-const { safeAddColumns, safeCreateTable, safeAddIndex, safeRemoveColumn, safeChangeColumn } = require('../../../utils/migration-utils');
+const {
+    safeAddColumns,
+    safeCreateTable,
+    safeAddIndex,
+    safeRemoveColumn,
+    safeChangeColumn,
+} = require('../../../utils/migration-utils');
 
 describe('migration-utils', () => {
     let queryInterface;
@@ -31,19 +37,29 @@ describe('migration-utils', () => {
 
         it('should add column when it does not exist', async () => {
             queryInterface.showAllTables.mockResolvedValue(['tasks']);
-            queryInterface.describeTable.mockResolvedValue({ id: {}, title: {} });
+            queryInterface.describeTable.mockResolvedValue({
+                id: {},
+                title: {},
+            });
             const definition = { type: 'TEXT' };
 
             await safeAddColumns(queryInterface, 'tasks', [
                 { name: 'description', definition },
             ]);
 
-            expect(queryInterface.addColumn).toHaveBeenCalledWith('tasks', 'description', definition);
+            expect(queryInterface.addColumn).toHaveBeenCalledWith(
+                'tasks',
+                'description',
+                definition
+            );
         });
 
         it('should skip column when it already exists', async () => {
             queryInterface.showAllTables.mockResolvedValue(['tasks']);
-            queryInterface.describeTable.mockResolvedValue({ id: {}, title: {} });
+            queryInterface.describeTable.mockResolvedValue({
+                id: {},
+                title: {},
+            });
 
             await safeAddColumns(queryInterface, 'tasks', [
                 { name: 'title', definition: { type: 'TEXT' } },
@@ -54,17 +70,28 @@ describe('migration-utils', () => {
 
         it('should add multiple columns, skipping existing ones', async () => {
             queryInterface.showAllTables.mockResolvedValue(['tasks']);
-            queryInterface.describeTable.mockResolvedValue({ id: {}, title: {} });
+            queryInterface.describeTable.mockResolvedValue({
+                id: {},
+                title: {},
+            });
 
             await safeAddColumns(queryInterface, 'tasks', [
-                { name: 'title', definition: { type: 'TEXT' } },       // exists
+                { name: 'title', definition: { type: 'TEXT' } }, // exists
                 { name: 'priority', definition: { type: 'INTEGER' } }, // new
-                { name: 'due_date', definition: { type: 'DATE' } },    // new
+                { name: 'due_date', definition: { type: 'DATE' } }, // new
             ]);
 
             expect(queryInterface.addColumn).toHaveBeenCalledTimes(2);
-            expect(queryInterface.addColumn).toHaveBeenCalledWith('tasks', 'priority', { type: 'INTEGER' });
-            expect(queryInterface.addColumn).toHaveBeenCalledWith('tasks', 'due_date', { type: 'DATE' });
+            expect(queryInterface.addColumn).toHaveBeenCalledWith(
+                'tasks',
+                'priority',
+                { type: 'INTEGER' }
+            );
+            expect(queryInterface.addColumn).toHaveBeenCalledWith(
+                'tasks',
+                'due_date',
+                { type: 'DATE' }
+            );
         });
 
         it('should re-throw errors from addColumn', async () => {
@@ -73,7 +100,9 @@ describe('migration-utils', () => {
             queryInterface.addColumn.mockRejectedValue(new Error('DB error'));
 
             await expect(
-                safeAddColumns(queryInterface, 'tasks', [{ name: 'col', definition: { type: 'TEXT' } }])
+                safeAddColumns(queryInterface, 'tasks', [
+                    { name: 'col', definition: { type: 'TEXT' } },
+                ])
             ).rejects.toThrow('DB error');
         });
     });
@@ -85,7 +114,10 @@ describe('migration-utils', () => {
 
             await safeCreateTable(queryInterface, 'new_table', definition);
 
-            expect(queryInterface.createTable).toHaveBeenCalledWith('new_table', definition);
+            expect(queryInterface.createTable).toHaveBeenCalledWith(
+                'new_table',
+                definition
+            );
         });
 
         it('should skip when table already exists', async () => {
@@ -98,7 +130,9 @@ describe('migration-utils', () => {
 
         it('should re-throw errors from createTable', async () => {
             queryInterface.showAllTables.mockResolvedValue([]);
-            queryInterface.createTable.mockRejectedValue(new Error('Create failed'));
+            queryInterface.createTable.mockRejectedValue(
+                new Error('Create failed')
+            );
 
             await expect(
                 safeCreateTable(queryInterface, 'fail_table', {})
@@ -117,9 +151,15 @@ describe('migration-utils', () => {
             queryInterface.showAllTables.mockResolvedValue(['tasks']);
             queryInterface.showIndex.mockResolvedValue([]);
 
-            await safeAddIndex(queryInterface, 'tasks', ['user_id'], { name: 'idx_user' });
+            await safeAddIndex(queryInterface, 'tasks', ['user_id'], {
+                name: 'idx_user',
+            });
 
-            expect(queryInterface.addIndex).toHaveBeenCalledWith('tasks', ['user_id'], { name: 'idx_user' });
+            expect(queryInterface.addIndex).toHaveBeenCalledWith(
+                'tasks',
+                ['user_id'],
+                { name: 'idx_user' }
+            );
         });
 
         it('should skip when a matching index already exists', async () => {
@@ -147,7 +187,10 @@ describe('migration-utils', () => {
 
     describe('safeRemoveColumn', () => {
         it('should skip when column does not exist', async () => {
-            queryInterface.describeTable.mockResolvedValue({ id: {}, title: {} });
+            queryInterface.describeTable.mockResolvedValue({
+                id: {},
+                title: {},
+            });
 
             await safeRemoveColumn(queryInterface, 'tasks', 'nonexistent');
 
@@ -155,17 +198,29 @@ describe('migration-utils', () => {
         });
 
         it('should remove column on non-SQLite dialect', async () => {
-            queryInterface.describeTable.mockResolvedValue({ id: {}, title: {}, old_col: {} });
+            queryInterface.describeTable.mockResolvedValue({
+                id: {},
+                title: {},
+                old_col: {},
+            });
             queryInterface.sequelize.getDialect.mockReturnValue('postgres');
 
             await safeRemoveColumn(queryInterface, 'tasks', 'old_col');
 
-            expect(queryInterface.removeColumn).toHaveBeenCalledWith('tasks', 'old_col');
+            expect(queryInterface.removeColumn).toHaveBeenCalledWith(
+                'tasks',
+                'old_col'
+            );
         });
 
         it('should use table recreation strategy on SQLite', async () => {
             queryInterface.describeTable.mockResolvedValue({
-                id: { type: 'INTEGER', primaryKey: true, autoIncrement: true, allowNull: false },
+                id: {
+                    type: 'INTEGER',
+                    primaryKey: true,
+                    autoIncrement: true,
+                    allowNull: false,
+                },
                 title: { type: 'TEXT', allowNull: true },
                 remove_me: { type: 'TEXT', allowNull: true },
             });
@@ -174,20 +229,40 @@ describe('migration-utils', () => {
             await safeRemoveColumn(queryInterface, 'tasks', 'remove_me');
 
             // Should have called multiple queries for SQLite recreation
-            const calls = queryInterface.sequelize.query.mock.calls.map((c) => c[0]);
-            expect(calls.some((q) => q.includes('PRAGMA foreign_keys = OFF'))).toBe(true);
-            expect(calls.some((q) => q.includes('CREATE TABLE tasks_new'))).toBe(true);
-            expect(calls.some((q) => q.includes('INSERT INTO tasks_new'))).toBe(true);
-            expect(calls.some((q) => q.includes('DROP TABLE tasks'))).toBe(true);
-            expect(calls.some((q) => q.includes('ALTER TABLE tasks_new RENAME TO tasks'))).toBe(true);
-            expect(calls.some((q) => q.includes('PRAGMA foreign_keys = ON'))).toBe(true);
+            const calls = queryInterface.sequelize.query.mock.calls.map(
+                (c) => c[0]
+            );
+            expect(
+                calls.some((q) => q.includes('PRAGMA foreign_keys = OFF'))
+            ).toBe(true);
+            expect(
+                calls.some((q) => q.includes('CREATE TABLE tasks_new'))
+            ).toBe(true);
+            expect(calls.some((q) => q.includes('INSERT INTO tasks_new'))).toBe(
+                true
+            );
+            expect(calls.some((q) => q.includes('DROP TABLE tasks'))).toBe(
+                true
+            );
+            expect(
+                calls.some((q) =>
+                    q.includes('ALTER TABLE tasks_new RENAME TO tasks')
+                )
+            ).toBe(true);
+            expect(
+                calls.some((q) => q.includes('PRAGMA foreign_keys = ON'))
+            ).toBe(true);
             // remove_me should not appear in CREATE TABLE
-            const createCall = calls.find((q) => q.includes('CREATE TABLE tasks_new'));
+            const createCall = calls.find((q) =>
+                q.includes('CREATE TABLE tasks_new')
+            );
             expect(createCall).not.toContain('remove_me');
         });
 
         it('should re-throw errors', async () => {
-            queryInterface.describeTable.mockRejectedValue(new Error('Describe failed'));
+            queryInterface.describeTable.mockRejectedValue(
+                new Error('Describe failed')
+            );
 
             await expect(
                 safeRemoveColumn(queryInterface, 'tasks', 'col')
@@ -199,7 +274,9 @@ describe('migration-utils', () => {
         it('should skip when table does not exist', async () => {
             queryInterface.showAllTables.mockResolvedValue([]);
 
-            await safeChangeColumn(queryInterface, 'missing', 'col', { type: 'TEXT' });
+            await safeChangeColumn(queryInterface, 'missing', 'col', {
+                type: 'TEXT',
+            });
 
             expect(queryInterface.changeColumn).not.toHaveBeenCalled();
         });
@@ -208,7 +285,9 @@ describe('migration-utils', () => {
             queryInterface.showAllTables.mockResolvedValue(['tasks']);
             queryInterface.describeTable.mockResolvedValue({ id: {} });
 
-            await safeChangeColumn(queryInterface, 'tasks', 'nonexistent', { type: 'TEXT' });
+            await safeChangeColumn(queryInterface, 'tasks', 'nonexistent', {
+                type: 'TEXT',
+            });
 
             expect(queryInterface.changeColumn).not.toHaveBeenCalled();
         });
@@ -224,13 +303,22 @@ describe('migration-utils', () => {
 
             await safeChangeColumn(queryInterface, 'tasks', 'title', newDef);
 
-            expect(queryInterface.changeColumn).toHaveBeenCalledWith('tasks', 'title', newDef);
+            expect(queryInterface.changeColumn).toHaveBeenCalledWith(
+                'tasks',
+                'title',
+                newDef
+            );
         });
 
         it('should use table recreation on SQLite', async () => {
             queryInterface.showAllTables.mockResolvedValue(['tasks']);
             queryInterface.describeTable.mockResolvedValue({
-                id: { type: 'INTEGER', primaryKey: true, autoIncrement: true, allowNull: false },
+                id: {
+                    type: 'INTEGER',
+                    primaryKey: true,
+                    autoIncrement: true,
+                    allowNull: false,
+                },
                 title: { type: 'TEXT', allowNull: true },
             });
             queryInterface.showIndex.mockResolvedValue([]);
@@ -241,9 +329,15 @@ describe('migration-utils', () => {
                 allowNull: false,
             });
 
-            const calls = queryInterface.sequelize.query.mock.calls.map((c) => c[0]);
-            expect(calls.some((q) => q.includes('CREATE TABLE tasks_new'))).toBe(true);
-            const createCall = calls.find((q) => q.includes('CREATE TABLE tasks_new'));
+            const calls = queryInterface.sequelize.query.mock.calls.map(
+                (c) => c[0]
+            );
+            expect(
+                calls.some((q) => q.includes('CREATE TABLE tasks_new'))
+            ).toBe(true);
+            const createCall = calls.find((q) =>
+                q.includes('CREATE TABLE tasks_new')
+            );
             expect(createCall).toContain('VARCHAR(255)');
             expect(createCall).toContain('NOT NULL');
         });
@@ -252,10 +346,14 @@ describe('migration-utils', () => {
             queryInterface.showAllTables.mockResolvedValue(['tasks']);
             queryInterface.describeTable.mockResolvedValue({ id: {}, col: {} });
             queryInterface.sequelize.getDialect.mockReturnValue('postgres');
-            queryInterface.changeColumn.mockRejectedValue(new Error('Change failed'));
+            queryInterface.changeColumn.mockRejectedValue(
+                new Error('Change failed')
+            );
 
             await expect(
-                safeChangeColumn(queryInterface, 'tasks', 'col', { type: 'TEXT' })
+                safeChangeColumn(queryInterface, 'tasks', 'col', {
+                    type: 'TEXT',
+                })
             ).rejects.toThrow('Change failed');
         });
     });

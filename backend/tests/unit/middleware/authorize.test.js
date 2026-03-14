@@ -7,7 +7,11 @@ describe('authorize middleware – hasAccess', () => {
     let req, res, next;
 
     beforeEach(() => {
-        req = { currentUser: { id: 42 }, session: { userId: 42 }, params: { uid: 'abc123' } };
+        req = {
+            currentUser: { id: 42 },
+            session: { userId: 42 },
+            params: { uid: 'abc123' },
+        };
         res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
         next = jest.fn();
         jest.clearAllMocks();
@@ -21,7 +25,11 @@ describe('authorize middleware – hasAccess', () => {
 
         await mw(req, res, next);
 
-        expect(permissionsService.getAccess).toHaveBeenCalledWith(42, 'project', 'abc123');
+        expect(permissionsService.getAccess).toHaveBeenCalledWith(
+            42,
+            'project',
+            'abc123'
+        );
         expect(next).toHaveBeenCalled();
     });
 
@@ -31,7 +39,11 @@ describe('authorize middleware – hasAccess', () => {
 
         await mw(req, res, next);
 
-        expect(permissionsService.getAccess).toHaveBeenCalledWith(42, 'project', 'static-uid');
+        expect(permissionsService.getAccess).toHaveBeenCalledWith(
+            42,
+            'project',
+            'static-uid'
+        );
         expect(next).toHaveBeenCalled();
     });
 
@@ -41,7 +53,11 @@ describe('authorize middleware – hasAccess', () => {
 
         await mw(req, res, next);
 
-        expect(permissionsService.getAccess).toHaveBeenCalledWith(42, 'task', 'abc123');
+        expect(permissionsService.getAccess).toHaveBeenCalledWith(
+            42,
+            'task',
+            'abc123'
+        );
         expect(next).toHaveBeenCalled();
     });
 
@@ -134,7 +150,11 @@ describe('authorize middleware – hasAccess', () => {
 
         await mw(req, res, next);
 
-        expect(permissionsService.getAccess).toHaveBeenCalledWith(100, 'project', 'uid1');
+        expect(permissionsService.getAccess).toHaveBeenCalledWith(
+            100,
+            'project',
+            'uid1'
+        );
     });
 
     it('should fall back to session.userId when currentUser is missing', async () => {
@@ -145,13 +165,19 @@ describe('authorize middleware – hasAccess', () => {
 
         await mw(req, res, next);
 
-        expect(permissionsService.getAccess).toHaveBeenCalledWith(200, 'project', 'uid1');
+        expect(permissionsService.getAccess).toHaveBeenCalledWith(
+            200,
+            'project',
+            'uid1'
+        );
     });
 
     // --- Options ---
 
     it('should use custom notFoundMessage', async () => {
-        const mw = hasAccess('ro', 'project', () => null, { notFoundMessage: 'Project not found' });
+        const mw = hasAccess('ro', 'project', () => null, {
+            notFoundMessage: 'Project not found',
+        });
 
         await mw(req, res, next);
 
@@ -161,7 +187,9 @@ describe('authorize middleware – hasAccess', () => {
 
     it('should return 404 instead of 403 when forbiddenStatus is 404', async () => {
         permissionsService.getAccess.mockResolvedValue('none');
-        const mw = hasAccess('rw', 'project', () => 'uid1', { forbiddenStatus: 404 });
+        const mw = hasAccess('rw', 'project', () => 'uid1', {
+            forbiddenStatus: 404,
+        });
 
         await mw(req, res, next);
 
@@ -190,7 +218,11 @@ describe('authorize middleware – hasAccess', () => {
 
         await mw(req, res, next);
 
-        expect(permissionsService.getAccess).toHaveBeenCalledWith(42, 'task', 'task-uid');
+        expect(permissionsService.getAccess).toHaveBeenCalledWith(
+            42,
+            'task',
+            'task-uid'
+        );
     });
 
     it('should pass correct resource type for notes', async () => {
@@ -199,7 +231,11 @@ describe('authorize middleware – hasAccess', () => {
 
         await mw(req, res, next);
 
-        expect(permissionsService.getAccess).toHaveBeenCalledWith(42, 'note', 'note-uid');
+        expect(permissionsService.getAccess).toHaveBeenCalledWith(
+            42,
+            'note',
+            'note-uid'
+        );
     });
 
     // --- Error handling ---
@@ -217,7 +253,9 @@ describe('authorize middleware – hasAccess', () => {
 
     it('should forward errors from getResourceUid to next()', async () => {
         const error = new Error('UID lookup failed');
-        const mw = hasAccess('ro', 'project', () => { throw error; });
+        const mw = hasAccess('ro', 'project', () => {
+            throw error;
+        });
 
         await mw(req, res, next);
 
