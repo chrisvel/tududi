@@ -289,6 +289,11 @@ const generateSuggestion = (content, tags, projects, cleanedContent) => {
     const textStartsWithVerb = startsWithVerb(cleanedContent);
     const hasUrl = containsUrl(content);
 
+    // Detect URLs even without a project (for bookmark tag display)
+    if (hasUrl && !hasProject) {
+        return { type: null, reason: 'url_detected' };
+    }
+
     if (!hasProject) {
         return { type: null, reason: null };
     }
