@@ -70,8 +70,7 @@ async function checkDueProjects() {
                     continue;
                 }
 
-                // Check for existing notifications (including dismissed ones)
-                // If a notification was dismissed, don't create it again
+                // Check for existing notifications
                 const recentNotifications = await Notification.findAll({
                     where: {
                         user_id: project.user_id,
@@ -91,9 +90,19 @@ async function checkDueProjects() {
                 );
 
                 if (existingNotification) {
-                    // Skip if notification exists, even if it was dismissed
-                    // This prevents re-notifying users about tasks they've already dismissed
-                    continue;
+                    // If notification was dismissed, don't create it again
+                    if (existingNotification.dismissed_at) {
+                        continue;
+                    }
+
+                    // If notification is unread, delete it before creating the new one
+                    // This prevents duplicate notifications from piling up
+                    if (!existingNotification.read_at) {
+                        await existingNotification.destroy();
+                    } else {
+                        // If it was already read, skip creating a new one
+                        continue;
+                    }
                 }
 
                 const { title, message } = generateNotificationContent(
