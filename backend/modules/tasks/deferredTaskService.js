@@ -68,7 +68,19 @@ async function checkDeferredTasks() {
                 );
 
                 if (existingNotification) {
-                    continue;
+                    // If notification was dismissed, don't create it again
+                    if (existingNotification.dismissed_at) {
+                        continue;
+                    }
+
+                    // If notification is unread, delete it before creating the new one
+                    // This prevents duplicate notifications from piling up
+                    if (!existingNotification.read_at) {
+                        await existingNotification.destroy();
+                    } else {
+                        // If it was already read, skip creating a new one
+                        continue;
+                    }
                 }
 
                 const sources = [];
