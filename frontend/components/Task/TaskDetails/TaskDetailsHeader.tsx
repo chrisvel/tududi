@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     CheckIcon,
@@ -35,6 +35,7 @@ interface TaskDetailsHeaderProps {
     onQuickStatusToggle?: () => void;
     attachmentCount?: number;
     subtasksCount?: number;
+    autoEditTitle?: boolean;
 }
 
 const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
@@ -55,14 +56,19 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
     onQuickStatusToggle,
     attachmentCount = 0,
     subtasksCount = 0,
+    autoEditTitle = false,
 }) => {
     const { t } = useTranslation();
-    const [isEditingTitle, setIsEditingTitle] = useState(false);
+    const [isEditingTitle, setIsEditingTitle] = useState(autoEditTitle);
     const [editedTitle, setEditedTitle] = useState(task.name);
     const [actionsMenuOpen, setActionsMenuOpen] = useState(false);
+    const [actionsMenuStyle, setActionsMenuStyle] =
+        useState<React.CSSProperties>({});
+    const [actionsMenuReady, setActionsMenuReady] = useState(false);
     const [priorityDropdownOpen, setPriorityDropdownOpen] = useState(false);
     const titleInputRef = useRef<HTMLInputElement>(null);
     const actionsMenuRef = useRef<HTMLDivElement>(null);
+    const actionsMenuDropdownRef = useRef<HTMLDivElement>(null);
     const priorityDropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -75,6 +81,54 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
             titleInputRef.current.select();
         }
     }, [isEditingTitle]);
+
+    useLayoutEffect(() => {
+        if (!actionsMenuOpen) {
+            setActionsMenuStyle({});
+            setActionsMenuReady(false);
+            return;
+        }
+
+        const updateMenuPosition = () => {
+            const triggerRect = actionsMenuRef.current?.getBoundingClientRect();
+            const menuRect =
+                actionsMenuDropdownRef.current?.getBoundingClientRect();
+
+            if (!triggerRect || !menuRect) {
+                return;
+            }
+
+            const padding = 8;
+            const gap = 8;
+            let top = triggerRect.bottom + gap;
+            if (top + menuRect.height + padding > window.innerHeight) {
+                top = triggerRect.top - menuRect.height - gap;
+            }
+            top = Math.min(
+                Math.max(top, padding),
+                window.innerHeight - menuRect.height - padding
+            );
+
+            let left = triggerRect.right - menuRect.width;
+            left = Math.min(
+                Math.max(left, padding),
+                window.innerWidth - menuRect.width - padding
+            );
+
+            setActionsMenuStyle({
+                position: 'fixed',
+                top,
+                left,
+            });
+            setActionsMenuReady(true);
+        };
+
+        updateMenuPosition();
+        window.addEventListener('resize', updateMenuPosition);
+        return () => {
+            window.removeEventListener('resize', updateMenuPosition);
+        };
+    }, [actionsMenuOpen]);
 
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
@@ -219,37 +273,21 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex-1 min-w-0">
                         {isEditingTitle ? (
-                            <div className="flex items-center space-x-2">
-                                <input
-                                    ref={titleInputRef}
-                                    type="text"
-                                    value={editedTitle}
-                                    onChange={(e) =>
-                                        setEditedTitle(e.target.value)
-                                    }
-                                    onKeyDown={handleTitleKeyDown}
-                                    onBlur={handleSaveTitle}
-                                    className="text-2xl font-normal text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 border-2 border-blue-500 dark:border-blue-400 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 w-full"
-                                    placeholder={t(
-                                        'task.titlePlaceholder',
-                                        'Enter task title'
-                                    )}
-                                />
-                                <button
-                                    onClick={handleSaveTitle}
-                                    className="p-1.5 text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 rounded-full transition-colors duration-200"
-                                    title={t('common.save', 'Save')}
-                                >
-                                    <CheckIcon className="h-5 w-5" />
-                                </button>
-                                <button
-                                    onClick={handleCancelTitleEdit}
-                                    className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 rounded-full transition-colors duration-200"
-                                    title={t('common.cancel', 'Cancel')}
-                                >
-                                    <XMarkIcon className="h-5 w-5" />
-                                </button>
-                            </div>
+                            <input
+                                ref={titleInputRef}
+                                type="text"
+                                value={editedTitle}
+                                onChange={(e) =>
+                                    setEditedTitle(e.target.value)
+                                }
+                                onKeyDown={handleTitleKeyDown}
+                                onBlur={handleSaveTitle}
+                                className="text-2xl font-normal text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 border-2 border-blue-500 dark:border-blue-400 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 w-full"
+                                placeholder={t(
+                                    'task.titlePlaceholder',
+                                    'Enter task title'
+                                )}
+                            />
                         ) : (
                             <>
                                 <div className="flex items-center gap-3 flex-wrap min-w-0">
@@ -264,7 +302,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                         {task.name}
                                     </h2>
 
-                                    <div className="flex items-center gap-2 flex-wrap flex-shrink-0">
+                                    <div className="flex items-center gap-2 flex-wrap min-w-0">
                                         <TaskStatusControl
                                             task={task}
                                             onToggleCompletion={
@@ -458,7 +496,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                         )}
 
                                         {formattedUpdatedAt && (
-                                            <span className="text-xs text-gray-400 dark:text-gray-600 sm:pl-1 mt-1 sm:mt-0">
+                                            <span className="text-xs text-gray-400 dark:text-gray-600 sm:pl-1 mt-1 sm:mt-0 break-words">
                                                 {t(
                                                     'task.updatedAt',
                                                     'Updated at'
@@ -706,7 +744,16 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                     </span>
                                 </button>
                                 {actionsMenuOpen && (
-                                    <div className="absolute right-0 top-full translate-y-2 w-40 rounded-lg shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 z-30">
+                                    <div
+                                        ref={actionsMenuDropdownRef}
+                                        style={{
+                                            ...actionsMenuStyle,
+                                            visibility: actionsMenuReady
+                                                ? 'visible'
+                                                : 'hidden',
+                                        }}
+                                        className="z-30 w-40 rounded-lg shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700"
+                                    >
                                         <button
                                             className="w-full text-left px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
                                             onClick={(e) => {

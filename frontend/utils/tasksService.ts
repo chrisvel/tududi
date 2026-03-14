@@ -92,13 +92,20 @@ export const updateTask = async (
     taskUid: string,
     taskData: Partial<Task>
 ): Promise<Task> => {
+    // Use original_name to prevent display name (e.g. "Monthly", "Daily")
+    // from overwriting the real task name in the database
+    const payload = { ...taskData };
+    if (payload.original_name && payload.name !== undefined) {
+        payload.name = payload.original_name;
+    }
+
     const response = await fetch(
         getApiPath(`task/${encodeURIComponent(taskUid)}`),
         {
             method: 'PATCH',
             credentials: 'include',
             headers: getPostHeaders(),
-            body: JSON.stringify(taskData),
+            body: JSON.stringify(payload),
         }
     );
 

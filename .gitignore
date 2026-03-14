@@ -6,8 +6,8 @@ certs/
 .DS_Store
 .cursor
 AGENTS.md
-CLAUDE.md
-CLAUDE.local.md
+# CLAUDE.md - project documentation (committed)
+CLAUDE.local.md  # User-specific customizations (ignored)
 
 .byebug_history
 node_modules

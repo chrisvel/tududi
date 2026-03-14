@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import RecurrenceDisplay from '../RecurrenceDisplay';
 import TaskRecurrenceSection from '../TaskForm/TaskRecurrenceSection';
 import TaskRecurringInstanceInfo from './TaskRecurringInstanceInfo';
 import { Task, RecurrenceType } from '../../../entities/Task';
 import { TaskIteration } from '../../../utils/tasksService';
+import { getTodayDateString } from '../../../utils/dateUtils';
+import { resolveUserLocale } from '../../../utils/localeUtils';
 
 interface TaskRecurrenceCardProps {
     task: Task;
@@ -45,16 +47,20 @@ const TaskRecurrenceCard: React.FC<TaskRecurrenceCardProps> = ({
     canEdit,
 }) => {
     const { t, i18n } = useTranslation();
+    const displayLocale = useMemo(
+        () => resolveUserLocale(i18n.language),
+        [i18n.language]
+    );
 
     const formatDateWithDayName = (dateString: string) => {
         const date = new Date(dateString);
-        const today = new Date().toISOString().split('T')[0];
+        const today = getTodayDateString();
         const isToday = dateString === today;
 
-        const dayName = date.toLocaleDateString(i18n.language, {
+        const dayName = date.toLocaleDateString(displayLocale, {
             weekday: 'long',
         });
-        const formattedDate = date.toLocaleDateString(i18n.language, {
+        const formattedDate = date.toLocaleDateString(displayLocale, {
             day: 'numeric',
             month: 'long',
         });

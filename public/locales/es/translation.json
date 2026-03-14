@@ -275,7 +275,26 @@
     "avatarUploadFailed": "Failed to upload avatar",
     "avatarRemoveFailed": "Failed to remove avatar",
     "notificationsDescription": "Elige cómo deseas ser notificado sobre eventos importantes.",
-    "aiFeatures": "Funciones de IA"
+    "aiFeatures": "Funciones de IA",
+    "keyboardShortcuts": "Atajos de teclado",
+    "shortcuts": {
+      "enableShortcuts": "Habilitar atajos de teclado",
+      "enableDescription": "Activar o desactivar atajos de teclado globalmente.",
+      "duplicateWarning": "Atajos duplicados detectados:",
+      "pressKeys": "Presiona teclas...",
+      "duplicateWith": "Conflictos con {{action}}",
+      "record": "Grabar",
+      "resetToDefaults": "Restablecer a los valores predeterminados",
+      "info": "Los atajos de teclado te ayudan a navegar rápidamente. Los cambios se guardan cuando haces clic en \"Guardar cambios\" en la parte inferior de la página. Los atajos están deshabilitados al escribir en campos de texto.",
+      "actions": {
+        "inbox": "Crear nuevo elemento de bandeja de entrada",
+        "task": "Crear nueva tarea",
+        "project": "Crear nuevo proyecto",
+        "note": "Crear nueva nota",
+        "area": "Crear nueva área",
+        "tag": "Crear nueva etiqueta"
+      }
+    }
   },
   "errors": {
     "required": "Este campo es obligatorio",
@@ -739,7 +758,9 @@
       "archived": "archivado",
       "unknown": "en curso",
       "waiting": "Esperando",
-      "setAsDone": "Marcar como hecho"
+      "setAsDone": "Marcar como hecho",
+      "planned": "Planificado",
+      "cancelled": "Cancelado"
     },
     "noSubtasksClickToAdd": "No hay subtareas aún, haz clic para agregar",
     "project": "Proyecto",

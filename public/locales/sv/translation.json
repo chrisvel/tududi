@@ -357,7 +357,26 @@
     "avatarUploadFailed": "Failed to upload avatar",
     "avatarRemoveFailed": "Failed to remove avatar",
     "notificationsDescription": "Välj hur du vill bli meddelad om viktiga händelser.",
-    "aiFeatures": "AI-funktioner"
+    "aiFeatures": "AI-funktioner",
+    "keyboardShortcuts": "Tangentbordsgenvägar",
+    "shortcuts": {
+      "enableShortcuts": "Aktivera tangentbordsgenvägar",
+      "enableDescription": "Slå på eller av tangentbordsgenvägar globalt.",
+      "duplicateWarning": "Duplicerade genvägar upptäckta:",
+      "pressKeys": "Tryck på tangenter...",
+      "duplicateWith": "Konflikterar med {{action}}",
+      "record": "Spela in",
+      "resetToDefaults": "Återställ till standard",
+      "info": "Tangentbordsgenvägar hjälper dig att navigera snabbt. Ändringar sparas när du klickar på \"Spara ändringar\" längst ner på sidan. Genvägar är inaktiverade när du skriver i textfält.",
+      "actions": {
+        "inbox": "Skapa nytt inkorgsobjekt",
+        "task": "Skapa ny uppgift",
+        "project": "Skapa nytt projekt",
+        "note": "Skapa ny anteckning",
+        "area": "Skapa nytt område",
+        "tag": "Skapa ny tagg"
+      }
+    }
   },
   "productivity": {
     "stalledProjects": "Stagnerade projekt",
@@ -783,7 +802,9 @@
       "archived": "arkiverad",
       "unknown": "pågår",
       "waiting": "Väntar",
-      "setAsDone": "Markera som klar"
+      "setAsDone": "Markera som klar",
+      "planned": "Planerad",
+      "cancelled": "Avbruten"
     },
     "noDueDate": "Ingen förfallodatum",
     "instanceOf": "Detta är en instans av en återkommande uppgift",

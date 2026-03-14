@@ -357,7 +357,26 @@
     "avatarUploadFailed": "Failed to upload avatar",
     "avatarRemoveFailed": "Failed to remove avatar",
     "notificationsDescription": "Wybierz, jak chcesz być informowany o ważnych wydarzeniach.",
-    "aiFeatures": "Funkcje AI"
+    "aiFeatures": "Funkcje AI",
+    "keyboardShortcuts": "Skróty klawiaturowe",
+    "shortcuts": {
+      "enableShortcuts": "Włącz skróty klawiaturowe",
+      "enableDescription": "Włącz lub wyłącz skróty klawiaturowe globalnie.",
+      "duplicateWarning": "Wykryto zduplikowane skróty:",
+      "pressKeys": "Naciśnij klawisze...",
+      "duplicateWith": "Konflikty z {{action}}",
+      "record": "Nagraj",
+      "resetToDefaults": "Przywróć ustawienia domyślne",
+      "info": "Skróty klawiaturowe pomagają szybko nawigować. Zmiany są zapisywane po kliknięciu \"Zapisz zmiany\" na dole strony. Skróty są wyłączone podczas pisania w polach tekstowych.",
+      "actions": {
+        "inbox": "Utwórz nowy element Skrzynki odbiorczej",
+        "task": "Utwórz nowe Zadanie",
+        "project": "Utwórz nowy Projekt",
+        "note": "Utwórz nową Notatkę",
+        "area": "Utwórz nowy Obszar",
+        "tag": "Utwórz nową Etykietę"
+      }
+    }
   },
   "productivity": {
     "stalledProjects": "Zatrzymane projekty",
@@ -782,7 +801,9 @@
       "archived": "zarchiwizowane",
       "unknown": "w toku",
       "waiting": "Oczekiwanie",
-      "setAsDone": "Oznacz jako zrobione"
+      "setAsDone": "Oznacz jako zrobione",
+      "planned": "Zaplanowane",
+      "cancelled": "Anulowane"
     },
     "noSubtasksClickToAdd": "Brak podzadań, kliknij, aby dodać",
     "noDueDate": "Brak daty wykonania",

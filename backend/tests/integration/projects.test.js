@@ -553,4 +553,155 @@ describe('Projects Routes', () => {
             expect(orphanedNote.content).toBe('This note belongs to a project');
         });
     });
+
+    describe('GET /api/projects - is_stalled flag', () => {
+        it('should mark in_progress project with no tasks as stalled', async () => {
+            await Project.create({
+                name: 'Empty In Progress Project',
+                status: 'in_progress',
+                user_id: user.id,
+            });
+
+            const response = await agent.get('/api/projects');
+
+            expect(response.status).toBe(200);
+            const project = response.body.projects.find(
+                (p) => p.name === 'Empty In Progress Project'
+            );
+            expect(project.is_stalled).toBe(true);
+        });
+
+        it('should mark planned project with no tasks as stalled', async () => {
+            await Project.create({
+                name: 'Empty Planned Project',
+                status: 'planned',
+                user_id: user.id,
+            });
+
+            const response = await agent.get('/api/projects');
+
+            expect(response.status).toBe(200);
+            const project = response.body.projects.find(
+                (p) => p.name === 'Empty Planned Project'
+            );
+            expect(project.is_stalled).toBe(true);
+        });
+
+        it('should not mark in_progress project with active tasks as stalled', async () => {
+            const project = await Project.create({
+                name: 'Active Project',
+                status: 'in_progress',
+                user_id: user.id,
+            });
+
+            await Task.create({
+                name: 'Active Task',
+                user_id: user.id,
+                project_id: project.id,
+                status: 1, // in_progress
+            });
+
+            const response = await agent.get('/api/projects');
+
+            expect(response.status).toBe(200);
+            const foundProject = response.body.projects.find(
+                (p) => p.name === 'Active Project'
+            );
+            expect(foundProject.is_stalled).toBe(false);
+        });
+
+        it('should not mark in_progress project with not_started tasks as stalled', async () => {
+            const project = await Project.create({
+                name: 'Project With Pending Tasks',
+                status: 'in_progress',
+                user_id: user.id,
+            });
+
+            await Task.create({
+                name: 'Pending Task',
+                user_id: user.id,
+                project_id: project.id,
+                status: 0, // not_started
+            });
+
+            const response = await agent.get('/api/projects');
+
+            expect(response.status).toBe(200);
+            const foundProject = response.body.projects.find(
+                (p) => p.name === 'Project With Pending Tasks'
+            );
+            expect(foundProject.is_stalled).toBe(false);
+        });
+
+        it('should mark in_progress project with only completed tasks as stalled', async () => {
+            const project = await Project.create({
+                name: 'All Done Project',
+                status: 'in_progress',
+                user_id: user.id,
+            });
+
+            await Task.create({
+                name: 'Completed Task',
+                user_id: user.id,
+                project_id: project.id,
+                status: 2, // done
+            });
+
+            const response = await agent.get('/api/projects');
+
+            expect(response.status).toBe(200);
+            const foundProject = response.body.projects.find(
+                (p) => p.name === 'All Done Project'
+            );
+            expect(foundProject.is_stalled).toBe(true);
+        });
+
+        it('should not mark not_started project as stalled even with no tasks', async () => {
+            await Project.create({
+                name: 'Not Started Project',
+                status: 'not_started',
+                user_id: user.id,
+            });
+
+            const response = await agent.get('/api/projects');
+
+            expect(response.status).toBe(200);
+            const project = response.body.projects.find(
+                (p) => p.name === 'Not Started Project'
+            );
+            expect(project.is_stalled).toBe(false);
+        });
+
+        it('should not mark done project as stalled even with no active tasks', async () => {
+            await Project.create({
+                name: 'Completed Project',
+                status: 'done',
+                user_id: user.id,
+            });
+
+            const response = await agent.get('/api/projects');
+
+            expect(response.status).toBe(200);
+            const project = response.body.projects.find(
+                (p) => p.name === 'Completed Project'
+            );
+            expect(project.is_stalled).toBe(false);
+        });
+
+        it('should not mark waiting project as stalled even with no tasks', async () => {
+            await Project.create({
+                name: 'Waiting Project',
+                status: 'waiting',
+                user_id: user.id,
+            });
+
+            const response = await agent.get('/api/projects');
+
+            expect(response.status).toBe(200);
+            const project = response.body.projects.find(
+                (p) => p.name === 'Waiting Project'
+            );
+            expect(project.is_stalled).toBe(false);
+        });
+    });
 });

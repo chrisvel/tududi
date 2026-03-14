@@ -228,7 +228,7 @@ const TaskRecurrenceSection: React.FC<TaskRecurrenceSectionProps> = ({
                     {t('forms.task.labels.weekday', 'Weekday')}
                 </label>
                 <RecurrenceSelectDropdown
-                    value={recurrenceWeekday || 1}
+                    value={recurrenceWeekday ?? 1}
                     onChange={(value) =>
                         onChange(
                             'recurrence_weekday',

@@ -42,7 +42,8 @@ const projectsController = {
     async getOne(req, res, next) {
         try {
             const uid = extractUidFromSlug(req.params.uidSlug);
-            const project = await projectsService.getByUid(uid);
+            const timezone = req.currentUser?.timezone;
+            const project = await projectsService.getByUid(uid, timezone);
             res.json(project);
         } catch (error) {
             next(error);

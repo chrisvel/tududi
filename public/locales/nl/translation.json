@@ -357,7 +357,26 @@
     "avatarUploadFailed": "Failed to upload avatar",
     "avatarRemoveFailed": "Failed to remove avatar",
     "notificationsDescription": "Kies hoe u op de hoogte wilt worden gesteld van belangrijke gebeurtenissen.",
-    "aiFeatures": "AI-functies"
+    "aiFeatures": "AI-functies",
+    "keyboardShortcuts": "Toetsenbord sneltoetsen",
+    "shortcuts": {
+      "enableShortcuts": "Schakel toetsenbord sneltoetsen in",
+      "enableDescription": "Schakel toetsenbord sneltoetsen globaal in of uit.",
+      "duplicateWarning": "Dubbele sneltoetsen gedetecteerd:",
+      "pressKeys": "Druk op toetsen...",
+      "duplicateWith": "Conflicteert met {{action}}",
+      "record": "Opnemen",
+      "resetToDefaults": "Reset naar standaardinstellingen",
+      "info": "Toetsenbord sneltoetsen helpen je snel te navigeren. Wijzigingen worden opgeslagen wanneer je op \"Wijzigingen Opslaan\" onderaan de pagina klikt. Sneltoetsen zijn uitgeschakeld tijdens het typen in tekstvelden.",
+      "actions": {
+        "inbox": "Maak nieuw Inbox-item aan",
+        "task": "Maak nieuwe Taak aan",
+        "project": "Maak nieuw Project aan",
+        "note": "Maak nieuwe Notitie aan",
+        "area": "Maak nieuw Gebied aan",
+        "tag": "Maak nieuwe Tag aan"
+      }
+    }
   },
   "productivity": {
     "stalledProjects": "Stagnerende Projecten",
@@ -760,7 +779,9 @@
       "archived": "gearchiveerd",
       "unknown": "lopende",
       "waiting": "Wachten",
-      "setAsDone": "Markeer als voltooid"
+      "setAsDone": "Markeer als voltooid",
+      "planned": "Gepland",
+      "cancelled": "Geannuleerd"
     },
     "noSubtasksClickToAdd": "Nog geen subtaken, klik om toe te voegen",
     "project": "Project",

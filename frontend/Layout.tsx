@@ -106,7 +106,10 @@ const Layout: React.FC<LayoutProps> = ({
             });
 
             if (newTask?.uid) {
-                navigate(`/task/${newTask.uid}`);
+                if (window.innerWidth < 1024) {
+                    setIsSidebarOpen(false);
+                }
+                navigate(`/task/${newTask.uid}`, { state: { isNew: true, from: location.pathname + location.search } });
             } else {
                 throw new Error('New task missing UID');
             }
@@ -160,6 +163,15 @@ const Layout: React.FC<LayoutProps> = ({
 
         loadProjects();
     }, [projects.length, isProjectsLoading, setProjects]);
+
+    useEffect(() => {
+        // Load areas into global store if not already loaded
+        const { hasLoaded, isLoading, loadAreas } =
+            useStore.getState().areasStore;
+        if (!hasLoaded && !isLoading) {
+            loadAreas();
+        }
+    }, []);
 
     const openNoteModal = (note: Note | null = null) => {
         setSelectedNote(note);
@@ -463,7 +475,7 @@ const Layout: React.FC<LayoutProps> = ({
                         <div
                             className={`flex-1 flex flex-col py-0 px-0 transition-all duration-300 ${
                                 isMobileSearchOpen ? 'pt-32' : 'pt-20'
-                            } md:pt-20 ${isUpcomingView ? '' : 'md:px-4'} overflow-hidden`}
+                            } md:pt-20 ${isUpcomingView ? 'md:px-6 lg:px-8' : 'md:px-4'} overflow-hidden`}
                         >
                             <div className="w-full h-full overflow-auto">
                                 {children}

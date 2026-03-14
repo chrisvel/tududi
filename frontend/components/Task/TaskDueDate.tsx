@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { parseDateString } from '../../utils/dateUtils';
+import { parseDateString, getTodayDateString, getTomorrowDateString, getYesterdayDateString } from '../../utils/dateUtils';
 
 interface TaskDueDateProps {
     dueDate: string;
@@ -10,10 +10,8 @@ interface TaskDueDateProps {
 const TaskDueDate: React.FC<TaskDueDateProps> = ({ dueDate, className }) => {
     const { t } = useTranslation();
     const getDueDateClass = () => {
-        const today = new Date().toISOString().split('T')[0];
-        const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000)
-            .toISOString()
-            .split('T')[0];
+        const today = getTodayDateString();
+        const tomorrow = getTomorrowDateString();
 
         if (dueDate === today) return 'border-blue-700 dark:text-white';
         if (dueDate === tomorrow) return 'border-blue-700 dark:text-white';
@@ -22,13 +20,9 @@ const TaskDueDate: React.FC<TaskDueDateProps> = ({ dueDate, className }) => {
     };
 
     const formatDueDate = () => {
-        const today = new Date().toISOString().split('T')[0];
-        const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000)
-            .toISOString()
-            .split('T')[0];
-        const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000)
-            .toISOString()
-            .split('T')[0];
+        const today = getTodayDateString();
+        const tomorrow = getTomorrowDateString();
+        const yesterday = getYesterdayDateString();
 
         if (dueDate === today) return t('dateIndicators.today', 'TODAY');
         if (dueDate === tomorrow)

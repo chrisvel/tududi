@@ -10,6 +10,7 @@ interface TaskSubtasksSectionProps {
     subtasks: Task[];
     onSubtasksChange: (subtasks: Task[]) => void;
     onSubtaskUpdate?: (subtask: Task) => Promise<void>;
+    onSave?: (subtasks: Task[]) => void;
 }
 
 const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
@@ -17,6 +18,7 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
     subtasks,
     onSubtasksChange,
     onSubtaskUpdate,
+    onSave,
 }) => {
     const [newSubtaskName, setNewSubtaskName] = useState('');
     const [isLoading] = useState(false);
@@ -28,7 +30,6 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
 
     const scrollToBottom = () => {
         setTimeout(() => {
-            // Find the modal's scrollable container
             const modalScrollContainer = document.querySelector(
                 '.absolute.inset-0.overflow-y-auto'
             );
@@ -49,24 +50,24 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
             status: 'not_started',
             priority: 'low',
             today: false,
-            parent_task_id: parentTaskId, // Set the parent task ID immediately
-            // Mark as new for backend processing
+            parent_task_id: parentTaskId,
             isNew: true,
-            // Also keep for UI purposes
             _isNew: true,
             completed_at: null,
         } as Task;
 
-        onSubtasksChange([...subtasks, newSubtask]);
+        const updatedSubtasks = [...subtasks, newSubtask];
+        onSubtasksChange(updatedSubtasks);
         setNewSubtaskName('');
-
-        // Only scroll when adding new subtask, not when toggling completion
         scrollToBottom();
+
+        onSave?.(updatedSubtasks);
     };
 
     const handleDeleteSubtask = (index: number) => {
         const updatedSubtasks = subtasks.filter((_, i) => i !== index);
         onSubtasksChange(updatedSubtasks);
+        onSave?.(updatedSubtasks);
     };
 
     const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -93,10 +94,8 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                 return {
                     ...subtask,
                     name: editingName.trim(),
-                    // Backend flags
                     isNew: isNew,
                     isEdited: isEdited,
-                    // UI flags
                     _isNew: isNew,
                     _isEdited: isEdited,
                 };
@@ -107,6 +106,7 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
         onSubtasksChange(updatedSubtasks);
         setEditingIndex(null);
         setEditingName('');
+        onSave?.(updatedSubtasks);
     };
 
     const handleCancelEdit = () => {
@@ -130,7 +130,6 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                     ...subtask,
                     status: newStatus,
                     completed_at: isDone ? null : new Date().toISOString(),
-                    // Mark for backend update if it has an ID (existing subtask)
                     _statusChanged: hasId,
                 };
             }
@@ -139,9 +138,31 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
         onSubtasksChange(updatedSubtasks);
     };
 
+    const handleToggleSubtaskCompletion = async (subtask: Task, index: number) => {
+        const isPersisted = subtask.id && subtask.uid &&
+            !((subtask as any)._isNew || (subtask as any).isNew);
+
+        if (isPersisted) {
+            try {
+                const updatedSubtask = await toggleTaskCompletion(subtask.uid!);
+                if (onSubtaskUpdate) {
+                    await onSubtaskUpdate(updatedSubtask);
+                } else {
+                    const updatedSubtasks = subtasks.map((s, i) =>
+                        i === index ? updatedSubtask : s
+                    );
+                    onSubtasksChange(updatedSubtasks);
+                }
+            } catch (error) {
+                console.error('Error toggling subtask completion:', error);
+            }
+        } else {
+            handleToggleNewSubtaskCompletion(index);
+        }
+    };
+
     return (
         <div ref={subtasksSectionRef} className="space-y-3">
-            {/* Existing Subtasks */}
             {isLoading ? (
                 <div className="text-sm text-gray-500 dark:text-gray-400">
                     {t('loading.subtasks', 'Loading subtasks...')}
@@ -161,38 +182,7 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                                             status={
                                                 subtask.status || 'not_started'
                                             }
-                                            onToggleCompletion={async () => {
-                                                if (
-                                                    subtask.id &&
-                                                    onSubtaskUpdate &&
-                                                    !(
-                                                        (subtask as any)
-                                                            ._isNew ||
-                                                        (subtask as any).isNew
-                                                    )
-                                                ) {
-                                                    // Existing subtask - use API for immediate toggle, then update callback
-                                                    try {
-                                                        const updatedSubtask =
-                                                            await toggleTaskCompletion(
-                                                                subtask.uid!
-                                                            );
-                                                        await onSubtaskUpdate(
-                                                            updatedSubtask
-                                                        );
-                                                    } catch (error) {
-                                                        console.error(
-                                                            'Error toggling subtask completion:',
-                                                            error
-                                                        );
-                                                    }
-                                                } else {
-                                                    // New subtask or no callback - handle locally
-                                                    handleToggleNewSubtaskCompletion(
-                                                        index
-                                                    );
-                                                }
-                                            }}
+                                            onToggleCompletion={() => handleToggleSubtaskCompletion(subtask, index)}
                                         />
                                     </div>
                                     <input
@@ -234,39 +224,7 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                                                     subtask.status ||
                                                     'not_started'
                                                 }
-                                                onToggleCompletion={async () => {
-                                                    if (
-                                                        subtask.id &&
-                                                        onSubtaskUpdate &&
-                                                        !(
-                                                            (subtask as any)
-                                                                ._isNew ||
-                                                            (subtask as any)
-                                                                .isNew
-                                                        )
-                                                    ) {
-                                                        // Existing subtask - use API for immediate toggle, then update callback
-                                                        try {
-                                                            const updatedSubtask =
-                                                                await toggleTaskCompletion(
-                                                                    subtask.uid!
-                                                                );
-                                                            await onSubtaskUpdate(
-                                                                updatedSubtask
-                                                            );
-                                                        } catch (error) {
-                                                            console.error(
-                                                                'Error toggling subtask completion:',
-                                                                error
-                                                            );
-                                                        }
-                                                    } else {
-                                                        // New subtask or no callback - handle locally
-                                                        handleToggleNewSubtaskCompletion(
-                                                            index
-                                                        );
-                                                    }
-                                                }}
+                                                onToggleCompletion={() => handleToggleSubtaskCompletion(subtask, index)}
                                             />
                                         </div>
                                         <span
@@ -287,16 +245,6 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                                             )}
                                         >
                                             {subtask.name}
-                                            {(subtask as any)._isNew && (
-                                                <span className="ml-2 text-xs text-blue-500 dark:text-blue-400">
-                                                    (new)
-                                                </span>
-                                            )}
-                                            {(subtask as any)._isEdited && (
-                                                <span className="ml-2 text-xs text-orange-500 dark:text-orange-400">
-                                                    (edited)
-                                                </span>
-                                            )}
                                         </span>
                                     </div>
                                     <button
@@ -320,7 +268,6 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                 </div>
             )}
 
-            {/* Add New Subtask */}
             <div className="flex items-center space-x-2">
                 <input
                     ref={addInputRef}

@@ -75,8 +75,9 @@ interface UrlPreviewState {
 }
 
 const urlWithProtocolRegex = /(https?:\/\/[^\s]+)/i;
+// Simplified regex to avoid catastrophic backtracking with nested quantifiers
 const urlWithoutProtocolRegex =
-    /(?:^|\s)((?:www\.)?[a-z0-9]+([-.]{1}[a-z0-9]+)*\.[a-z]{2,5}(?::[0-9]{1,5})?(?:\/[^\s]*)?)/i;
+    /(?:^|\s)((?:www\.)?[a-z0-9][a-z0-9.-]*\.[a-z]{2,}(?::[0-9]+)?(?:\/[^\s]*)?)/i;
 
 const normalizeUrl = (value: string) => {
     if (!value) {

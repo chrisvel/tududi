@@ -237,6 +237,9 @@ module.exports = (sequelize) => {
             tableName: 'users',
             hooks: {
                 beforeValidate: async (user) => {
+                    if (user.email) {
+                        user.email = user.email.trim().toLowerCase();
+                    }
                     if (user.password) {
                         user.password_digest = await bcrypt.hash(
                             user.password,

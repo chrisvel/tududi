@@ -6,6 +6,7 @@ import i18n from 'i18next';
 import { useNavigate } from 'react-router-dom';
 import { getLocalesPath, getApiPath } from '../../config/paths';
 import { sortTasksByPriorityDueDateProject } from '../../utils/taskSortUtils';
+import { getTodayDateString } from '../../utils/dateUtils';
 import {
     ClipboardDocumentListIcon,
     ArrowPathIcon,
@@ -838,12 +839,10 @@ const TasksToday: React.FC = () => {
                             (t) => t.id === updatedTask.id
                         )
                     ) {
-                        const today = new Date();
-                        const todayStr = format(today, 'yyyy-MM-dd');
-                        const dueDateStr = format(
-                            new Date(updatedTask.due_date),
-                            'yyyy-MM-dd'
-                        );
+                        const todayStr = getTodayDateString();
+                        const dueDateStr = (updatedTask.due_date || '').split(
+                            'T'
+                        )[0];
 
                         if (dueDateStr === todayStr) {
                             // Due today
@@ -1248,7 +1247,9 @@ const TasksToday: React.FC = () => {
                                             {t('tasks.dueToday')}
                                         </p>
                                     </div>
-                                    <p className={`text-sm font-semibold ${metrics.tasks_due_today.length > 0 ? 'text-red-500' : ''}`}>
+                                    <p
+                                        className={`text-sm font-semibold ${metrics.tasks_due_today.length > 0 ? 'text-red-500' : ''}`}
+                                    >
                                         {metrics.tasks_due_today.length}
                                     </p>
                                 </div>
@@ -1261,7 +1262,9 @@ const TasksToday: React.FC = () => {
                                             {t('tasks.overdue', 'Overdue')}
                                         </p>
                                     </div>
-                                    <p className={`text-sm font-semibold ${metrics.tasks_overdue.length > 0 ? 'text-red-500' : ''}`}>
+                                    <p
+                                        className={`text-sm font-semibold ${metrics.tasks_overdue.length > 0 ? 'text-red-500' : ''}`}
+                                    >
                                         {metrics.tasks_overdue.length}
                                     </p>
                                 </div>
@@ -1331,7 +1334,9 @@ const TasksToday: React.FC = () => {
                                                             </div>
                                                         </div>
                                                     )}
-                                                    <p className={`text-sm font-semibold ${metrics.tasks_completed_today.length > 0 ? 'text-green-500' : ''}`}>
+                                                    <p
+                                                        className={`text-sm font-semibold ${metrics.tasks_completed_today.length > 0 ? 'text-green-500' : ''}`}
+                                                    >
                                                         {
                                                             metrics
                                                                 .tasks_completed_today

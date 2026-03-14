@@ -7,6 +7,7 @@ services:
       - TUDUDI_USER_PASSWORD=your-secure-password
       - TUDUDI_SESSION_SECRET=changeme-please-use-openssl
       - TUDUDI_ALLOWED_ORIGINS=http://localhost:3002
+      - TUDUDI_TRUST_PROXY=false
       - TUDUDI_UPLOAD_PATH=/app/backend/uploads
       # Runtime UID/GID configuration - set these to match your host user/group
       - PUID=1001

@@ -157,7 +157,7 @@ const processDueTasks = async () => {
 
 const processDueProjects = async () => {
     try {
-        const { checkDueProjects } = require('./dueProjectService');
+        const { checkDueProjects } = require('../projects/dueProjectService');
         const result = await checkDueProjects();
         return result;
     } catch (error) {

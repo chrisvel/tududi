@@ -75,7 +75,7 @@ const options = {
                             type: 'string',
                             description: 'Task name',
                         },
-                        description: {
+                        note: {
                             type: 'string',
                             description:
                                 'Task description (Markdown supported)',

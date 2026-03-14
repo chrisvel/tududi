@@ -58,7 +58,13 @@ export const updateProfile = async (
         body: JSON.stringify(profileData),
     });
     await handleAuthResponse(response, 'Failed to update profile.');
-    return await response.json();
+    const updatedProfile = await response.json();
+
+    if ('task_intelligence_enabled' in profileData) {
+        localStorage.removeItem('taskIntelligenceEnabled');
+    }
+
+    return updatedProfile;
 };
 
 export const fetchSchedulerStatus = async (): Promise<SchedulerStatus> => {

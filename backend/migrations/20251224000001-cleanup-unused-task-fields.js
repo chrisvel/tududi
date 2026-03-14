@@ -1,18 +1,21 @@
 'use strict';
 
+const { safeRemoveColumn } = require('../utils/migration-utils');
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
         const tableInfo = await queryInterface.describeTable('tasks');
 
-        // Remove uuid field (redundant with uid)
         if (tableInfo.uuid) {
-            await queryInterface.removeColumn('tasks', 'uuid');
+            try {
+                await queryInterface.removeIndex('tasks', 'tasks_uuid_unique');
+            } catch (e) {}
+            await safeRemoveColumn(queryInterface, 'tasks', 'uuid');
         }
 
-        // Remove description field (tasks use note instead)
         if (tableInfo.description) {
-            await queryInterface.removeColumn('tasks', 'description');
+            await safeRemoveColumn(queryInterface, 'tasks', 'description');
         }
     },
 

@@ -32,6 +32,7 @@ interface TaskStatusControlProps {
     className?: string;
     variant?: 'pill' | 'square';
     showQuickActions?: boolean;
+    onMenuOpenChange?: (isOpen: boolean) => void;
 }
 
 const quickStartStatuses = new Set([
@@ -50,10 +51,15 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
     className = '',
     variant = 'square',
     showQuickActions = true,
+    onMenuOpenChange,
 }) => {
     const { t } = useTranslation();
     const [completionMenuOpen, setCompletionMenuOpen] =
         useState<CompletionMenuTarget | null>(null);
+
+    useEffect(() => {
+        onMenuOpenChange?.(completionMenuOpen !== null);
+    }, [completionMenuOpen, onMenuOpenChange]);
     const [isCompletingTask, setIsCompletingTask] = useState(false);
     const desktopCompletionMenuRef = useRef<HTMLDivElement>(null);
     const mobileCompletionMenuRef = useRef<HTMLDivElement>(null);

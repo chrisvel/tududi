@@ -108,6 +108,16 @@ const config = {
         enabled: process.env.SWAGGER_ENABLED !== 'false',
     },
 
+    trustProxy: (() => {
+        const val = process.env.TUDUDI_TRUST_PROXY;
+        if (val === undefined || val === '') return false;
+        if (val === 'true') return true;
+        if (val === 'false') return false;
+        const num = Number(val);
+        if (!isNaN(num) && val.trim() !== '') return num;
+        return val;
+    })(),
+
     // Rate limiting configuration
     rateLimiting: {
         // Disable rate limiting in test environment

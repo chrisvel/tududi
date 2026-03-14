@@ -357,7 +357,26 @@
     "avatarUploadFailed": "Failed to upload avatar",
     "avatarRemoveFailed": "Failed to remove avatar",
     "notificationsDescription": "选择您希望如何接收重要事件的通知。",
-    "aiFeatures": "AI 功能"
+    "aiFeatures": "AI 功能",
+    "keyboardShortcuts": "键盘快捷键",
+    "shortcuts": {
+      "enableShortcuts": "启用键盘快捷键",
+      "enableDescription": "全局开启或关闭键盘快捷键。",
+      "duplicateWarning": "检测到重复的快捷键：",
+      "pressKeys": "按下键...",
+      "duplicateWith": "与 {{action}} 冲突",
+      "record": "录制",
+      "resetToDefaults": "重置为默认值",
+      "info": "键盘快捷键帮助您快速导航。更改将在您点击页面底部的“保存更改”时保存。在文本字段中输入时，快捷键将被禁用。",
+      "actions": {
+        "inbox": "创建新收件箱项目",
+        "task": "创建新任务",
+        "project": "创建新项目",
+        "note": "创建新笔记",
+        "area": "创建新区域",
+        "tag": "创建新标签"
+      }
+    }
   },
   "productivity": {
     "stalledProjects": "停滞项目",
@@ -783,7 +802,9 @@
       "archived": "已归档",
       "unknown": "进行中",
       "waiting": "等待中",
-      "setAsDone": "标记为完成"
+      "setAsDone": "标记为完成",
+      "planned": "计划中",
+      "cancelled": "已取消"
     },
     "noDueDate": "没有截止日期",
     "instanceOf": "这是一个重复任务的实例",

@@ -11,12 +11,13 @@ const _ = require('lodash');
  * @returns {Promise<{user: User, created: boolean}>} User object and creation status
  */
 async function createOrUpdateUser(email, password) {
+    const normalizedEmail = email.trim().toLowerCase();
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const [user, created] = await User.findOrCreate({
-        where: { email },
+        where: { email: normalizedEmail },
         defaults: {
-            email,
+            email: normalizedEmail,
             password_digest: hashedPassword,
         },
     });

@@ -191,6 +191,44 @@ describe('Task Metrics Overdue and Due Today Tasks', () => {
         expect(dueTodayNames).toContain('Regular Due Today');
     });
 
+    it('excludes deferred planned tasks from today_plan until defer time arrives', async () => {
+        const tomorrow = dayFromNow(1);
+        const yesterday = dayFromNow(-1);
+
+        // Planned task deferred to tomorrow — should NOT be in today_plan
+        await createTask({
+            name: 'Deferred Future Planned',
+            status: Task.STATUS.PLANNED,
+            defer_until: tomorrow,
+        });
+
+        // Planned task deferred to yesterday — should be in today_plan
+        await createTask({
+            name: 'Deferred Past Planned',
+            status: Task.STATUS.PLANNED,
+            defer_until: yesterday,
+        });
+
+        // In-progress task deferred to tomorrow — should NOT be in tasks_in_progress
+        await createTask({
+            name: 'Deferred Future In Progress',
+            status: Task.STATUS.IN_PROGRESS,
+            defer_until: tomorrow,
+        });
+
+        const metrics = await getTaskMetrics(user.id, 'UTC');
+        const todayPlanNames = metrics.tasks_today_plan.map(
+            (task) => task.name
+        );
+        const inProgressNames = metrics.tasks_in_progress.map(
+            (task) => task.name
+        );
+
+        expect(todayPlanNames).toContain('Deferred Past Planned');
+        expect(todayPlanNames).not.toContain('Deferred Future Planned');
+        expect(inProgressNames).not.toContain('Deferred Future In Progress');
+    });
+
     it('includes tasks with WAITING status in Planned section, not in overdue', async () => {
         await createTask({
             name: 'Overdue Waiting',

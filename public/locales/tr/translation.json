@@ -357,7 +357,26 @@
     "avatarUploadFailed": "Failed to upload avatar",
     "avatarRemoveFailed": "Failed to remove avatar",
     "notificationsDescription": "Önemli olaylar hakkında nasıl bildirim almak istediğinizi seçin.",
-    "aiFeatures": "AI Özellikleri"
+    "aiFeatures": "AI Özellikleri",
+    "keyboardShortcuts": "Klavye Kısayolları",
+    "shortcuts": {
+      "enableShortcuts": "Klavye Kısayollarını Etkinleştir",
+      "enableDescription": "Klavye kısayollarını genel olarak açın veya kapatın.",
+      "duplicateWarning": "Yinelenen kısayollar tespit edildi:",
+      "pressKeys": "Tuşlara basın...",
+      "duplicateWith": "{{action}} ile çakışıyor",
+      "record": "Kaydet",
+      "resetToDefaults": "Varsayılanlara Sıfırla",
+      "info": "Klavye kısayolları hızlı gezinmenize yardımcı olur. Değişiklikler sayfanın altındaki \"Değişiklikleri Kaydet\" butonuna tıkladığınızda kaydedilir. Metin alanlarında yazarken kısayollar devre dışı bırakılır.",
+      "actions": {
+        "inbox": "Yeni Gelen Kutusu öğesi oluştur",
+        "task": "Yeni Görev oluştur",
+        "project": "Yeni Proje oluştur",
+        "note": "Yeni Not oluştur",
+        "area": "Yeni Alan oluştur",
+        "tag": "Yeni Etiket oluştur"
+      }
+    }
   },
   "productivity": {
     "stalledProjects": "Duraklayan Projeler",
@@ -783,7 +802,9 @@
       "archived": "arşivlendi",
       "unknown": "süreçte",
       "waiting": "Bekliyor",
-      "setAsDone": "Tamamlandı olarak ayarla"
+      "setAsDone": "Tamamlandı olarak ayarla",
+      "planned": "Planlandı",
+      "cancelled": "İptal Edildi"
     },
     "noDueDate": "Son tarih yok",
     "instanceOf": "Bu, tekrarlayan bir görevin bir örneğidir",

@@ -33,6 +33,7 @@ async function filterTasksByParams(
                     [Op.or]: [
                         { recurrence_type: 'none' },
                         { recurrence_type: null },
+                        { recurrence_type: '' },
                     ],
                 },
                 { recurring_parent_id: null },
@@ -42,6 +43,7 @@ async function filterTasksByParams(
             [Op.and]: [
                 { recurrence_type: { [Op.ne]: 'none' } },
                 { recurrence_type: { [Op.ne]: null } },
+                { recurrence_type: { [Op.ne]: '' } },
                 { recurring_parent_id: null },
                 {
                     [Op.or]: [
@@ -98,6 +100,11 @@ async function filterTasksByParams(
                 },
             ],
             required: false,
+            separate: true, // Required for order to work with associations
+            order: [
+                ['order', 'ASC'],
+                ['created_at', 'ASC'],
+            ],
         },
     ];
 
@@ -105,6 +112,7 @@ async function filterTasksByParams(
         case 'today': {
             const safeTimezone = getSafeTimezone(userTimezone);
             const todayBounds = getTodayBoundsInUTC(safeTimezone);
+            const now = new Date();
 
             // Tasks in today view are those with active statuses (in_progress, planned, waiting)
             const todayPlanStatuses = [
@@ -116,6 +124,14 @@ async function filterTasksByParams(
                 'planned',
             ];
 
+            // Exclude tasks deferred to the future
+            const notDeferredCondition = {
+                [Op.or]: [
+                    { defer_until: null },
+                    { defer_until: { [Op.lte]: now } },
+                ],
+            };
+
             whereClause[Op.or] = [
                 {
                     // Non-recurring tasks with active status
@@ -124,10 +140,12 @@ async function filterTasksByParams(
                             [Op.or]: [
                                 { recurrence_type: 'none' },
                                 { recurrence_type: null },
+                                { recurrence_type: '' },
                             ],
                         },
                         { recurring_parent_id: null },
                         { status: { [Op.in]: todayPlanStatuses } },
+                        notDeferredCondition,
                     ],
                 },
                 {
@@ -135,8 +153,10 @@ async function filterTasksByParams(
                     [Op.and]: [
                         { recurrence_type: { [Op.ne]: 'none' } },
                         { recurrence_type: { [Op.ne]: null } },
+                        { recurrence_type: { [Op.ne]: '' } },
                         { recurring_parent_id: null },
                         { status: { [Op.in]: todayPlanStatuses } },
+                        notDeferredCondition,
                     ],
                 },
                 {
@@ -151,6 +171,7 @@ async function filterTasksByParams(
                                 ],
                             },
                         },
+                        notDeferredCondition,
                     ],
                 },
             ];
@@ -299,6 +320,8 @@ async function filterTasksByParams(
                         'archived',
                     ],
                 };
+            } else if (params.status === 'all') {
+                // No status filter — return tasks of all statuses
             } else if (!params.client_side_filtering) {
                 whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
             }
@@ -411,6 +434,11 @@ function getTaskIncludeConfig() {
                 },
             ],
             required: false,
+            separate: true, // Required for order to work with associations
+            order: [
+                ['order', 'ASC'],
+                ['created_at', 'ASC'],
+            ],
         },
     ];
 }

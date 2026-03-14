@@ -21,7 +21,8 @@ const calculateNextDueDate = (task, fromDate) => {
             return calculateWeeklyRecurrence(
                 startDate,
                 task.recurrence_interval || 1,
-                task.recurrence_weekday
+                task.recurrence_weekday,
+                task.recurrence_weekdays
             );
 
         case 'monthly':
@@ -56,10 +57,34 @@ const calculateDailyRecurrence = (fromDate, interval) => {
     return nextDate;
 };
 
-const calculateWeeklyRecurrence = (fromDate, interval, weekday) => {
+const calculateWeeklyRecurrence = (fromDate, interval, weekday, weekdays) => {
     const nextDate = new Date(fromDate);
 
-    if (weekday !== null && weekday !== undefined) {
+    // Handle multiple weekdays (e.g. Tuesday AND Thursday)
+    const parsedWeekdays = weekdays
+        ? Array.isArray(weekdays)
+            ? weekdays
+            : JSON.parse(weekdays)
+        : null;
+
+    if (parsedWeekdays && parsedWeekdays.length > 0) {
+        const sorted = [...parsedWeekdays].sort((a, b) => a - b);
+        const currentDay = nextDate.getUTCDay();
+
+        // Find next weekday later in the current week
+        const laterInWeek = sorted.filter((d) => d > currentDay);
+        if (laterInWeek.length > 0) {
+            nextDate.setUTCDate(
+                nextDate.getUTCDate() + (laterInWeek[0] - currentDay)
+            );
+        } else {
+            // Wrap to first weekday of next cycle (interval weeks ahead)
+            const daysToNextFirst = (7 - currentDay + sorted[0]) % 7 || 7;
+            nextDate.setUTCDate(
+                nextDate.getUTCDate() + daysToNextFirst + (interval - 1) * 7
+            );
+        }
+    } else if (weekday !== null && weekday !== undefined) {
         const currentWeekday = nextDate.getUTCDay();
         const daysUntilTarget = (weekday - currentWeekday + 7) % 7;
 

@@ -699,10 +699,10 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                                     />
                                 )}
                             </div>
-                            <div className="flex-1">
+                            <div className="flex-1 min-w-0">
                                 <button
                                     onClick={handleStartEdit}
-                                    className="text-base font-medium text-gray-900 dark:text-gray-300 break-words text-left cursor-pointer w-full hover:text-blue-600 dark:hover:text-blue-400"
+                                    className="text-base font-medium text-gray-900 dark:text-gray-300 break-all text-left cursor-pointer w-full hover:text-blue-600 dark:hover:text-blue-400"
                                 >
                                     {linkifyContent(previewText)}
                                 </button>

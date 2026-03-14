@@ -600,7 +600,26 @@
     "avatarUploadFailed": "Failed to upload avatar",
     "avatarRemoveFailed": "Failed to remove avatar",
     "notificationsDescription": "Wählen Sie aus, wie Sie über wichtige Ereignisse benachrichtigt werden möchten.",
-    "aiFeatures": "KI-Funktionen"
+    "aiFeatures": "KI-Funktionen",
+    "keyboardShortcuts": "Tastenkombinationen",
+    "shortcuts": {
+      "enableShortcuts": "Tastenkombinationen aktivieren",
+      "enableDescription": "Tastenkombinationen global ein- oder ausschalten.",
+      "duplicateWarning": "Doppelte Tastenkombinationen erkannt:",
+      "pressKeys": "Tasten drücken...",
+      "duplicateWith": "Konflikte mit {{action}}",
+      "record": "Aufzeichnen",
+      "resetToDefaults": "Auf Standardwerte zurücksetzen",
+      "info": "Tastenkombinationen helfen Ihnen, schnell zu navigieren. Änderungen werden gespeichert, wenn Sie \"Änderungen speichern\" am Ende der Seite klicken. Tastenkombinationen sind beim Tippen in Textfeldern deaktiviert.",
+      "actions": {
+        "inbox": "Neuen Posteingangseintrag erstellen",
+        "task": "Neue Aufgabe erstellen",
+        "project": "Neues Projekt erstellen",
+        "note": "Neue Notiz erstellen",
+        "area": "Neuen Bereich erstellen",
+        "tag": "Neues Tag erstellen"
+      }
+    }
   },
   "nextTask": {
     "suggestion": "Da nichts in Bearbeitung ist, wie wäre es, mit diesem zu beginnen",
@@ -691,7 +710,9 @@
       "archived": "archiviert",
       "unknown": "laufend",
       "waiting": "Warten",
-      "setAsDone": "Als erledigt markieren"
+      "setAsDone": "Als erledigt markieren",
+      "planned": "Geplant",
+      "cancelled": "Abgebrochen"
     },
     "noSubtasksClickToAdd": "Noch keine Unteraufgaben, klicken Sie zum Hinzufügen",
     "project": "Projekt",

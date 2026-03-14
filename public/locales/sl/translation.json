@@ -357,7 +357,26 @@
     "avatarUploadFailed": "Failed to upload avatar",
     "avatarRemoveFailed": "Failed to remove avatar",
     "notificationsDescription": "Izberite, kako želite biti obveščeni o pomembnih dogodkih.",
-    "aiFeatures": "Funkcije AI"
+    "aiFeatures": "Funkcije AI",
+    "keyboardShortcuts": "Bližnjice na tipkovnici",
+    "shortcuts": {
+      "enableShortcuts": "Omogoči bližnjice na tipkovnici",
+      "enableDescription": "Vklopite ali izklopite bližnjice na tipkovnici globalno.",
+      "duplicateWarning": "Odkrili smo podvojene bližnjice:",
+      "pressKeys": "Pritisnite tipke...",
+      "duplicateWith": "Konflikt z {{action}}",
+      "record": "Zapiši",
+      "resetToDefaults": "Ponastavi na privzete nastavitve",
+      "info": "Bližnjice na tipkovnici vam pomagajo hitro navigirati. Spremembe so shranjene, ko kliknete \"Shrani spremembe\" na dnu strani. Bližnjice so onemogočene pri vnosu v besedilna polja.",
+      "actions": {
+        "inbox": "Ustvari nov element v Prejeto",
+        "task": "Ustvari novo nalogo",
+        "project": "Ustvari nov projekt",
+        "note": "Ustvari novo opombo",
+        "area": "Ustvari novo področje",
+        "tag": "Ustvari novo oznako"
+      }
+    }
   },
   "productivity": {
     "stalledProjects": "Zastali projekti",
@@ -783,7 +802,9 @@
       "archived": "arhivirano",
       "unknown": "poteka",
       "waiting": "Čaka",
-      "setAsDone": "Označi kot opravljeno"
+      "setAsDone": "Označi kot opravljeno",
+      "planned": "Načrtovano",
+      "cancelled": "Preklicano"
     },
     "noDueDate": "Brez roka",
     "instanceOf": "To je instanca ponavljajoče se naloge",

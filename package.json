@@ -1,6 +1,6 @@
 {
   "name": "tududi",
-  "version": "v0.88.3-rc.1",
+  "version": "v0.89.0",
   "description": "Self-hosted task management with hierarchical organization, multi-language support, and Telegram integration.",
   "directories": {
     "test": "test"
@@ -87,7 +87,7 @@
     "autoprefixer": "^10.4.20",
     "babel-jest": "^29.0.0",
     "babel-loader": "^9.2.1",
-    "copy-webpack-plugin": "^13.0.1",
+    "copy-webpack-plugin": "^14.0.0",
     "cross-env": "~7.0.3",
     "css-loader": "^7.1.2",
     "eslint": "^8.0.0",
@@ -152,7 +152,7 @@
     "lodash": "~4.17.21",
     "moment-timezone": "~0.6.0",
     "morgan": "~1.10.0",
-    "multer": "~2.0.1",
+    "multer": "~2.1.0",
     "nanoid": "^3.3.7",
     "node-cron": "~4.1.0",
     "nodemailer": "^7.0.10",
@@ -165,6 +165,9 @@
     "use-debounce": "^10.0.6",
     "uuid": "~11.1.0",
     "web-push": "^3.6.7"
+  },
+  "overrides": {
+    "tar": "^7.5.8"
   },
   "lint-staged": {
     "frontend/**/*.{js,jsx,ts,tsx}": [

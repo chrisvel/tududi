@@ -50,14 +50,26 @@ const TagDetails: React.FC = () => {
     const [groupBy, setGroupBy] = useState<'none' | 'project'>('none');
     const [orderBy, setOrderBy] = useState<string>('created_at:desc');
 
-    // Filter projects by current tag
-    const projects = allProjects.filter(
-        (project: any) =>
+    // Filter projects by current tag and status filter
+    const projects = allProjects.filter((project: any) => {
+        const hasTag =
             project.tags &&
             project.tags.some(
                 (projectTag: any) => projectTag.name === tag?.name
-            )
-    );
+            );
+        if (!hasTag) return false;
+
+        if (taskStatusFilter === 'active') {
+            return (
+                project.status !== 'done' && project.status !== 'cancelled'
+            );
+        } else if (taskStatusFilter === 'completed') {
+            return (
+                project.status === 'done' || project.status === 'cancelled'
+            );
+        }
+        return true;
+    });
 
     const projectLookupList = useMemo(() => {
         const map = new Map<string, Project>();
@@ -220,7 +232,7 @@ const TagDetails: React.FC = () => {
                 const [tasksResponse, notesResponse] = await Promise.all([
                     fetch(
                         getApiPath(
-                            `tasks?tag=${encodeURIComponent(tagData.name)}`
+                            `tasks?tag=${encodeURIComponent(tagData.name)}&status=all`
                         )
                     ),
                     fetch(

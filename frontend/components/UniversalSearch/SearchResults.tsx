@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     CheckCircleIcon,
@@ -46,6 +46,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
     const [results, setResults] = useState<SearchResult[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         const fetchResults = async () => {
@@ -134,7 +135,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
             case 'Task':
                 // Tasks use uid directly
                 if (result.uid) {
-                    navigate(`/task/${result.uid}`);
+                    navigate(`/task/${result.uid}`, { state: { from: location.pathname + location.search } });
                 }
                 break;
             case 'Project': {

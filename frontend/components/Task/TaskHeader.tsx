@@ -16,7 +16,7 @@ import { Task } from '../../entities/Task';
 import { fetchSubtasks } from '../../utils/tasksService';
 import { isTaskCompleted, isTaskInProgress } from '../../constants/taskStatus';
 import TaskStatusControl from './TaskStatusControl';
-import { parseDateString } from '../../utils/dateUtils';
+import { parseDateString, getTodayDateString, getTomorrowDateString, getYesterdayDateString } from '../../utils/dateUtils';
 
 interface TaskHeaderProps {
     task: Task;
@@ -34,6 +34,7 @@ interface TaskHeaderProps {
     onEdit?: (e: React.MouseEvent) => void;
     onDelete?: (e: React.MouseEvent) => void;
     isUpcomingView?: boolean;
+    onMenuOpenChange?: (isOpen: boolean) => void;
 }
 
 const TaskHeader: React.FC<TaskHeaderProps> = ({
@@ -51,6 +52,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
     onEdit: _onEdit,
     onDelete: _onDelete,
     isUpcomingView = false,
+    onMenuOpenChange,
 }) => {
     const { t } = useTranslation();
     void _onToggleToday;
@@ -90,13 +92,9 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
     };
 
     const formatDueDate = (dueDate: string) => {
-        const today = new Date().toISOString().split('T')[0];
-        const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000)
-            .toISOString()
-            .split('T')[0];
-        const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000)
-            .toISOString()
-            .split('T')[0];
+        const today = getTodayDateString();
+        const tomorrow = getTomorrowDateString();
+        const yesterday = getYesterdayDateString();
 
         if (dueDate === today) return t('dateIndicators.today', 'TODAY');
         if (dueDate === tomorrow)
@@ -296,15 +294,17 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                             </div>
                         ) : (
                             <div className="flex items-center gap-1.5 min-w-0 flex-1">
-                                {task.habit_mode && (
-                                    <FireIcon
-                                        className="h-4 w-4 text-orange-500 flex-shrink-0"
-                                        title="Habit"
-                                    />
-                                )}
-                                <span className="text-md font-medium text-gray-900 dark:text-gray-300 truncate">
-                                    {task.original_name || task.name}
-                                </span>
+                                <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                                    {task.habit_mode && (
+                                        <FireIcon
+                                            className="h-4 w-4 text-orange-500 flex-shrink-0"
+                                            title="Habit"
+                                        />
+                                    )}
+                                    <span className="text-md font-medium text-gray-900 dark:text-gray-300 truncate">
+                                        {task.original_name || task.name}
+                                    </span>
+                                </div>
                                 <SubtasksToggleButton />
                             </div>
                         )}
@@ -458,6 +458,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                             onTaskUpdate={onTaskUpdate}
                             showMobileVariant={false}
                             className=""
+                            onMenuOpenChange={onMenuOpenChange}
                         />
                     </div>
                 )}
@@ -636,6 +637,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                     onTaskUpdate={onTaskUpdate}
                                     hoverRevealQuickActions={false}
                                     showMobileVariant={false}
+                                    onMenuOpenChange={onMenuOpenChange}
                                 />
                             </div>
                         )}

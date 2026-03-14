@@ -357,7 +357,26 @@
     "avatarUploadFailed": "Failed to upload avatar",
     "avatarRemoveFailed": "Failed to remove avatar",
     "notificationsDescription": "Chọn cách bạn muốn nhận thông báo về các sự kiện quan trọng.",
-    "aiFeatures": "Tính năng AI"
+    "aiFeatures": "Tính năng AI",
+    "keyboardShortcuts": "Phím tắt",
+    "shortcuts": {
+      "enableShortcuts": "Bật phím tắt",
+      "enableDescription": "Bật hoặc tắt phím tắt toàn cầu.",
+      "duplicateWarning": "Phím tắt trùng lặp phát hiện:",
+      "pressKeys": "Nhấn phím...",
+      "duplicateWith": "Xung đột với {{action}}",
+      "record": "Ghi lại",
+      "resetToDefaults": "Đặt lại về mặc định",
+      "info": "Phím tắt giúp bạn điều hướng nhanh chóng. Thay đổi sẽ được lưu khi bạn nhấp vào \"Lưu thay đổi\" ở cuối trang. Phím tắt sẽ bị vô hiệu hóa khi gõ trong các trường văn bản.",
+      "actions": {
+        "inbox": "Tạo mục Hộp thư đến mới",
+        "task": "Tạo tác vụ mới",
+        "project": "Tạo dự án mới",
+        "note": "Tạo ghi chú mới",
+        "area": "Tạo khu vực mới",
+        "tag": "Tạo thẻ mới"
+      }
+    }
   },
   "productivity": {
     "stalledProjects": "Dự án Đang Tạm Dừng",
@@ -783,7 +802,9 @@
       "archived": "đã lưu trữ",
       "unknown": "đang diễn ra",
       "waiting": "Đang chờ",
-      "setAsDone": "Đánh dấu là đã hoàn thành"
+      "setAsDone": "Đánh dấu là đã hoàn thành",
+      "planned": "Đã lên kế hoạch",
+      "cancelled": "Đã hủy"
     },
     "noDueDate": "Không có ngày hết hạn",
     "instanceOf": "Đây là một phiên bản của một nhiệm vụ định kỳ",

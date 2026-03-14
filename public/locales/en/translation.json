@@ -801,10 +801,12 @@
     "updatedAt": "Updated at",
     "status": {
       "notStarted": "Not started",
+      "planned": "Planned",
       "inProgress": "In progress",
       "done": "Done",
       "archived": "Archived",
       "waiting": "Waiting",
+      "cancelled": "Cancelled",
       "setAsDone": "Set as done"
     },
     "statusUpdated": "Status updated successfully",

@@ -16,6 +16,7 @@ import {
     ClockIcon,
     EllipsisVerticalIcon,
     XMarkIcon,
+    ArrowsPointingOutIcon,
 } from '@heroicons/react/24/outline';
 import { useToast } from './Shared/ToastContext';
 import { Link, useParams, useNavigate } from 'react-router-dom';
@@ -32,6 +33,7 @@ import { deleteNoteWithStoreUpdate } from '../utils/noteDeleteUtils';
 import { useStore } from '../store/useStore';
 import { createProject } from '../utils/projectsService';
 import { ENABLE_NOTE_COLOR } from '../config/featureFlags';
+import NoteFocusMode from './Note/NoteFocusMode';
 
 const NOTE_COLORS = [
     { name: 'None', value: '' },
@@ -82,6 +84,7 @@ const Notes: React.FC = () => {
     const [saveStatus, setSaveStatus] = useState<
         'saved' | 'saving' | 'unsaved'
     >('saved');
+    const [isFocusMode, setIsFocusMode] = useState(false);
     const hasAutoSelected = useRef(false);
 
     const editingNoteColor =
@@ -759,6 +762,24 @@ const Notes: React.FC = () => {
                                             )}
                                         </div>
                                     </div>
+                                    <div className="flex items-center">
+                                        <button
+                                            onClick={() => setIsFocusMode(true)}
+                                            className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                            style={{
+                                                color: editingNoteColor
+                                                    ? shouldUseLightText(
+                                                          editingNoteColor
+                                                      )
+                                                        ? '#e0e0e0'
+                                                        : '#333333'
+                                                    : undefined,
+                                            }}
+                                            aria-label="Focus mode"
+                                            title="Focus mode"
+                                        >
+                                            <ArrowsPointingOutIcon className="h-5 w-5" />
+                                        </button>
                                     <div
                                         className="relative"
                                         ref={noteOptionsDropdownRef}
@@ -879,6 +900,7 @@ const Notes: React.FC = () => {
                                                 </div>
                                             </div>
                                         )}
+                                    </div>
                                     </div>
                                 </div>
 
@@ -1132,6 +1154,24 @@ const Notes: React.FC = () => {
                                             )}
                                         </div>
                                     </div>
+                                    <div className="flex items-center">
+                                        <button
+                                            onClick={() => setIsFocusMode(true)}
+                                            className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                            style={{
+                                                color: previewNoteColor
+                                                    ? shouldUseLightText(
+                                                          previewNoteColor
+                                                      )
+                                                        ? '#e0e0e0'
+                                                        : '#333333'
+                                                    : undefined,
+                                            }}
+                                            aria-label="Focus mode"
+                                            title="Focus mode"
+                                        >
+                                            <ArrowsPointingOutIcon className="h-5 w-5" />
+                                        </button>
                                     <div
                                         className="relative"
                                         ref={noteOptionsDropdownRef}
@@ -1245,6 +1285,7 @@ const Notes: React.FC = () => {
                                             </div>
                                         )}
                                     </div>
+                                    </div>
                                 </div>
 
                                 <div
@@ -1308,6 +1349,61 @@ const Notes: React.FC = () => {
                         )}
                     </div>
                 </div>
+
+                {isFocusMode && (isEditing ? editingNote : previewNote) && (
+                    <NoteFocusMode
+                        note={(isEditing ? editingNote : previewNote)!}
+                        isEditing={isEditing}
+                        saveStatus={saveStatus}
+                        onNoteChange={handleNoteChange}
+                        onContentChange={
+                            !isEditing && previewNote
+                                ? async (newContent) => {
+                                      const updatedNote = {
+                                          ...previewNote,
+                                          content: newContent,
+                                      };
+                                      setPreviewNote(updatedNote);
+                                      if (previewNote.uid) {
+                                          try {
+                                              const savedNote =
+                                                  await updateNote(
+                                                      previewNote.uid,
+                                                      updatedNote
+                                                  );
+                                              const updatedNotes = notes.map(
+                                                  (n) =>
+                                                      n.uid === previewNote.uid
+                                                          ? savedNote
+                                                          : n
+                                              );
+                                              setNotes(updatedNotes);
+                                              setPreviewNote(savedNote);
+                                          } catch (err) {
+                                              console.error(
+                                                  'Error updating note:',
+                                                  err
+                                              );
+                                          }
+                                      }
+                                  }
+                                : undefined
+                        }
+                        onEditNote={() => {
+                            if (previewNote) {
+                                handleEditNote(previewNote);
+                            }
+                        }}
+                        onExitEditing={() => {
+                            if (editingNote?.title) {
+                                handleSaveInlineNote();
+                            } else {
+                                handleCancelEdit();
+                            }
+                        }}
+                        onClose={() => setIsFocusMode(false)}
+                    />
+                )}
 
                 {isNoteModalOpen && (
                     <NoteModal

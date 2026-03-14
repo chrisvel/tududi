@@ -170,6 +170,20 @@
  *                     name:
  *                       type: string
  *                 description: Array of tag objects
+ *               subtasks:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     name:
+ *                       type: string
+ *                     priority:
+ *                       type: string
+ *                       enum: [low, medium, high]
+ *                     status:
+ *                       type: string
+ *                       enum: [pending, completed, archived]
+ *                 description: Array of subtasks to create with this task
  *               recurrence_type:
  *                 type: string
  *                 enum: [none, daily, weekly, monthly, yearly]
@@ -276,6 +290,30 @@
  *                     name:
  *                       type: string
  *                 description: Array of tag objects
+ *               subtasks:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       description: Subtask ID (for existing subtasks)
+ *                     name:
+ *                       type: string
+ *                       description: Subtask name
+ *                     isNew:
+ *                       type: boolean
+ *                       description: Mark as true for new subtasks
+ *                     isEdited:
+ *                       type: boolean
+ *                       description: Mark as true when editing existing subtasks
+ *                     priority:
+ *                       type: string
+ *                       enum: [low, medium, high]
+ *                     status:
+ *                       type: string
+ *                       enum: [pending, completed, archived]
+ *                 description: Array of subtasks (omit existing subtasks to delete them, include with isNew=true to add new ones)
  *               today:
  *                 type: boolean
  *                 description: Add/remove task from today's plan
@@ -325,6 +363,39 @@
 
 /**
  * @swagger
+ * /api/task/{id}/subtasks:
+ *   get:
+ *     summary: Get all subtasks for a parent task
+ *     tags: [Tasks]
+ *     security:
+ *       - cookieAuth: []
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Parent task ID (integer) or UID (string)
+ *     responses:
+ *       200:
+ *         description: List of subtasks
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Task'
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - insufficient permissions
+ *       404:
+ *         description: Parent task not found
+ */
+
+/**
+ * @swagger
  * /api/task/{id}/toggle_completion:
  *   patch:
  *     summary: Toggle task completion status
@@ -352,54 +423,6 @@
  *         description: Forbidden
  *       404:
  *         description: Task not found
- */
-
-/**
- * @swagger
- * /api/task/{id}/subtasks:
- *   post:
- *     summary: Add a subtask to a parent task
- *     tags: [Tasks]
- *     security:
- *       - cookieAuth: []
- *       - BearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: Parent task ID
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - name
- *             properties:
- *               name:
- *                 type: string
- *                 description: Subtask name
- *               priority:
- *                 type: string
- *                 enum: [low, medium, high]
- *               status:
- *                 type: string
- *                 enum: [pending, completed, archived]
- *               due_date:
- *                 type: string
- *                 format: date-time
- *     responses:
- *       201:
- *         description: Subtask created successfully
- *       400:
- *         description: Invalid request
- *       401:
- *         description: Unauthorized
- *       404:
- *         description: Parent task not found
  */
 
 /**

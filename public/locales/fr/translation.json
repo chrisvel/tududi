@@ -357,7 +357,26 @@
     "avatarUploadFailed": "Failed to upload avatar",
     "avatarRemoveFailed": "Failed to remove avatar",
     "notificationsDescription": "Choisissez comment vous souhaitez être informé des événements importants.",
-    "aiFeatures": "Fonctionnalités d'IA"
+    "aiFeatures": "Fonctionnalités d'IA",
+    "keyboardShortcuts": "Raccourcis Clavier",
+    "shortcuts": {
+      "enableShortcuts": "Activer les Raccourcis Clavier",
+      "enableDescription": "Activez ou désactivez les raccourcis clavier globalement.",
+      "duplicateWarning": "Raccourcis dupliqués détectés :",
+      "pressKeys": "Appuyez sur les touches...",
+      "duplicateWith": "Conflits avec {{action}}",
+      "record": "Enregistrer",
+      "resetToDefaults": "Réinitialiser aux Valeurs Par Défaut",
+      "info": "Les raccourcis clavier vous aident à naviguer rapidement. Les modifications sont enregistrées lorsque vous cliquez sur \"Enregistrer les Modifications\" en bas de la page. Les raccourcis sont désactivés lors de la saisie dans les champs de texte.",
+      "actions": {
+        "inbox": "Créer un nouvel élément dans la Boîte de Réception",
+        "task": "Créer une nouvelle Tâche",
+        "project": "Créer un nouveau Projet",
+        "note": "Créer une nouvelle Note",
+        "area": "Créer une nouvelle Zone",
+        "tag": "Créer une nouvelle Étiquette"
+      }
+    }
   },
   "productivity": {
     "stalledProjects": "Projets Bloqués",
@@ -755,11 +774,13 @@
     "priorityUpdateError": "Échec de la mise à jour de la priorité",
     "status": {
       "notStarted": "non commencé",
+      "planned": "Planifié",
       "inProgress": "en cours",
       "done": "terminé",
       "archived": "archivé",
       "unknown": "en cours",
       "waiting": "En attente",
+      "cancelled": "Annulé",
       "setAsDone": "Marquer comme fait"
     },
     "noSubtasksClickToAdd": "Pas encore de sous-tâches, cliquez pour ajouter",
