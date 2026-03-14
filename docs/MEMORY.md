@@ -61,6 +61,15 @@ This document contains preferences, patterns, and memory items specific to worki
 
 ---
 
+## GitHub Issue Preferences
+
+### Bug Reports
+- **Always follow** the GitHub bug template (`.github/ISSUE_TEMPLATE/bug_report.yml`)
+- Include all required fields: Description, Steps to Reproduce, Expected Behavior, Actual Behavior, OS, Browser
+- Add technical context in Additional Context section (root cause, solution, files affected)
+
+---
+
 ## Common Issues & Solutions
 
 ### Date Formatting
