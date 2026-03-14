@@ -153,10 +153,11 @@ describe('applyPerms', () => {
     });
 
     it('should handle empty upserts and deletes', async () => {
-        await sequelize.transaction(async (tx) => {
-            await applyPerms(tx, { upserts: [], deletes: [] });
-        });
-        // No error thrown
+        await expect(
+            sequelize.transaction(async (tx) => {
+                await applyPerms(tx, { upserts: [], deletes: [] });
+            })
+        ).resolves.not.toThrow();
     });
 
     it('should handle multiple upserts and deletes in one call', async () => {
@@ -241,18 +242,19 @@ describe('applyPerms', () => {
     });
 
     it('should not fail when deleting a non-existent permission', async () => {
-        await sequelize.transaction(async (tx) => {
-            await applyPerms(tx, {
-                upserts: [],
-                deletes: [
-                    {
-                        userId: target.id,
-                        resourceType: 'project',
-                        resourceUid: 'does-not-exist',
-                    },
-                ],
-            });
-        });
-        // Should not throw
+        await expect(
+            sequelize.transaction(async (tx) => {
+                await applyPerms(tx, {
+                    upserts: [],
+                    deletes: [
+                        {
+                            userId: target.id,
+                            resourceType: 'project',
+                            resourceUid: 'does-not-exist',
+                        },
+                    ],
+                });
+            })
+        ).resolves.not.toThrow();
     });
 });

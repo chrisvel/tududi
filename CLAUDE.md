@@ -76,7 +76,7 @@ npm start  # Frontend on :8080, Backend on :3002
    - Fix a bug (TDD workflow)
    - Add translations
 
-9. **[Claude Memory & Preferences](docs/claude-memory.md)**
+9. **[Claude Memory & Preferences](docs/MEMORY.md)**
    - PR and commit message preferences
    - Testing preferences
    - Common patterns to remember
