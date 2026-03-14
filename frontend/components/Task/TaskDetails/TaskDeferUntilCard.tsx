@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ClockIcon } from '@heroicons/react/24/outline';
 import TaskDeferUntilSection from '../TaskForm/TaskDeferUntilSection';
 import { Task } from '../../../entities/Task';
+import { resolveUserLocale } from '../../../utils/localeUtils';
 
 interface TaskDeferUntilCardProps {
     task: Task;
@@ -24,12 +25,16 @@ const TaskDeferUntilCard: React.FC<TaskDeferUntilCardProps> = ({
     onCancel,
 }) => {
     const { t, i18n } = useTranslation();
+    const displayLocale = useMemo(
+        () => resolveUserLocale(i18n.language),
+        [i18n.language]
+    );
 
     const getDeferUntilDisplay = (deferUntil: string) => {
         const date = new Date(deferUntil);
         if (Number.isNaN(date.getTime())) return null;
 
-        const formattedDateTime = date.toLocaleString(i18n.language, {
+        const formattedDateTime = date.toLocaleString(displayLocale, {
             day: '2-digit',
             month: '2-digit',
             year: 'numeric',
