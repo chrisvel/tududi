@@ -72,6 +72,230 @@ Tag.belongsToMany(Note, { through: 'notes_tags' });
 
 ---
 
+## Database Schema Diagram
+
+The following diagram visualizes the database structure and relationships:
+
+```mermaid
+%%{init: {'theme':'dark'}}%%
+erDiagram
+    User ||--o{ Task : owns
+    User ||--o{ Project : owns
+    User ||--o{ Area : owns
+    User ||--o{ Note : owns
+    User ||--o{ Tag : owns
+    User ||--o{ ApiToken : has
+    User ||--o{ Notification : receives
+    User ||--o{ View : creates
+    User ||--o{ InboxItem : has
+    User ||--o{ Backup : has
+    User ||--o| Role : has_role
+
+    Area ||--o{ Project : contains
+
+    Project ||--o{ Task : contains
+    Project ||--o{ Note : contains
+    Project }o--o{ Tag : tagged_with
+    Project ||--o{ Permission : shared_via
+
+    Task ||--o{ Task : subtasks
+    Task ||--o{ TaskEvent : events
+    Task ||--o{ TaskAttachment : attachments
+    Task ||--o{ RecurringCompletion : completions
+    Task }o--o{ Tag : tagged_with
+    Task ||--o{ Permission : shared_via
+
+    Note }o--o{ Tag : tagged_with
+    Note ||--o{ Permission : shared_via
+
+    User {
+        int id PK
+        string uid UK
+        string email UK
+        string password_hash
+        string timezone
+        json settings
+        json preferences
+        int role_id FK
+        datetime created_at
+        datetime updated_at
+    }
+
+    Role {
+        int id PK
+        string name
+        boolean is_admin
+    }
+
+    Area {
+        int id PK
+        string uid UK
+        string name
+        text description
+        int user_id FK
+        datetime created_at
+        datetime updated_at
+    }
+
+    Project {
+        int id PK
+        string uid UK
+        string name
+        text description
+        int status
+        date due_date
+        int priority
+        int area_id FK
+        int user_id FK
+        datetime created_at
+        datetime updated_at
+    }
+
+    Task {
+        int id PK
+        string uid UK
+        string name
+        text description
+        date due_date
+        date defer_until
+        int priority
+        int status
+        boolean is_habit
+        string recurrence_type
+        int recurrence_interval
+        date recurrence_end_date
+        int parent_task_id FK
+        int project_id FK
+        int user_id FK
+        datetime created_at
+        datetime updated_at
+    }
+
+    Note {
+        int id PK
+        string uid UK
+        string name
+        text text
+        string color
+        int project_id FK
+        int user_id FK
+        datetime created_at
+        datetime updated_at
+    }
+
+    Tag {
+        int id PK
+        string uid UK
+        string name UK
+        string color
+        int user_id FK
+        datetime created_at
+        datetime updated_at
+    }
+
+    TaskEvent {
+        int id PK
+        int task_id FK
+        int user_id FK
+        string action
+        json changes
+        datetime created_at
+    }
+
+    TaskAttachment {
+        int id PK
+        string uid UK
+        int task_id FK
+        string filename
+        string path
+        int size
+        string mime_type
+        datetime created_at
+    }
+
+    RecurringCompletion {
+        int id PK
+        int task_id FK
+        date due_date
+        datetime completed_at
+        int user_id FK
+    }
+
+    Permission {
+        int id PK
+        int user_id FK
+        string resource_type
+        string resource_uid
+        string access_level
+        datetime created_at
+    }
+
+    ApiToken {
+        int id PK
+        string uid UK
+        int user_id FK
+        string name
+        string token_hash
+        datetime last_used_at
+        datetime expires_at
+        datetime created_at
+    }
+
+    Notification {
+        int id PK
+        string uid UK
+        int user_id FK
+        string type
+        string message
+        boolean read
+        string linked_resource_type
+        string linked_resource_uid
+        datetime created_at
+    }
+
+    View {
+        int id PK
+        string uid UK
+        int user_id FK
+        string name
+        string resource_type
+        json filters
+        json sort
+        int position
+        boolean pinned
+        datetime created_at
+        datetime updated_at
+    }
+
+    InboxItem {
+        int id PK
+        string uid UK
+        int user_id FK
+        string name
+        text description
+        datetime created_at
+    }
+
+    Backup {
+        int id PK
+        int user_id FK
+        string filename
+        string path
+        int size
+        datetime created_at
+    }
+```
+
+**Key Observations:**
+- **Hierarchical Structure:** User → Area → Project → Task (with subtasks)
+- **Self-Referential:** Tasks can have subtasks via `parent_task_id`
+- **Many-to-Many:** Tags are shared across Tasks, Projects, and Notes (via junction tables)
+- **Polymorphic Sharing:** Permissions work across multiple resource types
+- **Recurring Tasks:** Tracked via `RecurringCompletion` records for history
+- **Audit Trail:** `TaskEvent` logs all task changes
+
+---
+
 ## Migration Workflow
 
 ### Creating a New Migration
