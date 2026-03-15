@@ -45,124 +45,92 @@
 
 ### Development Mode
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     Development Flow                        │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  Browser (http://localhost:8080)                           │
-│     ↓                                                       │
-│  ┌─────────────────────┐                                   │
-│  │ Webpack Dev Server  │                                   │
-│  │   Port: 8080        │                                   │
-│  │   - Hot reload      │                                   │
-│  │   - Proxy /api/*    │                                   │
-│  │   - Proxy /locales/*│                                   │
-│  └──────────┬──────────┘                                   │
-│             │                                               │
-│             │ Proxies requests to backend                  │
-│             ↓                                               │
-│  ┌─────────────────────┐                                   │
-│  │ Express Server      │                                   │
-│  │   Port: 3002        │                                   │
-│  │   - API endpoints   │                                   │
-│  │   - Session auth    │                                   │
-│  │   - Rate limiting   │                                   │
-│  └──────────┬──────────┘                                   │
-│             │                                               │
-│             ↓                                               │
-│  ┌─────────────────────┐                                   │
-│  │ Sequelize ORM       │                                   │
-│  │   - Model layer     │                                   │
-│  │   - Relationships   │                                   │
-│  │   - Migrations      │                                   │
-│  └──────────┬──────────┘                                   │
-│             │                                               │
-│             ↓                                               │
-│  ┌─────────────────────┐                                   │
-│  │ SQLite Database     │                                   │
-│  │ (database.sqlite)   │                                   │
-│  │   - WAL mode        │                                   │
-│  │   - Optimized I/O   │                                   │
-│  └─────────────────────┘                                   │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+graph TD
+    Browser["Browser<br>http://localhost:8080"] --> WebpackDev["Webpack Dev Server<br>Port: 8080<br>- Hot reload<br>- Proxy /api/*<br>- Proxy /locales/*"]
+    WebpackDev -->|Proxies requests| Express["Express Server<br>Port: 3002<br>- API endpoints<br>- Session auth<br>- Rate limiting"]
+    Express --> Sequelize["Sequelize ORM<br>- Model layer<br>- Relationships<br>- Migrations"]
+    Sequelize --> SQLite["SQLite Database<br>database.sqlite<br>- WAL mode<br>- Optimized I/O"]
+
+    style Browser fill:#1e3a5f,stroke:#4a9eff,color:#fff
+    style WebpackDev fill:#5f4a1e,stroke:#ffa94a,color:#fff
+    style Express fill:#5f1e4a,stroke:#ff4a9e,color:#fff
+    style Sequelize fill:#1e5f1e,stroke:#4aff4a,color:#fff
+    style SQLite fill:#4a1e5f,stroke:#9e4aff,color:#fff
 ```
 
 ### Production Mode
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                      Production Flow                        │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  Browser → Express Server (Port 3002)                      │
-│            ↓                                                │
-│            ├─ Serves static files from /dist               │
-│            │  (compiled React app)                         │
-│            │                                                │
-│            └─ /api routes → Sequelize → SQLite             │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+graph LR
+    Browser["Browser"] --> Express["Express Server<br>Port 3002"]
+    Express -->|Static files| Dist["/dist<br>compiled React app"]
+    Express -->|/api routes| API["API Layer"]
+    API --> Sequelize["Sequelize"]
+    Sequelize --> SQLite["SQLite"]
+
+    style Browser fill:#1e3a5f,stroke:#4a9eff,color:#fff
+    style Express fill:#5f1e4a,stroke:#ff4a9e,color:#fff
+    style Dist fill:#5f4a1e,stroke:#ffa94a,color:#fff
+    style API fill:#1e5f1e,stroke:#4aff4a,color:#fff
+    style Sequelize fill:#1e5f1e,stroke:#4aff4a,color:#fff
+    style SQLite fill:#4a1e5f,stroke:#9e4aff,color:#fff
 ```
 
 ---
 
 ## Data Model Hierarchy
 
+```mermaid
+graph TD
+    User["User<br>Authentication, Settings, Timezone"]
+    Area["Area<br>Work, Personal, Health"]
+    Project["Project<br>Website Redesign, Marketing Campaign"]
+    Task["Task<br>Design Homepage, Write Blog Post"]
+    Subtask["Subtask<br>Create mockup, Get feedback"]
+    Tag["Tag<br>urgent, design, bug"]
+    Note["Note"]
+    RecurringCompletion["RecurringCompletion<br>Completion history"]
+    TaskEvent["TaskEvent<br>Audit log"]
+    TaskAttachment["TaskAttachment<br>File attachments"]
+
+    User -->|1:N| Area
+    Area -->|1:N| Project
+    Project -->|1:N| Task
+    Task -->|1:N| Subtask
+
+    Project -.->|N:M| Tag
+    Task -.->|N:M| Tag
+    Note -.->|N:M| Tag
+
+    Project -->|1:N| Note
+
+    Task -->|1:N| RecurringCompletion
+    Task -->|1:N| TaskEvent
+    Task -->|1:N| TaskAttachment
+
+    Task -.->|"parent_task_id<br>self-referential"| Task
+    Task -.->|"recurring_parent_id<br>self-referential"| Task
+
+    style User fill:#1e3a5f,stroke:#4a9eff,color:#fff
+    style Area fill:#5f4a1e,stroke:#ffa94a,color:#fff
+    style Project fill:#5f1e4a,stroke:#ff4a9e,color:#fff
+    style Task fill:#1e5f1e,stroke:#4aff4a,color:#fff
+    style Subtask fill:#1e5f1e,stroke:#4aff4a,color:#fff
+    style Tag fill:#4a1e5f,stroke:#9e4aff,color:#fff
+    style Note fill:#5f4a1e,stroke:#ffa94a,color:#fff
+    style RecurringCompletion fill:#2a2a2a,stroke:#666,color:#ccc
+    style TaskEvent fill:#2a2a2a,stroke:#666,color:#ccc
+    style TaskAttachment fill:#2a2a2a,stroke:#666,color:#ccc
 ```
-┌────────────────────────────────────────────────────────────────┐
-│                         User                                   │
-│        (Authentication, Settings, Timezone)                    │
-└───────────────────┬────────────────────────────────────────────┘
-                    │
-                    │ 1:N (One user has many areas)
-                    ↓
-        ┌───────────────────────┐
-        │        Area           │  (Optional organizational layer)
-        │  (e.g., Work,         │
-        │   Personal, Health)   │
-        └──────────┬────────────┘
-                   │
-                   │ 1:N (One area has many projects)
-                   ↓
-        ┌───────────────────────┐                ┌──────────┐
-        │       Project         │────────────────│   Tag    │
-        │  (Website Redesign,   │   N:M          │  (urgent,│
-        │   Marketing Campaign) │                │  design, │
-        └──────────┬────────────┘                │  bug)    │
-                   │                             └─────┬────┘
-                   │ 1:N (One project has              │
-                   │      many tasks)                  │ N:M
-                   ↓                                   │
-        ┌───────────────────────┐                    │
-        │        Task           │────────────────────┘
-        │  (Design Homepage,    │   N:M (Tasks can
-        │   Write Blog Post)    │        have tags)
-        └──────────┬────────────┘
-                   │
-                   │ 1:N (Task can have subtasks)
-                   ↓
-        ┌───────────────────────┐
-        │      Subtask          │  (Self-referential)
-        │  (Create mockup,      │
-        │   Get feedback)       │
-        └───────────────────────┘
 
+**Relationship Key:**
+- Solid lines (→) represent one-to-many (1:N) relationships
+- Dotted lines (-.→) represent many-to-many (N:M) or special relationships
 
-Additional Relationships:
-
-Project 1:N Note         (One project has many notes)
-Note N:M Tag            (Notes can have tags)
-
-Task → RecurringCompletion  (Tracks completion history)
-Task → TaskEvent           (Audit log of all changes)
-Task → TaskAttachment      (File attachments)
-
-Special Task Relationships:
-- parent_task_id: Links subtasks to parent task
-- recurring_parent_id: Links recurring instances to original pattern
-```
+**Special Task Relationships:**
+- `parent_task_id`: Links subtasks to parent task (self-referential)
+- `recurring_parent_id`: Links recurring instances to original pattern (self-referential)
 
 ---
 

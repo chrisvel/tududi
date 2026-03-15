@@ -48,27 +48,34 @@ npm start  # Frontend on :8080, Backend on :3002
    - Migration best practices
    - Common migration operations
 
-5. **[Development Workflow](docs/development-workflow.md)**
+5. **[Backups & Restoration](docs/backups.md)**
+   - Automatic SQLite file backups before migrations
+   - Backup retention policies (4 per day, 1 per day for 7 days)
+   - Restoration procedures for development, Docker, and production
+   - Emergency restore after failed migrations
+   - Best practices for data safety
+
+6. **[Development Workflow](docs/development-workflow.md)**
    - Initial setup
    - Daily development (two-server process)
    - Environment variables
    - Adding new features (complete walkthrough)
    - Database management commands
 
-6. **[Code Conventions](docs/code-conventions.md)**
+7. **[Code Conventions](docs/code-conventions.md)**
    - Language usage (TypeScript/JavaScript)
    - Backend patterns (async/await, repository)
    - Frontend patterns (components, state)
    - Naming conventions
    - API route conventions
 
-7. **[Testing](docs/testing.md)**
+8. **[Testing](docs/testing.md)**
    - Test organization
    - Running tests
    - Testing requirements
    - Test patterns (Arrange-Act-Assert)
 
-8. **[Common Tasks](docs/common-tasks.md)**
+9. **[Common Tasks](docs/common-tasks.md)**
    - Add field to model
    - Create new backend module
    - Add React component
@@ -76,11 +83,105 @@ npm start  # Frontend on :8080, Backend on :3002
    - Fix a bug (TDD workflow)
    - Add translations
 
-9. **[Claude Memory & Preferences](docs/MEMORY.md)**
-   - PR and commit message preferences
-   - Testing preferences
-   - Common patterns to remember
-   - Known issues and solutions
+10. **[Tasks Behavior](docs/00-tasks-behavior.md)**
+    - Task creation and basic fields
+    - Status lifecycle and priority levels
+    - Due dates and Defer Until
+    - Subtasks and hierarchy
+    - File attachments
+    - Project assignment and tags
+    - Task completion and history
+    - Habit mode and tracking
+    - Task deletion and permissions
+
+11. **[Recurring Tasks Behavior](docs/01-recurring-tasks-behavior.md)**
+    - How recurring tasks work (non-technical rules)
+    - Completion behavior and patterns
+    - Virtual instances and display rules
+    - Parent-child relationships
+    - Editing and deletion behavior
+
+12. **[Today Page Sections](docs/02-today-page-sections.md)**
+    - How Overdue, Planned, Suggested, and Completed sections work
+    - Task filtering and display rules
+    - Section priority and deduplication logic
+    - User settings and customization
+    - Defer Until and timezone handling
+
+13. **[Upcoming View](docs/03-upcoming-view.md)**
+    - How the 7-day Upcoming view works
+    - Day-based grouping and organization
+    - Recurring task virtual occurrences
+    - Defer Until and status filtering
+    - Differences from Today view
+
+14. **[Inbox Page](docs/04-inbox-page.md)**
+    - Quick capture system for unorganized thoughts
+    - Smart parsing of hashtags, projects, and URLs
+    - Intelligent suggestions (Task vs Note vs Project)
+    - Converting inbox items to structured content
+    - Telegram integration and auto-refresh
+    - Keyboard shortcuts and workflows
+
+15. **[Notes System](docs/05-notes-system.md)**
+    - Flexible information and reference storage
+    - Markdown support and rich text rendering
+    - Auto-save functionality (1-second debounce)
+    - Project linking and tag-based organization
+    - Focus mode for distraction-free writing
+    - Color customization for visual organization
+    - Integration with inbox and project workflows
+
+16. **[Projects](docs/06-projects.md)**
+    - Project hierarchy and organization (Areas > Projects > Tasks)
+    - Status lifecycle and stalled detection
+    - Completion tracking and progress metrics
+    - Project sharing and collaboration permissions
+    - Due dates, notifications, and priorities
+    - Deletion behavior (orphaning vs cascading)
+    - Filtering, grouping, and sidebar pinning
+
+17. **[Areas](docs/07-areas.md)**
+    - Top-level organizational categories for life domains
+    - Simple structure with name and description
+    - Optional containers for grouping projects
+    - Cascade behavior when deleting (orphans projects)
+    - Grid view with alphabetical sorting
+    - Integration with Projects page filtering and grouping
+
+18. **[Views System](docs/08-views-system.md)**
+    - Smart saved searches for tasks, notes, and projects
+    - Creating views from Universal Search
+    - Pinning and reordering views in sidebar
+    - Filtering, sorting, and grouping within views
+    - View management (rename, delete, pin/unpin)
+    - URL parameters and deep linking
+    - Pagination and performance
+
+19. **[User Management](docs/08-user-management.md)**
+    - Registration flow and email verification
+    - Authentication (session-based and API tokens)
+    - User roles and admin system
+    - Resource permissions and sharing
+    - Profile management and preferences
+    - Password and avatar management
+    - API token management
+    - Admin user CRUD operations
+
+20. **[Tags System](docs/09-tags-system.md)**
+    - Cross-entity labeling and categorization (tasks, notes, projects)
+    - Auto-creation and validation rules
+    - Tag management (create, edit, delete, rename)
+    - Tag detail pages with filtering and search
+    - Alphabetical grouping and organization
+    - Hashtag parsing from inbox items
+    - Tag input component with autocomplete
+
+21. **[Claude Memory & Preferences](docs/MEMORY.md)**
+    - PR and commit message preferences
+    - Testing preferences
+    - Common patterns to remember
+    - Known issues and solutions
 
 ---
 
@@ -168,5 +269,5 @@ Tududi is a self-hosted task management system designed around hierarchical orga
 ---
 
 **Document Version:** 1.0.0
-**Last Updated:** 2026-03-13
+**Last Updated:** 2026-03-14
 **Maintainer:** Update when architecture changes or patterns evolve
