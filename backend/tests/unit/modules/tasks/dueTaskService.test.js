@@ -301,5 +301,93 @@ describe('dueTaskService', () => {
                 expect(result.notificationsCreated).toBe(0);
             });
         });
+
+        describe('Telegram rate limiting', () => {
+            const telegramNotificationService = require('../../../../modules/telegram/telegramNotificationService');
+
+            beforeEach(() => {
+                // Mock Telegram service
+                jest.spyOn(
+                    telegramNotificationService,
+                    'isTelegramConfigured'
+                ).mockReturnValue(true);
+                jest.spyOn(
+                    telegramNotificationService,
+                    'sendTelegramNotification'
+                ).mockResolvedValue({ success: true });
+            });
+
+            afterEach(() => {
+                jest.restoreAllMocks();
+            });
+
+            it('should not resend Telegram if notification recreated within 24 hours', async () => {
+                // Setup user with Telegram enabled
+                user.telegram_bot_token =
+                    '123456789:ABCdefGHIjklMNOPQRSTUVwxyz-12345678';
+                user.telegram_chat_id = '123456789';
+                user.notification_preferences = {
+                    dueTasks: { inApp: true, telegram: true },
+                    overdueTasks: { inApp: true, telegram: true },
+                };
+                await user.save();
+
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+
+                const task = await Task.create({
+                    name: 'Test Task',
+                    user_id: user.id,
+                    due_date: tomorrow,
+                    status: Task.STATUS.NOT_STARTED,
+                });
+
+                const sendTelegramSpy = jest.spyOn(
+                    telegramNotificationService,
+                    'sendTelegramNotification'
+                );
+
+                // First check - should send Telegram
+                await checkDueTasks();
+
+                const firstCallCount = sendTelegramSpy.mock.calls.length;
+                expect(firstCallCount).toBeGreaterThan(0);
+
+                // Get the created notification
+                const notification = await Notification.findOne({
+                    where: {
+                        user_id: user.id,
+                        type: 'task_due_soon',
+                    },
+                    order: [['created_at', 'DESC']],
+                });
+
+                expect(notification).not.toBeNull();
+                expect(notification.channel_sent_at).toBeDefined();
+                expect(notification.channel_sent_at.telegram).toBeDefined();
+
+                // Verify notification is still within 24h threshold
+                expect(notification.wasChannelRecentlySent('telegram')).toBe(
+                    true
+                );
+
+                sendTelegramSpy.mockClear();
+
+                // Second check within 24h - notification will be recreated but Telegram should NOT be resent
+                await checkDueTasks();
+
+                const secondCallCount = sendTelegramSpy.mock.calls.length;
+                expect(secondCallCount).toBe(0);
+
+                // Notification should still exist (recreated in-app)
+                const notifications = await Notification.findAll({
+                    where: {
+                        user_id: user.id,
+                        type: 'task_due_soon',
+                    },
+                });
+                expect(notifications.length).toBe(1);
+            });
+        });
     });
 });
