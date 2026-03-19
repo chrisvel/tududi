@@ -106,9 +106,9 @@ describe('Notification Telegram Rate Limiting', () => {
             await firstNotification.reload();
             expect(firstNotification.channel_sent_at).toBeDefined();
             expect(firstNotification.channel_sent_at.telegram).toBeDefined();
-            expect(
-                firstNotification.wasChannelRecentlySent('telegram')
-            ).toBe(true);
+            expect(firstNotification.wasChannelRecentlySent('telegram')).toBe(
+                true
+            );
 
             sendTelegramSpy.mockClear();
 
@@ -136,9 +136,9 @@ describe('Notification Telegram Rate Limiting', () => {
             expect(secondNotification.channel_sent_at).toEqual(
                 preservedChannelSentAt
             );
-            expect(
-                secondNotification.wasChannelRecentlySent('telegram')
-            ).toBe(true);
+            expect(secondNotification.wasChannelRecentlySent('telegram')).toBe(
+                true
+            );
         });
 
         it('should NOT send Telegram multiple times for same notification context', async () => {
