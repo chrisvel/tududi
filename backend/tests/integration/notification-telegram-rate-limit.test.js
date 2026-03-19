@@ -101,40 +101,44 @@ describe('Notification Telegram Rate Limiting', () => {
             });
 
             expect(sendTelegramSpy).toHaveBeenCalledTimes(1);
+
+            // Verify channel_sent_at was set
+            await firstNotification.reload();
+            expect(firstNotification.channel_sent_at).toBeDefined();
+            expect(firstNotification.channel_sent_at.telegram).toBeDefined();
+            expect(
+                firstNotification.wasChannelRecentlySent('telegram')
+            ).toBe(true);
+
             sendTelegramSpy.mockClear();
 
             // Simulate delete-and-recreate pattern (what cron jobs do)
+            const preservedChannelSentAt = firstNotification.channel_sent_at;
             await firstNotification.destroy();
 
-            // Create new notification for same task (within 24h)
-            // This simulates what happens when cron runs every 15 minutes
-            const secondNotification = await Notification.create({
-                user_id: user.id,
+            // Create new notification with preserved channel_sent_at (within 24h)
+            // This simulates what the service layer does
+            const secondNotification = await Notification.createNotification({
+                userId: user.id,
                 type: 'task_overdue',
                 title: 'Task Overdue',
-                message: 'Your task is now overdue',
+                message: 'Your task is still overdue',
                 sources: ['telegram'],
                 data: { taskUid: 'test-task-123' },
                 level: 'warning',
-                sent_at: new Date(),
-                // Copy the channel_sent_at from previous notification
-                channel_sent_at: firstNotification.channel_sent_at,
+                channel_sent_at: preservedChannelSentAt,
             });
 
-            // Manually call sendTelegram to simulate what createNotification does
-            const sendTelegramNotification =
-                require('../../models/notification').__get__(
-                    'sendTelegramNotification'
-                );
+            // Telegram should NOT have been sent again (rate limited)
+            expect(sendTelegramSpy).toHaveBeenCalledTimes(0);
 
-            // Note: In practice, this won't work because we can't access private functions
-            // Instead, we test through createNotification which will use the tracking
-
-            // Since the notification has channel_sent_at already set,
-            // wasChannelRecentlySent should return true
-            expect(secondNotification.wasChannelRecentlySent('telegram')).toBe(
-                true
+            // Channel tracking should be preserved
+            expect(secondNotification.channel_sent_at).toEqual(
+                preservedChannelSentAt
             );
+            expect(
+                secondNotification.wasChannelRecentlySent('telegram')
+            ).toBe(true);
         });
 
         it('should NOT send Telegram multiple times for same notification context', async () => {
