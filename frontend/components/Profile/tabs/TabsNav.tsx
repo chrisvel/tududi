@@ -4,6 +4,7 @@ interface TabConfig {
     id: string;
     name: string;
     icon: React.ReactNode;
+    featureFlag?: string; // Optional feature flag to conditionally show tab
 }
 
 interface TabsNavProps {
