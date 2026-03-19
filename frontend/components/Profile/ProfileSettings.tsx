@@ -17,6 +17,7 @@ import {
     CheckIcon,
     BellIcon,
     CommandLineIcon,
+    CpuChipIcon,
 } from '@heroicons/react/24/outline';
 import TelegramIcon from '../Shared/Icons/TelegramIcon';
 import { useToast } from '../Shared/ToastContext';
@@ -44,6 +45,7 @@ import TelegramTab from './tabs/TelegramTab';
 import AiTab from './tabs/AiTab';
 import NotificationsTab from './tabs/NotificationsTab';
 import KeyboardShortcutsTab from './tabs/KeyboardShortcutsTab';
+import McpTab from './tabs/McpTab';
 import { getDefaultConfig } from '../../utils/keyboardShortcutsService';
 import type {
     ProfileSettingsProps,
@@ -88,6 +90,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             'ai',
             'notifications',
             'keyboard-shortcuts',
+            'mcp',
         ];
         return section && validTabs.includes(section) ? section : 'general';
     }, [location.search]);
@@ -1127,6 +1130,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             name: t('profile.tabs.keyboardShortcuts', 'Shortcuts'),
             icon: <CommandLineIcon className="w-5 h-5" />,
         },
+        {
+            id: 'mcp',
+            name: t('profile.tabs.mcp', 'MCP Integration'),
+            icon: <CpuChipIcon className="w-5 h-5" />,
+        },
     ];
 
     return (
@@ -1317,6 +1325,8 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                         }))
                                     }
                                 />
+
+                                <McpTab isActive={activeTab === 'mcp'} />
 
                                 <div className="flex justify-end dark:border-gray-700">
                                     <button

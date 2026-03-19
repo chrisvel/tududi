@@ -4,6 +4,7 @@ export interface FeatureFlags {
     backups: boolean;
     calendar: boolean;
     habits: boolean;
+    mcp: boolean;
 }
 
 let cachedFeatureFlags: FeatureFlags | null = null;
@@ -24,6 +25,7 @@ export const getFeatureFlags = async (): Promise<FeatureFlags> => {
                 backups: false,
                 calendar: false,
                 habits: false,
+                mcp: false,
             };
         }
 
