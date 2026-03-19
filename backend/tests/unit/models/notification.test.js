@@ -34,7 +34,9 @@ describe('Notification Model', () => {
                 expect(notification.channel_sent_at).toBeDefined();
                 expect(notification.channel_sent_at.telegram).toBeDefined();
 
-                const sentTime = new Date(notification.channel_sent_at.telegram);
+                const sentTime = new Date(
+                    notification.channel_sent_at.telegram
+                );
                 expect(sentTime).toBeInstanceOf(Date);
                 expect(sentTime.getTime()).toBeGreaterThanOrEqual(
                     beforeMark.getTime()
@@ -86,16 +88,16 @@ describe('Notification Model', () => {
 
         describe('wasChannelRecentlySent', () => {
             it('should return false when channel was never sent', () => {
-                expect(
-                    notification.wasChannelRecentlySent('telegram')
-                ).toBe(false);
+                expect(notification.wasChannelRecentlySent('telegram')).toBe(
+                    false
+                );
             });
 
             it('should return false when channel_sent_at is null', () => {
                 notification.channel_sent_at = null;
-                expect(
-                    notification.wasChannelRecentlySent('telegram')
-                ).toBe(false);
+                expect(notification.wasChannelRecentlySent('telegram')).toBe(
+                    false
+                );
             });
 
             it('should return true when channel was sent within threshold', async () => {
@@ -152,9 +154,9 @@ describe('Notification Model', () => {
             it('should check channels independently', async () => {
                 await notification.markChannelAsSent('telegram');
 
-                expect(
-                    notification.wasChannelRecentlySent('telegram')
-                ).toBe(true);
+                expect(notification.wasChannelRecentlySent('telegram')).toBe(
+                    true
+                );
                 expect(notification.wasChannelRecentlySent('email')).toBe(
                     false
                 );
@@ -172,10 +174,7 @@ describe('Notification Model', () => {
                     )
                 ).toBe(true);
                 expect(
-                    notification.wasChannelRecentlySent(
-                        'email',
-                        60 * 60 * 1000
-                    )
+                    notification.wasChannelRecentlySent('email', 60 * 60 * 1000)
                 ).toBe(true);
             });
         });

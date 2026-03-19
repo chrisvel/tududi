@@ -367,9 +367,9 @@ describe('dueTaskService', () => {
                 expect(notification.channel_sent_at.telegram).toBeDefined();
 
                 // Verify notification is still within 24h threshold
-                expect(
-                    notification.wasChannelRecentlySent('telegram')
-                ).toBe(true);
+                expect(notification.wasChannelRecentlySent('telegram')).toBe(
+                    true
+                );
 
                 sendTelegramSpy.mockClear();
 

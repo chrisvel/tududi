@@ -122,18 +122,19 @@ describe('Notification Telegram Rate Limiting', () => {
             });
 
             // Manually call sendTelegram to simulate what createNotification does
-            const sendTelegramNotification = require('../../models/notification').__get__(
-                'sendTelegramNotification'
-            );
+            const sendTelegramNotification =
+                require('../../models/notification').__get__(
+                    'sendTelegramNotification'
+                );
 
             // Note: In practice, this won't work because we can't access private functions
             // Instead, we test through createNotification which will use the tracking
 
             // Since the notification has channel_sent_at already set,
             // wasChannelRecentlySent should return true
-            expect(
-                secondNotification.wasChannelRecentlySent('telegram')
-            ).toBe(true);
+            expect(secondNotification.wasChannelRecentlySent('telegram')).toBe(
+                true
+            );
         });
 
         it('should NOT send Telegram multiple times for same notification context', async () => {
@@ -228,9 +229,7 @@ describe('Notification Telegram Rate Limiting', () => {
             });
 
             // Channel was sent more than 24h ago
-            expect(
-                notification.wasChannelRecentlySent('telegram')
-            ).toBe(false);
+            expect(notification.wasChannelRecentlySent('telegram')).toBe(false);
 
             // Now create a new notification via createNotification
             // (simulating cron job running after 24h)

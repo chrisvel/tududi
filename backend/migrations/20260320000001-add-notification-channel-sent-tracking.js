@@ -27,6 +27,10 @@ module.exports = {
     },
 
     async down(queryInterface) {
-        await safeRemoveColumn(queryInterface, 'notifications', 'channel_sent_at');
+        await safeRemoveColumn(
+            queryInterface,
+            'notifications',
+            'channel_sent_at'
+        );
     },
 };
