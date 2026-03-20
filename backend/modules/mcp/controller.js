@@ -1,7 +1,6 @@
 'use strict';
 
 const path = require('path');
-const { getConfig } = require('../../config/config');
 
 /**
  * Get MCP configuration for Claude Desktop
@@ -9,7 +8,6 @@ const { getConfig } = require('../../config/config');
  */
 async function getMcpConfig(req, res) {
     try {
-        const config = getConfig();
         const serverPath = path.resolve(
             __dirname,
             '..',
@@ -27,7 +25,7 @@ async function getMcpConfig(req, res) {
                     args: [serverPath],
                     env: {
                         TUDUDI_API_TOKEN: 'YOUR_API_TOKEN_HERE',
-                        NODE_ENV: config.environment || 'development',
+                        NODE_ENV: process.env.NODE_ENV || 'development',
                     },
                 },
             },
@@ -38,6 +36,7 @@ async function getMcpConfig(req, res) {
         console.error('Error generating MCP config:', error);
         res.status(500).json({
             error: 'Failed to generate MCP configuration',
+            message: error.message,
         });
     }
 }
