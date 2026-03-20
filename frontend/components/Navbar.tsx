@@ -43,6 +43,7 @@ const Navbar: React.FC<NavbarProps> = ({
         backups: false,
         calendar: false,
         habits: false,
+        mcp: false,
     });
     const dropdownRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
