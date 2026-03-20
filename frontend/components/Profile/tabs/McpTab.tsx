@@ -15,7 +15,6 @@ interface McpConfig {
             args: string[];
             env: {
                 TUDUDI_API_TOKEN: string;
-                NODE_ENV: string;
             };
         };
     };
@@ -97,7 +96,7 @@ const McpTab: React.FC<McpTabProps> = ({ isActive }) => {
             <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
                 {t(
                     'profile.mcp.description',
-                    'Connect tududi with Claude Desktop using the Model Context Protocol. This enables natural language interaction with your tasks, projects, and notes.'
+                    'Connect tududi with any MCP-compatible application using the Model Context Protocol. This enables AI assistants to interact with your tasks, projects, and notes - works with both local and remote tududi servers.'
                 )}
             </p>
 
@@ -126,13 +125,13 @@ const McpTab: React.FC<McpTabProps> = ({ isActive }) => {
                     <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
                         {t(
                             'profile.mcp.step2.title',
-                            '2. Configure Claude Desktop'
+                            '2. Configure Your MCP Client'
                         )}
                     </h4>
                     <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
                         {t(
                             'profile.mcp.step2.description',
-                            'Add this configuration to your Claude Desktop config file. Replace YOUR_API_TOKEN_HERE with the token you generated in step 1.'
+                            'Add this configuration to your MCP client. Replace YOUR_API_TOKEN_HERE with the token you generated in step 1. This uses mcp-remote to connect to your tududi server via HTTP. Example shown for Claude Desktop:'
                         )}
                     </p>
 
@@ -158,8 +157,8 @@ const McpTab: React.FC<McpTabProps> = ({ isActive }) => {
                     </div>
 
                     <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md">
-                        <p className="text-xs font-medium text-blue-800 dark:text-blue-300 mb-1">
-                            {t('profile.mcp.step2.locationTitle', 'Config file location:')}
+                        <p className="text-xs font-medium text-blue-800 dark:text-blue-300 mb-2">
+                            {t('profile.mcp.step2.locationTitle', 'Claude Desktop config file location:')}
                         </p>
                         <ul className="text-xs text-blue-700 dark:text-blue-400 space-y-1 font-mono">
                             <li>
@@ -170,6 +169,25 @@ const McpTab: React.FC<McpTabProps> = ({ isActive }) => {
                                 <strong>Linux:</strong>{' '}
                                 ~/.config/claude/claude_desktop_config.json
                             </li>
+                        </ul>
+                        <p className="text-xs text-blue-700 dark:text-blue-400 mt-2 italic">
+                            Other MCP clients may use different configuration methods - check your client's documentation.
+                        </p>
+                    </div>
+
+                    <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-md border border-green-200 dark:border-green-800">
+                        <p className="text-xs font-medium text-green-800 dark:text-green-300 mb-2">
+                            ✓ Remote Access Enabled
+                        </p>
+                        <p className="text-xs text-green-700 dark:text-green-400">
+                            This configuration uses <code className="px-1 py-0.5 bg-green-100 dark:bg-green-900 rounded">mcp-remote</code> to connect via HTTP.
+                            This means you can:
+                        </p>
+                        <ul className="text-xs text-green-700 dark:text-green-400 mt-2 ml-4 space-y-1">
+                            <li>• Access local tududi (localhost)</li>
+                            <li>• Access remote tududi (cloud servers)</li>
+                            <li>• Use from Docker deployments</li>
+                            <li>• Connect securely with API tokens</li>
                         </ul>
                     </div>
                 </section>
@@ -185,7 +203,7 @@ const McpTab: React.FC<McpTabProps> = ({ isActive }) => {
                     <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
                         {t(
                             'profile.mcp.step3.description',
-                            'Once configured, Claude will have access to these 16 operations:'
+                            'Once configured, your MCP client will have access to these 16 operations:'
                         )}
                     </p>
 
@@ -221,7 +239,7 @@ const McpTab: React.FC<McpTabProps> = ({ isActive }) => {
                     <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
                         {t(
                             'profile.mcp.step4.description',
-                            'After adding the configuration, restart Claude Desktop. You can then use natural language to interact with tududi:'
+                            'After adding the configuration, restart your MCP client. You can then use natural language to interact with tududi:'
                         )}
                     </p>
                     <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
@@ -244,6 +262,21 @@ const McpTab: React.FC<McpTabProps> = ({ isActive }) => {
                             <li className="italic">
                                 "Search for tasks related to documentation"
                             </li>
+                        </ul>
+                    </div>
+
+                    <div className="mt-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-md border border-yellow-200 dark:border-yellow-800">
+                        <p className="text-xs font-medium text-yellow-800 dark:text-yellow-300 mb-1">
+                            💡 Troubleshooting
+                        </p>
+                        <p className="text-xs text-yellow-700 dark:text-yellow-400">
+                            If your MCP client can't connect, check that:
+                        </p>
+                        <ul className="text-xs text-yellow-700 dark:text-yellow-400 mt-2 ml-4 space-y-1">
+                            <li>• Your API token is valid and not expired</li>
+                            <li>• The tududi server is running and accessible</li>
+                            <li>• You've restarted your MCP client completely</li>
+                            <li>• For remote servers, check your firewall settings</li>
                         </ul>
                     </div>
                 </section>

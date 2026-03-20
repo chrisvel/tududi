@@ -1,6 +1,6 @@
 'use strict';
 
-const path = require('path');
+const { handleMcpHttpRequest } = require('./httpTransport');
 
 /**
  * Get MCP configuration for Claude Desktop
@@ -8,24 +8,25 @@ const path = require('path');
  */
 async function getMcpConfig(req, res) {
     try {
-        const serverPath = path.resolve(
-            __dirname,
-            '..',
-            '..',
-            'modules',
-            'mcp',
-            'server.js'
-        );
+        // Get base URL from request
+        const protocol = req.protocol;
+        const host = req.get('host');
+        const baseUrl = `${protocol}://${host}`;
 
-        // Generate config for user to copy
+        // Generate HTTP-based config for remote access
         const claudeConfig = {
             mcpServers: {
                 tududi: {
-                    command: 'node',
-                    args: [serverPath],
+                    command: 'npx',
+                    args: [
+                        '-y',
+                        'mcp-remote',
+                        `${baseUrl}/api/mcp`,
+                        '--header',
+                        'Authorization:Bearer ${TUDUDI_API_TOKEN}',
+                    ],
                     env: {
                         TUDUDI_API_TOKEN: 'YOUR_API_TOKEN_HERE',
-                        NODE_ENV: process.env.NODE_ENV || 'development',
                     },
                 },
             },
@@ -38,6 +39,30 @@ async function getMcpConfig(req, res) {
             error: 'Failed to generate MCP configuration',
             message: error.message,
         });
+    }
+}
+
+/**
+ * Handle MCP protocol message
+ * This is called by the POST /api/mcp endpoint
+ */
+async function handleMcpMessage(req, res) {
+    try {
+        const user = req.mcpUser;
+        const apiToken = req.mcpApiToken;
+
+        // Delegate to HTTP transport handler
+        await handleMcpHttpRequest(req, res, user, apiToken);
+    } catch (error) {
+        console.error('Error handling MCP message:', error);
+
+        // Only send response if headers haven't been sent
+        if (!res.headersSent) {
+            res.status(500).json({
+                error: 'Failed to process MCP message',
+                message: error.message,
+            });
+        }
     }
 }
 
@@ -92,4 +117,5 @@ module.exports = {
     getMcpConfig,
     getMcpStatus,
     listMcpTools,
+    handleMcpMessage,
 };
