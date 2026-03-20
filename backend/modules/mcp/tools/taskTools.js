@@ -1,7 +1,10 @@
 'use strict';
 
 const taskRepository = require('../../tasks/repository');
-const { serializeTask, serializeTasks } = require('../../tasks/core/serializers');
+const {
+    serializeTask,
+    serializeTasks,
+} = require('../../tasks/core/serializers');
 const { buildTaskAttributes } = require('../../tasks/core/builders');
 const { Op } = require('sequelize');
 const { Task, Project, Tag } = require('../../../models');
@@ -13,12 +16,16 @@ async function findTaskByIdentifier(identifier, userId) {
     const isNumeric = !isNaN(identifier);
 
     if (isNumeric) {
-        return await taskRepository.findByIdAndUser(parseInt(identifier), userId, {
-            include: [
-                { model: Project, as: 'Project' },
-                { model: Tag, as: 'Tags' },
-            ],
-        });
+        return await taskRepository.findByIdAndUser(
+            parseInt(identifier),
+            userId,
+            {
+                include: [
+                    { model: Project, as: 'Project' },
+                    { model: Tag, as: 'Tags' },
+                ],
+            }
+        );
     } else {
         return await taskRepository.findByUid(identifier, {
             include: [
@@ -302,7 +309,8 @@ function registerTaskTools(server, context, tools) {
 
             const updates = {};
             if (params.name !== undefined) updates.name = params.name;
-            if (params.description !== undefined) updates.note = params.description;
+            if (params.description !== undefined)
+                updates.note = params.description;
             if (params.priority) {
                 const priorityMap = { low: 0, medium: 1, high: 2 };
                 updates.priority = priorityMap[params.priority];
@@ -316,7 +324,8 @@ function registerTaskTools(server, context, tools) {
                 };
                 updates.status = statusMap[params.status];
             }
-            if (params.due_date !== undefined) updates.due_date = params.due_date;
+            if (params.due_date !== undefined)
+                updates.due_date = params.due_date;
             if (params.today !== undefined) updates.today = params.today;
 
             await task.update(updates);

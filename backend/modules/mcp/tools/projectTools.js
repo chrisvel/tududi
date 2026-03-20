@@ -266,7 +266,8 @@ function registerProjectTools(server, context, tools) {
             if (params.name !== undefined) updates.name = params.name;
             if (params.description !== undefined)
                 updates.description = params.description;
-            if (params.priority !== undefined) updates.priority = params.priority;
+            if (params.priority !== undefined)
+                updates.priority = params.priority;
             if (params.status !== undefined) updates.status = params.status;
             if (params.area_id !== undefined) updates.area_id = params.area_id;
             if (params.pinned !== undefined)

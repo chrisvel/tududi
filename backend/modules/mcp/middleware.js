@@ -15,7 +15,8 @@ async function authenticateMcpRequest(req, res, next) {
         if (!authHeader) {
             return res.status(401).json({
                 error: 'Unauthorized',
-                message: 'Missing Authorization header. Include: Authorization: Bearer YOUR_API_TOKEN',
+                message:
+                    'Missing Authorization header. Include: Authorization: Bearer YOUR_API_TOKEN',
             });
         }
 
@@ -24,7 +25,8 @@ async function authenticateMcpRequest(req, res, next) {
         if (parts.length !== 2 || parts[0] !== 'Bearer') {
             return res.status(401).json({
                 error: 'Unauthorized',
-                message: 'Invalid Authorization header format. Use: Authorization: Bearer YOUR_API_TOKEN',
+                message:
+                    'Invalid Authorization header format. Use: Authorization: Bearer YOUR_API_TOKEN',
             });
         }
 
@@ -35,7 +37,8 @@ async function authenticateMcpRequest(req, res, next) {
         if (!tokenRecord) {
             return res.status(401).json({
                 error: 'Unauthorized',
-                message: 'Invalid or expired API token. Generate a new token in Profile → API Keys.',
+                message:
+                    'Invalid or expired API token. Generate a new token in Profile → API Keys.',
             });
         }
 

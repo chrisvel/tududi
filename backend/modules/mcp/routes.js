@@ -13,7 +13,8 @@ const checkMcpEnabled = (req, res, next) => {
     if (!mcpEnabled) {
         return res.status(403).json({
             error: 'MCP feature is not enabled',
-            message: 'Set FF_ENABLE_MCP=true in your .env file to enable this feature',
+            message:
+                'Set FF_ENABLE_MCP=true in your .env file to enable this feature',
         });
     }
     next();
