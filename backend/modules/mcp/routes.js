@@ -23,15 +23,15 @@ const checkMcpEnabled = (req, res, next) => {
 router.use(requireAuth);
 
 // Get MCP feature flag status (no feature flag check needed for this one)
-router.get('/api/v1/mcp/status', controller.getMcpStatus);
+router.get('/mcp/status', controller.getMcpStatus);
 
 // All other MCP routes require the feature to be enabled
 router.use(checkMcpEnabled);
 
 // Get MCP configuration for Claude Desktop
-router.get('/api/v1/mcp/config', controller.getMcpConfig);
+router.get('/mcp/config', controller.getMcpConfig);
 
 // List available MCP tools
-router.get('/api/v1/mcp/tools', controller.listMcpTools);
+router.get('/mcp/tools', controller.listMcpTools);
 
 module.exports = router;
