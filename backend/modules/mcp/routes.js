@@ -19,14 +19,12 @@ const checkMcpEnabled = (req, res, next) => {
     next();
 };
 
-// All MCP routes require authentication
-router.use(requireAuth);
-
 // Get MCP feature flag status (no feature flag check needed for this one)
+// Note: requireAuth is already applied in app.js before these routes
 router.get('/mcp/status', controller.getMcpStatus);
 
 // All other MCP routes require the feature to be enabled
-router.use(checkMcpEnabled);
+router.use('/mcp', checkMcpEnabled);
 
 // Get MCP configuration for Claude Desktop
 router.get('/mcp/config', controller.getMcpConfig);
