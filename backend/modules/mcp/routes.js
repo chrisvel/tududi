@@ -3,7 +3,6 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('./controller');
-const { requireAuth } = require('../../middleware/auth');
 
 /**
  * Middleware to check if MCP feature is enabled
@@ -19,17 +18,14 @@ const checkMcpEnabled = (req, res, next) => {
     next();
 };
 
-// Get MCP feature flag status (no feature flag check needed for this one)
-// Note: requireAuth is already applied in app.js before these routes
+// Get MCP feature flag status (no feature flag check needed)
+// Note: requireAuth is already applied in app.js
 router.get('/mcp/status', controller.getMcpStatus);
 
-// All other MCP routes require the feature to be enabled
-router.use('/mcp', checkMcpEnabled);
+// Get MCP configuration for Claude Desktop (requires feature flag)
+router.get('/mcp/config', checkMcpEnabled, controller.getMcpConfig);
 
-// Get MCP configuration for Claude Desktop
-router.get('/mcp/config', controller.getMcpConfig);
-
-// List available MCP tools
-router.get('/mcp/tools', controller.listMcpTools);
+// List available MCP tools (requires feature flag)
+router.get('/mcp/tools', checkMcpEnabled, controller.listMcpTools);
 
 module.exports = router;
