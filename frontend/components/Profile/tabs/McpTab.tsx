@@ -171,7 +171,7 @@ const McpTab: React.FC<McpTabProps> = ({ isActive }) => {
                             </li>
                         </ul>
                         <p className="text-xs text-blue-700 dark:text-blue-400 mt-2 italic">
-                            Other MCP clients may use different configuration methods - check your client's documentation.
+                            Other MCP clients may use different configuration methods - check your client&apos;s documentation.
                         </p>
                     </div>
 
@@ -248,19 +248,19 @@ const McpTab: React.FC<McpTabProps> = ({ isActive }) => {
                         </p>
                         <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-2">
                             <li className="italic">
-                                "Show me my tasks for today"
+                                &quot;Show me my tasks for today&quot;
                             </li>
                             <li className="italic">
-                                "Create a task to review the MCP integration"
+                                &quot;Create a task to review the MCP integration&quot;
                             </li>
                             <li className="italic">
-                                "What projects do I have in progress?"
+                                &quot;What projects do I have in progress?&quot;
                             </li>
                             <li className="italic">
-                                "Add a reminder to my inbox to check emails"
+                                &quot;Add a reminder to my inbox to check emails&quot;
                             </li>
                             <li className="italic">
-                                "Search for tasks related to documentation"
+                                &quot;Search for tasks related to documentation&quot;
                             </li>
                         </ul>
                     </div>
@@ -270,12 +270,12 @@ const McpTab: React.FC<McpTabProps> = ({ isActive }) => {
                             💡 Troubleshooting
                         </p>
                         <p className="text-xs text-yellow-700 dark:text-yellow-400">
-                            If your MCP client can't connect, check that:
+                            If your MCP client can&apos;t connect, check that:
                         </p>
                         <ul className="text-xs text-yellow-700 dark:text-yellow-400 mt-2 ml-4 space-y-1">
                             <li>• Your API token is valid and not expired</li>
                             <li>• The tududi server is running and accessible</li>
-                            <li>• You've restarted your MCP client completely</li>
+                            <li>• You&apos;ve restarted your MCP client completely</li>
                             <li>• For remote servers, check your firewall settings</li>
                         </ul>
                     </div>
