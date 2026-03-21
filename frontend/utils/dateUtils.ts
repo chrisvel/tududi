@@ -10,6 +10,7 @@ import {
     isTaskWaiting,
 } from '../constants/taskStatus';
 import { StatusType } from '../entities/Task';
+import { getCountryFromTimezone } from './localeUtils';
 
 // Check if task is in today's plan (has active status)
 export const isTaskInTodayPlan = (
@@ -292,4 +293,142 @@ export const isTaskOverdueInTodayPlan = (task: {
     // This is an approximation - tasks created yesterday or earlier that are in today plan
     // are likely to have been sitting there for a while
     return createdDate.getTime() < yesterday.getTime();
+};
+
+/**
+ * Maps ISO 3166-1 country codes to date format patterns.
+ * Used to ensure consistent date formatting based on regional conventions,
+ * independent of browser locale support.
+ *
+ * @returns Object mapping country code to date-fns format string
+ */
+const getCountryDateFormats = (): Record<string, string> => ({
+    // DD/MM/YYYY format (most common globally - European standard)
+    AT: 'dd/MM/yyyy', // Austria
+    BE: 'dd/MM/yyyy', // Belgium
+    BG: 'dd/MM/yyyy', // Bulgaria
+    CH: 'dd/MM/yyyy', // Switzerland
+    CY: 'dd/MM/yyyy', // Cyprus
+    CZ: 'dd/MM/yyyy', // Czech Republic
+    DE: 'dd/MM/yyyy', // Germany
+    DK: 'dd/MM/yyyy', // Denmark
+    EE: 'dd/MM/yyyy', // Estonia
+    ES: 'dd/MM/yyyy', // Spain
+    FI: 'dd/MM/yyyy', // Finland
+    FR: 'dd/MM/yyyy', // France
+    GB: 'dd/MM/yyyy', // United Kingdom
+    GR: 'dd/MM/yyyy', // Greece
+    HR: 'dd/MM/yyyy', // Croatia
+    IE: 'dd/MM/yyyy', // Ireland
+    IS: 'dd/MM/yyyy', // Iceland
+    IT: 'dd/MM/yyyy', // Italy
+    LT: 'dd/MM/yyyy', // Lithuania
+    LU: 'dd/MM/yyyy', // Luxembourg
+    LV: 'dd/MM/yyyy', // Latvia
+    MT: 'dd/MM/yyyy', // Malta
+    NL: 'dd/MM/yyyy', // Netherlands
+    NO: 'dd/MM/yyyy', // Norway
+    PL: 'dd/MM/yyyy', // Poland
+    PT: 'dd/MM/yyyy', // Portugal
+    RO: 'dd/MM/yyyy', // Romania
+    SE: 'dd/MM/yyyy', // Sweden
+    SI: 'dd/MM/yyyy', // Slovenia
+    SK: 'dd/MM/yyyy', // Slovakia
+    TR: 'dd/MM/yyyy', // Turkey
+    RU: 'dd/MM/yyyy', // Russia
+
+    // DD/MM/YYYY format (Africa)
+    DZ: 'dd/MM/yyyy', // Algeria
+    EG: 'dd/MM/yyyy', // Egypt
+    GH: 'dd/MM/yyyy', // Ghana
+    KE: 'dd/MM/yyyy', // Kenya
+    MA: 'dd/MM/yyyy', // Morocco
+    NG: 'dd/MM/yyyy', // Nigeria
+    TN: 'dd/MM/yyyy', // Tunisia
+    ZA: 'dd/MM/yyyy', // South Africa
+
+    // DD/MM/YYYY format (Asia/Pacific)
+    AU: 'dd/MM/yyyy', // Australia
+    BD: 'dd/MM/yyyy', // Bangladesh
+    FJ: 'dd/MM/yyyy', // Fiji
+    GU: 'dd/MM/yyyy', // Guam
+    HK: 'dd/MM/yyyy', // Hong Kong
+    ID: 'dd/MM/yyyy', // Indonesia
+    IN: 'dd/MM/yyyy', // India
+    MY: 'dd/MM/yyyy', // Malaysia
+    NZ: 'dd/MM/yyyy', // New Zealand
+    PK: 'dd/MM/yyyy', // Pakistan
+    SG: 'dd/MM/yyyy', // Singapore
+    TH: 'dd/MM/yyyy', // Thailand
+
+    // DD/MM/YYYY format (Middle East)
+    AE: 'dd/MM/yyyy', // United Arab Emirates
+    IL: 'dd/MM/yyyy', // Israel
+    IR: 'dd/MM/yyyy', // Iran
+    SA: 'dd/MM/yyyy', // Saudi Arabia
+
+    // DD/MM/YYYY format (Americas - except US/CA)
+    AR: 'dd/MM/yyyy', // Argentina
+    BR: 'dd/MM/yyyy', // Brazil
+    CL: 'dd/MM/yyyy', // Chile
+    CO: 'dd/MM/yyyy', // Colombia
+    MX: 'dd/MM/yyyy', // Mexico
+    PE: 'dd/MM/yyyy', // Peru
+    VE: 'dd/MM/yyyy', // Venezuela
+
+    // MM/DD/YYYY format (North America and some others)
+    US: 'MM/dd/yyyy', // United States
+    CA: 'MM/dd/yyyy', // Canada
+    PH: 'MM/dd/yyyy', // Philippines
+
+    // YYYY/MM/DD format (East Asia - ISO-like format)
+    CN: 'yyyy/MM/dd', // China
+    JP: 'yyyy/MM/dd', // Japan
+    KR: 'yyyy/MM/dd', // South Korea
+    TW: 'yyyy/MM/dd', // Taiwan
+});
+
+/**
+ * Formats a date using country-specific format pattern.
+ * This provides consistent date formatting independent of browser locale support.
+ *
+ * @param date - Date to format
+ * @param country - ISO 3166-1 country code (optional)
+ * @returns Formatted date string (e.g., "15/03/2026" for Greece, "03/15/2026" for US)
+ */
+export const formatDateByCountry = (
+    date: Date,
+    country?: string | null
+): string => {
+    const formats = getCountryDateFormats();
+
+    // Use country-specific format if available, otherwise default to DD/MM/YYYY
+    const formatPattern =
+        country && formats[country] ? formats[country] : 'dd/MM/yyyy';
+
+    return format(date, formatPattern);
+};
+
+/**
+ * Formats a datetime using country-specific date format + 24-hour time.
+ * This provides consistent datetime formatting independent of browser locale support.
+ *
+ * @param date - Date to format
+ * @param country - ISO 3166-1 country code (optional)
+ * @returns Formatted datetime string (e.g., "15/03/2026 14:30" for Greece)
+ */
+export const formatDateTimeByCountry = (
+    date: Date,
+    country?: string | null
+): string => {
+    const formats = getCountryDateFormats();
+
+    // Use country-specific format if available, otherwise default to DD/MM/YYYY
+    const datePattern =
+        country && formats[country] ? formats[country] : 'dd/MM/yyyy';
+
+    // Combine date pattern with 24-hour time format
+    const datetimePattern = `${datePattern} HH:mm`;
+
+    return format(date, datetimePattern);
 };
