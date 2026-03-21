@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     CalendarIcon,
@@ -6,8 +6,12 @@ import {
 } from '@heroicons/react/24/outline';
 import TaskDueDateSection from '../TaskForm/TaskDueDateSection';
 import { Task } from '../../../entities/Task';
-import { parseDateString } from '../../../utils/dateUtils';
-import { resolveUserLocale } from '../../../utils/localeUtils';
+import {
+    parseDateString,
+    formatDateByCountry,
+    getUserTimezone,
+} from '../../../utils/dateUtils';
+import { getCountryFromTimezone } from '../../../utils/localeUtils';
 
 interface TaskDueDateCardProps {
     task: Task;
@@ -28,21 +32,16 @@ const TaskDueDateCard: React.FC<TaskDueDateCardProps> = ({
     onSave,
     onCancel,
 }) => {
-    const { t, i18n } = useTranslation();
-    const displayLocale = useMemo(
-        () => resolveUserLocale(i18n.language),
-        [i18n.language]
-    );
+    const { t } = useTranslation();
 
     const getDueDateDisplay = (dueDate: string) => {
         const date = parseDateString(dueDate);
         if (!date) return null;
 
-        const formattedDate = date.toLocaleDateString(displayLocale, {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-        });
+        // Format date based on user's timezone-derived country
+        const timezone = getUserTimezone();
+        const country = getCountryFromTimezone(timezone);
+        const formattedDate = formatDateByCountry(date, country);
 
         const today = new Date();
         today.setHours(0, 0, 0, 0);
