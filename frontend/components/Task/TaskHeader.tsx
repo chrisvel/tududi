@@ -183,7 +183,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
             {/* Full view (md and larger) */}
             <div className="hidden md:flex flex-col md:flex-row md:items-center md:relative">
                 <div
-                    className={`flex items-center space-x-3 mb-2 md:mb-0 flex-1 min-w-0 ${!isUpcomingView ? 'pr-48' : ''}`}
+                    className={`flex items-center space-x-3 mb-2 md:mb-0 flex-1 min-w-0 ${!isUpcomingView ? 'pr-56' : ''}`}
                 >
                     <div className="hidden">
                         <TaskPriorityIcon
@@ -293,7 +293,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                 )}
                             </div>
                         ) : (
-                            <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                            <div className="flex items-center gap-1.5 min-w-0">
                                 <div className="flex items-center gap-1.5 flex-1 min-w-0">
                                     {task.habit_mode && (
                                         <FireIcon
@@ -305,7 +305,9 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                         {task.original_name || task.name}
                                     </span>
                                 </div>
-                                <SubtasksToggleButton />
+                                <div className="flex-shrink-0">
+                                    <SubtasksToggleButton />
+                                </div>
                             </div>
                         )}
                         {/* Project, tags, due date, and recurrence in same row, with spacing when they exist */}
