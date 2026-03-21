@@ -10,7 +10,6 @@ import {
     isTaskWaiting,
 } from '../constants/taskStatus';
 import { StatusType } from '../entities/Task';
-import { getCountryFromTimezone } from './localeUtils';
 
 // Check if task is in today's plan (has active status)
 export const isTaskInTodayPlan = (
