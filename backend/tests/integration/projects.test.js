@@ -242,6 +242,56 @@ describe('Projects Routes', () => {
             expect(response.body.priority).toBe(updateData.priority);
         });
 
+        it('should clear due_date_at when set to null', async () => {
+            // First, create a project with a due date
+            const projectWithDueDate = await Project.create({
+                name: 'Project with Due Date',
+                description: 'Has a due date',
+                user_id: user.id,
+                due_date_at: new Date('2026-12-31'),
+            });
+
+            // Verify it has a due date
+            expect(projectWithDueDate.due_date_at).not.toBeNull();
+
+            // Update with null due_date_at
+            const response = await agent
+                .patch(`/api/project/${projectWithDueDate.uid}`)
+                .send({ due_date_at: null });
+
+            expect(response.status).toBe(200);
+            expect(response.body.due_date_at).toBeNull();
+
+            // Verify in database
+            await projectWithDueDate.reload();
+            expect(projectWithDueDate.due_date_at).toBeNull();
+        });
+
+        it('should clear due_date_at when set to empty string', async () => {
+            // First, create a project with a due date
+            const projectWithDueDate = await Project.create({
+                name: 'Project with Due Date 2',
+                description: 'Has a due date',
+                user_id: user.id,
+                due_date_at: new Date('2026-12-31'),
+            });
+
+            // Verify it has a due date
+            expect(projectWithDueDate.due_date_at).not.toBeNull();
+
+            // Update with empty string due_date_at
+            const response = await agent
+                .patch(`/api/project/${projectWithDueDate.uid}`)
+                .send({ due_date_at: '' });
+
+            expect(response.status).toBe(200);
+            expect(response.body.due_date_at).toBeNull();
+
+            // Verify in database
+            await projectWithDueDate.reload();
+            expect(projectWithDueDate.due_date_at).toBeNull();
+        });
+
         it('should return 404 for non-existent project', async () => {
             const response = await agent
                 .patch('/api/project/nonexistentuid')
