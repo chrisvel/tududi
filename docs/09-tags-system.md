@@ -68,8 +68,11 @@ This document explains how the Tags system works in tududi from a user behavior 
 - **Invalid characters:** `# % & { } \ < > * ? / $ ! ' " @ + \` | =`
 - **Valid characters:** Letters, numbers, spaces, hyphens, underscores
 - **Case:** Stored as-is, but treated case-insensitively for uniqueness
-  - ✅ `work`, `Work Projects`, `Q1-2026`, `backend_dev`
-  - ❌ `#hashtag`, `foo/bar`, `price$`, `email@domain`
+  - ✅ Valid examples: `work`, `Work Projects`, `Q1-2026`, `backend_dev`
+  - ❌ Invalid examples (contain special chars): `foo/bar`, `price$`, `email@domain`
+  - ❌ Invalid: `#hashtag` - the `#` character cannot be part of the tag name
+
+> **Note about Inbox hashtag syntax:** When using the Inbox quick capture, you can type `#work` and the system will extract `work` as the tag name. The `#` is a syntax marker, not part of the actual tag. Similarly, project references like `+ProjectName` use `+` as a marker, and the project name cannot contain `+`.
 
 **Uniqueness:**
 - Tag names must be unique per user (case-insensitive)
@@ -123,15 +126,14 @@ Tags are automatically created when you add them to a task, note, or project:
 
 **Automatic tag extraction:**
 1. Capture item in Inbox: `Review #quarterly-report +Work`
-2. System detects `#quarterly-report`
+2. System detects `#quarterly-report` and extracts `quarterly-report` as the tag name
 3. When converting to task/note, tag is auto-created
 4. Applied to the resulting item
 
 **Hashtag rules:**
-- Must start with `#`
-- Followed by valid tag characters
-- Stops at whitespace or invalid character
-- Example: `#work-item` creates tag `work-item`
+- Must start with `#` followed by valid tag characters
+- The `#` is a syntax marker, not part of the tag name
+- Example: Typing `#work-item` in Inbox creates tag `work-item` (without the `#`)
 
 ---
 
@@ -449,9 +451,9 @@ Tags are automatically created when you add them to a task, note, or project:
 - Shared projects: Each collaborator has their own tags
 
 **Example scenario:**
-- User A tags project with `#urgent`
+- User A tags project with `#urgent` (creates tag `urgent`)
 - User B (collaborator) doesn't see `#urgent` in their tag list
-- User B can create their own `#urgent` tag independently
+- User B can create their own `urgent` tag independently
 
 ### No Tag Hierarchy
 
@@ -505,7 +507,7 @@ Tags are automatically created when you add them to a task, note, or project:
 **Multiple tag filtering:**
 - Not supported in UI
 - API supports single tag filter only
-- Workaround: Use tag detail page, then search
+- Workaround: Use tag detail page + search
 
 ---
 
@@ -517,6 +519,7 @@ Tags are automatically created when you add them to a task, note, or project:
 - Inbox items can include `#tag-name` syntax
 - Example: `Buy groceries #home #errands`
 - When converting to task: Tags `home` and `errands` auto-created and applied
+- Note: The `#` is only a syntax marker in Inbox, not part of the actual tag name
 
 **Smart suggestions:**
 - Inbox processor detects hashtags
@@ -576,9 +579,9 @@ Tags are automatically created when you add them to a task, note, or project:
 **Scenario:** Organize tasks by context (e.g., @home, @office, @phone)
 
 1. Create tasks and tag them:
-   - "Fix garage door" → `#home`, `#maintenance`
-   - "Review budget report" → `#office`, `#finance`
-   - "Call dentist" → `#phone`, `#health`
+   - "Fix garage door" → `#home`, `#maintenance` (creates tags `home` and `maintenance`)
+   - "Review budget report" → `#office`, `#finance` (creates tags `office` and `finance`)
+   - "Call dentist" → `#phone`, `#health` (creates tags `phone` and `health`)
 
 2. Navigate to tag page to see filtered view:
    - `/tag/home` → All home tasks
@@ -592,7 +595,7 @@ Tags are automatically created when you add them to a task, note, or project:
 
 **Scenario:** Track all "urgent" items across multiple projects
 
-1. Tag urgent tasks/notes/projects with `#urgent`
+1. Tag urgent tasks/notes/projects with `#urgent` (creates tag `urgent`)
 2. Navigate to `/tag/urgent`
 3. See all urgent items regardless of project
 4. Filter and sort as needed
@@ -613,7 +616,7 @@ Tags are automatically created when you add them to a task, note, or project:
 
 **Scenario:** Review all items related to Q1 goals
 
-1. During Q1, tag relevant tasks/notes/projects with `#q1-2026`
+1. During Q1, tag relevant tasks/notes/projects with `#q1-2026` (creates tag `q1-2026`)
 2. At end of quarter, navigate to `/tag/q1-2026`
 3. See all items related to Q1 goals
 4. Review completion rates
@@ -624,7 +627,7 @@ Tags are automatically created when you add them to a task, note, or project:
 **Scenario:** Remove unused or redundant tags
 
 1. Navigate to `/tags`
-2. Search for old tags (e.g., `#2025`)
+2. Search for old tags
 3. Click tag to see what items use it
 4. If empty or obsolete, delete tag
 5. If overlapping (e.g., `work` and `work-related`), rename or consolidate
@@ -636,12 +639,13 @@ Tags are automatically created when you add them to a task, note, or project:
 ### "Tag name contains invalid characters"
 
 **Possible causes:**
-1. Using restricted characters: `# % & { } \ < > * ? / $ ! ' " @ + \` | =`
-2. Example: Trying to create `#hashtag` (contains `#`)
+1. Using restricted characters in the tag name itself: `# % & { } \ < > * ? / $ ! ' " @ + \` | =`
+2. Example: Trying to create a tag literally named `#hashtag` (the `#` character is not allowed in tag names)
 
 **Solution:**
 - Remove invalid characters
 - Use hyphens or underscores: `hashtag`, `hash-tag`
+- Remember: When typing `#hashtag` in Inbox, the system creates tag `hashtag` (without the `#`)
 
 ### "A tag with the name 'X' already exists"
 
@@ -717,9 +721,9 @@ Tags are automatically created when you add them to a task, note, or project:
    - Regularly review and delete unused tags
 
 2. **Use tags for cross-cutting concerns:**
-   - Themes that span multiple projects: `#urgent`, `#waiting-on`
-   - Contexts: `#home`, `#office`, `#errands`
-   - Time periods: `#q1-2026`, `#january`
+   - Themes that span multiple projects: `#urgent`, `#waiting-on` (Inbox syntax)
+   - Contexts: `#home`, `#office`, `#errands` (Inbox syntax)
+   - Time periods: `#q1-2026`, `#january` (Inbox syntax)
 
 3. **Combine with hierarchy:**
    - Use projects for structure (Areas > Projects > Tasks)
@@ -731,7 +735,7 @@ Tags are automatically created when you add them to a task, note, or project:
 1. **Regular cleanup:**
    - Monthly: Review tag list, delete unused tags
    - Quarterly: Consolidate similar tags
-   - Rename outdated tags (e.g., `#2025` → `#2026`)
+   - Rename outdated tags (e.g., `2025` → `2026`)
 
 2. **Tag naming audit:**
    - Ensure consistency (singular vs. plural)
@@ -740,7 +744,7 @@ Tags are automatically created when you add them to a task, note, or project:
 
 3. **Document tag taxonomy:**
    - Create a note listing standard tags and their meanings
-   - Tag it with `#reference`, `#tags`
+   - Tag it with `#reference`, `#tags` (Inbox syntax creates tags `reference` and `tags`)
    - Share with team if using shared projects
 
 ---
@@ -761,7 +765,7 @@ Tags are automatically created when you add them to a task, note, or project:
 
 3. **Single tag filter:**
    - Cannot filter by multiple tags simultaneously in UI
-   - API supports one tag filter at a time
+   - API supports single tag filter only
    - Workaround: Use tag detail page + search
 
 4. **No tag colors/icons:**
@@ -831,6 +835,6 @@ Tags are automatically created when you add them to a task, note, or project:
 
 ---
 
-**Document Version:** 1.0.0
-**Last Updated:** 2026-03-14
+**Document Version:** 1.0.1
+**Last Updated:** 2026-03-23
 **Audience:** Developers, AI assistants, and end users
