@@ -390,14 +390,15 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                         </span>
                                     </div>
                                 )}
-                                {task.due_date && (
-                                    <div className="flex items-center whitespace-nowrap">
-                                        <CalendarIcon className="h-3 w-3 mr-1" />
-                                        <span>
-                                            {formatDueDate(task.due_date)}
-                                        </span>
-                                    </div>
-                                )}
+                                {!isTaskCompleted(task.status) &&
+                                    task.due_date && (
+                                        <div className="flex items-center whitespace-nowrap">
+                                            <CalendarIcon className="h-3 w-3 mr-1" />
+                                            <span>
+                                                {formatDueDate(task.due_date)}
+                                            </span>
+                                        </div>
+                                    )}
                                 {isTaskCompleted(task.status) &&
                                     task.completed_at && (
                                         <div className="flex items-center whitespace-nowrap">
@@ -575,12 +576,14 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                     </span>
                                 </div>
                             )}
-                            {!isUpcomingView && task.due_date && (
-                                <div className="flex items-center whitespace-nowrap">
-                                    <CalendarIcon className="h-3 w-3 mr-1" />
-                                    <span>{formatDueDate(task.due_date)}</span>
-                                </div>
-                            )}
+                            {!isUpcomingView &&
+                                !isTaskCompleted(task.status) &&
+                                task.due_date && (
+                                    <div className="flex items-center whitespace-nowrap">
+                                        <CalendarIcon className="h-3 w-3 mr-1" />
+                                        <span>{formatDueDate(task.due_date)}</span>
+                                    </div>
+                                )}
                             {isTaskCompleted(task.status) &&
                                 task.completed_at && (
                                     <div className="flex items-center whitespace-nowrap">
