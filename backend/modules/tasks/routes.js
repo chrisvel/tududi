@@ -111,7 +111,7 @@ async function getRecurringParentEndDate(recurringParentId, userId) {
 function expandRecurringTasks(tasks, maxDays = 7, statusFilter = null) {
     const expandedTasks = [];
     const now = new Date();
-    now.setHours(0, 0, 0, 0);
+    now.setUTCHours(0, 0, 0, 0);
 
     tasks.forEach((task) => {
         const isRecurring =
