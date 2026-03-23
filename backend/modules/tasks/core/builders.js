@@ -5,6 +5,95 @@ const {
     processDeferUntilForStorage,
 } = require('../../../utils/timezone-utils');
 
+function calculateInitialDueDate(body) {
+    const recurrenceType = body.recurrence_type;
+    const now = new Date();
+    now.setUTCHours(0, 0, 0, 0);
+
+    // For monthly recurrence with specific day of month
+    if (
+        recurrenceType === 'monthly' &&
+        body.recurrence_month_day !== undefined &&
+        body.recurrence_month_day !== null
+    ) {
+        const targetDay = body.recurrence_month_day;
+        const currentDay = now.getUTCDate();
+        const currentMonth = now.getUTCMonth();
+        const currentYear = now.getUTCFullYear();
+
+        // Get max day in current month
+        const maxDayInMonth = new Date(
+            Date.UTC(currentYear, currentMonth + 1, 0)
+        ).getUTCDate();
+        const actualTargetDay = Math.min(targetDay, maxDayInMonth);
+
+        let firstOccurrence;
+        if (actualTargetDay >= currentDay) {
+            // Target day is today or later this month
+            firstOccurrence = new Date(
+                Date.UTC(currentYear, currentMonth, actualTargetDay)
+            );
+        } else {
+            // Target day already passed this month, use next month
+            const nextMonth = currentMonth + 1;
+            const nextYear = currentYear + Math.floor(nextMonth / 12);
+            const finalMonth = nextMonth % 12;
+            const maxDayInNextMonth = new Date(
+                Date.UTC(nextYear, finalMonth + 1, 0)
+            ).getUTCDate();
+            const actualTargetDayNextMonth = Math.min(
+                targetDay,
+                maxDayInNextMonth
+            );
+            firstOccurrence = new Date(
+                Date.UTC(nextYear, finalMonth, actualTargetDayNextMonth)
+            );
+        }
+
+        const year = firstOccurrence.getUTCFullYear();
+        const month = String(firstOccurrence.getUTCMonth() + 1).padStart(
+            2,
+            '0'
+        );
+        const day = String(firstOccurrence.getUTCDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    // For weekly recurrence with specific weekday
+    if (
+        recurrenceType === 'weekly' &&
+        body.recurrence_weekday !== undefined &&
+        body.recurrence_weekday !== null
+    ) {
+        const targetWeekday = body.recurrence_weekday;
+        const currentWeekday = now.getUTCDay();
+        const daysUntilTarget = (targetWeekday - currentWeekday + 7) % 7;
+
+        const firstOccurrence = new Date(now);
+        if (daysUntilTarget === 0) {
+            // Today is the target weekday, use today
+            firstOccurrence.setUTCDate(now.getUTCDate());
+        } else {
+            firstOccurrence.setUTCDate(now.getUTCDate() + daysUntilTarget);
+        }
+
+        const year = firstOccurrence.getUTCFullYear();
+        const month = String(firstOccurrence.getUTCMonth() + 1).padStart(
+            2,
+            '0'
+        );
+        const day = String(firstOccurrence.getUTCDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    // For other recurrence types (daily, monthly_last_day, etc.), use today
+    // as the starting point is reasonable
+    const year = now.getUTCFullYear();
+    const month = String(now.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(now.getUTCDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
 function buildTaskAttributes(body, userId, timezone, isUpdate = false) {
     const recurrenceType = body.recurrence_type || 'none';
     const isRecurring = recurrenceType && recurrenceType !== 'none';
@@ -14,11 +103,8 @@ function buildTaskAttributes(body, userId, timezone, isUpdate = false) {
         isRecurring &&
         (dueDate === undefined || dueDate === null || dueDate === '')
     ) {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        dueDate = `${year}-${month}-${day}`;
+        // Calculate proper first occurrence based on recurrence pattern
+        dueDate = calculateInitialDueDate(body);
     }
 
     const attrs = {
@@ -111,24 +197,24 @@ function buildUpdateAttributes(body, task, timezone) {
 
     if (body.due_date !== undefined) {
         if (isRecurring && (body.due_date === null || body.due_date === '')) {
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            attrs.due_date = processDueDateForStorage(
-                `${year}-${month}-${day}`,
-                timezone
-            );
+            // Calculate proper first occurrence based on recurrence pattern
+            const dueDateString = calculateInitialDueDate({
+                recurrence_type: recurrenceType,
+                recurrence_month_day: attrs.recurrence_month_day,
+                recurrence_weekday: attrs.recurrence_weekday,
+            });
+            attrs.due_date = processDueDateForStorage(dueDateString, timezone);
         } else {
             attrs.due_date = processDueDateForStorage(body.due_date, timezone);
         }
     } else if (isAddingRecurrence && (!task.due_date || task.due_date === '')) {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const dueDate = `${year}-${month}-${day}`;
-        attrs.due_date = processDueDateForStorage(dueDate, timezone);
+        // Calculate proper first occurrence based on recurrence pattern
+        const dueDateString = calculateInitialDueDate({
+            recurrence_type: recurrenceType,
+            recurrence_month_day: attrs.recurrence_month_day,
+            recurrence_weekday: attrs.recurrence_weekday,
+        });
+        attrs.due_date = processDueDateForStorage(dueDateString, timezone);
     }
 
     if (body.defer_until !== undefined) {
