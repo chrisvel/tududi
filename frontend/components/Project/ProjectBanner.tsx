@@ -52,6 +52,7 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                     -webkit-line-clamp: 2;
                     overflow: hidden;
                     text-overflow: ellipsis;
+                    line-height: 1.3;
                 }
                 .project-banner-desc {
                     display: -webkit-box;
