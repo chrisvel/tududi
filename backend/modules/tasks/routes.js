@@ -756,7 +756,36 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
             }
         }
 
+        console.log('[routes.js] Before task.update - taskAttributes:', {
+            status: taskAttributes.status,
+            completed_at: taskAttributes.completed_at,
+        });
+
         await task.update(taskAttributes);
+
+        console.log('[routes.js] After task.update - task values:', {
+            id: task.id,
+            status: task.status,
+            completed_at: task.completed_at,
+        });
+
+        // Defensive check: ensure completed_at is null if status is not DONE
+        if (
+            taskAttributes.status !== undefined &&
+            taskAttributes.status !== Task.STATUS.DONE &&
+            taskAttributes.status !== 'done' &&
+            task.completed_at !== null
+        ) {
+            console.log(
+                '[routes.js] DEFENSIVE CHECK TRIGGERED - Force clearing completed_at'
+            );
+            // Force clear completed_at if it wasn't cleared properly
+            await task.update({ completed_at: null });
+            console.log(
+                '[routes.js] After defensive update - completed_at:',
+                task.completed_at
+            );
+        }
 
         if (status !== undefined) {
             await handleParentChildOnStatusChange(
