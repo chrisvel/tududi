@@ -6,6 +6,7 @@ Thank you for your interest in contributing to tududi! This guide will help you 
 
 - [Code of Conduct](#code-of-conduct)
 - [Getting Started](#getting-started)
+- [Feature Contributions](#feature-contributions)
 - [Development Workflow](#development-workflow)
 - [Code Standards](#code-standards)
 - [Testing](#testing)
@@ -54,6 +55,50 @@ Please be respectful and constructive in all interactions. We want to foster an 
    npm run user:create
    ```
 
+## Feature Contributions
+
+> **⚠️ IMPORTANT: Please read this before contributing features**
+
+### Feature PRs Require Prior Discussion
+
+**Feature pull requests will not be merged** unless there is:
+- An existing GitHub issue
+- A feature request discussed in [Discussions](https://github.com/chrisvel/tududi/discussions)
+- Prior communication with the maintainer or community
+
+### Why This Requirement?
+
+This requirement exists to:
+1. **Ensure alignment** with the project's vision and roadmap
+2. **Avoid wasted effort** on features that may not fit the project direction
+3. **Enable collaborative design** before implementation begins
+4. **Maintain consistency** with existing architecture and patterns
+5. **Prevent duplicate work** on features already planned or in progress
+
+### How to Contribute a Feature
+
+Before writing any code:
+
+1. **Start a discussion** in [Feature Requests](https://github.com/chrisvel/tududi/discussions/categories/feature-requests)
+   - Describe the feature and the problem it solves
+   - Explain why it would benefit tududi users
+   - Outline your proposed approach
+
+2. **Send a direct message** to [@chrisvel](https://github.com/chrisvel) via:
+   - [Discord](https://discord.gg/fkbeJ9CmcH)
+   - GitHub Discussions
+   - Email (found in repository)
+
+3. **Wait for feedback** before investing significant time in implementation
+
+4. **Create or get assigned a GitHub issue** once the feature is approved
+
+5. **Then proceed** with development following the guidelines below
+
+### Bug Fixes and Documentation
+
+This requirement applies primarily to **new features**. Bug fixes, documentation improvements, and minor enhancements can proceed with just a linked issue.
+
 ## Development Workflow
 
 ### Branch Naming
@@ -66,9 +111,10 @@ Please be respectful and constructive in all interactions. We want to foster an 
 
 ### Before You Start
 
-1. **Check existing issues and discussions** to avoid duplicate work
-2. **Create or comment on an issue** describing what you plan to work on
-3. **Create a new branch** from `main`
+1. **For new features**: Read the [Feature Contributions](#feature-contributions) section above - **prior discussion is required**
+2. **Check existing issues and discussions** to avoid duplicate work
+3. **Create or comment on an issue** describing what you plan to work on
+4. **Create a new branch** from `main`
    ```bash
    git checkout -b feature/your-feature-name
    ```
@@ -267,6 +313,7 @@ tududi supports multiple languages via i18next.
 
 ### PR Requirements
 
+- ✅ **Feature PRs**: Linked to an approved issue or prior discussion (see [Feature Contributions](#feature-contributions))
 - ✅ All tests passing
 - ✅ Code follows style guidelines
 - ✅ No linting errors
@@ -276,10 +323,11 @@ tududi supports multiple languages via i18next.
 
 ## Questions?
 
+- **Feature ideas**: Start a [discussion](https://github.com/chrisvel/tududi/discussions/categories/feature-requests) or message [@chrisvel](https://github.com/chrisvel)
 - **General questions**: Use [GitHub Discussions](https://github.com/chrisvel/tududi/discussions)
 - **Bug reports**: Create an [issue](https://github.com/chrisvel/tududi/issues)
-- **Feature requests**: Start a [discussion](https://github.com/chrisvel/tududi/discussions/categories/feature-requests)
+- **Direct contact**: Join our [Discord](https://discord.gg/fkbeJ9CmcH) or find maintainer contact info in the repository
 
 ---
 
-Thank you for contributing to tududi! 🎉
+**Remember**: For feature contributions, please discuss first before submitting a PR. We're excited to collaborate with you! 🎉
