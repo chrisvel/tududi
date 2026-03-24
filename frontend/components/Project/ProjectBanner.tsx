@@ -45,6 +45,23 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
 
     return (
         <div className="w-full">
+            <style>{`
+                .project-banner-name {
+                    display: -webkit-box;
+                    -webkit-box-orient: vertical;
+                    -webkit-line-clamp: 2;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    line-height: 1.3;
+                }
+                .project-banner-desc {
+                    display: -webkit-box;
+                    -webkit-box-orient: vertical;
+                    -webkit-line-clamp: 2;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+            `}</style>
             <div className="mb-6 overflow-hidden relative group">
                 {project.image_url ? (
                     <img
@@ -63,12 +80,12 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                 )}
 
                 <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-                    <div className="text-center px-4">
-                        <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg">
+                    <div className="text-center px-4 w-full max-w-5xl">
+                        <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg project-banner-name">
                             {project.name}
                         </h1>
                         {project.description && (
-                            <p className="text-lg md:text-xl text-white/90 mt-2 font-light drop-shadow-md max-w-2xl mx-auto">
+                            <p className="text-lg md:text-xl text-white/90 mt-2 font-light drop-shadow-md max-w-2xl mx-auto project-banner-desc">
                                 {project.description}
                             </p>
                         )}

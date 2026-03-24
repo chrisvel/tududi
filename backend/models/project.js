@@ -19,6 +19,23 @@ module.exports = (sequelize) => {
             name: {
                 type: DataTypes.STRING,
                 allowNull: false,
+                validate: {
+                    notEmpty: {
+                        msg: 'Project name is required',
+                    },
+                    wordCount(value) {
+                        const MAX_WORDS = 6;
+                        const wordCount = value
+                            .trim()
+                            .split(/\s+/)
+                            .filter((word) => word.length > 0).length;
+                        if (wordCount > MAX_WORDS) {
+                            throw new Error(
+                                `Project name must be ${MAX_WORDS} words or less`
+                            );
+                        }
+                    },
+                },
             },
             description: {
                 type: DataTypes.TEXT,
