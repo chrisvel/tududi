@@ -1011,6 +1011,14 @@ const TasksToday: React.FC = () => {
         (updatedTask: Task): void => {
             if (!isMounted.current) return;
 
+            console.log('[updateTaskInState] Called with task:', {
+                id: updatedTask.id,
+                uid: updatedTask.uid,
+                name: updatedTask.name,
+                status: updatedTask.status,
+                completed_at: updatedTask.completed_at,
+            });
+
             setMetrics((prevMetrics) => {
                 const newMetrics = { ...prevMetrics };
 
@@ -1154,6 +1162,28 @@ const TasksToday: React.FC = () => {
                     newMetrics.tasks_due_today.length +
                     newMetrics.tasks_overdue.length +
                     newMetrics.tasks_in_progress.length;
+
+                console.log('[updateTaskInState] Task placement:', {
+                    taskId: updatedTask.id,
+                    isInCompleted: newMetrics.tasks_completed_today.some(
+                        (t) => t.id === updatedTask.id
+                    ),
+                    isInTodayPlan: newMetrics.today_plan_tasks.some(
+                        (t) => t.id === updatedTask.id
+                    ),
+                    isInSuggested: newMetrics.suggested_tasks.some(
+                        (t) => t.id === updatedTask.id
+                    ),
+                    isInDueToday: newMetrics.tasks_due_today.some(
+                        (t) => t.id === updatedTask.id
+                    ),
+                    isInOverdue: newMetrics.tasks_overdue.some(
+                        (t) => t.id === updatedTask.id
+                    ),
+                    isInProgress: newMetrics.tasks_in_progress.some(
+                        (t) => t.id === updatedTask.id
+                    ),
+                });
 
                 return newMetrics;
             });
