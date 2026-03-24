@@ -63,12 +63,12 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                 )}
 
                 <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-                    <div className="text-center px-4">
-                        <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg">
+                    <div className="text-center px-4 w-full max-w-5xl">
+                        <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg break-words line-clamp-3">
                             {project.name}
                         </h1>
                         {project.description && (
-                            <p className="text-lg md:text-xl text-white/90 mt-2 font-light drop-shadow-md max-w-2xl mx-auto">
+                            <p className="text-lg md:text-xl text-white/90 mt-2 font-light drop-shadow-md max-w-2xl mx-auto break-words line-clamp-2">
                                 {project.description}
                             </p>
                         )}

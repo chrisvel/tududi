@@ -268,6 +268,21 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             return;
         }
 
+        const MAX_WORDS = 6;
+        const wordCount = formData.name
+            .trim()
+            .split(/\s+/)
+            .filter((word) => word.length > 0).length;
+        if (wordCount > MAX_WORDS) {
+            setError(
+                t(
+                    'errors.projectNameTooLong',
+                    `Project name must be ${MAX_WORDS} words or less`
+                )
+            );
+            return;
+        }
+
         setIsSaving(true);
         try {
             // Add new tags to the global store
