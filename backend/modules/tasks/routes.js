@@ -758,6 +758,17 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
 
         await task.update(taskAttributes);
 
+        // Defensive check: ensure completed_at is null if status is not DONE
+        if (
+            taskAttributes.status !== undefined &&
+            taskAttributes.status !== Task.STATUS.DONE &&
+            taskAttributes.status !== 'done' &&
+            task.completed_at !== null
+        ) {
+            // Force clear completed_at if it wasn't cleared properly
+            await task.update({ completed_at: null });
+        }
+
         if (status !== undefined) {
             await handleParentChildOnStatusChange(
                 task,

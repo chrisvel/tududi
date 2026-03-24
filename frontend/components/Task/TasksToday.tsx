@@ -1818,6 +1818,7 @@ const TasksToday: React.FC = () => {
                                             projects={localProjects}
                                             onToggleToday={undefined}
                                             showCompletedTasks={true}
+                                            isInCompletedSection={true}
                                         />
 
                                         {/* Load More Buttons for Completed Today Tasks */}

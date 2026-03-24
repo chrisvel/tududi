@@ -156,6 +156,7 @@ interface TaskItemProps {
     onToggleToday?: (taskId: number, task?: Task) => Promise<void>;
     isUpcomingView?: boolean;
     showCompletedTasks?: boolean;
+    isInCompletedSection?: boolean;
 }
 
 const TaskItem: React.FC<TaskItemProps> = ({
@@ -168,6 +169,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
     onToggleToday,
     isUpcomingView = false,
     showCompletedTasks = false,
+    isInCompletedSection = false,
 }) => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -374,9 +376,10 @@ const TaskItem: React.FC<TaskItemProps> = ({
     // Check if task is overdue (created yesterday or earlier and not completed)
     const isOverdue = isTaskOverdueInTodayPlan(task);
 
-    const priorityBorderClass = isTaskCompleted(task.status)
-        ? 'border-l-4 border-l-green-500'
-        : getPriorityBorderClassName(task.priority);
+    const priorityBorderClass =
+        isInCompletedSection || isTaskCompleted(task.status)
+            ? 'border-l-4 border-l-green-500'
+            : getPriorityBorderClassName(task.priority);
 
     return (
         <div className={`relative ${isStatusMenuOpen ? 'z-[10001]' : ''}`}>
