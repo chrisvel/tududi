@@ -309,6 +309,7 @@ module.exports = (sequelize) => {
         const sentTimes = this.channel_sent_at || {};
         sentTimes[channel] = new Date().toISOString();
         this.channel_sent_at = sentTimes;
+        this.changed('channel_sent_at', true);
         await this.save();
         return this;
     };
