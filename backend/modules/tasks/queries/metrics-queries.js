@@ -431,14 +431,17 @@ async function fetchTasksCompletedToday(userId, userTimezone) {
     // Extract the tasks from recurring completions and add completed_at, status, and due_date
     const recurringCompletedTasks = recurringCompletions.map((rc) => {
         const task = rc.Task;
-        // Add virtual completed_at, status, and due_date for display purposes
-        task.dataValues.completed_at = rc.completed_at;
-        task.dataValues.status = Task.STATUS.DONE;
-        task.dataValues.due_date = rc.original_due_date;
-        // Also set the direct properties to ensure they're accessible
-        task.status = Task.STATUS.DONE;
-        task.completed_at = rc.completed_at;
-        task.due_date = rc.original_due_date;
+        // Set overrides using Sequelize's setDataValue method to ensure they persist
+        if (task.setDataValue) {
+            task.setDataValue('completed_at', rc.completed_at);
+            task.setDataValue('status', Task.STATUS.DONE);
+            task.setDataValue('due_date', rc.original_due_date);
+        } else {
+            // Fallback for non-Sequelize objects
+            task.completed_at = rc.completed_at;
+            task.status = Task.STATUS.DONE;
+            task.due_date = rc.original_due_date;
+        }
         return task;
     });
 
