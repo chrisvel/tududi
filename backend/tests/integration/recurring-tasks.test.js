@@ -387,6 +387,87 @@ describe('Recurring Tasks', () => {
                 expect(next3.getUTCDay()).toBe(1);
                 expect(next3.toISOString().split('T')[0]).toBe('2026-02-16');
             });
+
+            it('should calculate correct initial due date when creating task with recurrence_weekdays and no due_date (Issue #974)', async () => {
+                const now = new Date();
+                now.setUTCHours(0, 0, 0, 0);
+                const currentWeekday = now.getUTCDay();
+
+                const targetWeekdays = [
+                    (currentWeekday + 1) % 7,
+                    (currentWeekday + 3) % 7,
+                ].sort();
+
+                const response = await agent.post('/api/task').send({
+                    name: 'Multi-day Task Without Due Date',
+                    recurrence_type: 'weekly',
+                    recurrence_weekdays: targetWeekdays,
+                    recurrence_interval: 1,
+                });
+
+                expect(response.status).toBe(201);
+                expect(response.body.recurrence_weekdays).toEqual(
+                    targetWeekdays
+                );
+                expect(response.body.due_date).toBeDefined();
+
+                const dueDate = new Date(response.body.due_date);
+                dueDate.setUTCHours(0, 0, 0, 0);
+                expect(targetWeekdays).toContain(dueDate.getUTCDay());
+
+                expect(dueDate.getTime()).toBeGreaterThanOrEqual(now.getTime());
+            });
+
+            it('should calculate correct initial due date when adding recurrence_weekdays to existing task (Issue #974)', async () => {
+                const task = await Task.create({
+                    name: 'Regular Task',
+                    user_id: user.id,
+                    status: Task.STATUS.NOT_STARTED,
+                });
+
+                const now = new Date();
+                now.setUTCHours(0, 0, 0, 0);
+                const currentWeekday = now.getUTCDay();
+
+                const targetWeekdays = [
+                    (currentWeekday + 1) % 7,
+                    (currentWeekday + 2) % 7,
+                ].sort();
+
+                const response = await agent
+                    .patch(`/api/task/${task.uid}`)
+                    .send({
+                        recurrence_type: 'weekly',
+                        recurrence_weekdays: targetWeekdays,
+                        recurrence_interval: 1,
+                    });
+
+                expect(response.status).toBe(200);
+                expect(response.body.recurrence_weekdays).toEqual(
+                    targetWeekdays
+                );
+                expect(response.body.due_date).toBeDefined();
+
+                const dueDate = new Date(response.body.due_date);
+                dueDate.setUTCHours(0, 0, 0, 0);
+                expect(targetWeekdays).toContain(dueDate.getUTCDay());
+                expect(dueDate.getTime()).toBeGreaterThanOrEqual(now.getTime());
+            });
+
+            it('should respect explicit due_date over calculated date for recurrence_weekdays (Issue #974)', async () => {
+                const explicitDate = '2026-12-25';
+
+                const response = await agent.post('/api/task').send({
+                    name: 'Task with explicit date',
+                    recurrence_type: 'weekly',
+                    recurrence_weekdays: [1, 4],
+                    recurrence_interval: 1,
+                    due_date: explicitDate,
+                });
+
+                expect(response.status).toBe(201);
+                expect(response.body.due_date).toBe(explicitDate);
+            });
         });
 
         describe('Monthly Recurrence', () => {
