@@ -59,31 +59,61 @@ function calculateInitialDueDate(body) {
         return `${year}-${month}-${day}`;
     }
 
-    // For weekly recurrence with specific weekday
-    if (
-        recurrenceType === 'weekly' &&
-        body.recurrence_weekday !== undefined &&
-        body.recurrence_weekday !== null
-    ) {
-        const targetWeekday = body.recurrence_weekday;
-        const currentWeekday = now.getUTCDay();
-        const daysUntilTarget = (targetWeekday - currentWeekday + 7) % 7;
+    // For weekly recurrence with specific weekday(s)
+    if (recurrenceType === 'weekly') {
+        const parsedWeekdays = body.recurrence_weekdays
+            ? Array.isArray(body.recurrence_weekdays)
+                ? body.recurrence_weekdays
+                : JSON.parse(body.recurrence_weekdays)
+            : null;
 
-        const firstOccurrence = new Date(now);
-        if (daysUntilTarget === 0) {
-            // Today is the target weekday, use today
-            firstOccurrence.setUTCDate(now.getUTCDate());
-        } else {
-            firstOccurrence.setUTCDate(now.getUTCDate() + daysUntilTarget);
+        if (parsedWeekdays && parsedWeekdays.length > 0) {
+            const sorted = [...parsedWeekdays].sort((a, b) => a - b);
+            const currentDay = now.getUTCDay();
+
+            const laterInWeek = sorted.filter((d) => d > currentDay);
+
+            let firstOccurrence;
+            if (laterInWeek.length > 0) {
+                const daysAhead = laterInWeek[0] - currentDay;
+                firstOccurrence = new Date(now);
+                firstOccurrence.setUTCDate(now.getUTCDate() + daysAhead);
+            } else {
+                const daysToNextFirst = (7 - currentDay + sorted[0]) % 7 || 7;
+                firstOccurrence = new Date(now);
+                firstOccurrence.setUTCDate(now.getUTCDate() + daysToNextFirst);
+            }
+
+            const year = firstOccurrence.getUTCFullYear();
+            const month = String(firstOccurrence.getUTCMonth() + 1).padStart(
+                2,
+                '0'
+            );
+            const day = String(firstOccurrence.getUTCDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        } else if (
+            body.recurrence_weekday !== undefined &&
+            body.recurrence_weekday !== null
+        ) {
+            const targetWeekday = body.recurrence_weekday;
+            const currentWeekday = now.getUTCDay();
+            const daysUntilTarget = (targetWeekday - currentWeekday + 7) % 7;
+
+            const firstOccurrence = new Date(now);
+            if (daysUntilTarget === 0) {
+                firstOccurrence.setUTCDate(now.getUTCDate());
+            } else {
+                firstOccurrence.setUTCDate(now.getUTCDate() + daysUntilTarget);
+            }
+
+            const year = firstOccurrence.getUTCFullYear();
+            const month = String(firstOccurrence.getUTCMonth() + 1).padStart(
+                2,
+                '0'
+            );
+            const day = String(firstOccurrence.getUTCDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
         }
-
-        const year = firstOccurrence.getUTCFullYear();
-        const month = String(firstOccurrence.getUTCMonth() + 1).padStart(
-            2,
-            '0'
-        );
-        const day = String(firstOccurrence.getUTCDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
     }
 
     // For other recurrence types (daily, monthly_last_day, etc.), use today
@@ -202,6 +232,7 @@ function buildUpdateAttributes(body, task, timezone) {
                 recurrence_type: recurrenceType,
                 recurrence_month_day: attrs.recurrence_month_day,
                 recurrence_weekday: attrs.recurrence_weekday,
+                recurrence_weekdays: attrs.recurrence_weekdays,
             });
             attrs.due_date = processDueDateForStorage(dueDateString, timezone);
         } else {
@@ -213,6 +244,7 @@ function buildUpdateAttributes(body, task, timezone) {
             recurrence_type: recurrenceType,
             recurrence_month_day: attrs.recurrence_month_day,
             recurrence_weekday: attrs.recurrence_weekday,
+            recurrence_weekdays: attrs.recurrence_weekdays,
         });
         attrs.due_date = processDueDateForStorage(dueDateString, timezone);
     }
@@ -230,4 +262,5 @@ function buildUpdateAttributes(body, task, timezone) {
 module.exports = {
     buildTaskAttributes,
     buildUpdateAttributes,
+    calculateInitialDueDate,
 };
