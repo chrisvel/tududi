@@ -53,13 +53,13 @@ function shouldSendInAppNotification(user, notificationType) {
 }
 
 /**
- * Check if user has enabled Telegram notifications for a specific type
+ * Check if user has enabled a specific notification channel for a type
  * @param {Object} user - User model instance with notification_preferences field
- * @param {string} notificationType - Backend notification type (e.g., 'task_due_soon', 'task_overdue')
- * @returns {boolean} - True if Telegram notifications are enabled for this type
+ * @param {string} notificationType - Backend notification type
+ * @param {string} channel - Channel to check ('telegram', 'push', 'email')
+ * @returns {boolean} - True if channel is enabled for this type
  */
-function shouldSendTelegramNotification(user, notificationType) {
-    // If no user or no preferences set, default to disabled for Telegram
+function shouldSendToChannel(user, notificationType, channel) {
     if (!user || !user.notification_preferences) {
         return false;
     }
@@ -75,8 +75,22 @@ function shouldSendTelegramNotification(user, notificationType) {
         return false;
     }
 
-    // Check if telegram channel is enabled (default to false if not set)
-    return prefs[prefKey].telegram === true;
+    // Check if channel is enabled (default to false if not set)
+    return prefs[prefKey][channel] === true;
+}
+
+/**
+ * Check if user has enabled Telegram notifications for a specific type
+ */
+function shouldSendTelegramNotification(user, notificationType) {
+    return shouldSendToChannel(user, notificationType, 'telegram');
+}
+
+/**
+ * Check if user has enabled Push notifications for a specific type
+ */
+function shouldSendPushNotification(user, notificationType) {
+    return shouldSendToChannel(user, notificationType, 'push');
 }
 
 /**
@@ -90,6 +104,7 @@ function getDefaultNotificationPreferences() {
 module.exports = {
     shouldSendInAppNotification,
     shouldSendTelegramNotification,
+    shouldSendPushNotification,
     getDefaultNotificationPreferences,
     NOTIFICATION_TYPE_MAPPING,
 };

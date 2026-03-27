@@ -33,6 +33,11 @@
           document.head.insertBefore(baseTag, document.head.firstChild);
         }
         baseTag.setAttribute('href', baseHref);
+
+        // Register service worker for PWA support
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register("/pwa/sw.js", { scope: '/' });
+        }
       })();
     </script>
     <title>tududi</title>
