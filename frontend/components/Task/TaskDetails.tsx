@@ -357,7 +357,6 @@ const TaskDetails: React.FC = () => {
         try {
             taskModifiedRef.current = true;
             await updateTask(task.uid, {
-                ...task,
                 due_date: editedDueDate || null,
             });
 
@@ -845,7 +844,6 @@ const TaskDetails: React.FC = () => {
         try {
             taskModifiedRef.current = true;
             await updateTask(task.uid, {
-                ...task,
                 status: newStatus,
             });
 
@@ -1054,7 +1052,6 @@ const TaskDetails: React.FC = () => {
         try {
             taskModifiedRef.current = true;
             await updateTask(task.uid, {
-                ...task,
                 tags: tags.map((name) => ({ name })),
             });
 
@@ -1096,7 +1093,6 @@ const TaskDetails: React.FC = () => {
         try {
             taskModifiedRef.current = true;
             await updateTask(task.uid, {
-                ...task,
                 priority: priority,
             });
             const updatedTask = await fetchTaskByUid(uid!);
