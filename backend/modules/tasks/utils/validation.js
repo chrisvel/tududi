@@ -36,7 +36,18 @@ async function validateParentTaskAccess(parentTaskId, userId) {
         where: { id: parentTaskId, user_id: userId },
     });
     if (!parentTask) {
-        throw new Error('Invalid parent task.');
+        const anyTask = await Task.findOne({
+            where: { id: parentTaskId },
+        });
+        if (anyTask) {
+            throw new Error(
+                `Invalid parent task. Parent task exists but belongs to a different user (parent user_id: ${anyTask.user_id}, current user_id: ${userId}).`
+            );
+        } else {
+            throw new Error(
+                `Invalid parent task. Parent task with id ${parentTaskId} not found.`
+            );
+        }
     }
 
     const parentAccess = await permissionsService.getAccess(
@@ -49,7 +60,7 @@ async function validateParentTaskAccess(parentTaskId, userId) {
         isOwner || parentAccess === 'rw' || parentAccess === 'admin';
 
     if (!canWrite) {
-        throw new Error('Invalid parent task.');
+        throw new Error('Invalid parent task. Insufficient permissions.');
     }
 
     return parentTaskId;

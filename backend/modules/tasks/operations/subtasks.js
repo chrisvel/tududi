@@ -92,6 +92,26 @@ async function updateSubtasks(taskId, subtasks, userId) {
     );
 
     if (subtasksToDelete.length > 0) {
+        if (
+            subtasksToDelete.length === existingSubtasks.length &&
+            subtasks.length === 0
+        ) {
+            logError(
+                'WARNING: Attempting to delete all subtasks with empty array:',
+                {
+                    taskId,
+                    userId,
+                    existingCount: existingSubtasks.length,
+                    providedCount: subtasks.length,
+                    subtasksToDelete: subtasksToDelete.map((s) => ({
+                        id: s.id,
+                        name: s.name,
+                        parent_task_id: s.parent_task_id,
+                    })),
+                }
+            );
+        }
+
         await taskRepository.destroyMany({
             where: {
                 id: subtasksToDelete.map((s) => s.id),
