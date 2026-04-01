@@ -1062,7 +1062,10 @@ const TaskDetails: React.FC = () => {
                 );
                 if (existingIndex >= 0) {
                     const updatedTasks = [...tasksStore.tasks];
-                    updatedTasks[existingIndex] = updatedTask;
+                    updatedTasks[existingIndex] = {
+                        ...updatedTask,
+                        subtasks: updatedTask.subtasks || task.subtasks || [],
+                    };
                     tasksStore.setTasks(updatedTasks);
                 }
             }
