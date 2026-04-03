@@ -1,6 +1,6 @@
 'use strict';
 
-const { Inbox } = require('../../../models');
+const { InboxItem } = require('../../../models');
 
 /**
  * Register all inbox-related MCP tools
@@ -29,7 +29,7 @@ function registerInboxTools(server, context, tools) {
             const limit = params.limit || 20;
             const offset = params.offset || 0;
 
-            const items = await Inbox.findAll({
+            const items = await InboxItem.findAll({
                 where: { user_id: context.userId },
                 limit: limit,
                 offset: offset,
@@ -91,7 +91,7 @@ function registerInboxTools(server, context, tools) {
                 processed: false,
             };
 
-            const item = await Inbox.create(inboxData);
+            const item = await InboxItem.create(inboxData);
 
             const serialized = {
                 id: item.id,
