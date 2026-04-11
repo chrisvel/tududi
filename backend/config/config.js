@@ -108,6 +108,27 @@ const config = {
         enabled: process.env.SWAGGER_ENABLED !== 'false',
     },
 
+    llm: {
+        enabled:
+            process.env.TUDUDI_LLM_ENABLED !== 'false' &&
+            !!(process.env.TUDUDI_LLM_API_KEY || process.env.OPENAI_API_KEY),
+        apiKey: process.env.TUDUDI_LLM_API_KEY || process.env.OPENAI_API_KEY,
+        baseUrl:
+            process.env.TUDUDI_LLM_BASE_URL ||
+            process.env.OPENAI_BASE_URL ||
+            'https://api.openai.com/v1',
+        model:
+            process.env.TUDUDI_LLM_MODEL ||
+            process.env.OPENAI_MODEL ||
+            'gpt-4.1-mini',
+        timeoutMs: process.env.TUDUDI_LLM_TIMEOUT_MS
+            ? parseInt(process.env.TUDUDI_LLM_TIMEOUT_MS, 10)
+            : 20000,
+        temperature: process.env.TUDUDI_LLM_TEMPERATURE
+            ? parseFloat(process.env.TUDUDI_LLM_TEMPERATURE)
+            : 0.2,
+    },
+
     trustProxy: (() => {
         const val = process.env.TUDUDI_TRUST_PROXY;
         if (val === undefined || val === '') return false;

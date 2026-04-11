@@ -197,6 +197,37 @@ const updateUserChatId = async (userId, chatId) => {
     await User.update({ telegram_chat_id: chatId }, { where: { id: userId } });
 };
 
+const buildTelegramWelcomeMessage = () =>
+    `🎉 Welcome to tududi!\n\nYour personal task management bot is now connected and ready to help!\n\n📝 Send any plain message to capture it in your tududi inbox.\n\n✨ Helpful commands:\n• /help - See everything the bot can do\n• /today - Get your current task summary\n• /inbox - Show your latest inbox captures\n• /status - Check connection and summary status\n• /plan <task> - Break a task into actionable subtasks\n\nLet's get organized! 🚀`;
+
+const buildTelegramHelpMessage = () =>
+    `📋 tududi Bot Help\n\nWhat you can do:\n• Send any plain message → save it to your tududi inbox\n• /today → get your current task summary\n• /inbox → show your latest inbox captures\n• /status → check bot and summary settings\n• /plan <task> → break a task into actionable subtasks\n\nExamples:\n• Buy birthday gift ideas\n• /plan launch referral program\n• /today\n\nTip: include project names, due dates, or constraints in your message so tududi can preserve better context.`;
+
+const buildTelegramStatusMessage = (user) => {
+    const summaryState = user.task_summary_enabled ? 'enabled' : 'disabled';
+    const summaryFrequency = user.task_summary_frequency || 'daily';
+    const chatState = user.telegram_chat_id
+        ? `connected to chat ${user.telegram_chat_id}`
+        : 'waiting for first chat message';
+    return `🤖 tududi Telegram Status\n\n• Bot: configured\n• Chat: ${chatState}\n• Polling: ${pollerState.running ? 'running' : 'stopped'}\n• Task summaries: ${summaryState} (${summaryFrequency})\n• Allowed users: ${user.telegram_allowed_users || 'all users'}\n\nUse /help to see available commands.`;
+};
+
+const fetchRecentInboxItems = async (userId, limit = 5) =>
+    await InboxItem.findAll({
+        where: { user_id: userId },
+        order: [['created_at', 'DESC']],
+        limit,
+    });
+
+const buildInboxPreviewMessage = (items) => {
+    if (!items.length) {
+        return '📥 Your tududi inbox is empty. Send any message here and I will capture it for you.';
+    }
+
+    const lines = items.map((item, index) => `${index + 1}. ${item.content}`);
+    return `📥 Latest tududi inbox captures\n\n${lines.join('\n')}\n\nSend any new message to capture another item.`;
+};
+
 // Side effect function to create inbox item
 const createInboxItem = async (content, userId, messageId) => {
     // Check if a similar item was created recently (within last 30 seconds)
@@ -274,15 +305,19 @@ const isAuthorizedTelegramUser = (user, message) => {
 };
 
 // Function to handle bot commands
-const handleBotCommand = async (command, user, chatId, messageId) => {
+const handleBotCommand = async (commandText, user, chatId, messageId) => {
     const botToken = user.telegram_bot_token;
+    const trimmedCommand = commandText.trim();
+    const [rawCommand, ...rawArgs] = trimmedCommand.split(/\s+/);
+    const command = rawCommand.toLowerCase();
+    const args = rawArgs.join(' ').trim();
 
-    switch (command.toLowerCase()) {
+    switch (command) {
         case '/start':
             await sendTelegramMessage(
                 botToken,
                 chatId,
-                `🎉 Welcome to tududi!\n\nYour personal task management bot is now connected and ready to help!\n\n📝 Simply send me any message and I'll add it to your tududi inbox as an item.\n\n✨ Commands:\n• /help - Show help information\n• /start - Show welcome message\n• Just type any text - Add it as an inbox item\n\nLet's get organized! 🚀`,
+                buildTelegramWelcomeMessage(),
                 messageId
             );
             break;
@@ -290,15 +325,87 @@ const handleBotCommand = async (command, user, chatId, messageId) => {
             await sendTelegramMessage(
                 botToken,
                 chatId,
-                `📋 tududi Bot Help\n\nSend me any text message and I'll add it to your tududi inbox as an inbox item.\n\nCommands:\n/start - Welcome message\n/help - Show this help message\n\nJust type your item and I'll take care of the rest!`,
+                buildTelegramHelpMessage(),
                 messageId
             );
             break;
+        case '/today': {
+            const { generateSummaryForUser } = require('../tasks/taskSummaryService');
+            const summary = await generateSummaryForUser(user.id);
+            await sendTelegramMessage(
+                botToken,
+                chatId,
+                summary ||
+                    '📋 I could not build your summary just now. Try again in a moment or verify you have tasks in tududi.',
+                messageId
+            );
+            break;
+        }
+        case '/inbox': {
+            const items = await fetchRecentInboxItems(user.id, 5);
+            await sendTelegramMessage(
+                botToken,
+                chatId,
+                buildInboxPreviewMessage(items),
+                messageId
+            );
+            break;
+        }
+        case '/status':
+            await sendTelegramMessage(
+                botToken,
+                chatId,
+                buildTelegramStatusMessage(user),
+                messageId
+            );
+            break;
+        case '/plan': {
+            if (!args) {
+                await sendTelegramMessage(
+                    botToken,
+                    chatId,
+                    '🧠 Usage: /plan <task description>\n\nExample: /plan prepare board meeting agenda',
+                    messageId
+                );
+                break;
+            }
+
+            try {
+                const { generateDelegationPlanFromText } = require('../tasks/taskDelegationService');
+                const plan = await generateDelegationPlanFromText(args);
+                const contextLines = plan.context?.length
+                    ? `\n\nContext:\n${plan.context.map((item) => `• ${item}`).join('\n')}`
+                    : '';
+                const subtaskLines = plan.subtasks
+                    .map((subtask, index) => {
+                        const contextSuffix = subtask.context
+                            ? ` — ${subtask.context}`
+                            : '';
+                        return `${index + 1}. ${subtask.name}${contextSuffix}`;
+                    })
+                    .join('\n');
+
+                await sendTelegramMessage(
+                    botToken,
+                    chatId,
+                    `🧠 ${plan.summary}\n\n${plan.delegation_brief}${contextLines}\n\nSuggested subtasks:\n${subtaskLines}`,
+                    messageId
+                );
+            } catch (error) {
+                await sendTelegramMessage(
+                    botToken,
+                    chatId,
+                    `❌ Could not generate a delegation plan right now: ${error.message}`,
+                    messageId
+                );
+            }
+            break;
+        }
         default:
             await sendTelegramMessage(
                 botToken,
                 chatId,
-                `❓ Unknown command: ${command}\n\nUse /help to see available commands or just send a regular message to add it to your inbox.`,
+                `❓ Unknown command: ${trimmedCommand}\n\nUse /help to see available commands or just send a regular message to add it to your inbox.`,
                 messageId
             );
             break;
@@ -352,7 +459,7 @@ const processMessage = async (user, update) => {
         await sendTelegramMessage(
             user.telegram_bot_token,
             chatId,
-            `🎉 Welcome to tududi!\n\nYour personal task management bot is now connected and ready to help!\n\n📝 Simply send me any message and I'll add it to your tududi inbox as an inbox item.\n\n✨ Commands:\n• /help - Show help information\n• /start - Show welcome message\n• Just type any text - Add it as an inbox item\n\nLet's get organized! 🚀`
+            buildTelegramWelcomeMessage()
         );
 
         console.log(

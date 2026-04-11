@@ -179,6 +179,36 @@ export interface TaskIteration {
     utc_date: string;
 }
 
+export interface TaskDelegationPlanSubtask {
+    name: string;
+    context?: string;
+}
+
+export interface TaskDelegationPlan {
+    summary: string;
+    delegation_brief: string;
+    context: string[];
+    subtasks: TaskDelegationPlanSubtask[];
+    model?: string;
+    source?: string;
+}
+
+export const generateTaskDelegationPlan = async (
+    taskUid: string
+): Promise<TaskDelegationPlan> => {
+    const response = await fetch(
+        getApiPath(`task/${encodeURIComponent(taskUid)}/delegation-plan`),
+        {
+            method: 'POST',
+            credentials: 'include',
+            headers: getPostHeaders(),
+        }
+    );
+
+    await handleAuthResponse(response, 'Failed to generate delegation plan.');
+    return await response.json();
+};
+
 export const fetchTaskNextIterations = async (
     taskUid: string,
     startFromDate?: string

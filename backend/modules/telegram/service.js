@@ -12,7 +12,7 @@ const {
 
 async function sendWelcomeMessage(token, chatId) {
     return new Promise((resolve) => {
-        const welcomeText = `🎉 Welcome to tududi!\n\nYour personal task management bot is now connected and ready to help!\n\n📝 Simply send me any message and I'll add it to your tududi inbox as an item.\n\n✨ Commands:\n• /help - Show help information\n• Just type any text - Add it as an inbox item\n\nLet's get organized! 🚀`;
+        const welcomeText = `🎉 Welcome to tududi!\n\nYour personal task management bot is now connected and ready to help!\n\n📝 Send any plain message to capture it in your tududi inbox.\n\n✨ Helpful commands:\n• /help - See everything the bot can do\n• /today - Get your current task summary\n• /inbox - Show your latest inbox captures\n• /status - Check connection and summary status\n• /plan <task> - Break a task into actionable subtasks\n\nLet's get organized! 🚀`;
 
         const postData = JSON.stringify({
             chat_id: chatId,

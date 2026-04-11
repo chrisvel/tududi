@@ -1,9 +1,15 @@
 import React, { useState, useRef } from 'react';
-import { PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
+import {
+    PlusIcon,
+    TrashIcon,
+    SparklesIcon,
+    InformationCircleIcon,
+} from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 import { Task } from '../../../entities/Task';
 import TaskPriorityIcon from '../../Shared/Icons/TaskPriorityIcon';
 import { toggleTaskCompletion } from '../../../utils/tasksService';
+import type { TaskDelegationPlan } from '../../../utils/tasksService';
 
 interface TaskSubtasksSectionProps {
     parentTaskId: number;
@@ -11,6 +17,9 @@ interface TaskSubtasksSectionProps {
     onSubtasksChange: (subtasks: Task[]) => void;
     onSubtaskUpdate?: (subtask: Task) => Promise<void>;
     onSave?: (subtasks: Task[]) => void;
+    delegationPlan?: TaskDelegationPlan | null;
+    isGeneratingDelegationPlan?: boolean;
+    onGenerateDelegationPlan?: () => void;
 }
 
 const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
@@ -19,6 +28,9 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
     onSubtasksChange,
     onSubtaskUpdate,
     onSave,
+    delegationPlan,
+    isGeneratingDelegationPlan = false,
+    onGenerateDelegationPlan,
 }) => {
     const [newSubtaskName, setNewSubtaskName] = useState('');
     const [isLoading] = useState(false);
@@ -140,6 +152,53 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
 
     return (
         <div ref={subtasksSectionRef} className="space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                        {t('subtasks.title', 'Subtasks')}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {t(
+                            'subtasks.helper',
+                            'Keep subtasks concrete so someone else can execute them without guessing.'
+                        )}
+                    </p>
+                </div>
+
+                {onGenerateDelegationPlan && (
+                    <button
+                        type="button"
+                        onClick={onGenerateDelegationPlan}
+                        disabled={isGeneratingDelegationPlan}
+                        className="inline-flex items-center px-3 py-2 text-sm rounded-md bg-violet-600 text-white hover:bg-violet-700 disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                        <SparklesIcon className="h-4 w-4 mr-2" />
+                        {isGeneratingDelegationPlan
+                            ? t('subtasks.generatingPlan', 'Generating plan...')
+                            : t('subtasks.generateWithAi', 'Generate with AI')}
+                    </button>
+                )}
+            </div>
+
+            {delegationPlan && (
+                <div className="rounded-lg border border-violet-200 dark:border-violet-800 bg-violet-50 dark:bg-violet-950/30 p-4">
+                    <div className="flex items-start gap-3">
+                        <InformationCircleIcon className="h-5 w-5 text-violet-600 dark:text-violet-300 mt-0.5" />
+                        <div className="space-y-2 text-sm text-violet-900 dark:text-violet-100">
+                            <p className="font-semibold">{delegationPlan.summary}</p>
+                            <p>{delegationPlan.delegation_brief}</p>
+                            {delegationPlan.context?.length > 0 && (
+                                <ul className="list-disc pl-5 space-y-1 text-violet-800 dark:text-violet-200">
+                                    {delegationPlan.context.map((item, index) => (
+                                        <li key={`${item}-${index}`}>{item}</li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {isLoading ? (
                 <div className="text-sm text-gray-500 dark:text-gray-400">
                     {t('loading.subtasks', 'Loading subtasks...')}

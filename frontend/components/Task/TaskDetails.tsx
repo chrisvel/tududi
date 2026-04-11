@@ -13,6 +13,8 @@ import {
     fetchSubtasks,
     TaskIteration,
     toggleTaskCompletion,
+    generateTaskDelegationPlan,
+    TaskDelegationPlan,
 } from '../../utils/tasksService';
 import { createProject } from '../../utils/projectsService';
 import { fetchAttachments } from '../../utils/attachmentsService';
@@ -72,6 +74,10 @@ const TaskDetails: React.FC = () => {
     const [parentTask, setParentTask] = useState<Task | null>(null);
     const [loadingParent, setLoadingParent] = useState(false);
     const [pendingSubtasks, setPendingSubtasks] = useState<Task[]>([]);
+    const [delegationPlan, setDelegationPlan] =
+        useState<TaskDelegationPlan | null>(null);
+    const [isGeneratingDelegationPlan, setIsGeneratingDelegationPlan] =
+        useState(false);
     const [actionsMenuOpen, setActionsMenuOpen] = useState(false);
     const actionsMenuRef = useRef<HTMLDivElement>(null);
     const lastKnownSubtaskCount = useRef<number>(0);
@@ -539,6 +545,10 @@ const TaskDetails: React.FC = () => {
     }, [subtasks]);
 
     useEffect(() => {
+        setDelegationPlan(null);
+    }, [task?.uid]);
+
+    useEffect(() => {
         const loadNextIterations = async () => {
             if (
                 task?.id &&
@@ -659,6 +669,69 @@ const TaskDetails: React.FC = () => {
                 t('task.subtasksUpdateError', 'Failed to update subtasks')
             );
             setPendingSubtasks([...subtasks]);
+        }
+    };
+
+    const handleGenerateDelegationPlan = async () => {
+        if (!task?.uid || !task?.id) {
+            return;
+        }
+
+        setIsGeneratingDelegationPlan(true);
+        try {
+            const plan = await generateTaskDelegationPlan(task.uid);
+            setDelegationPlan(plan);
+
+            const existingNames = new Set(
+                pendingSubtasks.map((subtask) => subtask.name.trim().toLowerCase())
+            );
+
+            const newSubtasks = plan.subtasks
+                .filter((subtask) => !existingNames.has(subtask.name.toLowerCase()))
+                .map(
+                    (subtask) =>
+                        ({
+                            name: subtask.name,
+                            status: 'not_started',
+                            priority: 'low',
+                            parent_task_id: task.id,
+                            isNew: true,
+                            _isNew: true,
+                            completed_at: null,
+                        }) as Task
+                );
+
+            if (newSubtasks.length === 0) {
+                showSuccessToast(
+                    t(
+                        'task.delegationPlanReady',
+                        'AI plan generated. Your existing subtasks already cover the suggestions.'
+                    )
+                );
+                return;
+            }
+
+            const mergedSubtasks = [...pendingSubtasks, ...newSubtasks];
+            setPendingSubtasks(mergedSubtasks);
+            await handleSaveSubtasks(mergedSubtasks);
+            showSuccessToast(
+                t(
+                    'task.delegationPlanApplied',
+                    'AI delegation plan added {{count}} subtasks.',
+                    { count: newSubtasks.length }
+                )
+            );
+        } catch (error) {
+            console.error('Error generating delegation plan:', error);
+            showErrorToast(
+                (error as Error).message ||
+                    t(
+                        'task.delegationPlanError',
+                        'Failed to generate an AI delegation plan.'
+                    )
+            );
+        } finally {
+            setIsGeneratingDelegationPlan(false);
         }
     };
 
@@ -1213,6 +1286,13 @@ const TaskDetails: React.FC = () => {
                                 subtasks={pendingSubtasks}
                                 onSubtasksChange={setPendingSubtasks}
                                 onSave={handleSaveSubtasks}
+                                delegationPlan={delegationPlan}
+                                isGeneratingDelegationPlan={
+                                    isGeneratingDelegationPlan
+                                }
+                                onGenerateDelegationPlan={
+                                    handleGenerateDelegationPlan
+                                }
                             />
                         </div>
                     )}

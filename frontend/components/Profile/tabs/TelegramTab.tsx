@@ -42,6 +42,24 @@ const TelegramTab: React.FC<TelegramTabProps> = ({
     formatFrequency,
 }) => {
     const { t } = useTranslation();
+    const telegramCommands = [
+        {
+            command: '/today',
+            description: 'Send the latest Today summary right now',
+        },
+        {
+            command: '/inbox',
+            description: 'Preview your most recent inbox captures',
+        },
+        {
+            command: '/status',
+            description: 'Check bot connectivity and summary settings',
+        },
+        {
+            command: '/plan <task>',
+            description: 'Generate an AI delegation plan for a task idea',
+        },
+    ];
 
     if (!isActive) return null;
 
@@ -161,6 +179,28 @@ const TelegramTab: React.FC<TelegramTabProps> = ({
                             </p>
                         </div>
                     )}
+
+                    <div className="rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/30 p-4">
+                        <p className="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-2">
+                            {t('profile.telegramWhatYouCanDo', 'What your bot can do')}
+                        </p>
+                        <ul className="space-y-2 text-sm text-blue-800 dark:text-blue-200">
+                            <li>
+                                {t(
+                                    'profile.telegramCaptureTip',
+                                    'Send any plain message to capture it in your tududi inbox.'
+                                )}
+                            </li>
+                            {telegramCommands.map((item) => (
+                                <li key={item.command}>
+                                    <span className="font-mono font-semibold">
+                                        {item.command}
+                                    </span>{' '}
+                                    — {item.description}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
 
                     {(telegramBotInfo || profile?.telegram_bot_token) && (
                         <div className="p-2 bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-800 rounded text-blue-800 dark:text-blue-200">
@@ -368,7 +408,7 @@ const TelegramTab: React.FC<TelegramTabProps> = ({
                         {t('profile.summaryFrequency', 'Summary Frequency')}
                     </label>
                     <div className="flex flex-wrap gap-2">
-                        {['1h', '2h', '4h', '8h', '12h', 'daily', 'weekly'].map(
+                        {['1h', '2h', '4h', '8h', '12h', 'daily', 'weekdays', 'weekly'].map(
                             (frequency) => (
                                 <button
                                     key={frequency}

@@ -71,6 +71,7 @@ const {
 const { getTaskMetrics } = require('./queries/metrics-computation');
 
 const { getSubtasks } = require('./operations/subtasks');
+const taskDelegationService = require('./taskDelegationService');
 
 const {
     requireTaskReadAccess,
@@ -845,6 +846,30 @@ router.get('/task/:uid/subtasks', async (req, res) => {
     } catch (error) {
         logError('Error fetching subtasks:', error);
         res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+router.post('/task/:uid/delegation-plan', requireTaskReadAccess, async (req, res) => {
+    try {
+        const task = await taskRepository.findByUid(req.params.uid, {
+            include: TASK_INCLUDES_WITH_SUBTASKS,
+        });
+
+        if (!task) {
+            return res.status(404).json({ error: 'Task not found.' });
+        }
+
+        const plan = await taskDelegationService.generateTaskDelegationPlan(task);
+        res.json(plan);
+    } catch (error) {
+        if (error.statusCode === 503) {
+            return res.status(503).json({ error: error.message });
+        }
+
+        logError('Error generating task delegation plan:', error);
+        res.status(500).json({
+            error: 'Failed to generate delegation plan.',
+        });
     }
 });
 
