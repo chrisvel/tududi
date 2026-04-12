@@ -179,8 +179,10 @@ async function fetchTasksDueToday(visibleTasksWhere, userTimezone) {
                         [Op.notIn]: [
                             Task.STATUS.DONE,
                             Task.STATUS.ARCHIVED,
+                            Task.STATUS.CANCELLED,
                             'done',
                             'archived',
+                            'cancelled',
                             ...TODAY_PLAN_STATUSES,
                         ],
                     },
@@ -227,8 +229,10 @@ async function fetchOverdueTasks(visibleTasksWhere, userTimezone) {
                         [Op.notIn]: [
                             Task.STATUS.DONE,
                             Task.STATUS.ARCHIVED,
+                            Task.STATUS.CANCELLED,
                             'done',
                             'archived',
+                            'cancelled',
                             // Exclude tasks in today plan (they show in Planned section)
                             ...TODAY_PLAN_STATUSES,
                         ],
