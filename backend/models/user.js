@@ -39,7 +39,7 @@ module.exports = (sequelize) => {
             },
             password_digest: {
                 type: DataTypes.STRING,
-                allowNull: false,
+                allowNull: true,
                 field: 'password_digest',
             },
             appearance: {
