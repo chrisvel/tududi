@@ -95,7 +95,10 @@ async function deleteFileFromDisk(filepath) {
             const resolvedPath = path.resolve(filepath);
             const relativePath = path.relative(uploadDir, resolvedPath);
 
-            if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
+            if (
+                relativePath.startsWith('..') ||
+                path.isAbsolute(relativePath)
+            ) {
                 logError(
                     'Attempt to delete file outside upload directory:',
                     filepath
