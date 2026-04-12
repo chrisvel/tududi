@@ -14,6 +14,7 @@ const {
 } = require('../../utils/attachment-utils');
 const { getAuthenticatedUserId } = require('../../utils/request-utils');
 const permissionsService = require('../../services/permissionsService');
+const { createResourceLimiter } = require('../../middleware/rateLimiter');
 
 const router = express.Router();
 
@@ -59,6 +60,7 @@ const upload = multer({
 // Upload attachment to task
 router.post(
     '/upload/task-attachment',
+    createResourceLimiter,
     upload.single('file'),
     async (req, res) => {
         try {
@@ -204,6 +206,7 @@ router.get('/tasks/:taskUid/attachments', async (req, res) => {
 // Delete an attachment
 router.delete(
     '/tasks/:taskUid/attachments/:attachmentUid',
+    createResourceLimiter,
     async (req, res) => {
         try {
             const { taskUid, attachmentUid } = req.params;

@@ -31,9 +31,26 @@ const sessionStore = new SequelizeStore({
 // Middlewares
 app.use(
     helmet({
-        hsts: false,
-        forceHTTPS: false,
-        contentSecurityPolicy: false,
+        contentSecurityPolicy: {
+            directives: {
+                defaultSrc: ["'self'"],
+                scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+                styleSrc: ["'self'", "'unsafe-inline'"],
+                imgSrc: ["'self'", 'data:', 'https:'],
+                connectSrc: ["'self'"],
+                fontSrc: ["'self'"],
+                objectSrc: ["'none'"],
+                mediaSrc: ["'self'"],
+                frameSrc: ["'none'"],
+            },
+        },
+        hsts: config.production
+            ? {
+                  maxAge: 31536000,
+                  includeSubDomains: true,
+                  preload: true,
+              }
+            : false,
     })
 );
 app.use(compression());
@@ -69,7 +86,7 @@ app.use(
         saveUninitialized: false,
         cookie: {
             httpOnly: true,
-            secure: false,
+            secure: config.production,
             maxAge: 2592000000, // 30 days
             sameSite: 'lax',
         },

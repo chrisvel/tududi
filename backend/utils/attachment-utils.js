@@ -1,6 +1,9 @@
 const path = require('path');
 const fs = require('fs').promises;
 const { logError } = require('../services/logService');
+const { getConfig } = require('../config/config');
+
+const config = getConfig();
 
 // Allowed MIME types and their extensions
 const ALLOWED_TYPES = {
@@ -82,8 +85,22 @@ function isTextFile(mimetype) {
  * Delete file from disk safely
  */
 async function deleteFileFromDisk(filepath) {
+    if (!filepath) return false;
+
     try {
-        await fs.unlink(filepath);
+        const uploadDir = path.resolve(config.uploadPath);
+        const resolvedPath = path.resolve(filepath);
+        const relativePath = path.relative(uploadDir, resolvedPath);
+
+        if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
+            logError(
+                'Attempt to delete file outside upload directory:',
+                filepath
+            );
+            return false;
+        }
+
+        await fs.unlink(resolvedPath);
         return true;
     } catch (error) {
         logError('Error deleting file from disk:', error);

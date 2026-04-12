@@ -22,6 +22,24 @@ const taskSummaryService = require('../tasks/taskSummaryService');
 const { logError } = require('../../services/logService');
 const fs = require('fs').promises;
 const path = require('path');
+const { getConfig } = require('../../config/config');
+
+const config = getConfig();
+
+async function safeDeleteFile(filePath) {
+    if (!filePath) return;
+
+    const uploadDir = path.resolve(config.uploadPath);
+    const resolvedPath = path.resolve(filePath);
+    const relativePath = path.relative(uploadDir, resolvedPath);
+
+    if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
+        logError('Attempt to delete file outside upload directory:', filePath);
+        return;
+    }
+
+    await fs.unlink(resolvedPath).catch(() => {});
+}
 
 class UsersService {
     /**
@@ -177,18 +195,17 @@ class UsersService {
 
         const user = await usersRepository.findById(userId);
         if (!user) {
-            await fs.unlink(file.path).catch(() => {});
+            await safeDeleteFile(file.path);
             throw new NotFoundError('User not found');
         }
 
-        // Delete old avatar file if it exists
         if (user.avatar_image) {
             const oldAvatarPath = path.join(
                 __dirname,
                 '../../uploads/avatars',
                 path.basename(user.avatar_image)
             );
-            await fs.unlink(oldAvatarPath).catch(() => {});
+            await safeDeleteFile(oldAvatarPath);
         }
 
         const avatarUrl = `/uploads/avatars/${path.basename(file.path)}`;
@@ -216,7 +233,7 @@ class UsersService {
                 '../../uploads/avatars',
                 path.basename(user.avatar_image)
             );
-            await fs.unlink(avatarPath).catch(() => {});
+            await safeDeleteFile(avatarPath);
         }
 
         await usersRepository.update(user, { avatar_image: null });

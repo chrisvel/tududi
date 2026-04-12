@@ -8,7 +8,10 @@ const { getConfig } = require('../../config/config');
 const config = getConfig();
 const router = express.Router();
 const usersController = require('./controller');
-const { apiKeyManagementLimiter } = require('../../middleware/rateLimiter');
+const {
+    apiKeyManagementLimiter,
+    createResourceLimiter,
+} = require('../../middleware/rateLimiter');
 
 // Configure multer for avatar uploads
 const storage = multer.diskStorage({
@@ -61,10 +64,15 @@ router.patch('/profile', usersController.updateProfile);
 // Avatar routes
 router.post(
     '/profile/avatar',
+    createResourceLimiter,
     upload.single('avatar'),
     usersController.uploadAvatar
 );
-router.delete('/profile/avatar', usersController.deleteAvatar);
+router.delete(
+    '/profile/avatar',
+    createResourceLimiter,
+    usersController.deleteAvatar
+);
 
 // Password change
 router.post('/profile/change-password', usersController.changePassword);
