@@ -160,6 +160,7 @@
     "nanoid": "^3.3.7",
     "node-cron": "~4.1.0",
     "nodemailer": "^8.0.4",
+    "openid-client": "^6.8.2",
     "sequelize": "~6.37.7",
     "sequelize-cli": "~6.6.2",
     "slugify": "^1.6.6",
