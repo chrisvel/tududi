@@ -8,12 +8,10 @@ import {
     InformationCircleIcon,
 } from '@heroicons/react/24/outline';
 import type { ProfileFormData } from '../types';
-import ConnectedAccounts from './ConnectedAccounts';
 
 interface SecurityTabProps {
     isActive: boolean;
     formData: ProfileFormData;
-    hasPassword: boolean;
     showCurrentPassword: boolean;
     showNewPassword: boolean;
     showConfirmPassword: boolean;
@@ -26,7 +24,6 @@ interface SecurityTabProps {
 const SecurityTab: React.FC<SecurityTabProps> = ({
     isActive,
     formData,
-    hasPassword,
     showCurrentPassword,
     showNewPassword,
     showConfirmPassword,
@@ -164,8 +161,6 @@ const SecurityTab: React.FC<SecurityTabProps> = ({
                     </div>
                 </div>
             </div>
-
-            <ConnectedAccounts hasPassword={hasPassword} />
         </div>
     );
 };

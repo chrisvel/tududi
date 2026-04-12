@@ -30,14 +30,18 @@ export async function fetchOIDCProviders(): Promise<OIDCProvider[]> {
     const response = await fetch(getApiPath('oidc/providers'), {
         credentials: 'include',
     });
-    return handleResponse<OIDCProvider[]>(response);
+    const data = await handleResponse<{ providers: OIDCProvider[] }>(response);
+    return data.providers;
 }
 
 export async function fetchOIDCIdentities(): Promise<OIDCIdentity[]> {
     const response = await fetch(getApiPath('oidc/identities'), {
         credentials: 'include',
     });
-    return handleResponse<OIDCIdentity[]>(response);
+    const data = await handleResponse<{ identities: OIDCIdentity[] }>(
+        response
+    );
+    return data.identities;
 }
 
 export async function unlinkOIDCIdentity(identityId: number): Promise<void> {
@@ -52,6 +56,18 @@ export async function unlinkOIDCIdentity(identityId: number): Promise<void> {
     }
 }
 
-export function initiateOIDCLink(providerSlug: string): void {
-    window.location.href = getApiPath(`oidc/link/${providerSlug}`);
+export async function initiateOIDCLink(providerSlug: string): Promise<void> {
+    const response = await fetch(getApiPath(`oidc/link/${providerSlug}`), {
+        method: 'POST',
+        credentials: 'include',
+    });
+
+    if (!response.ok) {
+        const errorBody = await response.json().catch(() => null);
+        const message = errorBody?.error || 'Failed to initiate account linking';
+        throw new Error(message);
+    }
+
+    const data = (await response.json()) as { redirectUrl: string };
+    window.location.href = data.redirectUrl;
 }

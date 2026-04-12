@@ -12,6 +12,7 @@ import {
     UserIcon,
     ClockIcon,
     ShieldCheckIcon,
+    LinkIcon,
     LightBulbIcon,
     KeyIcon,
     CheckIcon,
@@ -39,6 +40,7 @@ import {
 import TabsNav, { type TabConfig } from './tabs/TabsNav';
 import GeneralTab from './tabs/GeneralTab';
 import SecurityTab from './tabs/SecurityTab';
+import OIDCTab from './tabs/OIDCTab';
 import ApiKeysTab from './tabs/ApiKeysTab';
 import ProductivityTab from './tabs/ProductivityTab';
 import TelegramTab from './tabs/TelegramTab';
@@ -88,6 +90,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         const validTabs = [
             'general',
             'security',
+            'oidc',
             'api-keys',
             'productivity',
             'telegram',
@@ -1116,6 +1119,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             icon: <ShieldCheckIcon className="w-5 h-5" />,
         },
         {
+            id: 'oidc',
+            name: t('profile.tabs.oidc', 'OIDC/SSO'),
+            icon: <LinkIcon className="w-5 h-5" />,
+        },
+        {
             id: 'api-keys',
             name: t('profile.tabs.apiKeys', 'API Keys'),
             icon: <KeyIcon className="w-5 h-5" />,
@@ -1228,7 +1236,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                 <SecurityTab
                                     isActive={activeTab === 'security'}
                                     formData={formData}
-                                    hasPassword={profile?.has_password ?? false}
                                     showCurrentPassword={showCurrentPassword}
                                     showNewPassword={showNewPassword}
                                     showConfirmPassword={showConfirmPassword}
@@ -1242,6 +1249,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                     onToggleConfirmPassword={() =>
                                         setShowConfirmPassword((prev) => !prev)
                                     }
+                                />
+
+                                <OIDCTab
+                                    isActive={activeTab === 'oidc'}
+                                    hasPassword={profile?.has_password ?? false}
                                 />
 
                                 <ApiKeysTab

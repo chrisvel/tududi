@@ -339,7 +339,8 @@
     "skipNextAction": "Skip for now",
     "nextActionHint": "Think of the smallest, most concrete step you can take right now to move this project forward.",
     "tabs": {
-      "notifications": "Notification Preferences"
+      "notifications": "Notification Preferences",
+      "oidc": "OIDC/SSO"
     },
     "security": "Security Settings",
     "changePassword": "Change Password",
@@ -537,6 +538,7 @@
     "loginFailed": "Login Failed",
     "logoutSuccess": "Logout Successful",
     "or_continue_with_email": "Or continue with email",
+    "sign_in_with": "Sign in with {{provider}}",
     "oidc": {
       "completing_signin": "Completing sign-in...",
       "authenticating_with_provider": "Authenticating with provider. Please wait..."

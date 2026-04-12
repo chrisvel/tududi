@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface OIDCProvider {
     slug: string;
@@ -12,6 +13,8 @@ interface OIDCProviderButtonsProps {
 const OIDCProviderButtons: React.FC<OIDCProviderButtonsProps> = ({
     providers,
 }) => {
+    const { t } = useTranslation();
+
     const handleProviderClick = (slug: string) => {
         window.location.href = `/api/oidc/auth/${slug}`;
     };
@@ -29,7 +32,11 @@ const OIDCProviderButtons: React.FC<OIDCProviderButtonsProps> = ({
                     className="w-full flex items-center justify-center gap-3 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-gray-700 dark:text-gray-200"
                     type="button"
                 >
-                    <span>Sign in with {provider.name}</span>
+                    <span>
+                        {t('auth.sign_in_with', 'Sign in with {{provider}}', {
+                            provider: provider.name,
+                        })}
+                    </span>
                 </button>
             ))}
         </div>

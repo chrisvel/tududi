@@ -56,8 +56,17 @@ const ConnectedAccounts: React.FC<ConnectedAccountsProps> = ({
         }
     };
 
-    const handleLinkProvider = (providerSlug: string) => {
-        initiateOIDCLink(providerSlug);
+    const handleLinkProvider = async (providerSlug: string) => {
+        try {
+            setError(null);
+            await initiateOIDCLink(providerSlug);
+        } catch (err) {
+            setError(
+                err instanceof Error
+                    ? err.message
+                    : 'Failed to initiate account linking'
+            );
+        }
     };
 
     const handleRequestUnlink = (identityId: number) => {
