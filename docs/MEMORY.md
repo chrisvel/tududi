@@ -6,13 +6,16 @@ This document contains preferences, patterns, and memory items specific to worki
 
 ## Pull Request Preferences
 
-### PR Descriptions
+### PR Template
+- **ALWAYS use** the PR template from `.github/pull_request_template.md`
 - **Do NOT add** the "🤖 Generated with [Claude Code](https://claude.com/claude-code)" footer to pull requests
-- Keep PR descriptions focused on the changes and test plan
-- Follow the standard format:
-  - Summary section with bullet points
-  - Changes section with detailed breakdown
-  - Test plan section with checkboxes
+- Required sections:
+  - **Description**: What does this PR do? Why is this change needed?
+  - **Type of Change**: Bug fix / New feature / Breaking change / Documentation
+  - **Related Issues**: Link issues using "Fixes #123"
+  - **Testing**: Describe testing steps and commands run
+  - **Checklist**: Mark all applicable items (including "This is not AI slop crap")
+  - **Additional Notes**: Any other context for reviewers
 
 ### PR Creation Workflow
 - Always create PRs against the `main` branch
@@ -64,9 +67,18 @@ This document contains preferences, patterns, and memory items specific to worki
 ## GitHub Issue Preferences
 
 ### Bug Reports
-- **Always follow** the GitHub bug template (`.github/ISSUE_TEMPLATE/bug_report.yml`)
-- Include all required fields: Description, Steps to Reproduce, Expected Behavior, Actual Behavior, OS, Browser
-- Add technical context in Additional Context section (root cause, solution, files affected)
+- **ALWAYS use** the GitHub bug report template from `.github/ISSUE_TEMPLATE/bug_report.yml`
+- Required fields:
+  - **Description**: Clear description of the bug
+  - **Steps to Reproduce**: Detailed steps to reproduce the issue
+  - **Expected Behavior**: What should happen
+  - **Actual Behavior**: What actually happens
+  - **Operating System**: User's OS
+  - **Browser**: Browser name and version
+- Optional fields:
+  - **Version**: Tududi version (if known)
+  - **Screenshots**: Visual evidence of the issue
+  - **Additional Context**: Technical details (root cause, solution, files affected)
 
 ---
 
@@ -82,5 +94,5 @@ This document contains preferences, patterns, and memory items specific to worki
 
 ---
 
-**Last Updated:** 2026-03-14
+**Last Updated:** 2026-04-12
 **Maintained by:** Claude Code sessions - update as new patterns emerge
