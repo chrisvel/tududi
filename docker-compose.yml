@@ -9,6 +9,10 @@ services:
       - TUDUDI_ALLOWED_ORIGINS=http://localhost:3002
       - TUDUDI_TRUST_PROXY=false
       - TUDUDI_UPLOAD_PATH=/app/backend/uploads
+      # Push Notifications (optional) - generate with: npm run vapid:generate
+      - VAPID_PUBLIC_KEY=
+      - VAPID_PRIVATE_KEY=
+      - VAPID_SUBJECT=mailto:admin@example.com
       # Runtime UID/GID configuration - set these to match your host user/group
       - PUID=1001
       - PGID=1001
