@@ -98,7 +98,10 @@ describe('OIDC Provider Configuration', () => {
             providerConfig.reloadProviders();
             const provider = providerConfig.getProvider('google');
 
-            expect(provider.adminEmailDomains).toEqual(['example.com', 'company.com']);
+            expect(provider.adminEmailDomains).toEqual([
+                'example.com',
+                'company.com',
+            ]);
         });
 
         it('should respect AUTO_PROVISION=false', () => {

@@ -8,7 +8,7 @@ async function listProviders(req, res) {
     try {
         const providers = providerConfig.getAllProviders();
 
-        const publicProviders = providers.map(p => ({
+        const publicProviders = providers.map((p) => ({
             slug: p.slug,
             name: p.name,
             type: 'oidc',
@@ -44,7 +44,12 @@ async function handleCallback(req, res) {
 
         if (result.linkMode) {
             if (!req.currentUser) {
-                return res.redirect('/login?error=' + encodeURIComponent('Authentication required to link account'));
+                return res.redirect(
+                    '/login?error=' +
+                        encodeURIComponent(
+                            'Authentication required to link account'
+                        )
+                );
             }
 
             await provisioningService.linkIdentityToUser(
@@ -67,7 +72,12 @@ async function handleCallback(req, res) {
         req.session.userId = user.id;
 
         await auditService.logOidcProvision(user.id, slug, req, isNewUser);
-        await auditService.logLoginSuccess(user.id, auditService.AUTH_METHODS.OIDC, req, slug);
+        await auditService.logLoginSuccess(
+            user.id,
+            auditService.AUTH_METHODS.OIDC,
+            req,
+            slug
+        );
 
         res.redirect('/today');
     } catch (error) {
@@ -99,7 +109,9 @@ async function initiateLink(req, res) {
         res.json({ redirectUrl: authUrl });
     } catch (error) {
         console.error('Error initiating OIDC link:', error);
-        res.status(500).json({ error: error.message || 'Failed to initiate linking' });
+        res.status(500).json({
+            error: error.message || 'Failed to initiate linking',
+        });
     }
 }
 
@@ -122,7 +134,10 @@ async function unlinkIdentity(req, res) {
 
         const identity = await oidcIdentityService.getIdentityById(identityId);
 
-        await oidcIdentityService.unlinkIdentity(identityId, req.currentUser.id);
+        await oidcIdentityService.unlinkIdentity(
+            identityId,
+            req.currentUser.id
+        );
 
         await auditService.logOidcUnlinked(
             req.currentUser.id,
@@ -133,7 +148,9 @@ async function unlinkIdentity(req, res) {
         res.json({ success: true });
     } catch (error) {
         console.error('Error unlinking OIDC identity:', error);
-        res.status(500).json({ error: error.message || 'Failed to unlink identity' });
+        res.status(500).json({
+            error: error.message || 'Failed to unlink identity',
+        });
     }
 }
 
@@ -148,14 +165,16 @@ async function getUserIdentities(req, res) {
         );
 
         const providersMap = {};
-        providerConfig.getAllProviders().forEach(p => {
+        providerConfig.getAllProviders().forEach((p) => {
             providersMap[p.slug] = p;
         });
 
-        const enrichedIdentities = identities.map(identity => ({
+        const enrichedIdentities = identities.map((identity) => ({
             id: identity.id,
             provider_slug: identity.provider_slug,
-            provider_name: providersMap[identity.provider_slug]?.name || identity.provider_slug,
+            provider_name:
+                providersMap[identity.provider_slug]?.name ||
+                identity.provider_slug,
             email: identity.email,
             name: identity.name,
             picture: identity.picture,

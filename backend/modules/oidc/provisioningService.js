@@ -146,7 +146,9 @@ async function linkIdentityToUser(userId, providerSlug, claims) {
             }
 
             await transaction.rollback();
-            throw new Error('This OIDC identity is already linked to another user');
+            throw new Error(
+                'This OIDC identity is already linked to another user'
+            );
         }
 
         const user = await User.findByPk(userId, { transaction });

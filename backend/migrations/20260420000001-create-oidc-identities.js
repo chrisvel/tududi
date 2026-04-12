@@ -92,9 +92,7 @@ module.exports = {
             'subject',
         ]);
         await queryInterface.removeIndex('oidc_identities', ['email']);
-        await queryInterface.removeIndex('oidc_identities', [
-            'provider_slug',
-        ]);
+        await queryInterface.removeIndex('oidc_identities', ['provider_slug']);
         await queryInterface.removeIndex('oidc_identities', ['user_id']);
 
         await queryInterface.dropTable('oidc_identities');

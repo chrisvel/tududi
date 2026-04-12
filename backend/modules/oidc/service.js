@@ -14,7 +14,10 @@ async function discoverProvider(config) {
         issuerCache.set(config.issuer, issuer);
         return issuer;
     } catch (error) {
-        console.error(`Failed to discover OIDC provider at ${config.issuer}:`, error.message);
+        console.error(
+            `Failed to discover OIDC provider at ${config.issuer}:`,
+            error.message
+        );
         throw new Error(`OIDC provider discovery failed: ${error.message}`);
     }
 }

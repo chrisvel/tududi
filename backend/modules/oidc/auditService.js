@@ -50,7 +50,13 @@ async function logLoginSuccess(userId, authMethod, req, providerSlug = null) {
     });
 }
 
-async function logLoginFailed(email, authMethod, req, providerSlug = null, reason = null) {
+async function logLoginFailed(
+    email,
+    authMethod,
+    req,
+    providerSlug = null,
+    reason = null
+) {
     return logEvent({
         userId: null,
         eventType: EVENT_TYPES.LOGIN_FAILED,

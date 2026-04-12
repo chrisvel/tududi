@@ -524,7 +524,12 @@
     "rememberMe": "Remember Me",
     "loginSuccess": "Login Successful",
     "loginFailed": "Login Failed",
-    "logoutSuccess": "Logout Successful"
+    "logoutSuccess": "Logout Successful",
+    "or_continue_with_email": "Or continue with email",
+    "oidc": {
+      "completing_signin": "Completing sign-in...",
+      "authenticating_with_provider": "Authenticating with provider. Please wait..."
+    }
   },
   "dropdown": {
     "createNew": "Create New",

@@ -1,6 +1,9 @@
 function parseCommaSeparated(value) {
     if (!value) return [];
-    return value.split(',').map(v => v.trim()).filter(Boolean);
+    return value
+        .split(',')
+        .map((v) => v.trim())
+        .filter(Boolean);
 }
 
 function loadProvidersFromEnv() {
@@ -18,15 +21,23 @@ function loadProvidersFromEnv() {
             issuer: process.env[`OIDC_PROVIDER_${i}_ISSUER`],
             clientId: process.env[`OIDC_PROVIDER_${i}_CLIENT_ID`],
             clientSecret: process.env[`OIDC_PROVIDER_${i}_CLIENT_SECRET`],
-            scope: process.env[`OIDC_PROVIDER_${i}_SCOPE`] || 'openid profile email',
-            autoProvision: process.env[`OIDC_PROVIDER_${i}_AUTO_PROVISION`] !== 'false',
+            scope:
+                process.env[`OIDC_PROVIDER_${i}_SCOPE`] ||
+                'openid profile email',
+            autoProvision:
+                process.env[`OIDC_PROVIDER_${i}_AUTO_PROVISION`] !== 'false',
             adminEmailDomains: parseCommaSeparated(
                 process.env[`OIDC_PROVIDER_${i}_ADMIN_EMAIL_DOMAINS`]
             ),
         };
 
-        if (!provider.slug || !provider.name || !provider.issuer ||
-            !provider.clientId || !provider.clientSecret) {
+        if (
+            !provider.slug ||
+            !provider.name ||
+            !provider.issuer ||
+            !provider.clientId ||
+            !provider.clientSecret
+        ) {
             i++;
             continue;
         }
@@ -70,7 +81,7 @@ function getAllProviders() {
 
 function getProvider(slug) {
     const providers = getAllProviders();
-    const provider = providers.find(p => p.slug === slug);
+    const provider = providers.find((p) => p.slug === slug);
 
     if (!provider) {
         return null;

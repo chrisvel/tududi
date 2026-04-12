@@ -37,14 +37,18 @@ describe('OIDC Audit Service', () => {
     describe('EVENT_TYPES and AUTH_METHODS constants', () => {
         it('should export EVENT_TYPES', () => {
             expect(auditService.EVENT_TYPES).toBeDefined();
-            expect(auditService.EVENT_TYPES.LOGIN_SUCCESS).toBe('login_success');
+            expect(auditService.EVENT_TYPES.LOGIN_SUCCESS).toBe(
+                'login_success'
+            );
             expect(auditService.EVENT_TYPES.LOGIN_FAILED).toBe('login_failed');
             expect(auditService.EVENT_TYPES.OIDC_LINKED).toBe('oidc_linked');
         });
 
         it('should export AUTH_METHODS', () => {
             expect(auditService.AUTH_METHODS).toBeDefined();
-            expect(auditService.AUTH_METHODS.EMAIL_PASSWORD).toBe('email_password');
+            expect(auditService.AUTH_METHODS.EMAIL_PASSWORD).toBe(
+                'email_password'
+            );
             expect(auditService.AUTH_METHODS.OIDC).toBe('oidc');
             expect(auditService.AUTH_METHODS.API_TOKEN).toBe('api_token');
         });
@@ -72,11 +76,16 @@ describe('OIDC Audit Service', () => {
                 userId: testUser.id,
                 eventType: 'login_failed',
                 authMethod: 'email_password',
-                metadata: { email: 'test@example.com', reason: 'invalid_password' },
+                metadata: {
+                    email: 'test@example.com',
+                    reason: 'invalid_password',
+                },
             });
 
             const log = await AuthAuditLog.findOne();
-            expect(log.metadata).toBe('{"email":"test@example.com","reason":"invalid_password"}');
+            expect(log.metadata).toBe(
+                '{"email":"test@example.com","reason":"invalid_password"}'
+            );
         });
 
         it('should handle null userId for failed login attempts', async () => {
@@ -205,7 +214,12 @@ describe('OIDC Audit Service', () => {
 
     describe('logOidcProvision', () => {
         it('should log new user provisioning', async () => {
-            await auditService.logOidcProvision(testUser.id, 'google', mockReq, true);
+            await auditService.logOidcProvision(
+                testUser.id,
+                'google',
+                mockReq,
+                true
+            );
 
             const log = await AuthAuditLog.findOne();
             expect(log.user_id).toBe(testUser.id);
@@ -217,7 +231,12 @@ describe('OIDC Audit Service', () => {
         });
 
         it('should log existing user provisioning', async () => {
-            await auditService.logOidcProvision(testUser.id, 'okta', mockReq, false);
+            await auditService.logOidcProvision(
+                testUser.id,
+                'okta',
+                mockReq,
+                false
+            );
 
             const log = await AuthAuditLog.findOne();
             const metadata = JSON.parse(log.metadata);
@@ -246,7 +265,10 @@ describe('OIDC Audit Service', () => {
 
             expect(events).toHaveLength(5);
             for (let i = 0; i < events.length - 1; i++) {
-                expect(new Date(events[i].created_at) >= new Date(events[i + 1].created_at)).toBe(true);
+                expect(
+                    new Date(events[i].created_at) >=
+                        new Date(events[i + 1].created_at)
+                ).toBe(true);
             }
         });
 
@@ -305,7 +327,11 @@ describe('OIDC Audit Service', () => {
     describe('IP address handling', () => {
         it('should use req.ip if available', async () => {
             mockReq.ip = '10.0.0.1';
-            await auditService.logLoginSuccess(testUser.id, 'email_password', mockReq);
+            await auditService.logLoginSuccess(
+                testUser.id,
+                'email_password',
+                mockReq
+            );
 
             const log = await AuthAuditLog.findOne();
             expect(log.ip_address).toBe('10.0.0.1');
@@ -315,7 +341,11 @@ describe('OIDC Audit Service', () => {
             mockReq.ip = null;
             mockReq.connection.remoteAddress = '172.16.0.1';
 
-            await auditService.logLoginSuccess(testUser.id, 'email_password', mockReq);
+            await auditService.logLoginSuccess(
+                testUser.id,
+                'email_password',
+                mockReq
+            );
 
             const log = await AuthAuditLog.findOne();
             expect(log.ip_address).toBe('172.16.0.1');

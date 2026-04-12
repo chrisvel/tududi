@@ -47,7 +47,9 @@ describe('OIDC State Manager', () => {
             const expectedTime = expectedExpiry.getTime();
 
             expect(expiryTime).toBeGreaterThanOrEqual(expectedTime - 1000);
-            expect(expiryTime).toBeLessThanOrEqual(new Date(after.getTime() + 10 * 60 * 1000).getTime() + 1000);
+            expect(expiryTime).toBeLessThanOrEqual(
+                new Date(after.getTime() + 10 * 60 * 1000).getTime() + 1000
+            );
         });
 
         it('should generate unique state values', async () => {
@@ -59,7 +61,10 @@ describe('OIDC State Manager', () => {
 
         it('should store redirect URI if provided', async () => {
             const redirectUri = 'https://app.example.com/callback';
-            const { state } = await stateManager.createState('google', redirectUri);
+            const { state } = await stateManager.createState(
+                'google',
+                redirectUri
+            );
 
             const record = await OIDCStateNonce.findOne({ where: { state } });
 
@@ -91,9 +96,9 @@ describe('OIDC State Manager', () => {
                 { where: { state } }
             );
 
-            await expect(
-                stateManager.validateState(state)
-            ).rejects.toThrow('State expired');
+            await expect(stateManager.validateState(state)).rejects.toThrow(
+                'State expired'
+            );
         });
 
         it('should delete expired state after validation attempt', async () => {
@@ -106,8 +111,7 @@ describe('OIDC State Manager', () => {
 
             try {
                 await stateManager.validateState(state);
-            } catch (error) {
-            }
+            } catch (error) {}
 
             const record = await OIDCStateNonce.findOne({ where: { state } });
             expect(record).toBeNull();
@@ -115,7 +119,10 @@ describe('OIDC State Manager', () => {
 
         it('should return redirect URI if stored', async () => {
             const redirectUri = 'https://app.example.com/callback';
-            const { state } = await stateManager.createState('google', redirectUri);
+            const { state } = await stateManager.createState(
+                'google',
+                redirectUri
+            );
 
             const result = await stateManager.validateState(state);
 
@@ -154,7 +161,8 @@ describe('OIDC State Manager', () => {
         it('should delete expired states', async () => {
             await stateManager.createState('google');
 
-            const { state: expiredState } = await stateManager.createState('okta');
+            const { state: expiredState } =
+                await stateManager.createState('okta');
             await OIDCStateNonce.update(
                 { expires_at: new Date(Date.now() - 1000) },
                 { where: { state: expiredState } }
@@ -193,9 +201,9 @@ describe('OIDC State Manager', () => {
             await stateManager.validateState(state);
             await stateManager.consumeState(state);
 
-            await expect(
-                stateManager.validateState(state)
-            ).rejects.toThrow('Invalid state parameter');
+            await expect(stateManager.validateState(state)).rejects.toThrow(
+                'Invalid state parameter'
+            );
         });
 
         it('should handle concurrent state creation', async () => {
@@ -205,7 +213,7 @@ describe('OIDC State Manager', () => {
 
             const results = await Promise.all(promises);
 
-            const states = results.map(r => r.state);
+            const states = results.map((r) => r.state);
             const uniqueStates = new Set(states);
 
             expect(uniqueStates.size).toBe(10);

@@ -46,9 +46,7 @@ module.exports = {
         await safeAddIndex(queryInterface, 'oidc_state_nonces', ['state'], {
             unique: true,
         });
-        await safeAddIndex(queryInterface, 'oidc_state_nonces', [
-            'expires_at',
-        ]);
+        await safeAddIndex(queryInterface, 'oidc_state_nonces', ['expires_at']);
     },
 
     async down(queryInterface) {
