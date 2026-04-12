@@ -137,6 +137,7 @@ const urlModule = require('./modules/url');
 const usersModule = require('./modules/users');
 const viewsModule = require('./modules/views');
 const mcpModule = require('./modules/mcp');
+const oidcModule = require('./modules/oidc');
 
 // Swagger documentation - enabled by default, protected by authentication
 // Mounted on /api-docs to avoid conflicts with API routes
@@ -198,6 +199,7 @@ healthPaths.forEach(registerHealthCheck);
 const registerApiRoutes = (basePath) => {
     app.use(basePath, authModule.routes);
     app.use(basePath, featureFlagsModule.routes);
+    app.use(`${basePath}/oidc`, oidcModule.routes);
 
     app.use(basePath, requireAuth);
     app.use(basePath, tasksModule.routes);
