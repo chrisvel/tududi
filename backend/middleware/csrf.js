@@ -1,7 +1,8 @@
-const { csrfSync } = require('csrf-sync');
+const csurf = require('@dr.pogodin/csurf');
 
-const { generateToken, csrfSynchronisedProtection } = csrfSync({
-    getTokenFromRequest: (req) => {
+const csrfMiddleware = csurf({
+    cookie: false,
+    value: (req) => {
         return req.headers['x-csrf-token'] || req.body?._csrf;
     },
 });
@@ -15,11 +16,15 @@ const csrfProtection = (req, res, next) => {
         return next();
     }
 
-    return csrfSynchronisedProtection(req, res, next);
+    return csrfMiddleware(req, res, next);
+};
+
+const generateToken = (req) => {
+    return req.csrfToken ? req.csrfToken() : '';
 };
 
 module.exports = {
-    generateToken,
     csrfProtection,
-    csrfSynchronisedProtection,
+    csrfMiddleware,
+    generateToken,
 };

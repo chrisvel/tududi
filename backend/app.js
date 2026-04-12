@@ -78,24 +78,45 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Session configuration
-app.use(
-    session({
-        secret: config.secret,
-        store: sessionStore,
-        resave: false,
-        saveUninitialized: false,
-        cookie: {
-            httpOnly: true,
-            secure: config.production,
-            maxAge: 2592000000, // 30 days
-            sameSite: 'lax',
-        },
-    })
-);
+const sessionMiddleware = session({
+    secret: config.secret,
+    store: sessionStore,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        secure: config.production,
+        maxAge: 2592000000, // 30 days
+        sameSite: 'lax',
+    },
+});
+app.use(sessionMiddleware);
 
-// CSRF protection (skips for API token authenticated requests)
-const { csrfProtection } = require('./middleware/csrf');
-app.use(csrfProtection);
+// CSRF protection using lusca (CodeQL recommended library)
+const lusca = require('lusca');
+
+// Pre-check middleware to exempt test/Bearer requests before lusca runs
+app.use((req, res, next) => {
+    // Mark exempt requests so lusca wrapper can skip them
+    if (
+        process.env.NODE_ENV === 'test' ||
+        req.headers.authorization?.startsWith('Bearer ')
+    ) {
+        req._csrfExempt = true;
+    }
+    next();
+});
+
+// Apply lusca CSRF - wrapped to check exemption flag
+app.use((req, res, next) => {
+    if (req._csrfExempt) {
+        return next();
+    }
+    return lusca.csrf({
+        header: 'x-csrf-token',
+        cookie: false,
+    })(req, res, next);
+});
 
 // Static files
 if (config.production) {
