@@ -24,7 +24,8 @@
     "no": "No, continua a modificare",
     "yesDiscard": "Sì, scarta",
     "uploading": "Caricamento...",
-    "refresh": "Aggiorna"
+    "refresh": "Aggiorna",
+    "unlinking": "Disconnettendo..."
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -302,7 +303,8 @@
       "productivity": "Produttività",
       "telegram": "Telegram",
       "ai": "Funzioni AI",
-      "notifications": "Preferenze di Notifica"
+      "notifications": "Preferenze di Notifica",
+      "oidc": "OIDC/SSO"
     },
     "security": "Impostazioni Sicurezza",
     "changePassword": "Cambia Password",
@@ -376,6 +378,16 @@
         "area": "Crea una nuova Area",
         "tag": "Crea un nuovo Tag"
       }
+    },
+    "connectedAccounts": {
+      "title": "Account Connessi",
+      "description": "Collega account esterni per accedere con i fornitori SSO.",
+      "link": "Collega {{provider}}",
+      "unlink": "Disconnetti",
+      "confirmUnlink": "Conferma Disconnessione",
+      "linkedOn": "Collegato il {{date}}",
+      "cannotUnlinkLast": "Impossibile disconnettere il tuo ultimo metodo di autenticazione. Imposta prima una password.",
+      "noPasswordWarning": "Non hai impostato una password. Considera di impostarne una per avere un metodo di accesso alternativo."
     }
   },
   "productivity": {
@@ -531,7 +543,13 @@
     "rememberMe": "Ricordami",
     "loginSuccess": "Accesso Riuscito",
     "loginFailed": "Accesso Fallito",
-    "logoutSuccess": "Disconnessione Riuscita"
+    "logoutSuccess": "Disconnessione Riuscita",
+    "or_continue_with_email": "Oppure continua con l'email",
+    "sign_in_with": "Accedi con {{provider}}",
+    "oidc": {
+      "completing_signin": "Completando l'accesso...",
+      "authenticating_with_provider": "Autenticazione con il fornitore. Attendere prego..."
+    }
   },
   "dropdown": {
     "createNew": "Crea Nuovo",

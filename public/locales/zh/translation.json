@@ -24,7 +24,8 @@
     "no": "不，继续编辑",
     "yesDiscard": "是的，放弃",
     "uploading": "上传中...",
-    "refresh": "刷新"
+    "refresh": "刷新",
+    "unlinking": "正在解除链接..."
   },
   "sidebar": {
     "dashboard": "仪表板",
@@ -313,7 +314,8 @@
       "productivity": "生产力",
       "telegram": "电报",
       "ai": "人工智能功能",
-      "notifications": "通知偏好设置"
+      "notifications": "通知偏好设置",
+      "oidc": "OIDC/SSO"
     },
     "security": "安全设置",
     "changePassword": "更改密码",
@@ -376,6 +378,16 @@
         "area": "创建新区域",
         "tag": "创建新标签"
       }
+    },
+    "connectedAccounts": {
+      "title": "已连接账户",
+      "description": "链接外部账户以使用SSO提供商登录。",
+      "link": "链接 {{provider}}",
+      "unlink": "解除链接",
+      "confirmUnlink": "确认解除链接",
+      "linkedOn": "于 {{date}} 连接",
+      "cannotUnlinkLast": "无法解除您最后的认证方式。请先设置密码。",
+      "noPasswordWarning": "您尚未设置密码。考虑设置一个以便拥有替代登录方式。"
     }
   },
   "productivity": {
@@ -531,7 +543,13 @@
     "rememberMe": "记住我",
     "loginSuccess": "登录成功",
     "loginFailed": "登录失败",
-    "logoutSuccess": "注销成功"
+    "logoutSuccess": "注销成功",
+    "or_continue_with_email": "或继续使用电子邮件",
+    "sign_in_with": "使用 {{provider}} 登录",
+    "oidc": {
+      "completing_signin": "正在完成登录...",
+      "authenticating_with_provider": "正在与提供商进行身份验证。请稍候..."
+    }
   },
   "dropdown": {
     "createNew": "创建新项",

@@ -24,7 +24,8 @@
     "no": "Não, continuar editando",
     "yesDiscard": "Sim, descartar",
     "uploading": "Carregando...",
-    "refresh": "Atualizar"
+    "refresh": "Atualizar",
+    "unlinking": "Desvinculando..."
   },
   "sidebar": {
     "dashboard": "Painel",
@@ -313,7 +314,8 @@
       "productivity": "Produtividade",
       "telegram": "Telegram",
       "ai": "Recursos de IA",
-      "notifications": "Preferências de Notificação"
+      "notifications": "Preferências de Notificação",
+      "oidc": "OIDC/SSO"
     },
     "security": "Configurações de Segurança",
     "changePassword": "Alterar Senha",
@@ -376,6 +378,16 @@
         "area": "Criar nova Área",
         "tag": "Criar nova Tag"
       }
+    },
+    "connectedAccounts": {
+      "title": "Contas Conectadas",
+      "description": "Vincule contas externas para fazer login com provedores SSO.",
+      "link": "Vincular {{provider}}",
+      "unlink": "Desvincular",
+      "confirmUnlink": "Confirmar Desvinculação",
+      "linkedOn": "Vinculado em {{date}}",
+      "cannotUnlinkLast": "Não é possível desvincular seu último método de autenticação. Por favor, defina uma senha primeiro.",
+      "noPasswordWarning": "Você não tem uma senha definida. Considere definir uma para ter um método de login alternativo."
     }
   },
   "productivity": {
@@ -531,7 +543,13 @@
     "rememberMe": "Lembrar-me",
     "loginSuccess": "Login Bem-sucedido",
     "loginFailed": "Login Falhou",
-    "logoutSuccess": "Logout Bem-sucedido"
+    "logoutSuccess": "Logout Bem-sucedido",
+    "or_continue_with_email": "Ou continue com e-mail",
+    "sign_in_with": "Fazer login com {{provider}}",
+    "oidc": {
+      "completing_signin": "Concluindo login...",
+      "authenticating_with_provider": "Autenticando com o provedor. Por favor, aguarde..."
+    }
   },
   "dropdown": {
     "createNew": "Criar Novo",

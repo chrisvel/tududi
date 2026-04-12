@@ -24,7 +24,8 @@
     "no": "Nie, kontynuuj edytowanie",
     "yesDiscard": "Tak, porzuć",
     "uploading": "Przesyłanie...",
-    "refresh": "Odśwież"
+    "refresh": "Odśwież",
+    "unlinking": "Odłączanie..."
   },
   "sidebar": {
     "dashboard": "Panel sterowania",
@@ -320,7 +321,8 @@
       "productivity": "Produktywność",
       "telegram": "Telegram",
       "ai": "Funkcje AI",
-      "notifications": "Preferencje powiadomień"
+      "notifications": "Preferencje powiadomień",
+      "oidc": "OIDC/SSO"
     },
     "security": "Ustawienia Bezpieczeństwa",
     "changePassword": "Zmień Hasło",
@@ -376,6 +378,16 @@
         "area": "Utwórz nowy Obszar",
         "tag": "Utwórz nową Etykietę"
       }
+    },
+    "connectedAccounts": {
+      "title": "Połączone konta",
+      "description": "Połącz konta zewnętrzne, aby zalogować się za pomocą dostawców SSO.",
+      "link": "Połącz {{provider}}",
+      "unlink": "Odłącz",
+      "confirmUnlink": "Potwierdź odłączenie",
+      "linkedOn": "Połączono {{date}}",
+      "cannotUnlinkLast": "Nie można odłączyć ostatniej metody uwierzytelniania. Najpierw ustaw hasło.",
+      "noPasswordWarning": "Nie masz ustawionego hasła. Rozważ ustawienie go, aby mieć alternatywną metodę logowania."
     }
   },
   "productivity": {
@@ -531,7 +543,13 @@
     "rememberMe": "Zapamiętaj Mnie",
     "loginSuccess": "Logowanie Udane",
     "loginFailed": "Logowanie Nieudane",
-    "logoutSuccess": "Wylogowanie Udane"
+    "logoutSuccess": "Wylogowanie Udane",
+    "or_continue_with_email": "Lub kontynuuj z e-mailem",
+    "sign_in_with": "Zaloguj się za pomocą {{provider}}",
+    "oidc": {
+      "completing_signin": "Kończenie logowania...",
+      "authenticating_with_provider": "Uwierzytelnianie z dostawcą. Proszę czekać..."
+    }
   },
   "dropdown": {
     "createNew": "Utwórz Nowy",

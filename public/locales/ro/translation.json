@@ -24,7 +24,8 @@
     "no": "Nu, continuă editarea",
     "yesDiscard": "Da, renunță",
     "uploading": "Se încarcă...",
-    "refresh": "Reîmprospătare"
+    "refresh": "Reîmprospătare",
+    "unlinking": "Dezlegare..."
   },
   "sidebar": {
     "dashboard": "Tabloul de bord",
@@ -313,7 +314,8 @@
       "productivity": "Productivitate",
       "telegram": "Telegram",
       "ai": "Funcții AI",
-      "notifications": "Preferințe de Notificare"
+      "notifications": "Preferințe de Notificare",
+      "oidc": "OIDC/SSO"
     },
     "security": "Setări de Securitate",
     "changePassword": "Schimbă Parola",
@@ -376,6 +378,16 @@
         "area": "Creează o nouă zonă",
         "tag": "Creează un nou etichetă"
       }
+    },
+    "connectedAccounts": {
+      "title": "Conturi Conectate",
+      "description": "Leagă conturi externe pentru a te conecta cu furnizorii SSO.",
+      "link": "Leagă {{provider}}",
+      "unlink": "Dezleagă",
+      "confirmUnlink": "Confirmă Dezlegarea",
+      "linkedOn": "Legat pe {{date}}",
+      "cannotUnlinkLast": "Nu poți dezlega ultima metodă de autentificare. Te rugăm să setezi mai întâi o parolă.",
+      "noPasswordWarning": "Nu ai setată nicio parolă. Ia în considerare setarea uneia pentru a avea o metodă alternativă de conectare."
     }
   },
   "productivity": {
@@ -531,7 +543,13 @@
     "rememberMe": "Ține-mă minte",
     "loginSuccess": "Autentificare reușită",
     "loginFailed": "Autentificare eșuată",
-    "logoutSuccess": "Deconectare reușită"
+    "logoutSuccess": "Deconectare reușită",
+    "or_continue_with_email": "Sau continuă cu email",
+    "sign_in_with": "Conectează-te cu {{provider}}",
+    "oidc": {
+      "completing_signin": "Finalizând conectarea...",
+      "authenticating_with_provider": "Autentificare cu furnizorul. Te rugăm să aștepți..."
+    }
   },
   "dropdown": {
     "createNew": "Creează Nou",

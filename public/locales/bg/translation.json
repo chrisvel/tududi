@@ -24,7 +24,8 @@
     "no": "Не, продължавайте да редактирате",
     "yesDiscard": "Да, откажете",
     "uploading": "Качване...",
-    "refresh": "Обнови"
+    "refresh": "Обнови",
+    "unlinking": "Откачане..."
   },
   "sidebar": {
     "dashboard": "Табло",
@@ -313,7 +314,8 @@
       "productivity": "Продуктивност",
       "telegram": "Телеграм",
       "ai": "AI функции",
-      "notifications": "Настройки за известия"
+      "notifications": "Настройки за известия",
+      "oidc": "OIDC/SSO"
     },
     "security": "Настройки за сигурност",
     "changePassword": "Смяна на парола",
@@ -376,6 +378,16 @@
         "area": "Създаване на нова област",
         "tag": "Създаване на нов етикет"
       }
+    },
+    "connectedAccounts": {
+      "title": "Свързани акаунти",
+      "description": "Свържете външни акаунти, за да влезете с доставчици на SSO.",
+      "link": "Свържете {{provider}}",
+      "unlink": "Откачане",
+      "confirmUnlink": "Потвърдете откачането",
+      "linkedOn": "Свързан на {{date}}",
+      "cannotUnlinkLast": "Не можете да откачите последния си метод за удостоверяване. Моля, задайте парола първо.",
+      "noPasswordWarning": "Нямате зададена парола. Помислете за задаване на такава, за да имате алтернативен метод за вход."
     }
   },
   "productivity": {
@@ -531,7 +543,13 @@
     "rememberMe": "Запомни ме",
     "loginSuccess": "Успешно влизане",
     "loginFailed": "Неуспешно влизане",
-    "logoutSuccess": "Успешно излизане"
+    "logoutSuccess": "Успешно излизане",
+    "or_continue_with_email": "Или продължете с имейл",
+    "sign_in_with": "Влезте с {{provider}}",
+    "oidc": {
+      "completing_signin": "Завършване на входа...",
+      "authenticating_with_provider": "Удостоверяване с доставчика. Моля, изчакайте..."
+    }
   },
   "dropdown": {
     "createNew": "Създай ново",

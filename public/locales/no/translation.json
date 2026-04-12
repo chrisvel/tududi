@@ -24,7 +24,8 @@
     "no": "Nei, fortsett å redigere",
     "yesDiscard": "Ja, forkast",
     "uploading": "Laster opp...",
-    "refresh": "Oppdater"
+    "refresh": "Oppdater",
+    "unlinking": "Fjerner kobling..."
   },
   "sidebar": {
     "dashboard": "Dashbord",
@@ -320,7 +321,8 @@
       "productivity": "Produktivitet",
       "telegram": "Telegram",
       "ai": "AI-funksjoner",
-      "notifications": "Varslingsinnstillinger"
+      "notifications": "Varslingsinnstillinger",
+      "oidc": "OIDC/SSO"
     },
     "security": "Sikkerhetsinnstillinger",
     "changePassword": "Endre passord",
@@ -376,6 +378,16 @@
         "area": "Opprett nytt område",
         "tag": "Opprett ny etikett"
       }
+    },
+    "connectedAccounts": {
+      "title": "Koblede kontoer",
+      "description": "Koble eksterne kontoer for å logge inn med SSO-leverandører.",
+      "link": "Koble {{provider}}",
+      "unlink": "Fjern kobling",
+      "confirmUnlink": "Bekreft fjerning av kobling",
+      "linkedOn": "Koblet den {{date}}",
+      "cannotUnlinkLast": "Kan ikke fjerne koblingen til din siste autentiseringsmetode. Vennligst sett et passord først.",
+      "noPasswordWarning": "Du har ikke satt et passord. Vurder å sette et for å ha en alternativ påloggingsmetode."
     }
   },
   "productivity": {
@@ -531,7 +543,13 @@
     "rememberMe": "Husk meg",
     "loginSuccess": "Innlogging vellykket",
     "loginFailed": "Innlogging mislyktes",
-    "logoutSuccess": "Utlogging vellykket"
+    "logoutSuccess": "Utlogging vellykket",
+    "or_continue_with_email": "Eller fortsett med e-post",
+    "sign_in_with": "Logg inn med {{provider}}",
+    "oidc": {
+      "completing_signin": "Fullfører pålogging...",
+      "authenticating_with_provider": "Autentiserer med leverandør. Vennligst vent..."
+    }
   },
   "dropdown": {
     "createNew": "Opprett ny",

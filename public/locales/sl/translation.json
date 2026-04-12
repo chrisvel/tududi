@@ -24,7 +24,8 @@
     "no": "Ne, nadaljuj z urejanjem",
     "yesDiscard": "Da, zavrzi",
     "uploading": "Nalagam...",
-    "refresh": "Osveži"
+    "refresh": "Osveži",
+    "unlinking": "Odvezovanje..."
   },
   "sidebar": {
     "dashboard": "Nadzorna plošča",
@@ -320,7 +321,8 @@
       "productivity": "Produktivnost",
       "telegram": "Telegram",
       "ai": "AI Funkcije",
-      "notifications": "Nastavitve obvestil"
+      "notifications": "Nastavitve obvestil",
+      "oidc": "OIDC/SSO"
     },
     "security": "Nastavitve varnosti",
     "changePassword": "Spremeni geslo",
@@ -376,6 +378,16 @@
         "area": "Ustvari novo področje",
         "tag": "Ustvari novo oznako"
       }
+    },
+    "connectedAccounts": {
+      "title": "Povezani računi",
+      "description": "Povežite zunanje račune za prijavo z SSO ponudniki.",
+      "link": "Poveži {{provider}}",
+      "unlink": "Odveži",
+      "confirmUnlink": "Potrdi odvezovanje",
+      "linkedOn": "Povezano dne {{date}}",
+      "cannotUnlinkLast": "Ne morete odvezati vaše zadnje metode avtentikacije. Najprej nastavite geslo.",
+      "noPasswordWarning": "Nimate nastavljenega gesla. Razmislite o nastavitvi, da boste imeli alternativno metodo prijave."
     }
   },
   "productivity": {
@@ -531,7 +543,13 @@
     "rememberMe": "Zapomni si me",
     "loginSuccess": "Prijava uspešna",
     "loginFailed": "Prijava neuspešna",
-    "logoutSuccess": "Odjava uspešna"
+    "logoutSuccess": "Odjava uspešna",
+    "or_continue_with_email": "Ali nadaljujte z e-pošto",
+    "sign_in_with": "Prijavite se z {{provider}}",
+    "oidc": {
+      "completing_signin": "Dokončujem prijavo...",
+      "authenticating_with_provider": "Avtentikacija pri ponudniku. Prosimo, počakajte..."
+    }
   },
   "dropdown": {
     "createNew": "Ustvari novo",

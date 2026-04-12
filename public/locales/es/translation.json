@@ -24,7 +24,8 @@
     "no": "No, seguir editando",
     "yesDiscard": "Sí, descartar",
     "uploading": "Subiendo...",
-    "refresh": "Actualizar"
+    "refresh": "Actualizar",
+    "unlinking": "Desvinculando..."
   },
   "sidebar": {
     "dashboard": "Tablero",
@@ -115,7 +116,13 @@
     "rememberMe": "Recordarme",
     "loginSuccess": "Inicio de Sesión Exitoso",
     "loginFailed": "Error al Iniciar Sesión",
-    "logoutSuccess": "Cierre de Sesión Exitoso"
+    "logoutSuccess": "Cierre de Sesión Exitoso",
+    "or_continue_with_email": "O continuar con el correo electrónico",
+    "sign_in_with": "Iniciar sesión con {{provider}}",
+    "oidc": {
+      "completing_signin": "Completando el inicio de sesión...",
+      "authenticating_with_provider": "Autenticando con el proveedor. Por favor, espere..."
+    }
   },
   "profile": {
     "title": "Configuración de Perfil",
@@ -163,7 +170,8 @@
       "productivity": "Productividad",
       "telegram": "Telegram",
       "ai": "Funciones IA",
-      "notifications": "Preferencias de Notificación"
+      "notifications": "Preferencias de Notificación",
+      "oidc": "OIDC/SSO"
     },
     "security": "Configuración de Seguridad",
     "changePassword": "Cambiar Contraseña",
@@ -294,6 +302,16 @@
         "area": "Crear nueva área",
         "tag": "Crear nueva etiqueta"
       }
+    },
+    "connectedAccounts": {
+      "title": "Cuentas Conectadas",
+      "description": "Vincula cuentas externas para iniciar sesión con proveedores de SSO.",
+      "link": "Vincular {{provider}}",
+      "unlink": "Desvincular",
+      "confirmUnlink": "Confirmar Desvinculación",
+      "linkedOn": "Vinculado el {{date}}",
+      "cannotUnlinkLast": "No se puede desvincular su último método de autenticación. Por favor, establezca una contraseña primero.",
+      "noPasswordWarning": "No tiene ninguna contraseña establecida. Considere establecer una para tener un método de inicio de sesión alternativo."
     }
   },
   "errors": {
