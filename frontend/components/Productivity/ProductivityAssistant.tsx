@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
     AcademicCapIcon,
     ExclamationTriangleIcon,
@@ -39,6 +39,7 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
 }) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [isExpanded, setIsExpanded] = useState(false);
     const [insights, setInsights] = useState<ProductivityInsight[]>([]);
@@ -281,7 +282,7 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
         if (!isProject) {
             // Handle task click - navigate to task details page
             if (item.uid) {
-                navigate(`/task/${item.uid}`);
+                navigate(`/task/${item.uid}`, { state: { from: location.pathname + location.search } });
             }
         } else {
             // Handle project click - navigate to project page

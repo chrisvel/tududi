@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useSidebar } from '../contexts/SidebarContext';
 import TaskList from './Task/TaskList';
 import GroupedTaskList from './Task/GroupedTaskList';
 import NewTask from './Task/NewTask';
@@ -40,10 +39,11 @@ const getSearchPlaceholder = (language: string): string => {
 const Tasks: React.FC = () => {
     const { t, i18n } = useTranslation();
     const { showSuccessToast } = useToast();
-    const { isSidebarOpen } = useSidebar();
+
     const [tasks, setTasks] = useState<Task[]>([]);
     const projects = useStore((state: any) => state.projectsStore.projects);
     const [groupedTasks, setGroupedTasks] = useState<GroupedTasks | null>(null);
+    const [upcomingProjects, setUpcomingProjects] = useState<any[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
@@ -196,7 +196,6 @@ const Tasks: React.FC = () => {
                 allTasksUrl.set('type', 'upcoming');
                 allTasksUrl.set('groupBy', 'day');
                 allTasksUrl.set('maxDays', '7');
-                allTasksUrl.set('sidebarOpen', isSidebarOpen.toString());
                 allTasksUrl.set('isMobile', isMobile.toString());
             }
 
@@ -226,6 +225,7 @@ const Tasks: React.FC = () => {
                 if (resetPagination) {
                     setTasks(tasksData.tasks || []);
                     setGroupedTasks(tasksData.groupedTasks || null);
+                    setUpcomingProjects(tasksData.projects || []);
                     if (!options?.disablePagination) {
                         const limitToUse = options?.limitOverride ?? limit;
                         setOffset(limitToUse);
@@ -240,6 +240,9 @@ const Tasks: React.FC = () => {
                                 ...tasksData.groupedTasks,
                             };
                         });
+                    }
+                    if (tasksData.projects) {
+                        setUpcomingProjects((prev) => [...prev, ...(tasksData.projects || [])]);
                     }
                     if (!options?.disablePagination) {
                         const limitToUse = options?.limitOverride ?? limit;
@@ -307,7 +310,7 @@ const Tasks: React.FC = () => {
                   }
                 : undefined
         );
-    }, [location, isSidebarOpen, isMobile, groupBy, isUpcomingView]);
+    }, [location, isMobile, groupBy, isUpcomingView]);
 
     useEffect(() => {
         const handleResize = () => {
@@ -896,22 +899,54 @@ const Tasks: React.FC = () => {
                             Object.keys(groupedTasks).length > 0) ? (
                             <>
                                 {query.get('type') === 'upcoming' ? (
-                                    <GroupedTaskList
-                                        tasks={displayTasks}
-                                        groupedTasks={groupedTasks}
-                                        groupBy="none"
-                                        onTaskCreate={handleTaskCreate}
-                                        onTaskUpdate={handleTaskUpdate}
-                                        onTaskCompletionToggle={
-                                            handleTaskCompletionToggle
-                                        }
-                                        onTaskDelete={handleTaskDelete}
-                                        projects={projects}
-                                        hideProjectName={false}
-                                        onToggleToday={undefined}
-                                        showCompletedTasks={showCompleted}
-                                        searchQuery={taskSearchQuery}
-                                    />
+                                    <>
+                                        <GroupedTaskList
+                                            tasks={displayTasks}
+                                            groupedTasks={groupedTasks}
+                                            groupBy="none"
+                                            onTaskCreate={handleTaskCreate}
+                                            onTaskUpdate={handleTaskUpdate}
+                                            onTaskCompletionToggle={
+                                                handleTaskCompletionToggle
+                                            }
+                                            onTaskDelete={handleTaskDelete}
+                                            projects={projects}
+                                            hideProjectName={false}
+                                            onToggleToday={undefined}
+                                            showCompletedTasks={showCompleted}
+                                            searchQuery={taskSearchQuery}
+                                        />
+                                        {upcomingProjects.length > 0 && (
+                                            <div className="mt-8">
+                                                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
+                                                    {t('projects.upcomingProjects', 'Upcoming Projects')}
+                                                </h3>
+                                                <div className="space-y-2">
+                                                    {upcomingProjects.map((project) => (
+                                                        <div
+                                                            key={project.uid}
+                                                            className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow"
+                                                        >
+                                                            <div className="flex items-center justify-between">
+                                                                <a
+                                                                    href={`/project/${project.uid}-${project.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`}
+                                                                    className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                                                                >
+                                                                    {project.name}
+                                                                </a>
+                                                                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                                                                    <span>{t('common.due', 'Due')}: </span>
+                                                                    <span className="font-medium">
+                                                                        {new Date(project.due_date_at).toLocaleDateString()}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </>
                                 ) : groupBy === 'project' ? (
                                     <GroupedTaskList
                                         tasks={displayTasks}

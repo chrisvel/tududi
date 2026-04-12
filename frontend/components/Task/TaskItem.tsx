@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import TaskHeader from './TaskHeader';
@@ -156,6 +156,7 @@ interface TaskItemProps {
     onToggleToday?: (taskId: number, task?: Task) => Promise<void>;
     isUpcomingView?: boolean;
     showCompletedTasks?: boolean;
+    isInCompletedSection?: boolean;
 }
 
 const TaskItem: React.FC<TaskItemProps> = ({
@@ -168,8 +169,10 @@ const TaskItem: React.FC<TaskItemProps> = ({
     onToggleToday,
     isUpcomingView = false,
     showCompletedTasks = false,
+    isInCompletedSection = false,
 }) => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { t } = useTranslation();
     const [projectList, setProjectList] = useState<Project[]>(projects);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
@@ -230,12 +233,14 @@ const TaskItem: React.FC<TaskItemProps> = ({
     useEffect(() => {
         setShowSubtasks(false);
     }, [task.id]);
+    const fromState = { state: { from: location.pathname + location.search } };
+
     const handleTaskClick = () => {
         if (task.uid) {
             if (task.habit_mode) {
                 navigate(`/habit/${task.uid}`);
             } else {
-                navigate(`/task/${task.uid}`);
+                navigate(`/task/${task.uid}`, fromState);
             }
         }
     };
@@ -243,7 +248,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
     const handleSubtaskClick = async () => {
         // Navigate to the parent task URL (not the subtask URL)
         if (task.uid) {
-            navigate(`/task/${task.uid}`);
+            navigate(`/task/${task.uid}`, fromState);
         }
     };
 
@@ -264,7 +269,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
         e.preventDefault();
         e.stopPropagation();
         if (task.uid) {
-            navigate(`/task/${task.uid}`);
+            navigate(`/task/${task.uid}`, fromState);
         }
     };
 
@@ -371,9 +376,10 @@ const TaskItem: React.FC<TaskItemProps> = ({
     // Check if task is overdue (created yesterday or earlier and not completed)
     const isOverdue = isTaskOverdueInTodayPlan(task);
 
-    const priorityBorderClass = isTaskCompleted(task.status)
-        ? 'border-l-4 border-l-green-500'
-        : getPriorityBorderClassName(task.priority);
+    const priorityBorderClass =
+        isInCompletedSection || isTaskCompleted(task.status)
+            ? 'border-l-4 border-l-green-500'
+            : getPriorityBorderClassName(task.priority);
 
     return (
         <div className={`relative ${isStatusMenuOpen ? 'z-[10001]' : ''}`}>

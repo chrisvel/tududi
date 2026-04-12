@@ -3,6 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { ClockIcon } from '@heroicons/react/24/outline';
 import TaskDeferUntilSection from '../TaskForm/TaskDeferUntilSection';
 import { Task } from '../../../entities/Task';
+import {
+    formatDateTimeByCountry,
+    getUserTimezone,
+} from '../../../utils/dateUtils';
+import { getCountryFromTimezone } from '../../../utils/localeUtils';
 
 interface TaskDeferUntilCardProps {
     task: Task;
@@ -23,19 +28,16 @@ const TaskDeferUntilCard: React.FC<TaskDeferUntilCardProps> = ({
     onSave,
     onCancel,
 }) => {
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
 
     const getDeferUntilDisplay = (deferUntil: string) => {
         const date = new Date(deferUntil);
         if (Number.isNaN(date.getTime())) return null;
 
-        const formattedDateTime = date.toLocaleString(i18n.language, {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        });
+        // Format datetime based on user's timezone-derived country
+        const timezone = getUserTimezone();
+        const country = getCountryFromTimezone(timezone);
+        const formattedDateTime = formatDateTimeByCountry(date, country);
 
         const now = new Date();
         const diffMs = date.getTime() - now.getTime();

@@ -1,5 +1,6 @@
 const { requireAuth } = require('../../../middleware/auth');
 const { User } = require('../../../models');
+const { createApiToken } = require('../../../modules/users/apiTokenService');
 
 describe('Auth Middleware', () => {
     let req, res, next;
@@ -134,5 +135,155 @@ describe('Auth Middleware', () => {
         // Restore original methods
         User.findByPk = originalFindByPk;
         console.error = originalConsoleError;
+    });
+
+    // --- API Token (Bearer) authentication ---
+
+    describe('Bearer token authentication', () => {
+        let user;
+
+        beforeEach(async () => {
+            const { sequelize } = require('../../../models');
+            await sequelize.query('DELETE FROM api_tokens');
+            const bcrypt = require('bcrypt');
+            user = await User.create({
+                email: 'token-user@example.com',
+                password_digest: await bcrypt.hash('password123', 10),
+            });
+            // No session – forces the bearer path
+            req.session = null;
+            req.headers = {};
+        });
+
+        it('should authenticate with a valid Bearer token', async () => {
+            const { rawToken } = await createApiToken({
+                userId: user.id,
+                name: 'test',
+            });
+            req.headers = { authorization: `Bearer ${rawToken}` };
+
+            await requireAuth(req, res, next);
+
+            expect(next).toHaveBeenCalled();
+            expect(req.currentUser.id).toBe(user.id);
+            expect(req.authToken).toBeDefined();
+        });
+
+        it('should return 401 for an invalid Bearer token', async () => {
+            req.headers = { authorization: 'Bearer invalid-token-value' };
+
+            await requireAuth(req, res, next);
+
+            expect(res.status).toHaveBeenCalledWith(401);
+            expect(res.json).toHaveBeenCalledWith({
+                error: 'Invalid or expired API token',
+            });
+            expect(next).not.toHaveBeenCalled();
+        });
+
+        it('should return 401 for a revoked token', async () => {
+            const { rawToken, tokenRecord } = await createApiToken({
+                userId: user.id,
+                name: 'revoked',
+            });
+            await tokenRecord.update({ revoked_at: new Date() });
+            req.headers = { authorization: `Bearer ${rawToken}` };
+
+            await requireAuth(req, res, next);
+
+            expect(res.status).toHaveBeenCalledWith(401);
+            expect(res.json).toHaveBeenCalledWith({
+                error: 'Invalid or expired API token',
+            });
+        });
+
+        it('should return 401 for an expired token', async () => {
+            const pastDate = new Date(Date.now() - 24 * 60 * 60 * 1000);
+            const { rawToken } = await createApiToken({
+                userId: user.id,
+                name: 'expired',
+                expiresAt: pastDate,
+            });
+            req.headers = { authorization: `Bearer ${rawToken}` };
+
+            await requireAuth(req, res, next);
+
+            expect(res.status).toHaveBeenCalledWith(401);
+            expect(res.json).toHaveBeenCalledWith({
+                error: 'Invalid or expired API token',
+            });
+        });
+
+        it('should return 401 when Authorization header has no token value', async () => {
+            req.headers = { authorization: 'Bearer ' };
+
+            await requireAuth(req, res, next);
+
+            expect(res.status).toHaveBeenCalledWith(401);
+            expect(next).not.toHaveBeenCalled();
+        });
+
+        it('should return 401 for non-Bearer scheme', async () => {
+            req.headers = { authorization: 'Basic abc123' };
+
+            await requireAuth(req, res, next);
+
+            expect(res.status).toHaveBeenCalledWith(401);
+            expect(next).not.toHaveBeenCalled();
+        });
+
+        it('should return 401 when token user no longer exists', async () => {
+            const originalConsoleError = console.error;
+            console.error = jest.fn();
+
+            const { rawToken } = await createApiToken({
+                userId: user.id,
+                name: 'orphan',
+            });
+            // Destroying the user cascade-deletes associated tokens,
+            // so the token lookup itself fails rather than the user lookup
+            await user.destroy();
+            req.headers = { authorization: `Bearer ${rawToken}` };
+
+            await requireAuth(req, res, next);
+
+            expect(res.status).toHaveBeenCalledWith(401);
+            expect(next).not.toHaveBeenCalled();
+
+            console.error = originalConsoleError;
+        });
+
+        it('should update last_used_at when token has not been used recently', async () => {
+            const { rawToken, tokenRecord } = await createApiToken({
+                userId: user.id,
+                name: 'fresh',
+            });
+            // Ensure last_used_at is old enough to trigger update
+            await tokenRecord.update({
+                last_used_at: new Date(Date.now() - 10 * 60 * 1000),
+            });
+            req.headers = { authorization: `Bearer ${rawToken}` };
+
+            await requireAuth(req, res, next);
+
+            expect(next).toHaveBeenCalled();
+            // Give the fire-and-forget update a moment to complete
+            await new Promise((r) => setTimeout(r, 100));
+            await tokenRecord.reload();
+            // last_used_at should be updated to roughly now
+            expect(
+                Date.now() - tokenRecord.last_used_at.getTime()
+            ).toBeLessThan(5000);
+        });
+
+        it('should skip health check even with no session and no token', async () => {
+            req.path = '/api/health';
+            req.headers = {};
+
+            await requireAuth(req, res, next);
+
+            expect(next).toHaveBeenCalled();
+            expect(res.status).not.toHaveBeenCalled();
+        });
     });
 });

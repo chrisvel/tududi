@@ -45,6 +45,8 @@ const TaskDetails: React.FC = () => {
     const location = useLocation();
     const { t } = useTranslation();
     const isNewTask = location.state?.isNew === true;
+    const isNewTaskRef = useRef(isNewTask);
+    const taskModifiedRef = useRef(false);
     const { showSuccessToast, showErrorToast } = useToast();
 
     // Clear navigation state so refresh/back doesn't re-trigger edit mode
@@ -53,6 +55,22 @@ const TaskDetails: React.FC = () => {
             navigate(location.pathname, { replace: true, state: {} });
         }
     }, [isNewTask, navigate, location.pathname]);
+
+    // Clean up abandoned new tasks: if user navigates away without modifying anything, delete the task
+    useEffect(() => {
+        const taskUid = uid;
+        return () => {
+            if (isNewTaskRef.current && !taskModifiedRef.current && taskUid) {
+                deleteTask(taskUid).catch((err) =>
+                    console.error('Error cleaning up abandoned new task:', err)
+                );
+                const store = useStore.getState();
+                store.tasksStore.setTasks(
+                    store.tasksStore.tasks.filter((t: Task) => t.uid !== taskUid)
+                );
+            }
+        };
+    }, [uid]);
 
     const projectsStore = useStore((state: any) => state.projectsStore);
     const tagsStore = useStore((state: any) => state.tagsStore);
@@ -227,6 +245,7 @@ const TaskDetails: React.FC = () => {
         }
 
         try {
+            taskModifiedRef.current = true;
             const recurrencePayload: Partial<Task> = {
                 recurrence_type: recurrenceForm.recurrence_type,
                 recurrence_interval: recurrenceForm.recurrence_interval || 1,
@@ -251,7 +270,7 @@ const TaskDetails: React.FC = () => {
                 completion_based: recurrenceForm.completion_based,
             };
 
-            await updateTask(task.uid, { ...task, ...recurrencePayload });
+            await updateTask(task.uid, recurrencePayload);
 
             if (uid) {
                 const updatedTask = await fetchTaskByUid(uid);
@@ -342,8 +361,8 @@ const TaskDetails: React.FC = () => {
         }
 
         try {
+            taskModifiedRef.current = true;
             await updateTask(task.uid, {
-                ...task,
                 due_date: editedDueDate || null,
             });
 
@@ -402,19 +421,25 @@ const TaskDetails: React.FC = () => {
             const dueDate = new Date(task.due_date);
 
             if (!isNaN(deferDate.getTime()) && !isNaN(dueDate.getTime())) {
-                if (deferDate > dueDate) {
-                    showErrorToast(
-                        t(
-                            'task.deferAfterDueError',
-                            'Defer until date cannot be after the due date'
-                        )
-                    );
-                    return;
+                // For recurring instances, skip strict frontend validation
+                // Backend will validate against parent's recurrence_end_date
+                if (!task.recurring_parent_id) {
+                    // Only validate for non-recurring tasks
+                    if (deferDate > dueDate) {
+                        showErrorToast(
+                            t(
+                                'task.deferAfterDueError',
+                                'Defer until date cannot be after the due date'
+                            )
+                        );
+                        return;
+                    }
                 }
             }
         }
 
         try {
+            taskModifiedRef.current = true;
             await updateTask(task.uid, {
                 defer_until: editedDeferUntil || null,
             });
@@ -646,7 +671,8 @@ const TaskDetails: React.FC = () => {
         }
 
         try {
-            await updateTask(task.uid, { ...task, subtasks: subtasksToSave });
+            taskModifiedRef.current = true;
+            await updateTask(task.uid, { subtasks: subtasksToSave });
 
             if (uid) {
                 const updatedTask = await fetchTaskByUid(uid);
@@ -739,7 +765,8 @@ const TaskDetails: React.FC = () => {
         if (!task?.uid) return;
 
         try {
-            await updateTask(task.uid, { ...task, project_id: project.id });
+            taskModifiedRef.current = true;
+            await updateTask(task.uid, { project_id: project.id });
 
             if (uid) {
                 const updatedTask = await fetchTaskByUid(uid);
@@ -770,7 +797,8 @@ const TaskDetails: React.FC = () => {
         if (!task?.uid) return;
 
         try {
-            await updateTask(task.uid, { ...task, project_id: null });
+            taskModifiedRef.current = true;
+            await updateTask(task.uid, { project_id: null });
 
             if (uid) {
                 const updatedTask = await fetchTaskByUid(uid);
@@ -848,6 +876,7 @@ const TaskDetails: React.FC = () => {
         }
 
         try {
+            taskModifiedRef.current = true;
             const updatedTaskResponse = await toggleTaskCompletion(
                 task.uid,
                 task
@@ -886,8 +915,8 @@ const TaskDetails: React.FC = () => {
         if (!task?.uid) return;
 
         try {
+            taskModifiedRef.current = true;
             await updateTask(task.uid, {
-                ...task,
                 status: newStatus,
             });
 
@@ -926,11 +955,12 @@ const TaskDetails: React.FC = () => {
     const handleDeleteConfirm = async () => {
         if (taskToDelete?.uid) {
             try {
+                taskModifiedRef.current = true;
                 await deleteTask(taskToDelete.uid);
                 showSuccessToast(
                     t('task.deleteSuccess', 'Task deleted successfully')
                 );
-                navigate('/today');
+                navigate(location.state?.from || '/today');
             } catch (error) {
                 console.error('Error deleting task:', error);
                 showErrorToast(t('task.deleteError', 'Failed to delete task'));
@@ -972,7 +1002,8 @@ const TaskDetails: React.FC = () => {
         }
 
         try {
-            await updateTask(task.uid, { ...task, name: newTitle.trim() });
+            taskModifiedRef.current = true;
+            await updateTask(task.uid, { name: newTitle.trim() });
 
             if (uid) {
                 const updatedTask = await fetchTaskByUid(uid);
@@ -1012,7 +1043,8 @@ const TaskDetails: React.FC = () => {
         }
 
         try {
-            await updateTask(task.uid, { ...task, note: trimmedContent });
+            taskModifiedRef.current = true;
+            await updateTask(task.uid, { note: trimmedContent });
 
             if (uid) {
                 const updatedTask = await fetchTaskByUid(uid);
@@ -1044,11 +1076,12 @@ const TaskDetails: React.FC = () => {
         if (!task?.uid || !name.trim()) return;
 
         try {
+            taskModifiedRef.current = true;
             const newProject = await createProject({ name });
 
             projectsStore.setProjects([...projectsStore.projects, newProject]);
 
-            await updateTask(task.uid, { ...task, project_id: newProject.id });
+            await updateTask(task.uid, { project_id: newProject.id });
 
             if (uid) {
                 const updatedTask = await fetchTaskByUid(uid);
@@ -1090,8 +1123,8 @@ const TaskDetails: React.FC = () => {
         }
 
         try {
+            taskModifiedRef.current = true;
             await updateTask(task.uid, {
-                ...task,
                 tags: tags.map((name) => ({ name })),
             });
 
@@ -1102,7 +1135,10 @@ const TaskDetails: React.FC = () => {
                 );
                 if (existingIndex >= 0) {
                     const updatedTasks = [...tasksStore.tasks];
-                    updatedTasks[existingIndex] = updatedTask;
+                    updatedTasks[existingIndex] = {
+                        ...updatedTask,
+                        subtasks: updatedTask.subtasks || task.subtasks || [],
+                    };
                     tasksStore.setTasks(updatedTasks);
                 }
             }
@@ -1131,8 +1167,8 @@ const TaskDetails: React.FC = () => {
         if (!task?.uid) return;
 
         try {
+            taskModifiedRef.current = true;
             await updateTask(task.uid, {
-                ...task,
                 priority: priority,
             });
             const updatedTask = await fetchTaskByUid(uid!);

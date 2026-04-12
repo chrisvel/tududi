@@ -170,6 +170,21 @@ select:focus {
   display: none; /* Chrome/Safari */
 }
 
+/* Project name and description line clamp */
+.project-name-clamp {
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 3 !important;
+  overflow: hidden !important;
+}
+
+.project-desc-clamp {
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 2 !important;
+  overflow: hidden !important;
+}
+
 @layer utilities {
   .line-clamp-1,
   .line-clamp-2,

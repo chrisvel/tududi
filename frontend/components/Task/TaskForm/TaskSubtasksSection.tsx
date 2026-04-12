@@ -150,6 +150,29 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
         onSubtasksChange(updatedSubtasks);
     };
 
+    const handleToggleSubtaskCompletion = async (subtask: Task, index: number) => {
+        const isPersisted = subtask.id && subtask.uid &&
+            !((subtask as any)._isNew || (subtask as any).isNew);
+
+        if (isPersisted) {
+            try {
+                const updatedSubtask = await toggleTaskCompletion(subtask.uid!);
+                if (onSubtaskUpdate) {
+                    await onSubtaskUpdate(updatedSubtask);
+                } else {
+                    const updatedSubtasks = subtasks.map((s, i) =>
+                        i === index ? updatedSubtask : s
+                    );
+                    onSubtasksChange(updatedSubtasks);
+                }
+            } catch (error) {
+                console.error('Error toggling subtask completion:', error);
+            }
+        } else {
+            handleToggleNewSubtaskCompletion(index);
+        }
+    };
+
     return (
         <div ref={subtasksSectionRef} className="space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-3">
@@ -218,36 +241,7 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                                             status={
                                                 subtask.status || 'not_started'
                                             }
-                                            onToggleCompletion={async () => {
-                                                if (
-                                                    subtask.id &&
-                                                    onSubtaskUpdate &&
-                                                    !(
-                                                        (subtask as any)
-                                                            ._isNew ||
-                                                        (subtask as any).isNew
-                                                    )
-                                                ) {
-                                                    try {
-                                                        const updatedSubtask =
-                                                            await toggleTaskCompletion(
-                                                                subtask.uid!
-                                                            );
-                                                        await onSubtaskUpdate(
-                                                            updatedSubtask
-                                                        );
-                                                    } catch (error) {
-                                                        console.error(
-                                                            'Error toggling subtask completion:',
-                                                            error
-                                                        );
-                                                    }
-                                                } else {
-                                                    handleToggleNewSubtaskCompletion(
-                                                        index
-                                                    );
-                                                }
-                                            }}
+                                            onToggleCompletion={() => handleToggleSubtaskCompletion(subtask, index)}
                                         />
                                     </div>
                                     <input
@@ -289,37 +283,7 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                                                     subtask.status ||
                                                     'not_started'
                                                 }
-                                                onToggleCompletion={async () => {
-                                                    if (
-                                                        subtask.id &&
-                                                        onSubtaskUpdate &&
-                                                        !(
-                                                            (subtask as any)
-                                                                ._isNew ||
-                                                            (subtask as any)
-                                                                .isNew
-                                                        )
-                                                    ) {
-                                                        try {
-                                                            const updatedSubtask =
-                                                                await toggleTaskCompletion(
-                                                                    subtask.uid!
-                                                                );
-                                                            await onSubtaskUpdate(
-                                                                updatedSubtask
-                                                            );
-                                                        } catch (error) {
-                                                            console.error(
-                                                                'Error toggling subtask completion:',
-                                                                error
-                                                            );
-                                                        }
-                                                    } else {
-                                                        handleToggleNewSubtaskCompletion(
-                                                            index
-                                                        );
-                                                    }
-                                                }}
+                                                onToggleCompletion={() => handleToggleSubtaskCompletion(subtask, index)}
                                             />
                                         </div>
                                         <span

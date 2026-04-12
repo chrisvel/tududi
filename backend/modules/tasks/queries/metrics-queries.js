@@ -50,10 +50,16 @@ async function countTasksPendingOverMonth(visibleTasksWhere) {
 }
 
 async function fetchTasksInProgress(visibleTasksWhere) {
+    const now = new Date();
     return await Task.findAll({
         where: {
             ...visibleTasksWhere,
             status: { [Op.in]: [Task.STATUS.IN_PROGRESS, 'in_progress'] },
+            // Exclude tasks deferred to the future
+            [Op.or]: [
+                { defer_until: null },
+                { defer_until: { [Op.lte]: now } },
+            ],
             parent_task_id: null,
             recurring_parent_id: null,
         },
@@ -67,6 +73,7 @@ async function fetchTasksInProgress(visibleTasksWhere) {
 }
 
 async function fetchTodayPlanTasks(visibleTasksWhere) {
+    const now = new Date();
     const todayPlanStatuses = [
         Task.STATUS.IN_PROGRESS,
         Task.STATUS.WAITING,
@@ -87,7 +94,7 @@ async function fetchTodayPlanTasks(visibleTasksWhere) {
         'cancelled',
     ];
 
-    return await Task.findAll({
+    const tasks = await Task.findAll({
         where: {
             [Op.and]: [
                 visibleTasksWhere,
@@ -97,7 +104,16 @@ async function fetchTodayPlanTasks(visibleTasksWhere) {
                         [Op.notIn]: excludedStatuses,
                     },
                     parent_task_id: null,
-                    // Exclude recurring parent tasks - only include non-recurring tasks or recurring instances
+                },
+                // Exclude tasks deferred to the future
+                {
+                    [Op.or]: [
+                        { defer_until: null },
+                        { defer_until: { [Op.lte]: now } },
+                    ],
+                },
+                // Include non-recurring tasks, recurring parents, and recurring instances
+                {
                     [Op.or]: [
                         {
                             // Non-recurring tasks
@@ -106,8 +122,18 @@ async function fetchTodayPlanTasks(visibleTasksWhere) {
                                     [Op.or]: [
                                         { recurrence_type: 'none' },
                                         { recurrence_type: null },
+                                        { recurrence_type: '' },
                                     ],
                                 },
+                                { recurring_parent_id: null },
+                            ],
+                        },
+                        {
+                            // Recurring parent tasks
+                            [Op.and]: [
+                                { recurrence_type: { [Op.ne]: 'none' } },
+                                { recurrence_type: { [Op.ne]: null } },
+                                { recurrence_type: { [Op.ne]: '' } },
                                 { recurring_parent_id: null },
                             ],
                         },
@@ -126,6 +152,18 @@ async function fetchTodayPlanTasks(visibleTasksWhere) {
             ['project_id', 'ASC'],
         ],
     });
+
+    // Deduplicate: exclude recurring parents that already have instances in the list
+    const parentIdsWithInstances = new Set(
+        tasks
+            .filter((t) => t.recurring_parent_id)
+            .map((t) => t.recurring_parent_id)
+    );
+
+    return tasks.filter(
+        (t) =>
+            !parentIdsWithInstances.has(t.id) || t.recurring_parent_id !== null
+    );
 }
 
 async function fetchTasksDueToday(visibleTasksWhere, userTimezone) {
@@ -141,8 +179,10 @@ async function fetchTasksDueToday(visibleTasksWhere, userTimezone) {
                         [Op.notIn]: [
                             Task.STATUS.DONE,
                             Task.STATUS.ARCHIVED,
+                            Task.STATUS.CANCELLED,
                             'done',
                             'archived',
+                            'cancelled',
                             ...TODAY_PLAN_STATUSES,
                         ],
                     },
@@ -189,8 +229,10 @@ async function fetchOverdueTasks(visibleTasksWhere, userTimezone) {
                         [Op.notIn]: [
                             Task.STATUS.DONE,
                             Task.STATUS.ARCHIVED,
+                            Task.STATUS.CANCELLED,
                             'done',
                             'archived',
+                            'cancelled',
                             // Exclude tasks in today plan (they show in Planned section)
                             ...TODAY_PLAN_STATUSES,
                         ],

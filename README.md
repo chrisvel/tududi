@@ -226,10 +226,6 @@ Join the tududi community:
 
 ![Dark Mode Screenshot](screenshots/all-dark.png)
 
-![Light Mobile Screenshot](screenshots/mobile-all-light.png)
-
-![Dark Mobile Screenshot](screenshots/mobile-all-dark.png)
-
 ---
 
 README created by [Chris Veleris](https://github.com/chrisvel) for `tududi`.

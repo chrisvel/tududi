@@ -333,12 +333,16 @@ class ProjectsService {
 
         if (name !== undefined) updateData.name = name;
         if (description !== undefined) updateData.description = description;
-        if (area_id !== undefined) updateData.area_id = area_id;
+        if (area_id !== undefined)
+            updateData.area_id = area_id === '' ? null : area_id;
         if (pin_to_sidebar !== undefined)
             updateData.pin_to_sidebar = pin_to_sidebar;
-        if (priority !== undefined) updateData.priority = priority;
-        if (due_date_at !== undefined) updateData.due_date_at = due_date_at;
-        if (image_url !== undefined) updateData.image_url = image_url;
+        if (priority !== undefined)
+            updateData.priority = priority === '' ? null : priority;
+        if (due_date_at !== undefined)
+            updateData.due_date_at = due_date_at === '' ? null : due_date_at;
+        if (image_url !== undefined)
+            updateData.image_url = image_url === '' ? null : image_url;
         if (status !== undefined) updateData.status = status;
         else if (state !== undefined) updateData.status = state;
 

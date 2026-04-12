@@ -97,6 +97,11 @@ module.exports = (sequelize) => {
                 type: DataTypes.DATE,
                 allowNull: true,
             },
+            channel_sent_at: {
+                type: DataTypes.JSON,
+                allowNull: true,
+                defaultValue: null,
+            },
         },
         {
             tableName: 'notifications',
@@ -142,6 +147,7 @@ module.exports = (sequelize) => {
         sources = [],
         sentAt = null,
         level = 'info',
+        channel_sent_at = null,
     }) {
         const notification = await Notification.create({
             user_id: userId,
@@ -152,6 +158,7 @@ module.exports = (sequelize) => {
             sources,
             level,
             sent_at: sentAt || new Date(),
+            channel_sent_at,
         });
 
         if (sources.includes('email')) {
@@ -164,7 +171,8 @@ module.exports = (sequelize) => {
                 title,
                 message,
                 data,
-                Notification
+                Notification,
+                notification
             );
         }
 
@@ -209,13 +217,26 @@ module.exports = (sequelize) => {
         title,
         message,
         data,
-        NotificationModel
+        NotificationModel,
+        notificationInstance
     ) {
         try {
             const telegramService = require('../modules/telegram/telegramNotificationService');
 
             if (!message) {
                 return;
+            }
+
+            // Check if Telegram was recently sent for this notification (within 24 hours)
+            // to prevent spam from delete-and-recreate pattern
+            if (
+                notificationInstance &&
+                notificationInstance.wasChannelRecentlySent(
+                    'telegram',
+                    24 * 60 * 60 * 1000
+                )
+            ) {
+                return; // Skip sending to prevent spam
             }
 
             const UserModel = NotificationModel.sequelize.models.User;
@@ -236,6 +257,11 @@ module.exports = (sequelize) => {
                     data,
                     level: 'info',
                 });
+
+                // Mark that Telegram was sent for this notification
+                if (notificationInstance) {
+                    await notificationInstance.markChannelAsSent('telegram');
+                }
             }
         } catch (error) {
             console.error('Failed to send Telegram notification:', error);
@@ -273,6 +299,37 @@ module.exports = (sequelize) => {
 
     Notification.prototype.isDismissed = function () {
         return this.dismissed_at !== null;
+    };
+
+    /**
+     * Mark a notification channel as sent
+     * @param {string} channel - The channel name (telegram, email, push)
+     */
+    Notification.prototype.markChannelAsSent = async function (channel) {
+        const sentTimes = this.channel_sent_at || {};
+        sentTimes[channel] = new Date().toISOString();
+        this.channel_sent_at = sentTimes;
+        this.changed('channel_sent_at', true);
+        await this.save();
+        return this;
+    };
+
+    /**
+     * Check if a channel was recently sent for this notification
+     * @param {string} channel - The channel name (telegram, email, push)
+     * @param {number} thresholdMs - Time threshold in milliseconds (default: 24 hours)
+     * @returns {boolean} True if channel was sent within threshold
+     */
+    Notification.prototype.wasChannelRecentlySent = function (
+        channel,
+        thresholdMs = 24 * 60 * 60 * 1000
+    ) {
+        if (!this.channel_sent_at || !this.channel_sent_at[channel]) {
+            return false;
+        }
+        const lastSent = new Date(this.channel_sent_at[channel]);
+        const now = new Date();
+        return now - lastSent < thresholdMs;
     };
 
     Notification.getUserNotifications = async function (userId, options = {}) {

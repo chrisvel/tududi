@@ -1007,25 +1007,208 @@ const TasksToday: React.FC = () => {
         []
     );
 
+    const updateTaskInState = useCallback(
+        (updatedTask: Task): void => {
+            if (!isMounted.current) return;
+
+            console.log('[updateTaskInState] Called with task:', {
+                id: updatedTask.id,
+                uid: updatedTask.uid,
+                name: updatedTask.name,
+                status: updatedTask.status,
+                completed_at: updatedTask.completed_at,
+            });
+
+            setMetrics((prevMetrics) => {
+                const newMetrics = { ...prevMetrics };
+
+                const removeTask = (list: Task[]) =>
+                    list.filter((task) => task.id !== updatedTask.id);
+
+                const updateOrAddTask = (list: Task[], taskToProcess: Task) => {
+                    const existingIndex = list.findIndex(
+                        (task) => task.id === taskToProcess.id
+                    );
+                    if (existingIndex > -1) {
+                        return list.map((task, index) =>
+                            index === existingIndex
+                                ? {
+                                      ...task,
+                                      ...taskToProcess,
+                                      subtasks:
+                                          taskToProcess.subtasks ||
+                                          task.subtasks ||
+                                          [],
+                                  }
+                                : task
+                        );
+                    } else {
+                        return [...list, taskToProcess];
+                    }
+                };
+
+                newMetrics.today_plan_tasks = removeTask(
+                    newMetrics.today_plan_tasks || []
+                );
+                newMetrics.suggested_tasks = removeTask(
+                    newMetrics.suggested_tasks || []
+                );
+                newMetrics.tasks_due_today = removeTask(
+                    newMetrics.tasks_due_today || []
+                );
+                newMetrics.tasks_overdue = removeTask(
+                    newMetrics.tasks_overdue || []
+                );
+                newMetrics.tasks_in_progress = removeTask(
+                    newMetrics.tasks_in_progress || []
+                );
+                newMetrics.tasks_completed_today = removeTask(
+                    newMetrics.tasks_completed_today || []
+                );
+
+                if (isTaskDone(updatedTask.status)) {
+                    if (updatedTask.completed_at) {
+                        const completedDate = new Date(
+                            updatedTask.completed_at
+                        );
+                        const today = new Date();
+                        if (
+                            format(completedDate, 'yyyy-MM-dd') ===
+                            format(today, 'yyyy-MM-dd')
+                        ) {
+                            newMetrics.tasks_completed_today = updateOrAddTask(
+                                newMetrics.tasks_completed_today,
+                                updatedTask
+                            );
+                        }
+                    }
+                } else {
+                    const isInTodayPlan =
+                        isTaskInProgress(updatedTask.status) ||
+                        isTaskPlanned(updatedTask.status) ||
+                        isTaskWaiting(updatedTask.status);
+                    if (isInTodayPlan && updatedTask.status !== 'cancelled') {
+                        newMetrics.today_plan_tasks = updateOrAddTask(
+                            newMetrics.today_plan_tasks,
+                            updatedTask
+                        );
+                    }
+                    if (updatedTask.status === 'in_progress') {
+                        newMetrics.tasks_in_progress = updateOrAddTask(
+                            newMetrics.tasks_in_progress,
+                            updatedTask
+                        );
+                    }
+                    if (
+                        updatedTask.due_date &&
+                        updatedTask.status !== 'cancelled' &&
+                        !newMetrics.today_plan_tasks.some(
+                            (t) => t.id === updatedTask.id
+                        ) &&
+                        !newMetrics.tasks_in_progress.some(
+                            (t) => t.id === updatedTask.id
+                        )
+                    ) {
+                        const todayStr = getTodayDateString();
+                        const dueDateStr = (updatedTask.due_date || '').split(
+                            'T'
+                        )[0];
+
+                        if (dueDateStr === todayStr) {
+                            newMetrics.tasks_due_today = updateOrAddTask(
+                                newMetrics.tasks_due_today,
+                                updatedTask
+                            );
+                        } else if (dueDateStr < todayStr) {
+                            newMetrics.tasks_overdue = updateOrAddTask(
+                                newMetrics.tasks_overdue,
+                                updatedTask
+                            );
+                        }
+                    }
+                    const notInTodayPlan =
+                        !isTaskInProgress(updatedTask.status) &&
+                        !isTaskPlanned(updatedTask.status) &&
+                        !isTaskWaiting(updatedTask.status);
+                    const isSuggested =
+                        notInTodayPlan &&
+                        !updatedTask.project_id &&
+                        !updatedTask.due_date;
+                    const isActive = isTaskActive(updatedTask.status);
+
+                    if (
+                        isSuggested &&
+                        isActive &&
+                        !newMetrics.today_plan_tasks.some(
+                            (t) => t.id === updatedTask.id
+                        ) &&
+                        !newMetrics.tasks_due_today.some(
+                            (t) => t.id === updatedTask.id
+                        ) &&
+                        !newMetrics.tasks_in_progress.some(
+                            (t) => t.id === updatedTask.id
+                        )
+                    ) {
+                        newMetrics.suggested_tasks = updateOrAddTask(
+                            newMetrics.suggested_tasks,
+                            updatedTask
+                        );
+                    }
+                }
+
+                newMetrics.total_open_tasks =
+                    newMetrics.today_plan_tasks.length +
+                    newMetrics.suggested_tasks.length +
+                    newMetrics.tasks_due_today.length +
+                    newMetrics.tasks_overdue.length +
+                    newMetrics.tasks_in_progress.length;
+
+                console.log('[updateTaskInState] Task placement:', {
+                    taskId: updatedTask.id,
+                    isInCompleted: newMetrics.tasks_completed_today.some(
+                        (t) => t.id === updatedTask.id
+                    ),
+                    isInTodayPlan: newMetrics.today_plan_tasks.some(
+                        (t) => t.id === updatedTask.id
+                    ),
+                    isInSuggested: newMetrics.suggested_tasks.some(
+                        (t) => t.id === updatedTask.id
+                    ),
+                    isInDueToday: newMetrics.tasks_due_today.some(
+                        (t) => t.id === updatedTask.id
+                    ),
+                    isInOverdue: newMetrics.tasks_overdue.some(
+                        (t) => t.id === updatedTask.id
+                    ),
+                    isInProgress: newMetrics.tasks_in_progress.some(
+                        (t) => t.id === updatedTask.id
+                    ),
+                });
+
+                return newMetrics;
+            });
+
+            useStore.getState().tasksStore.updateTaskInStore(updatedTask);
+        },
+        []
+    );
+
     const handleTaskCompletionToggle = useCallback(
         async (updatedTask: Task): Promise<void> => {
             if (!isMounted.current) return;
 
             try {
                 // The updatedTask is already the result of the API call from TaskItem
-                // Use the centralized task update handler to update UI optimistically
-                await handleTaskUpdate(updatedTask);
+                // Just update the local state without making another API call
+                updateTaskInState(updatedTask);
 
                 // Check if this was a recurring task completion that needs refresh
-                // Recurring tasks get advanced after completion, so they won't appear in completed list
-                // without a refetch
                 const isRecurringParent =
                     updatedTask.recurrence_type &&
                     updatedTask.recurrence_type !== 'none' &&
                     !updatedTask.recurring_parent_id;
 
                 if (isRecurringParent) {
-                    // Refetch tasks to get the updated completed list for recurring tasks
                     const result = await fetchTasks('?type=today');
                     if (isMounted.current) {
                         setMetrics((prevMetrics) => ({
@@ -1039,7 +1222,7 @@ const TasksToday: React.FC = () => {
                 console.error('Error toggling task completion:', error);
             }
         },
-        [handleTaskUpdate]
+        [updateTaskInState]
     );
 
     // Calculate today's progress for the progress bar
@@ -1814,10 +1997,14 @@ const TasksToday: React.FC = () => {
                                                 completedTodayDisplayLimit
                                             )}
                                             onTaskUpdate={handleTaskUpdate}
+                                            onTaskCompletionToggle={
+                                                handleTaskCompletionToggle
+                                            }
                                             onTaskDelete={handleTaskDelete}
                                             projects={localProjects}
                                             onToggleToday={undefined}
                                             showCompletedTasks={true}
+                                            isInCompletedSection={true}
                                         />
 
                                         {/* Load More Buttons for Completed Today Tasks */}

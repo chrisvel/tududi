@@ -109,7 +109,7 @@ const Layout: React.FC<LayoutProps> = ({
                 if (window.innerWidth < 1024) {
                     setIsSidebarOpen(false);
                 }
-                navigate(`/task/${newTask.uid}`, { state: { isNew: true } });
+                navigate(`/task/${newTask.uid}`, { state: { isNew: true, from: location.pathname + location.search } });
             } else {
                 throw new Error('New task missing UID');
             }
@@ -163,6 +163,15 @@ const Layout: React.FC<LayoutProps> = ({
 
         loadProjects();
     }, [projects.length, isProjectsLoading, setProjects]);
+
+    useEffect(() => {
+        // Load areas into global store if not already loaded
+        const { hasLoaded, isLoading, loadAreas } =
+            useStore.getState().areasStore;
+        if (!hasLoaded && !isLoading) {
+            loadAreas();
+        }
+    }, []);
 
     const openNoteModal = (note: Note | null = null) => {
         setSelectedNote(note);

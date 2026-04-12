@@ -92,13 +92,20 @@ export const updateTask = async (
     taskUid: string,
     taskData: Partial<Task>
 ): Promise<Task> => {
+    // Use original_name to prevent display name (e.g. "Monthly", "Daily")
+    // from overwriting the real task name in the database
+    const payload = { ...taskData };
+    if (payload.original_name && payload.name !== undefined) {
+        payload.name = payload.original_name;
+    }
+
     const response = await fetch(
         getApiPath(`task/${encodeURIComponent(taskUid)}`),
         {
             method: 'PATCH',
             credentials: 'include',
             headers: getPostHeaders(),
-            body: JSON.stringify(taskData),
+            body: JSON.stringify(payload),
         }
     );
 
@@ -125,7 +132,26 @@ export const toggleTaskCompletion = async (
             : TASK_STATUS.NOT_STARTED
         : TASK_STATUS.DONE;
 
-    return await updateTask(taskUid, { status: newStatus });
+    if (process.env.NODE_ENV === 'development') {
+        console.log('[toggleTaskCompletion]', {
+            taskUid,
+            oldStatus: task.status,
+            newStatus,
+            oldCompletedAt: task.completed_at,
+        });
+    }
+
+    const result = await updateTask(taskUid, { status: newStatus });
+
+    if (process.env.NODE_ENV === 'development') {
+        console.log('[toggleTaskCompletion] result', {
+            taskUid,
+            status: result.status,
+            completed_at: result.completed_at,
+        });
+    }
+
+    return result;
 };
 
 export const deleteTask = async (taskUid: string): Promise<void> => {

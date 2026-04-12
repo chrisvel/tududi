@@ -295,6 +295,68 @@ describe('Recurring Tasks', () => {
                 expect(nextDueDate.getUTCDay()).toBe(2); // Tuesday
             });
 
+            it('should respect bi-weekly interval with multiple weekdays (Issue #844)', async () => {
+                // Use a fixed Tuesday: 2026-02-10
+                const tuesday = new Date(Date.UTC(2026, 1, 10, 0, 0, 0, 0));
+                expect(tuesday.getUTCDay()).toBe(2); // Sanity: Tuesday
+
+                const task = await Task.create({
+                    name: 'Bi-weekly Tue/Thu Task',
+                    recurrence_type: 'weekly',
+                    recurrence_interval: 2,
+                    recurrence_weekdays: [2, 4], // Tuesday, Thursday
+                    due_date: tuesday,
+                    user_id: user.id,
+                    status: Task.STATUS.NOT_STARTED,
+                });
+
+                // Tuesday -> Thursday (same cycle week)
+                const next1 = calculateNextDueDate(task, tuesday);
+                expect(next1.getUTCDay()).toBe(4); // Thursday
+                expect(next1.toISOString().split('T')[0]).toBe('2026-02-12');
+
+                // Thursday -> next cycle Tuesday (skip 1 week, land on week 3's Tuesday)
+                const next2 = calculateNextDueDate(task, next1);
+                expect(next2.getUTCDay()).toBe(2); // Tuesday
+                expect(next2.toISOString().split('T')[0]).toBe('2026-02-24');
+
+                // Tuesday (week 3) -> Thursday (week 3, same cycle)
+                const next3 = calculateNextDueDate(task, next2);
+                expect(next3.getUTCDay()).toBe(4); // Thursday
+                expect(next3.toISOString().split('T')[0]).toBe('2026-02-26');
+
+                // Thursday (week 3) -> Tuesday (week 5)
+                const next4 = calculateNextDueDate(task, next3);
+                expect(next4.getUTCDay()).toBe(2); // Tuesday
+                expect(next4.toISOString().split('T')[0]).toBe('2026-03-10');
+            });
+
+            it('should respect tri-weekly interval with single weekday via weekdays array (Issue #844)', async () => {
+                // Use a fixed Monday: 2026-02-09
+                const monday = new Date(Date.UTC(2026, 1, 9, 0, 0, 0, 0));
+                expect(monday.getUTCDay()).toBe(1);
+
+                const task = await Task.create({
+                    name: 'Every 3 weeks on Monday',
+                    recurrence_type: 'weekly',
+                    recurrence_interval: 3,
+                    recurrence_weekdays: [1], // Monday only
+                    due_date: monday,
+                    user_id: user.id,
+                    status: Task.STATUS.NOT_STARTED,
+                });
+
+                // Monday Feb 9 -> Monday Mar 2 (3 weeks later)
+                const next1 = calculateNextDueDate(task, monday);
+                expect(next1.getUTCDay()).toBe(1);
+                expect(next1.toISOString().split('T')[0]).toBe('2026-03-02');
+
+                // Monday Mar 2 -> Monday Mar 23 (3 weeks later)
+                const next2 = calculateNextDueDate(task, next1);
+                expect(next2.getUTCDay()).toBe(1);
+                expect(next2.toISOString().split('T')[0]).toBe('2026-03-23');
+            });
+
             it('should handle three weekdays (Mon/Wed/Fri)', async () => {
                 // Use a fixed Monday: 2026-02-09
                 const monday = new Date(Date.UTC(2026, 1, 9, 0, 0, 0, 0));
@@ -324,6 +386,87 @@ describe('Recurring Tasks', () => {
                 const next3 = calculateNextDueDate(task, next2);
                 expect(next3.getUTCDay()).toBe(1);
                 expect(next3.toISOString().split('T')[0]).toBe('2026-02-16');
+            });
+
+            it('should calculate correct initial due date when creating task with recurrence_weekdays and no due_date (Issue #974)', async () => {
+                const now = new Date();
+                now.setUTCHours(0, 0, 0, 0);
+                const currentWeekday = now.getUTCDay();
+
+                const targetWeekdays = [
+                    (currentWeekday + 1) % 7,
+                    (currentWeekday + 3) % 7,
+                ].sort();
+
+                const response = await agent.post('/api/task').send({
+                    name: 'Multi-day Task Without Due Date',
+                    recurrence_type: 'weekly',
+                    recurrence_weekdays: targetWeekdays,
+                    recurrence_interval: 1,
+                });
+
+                expect(response.status).toBe(201);
+                expect(response.body.recurrence_weekdays).toEqual(
+                    targetWeekdays
+                );
+                expect(response.body.due_date).toBeDefined();
+
+                const dueDate = new Date(response.body.due_date);
+                dueDate.setUTCHours(0, 0, 0, 0);
+                expect(targetWeekdays).toContain(dueDate.getUTCDay());
+
+                expect(dueDate.getTime()).toBeGreaterThanOrEqual(now.getTime());
+            });
+
+            it('should calculate correct initial due date when adding recurrence_weekdays to existing task (Issue #974)', async () => {
+                const task = await Task.create({
+                    name: 'Regular Task',
+                    user_id: user.id,
+                    status: Task.STATUS.NOT_STARTED,
+                });
+
+                const now = new Date();
+                now.setUTCHours(0, 0, 0, 0);
+                const currentWeekday = now.getUTCDay();
+
+                const targetWeekdays = [
+                    (currentWeekday + 1) % 7,
+                    (currentWeekday + 2) % 7,
+                ].sort();
+
+                const response = await agent
+                    .patch(`/api/task/${task.uid}`)
+                    .send({
+                        recurrence_type: 'weekly',
+                        recurrence_weekdays: targetWeekdays,
+                        recurrence_interval: 1,
+                    });
+
+                expect(response.status).toBe(200);
+                expect(response.body.recurrence_weekdays).toEqual(
+                    targetWeekdays
+                );
+                expect(response.body.due_date).toBeDefined();
+
+                const dueDate = new Date(response.body.due_date);
+                dueDate.setUTCHours(0, 0, 0, 0);
+                expect(targetWeekdays).toContain(dueDate.getUTCDay());
+                expect(dueDate.getTime()).toBeGreaterThanOrEqual(now.getTime());
+            });
+
+            it('should respect explicit due_date over calculated date for recurrence_weekdays (Issue #974)', async () => {
+                const explicitDate = '2026-12-25';
+
+                const response = await agent.post('/api/task').send({
+                    name: 'Task with explicit date',
+                    recurrence_type: 'weekly',
+                    recurrence_weekdays: [1, 4],
+                    recurrence_interval: 1,
+                    due_date: explicitDate,
+                });
+
+                expect(response.status).toBe(201);
+                expect(response.body.due_date).toBe(explicitDate);
             });
         });
 
@@ -1271,6 +1414,340 @@ describe('Recurring Tasks', () => {
                 new Date()
             );
             expect(result).toBeNull();
+        });
+    });
+
+    describe('Recurring Task Defer Until Validation', () => {
+        it('should allow defer_until after due_date for recurring instance with end date', async () => {
+            // Create parent recurring task with end date
+            const parentTask = await Task.create({
+                name: 'Recurring Parent',
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+                recurrence_end_date: new Date('2026-12-31'),
+                due_date: new Date('2026-03-01'),
+                user_id: user.id,
+                status: 0,
+            });
+
+            // Create instance with recurring_parent_id
+            const response = await agent.post('/api/task').send({
+                name: 'Instance Task',
+                due_date: '2026-03-10',
+                defer_until: '2026-03-15', // After due_date but before end_date
+                recurring_parent_id: parentTask.id,
+            });
+
+            expect(response.status).toBe(201);
+            expect(response.body.defer_until).toBeTruthy();
+        });
+
+        it('should reject defer_until after recurrence_end_date', async () => {
+            const parentTask = await Task.create({
+                name: 'Recurring Parent',
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+                recurrence_end_date: new Date('2026-03-20'),
+                due_date: new Date('2026-03-01'),
+                user_id: user.id,
+                status: 0,
+            });
+
+            const response = await agent.post('/api/task').send({
+                name: 'Instance Task',
+                due_date: '2026-03-10',
+                defer_until: '2026-03-25', // After end_date
+                recurring_parent_id: parentTask.id,
+            });
+
+            expect(response.status).toBe(400);
+            expect(response.body.error).toContain('recurring task end date');
+        });
+
+        it('should allow any defer_until for recurring instance with no end date', async () => {
+            const parentTask = await Task.create({
+                name: 'Recurring Parent',
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+                recurrence_end_date: null, // No end date
+                due_date: new Date('2026-03-01'),
+                user_id: user.id,
+                status: 0,
+            });
+
+            const response = await agent.post('/api/task').send({
+                name: 'Instance Task',
+                due_date: '2026-03-10',
+                defer_until: '2027-12-31', // Far in future
+                recurring_parent_id: parentTask.id,
+            });
+
+            expect(response.status).toBe(201);
+            expect(response.body.defer_until).toBeTruthy();
+        });
+
+        it('should update defer_until on recurring instance via PATCH', async () => {
+            const parentTask = await Task.create({
+                name: 'Recurring Parent',
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+                recurrence_end_date: new Date('2026-12-31'),
+                due_date: new Date('2026-03-01'),
+                user_id: user.id,
+                status: 0,
+            });
+
+            const instanceTask = await Task.create({
+                name: 'Instance Task',
+                due_date: new Date('2026-03-10'),
+                recurring_parent_id: parentTask.id,
+                user_id: user.id,
+                status: 0,
+            });
+
+            const response = await agent
+                .patch(`/api/task/${instanceTask.uid}`)
+                .send({
+                    defer_until: '2026-03-15', // After due_date but before end_date
+                });
+
+            expect(response.status).toBe(200);
+            expect(response.body.defer_until).toBeTruthy();
+        });
+
+        it('should still enforce strict validation for non-recurring tasks', async () => {
+            const response = await agent.post('/api/task').send({
+                name: 'Regular Task',
+                due_date: '2026-03-10',
+                defer_until: '2026-03-15', // After due_date
+                recurrence_type: 'none',
+            });
+
+            expect(response.status).toBe(400);
+            expect(response.body.error).toContain(
+                'cannot be after the due date'
+            );
+        });
+
+        it('should handle invalid recurring_parent_id gracefully', async () => {
+            const response = await agent.post('/api/task').send({
+                name: 'Instance Task',
+                due_date: '2026-03-10',
+                defer_until: '2026-03-15',
+                recurring_parent_id: 999999, // Non-existent parent
+            });
+
+            // Should fall back to strict validation
+            expect(response.status).toBe(400);
+            expect(response.body.error).toContain(
+                'cannot be after the due date'
+            );
+        });
+    });
+
+    describe('Auto-calculation of initial due date (Issue #963)', () => {
+        it('should calculate correct first occurrence for monthly task on specific day in future', async () => {
+            // Always use day 28 as target, which works for all months
+            const targetDay = 28;
+
+            const response = await agent.post('/api/task').send({
+                name: 'Monthly Recurring Task',
+                recurrence_type: 'monthly',
+                recurrence_month_day: targetDay,
+                recurrence_interval: 1,
+                // Intentionally NOT providing due_date
+            });
+
+            expect(response.status).toBe(201);
+            expect(response.body.recurrence_type).toBe('monthly');
+            expect(response.body.recurrence_month_day).toBe(targetDay);
+            expect(response.body.due_date).toBeDefined();
+
+            // Verify due_date matches the target day (not today or yesterday)
+            const dueDate = new Date(response.body.due_date);
+            const dueDateDay = dueDate.getUTCDate();
+
+            // Should be set to the 28th (or closest valid day if month doesn't have 28 days)
+            expect(dueDateDay).toBeLessThanOrEqual(targetDay);
+            expect(dueDateDay).toBeGreaterThanOrEqual(28);
+
+            // Should be today or in the future
+            const now = new Date();
+            now.setUTCHours(0, 0, 0, 0);
+            expect(dueDate.getTime()).toBeGreaterThanOrEqual(
+                now.getTime() - 24 * 60 * 60 * 1000
+            );
+        });
+
+        it('should calculate correct first occurrence for monthly task when target day already passed', async () => {
+            // Use day 1 as target, which should always result in next month if we're past the 1st
+            const targetDay = 1;
+
+            const response = await agent.post('/api/task').send({
+                name: 'Monthly Task Past Due Day',
+                recurrence_type: 'monthly',
+                recurrence_month_day: targetDay,
+                recurrence_interval: 1,
+            });
+
+            expect(response.status).toBe(201);
+            expect(response.body.due_date).toBeDefined();
+
+            const dueDate = new Date(response.body.due_date);
+            const dueDateDay = dueDate.getUTCDate();
+
+            // Should be set to the 1st of the month
+            expect(dueDateDay).toBe(targetDay);
+
+            // Should be today or in the future
+            const now = new Date();
+            now.setUTCHours(0, 0, 0, 0);
+            expect(dueDate.getTime()).toBeGreaterThanOrEqual(
+                now.getTime() - 24 * 60 * 60 * 1000
+            );
+        });
+
+        it('should calculate correct first occurrence for weekly recurring task', async () => {
+            const now = new Date();
+            now.setUTCHours(0, 0, 0, 0);
+            const currentWeekday = now.getUTCDay();
+
+            // Pick a weekday different from today
+            const targetWeekday = (currentWeekday + 2) % 7;
+
+            const response = await agent.post('/api/task').send({
+                name: 'Weekly Task',
+                recurrence_type: 'weekly',
+                recurrence_weekday: targetWeekday,
+                recurrence_interval: 1,
+                // Intentionally NOT providing due_date
+            });
+
+            expect(response.status).toBe(201);
+            expect(response.body.recurrence_type).toBe('weekly');
+            expect(response.body.recurrence_weekday).toBe(targetWeekday);
+            expect(response.body.due_date).toBeDefined();
+
+            // Verify due_date is on the correct weekday
+            const dueDate = new Date(response.body.due_date);
+            expect(dueDate.getUTCDay()).toBe(targetWeekday);
+
+            // Verify due_date is in the future (or today if target is today)
+            expect(dueDate.getTime()).toBeGreaterThanOrEqual(
+                now.getTime() - 24 * 60 * 60 * 1000
+            ); // Allow for today
+        });
+
+        it('should use today for weekly task when today is the target weekday', async () => {
+            const now = new Date();
+            now.setUTCHours(0, 0, 0, 0);
+            const currentWeekday = now.getUTCDay();
+
+            const response = await agent.post('/api/task').send({
+                name: 'Weekly Task Today',
+                recurrence_type: 'weekly',
+                recurrence_weekday: currentWeekday,
+                recurrence_interval: 1,
+            });
+
+            expect(response.status).toBe(201);
+            expect(response.body.due_date).toBeDefined();
+
+            const dueDate = new Date(response.body.due_date);
+            expect(dueDate.getUTCDay()).toBe(currentWeekday);
+
+            // Should be today
+            const dueDateStr = dueDate.toISOString().split('T')[0];
+            const nowStr = now.toISOString().split('T')[0];
+            expect(dueDateStr).toBe(nowStr);
+        });
+
+        it('should default to today for daily recurring task without due date', async () => {
+            const now = new Date();
+            now.setUTCHours(0, 0, 0, 0);
+
+            const response = await agent.post('/api/task').send({
+                name: 'Daily Task',
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+                // Intentionally NOT providing due_date
+            });
+
+            expect(response.status).toBe(201);
+            expect(response.body.recurrence_type).toBe('daily');
+            expect(response.body.due_date).toBeDefined();
+
+            // For daily tasks, today is a reasonable default
+            const dueDate = new Date(response.body.due_date);
+            const dueDateStr = dueDate.toISOString().split('T')[0];
+            const nowStr = now.toISOString().split('T')[0];
+            expect(dueDateStr).toBe(nowStr);
+        });
+
+        it('should update existing task to add monthly recurrence and calculate correct due date', async () => {
+            // Create a task without recurrence
+            const task = await Task.create({
+                name: 'Regular Task',
+                user_id: user.id,
+                status: 0,
+            });
+
+            const targetDay = 15; // Use middle of month for consistency
+
+            // Update to add recurrence without providing due_date
+            const response = await agent.patch(`/api/task/${task.uid}`).send({
+                recurrence_type: 'monthly',
+                recurrence_month_day: targetDay,
+                recurrence_interval: 1,
+            });
+
+            expect(response.status).toBe(200);
+            expect(response.body.recurrence_type).toBe('monthly');
+            expect(response.body.due_date).toBeDefined();
+
+            const dueDate = new Date(response.body.due_date);
+            const dueDateDay = dueDate.getUTCDate();
+
+            // Should be set to the 15th
+            expect(dueDateDay).toBe(targetDay);
+
+            // Should be today or in the future
+            const now = new Date();
+            now.setUTCHours(0, 0, 0, 0);
+            expect(dueDate.getTime()).toBeGreaterThanOrEqual(
+                now.getTime() - 24 * 60 * 60 * 1000
+            );
+        });
+
+        it('should respect explicitly provided due_date over calculated date', async () => {
+            const explicitDate = '2026-12-25';
+
+            const response = await agent.post('/api/task').send({
+                name: 'Monthly Task with Explicit Date',
+                recurrence_type: 'monthly',
+                recurrence_month_day: 15,
+                recurrence_interval: 1,
+                due_date: explicitDate, // Explicitly provided
+            });
+
+            expect(response.status).toBe(201);
+            expect(response.body.due_date).toBe(explicitDate);
+        });
+
+        it('should handle month edge case (31st of month in February)', async () => {
+            const response = await agent.post('/api/task').send({
+                name: 'Monthly Task 31st',
+                recurrence_type: 'monthly',
+                recurrence_month_day: 31,
+                recurrence_interval: 1,
+            });
+
+            expect(response.status).toBe(201);
+            expect(response.body.due_date).toBeDefined();
+
+            // Should not crash and should provide a valid date
+            const dueDate = new Date(response.body.due_date);
+            expect(dueDate.getTime()).not.toBeNaN();
         });
     });
 });

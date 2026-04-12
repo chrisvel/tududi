@@ -233,7 +233,9 @@ class SearchService {
             params.offset
         );
 
-        const serializedTasks = await serializeTasks(tasks, timezone);
+        const serializedTasks = await serializeTasks(tasks, timezone, {
+            skipDisplayNameTransform: true,
+        });
 
         return {
             count,

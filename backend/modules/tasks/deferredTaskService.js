@@ -67,8 +67,26 @@ async function checkDeferredTasks() {
                         notif.data?.reason === 'defer_until_reached'
                 );
 
+                // Preserve channel_sent_at for rate limiting when recreating notifications
+                let preservedChannelSentAt = null;
+
                 if (existingNotification) {
-                    continue;
+                    // If notification was dismissed, don't create it again
+                    if (existingNotification.dismissed_at) {
+                        continue;
+                    }
+
+                    // If notification is unread, delete it before creating the new one
+                    // This prevents duplicate notifications from piling up
+                    if (!existingNotification.read_at) {
+                        // Preserve channel_sent_at to maintain rate limiting across recreations
+                        preservedChannelSentAt =
+                            existingNotification.channel_sent_at;
+                        await existingNotification.destroy();
+                    } else {
+                        // If it was already read, skip creating a new one
+                        continue;
+                    }
                 }
 
                 const sources = [];
@@ -89,6 +107,7 @@ async function checkDeferredTasks() {
                         reason: 'defer_until_reached',
                     },
                     sentAt: new Date(),
+                    channel_sent_at: preservedChannelSentAt,
                 });
 
                 notificationsCreated++;

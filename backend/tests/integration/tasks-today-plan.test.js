@@ -216,6 +216,72 @@ describe('Tasks Today Plan - Status-Based Filtering', () => {
             expect(response.body.tasks_today_plan).toHaveLength(0);
         });
 
+        it('should exclude tasks deferred to the future', async () => {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+
+            // Planned task with future defer_until — should be excluded
+            await Task.create({
+                name: 'Deferred Future Planned',
+                user_id: user.id,
+                status: Task.STATUS.PLANNED,
+                defer_until: tomorrow,
+            });
+
+            // Planned task with past defer_until — should be included
+            const pastDeferredTask = await Task.create({
+                name: 'Deferred Past Planned',
+                user_id: user.id,
+                status: Task.STATUS.PLANNED,
+                defer_until: yesterday,
+            });
+
+            // Planned task with no defer_until — should be included
+            const noDeferTask = await Task.create({
+                name: 'No Defer Planned',
+                user_id: user.id,
+                status: Task.STATUS.PLANNED,
+            });
+
+            const response = await agent
+                .get('/api/tasks?type=today&include_lists=true')
+                .expect(200);
+
+            expect(response.body.tasks_today_plan).toBeDefined();
+            expect(response.body.tasks_today_plan).toHaveLength(2);
+
+            const taskIds = response.body.tasks_today_plan.map((t) => t.id);
+            expect(taskIds).toContain(pastDeferredTask.id);
+            expect(taskIds).toContain(noDeferTask.id);
+        });
+
+        it('should include a deferred planned task once defer time has passed', async () => {
+            const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+
+            const task = await Task.create({
+                name: 'Recently Undeferred Planned',
+                user_id: user.id,
+                status: Task.STATUS.PLANNED,
+                defer_until: oneHourAgo,
+            });
+
+            const response = await agent
+                .get('/api/tasks?type=today&include_lists=true')
+                .expect(200);
+
+            expect(response.body.tasks_today_plan).toBeDefined();
+            const taskIds = response.body.tasks_today_plan.map((t) => t.id);
+            expect(taskIds).toContain(task.id);
+
+            // Verify the task retains its planned status
+            const taskInResponse = response.body.tasks_today_plan.find(
+                (t) => t.id === task.id
+            );
+            expect(taskInResponse.status).toBe(Task.STATUS.PLANNED);
+        });
+
         it('should order tasks by priority DESC, due_date ASC, project_id ASC', async () => {
             const tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1);

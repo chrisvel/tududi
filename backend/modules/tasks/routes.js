@@ -9,6 +9,7 @@ const {
     Task,
     TaskEvent,
     RecurringCompletion,
+    Project,
     sequelize,
 } = require('../../models');
 const taskRepository = require('./repository');
@@ -32,7 +33,9 @@ const { filterTasksByParams } = require('./queries/query-builders');
 const {
     getSafeTimezone,
     getTodayBoundsInUTC,
+    getUpcomingRangeInUTC,
 } = require('../../utils/timezone-utils');
+const permissionsService = require('../../services/permissionsService');
 const { isValidUid } = require('../../utils/slug-utils');
 
 const {
@@ -50,10 +53,7 @@ const { captureOldValues, logTaskChanges } = require('./utils/logging');
 const {
     handleParentChildOnStatusChange,
 } = require('./operations/parent-child');
-const {
-    TASK_INCLUDES,
-    TASK_INCLUDES_WITH_SUBTASKS,
-} = require('./utils/constants');
+const { TASK_INCLUDES_WITH_SUBTASKS } = require('./utils/constants');
 
 const {
     handleRecurringTasks,
@@ -82,10 +82,37 @@ if (process.env.NODE_ENV === 'development') {
     enableQueryLogging();
 }
 
+/**
+ * Fetches the recurrence end date for a recurring parent task.
+ * Used for validating defer_until dates on recurring task instances.
+ *
+ * @param {number|null|undefined} recurringParentId - The ID of the recurring parent task
+ * @param {number} userId - The user ID for access control
+ * @returns {Promise<Date|null|undefined>} The parent's recurrence_end_date, null (infinite), or undefined (no parent)
+ *          - undefined: no recurring parent (not a recurring instance)
+ *          - null: recurring parent with no end date (infinite recurrence)
+ *          - Date: recurring parent with specific end date
+ */
+async function getRecurringParentEndDate(recurringParentId, userId) {
+    // No parent ID provided - not a recurring instance
+    if (!recurringParentId) return undefined;
+
+    const parent = await taskRepository.findByIdAndUser(
+        recurringParentId,
+        userId
+    );
+
+    // Parent not found or no access - treat as non-recurring (undefined)
+    if (!parent) return undefined;
+
+    // Return the end date (null for infinite, Date for specific end)
+    return parent.recurrence_end_date;
+}
+
 function expandRecurringTasks(tasks, maxDays = 7, statusFilter = null) {
     const expandedTasks = [];
     const now = new Date();
-    now.setHours(0, 0, 0, 0);
+    now.setUTCHours(0, 0, 0, 0);
 
     tasks.forEach((task) => {
         const isRecurring =
@@ -189,6 +216,34 @@ router.get('/tasks', async (req, res) => {
 
         let tasks = await filterTasksByParams(req.query, userId, timezone);
 
+        // Fetch projects with upcoming due dates for the upcoming view
+        let upcomingProjects = [];
+        if (type === 'upcoming') {
+            const safeTimezone = getSafeTimezone(timezone);
+            const upcomingRange = getUpcomingRangeInUTC(safeTimezone, 7);
+            const { Op } = require('sequelize');
+
+            // Get projects owned by user or shared with user
+            const ownedOrShared =
+                await permissionsService.ownershipOrPermissionWhere(
+                    'project',
+                    userId
+                );
+
+            upcomingProjects = await Project.findAll({
+                where: {
+                    ...ownedOrShared,
+                    due_date_at: {
+                        [Op.between]: [upcomingRange.start, upcomingRange.end],
+                    },
+                    status: {
+                        [Op.notIn]: ['completed', 'archived'],
+                    },
+                },
+                order: [['due_date_at', 'ASC']],
+            });
+        }
+
         if (type === 'upcoming' && groupBy === 'day') {
             console.log('[DEBUG] Expanding recurring tasks for /upcoming');
             console.log('[DEBUG] Total tasks before expansion:', tasks.length);
@@ -276,6 +331,20 @@ router.get('/tasks', async (req, res) => {
             response.groupedTasks = serializedGrouped;
         }
 
+        // Add upcoming projects to response
+        if (type === 'upcoming' && upcomingProjects.length > 0) {
+            response.projects = upcomingProjects.map((project) => ({
+                id: project.id,
+                uid: project.uid,
+                name: project.name,
+                status: project.status,
+                priority: project.priority,
+                due_date_at: project.due_date_at,
+                created_at: project.created_at,
+                updated_at: project.updated_at,
+            }));
+        }
+
         await addDashboardLists(
             response,
             userId,
@@ -340,9 +409,16 @@ router.post('/task', async (req, res) => {
         );
 
         try {
+            // Fetch parent end date if this is a recurring instance
+            const recurringParentEndDate = await getRecurringParentEndDate(
+                req.body.recurring_parent_id,
+                req.currentUser.id
+            );
+
             validateDeferUntilAndDueDate(
                 taskAttributes.defer_until,
-                taskAttributes.due_date
+                taskAttributes.due_date,
+                recurringParentEndDate
             );
         } catch (error) {
             return res.status(400).json({ error: error.message });
@@ -375,7 +451,7 @@ router.post('/task', async (req, res) => {
         await createSubtasks(task.id, subtasks, req.currentUser.id);
 
         const taskWithAssociations = await taskRepository.findById(task.id, {
-            include: TASK_INCLUDES,
+            include: TASK_INCLUDES_WITH_SUBTASKS,
         });
 
         if (!taskWithAssociations) {
@@ -539,7 +615,17 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
                     ? taskAttributes.due_date
                     : task.due_date;
 
-            validateDeferUntilAndDueDate(finalDeferUntil, finalDueDate);
+            // Fetch parent end date if this is a recurring instance
+            const recurringParentEndDate = await getRecurringParentEndDate(
+                task.recurring_parent_id,
+                req.currentUser.id
+            );
+
+            validateDeferUntilAndDueDate(
+                finalDeferUntil,
+                finalDueDate,
+                recurringParentEndDate
+            );
         } catch (error) {
             return res.status(400).json({ error: error.message });
         }
@@ -671,7 +757,36 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
             }
         }
 
+        console.log('[routes.js] Before task.update - taskAttributes:', {
+            status: taskAttributes.status,
+            completed_at: taskAttributes.completed_at,
+        });
+
         await task.update(taskAttributes);
+
+        console.log('[routes.js] After task.update - task values:', {
+            id: task.id,
+            status: task.status,
+            completed_at: task.completed_at,
+        });
+
+        // Defensive check: ensure completed_at is null if status is not DONE
+        if (
+            taskAttributes.status !== undefined &&
+            taskAttributes.status !== Task.STATUS.DONE &&
+            taskAttributes.status !== 'done' &&
+            task.completed_at !== null
+        ) {
+            console.log(
+                '[routes.js] DEFENSIVE CHECK TRIGGERED - Force clearing completed_at'
+            );
+            // Force clear completed_at if it wasn't cleared properly
+            await task.update({ completed_at: null });
+            console.log(
+                '[routes.js] After defensive update - completed_at:',
+                task.completed_at
+            );
+        }
 
         if (status !== undefined) {
             await handleParentChildOnStatusChange(
@@ -726,7 +841,7 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
         );
 
         const taskWithAssociations = await taskRepository.findById(task.id, {
-            include: TASK_INCLUDES,
+            include: TASK_INCLUDES_WITH_SUBTASKS,
         });
 
         const serializedTask = await serializeTask(

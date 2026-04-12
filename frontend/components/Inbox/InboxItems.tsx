@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import { Note } from '../../entities/Note';
@@ -31,6 +31,7 @@ const InboxItems: React.FC = () => {
     const { showSuccessToast, showErrorToast } = useToast();
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [hasInitialized, setHasInitialized] = useState(false);
 
@@ -243,7 +244,7 @@ const InboxItems: React.FC = () => {
             }
 
             if (options.navigateAfterCreate && createdTask.uid) {
-                navigate(`/task/${createdTask.uid}`);
+                navigate(`/task/${createdTask.uid}`, { state: { from: location.pathname + location.search } });
             }
 
             return createdTask;

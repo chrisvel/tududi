@@ -68,16 +68,56 @@ const calculateWeeklyRecurrence = (fromDate, interval, weekday, weekdays) => {
         : null;
 
     if (parsedWeekdays && parsedWeekdays.length > 0) {
-        // Find the next matching weekday from tomorrow onward
-        for (let daysAhead = 1; daysAhead <= 7; daysAhead++) {
-            const testDate = new Date(nextDate);
-            testDate.setUTCDate(testDate.getUTCDate() + daysAhead);
-            if (parsedWeekdays.includes(testDate.getUTCDay())) {
-                return testDate;
+        const sorted = [...parsedWeekdays].sort((a, b) => a - b);
+        const currentDay = nextDate.getUTCDay();
+
+        // Find next weekday in calendar order (accounting for week wrap)
+        let nextWeekday = null;
+        let daysToNext = null;
+
+        for (let i = 1; i <= 7; i++) {
+            const testDay = (currentDay + i) % 7;
+            if (sorted.includes(testDay)) {
+                nextWeekday = testDay;
+                daysToNext = i;
+                break;
             }
         }
-        // Fallback: advance by interval weeks
-        nextDate.setUTCDate(nextDate.getUTCDate() + interval * 7);
+
+        if (daysToNext === null) {
+            // No weekday found (shouldn't happen), fallback
+            daysToNext = interval * 7;
+        } else if (daysToNext < 7) {
+            // Next weekday is within current 7-day period
+            // Determine if we should skip weeks based on interval
+            const isAdjacentDay = daysToNext === 1;
+
+            // Determine if current day is the last weekday in the pattern
+            // (considering calendar order, where the highest day number is last,
+            // except Sunday(0) which wraps around)
+            const maxWeekday = Math.max(...sorted);
+            const isOnLastWeekday = currentDay === maxWeekday;
+
+            // Special case: if pattern includes Sunday(0), check if we're on it
+            // and all other weekdays are higher (meaning we're at the end of the pattern)
+            const hasSunday = sorted.includes(0);
+            const isOnSundayWithHigherDays =
+                currentDay === 0 && sorted.every((d) => d === 0 || d > 0);
+
+            if (
+                interval > 1 &&
+                !isAdjacentDay &&
+                (isOnLastWeekday || isOnSundayWithHigherDays)
+            ) {
+                // We're on the last weekday of the pattern cycle, add interval skip
+                daysToNext += (interval - 1) * 7;
+            }
+        } else {
+            // Next occurrence is 7 days away, add interval skip
+            daysToNext += (interval - 1) * 7;
+        }
+
+        nextDate.setUTCDate(nextDate.getUTCDate() + daysToNext);
     } else if (weekday !== null && weekday !== undefined) {
         const currentWeekday = nextDate.getUTCDay();
         const daysUntilTarget = (weekday - currentWeekday + 7) % 7;

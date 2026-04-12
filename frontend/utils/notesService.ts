@@ -21,11 +21,25 @@ export const fetchNotes = async (): Promise<Note[]> => {
 };
 
 export const createNote = async (noteData: Note): Promise<Note> => {
+    // Transform project_id to project_uid if needed (same as updateNote)
+    const requestData = { ...noteData };
+    if (noteData.project && noteData.project.uid) {
+        requestData.project_uid = noteData.project.uid;
+    } else if (noteData.project_uid) {
+        // project_uid is already set, use it as-is
+    } else if (noteData.project_id && !noteData.project_uid) {
+        // Legacy: if only project_id is provided, we can't convert it to uid here
+        // This should not happen with the new implementation, but keeping for safety
+        console.warn(
+            'Note creation with project_id but no project_uid - this may fail'
+        );
+    }
+
     const response = await fetch(getApiPath('note'), {
         method: 'POST',
         credentials: 'include',
         headers: getPostHeaders(),
-        body: JSON.stringify(noteData),
+        body: JSON.stringify(requestData),
     });
 
     await handleAuthResponse(response, 'Failed to create note.');

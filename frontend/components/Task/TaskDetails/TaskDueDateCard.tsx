@@ -6,7 +6,12 @@ import {
 } from '@heroicons/react/24/outline';
 import TaskDueDateSection from '../TaskForm/TaskDueDateSection';
 import { Task } from '../../../entities/Task';
-import { parseDateString } from '../../../utils/dateUtils';
+import {
+    parseDateString,
+    formatDateByCountry,
+    getUserTimezone,
+} from '../../../utils/dateUtils';
+import { getCountryFromTimezone } from '../../../utils/localeUtils';
 
 interface TaskDueDateCardProps {
     task: Task;
@@ -27,17 +32,16 @@ const TaskDueDateCard: React.FC<TaskDueDateCardProps> = ({
     onSave,
     onCancel,
 }) => {
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
 
     const getDueDateDisplay = (dueDate: string) => {
         const date = parseDateString(dueDate);
         if (!date) return null;
 
-        const formattedDate = date.toLocaleDateString(i18n.language, {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-        });
+        // Format date based on user's timezone-derived country
+        const timezone = getUserTimezone();
+        const country = getCountryFromTimezone(timezone);
+        const formattedDate = formatDateByCountry(date, country);
 
         const today = new Date();
         today.setHours(0, 0, 0, 0);
