@@ -13,6 +13,7 @@ const PROFILE_ATTRIBUTES = [
     'timezone',
     'first_day_of_week',
     'avatar_image',
+    'has_password',
     'telegram_bot_token',
     'telegram_chat_id',
     'telegram_allowed_users',

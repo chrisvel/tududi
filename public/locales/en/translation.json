@@ -12,6 +12,7 @@
     "loading": "Loading...",
     "appLoading": "Loading application... Please wait.",
     "completed": "Completed",
+    "unlinking": "Unlinking...",
     "error": "Error",
     "success": "Success",
     "area": "Area",
@@ -370,7 +371,17 @@
     "avatarUploadFailed": "Failed to upload avatar",
     "avatarRemoveFailed": "Failed to remove avatar",
     "notificationsDescription": "Choose how you want to be notified about important events.",
-    "aiFeatures": "AI Features"
+    "aiFeatures": "AI Features",
+    "connectedAccounts": {
+      "title": "Connected Accounts",
+      "description": "Link external accounts to sign in with SSO providers.",
+      "link": "Link {{provider}}",
+      "unlink": "Unlink",
+      "confirmUnlink": "Confirm Unlink",
+      "linkedOn": "Linked on {{date}}",
+      "cannotUnlinkLast": "Cannot unlink your last authentication method. Please set a password first.",
+      "noPasswordWarning": "You have no password set. Consider setting one to have an alternative login method."
+    }
   },
   "productivity": {
     "stalledProjects": "Stalled Projects",

@@ -1228,6 +1228,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                 <SecurityTab
                                     isActive={activeTab === 'security'}
                                     formData={formData}
+                                    hasPassword={profile?.has_password ?? false}
                                     showCurrentPassword={showCurrentPassword}
                                     showNewPassword={showNewPassword}
                                     showConfirmPassword={showConfirmPassword}
