@@ -153,7 +153,7 @@
     "helmet": "~8.1.0",
     "js-yaml": "~4.1.0",
     "linguaisync": "^0.1.2",
-    "lodash": "~4.17.21",
+    "lodash": "~4.18.1",
     "moment-timezone": "~0.6.0",
     "morgan": "~1.10.0",
     "multer": "~2.1.0",
