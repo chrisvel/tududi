@@ -93,6 +93,10 @@ app.use(
     })
 );
 
+// CSRF protection (skips for API token authenticated requests)
+const { csrfProtection } = require('./middleware/csrf');
+app.use(csrfProtection);
+
 // Static files
 if (config.production) {
     app.use(express.static(path.join(__dirname, 'dist')));

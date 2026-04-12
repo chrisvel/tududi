@@ -7,6 +7,7 @@ const { authLimiter } = require('../../middleware/rateLimiter');
 
 router.get('/version', authController.getVersion);
 router.get('/registration-status', authController.getRegistrationStatus);
+router.get('/csrf-token', authController.getCsrfToken);
 router.post('/register', authLimiter, authController.register);
 router.get('/verify-email', authLimiter, authController.verifyEmail);
 router.get('/current_user', authController.getCurrentUser);

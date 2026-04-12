@@ -60,7 +60,12 @@ const GeneralTab: React.FC<GeneralTabProps> = ({
 
         if (formData.avatar_image) {
             const url = formData.avatar_image;
-            if (url.startsWith('javascript:') || url.startsWith('data:text/html')) {
+            if (
+                url.startsWith('javascript:') ||
+                url.startsWith('data:') ||
+                url.startsWith('vbscript:') ||
+                url.startsWith('file:')
+            ) {
                 return '';
             }
             return getApiPath(url);

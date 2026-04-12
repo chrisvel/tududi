@@ -144,6 +144,7 @@
     "compromise": "^14.14.4",
     "connect-session-sequelize": "~7.1.7",
     "cors": "~2.8.5",
+    "csrf-sync": "^4.2.1",
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
     "dotenv": "~16.5.0",
