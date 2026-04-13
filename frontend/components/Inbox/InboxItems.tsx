@@ -328,7 +328,12 @@ const InboxItems: React.FC = () => {
     const handleSaveProject = async (project: Project) => {
         try {
             await createProject(project);
-            showSuccessToast(t('project.createSuccess'));
+
+            const updatedProjects = await fetchProjects();
+            setProjects(updatedProjects);
+
+            const { setProjects: setGlobalProjects } = useStore.getState().projectsStore;
+            setGlobalProjects(updatedProjects);
 
             if (currentConversionItemUid !== null) {
                 await handleProcessItem(currentConversionItemUid, false);
