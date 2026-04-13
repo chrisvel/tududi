@@ -108,8 +108,10 @@ app.use((req, res, next) => {
 });
 
 // Apply lusca CSRF - wrapped to check exemption flag
+// Only apply to state-changing methods (POST, PUT, PATCH, DELETE)
 app.use((req, res, next) => {
-    if (req._csrfExempt) {
+    const statefulMethods = ['POST', 'PUT', 'PATCH', 'DELETE'];
+    if (req._csrfExempt || !statefulMethods.includes(req.method)) {
         return next();
     }
     return lusca.csrf({
