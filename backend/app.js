@@ -97,10 +97,28 @@ const lusca = require('lusca');
 
 // Pre-check middleware to exempt test/Bearer requests before lusca runs
 app.use((req, res, next) => {
+    // Public unauthenticated endpoints that should bypass CSRF
+    // These are routes that don't require authentication and are used during login/registration
+    const publicPaths = [
+        '/api/login',
+        '/api/register',
+        '/api/verify-email',
+        '/api/version',
+        '/api/registration-status',
+        '/api/health',
+    ];
+
+    const isPublicPath = publicPaths.some((path) => req.path === path);
+    const isOidcPath = req.path.startsWith('/api/oidc/');
+    const isFeatureFlagsPath = req.path.startsWith('/api/feature-flags');
+
     // Mark exempt requests so lusca wrapper can skip them
     if (
         process.env.NODE_ENV === 'test' ||
-        req.headers.authorization?.startsWith('Bearer ')
+        req.headers.authorization?.startsWith('Bearer ') ||
+        isPublicPath ||
+        isOidcPath ||
+        isFeatureFlagsPath
     ) {
         req._csrfExempt = true;
     }

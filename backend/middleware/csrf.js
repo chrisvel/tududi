@@ -1,11 +1,16 @@
-const csurf = require('@dr.pogodin/csurf');
+const lusca = require('lusca');
 
-const csrfMiddleware = csurf({
-    cookie: false,
-    value: (req) => {
-        return req.headers['x-csrf-token'] || req.body?._csrf;
-    },
-});
+const csrfMiddleware = (req, res, next) => {
+    if (!req.session) {
+        return res.status(500).json({ error: 'Session not initialized' });
+    }
+
+    if (!req.session._csrf) {
+        req.session._csrf = require('crypto').randomBytes(16).toString('hex');
+    }
+
+    next();
+};
 
 const csrfProtection = (req, res, next) => {
     if (
@@ -16,11 +21,22 @@ const csrfProtection = (req, res, next) => {
         return next();
     }
 
-    return csrfMiddleware(req, res, next);
+    return lusca.csrf({
+        header: 'x-csrf-token',
+        cookie: false,
+    })(req, res, next);
 };
 
 const generateToken = (req) => {
-    return req.csrfToken ? req.csrfToken() : '';
+    if (!req.session) {
+        return '';
+    }
+
+    if (!req.session._csrf) {
+        req.session._csrf = require('crypto').randomBytes(16).toString('hex');
+    }
+
+    return req.session._csrf;
 };
 
 module.exports = {
