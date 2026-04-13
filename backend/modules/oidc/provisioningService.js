@@ -11,11 +11,6 @@ function shouldBeAdmin(config, email) {
     return config.adminEmailDomains.includes(domain);
 }
 
-function generateUsername(email) {
-    const baseUsername = email.split('@')[0];
-    return baseUsername.replace(/[^a-zA-Z0-9_-]/g, '_');
-}
-
 async function findOrCreateIdentity(providerSlug, claims) {
     const identity = await OIDCIdentity.findOne({
         where: {
@@ -59,7 +54,7 @@ async function provisionUser(providerSlug, claims, req) {
             );
 
             await transaction.commit();
-            return { user: identity.user, isNewUser: false };
+            return { user: identity.User, isNewUser: false };
         }
 
         if (!config.autoProvision) {
@@ -80,20 +75,24 @@ async function provisionUser(providerSlug, claims, req) {
         let isNewUser = false;
 
         if (!user) {
-            const username = generateUsername(claims.email);
-
             user = await User.create(
                 {
                     email: claims.email,
-                    username,
                     verified_email: true,
-                    is_admin: shouldBeAdmin(config, claims.email),
                     password_digest: null,
                 },
                 { transaction }
             );
 
             isNewUser = true;
+
+            if (shouldBeAdmin(config, claims.email)) {
+                const { Role } = require('../../models');
+                await Role.update(
+                    { is_admin: true },
+                    { where: { user_id: user.id }, transaction }
+                );
+            }
         }
 
         identity = await OIDCIdentity.create(
@@ -117,7 +116,9 @@ async function provisionUser(providerSlug, claims, req) {
 
         return { user, isNewUser };
     } catch (error) {
-        await transaction.rollback();
+        if (!transaction.finished) {
+            await transaction.rollback();
+        }
         throw error;
     }
 }
@@ -177,7 +178,9 @@ async function linkIdentityToUser(userId, providerSlug, claims) {
         await transaction.commit();
         return identity;
     } catch (error) {
-        await transaction.rollback();
+        if (!transaction.finished) {
+            await transaction.rollback();
+        }
         throw error;
     }
 }
@@ -187,5 +190,4 @@ module.exports = {
     linkIdentityToUser,
     findOrCreateIdentity,
     shouldBeAdmin,
-    generateUsername,
 };
