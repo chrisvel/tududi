@@ -9,6 +9,7 @@ const createPollerState = () => ({
     usersToPool: [],
     userStatus: {},
     processedUpdates: new Set(), // Track processed update IDs to prevent duplicates
+    userErrorState: {}, // Track error count and backoff per user
 });
 
 // Global mutable state (managed functionally)
@@ -33,6 +34,55 @@ const removeUserFromList = (users, userId) =>
 const removeUserStatus = (userStatus, userId) => {
     const { [userId]: removed, ...rest } = userStatus;
     return rest;
+};
+
+// Initialize error state for a user
+const initializeUserErrorState = (userId) => ({
+    consecutiveErrors: 0,
+    lastErrorTime: null,
+    nextPollTime: Date.now(),
+    lastLoggedErrorTime: null,
+});
+
+// Update error state for a user
+const updateUserErrorState = (userErrorState, userId, updates) => ({
+    ...userErrorState,
+    [userId]: {
+        ...(userErrorState[userId] || initializeUserErrorState(userId)),
+        ...updates,
+    },
+});
+
+// Remove user error state
+const removeUserErrorState = (userErrorState, userId) => {
+    const { [userId]: removed, ...rest } = userErrorState;
+    return rest;
+};
+
+// Calculate backoff delay using exponential backoff (max 5 minutes)
+const calculateBackoffDelay = (consecutiveErrors) => {
+    const baseDelay = 5000; // 5 seconds
+    const maxDelay = 300000; // 5 minutes
+    const delay = Math.min(
+        baseDelay * Math.pow(2, consecutiveErrors),
+        maxDelay
+    );
+    return delay;
+};
+
+// Check if user should be polled based on backoff state
+const shouldPollUser = (userId) => {
+    const errorState = pollerState.userErrorState[userId];
+    if (!errorState) return true;
+    return Date.now() >= errorState.nextPollTime;
+};
+
+// Check if error should be logged (rate limit: once per minute per user)
+const shouldLogError = (userId) => {
+    const errorState = pollerState.userErrorState[userId];
+    if (!errorState || !errorState.lastLoggedErrorTime) return true;
+    const timeSinceLastLog = Date.now() - errorState.lastLoggedErrorTime;
+    return timeSinceLastLog >= 60000; // 1 minute
 };
 
 // Update user status
@@ -458,6 +508,11 @@ const pollUpdates = async () => {
         const token = user.telegram_bot_token;
         if (!token) continue;
 
+        // Check if we should poll this user based on backoff state
+        if (!shouldPollUser(user.id)) {
+            continue;
+        }
+
         try {
             const lastUpdateId =
                 pollerState.userStatus[user.id]?.lastUpdateId || 0;
@@ -469,8 +524,54 @@ const pollUpdates = async () => {
                 );
                 await processUpdates(user, updates);
             }
+
+            // Reset error state on successful poll
+            if (pollerState.userErrorState[user.id]?.consecutiveErrors > 0) {
+                pollerState = {
+                    ...pollerState,
+                    userErrorState: updateUserErrorState(
+                        pollerState.userErrorState,
+                        user.id,
+                        {
+                            consecutiveErrors: 0,
+                            lastErrorTime: null,
+                            nextPollTime: Date.now(),
+                        }
+                    ),
+                };
+            }
         } catch (error) {
-            console.error(`Error getting updates for user ${user.id}:`, error);
+            // Get current error state or initialize it
+            const currentErrorState =
+                pollerState.userErrorState[user.id] ||
+                initializeUserErrorState(user.id);
+            const consecutiveErrors = currentErrorState.consecutiveErrors + 1;
+            const backoffDelay = calculateBackoffDelay(consecutiveErrors);
+
+            // Update error state with exponential backoff
+            pollerState = {
+                ...pollerState,
+                userErrorState: updateUserErrorState(
+                    pollerState.userErrorState,
+                    user.id,
+                    {
+                        consecutiveErrors,
+                        lastErrorTime: Date.now(),
+                        nextPollTime: Date.now() + backoffDelay,
+                        lastLoggedErrorTime: shouldLogError(user.id)
+                            ? Date.now()
+                            : currentErrorState.lastLoggedErrorTime,
+                    }
+                ),
+            };
+
+            // Only log error if enough time has passed (rate limiting)
+            if (shouldLogError(user.id)) {
+                console.error(
+                    `Error getting updates for user ${user.id} (${consecutiveErrors} consecutive errors, backing off for ${backoffDelay / 1000}s):`,
+                    error.message || error
+                );
+            }
         }
     }
 };
@@ -533,14 +634,19 @@ const addUser = async (user) => {
 
 // Function to remove user (contains side effects)
 const removeUser = (userId) => {
-    // Remove user from list and status
+    // Remove user from list, status, and error state
     const newUsersList = removeUserFromList(pollerState.usersToPool, userId);
     const newUserStatus = removeUserStatus(pollerState.userStatus, userId);
+    const newUserErrorState = removeUserErrorState(
+        pollerState.userErrorState,
+        userId
+    );
 
     pollerState = {
         ...pollerState,
         usersToPool: newUsersList,
         userStatus: newUserStatus,
+        userErrorState: newUserErrorState,
     };
 
     // Stop polling if no users left

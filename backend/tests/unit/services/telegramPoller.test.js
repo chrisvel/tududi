@@ -191,6 +191,7 @@ describe('TelegramPoller Duplicate Prevention', () => {
                 usersToPool: [],
                 userStatus: {},
                 processedUpdates: expect.any(Set),
+                userErrorState: {},
             });
         });
 
