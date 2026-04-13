@@ -150,16 +150,16 @@ const TaskRecurrenceCard: React.FC<TaskRecurrenceCardProps> = ({
                                 recurrenceForm.recurrence_end_date || undefined
                             }
                             recurrenceWeekday={
-                                recurrenceForm.recurrence_weekday || undefined
+                                recurrenceForm.recurrence_weekday ?? undefined
                             }
                             recurrenceWeekdays={
                                 recurrenceForm.recurrence_weekdays || []
                             }
                             recurrenceMonthDay={
-                                recurrenceForm.recurrence_month_day || undefined
+                                recurrenceForm.recurrence_month_day ?? undefined
                             }
                             recurrenceWeekOfMonth={
-                                recurrenceForm.recurrence_week_of_month ||
+                                recurrenceForm.recurrence_week_of_month ??
                                 undefined
                             }
                             completionBased={recurrenceForm.completion_based}
