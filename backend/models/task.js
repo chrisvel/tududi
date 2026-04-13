@@ -17,7 +17,7 @@ module.exports = (sequelize) => {
                 defaultValue: uid,
             },
             name: {
-                type: DataTypes.STRING,
+                type: DataTypes.TEXT,
                 allowNull: false,
             },
             due_date: {
