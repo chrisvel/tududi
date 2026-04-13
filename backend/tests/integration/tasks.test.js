@@ -68,6 +68,27 @@ describe('Tasks Routes', () => {
             // Restore original console.error
             console.error = originalConsoleError;
         });
+
+        it('should not truncate long task names', async () => {
+            const longTaskName =
+                'This task has a long name, very long name, with lots of stuff';
+            const taskData = {
+                name: longTaskName,
+                priority: 'low',
+                status: 'not_started',
+            };
+
+            const response = await agent.post('/api/task').send(taskData);
+
+            expect(response.status).toBe(201);
+            expect(response.body.name).toBe(longTaskName);
+            expect(response.body.name.length).toBe(longTaskName.length);
+
+            const retrievedTask = await Task.findOne({
+                where: { id: response.body.id },
+            });
+            expect(retrievedTask.name).toBe(longTaskName);
+        });
     });
 
     describe('GET /api/tasks', () => {

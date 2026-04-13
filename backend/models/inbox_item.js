@@ -21,7 +21,7 @@ module.exports = (sequelize) => {
                 allowNull: false,
             },
             title: {
-                type: DataTypes.STRING,
+                type: DataTypes.TEXT,
                 allowNull: true,
             },
             status: {
@@ -58,7 +58,7 @@ module.exports = (sequelize) => {
                 allowNull: true,
             },
             cleaned_content: {
-                type: DataTypes.STRING,
+                type: DataTypes.TEXT,
                 allowNull: true,
             },
         },

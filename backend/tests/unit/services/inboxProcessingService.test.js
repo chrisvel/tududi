@@ -56,6 +56,18 @@ describe('inboxProcessingService', () => {
                 suggested_reason: null,
             });
         });
+
+        it('should not truncate long cleaned_content', () => {
+            const longText =
+                'This task has a long name, very long name, with lots of stuff';
+            const content = `${longText} #tag1 +Project`;
+            const result = processInboxItem(content);
+
+            expect(result.parsed_tags).toEqual(['tag1']);
+            expect(result.parsed_projects).toEqual(['Project']);
+            expect(result.cleaned_content).toBe(longText);
+            expect(result.cleaned_content.length).toBe(longText.length);
+        });
     });
 
     describe('containsUrl', () => {
