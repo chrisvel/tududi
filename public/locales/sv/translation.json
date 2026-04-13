@@ -24,7 +24,8 @@
     "no": "Nej, fortsätt redigera",
     "yesDiscard": "Ja, kasta bort",
     "uploading": "Laddar upp...",
-    "refresh": "Uppdatera"
+    "refresh": "Uppdatera",
+    "unlinking": "Avlänkar..."
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -320,7 +321,8 @@
       "productivity": "Produktivitet",
       "telegram": "Telegram",
       "ai": "AI-funktioner",
-      "notifications": "Notifikationsinställningar"
+      "notifications": "Notifikationsinställningar",
+      "oidc": "OIDC/SSO"
     },
     "security": "Säkerhetsinställningar",
     "changePassword": "Ändra lösenord",
@@ -376,6 +378,16 @@
         "area": "Skapa nytt område",
         "tag": "Skapa ny tagg"
       }
+    },
+    "connectedAccounts": {
+      "title": "Anslutna Konton",
+      "description": "Länka externa konton för att logga in med SSO-leverantörer.",
+      "link": "Länka {{provider}}",
+      "unlink": "Avlänk",
+      "confirmUnlink": "Bekräfta avlänkning",
+      "linkedOn": "Länkat den {{date}}",
+      "cannotUnlinkLast": "Kan inte avlänka din sista autentiseringsmetod. Vänligen ställ in ett lösenord först.",
+      "noPasswordWarning": "Du har inget lösenord inställt. Överväg att ställa in ett för att ha en alternativ inloggningsmetod."
     }
   },
   "productivity": {
@@ -531,7 +543,13 @@
     "rememberMe": "Kom ihåg mig",
     "loginSuccess": "Inloggning lyckades",
     "loginFailed": "Inloggning misslyckades",
-    "logoutSuccess": "Utloggning lyckades"
+    "logoutSuccess": "Utloggning lyckades",
+    "or_continue_with_email": "Eller fortsätt med e-post",
+    "sign_in_with": "Logga in med {{provider}}",
+    "oidc": {
+      "completing_signin": "Avslutar inloggning...",
+      "authenticating_with_provider": "Autentiserar med leverantör. Vänligen vänta..."
+    }
   },
   "dropdown": {
     "createNew": "Skapa ny",

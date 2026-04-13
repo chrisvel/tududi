@@ -53,6 +53,12 @@ For the thinking behind tududi, read:
     - Receive daily digests of your tasks
     - Quick capture of ideas and todos on the go
 - **Open API & Access Tokens**: Versioned Swagger docs exposed at `/api/v1` plus personal API keys for integrating tududi with your own tooling or automations.
+- **OIDC/SSO Authentication**: Enterprise-ready Single Sign-On support with:
+    - Multiple OIDC providers (Google, Okta, Keycloak, Authentik, PocketID, Azure AD, and more)
+    - Just-In-Time (JIT) user provisioning
+    - Account linking for hybrid authentication
+    - Simple .env-based configuration perfect for self-hosters
+    - Automatic admin role assignment based on email domains
 
 ## 🗺️ Roadmap
 
@@ -96,6 +102,55 @@ docker run \
 | `1` | Trust the first hop only |
 | `loopback` | Trust loopback addresses (127.0.0.1/::1) |
 | `172.16.0.0/12` | Trust a specific subnet |
+
+### OIDC/SSO Authentication
+
+Tududi supports Single Sign-On via OpenID Connect (OIDC), allowing users to authenticate with external identity providers.
+
+**Quick Setup (Single Provider):**
+
+```bash
+docker run \
+  -e OIDC_ENABLED=true \
+  -e OIDC_PROVIDER_NAME=Google \
+  -e OIDC_PROVIDER_SLUG=google \
+  -e OIDC_ISSUER_URL=https://accounts.google.com \
+  -e OIDC_CLIENT_ID=your-client-id.apps.googleusercontent.com \
+  -e OIDC_CLIENT_SECRET=your-client-secret \
+  -e OIDC_SCOPE="openid profile email" \
+  -e OIDC_AUTO_PROVISION=true \
+  -e TUDUDI_BASE_URL=https://your-domain.com \
+  ...
+```
+
+**Multiple Providers:**
+
+```bash
+# Provider 1: Google
+-e OIDC_PROVIDER_1_NAME=Google \
+-e OIDC_PROVIDER_1_SLUG=google \
+-e OIDC_PROVIDER_1_ISSUER=https://accounts.google.com \
+-e OIDC_PROVIDER_1_CLIENT_ID=xxx \
+-e OIDC_PROVIDER_1_CLIENT_SECRET=xxx \
+
+# Provider 2: Company SSO
+-e OIDC_PROVIDER_2_NAME="Company SSO" \
+-e OIDC_PROVIDER_2_SLUG=okta \
+-e OIDC_PROVIDER_2_ISSUER=https://company.okta.com \
+-e OIDC_PROVIDER_2_CLIENT_ID=yyy \
+-e OIDC_PROVIDER_2_CLIENT_SECRET=yyy \
+-e OIDC_PROVIDER_2_ADMIN_EMAIL_DOMAINS=company.com \
+```
+
+**Supported Providers:** Google, Okta, Keycloak, Authentik, PocketID, Azure AD, and any OIDC-compliant provider
+
+**Key Features:**
+- Automatic user provisioning on first login
+- Account linking for existing users
+- Admin role assignment based on email domains
+- Hybrid authentication (email/password + SSO)
+
+**Documentation:** See [docs/10-oidc-sso.md](docs/10-oidc-sso.md) for detailed setup guides and provider-specific configuration.
 
 ### 📚 Documentation
 

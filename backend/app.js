@@ -31,9 +31,26 @@ const sessionStore = new SequelizeStore({
 // Middlewares
 app.use(
     helmet({
-        hsts: false,
-        forceHTTPS: false,
-        contentSecurityPolicy: false,
+        contentSecurityPolicy: {
+            directives: {
+                defaultSrc: ["'self'"],
+                scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+                styleSrc: ["'self'", "'unsafe-inline'"],
+                imgSrc: ["'self'", 'data:', 'https:'],
+                connectSrc: ["'self'"],
+                fontSrc: ["'self'"],
+                objectSrc: ["'none'"],
+                mediaSrc: ["'self'"],
+                frameSrc: ["'none'"],
+            },
+        },
+        hsts: config.production
+            ? {
+                  maxAge: 31536000,
+                  includeSubDomains: true,
+                  preload: true,
+              }
+            : false,
     })
 );
 app.use(compression());
@@ -61,20 +78,45 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Session configuration
-app.use(
-    session({
-        secret: config.secret,
-        store: sessionStore,
-        resave: false,
-        saveUninitialized: false,
-        cookie: {
-            httpOnly: true,
-            secure: false,
-            maxAge: 2592000000, // 30 days
-            sameSite: 'lax',
-        },
-    })
-);
+const sessionMiddleware = session({
+    secret: config.secret,
+    store: sessionStore,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        secure: config.production,
+        maxAge: 2592000000, // 30 days
+        sameSite: 'lax',
+    },
+});
+app.use(sessionMiddleware);
+
+// CSRF protection using lusca (CodeQL recommended library)
+const lusca = require('lusca');
+
+// Pre-check middleware to exempt test/Bearer requests before lusca runs
+app.use((req, res, next) => {
+    // Mark exempt requests so lusca wrapper can skip them
+    if (
+        process.env.NODE_ENV === 'test' ||
+        req.headers.authorization?.startsWith('Bearer ')
+    ) {
+        req._csrfExempt = true;
+    }
+    next();
+});
+
+// Apply lusca CSRF - wrapped to check exemption flag
+app.use((req, res, next) => {
+    if (req._csrfExempt) {
+        return next();
+    }
+    return lusca.csrf({
+        header: 'x-csrf-token',
+        cookie: false,
+    })(req, res, next);
+});
 
 // Static files
 if (config.production) {
@@ -137,6 +179,7 @@ const urlModule = require('./modules/url');
 const usersModule = require('./modules/users');
 const viewsModule = require('./modules/views');
 const mcpModule = require('./modules/mcp');
+const oidcModule = require('./modules/oidc');
 
 // Swagger documentation - enabled by default, protected by authentication
 // Mounted on /api-docs to avoid conflicts with API routes
@@ -198,6 +241,7 @@ healthPaths.forEach(registerHealthCheck);
 const registerApiRoutes = (basePath) => {
     app.use(basePath, authModule.routes);
     app.use(basePath, featureFlagsModule.routes);
+    app.use(`${basePath}/oidc`, oidcModule.routes);
 
     app.use(basePath, requireAuth);
     app.use(basePath, tasksModule.routes);

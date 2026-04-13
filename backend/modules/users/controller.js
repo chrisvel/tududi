@@ -5,16 +5,32 @@ const { UnauthorizedError } = require('../../shared/errors');
 const { getAuthenticatedUserId } = require('../../utils/request-utils');
 const { logError } = require('../../services/logService');
 const fs = require('fs').promises;
+const path = require('path');
+const { getConfig } = require('../../config/config');
 
-/**
- * Get authenticated user ID or throw UnauthorizedError.
- */
+const config = getConfig();
+
 function requireUserId(req) {
     const userId = getAuthenticatedUserId(req);
     if (!userId) {
         throw new UnauthorizedError('Authentication required');
     }
     return userId;
+}
+
+async function safeDeleteFile(filePath) {
+    if (!filePath) return;
+
+    const uploadDir = path.resolve(config.uploadPath);
+    const resolvedPath = path.resolve(filePath);
+    const relativePath = path.relative(uploadDir, resolvedPath);
+
+    if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
+        logError('Attempt to delete file outside upload directory:', filePath);
+        return;
+    }
+
+    await fs.unlink(resolvedPath).catch(() => {});
 }
 
 /**
@@ -72,8 +88,8 @@ const usersController = {
             const result = await usersService.uploadAvatar(userId, req.file);
             res.json(result);
         } catch (error) {
-            if (req.file) {
-                await fs.unlink(req.file.path).catch(() => {});
+            if (req.file?.path) {
+                await safeDeleteFile(req.file.path);
             }
             next(error);
         }

@@ -24,7 +24,8 @@
     "no": "Hayır, düzenlemeye devam et",
     "yesDiscard": "Evet, iptal et",
     "uploading": "Yükleniyor...",
-    "refresh": "Yenile"
+    "refresh": "Yenile",
+    "unlinking": "Bağlantı kesiliyor..."
   },
   "sidebar": {
     "dashboard": "Gösterge Paneli",
@@ -313,7 +314,8 @@
       "productivity": "Verimlilik",
       "telegram": "Telegram",
       "ai": "Yapay Zeka Özellikleri",
-      "notifications": "Bildirim Tercihleri"
+      "notifications": "Bildirim Tercihleri",
+      "oidc": "OIDC/SSO"
     },
     "security": "Güvenlik Ayarları",
     "changePassword": "Şifre Değiştir",
@@ -376,6 +378,16 @@
         "area": "Yeni Alan oluştur",
         "tag": "Yeni Etiket oluştur"
       }
+    },
+    "connectedAccounts": {
+      "title": "Bağlı Hesaplar",
+      "description": "SSO sağlayıcıları ile oturum açmak için harici hesapları bağlayın.",
+      "link": "Bağla {{provider}}",
+      "unlink": "Bağlantıyı Kes",
+      "confirmUnlink": "Bağlantıyı Kesmeyi Onayla",
+      "linkedOn": "{{date}} tarihinde bağlandı",
+      "cannotUnlinkLast": "Son kimlik doğrulama yöntemini kaldıramazsınız. Lütfen önce bir şifre belirleyin.",
+      "noPasswordWarning": "Hiç şifreniz yok. Alternatif bir oturum açma yöntemi için bir şifre belirlemeyi düşünün."
     }
   },
   "productivity": {
@@ -531,7 +543,13 @@
     "rememberMe": "Beni Hatırla",
     "loginSuccess": "Giriş Başarılı",
     "loginFailed": "Giriş Başarısız",
-    "logoutSuccess": "Çıkış Başarılı"
+    "logoutSuccess": "Çıkış Başarılı",
+    "or_continue_with_email": "Ya da e-posta ile devam et",
+    "sign_in_with": "{{provider}} ile oturum aç",
+    "oidc": {
+      "completing_signin": "Oturum açma işlemi tamamlanıyor...",
+      "authenticating_with_provider": "Sağlayıcı ile kimlik doğrulama yapılıyor. Lütfen bekleyin..."
+    }
   },
   "dropdown": {
     "createNew": "Yeni Oluştur",

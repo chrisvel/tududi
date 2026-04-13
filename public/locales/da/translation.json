@@ -24,7 +24,8 @@
     "no": "Nej, fortsæt med at redigere",
     "yesDiscard": "Ja, forkast",
     "uploading": "Uploader...",
-    "refresh": "Opdater"
+    "refresh": "Opdater",
+    "unlinking": "Frakobler..."
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -320,7 +321,8 @@
       "productivity": "Produktivitet",
       "telegram": "Telegram",
       "ai": "AI-funktioner",
-      "notifications": "Notifikationsindstillinger"
+      "notifications": "Notifikationsindstillinger",
+      "oidc": "OIDC/SSO"
     },
     "security": "Sikkerhedsindstillinger",
     "changePassword": "Skift adgangskode",
@@ -376,6 +378,16 @@
         "area": "Opret nyt område",
         "tag": "Opret ny tag"
       }
+    },
+    "connectedAccounts": {
+      "title": "Forbundne Konti",
+      "description": "Link eksterne konti for at logge ind med SSO-udbydere.",
+      "link": "Link {{provider}}",
+      "unlink": "Frakobl",
+      "confirmUnlink": "Bekræft Frakobling",
+      "linkedOn": "Forbundet den {{date}}",
+      "cannotUnlinkLast": "Kan ikke frakoble din sidste autentifikationsmetode. Venligst indstil en adgangskode først.",
+      "noPasswordWarning": "Du har ikke indstillet en adgangskode. Overvej at indstille en for at have en alternativ loginmetode."
     }
   },
   "productivity": {
@@ -531,7 +543,13 @@
     "rememberMe": "Husk Mig",
     "loginSuccess": "Login Succesfuld",
     "loginFailed": "Login Mislykkedes",
-    "logoutSuccess": "Logout Succesfuld"
+    "logoutSuccess": "Logout Succesfuld",
+    "or_continue_with_email": "Eller fortsæt med e-mail",
+    "sign_in_with": "Log ind med {{provider}}",
+    "oidc": {
+      "completing_signin": "Afslutter log ind...",
+      "authenticating_with_provider": "Autentificerer med udbyder. Vent venligst..."
+    }
   },
   "dropdown": {
     "createNew": "Opret Ny",

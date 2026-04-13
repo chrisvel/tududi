@@ -49,6 +49,7 @@ export interface Profile {
     timezone: string;
     first_day_of_week: number;
     avatar_image: string | null;
+    has_password: boolean;
     telegram_bot_token: string | null;
     telegram_chat_id: string | null;
     telegram_allowed_users: string | null;

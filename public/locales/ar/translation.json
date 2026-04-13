@@ -24,7 +24,8 @@
     "no": "لا، استمر في التحرير",
     "yesDiscard": "نعم، ألغِ",
     "uploading": "جارٍ التحميل...",
-    "refresh": "تحديث"
+    "refresh": "تحديث",
+    "unlinking": "فصل الارتباط..."
   },
   "sidebar": {
     "dashboard": "لوحة التحكم",
@@ -313,7 +314,8 @@
       "productivity": "الإنتاجية",
       "telegram": "تيليجرام",
       "ai": "ميزات الذكاء الاصطناعي",
-      "notifications": "تفضيلات الإشعارات"
+      "notifications": "تفضيلات الإشعارات",
+      "oidc": "OIDC/SSO"
     },
     "security": "إعدادات الأمان",
     "changePassword": "تغيير كلمة المرور",
@@ -376,6 +378,16 @@
         "area": "إنشاء منطقة جديدة",
         "tag": "إنشاء علامة جديدة"
       }
+    },
+    "connectedAccounts": {
+      "title": "الحسابات المتصلة",
+      "description": "قم بربط الحسابات الخارجية لتسجيل الدخول باستخدام مزودي SSO.",
+      "link": "ربط {{provider}}",
+      "unlink": "فصل الارتباط",
+      "confirmUnlink": "تأكيد فصل الارتباط",
+      "linkedOn": "مرتبط في {{date}}",
+      "cannotUnlinkLast": "لا يمكن فصل الارتباط عن طريقة المصادقة الأخيرة. يرجى تعيين كلمة مرور أولاً.",
+      "noPasswordWarning": "لا توجد لديك كلمة مرور محددة. يُنصح بتعيين واحدة لتوفير طريقة تسجيل دخول بديلة."
     }
   },
   "productivity": {
@@ -531,7 +543,13 @@
     "rememberMe": "تذكرني",
     "loginSuccess": "تسجيل الدخول ناجح",
     "loginFailed": "فشل تسجيل الدخول",
-    "logoutSuccess": "تسجيل الخروج ناجح"
+    "logoutSuccess": "تسجيل الخروج ناجح",
+    "or_continue_with_email": "أو تابع باستخدام البريد الإلكتروني",
+    "sign_in_with": "تسجيل الدخول باستخدام {{provider}}",
+    "oidc": {
+      "completing_signin": "يتم إكمال تسجيل الدخول...",
+      "authenticating_with_provider": "يتم المصادقة مع المزود. يرجى الانتظار..."
+    }
   },
   "dropdown": {
     "createNew": "إنشاء جديد",

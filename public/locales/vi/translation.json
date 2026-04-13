@@ -24,7 +24,8 @@
     "no": "Không, tiếp tục chỉnh sửa",
     "yesDiscard": "Có, bỏ qua",
     "uploading": "Đang tải lên...",
-    "refresh": "Làm mới"
+    "refresh": "Làm mới",
+    "unlinking": "Ngắt liên kết..."
   },
   "sidebar": {
     "dashboard": "Bảng điều khiển",
@@ -313,7 +314,8 @@
       "productivity": "Năng suất",
       "telegram": "Telegram",
       "ai": "Tính năng AI",
-      "notifications": "Tùy Chọn Thông Báo"
+      "notifications": "Tùy Chọn Thông Báo",
+      "oidc": "OIDC/SSO"
     },
     "security": "Cài đặt bảo mật",
     "changePassword": "Đổi mật khẩu",
@@ -376,6 +378,16 @@
         "area": "Tạo khu vực mới",
         "tag": "Tạo thẻ mới"
       }
+    },
+    "connectedAccounts": {
+      "title": "Tài khoản đã kết nối",
+      "description": "Liên kết các tài khoản bên ngoài để đăng nhập với các nhà cung cấp SSO.",
+      "link": "Liên kết {{provider}}",
+      "unlink": "Ngắt liên kết",
+      "confirmUnlink": "Xác nhận ngắt liên kết",
+      "linkedOn": "Đã liên kết vào {{date}}",
+      "cannotUnlinkLast": "Không thể ngắt liên kết phương thức xác thực cuối cùng của bạn. Vui lòng đặt mật khẩu trước.",
+      "noPasswordWarning": "Bạn chưa đặt mật khẩu. Hãy cân nhắc đặt một cái để có phương thức đăng nhập thay thế."
     }
   },
   "productivity": {
@@ -531,7 +543,13 @@
     "rememberMe": "Ghi nhớ tôi",
     "loginSuccess": "Đăng nhập thành công",
     "loginFailed": "Đăng nhập thất bại",
-    "logoutSuccess": "Đăng xuất thành công"
+    "logoutSuccess": "Đăng xuất thành công",
+    "or_continue_with_email": "Hoặc tiếp tục với email",
+    "sign_in_with": "Đăng nhập với {{provider}}",
+    "oidc": {
+      "completing_signin": "Đang hoàn tất đăng nhập...",
+      "authenticating_with_provider": "Đang xác thực với nhà cung cấp. Vui lòng chờ..."
+    }
   },
   "dropdown": {
     "createNew": "Tạo mới",

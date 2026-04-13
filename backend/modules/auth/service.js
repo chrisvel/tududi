@@ -158,6 +158,12 @@ class AuthService {
             throw new UnauthorizedError('Invalid credentials');
         }
 
+        if (!user.password_digest) {
+            throw new UnauthorizedError(
+                'This account uses SSO. Please sign in with your SSO provider.'
+            );
+        }
+
         const isValidPassword = await User.checkPassword(
             password,
             user.password_digest

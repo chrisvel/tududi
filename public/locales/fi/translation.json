@@ -24,7 +24,8 @@
     "no": "Ei, jatka muokkaamista",
     "yesDiscard": "Kyllä, hylkää",
     "uploading": "Lähetetään...",
-    "refresh": "Päivitä"
+    "refresh": "Päivitä",
+    "unlinking": "Irrottaminen..."
   },
   "sidebar": {
     "dashboard": "Ohjauspaneeli",
@@ -320,7 +321,8 @@
       "productivity": "Tuottavuus",
       "telegram": "Telegram",
       "ai": "AI-ominaisuudet",
-      "notifications": "Ilmoitusasetukset"
+      "notifications": "Ilmoitusasetukset",
+      "oidc": "OIDC/SSO"
     },
     "security": "Turvallisuusasetukset",
     "changePassword": "Vaihda salasana",
@@ -376,6 +378,16 @@
         "area": "Luo uusi Alue",
         "tag": "Luo uusi Tagi"
       }
+    },
+    "connectedAccounts": {
+      "title": "Liitetyt tilit",
+      "description": "Linkitä ulkoiset tilit kirjautuaksesi SSO-palveluntarjoajien kanssa.",
+      "link": "Linkitä {{provider}}",
+      "unlink": "Irrota",
+      "confirmUnlink": "Vahvista irrottaminen",
+      "linkedOn": "Liitetty {{date}}",
+      "cannotUnlinkLast": "Et voi irrottaa viimeistä todennusmenetelmääsi. Aseta ensin salasana.",
+      "noPasswordWarning": "Sinulla ei ole asetettua salasanaa. Harkitse salasanan asettamista vaihtoehtoista kirjautumistapaa varten."
     }
   },
   "productivity": {
@@ -531,7 +543,13 @@
     "rememberMe": "Muista minut",
     "loginSuccess": "Kirjautuminen onnistui",
     "loginFailed": "Kirjautuminen epäonnistui",
-    "logoutSuccess": "Uloskirjautuminen onnistui"
+    "logoutSuccess": "Uloskirjautuminen onnistui",
+    "or_continue_with_email": "Tai jatka sähköpostilla",
+    "sign_in_with": "Kirjaudu sisään {{provider}} avulla",
+    "oidc": {
+      "completing_signin": "Kirjautumisen viimeistely...",
+      "authenticating_with_provider": "Todennetaan palveluntarjoajalla. Ole hyvä ja odota..."
+    }
   },
   "dropdown": {
     "createNew": "Luo uusi",

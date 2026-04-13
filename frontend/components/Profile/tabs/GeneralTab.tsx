@@ -50,6 +50,32 @@ const GeneralTab: React.FC<GeneralTabProps> = ({
 
     if (!isActive) return null;
 
+    const getSafeAvatarUrl = (): string => {
+        if (avatarPreview) {
+            if (avatarPreview.startsWith('data:') || avatarPreview.startsWith('blob:')) {
+                return avatarPreview;
+            }
+            return '';
+        }
+
+        if (formData.avatar_image) {
+            const url = formData.avatar_image;
+            if (
+                url.startsWith('javascript:') ||
+                url.startsWith('data:') ||
+                url.startsWith('vbscript:') ||
+                url.startsWith('file:')
+            ) {
+                return '';
+            }
+            return getApiPath(url);
+        }
+
+        return '';
+    };
+
+    const avatarUrl = getSafeAvatarUrl();
+
     return (
         <div>
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
@@ -59,12 +85,9 @@ const GeneralTab: React.FC<GeneralTabProps> = ({
 
             <div className="mb-8 flex flex-col items-center">
                 <div className="relative">
-                    {avatarPreview || formData.avatar_image ? (
+                    {avatarUrl ? (
                         <img
-                            src={
-                                avatarPreview ||
-                                getApiPath(formData.avatar_image || '')
-                            }
+                            src={avatarUrl}
                             alt="Avatar"
                             className="w-32 h-32 rounded-full object-cover border-4 border-blue-500"
                         />

@@ -39,8 +39,14 @@ module.exports = (sequelize) => {
             },
             password_digest: {
                 type: DataTypes.STRING,
-                allowNull: false,
+                allowNull: true,
                 field: 'password_digest',
+            },
+            has_password: {
+                type: DataTypes.VIRTUAL,
+                get() {
+                    return this.password_digest != null;
+                },
             },
             appearance: {
                 type: DataTypes.STRING,

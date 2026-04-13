@@ -137,6 +137,7 @@
     "zustand": "^5.0.3"
   },
   "dependencies": {
+    "@dr.pogodin/csurf": "^1.16.9",
     "@modelcontextprotocol/sdk": "^1.0.0",
     "@playwright/test": "^1.57.0",
     "bcrypt": "~6.0.0",
@@ -154,12 +155,14 @@
     "js-yaml": "~4.1.0",
     "linguaisync": "^0.1.2",
     "lodash": "~4.18.1",
+    "lusca": "^1.7.0",
     "moment-timezone": "~0.6.0",
     "morgan": "~1.10.0",
     "multer": "~2.1.0",
     "nanoid": "^3.3.7",
     "node-cron": "~4.1.0",
     "nodemailer": "^8.0.5",
+    "openid-client": "^5.7.1",
     "sequelize": "~6.37.7",
     "sequelize-cli": "~6.6.2",
     "slugify": "^1.6.6",

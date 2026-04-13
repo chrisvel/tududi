@@ -24,7 +24,8 @@
     "no": "いいえ、編集を続ける",
     "yesDiscard": "はい、破棄する",
     "uploading": "アップロード中...",
-    "refresh": "更新"
+    "refresh": "更新",
+    "unlinking": "リンク解除中..."
   },
   "sidebar": {
     "dashboard": "ダッシュボード",
@@ -227,7 +228,8 @@
       "productivity": "生産性",
       "telegram": "Telegram",
       "ai": "AI機能",
-      "notifications": "通知設定"
+      "notifications": "通知設定",
+      "oidc": "OIDC/SSO"
     },
     "security": "セキュリティ設定",
     "changePassword": "パスワード変更",
@@ -376,6 +378,16 @@
         "area": "新しいエリアを作成",
         "tag": "新しいタグを作成"
       }
+    },
+    "connectedAccounts": {
+      "title": "接続されたアカウント",
+      "description": "SSOプロバイダーを使用してサインインするために外部アカウントをリンクします。",
+      "link": "{{provider}}をリンク",
+      "unlink": "リンク解除",
+      "confirmUnlink": "リンク解除を確認",
+      "linkedOn": "{{date}}にリンク済み",
+      "cannotUnlinkLast": "最後の認証方法をリンク解除できません。最初にパスワードを設定してください。",
+      "noPasswordWarning": "パスワードが設定されていません。代替のログイン方法を持つために設定を検討してください。"
     }
   },
   "nextTask": {
@@ -513,7 +525,13 @@
     "rememberMe": "ログイン状態を保持する",
     "loginSuccess": "ログイン成功",
     "loginFailed": "ログイン失敗",
-    "logoutSuccess": "ログアウト成功"
+    "logoutSuccess": "ログアウト成功",
+    "or_continue_with_email": "またはメールで続行",
+    "sign_in_with": "{{provider}}でサインイン",
+    "oidc": {
+      "completing_signin": "サインインを完了しています...",
+      "authenticating_with_provider": "プロバイダーで認証中です。お待ちください..."
+    }
   },
   "dropdown": {
     "createNew": "新規作成",

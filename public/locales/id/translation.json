@@ -24,7 +24,8 @@
     "no": "Tidak, lanjutkan mengedit",
     "yesDiscard": "Ya, buang",
     "uploading": "Mengunggah...",
-    "refresh": "Segarkan"
+    "refresh": "Segarkan",
+    "unlinking": "Menghapus tautan..."
   },
   "sidebar": {
     "dashboard": "Dasbor",
@@ -313,7 +314,8 @@
       "productivity": "Produktivitas",
       "telegram": "Telegram",
       "ai": "Fitur AI",
-      "notifications": "Preferensi Notifikasi"
+      "notifications": "Preferensi Notifikasi",
+      "oidc": "OIDC/SSO"
     },
     "security": "Pengaturan Keamanan",
     "changePassword": "Ubah Kata Sandi",
@@ -376,6 +378,16 @@
         "area": "Buat Area baru",
         "tag": "Buat Tag baru"
       }
+    },
+    "connectedAccounts": {
+      "title": "Akun Terhubung",
+      "description": "Tautkan akun eksternal untuk masuk dengan penyedia SSO.",
+      "link": "Tautkan {{provider}}",
+      "unlink": "Hapus tautan",
+      "confirmUnlink": "Konfirmasi Hapus Tautan",
+      "linkedOn": "Tautkan pada {{date}}",
+      "cannotUnlinkLast": "Tidak dapat menghapus tautan metode otentikasi terakhir Anda. Silakan atur kata sandi terlebih dahulu.",
+      "noPasswordWarning": "Anda belum mengatur kata sandi. Pertimbangkan untuk mengatur satu untuk memiliki metode login alternatif."
     }
   },
   "productivity": {
@@ -531,7 +543,13 @@
     "rememberMe": "Ingat Saya",
     "loginSuccess": "Login Berhasil",
     "loginFailed": "Login Gagal",
-    "logoutSuccess": "Logout Berhasil"
+    "logoutSuccess": "Logout Berhasil",
+    "or_continue_with_email": "Atau lanjutkan dengan email",
+    "sign_in_with": "Masuk dengan {{provider}}",
+    "oidc": {
+      "completing_signin": "Menyelesaikan masuk...",
+      "authenticating_with_provider": "Mengautentikasi dengan penyedia. Silakan tunggu..."
+    }
   },
   "dropdown": {
     "createNew": "Buat Baru",

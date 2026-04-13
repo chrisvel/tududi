@@ -2,6 +2,7 @@
 
 const authService = require('./service');
 const { logError } = require('../../services/logService');
+const { generateToken } = require('../../middleware/csrf');
 
 const authController = {
     getVersion(req, res) {
@@ -97,6 +98,11 @@ const authController = {
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
+    },
+
+    getCsrfToken(req, res) {
+        const token = generateToken(req);
+        res.json({ csrfToken: token });
     },
 };
 

@@ -24,7 +24,8 @@
     "no": "Nein, weiter bearbeiten",
     "yesDiscard": "Ja, verwerfen",
     "uploading": "Hochladen...",
-    "refresh": "Aktualisieren"
+    "refresh": "Aktualisieren",
+    "unlinking": "Trennen..."
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -493,7 +494,8 @@
       "productivity": "Produktivität",
       "telegram": "Telegram",
       "ai": "KI-Funktionen",
-      "notifications": "Benachrichtigungseinstellungen"
+      "notifications": "Benachrichtigungseinstellungen",
+      "oidc": "OIDC/SSO"
     },
     "security": "Sicherheitseinstellungen",
     "changePassword": "Passwort ändern",
@@ -619,6 +621,16 @@
         "area": "Neuen Bereich erstellen",
         "tag": "Neues Tag erstellen"
       }
+    },
+    "connectedAccounts": {
+      "title": "Verbundene Konten",
+      "description": "Verknüpfen Sie externe Konten, um sich bei SSO-Anbietern anzumelden.",
+      "link": "Verknüpfen {{provider}}",
+      "unlink": "Trennen",
+      "confirmUnlink": "Trennen bestätigen",
+      "linkedOn": "Verknüpft am {{date}}",
+      "cannotUnlinkLast": "Kann Ihre letzte Authentifizierungsmethode nicht trennen. Bitte setzen Sie zuerst ein Passwort.",
+      "noPasswordWarning": "Sie haben kein Passwort festgelegt. Erwägen Sie, eines festzulegen, um eine alternative Anmeldemethode zu haben."
     }
   },
   "nextTask": {
@@ -854,7 +866,13 @@
     "rememberMe": "Erinnere dich an mich",
     "loginSuccess": "Anmeldung erfolgreich",
     "loginFailed": "Anmeldung fehlgeschlagen",
-    "logoutSuccess": "Abmeldung erfolgreich"
+    "logoutSuccess": "Abmeldung erfolgreich",
+    "or_continue_with_email": "Oder mit E-Mail fortfahren",
+    "sign_in_with": "Mit {{provider}} anmelden",
+    "oidc": {
+      "completing_signin": "Anmeldung wird abgeschlossen...",
+      "authenticating_with_provider": "Authentifizierung beim Anbieter. Bitte warten..."
+    }
   },
   "dropdown": {
     "createNew": "Neu erstellen",

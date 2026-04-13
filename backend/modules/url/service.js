@@ -71,16 +71,14 @@ function extractMetadataFromHtml(html) {
             }
         }
 
-        // Clean up title
         if (title) {
             title = title.trim();
-            // Decode common HTML entities
             title = title
                 .replace(/&lt;/g, '<')
                 .replace(/&gt;/g, '>')
-                .replace(/&amp;/g, '&')
                 .replace(/&quot;/g, '"')
-                .replace(/&#39;/g, "'");
+                .replace(/&#39;/g, "'")
+                .replace(/&amp;/g, '&');
 
             if (title.length > 100) {
                 title = title.substring(0, 100) + '...';
@@ -400,15 +398,22 @@ async function fetchUrlMetadata(url) {
         normalizedUrl = `https://${normalizedUrl}`;
     }
 
-    // Handle YouTube URLs specially to avoid anti-bot issues
-    if (
-        normalizedUrl.includes('youtube.com') ||
-        normalizedUrl.includes('youtu.be')
-    ) {
-        const youtubeMetadata = handleYouTubeUrl(normalizedUrl);
-        if (youtubeMetadata) {
-            return youtubeMetadata;
+    try {
+        const parsedUrl = new URL(normalizedUrl);
+        const hostname = parsedUrl.hostname.toLowerCase();
+
+        if (
+            hostname === 'youtube.com' ||
+            hostname.endsWith('.youtube.com') ||
+            hostname === 'youtu.be'
+        ) {
+            const youtubeMetadata = handleYouTubeUrl(normalizedUrl);
+            if (youtubeMetadata) {
+                return youtubeMetadata;
+            }
         }
+    } catch (error) {
+        logError('Error parsing URL for YouTube check:', error);
     }
 
     try {

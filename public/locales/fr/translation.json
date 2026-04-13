@@ -24,7 +24,8 @@
     "no": "Non, continuer à éditer",
     "yesDiscard": "Oui, abandonner",
     "uploading": "Téléchargement...",
-    "refresh": "Rafraîchir"
+    "refresh": "Rafraîchir",
+    "unlinking": "Dissociation..."
   },
   "sidebar": {
     "dashboard": "Tableau de bord",
@@ -313,7 +314,8 @@
       "productivity": "Productivité",
       "telegram": "Telegram",
       "ai": "Fonctionnalités IA",
-      "notifications": "Préférences de Notification"
+      "notifications": "Préférences de Notification",
+      "oidc": "OIDC/SSO"
     },
     "security": "Paramètres de sécurité",
     "changePassword": "Changer le mot de passe",
@@ -376,6 +378,16 @@
         "area": "Créer une nouvelle Zone",
         "tag": "Créer une nouvelle Étiquette"
       }
+    },
+    "connectedAccounts": {
+      "title": "Comptes Connectés",
+      "description": "Liez des comptes externes pour vous connecter avec des fournisseurs SSO.",
+      "link": "Lier {{provider}}",
+      "unlink": "Dissocier",
+      "confirmUnlink": "Confirmer la Dissociation",
+      "linkedOn": "Lié le {{date}}",
+      "cannotUnlinkLast": "Impossible de dissocier votre dernier moyen d'authentification. Veuillez d'abord définir un mot de passe.",
+      "noPasswordWarning": "Vous n'avez pas de mot de passe défini. Envisagez d'en définir un pour avoir une méthode de connexion alternative."
     }
   },
   "productivity": {
@@ -531,7 +543,13 @@
     "rememberMe": "Se souvenir de moi",
     "loginSuccess": "Connexion réussie",
     "loginFailed": "Échec de la connexion",
-    "logoutSuccess": "Déconnexion réussie"
+    "logoutSuccess": "Déconnexion réussie",
+    "or_continue_with_email": "Ou continuez avec l'email",
+    "sign_in_with": "Se connecter avec {{provider}}",
+    "oidc": {
+      "completing_signin": "Finalisation de la connexion...",
+      "authenticating_with_provider": "Authentification avec le fournisseur. Veuillez patienter..."
+    }
   },
   "dropdown": {
     "createNew": "Créer nouveau",

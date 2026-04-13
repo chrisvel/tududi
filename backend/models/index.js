@@ -68,6 +68,9 @@ const Notification = require('./notification')(sequelize);
 const RecurringCompletion = require('./recurringCompletion')(sequelize);
 const TaskAttachment = require('./task_attachment')(sequelize);
 const Backup = require('./backup')(sequelize);
+const OIDCIdentity = require('./oidc_identity')(sequelize);
+const OIDCStateNonce = require('./oidc_state_nonce')(sequelize);
+const AuthAuditLog = require('./auth_audit_log')(sequelize);
 
 User.hasMany(Area, { foreignKey: 'user_id' });
 Area.belongsTo(User, { foreignKey: 'user_id' });
@@ -188,6 +191,13 @@ TaskAttachment.belongsTo(Task, { foreignKey: 'task_id' });
 User.hasMany(Backup, { foreignKey: 'user_id', as: 'Backups' });
 Backup.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 
+// OIDC associations
+User.hasMany(OIDCIdentity, { foreignKey: 'user_id', as: 'OIDCIdentities' });
+OIDCIdentity.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+
+// Auth audit log associations
+AuthAuditLog.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+
 module.exports = {
     sequelize,
     User,
@@ -208,4 +218,7 @@ module.exports = {
     RecurringCompletion,
     TaskAttachment,
     Backup,
+    OIDCIdentity,
+    OIDCStateNonce,
+    AuthAuditLog,
 };

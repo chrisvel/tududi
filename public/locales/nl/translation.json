@@ -24,7 +24,8 @@
     "no": "Nee, blijf bewerken",
     "yesDiscard": "Ja, negeren",
     "uploading": "Uploaden...",
-    "refresh": "Vernieuwen"
+    "refresh": "Vernieuwen",
+    "unlinking": "Ontkoppelen..."
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -313,7 +314,8 @@
       "productivity": "Productiviteit",
       "telegram": "Telegram",
       "ai": "AI-functies",
-      "notifications": "Meldingsvoorkeuren"
+      "notifications": "Meldingsvoorkeuren",
+      "oidc": "OIDC/SSO"
     },
     "security": "Beveiligingsinstellingen",
     "changePassword": "Wachtwoord wijzigen",
@@ -376,6 +378,16 @@
         "area": "Maak nieuw Gebied aan",
         "tag": "Maak nieuwe Tag aan"
       }
+    },
+    "connectedAccounts": {
+      "title": "Verbonden Accounts",
+      "description": "Koppel externe accounts om in te loggen met SSO-providers.",
+      "link": "Koppel {{provider}}",
+      "unlink": "Ontkoppel",
+      "confirmUnlink": "Bevestig Ontkoppeling",
+      "linkedOn": "Gekoppeld op {{date}}",
+      "cannotUnlinkLast": "Kan uw laatste authenticatiemethode niet ontkoppelen. Stel eerst een wachtwoord in.",
+      "noPasswordWarning": "U heeft geen wachtwoord ingesteld. Overweeg er een in te stellen voor een alternatieve inlogmethode."
     }
   },
   "productivity": {
@@ -531,7 +543,13 @@
     "rememberMe": "Onthoud Mij",
     "loginSuccess": "Inloggen Succesvol",
     "loginFailed": "Inloggen Mislukt",
-    "logoutSuccess": "Uitloggen Succesvol"
+    "logoutSuccess": "Uitloggen Succesvol",
+    "or_continue_with_email": "Of ga verder met e-mail",
+    "sign_in_with": "Inloggen met {{provider}}",
+    "oidc": {
+      "completing_signin": "Inloggen voltooien...",
+      "authenticating_with_provider": "Authenticeren met provider. Even geduld..."
+    }
   },
   "dropdown": {
     "createNew": "Nieuw Aanmaken",
