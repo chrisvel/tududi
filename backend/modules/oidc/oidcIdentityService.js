@@ -22,7 +22,7 @@ async function getIdentityById(identityId) {
         include: [
             {
                 model: User,
-                as: 'user',
+                as: 'User',
                 attributes: ['id', 'email', 'username', 'is_admin'],
             },
         ],

@@ -22,7 +22,7 @@ async function findOrCreateIdentity(providerSlug, claims) {
             provider_slug: providerSlug,
             subject: claims.sub,
         },
-        include: [{ model: User, as: 'user' }],
+        include: [{ model: User, as: 'User' }],
     });
 
     return identity;
@@ -42,7 +42,7 @@ async function provisionUser(providerSlug, claims, req) {
                 provider_slug: providerSlug,
                 subject: claims.sub,
             },
-            include: [{ model: User, as: 'user' }],
+            include: [{ model: User, as: 'User' }],
             transaction,
         });
 
