@@ -8,25 +8,37 @@ async function initializeTelegramPolling() {
         return;
     }
 
-    try {
-        // Find users with configured Telegram tokens
-        const usersWithTelegram = await User.findAll({
-            where: {
-                telegram_bot_token: {
-                    [require('sequelize').Op.ne]: null,
-                },
-            },
-        });
+    // Add a delay before starting Telegram polling to allow the system to settle
+    // and prevent immediate error floods if Telegram is temporarily unreachable
+    const startupDelay = 10000; // 10 seconds
 
-        if (usersWithTelegram.length > 0) {
-            // Add each user to the polling list
-            for (const user of usersWithTelegram) {
-                await telegramPoller.addUser(user);
+    setTimeout(async () => {
+        try {
+            // Find users with configured Telegram tokens
+            const usersWithTelegram = await User.findAll({
+                where: {
+                    telegram_bot_token: {
+                        [require('sequelize').Op.ne]: null,
+                    },
+                },
+            });
+
+            if (usersWithTelegram.length > 0) {
+                console.log(
+                    `Initializing Telegram polling for ${usersWithTelegram.length} user(s)...`
+                );
+                // Add each user to the polling list
+                for (const user of usersWithTelegram) {
+                    await telegramPoller.addUser(user);
+                }
             }
+        } catch (error) {
+            console.error(
+                'Error initializing Telegram polling:',
+                error.message
+            );
         }
-    } catch (error) {
-        // Telegram polling will be initialized later when the database is available
-    }
+    }, startupDelay);
 }
 
 module.exports = { initializeTelegramPolling };
