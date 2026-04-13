@@ -801,7 +801,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                     className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none transition duration-150 ease-in-out text-sm"
                                     data-testid="project-save-button"
                                 >
-                                    {project
+                                    {project?.uid || project?.id
                                         ? t(
                                               'modals.updateProject',
                                               'Update Project'
