@@ -49,8 +49,32 @@ module.exports = {
         `);
 
         await queryInterface.sequelize.query(`
-            INSERT INTO users_new
-            SELECT * FROM users;
+            INSERT INTO users_new (
+                id, uid, name, surname, email, password_digest, appearance, language,
+                timezone, first_day_of_week, avatar_image, telegram_bot_token,
+                telegram_chat_id, task_summary_enabled, task_summary_frequency,
+                task_summary_last_run, task_summary_next_run, telegram_allowed_users,
+                task_intelligence_enabled, auto_suggest_next_actions_enabled,
+                pomodoro_enabled, productivity_assistant_enabled,
+                next_task_suggestion_enabled, today_settings, sidebar_settings,
+                ui_settings, notification_preferences, keyboard_shortcuts,
+                email_verified, email_verification_token,
+                email_verification_token_expires_at, created_at, updated_at
+            )
+            SELECT
+                id, uid, name, surname, email,
+                COALESCE(password_digest, NULL) as password_digest,
+                appearance, language,
+                timezone, first_day_of_week, avatar_image, telegram_bot_token,
+                telegram_chat_id, task_summary_enabled, task_summary_frequency,
+                task_summary_last_run, task_summary_next_run, telegram_allowed_users,
+                task_intelligence_enabled, auto_suggest_next_actions_enabled,
+                pomodoro_enabled, productivity_assistant_enabled,
+                next_task_suggestion_enabled, today_settings, sidebar_settings,
+                ui_settings, notification_preferences, keyboard_shortcuts,
+                email_verified, email_verification_token,
+                email_verification_token_expires_at, created_at, updated_at
+            FROM users;
         `);
 
         await queryInterface.sequelize.query('DROP TABLE users;');
@@ -110,8 +134,32 @@ module.exports = {
         `);
 
         await queryInterface.sequelize.query(`
-            INSERT INTO users_new
-            SELECT * FROM users;
+            INSERT INTO users_new (
+                id, uid, name, surname, email, password_digest, appearance, language,
+                timezone, first_day_of_week, avatar_image, telegram_bot_token,
+                telegram_chat_id, task_summary_enabled, task_summary_frequency,
+                task_summary_last_run, task_summary_next_run, telegram_allowed_users,
+                task_intelligence_enabled, auto_suggest_next_actions_enabled,
+                pomodoro_enabled, productivity_assistant_enabled,
+                next_task_suggestion_enabled, today_settings, sidebar_settings,
+                ui_settings, notification_preferences, keyboard_shortcuts,
+                email_verified, email_verification_token,
+                email_verification_token_expires_at, created_at, updated_at,
+                ai_provider, openai_api_key, ollama_base_url, ollama_model
+            )
+            SELECT
+                id, uid, name, surname, email, password_digest, appearance, language,
+                timezone, first_day_of_week, avatar_image, telegram_bot_token,
+                telegram_chat_id, task_summary_enabled, task_summary_frequency,
+                task_summary_last_run, task_summary_next_run, telegram_allowed_users,
+                task_intelligence_enabled, auto_suggest_next_actions_enabled,
+                pomodoro_enabled, productivity_assistant_enabled,
+                next_task_suggestion_enabled, today_settings, sidebar_settings,
+                ui_settings, notification_preferences, keyboard_shortcuts,
+                email_verified, email_verification_token,
+                email_verification_token_expires_at, created_at, updated_at,
+                ai_provider, openai_api_key, ollama_base_url, ollama_model
+            FROM users;
         `);
 
         await queryInterface.sequelize.query('DROP TABLE users;');
