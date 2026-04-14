@@ -44,13 +44,14 @@ app.use(
                 frameSrc: ["'none'"],
             },
         },
-        hsts: config.production
-            ? {
-                  maxAge: 31536000,
-                  includeSubDomains: true,
-                  preload: true,
-              }
-            : false,
+        hsts:
+            config.production && process.env.DISABLE_HSTS !== 'true'
+                ? {
+                      maxAge: 31536000,
+                      includeSubDomains: true,
+                      preload: true,
+                  }
+                : false,
     })
 );
 app.use(compression());
