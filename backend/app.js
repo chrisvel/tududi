@@ -42,6 +42,7 @@ app.use(
                 objectSrc: ["'none'"],
                 mediaSrc: ["'self'"],
                 frameSrc: ["'none'"],
+                upgradeInsecureRequests: config.production ? [] : null,
             },
         },
         hsts: config.production
