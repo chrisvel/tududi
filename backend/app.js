@@ -347,6 +347,10 @@ async function startServer() {
         // Initialize task scheduler
         await taskScheduler.initialize();
 
+        // Initialize CalDAV sync scheduler
+        const caldavSyncScheduler = require('./modules/caldav/services/sync-scheduler');
+        await caldavSyncScheduler.initialize();
+
         const server = app.listen(config.port, config.host, () => {
             console.log(`Server running on port ${config.port}`);
             console.log(`Server listening on http://localhost:${config.port}`);

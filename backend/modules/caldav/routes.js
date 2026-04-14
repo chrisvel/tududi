@@ -10,6 +10,8 @@ const {
     handlePutTask,
     handleDeleteTask,
 } = require('./webdav/task-handlers');
+const apiRoutes = require('./api/routes');
+const { requireAuth } = require('../../middleware/auth');
 
 const router = express.Router();
 
@@ -66,5 +68,7 @@ router.delete(
     caldavAuth,
     handleDeleteTask
 );
+
+router.use('/api/caldav', requireAuth, apiRoutes);
 
 module.exports = router;

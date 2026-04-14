@@ -2,7 +2,14 @@ const request = require('supertest');
 const bcrypt = require('bcrypt');
 const axios = require('axios');
 const app = require('../../app');
-const { sequelize, User, Task, CalDAVCalendar, CalDAVRemoteCalendar, CalDAVSyncState } = require('../../models');
+const {
+    sequelize,
+    User,
+    Task,
+    CalDAVCalendar,
+    CalDAVRemoteCalendar,
+    CalDAVSyncState,
+} = require('../../models');
 const syncEngine = require('../../modules/caldav/sync/sync-engine');
 const encryptionService = require('../../modules/caldav/services/encryption-service');
 
