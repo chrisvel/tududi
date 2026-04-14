@@ -1,4 +1,6 @@
-const { parseRRULE } = require('../../../../../modules/caldav/icalendar/rrule-parser');
+const {
+    parseRRULE,
+} = require('../../../../../modules/caldav/icalendar/rrule-parser');
 
 describe('RRULE Parser', () => {
     it('should return null for empty RRULE', () => {
@@ -104,7 +106,9 @@ describe('RRULE Parser', () => {
         });
 
         it('should parse weekly with BYDAY and UNTIL', () => {
-            const result = parseRRULE('FREQ=WEEKLY;BYDAY=MO,FR;UNTIL=20270101T000000Z');
+            const result = parseRRULE(
+                'FREQ=WEEKLY;BYDAY=MO,FR;UNTIL=20270101T000000Z'
+            );
             expect(result.recurrence_type).toBe('weekly');
             expect(result.recurrence_weekdays).toEqual([1, 5]);
             expect(result.recurrence_end_date).toBeInstanceOf(Date);
@@ -115,10 +119,23 @@ describe('RRULE Parser', () => {
         const testCases = [
             { rrule: 'FREQ=DAILY', type: 'daily' },
             { rrule: 'FREQ=DAILY;INTERVAL=2', type: 'daily', interval: 2 },
-            { rrule: 'FREQ=WEEKLY;BYDAY=MO,WE,FR', type: 'weekly', weekdays: [1, 3, 5] },
-            { rrule: 'FREQ=MONTHLY;BYMONTHDAY=15', type: 'monthly', monthDay: 15 },
+            {
+                rrule: 'FREQ=WEEKLY;BYDAY=MO,WE,FR',
+                type: 'weekly',
+                weekdays: [1, 3, 5],
+            },
+            {
+                rrule: 'FREQ=MONTHLY;BYMONTHDAY=15',
+                type: 'monthly',
+                monthDay: 15,
+            },
             { rrule: 'FREQ=MONTHLY;BYMONTHDAY=-1', type: 'monthly_last_day' },
-            { rrule: 'FREQ=MONTHLY;BYDAY=2TH', type: 'monthly_weekday', week: 2, weekday: 4 },
+            {
+                rrule: 'FREQ=MONTHLY;BYDAY=2TH',
+                type: 'monthly_weekday',
+                week: 2,
+                weekday: 4,
+            },
             { rrule: 'FREQ=YEARLY', type: 'yearly' },
         ];
 

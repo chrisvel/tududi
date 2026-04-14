@@ -216,7 +216,10 @@ CalDAVSyncState.belongsTo(CalDAVCalendar, {
     foreignKey: 'calendar_id',
     as: 'Calendar',
 });
-Task.hasMany(CalDAVSyncState, { foreignKey: 'task_id', as: 'CalDAVSyncStates' });
+Task.hasMany(CalDAVSyncState, {
+    foreignKey: 'task_id',
+    as: 'CalDAVSyncStates',
+});
 CalDAVSyncState.belongsTo(Task, { foreignKey: 'task_id', as: 'Task' });
 
 CalDAVCalendar.hasMany(CalDAVOccurrenceOverride, {

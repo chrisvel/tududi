@@ -27,8 +27,12 @@ describe('CalDAV Round-Trip Conversion', () => {
         expect(parsedTask.status).toBe(originalTask.status);
         expect(parsedTask.priority).toBe(originalTask.priority);
         expect(parsedTask.note).toBe(originalTask.note);
-        expect(parsedTask.due_date.getTime()).toBe(originalTask.due_date.getTime());
-        expect(parsedTask.defer_until.getTime()).toBe(originalTask.defer_until.getTime());
+        expect(parsedTask.due_date.getTime()).toBe(
+            originalTask.due_date.getTime()
+        );
+        expect(parsedTask.defer_until.getTime()).toBe(
+            originalTask.defer_until.getTime()
+        );
     });
 
     it('should preserve completed task data', async () => {
@@ -46,7 +50,9 @@ describe('CalDAV Round-Trip Conversion', () => {
         const parsedTask = await parseVTODOToTask(vtodoString);
 
         expect(parsedTask.status).toBe(2);
-        expect(parsedTask.completed_at.getTime()).toBe(completedTask.completed_at.getTime());
+        expect(parsedTask.completed_at.getTime()).toBe(
+            completedTask.completed_at.getTime()
+        );
     });
 
     it('should preserve recurring task data', async () => {

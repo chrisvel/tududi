@@ -64,7 +64,16 @@ app.use(
     cors({
         origin: config.allowedOrigins,
         credentials: true,
-        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'PROPFIND', 'REPORT'],
+        methods: [
+            'GET',
+            'POST',
+            'PUT',
+            'PATCH',
+            'DELETE',
+            'OPTIONS',
+            'PROPFIND',
+            'REPORT',
+        ],
         allowedHeaders: [
             'Authorization',
             'Content-Type',
@@ -118,7 +127,9 @@ app.use((req, res, next) => {
     const isPublicPath = publicPaths.some((path) => req.path === path);
     const isOidcPath = req.path.startsWith('/api/oidc/');
     const isFeatureFlagsPath = req.path.startsWith('/api/feature-flags');
-    const isCalDAVPath = req.path.startsWith('/caldav/') || req.path.startsWith('/.well-known/caldav');
+    const isCalDAVPath =
+        req.path.startsWith('/caldav/') ||
+        req.path.startsWith('/.well-known/caldav');
 
     // Mark exempt requests so lusca wrapper can skip them
     if (

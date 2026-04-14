@@ -44,9 +44,7 @@ class RemoteCalendarRepository extends BaseRepository {
     ) {
         const remoteCalendar = await this.findById(remoteCalendarId);
         if (!remoteCalendar) {
-            throw new Error(
-                `Remote calendar ${remoteCalendarId} not found`
-            );
+            throw new Error(`Remote calendar ${remoteCalendarId} not found`);
         }
 
         return this.update(
@@ -63,9 +61,7 @@ class RemoteCalendarRepository extends BaseRepository {
     async updateServerCTag(remoteCalendarId, ctag, options = {}) {
         const remoteCalendar = await this.findById(remoteCalendarId);
         if (!remoteCalendar) {
-            throw new Error(
-                `Remote calendar ${remoteCalendarId} not found`
-            );
+            throw new Error(`Remote calendar ${remoteCalendarId} not found`);
         }
 
         return this.update(remoteCalendar, { server_ctag: ctag }, options);
@@ -74,9 +70,7 @@ class RemoteCalendarRepository extends BaseRepository {
     async updateServerSyncToken(remoteCalendarId, syncToken, options = {}) {
         const remoteCalendar = await this.findById(remoteCalendarId);
         if (!remoteCalendar) {
-            throw new Error(
-                `Remote calendar ${remoteCalendarId} not found`
-            );
+            throw new Error(`Remote calendar ${remoteCalendarId} not found`);
         }
 
         return this.update(

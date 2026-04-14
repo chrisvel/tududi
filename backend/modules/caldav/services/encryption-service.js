@@ -11,7 +11,10 @@ function getEncryptionKey() {
 
     if (!key) {
         if (process.env.NODE_ENV === 'test') {
-            return Buffer.from('test-encryption-key-32-chars-long!!!', 'utf-8').slice(0, 32);
+            return Buffer.from(
+                'test-encryption-key-32-chars-long!!!',
+                'utf-8'
+            ).slice(0, 32);
         }
         throw new Error(
             'No encryption key found. Set ENCRYPTION_KEY or SECRET_KEY environment variable'
@@ -70,7 +73,11 @@ function decrypt(encryptedData) {
 
         return decrypted;
     } catch (error) {
-        if (error.message.includes('Unsupported state or unable to authenticate data')) {
+        if (
+            error.message.includes(
+                'Unsupported state or unable to authenticate data'
+            )
+        ) {
             throw new Error(
                 'Decryption failed: Invalid auth tag or tampered data'
             );

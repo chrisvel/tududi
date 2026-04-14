@@ -1,4 +1,6 @@
-const { generateRRULE } = require('../../../../../modules/caldav/icalendar/rrule-generator');
+const {
+    generateRRULE,
+} = require('../../../../../modules/caldav/icalendar/rrule-generator');
 
 describe('RRULE Generator', () => {
     it('should return null for non-recurring task', () => {
@@ -75,7 +77,9 @@ describe('RRULE Generator', () => {
                 recurrence_interval: 3,
                 recurrence_month_day: 1,
             };
-            expect(generateRRULE(task)).toBe('FREQ=MONTHLY;INTERVAL=3;BYMONTHDAY=1');
+            expect(generateRRULE(task)).toBe(
+                'FREQ=MONTHLY;INTERVAL=3;BYMONTHDAY=1'
+            );
         });
     });
 
@@ -110,7 +114,9 @@ describe('RRULE Generator', () => {
                 recurrence_type: 'monthly_last_day',
                 recurrence_interval: 2,
             };
-            expect(generateRRULE(task)).toBe('FREQ=MONTHLY;INTERVAL=2;BYMONTHDAY=-1');
+            expect(generateRRULE(task)).toBe(
+                'FREQ=MONTHLY;INTERVAL=2;BYMONTHDAY=-1'
+            );
         });
     });
 

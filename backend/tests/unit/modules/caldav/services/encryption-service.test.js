@@ -72,7 +72,9 @@ describe('CalDAV Encryption Service', () => {
             data.encrypted = data.encrypted.replace(/.$/, 'X');
             const tampered = JSON.stringify(data);
 
-            expect(() => decrypt(tampered)).toThrow('Invalid auth tag or tampered data');
+            expect(() => decrypt(tampered)).toThrow(
+                'Invalid auth tag or tampered data'
+            );
         });
     });
 

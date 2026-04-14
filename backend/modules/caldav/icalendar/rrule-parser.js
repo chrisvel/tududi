@@ -36,7 +36,10 @@ function parseRRULE(rruleString) {
             try {
                 const until = rruleData.UNTIL;
                 result.recurrence_end_date = new Date(
-                    until.replace(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z?/, '$1-$2-$3T$4:$5:$6Z')
+                    until.replace(
+                        /(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z?/,
+                        '$1-$2-$3T$4:$5:$6Z'
+                    )
                 );
             } catch (error) {
                 console.error('Error parsing UNTIL:', error);
@@ -64,7 +67,8 @@ function parseRRULE(rruleString) {
             case 'MONTHLY':
                 if (rruleData.BYDAY) {
                     result.recurrence_type = 'monthly_weekday';
-                    const byDayMatch = rruleData.BYDAY.match(/(-?\d+)([A-Z]{2})/);
+                    const byDayMatch =
+                        rruleData.BYDAY.match(/(-?\d+)([A-Z]{2})/);
                     if (byDayMatch) {
                         result.recurrence_week_of_month = parseInt(
                             byDayMatch[1],

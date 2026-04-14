@@ -21,7 +21,10 @@ function generateRRULE(task) {
             if (task.recurrence_interval && task.recurrence_interval > 1) {
                 parts.push(`INTERVAL=${task.recurrence_interval}`);
             }
-            if (task.recurrence_weekdays && task.recurrence_weekdays.length > 0) {
+            if (
+                task.recurrence_weekdays &&
+                task.recurrence_weekdays.length > 0
+            ) {
                 const weekdaysArray =
                     typeof task.recurrence_weekdays === 'string'
                         ? JSON.parse(task.recurrence_weekdays)

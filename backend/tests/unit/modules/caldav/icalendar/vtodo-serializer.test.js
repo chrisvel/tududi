@@ -38,6 +38,13 @@ describe('VTODO Serializer', () => {
             { ...basicTask, status: 5 },
         ];
 
+        const statusMap = {
+            0: 'NEEDS-ACTION',
+            1: 'IN-PROCESS',
+            2: 'COMPLETED',
+            5: 'CANCELLED',
+        };
+
         for (const task of tasks) {
             const vtodoString = await serializeTaskToVTODO(task);
             const jcalData = ICAL.parse(vtodoString);
@@ -45,10 +52,7 @@ describe('VTODO Serializer', () => {
             const vtodo = comp.getFirstSubcomponent('vtodo');
             const status = vtodo.getFirstPropertyValue('status');
 
-            if (task.status === 0) expect(status).toBe('NEEDS-ACTION');
-            if (task.status === 1) expect(status).toBe('IN-PROCESS');
-            if (task.status === 2) expect(status).toBe('COMPLETED');
-            if (task.status === 5) expect(status).toBe('CANCELLED');
+            expect(status).toBe(statusMap[task.status]);
         }
     });
 
@@ -115,7 +119,9 @@ describe('VTODO Serializer', () => {
             ParentTask: { uid: 'parent-task-456' },
         };
         const vtodoString = await serializeTaskToVTODO(subtask);
-        expect(vtodoString).toContain('RELATED-TO;RELTYPE=PARENT:parent-task-456');
+        expect(vtodoString).toContain(
+            'RELATED-TO;RELTYPE=PARENT:parent-task-456'
+        );
     });
 
     it('should include project information as custom property', async () => {

@@ -28,7 +28,9 @@ describe('CalDAV Protocol - Phase 3', () => {
             enabled: true,
         });
 
-        authHeader = 'Basic ' + Buffer.from('caldav@test.com:password123').toString('base64');
+        authHeader =
+            'Basic ' +
+            Buffer.from('caldav@test.com:password123').toString('base64');
     });
 
     afterAll(async () => {
@@ -46,14 +48,18 @@ describe('CalDAV Protocol - Phase 3', () => {
     });
 
     describe('Authentication', () => {
+        // eslint-disable-next-line jest/expect-expect
         test('should reject requests without authentication', async () => {
             await request(app)
                 .get('/caldav/caldav@test.com/tasks/')
                 .expect(401);
         });
 
+        // eslint-disable-next-line jest/expect-expect
         test('should reject requests with invalid credentials', async () => {
-            const badAuth = 'Basic ' + Buffer.from('caldav@test.com:wrongpass').toString('base64');
+            const badAuth =
+                'Basic ' +
+                Buffer.from('caldav@test.com:wrongpass').toString('base64');
 
             await request(app)
                 .get('/caldav/caldav@test.com/tasks/')
@@ -61,6 +67,7 @@ describe('CalDAV Protocol - Phase 3', () => {
                 .expect(401);
         });
 
+        // eslint-disable-next-line jest/expect-expect
         test('should accept requests with valid HTTP Basic Auth', async () => {
             await request(app)
                 .get('/caldav/caldav@test.com/tasks/')
@@ -68,6 +75,7 @@ describe('CalDAV Protocol - Phase 3', () => {
                 .expect(207);
         });
 
+        // eslint-disable-next-line jest/expect-expect
         test('should reject access to other users calendars', async () => {
             const otherUser = await User.create({
                 email: 'other@test.com',
@@ -123,7 +131,10 @@ describe('CalDAV Protocol - Phase 3', () => {
   </D:prop>
 </D:propfind>`;
 
-            const response = await propfind(app, '/caldav/caldav@test.com/tasks/')
+            const response = await propfind(
+                app,
+                '/caldav/caldav@test.com/tasks/'
+            )
                 .set('Authorization', authHeader)
                 .set('Depth', '0')
                 .set('Content-Type', 'application/xml')
@@ -144,7 +155,10 @@ describe('CalDAV Protocol - Phase 3', () => {
   </D:prop>
 </D:propfind>`;
 
-            const response = await propfind(app, '/caldav/caldav@test.com/tasks/')
+            const response = await propfind(
+                app,
+                '/caldav/caldav@test.com/tasks/'
+            )
                 .set('Authorization', authHeader)
                 .set('Depth', '1')
                 .set('Content-Type', 'application/xml')
@@ -165,7 +179,10 @@ describe('CalDAV Protocol - Phase 3', () => {
   </D:prop>
 </D:propfind>`;
 
-            const response = await propfind(app, '/caldav/caldav@test.com/tasks/test-task-1.ics')
+            const response = await propfind(
+                app,
+                '/caldav/caldav@test.com/tasks/test-task-1.ics'
+            )
                 .set('Authorization', authHeader)
                 .set('Depth', '0')
                 .set('Content-Type', 'application/xml')
@@ -271,6 +288,7 @@ describe('CalDAV Protocol - Phase 3', () => {
             expect(response.headers.etag).toBeDefined();
         });
 
+        // eslint-disable-next-line jest/expect-expect
         test('GET should return 404 for non-existent task', async () => {
             await request(app)
                 .get('/caldav/caldav@test.com/tasks/non-existent.ics')
@@ -278,6 +296,7 @@ describe('CalDAV Protocol - Phase 3', () => {
                 .expect(404);
         });
 
+        // eslint-disable-next-line jest/expect-expect
         test('GET should support If-None-Match (304 Not Modified)', async () => {
             const firstResponse = await request(app)
                 .get('/caldav/caldav@test.com/tasks/get-task-1.ics')
@@ -320,7 +339,9 @@ END:VCALENDAR`;
 
             expect(response.headers.etag).toBeDefined();
 
-            const created = await Task.findOne({ where: { uid: 'put-task-new' } });
+            const created = await Task.findOne({
+                where: { uid: 'put-task-new' },
+            });
             expect(created).toBeDefined();
             expect(created.name).toBe('New Task via PUT');
             expect(created.status).toBe(0);
@@ -356,6 +377,7 @@ END:VCALENDAR`;
             expect(existing.status).toBe(2);
         });
 
+        // eslint-disable-next-line jest/expect-expect
         test('PUT should respect If-Match precondition', async () => {
             const existing = await Task.create({
                 uid: 'put-task-match',
@@ -381,6 +403,7 @@ END:VCALENDAR`;
                 .expect(412);
         });
 
+        // eslint-disable-next-line jest/expect-expect
         test('PUT should reject invalid VTODO', async () => {
             const invalidVtodo = 'This is not valid iCalendar data';
 
@@ -413,10 +436,13 @@ END:VCALENDAR`;
                 .set('Authorization', authHeader)
                 .expect(204);
 
-            const deleted = await Task.findOne({ where: { uid: 'delete-task-1' } });
+            const deleted = await Task.findOne({
+                where: { uid: 'delete-task-1' },
+            });
             expect(deleted).toBeNull();
         });
 
+        // eslint-disable-next-line jest/expect-expect
         test('DELETE should return 404 for non-existent task', async () => {
             await request(app)
                 .delete('/caldav/caldav@test.com/tasks/non-existent.ics')
@@ -431,7 +457,9 @@ END:VCALENDAR`;
                 .set('If-Match', '"wrong-etag"')
                 .expect(412);
 
-            const stillExists = await Task.findOne({ where: { uid: 'delete-task-1' } });
+            const stillExists = await Task.findOne({
+                where: { uid: 'delete-task-1' },
+            });
             expect(stillExists).toBeDefined();
         });
     });
@@ -478,7 +506,10 @@ END:VCALENDAR`;
   </D:prop>
 </D:propfind>`;
 
-            const response = await propfind(app, '/caldav/caldav@test.com/tasks/')
+            const response = await propfind(
+                app,
+                '/caldav/caldav@test.com/tasks/'
+            )
                 .set('Authorization', authHeader)
                 .set('Depth', '0')
                 .set('Content-Type', 'application/xml')

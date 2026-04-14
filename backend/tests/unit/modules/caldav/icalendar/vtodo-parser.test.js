@@ -36,7 +36,9 @@ END:VCALENDAR`;
         const invalidCalendar = `BEGIN:VCALENDAR
 VERSION:2.0
 END:VCALENDAR`;
-        await expect(parseVTODOToTask(invalidCalendar)).rejects.toThrow('No VTODO component found');
+        await expect(parseVTODOToTask(invalidCalendar)).rejects.toThrow(
+            'No VTODO component found'
+        );
     });
 
     it('should map iCalendar STATUS to tududi status', async () => {
@@ -48,7 +50,10 @@ END:VCALENDAR`;
         ];
 
         for (const { ical, tududi } of statuses) {
-            const vtodo = basicVTODO.replace('STATUS:NEEDS-ACTION', `STATUS:${ical}`);
+            const vtodo = basicVTODO.replace(
+                'STATUS:NEEDS-ACTION',
+                `STATUS:${ical}`
+            );
             const task = await parseVTODOToTask(vtodo);
             expect(task.status).toBe(tududi);
         }
@@ -93,7 +98,9 @@ END:VCALENDAR`;
         );
         const task = await parseVTODOToTask(vtodo);
         expect(task.completed_at).toBeInstanceOf(Date);
-        expect(task.completed_at.toISOString()).toBe('2026-04-20T14:30:00.000Z');
+        expect(task.completed_at.toISOString()).toBe(
+            '2026-04-20T14:30:00.000Z'
+        );
     });
 
     it('should parse RRULE for recurring tasks', async () => {

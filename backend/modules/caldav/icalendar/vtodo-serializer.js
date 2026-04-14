@@ -89,7 +89,10 @@ async function serializeTaskToVTODO(task, options = {}) {
     if (task.Project) {
         vtodo.addPropertyWithValue('x-tududi-project-uid', task.Project.uid);
         if (task.Project.name) {
-            vtodo.addPropertyWithValue('x-tududi-project-name', task.Project.name);
+            vtodo.addPropertyWithValue(
+                'x-tududi-project-name',
+                task.Project.name
+            );
         }
     }
 

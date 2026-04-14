@@ -74,17 +74,27 @@ module.exports = {
             name: 'caldav_sync_state_task_id_idx',
         });
 
-        await safeAddIndex(queryInterface, 'caldav_sync_state', ['calendar_id'], {
-            name: 'caldav_sync_state_calendar_id_idx',
-        });
+        await safeAddIndex(
+            queryInterface,
+            'caldav_sync_state',
+            ['calendar_id'],
+            {
+                name: 'caldav_sync_state_calendar_id_idx',
+            }
+        );
 
         await safeAddIndex(queryInterface, 'caldav_sync_state', ['etag'], {
             name: 'caldav_sync_state_etag_idx',
         });
 
-        await safeAddIndex(queryInterface, 'caldav_sync_state', ['sync_status'], {
-            name: 'caldav_sync_state_sync_status_idx',
-        });
+        await safeAddIndex(
+            queryInterface,
+            'caldav_sync_state',
+            ['sync_status'],
+            {
+                name: 'caldav_sync_state_sync_status_idx',
+            }
+        );
 
         await safeAddIndex(
             queryInterface,

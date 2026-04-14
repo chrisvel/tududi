@@ -15,7 +15,10 @@ class SyncStateRepository extends BaseRepository {
     }
 
     async findByTaskAndCalendar(taskId, calendarId, options = {}) {
-        return this.findOne({ task_id: taskId, calendar_id: calendarId }, options);
+        return this.findOne(
+            { task_id: taskId, calendar_id: calendarId },
+            options
+        );
     }
 
     async findByETag(etag, options = {}) {
