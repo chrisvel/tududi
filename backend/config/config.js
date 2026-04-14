@@ -111,7 +111,7 @@ const config = {
     trustProxy: (() => {
         const val = process.env.TUDUDI_TRUST_PROXY;
         if (val === undefined || val === '') return false;
-        if (val === 'true') return true;
+        if (val === 'true') return 1;
         if (val === 'false') return false;
         const num = Number(val);
         if (!isNaN(num) && val.trim() !== '') return num;

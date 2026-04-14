@@ -185,8 +185,18 @@ BASE_URL=https://tududi.example.com  # Production
 If Tududi is deployed behind a reverse proxy (nginx, Traefik, Apache, etc.), you **must** configure Express to trust the proxy:
 
 ```bash
+# For single reverse proxy (nginx, Traefik, etc.) - RECOMMENDED
 TUDUDI_TRUST_PROXY=true
+
+# Or specify exact number of proxy hops (advanced)
+TUDUDI_TRUST_PROXY=1  # Trust first proxy only
+TUDUDI_TRUST_PROXY=2  # Trust two hops (e.g., CloudFlare → nginx)
 ```
+
+**What this does:**
+- `true` → Sets trust proxy to `1` (trusts first proxy hop - safest for most setups)
+- `1` → Explicitly trusts only the first proxy
+- `2` → Trusts two proxy hops (for CDN + reverse proxy setups)
 
 This is required for:
 - Proper session handling after OIDC login
