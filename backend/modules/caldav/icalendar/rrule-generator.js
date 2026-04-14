@@ -86,7 +86,7 @@ function generateRRULE(task) {
         try {
             const endDate = new Date(task.recurrence_end_date);
             const until = ICAL.Time.fromJSDate(endDate, true);
-            parts.push(`UNTIL=${until.toString()}`);
+            parts.push(`UNTIL=${until.toICALString()}`);
         } catch (error) {
             console.error('Error formatting UNTIL date:', error);
         }

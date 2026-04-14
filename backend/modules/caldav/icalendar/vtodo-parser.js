@@ -100,9 +100,13 @@ async function parseVTODOToTask(vtodoString) {
 
         const categories = vtodo.getFirstPropertyValue('categories');
         if (categories) {
-            task.tag_names = Array.isArray(categories)
-                ? categories
-                : [categories];
+            if (Array.isArray(categories)) {
+                task.tag_names = categories;
+            } else if (typeof categories === 'string') {
+                task.tag_names = categories.split(',').map((t) => t.trim());
+            } else {
+                task.tag_names = [categories];
+            }
         }
 
         const habitMode = vtodo.getFirstPropertyValue('x-tududi-habit-mode');

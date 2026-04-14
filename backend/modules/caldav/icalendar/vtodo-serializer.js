@@ -94,7 +94,7 @@ async function serializeTaskToVTODO(task, options = {}) {
     }
 
     if (task.Tags && task.Tags.length > 0) {
-        const tagNames = task.Tags.map((t) => t.name);
+        const tagNames = task.Tags.map((t) => t.name).join(',');
         vtodo.addPropertyWithValue('categories', tagNames);
 
         const tagUids = task.Tags.map((t) => t.uid).join(',');

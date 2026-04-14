@@ -10,6 +10,9 @@ function getEncryptionKey() {
     const key = config.encryptionKey || config.secretKey;
 
     if (!key) {
+        if (process.env.NODE_ENV === 'test') {
+            return Buffer.from('test-encryption-key-32-chars-long!!!', 'utf-8').slice(0, 32);
+        }
         throw new Error(
             'No encryption key found. Set ENCRYPTION_KEY or SECRET_KEY environment variable'
         );

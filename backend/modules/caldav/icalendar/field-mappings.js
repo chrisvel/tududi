@@ -20,7 +20,10 @@ function tududiToIcalPriority(priority) {
         return 0;
     }
 
-    return 9 - priority * 2;
+    if (priority === 0) return 7;
+    if (priority === 1) return 5;
+    if (priority === 2) return 3;
+    return 0;
 }
 
 function icalToTududiPriority(priority) {
