@@ -140,6 +140,7 @@
     "@dr.pogodin/csurf": "^1.16.9",
     "@modelcontextprotocol/sdk": "^1.0.0",
     "@playwright/test": "^1.57.0",
+    "axios": "^1.15.0",
     "bcrypt": "~6.0.0",
     "compression": "~1.8.0",
     "compromise": "^14.14.4",

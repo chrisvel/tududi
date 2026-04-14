@@ -1,7 +1,7 @@
 const axios = require('axios');
 const { AppError } = require('../../../shared/errors/AppError');
 const logger = require('../../../services/logService');
-const Task = require('../../../models/task');
+const { Task } = require('../../../models');
 const SyncStateRepository = require('../repositories/sync-state-repository');
 const RemoteCalendarRepository = require('../repositories/remote-calendar-repository');
 const { serializeTaskToVTODO } = require('../icalendar/vtodo-serializer');
@@ -15,9 +15,8 @@ class PushPhase {
             `Push phase starting for calendar ${calendar.id} (user: ${userId})`
         );
 
-        const remoteCalendar = await RemoteCalendarRepository.findByCalendarId(
-            calendar.id
-        );
+        const remoteCalendar =
+            await RemoteCalendarRepository.findByLocalCalendarId(calendar.id);
 
         if (!remoteCalendar) {
             logger.logInfo(
