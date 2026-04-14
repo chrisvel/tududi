@@ -4,6 +4,8 @@ module.exports = {
     async up(queryInterface, Sequelize) {
         await queryInterface.sequelize.query('PRAGMA foreign_keys = OFF;');
 
+        await queryInterface.sequelize.query('DROP TABLE IF EXISTS users_new;');
+
         await queryInterface.sequelize.query(`
             CREATE TABLE users_new (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -62,6 +64,8 @@ module.exports = {
 
     async down(queryInterface, Sequelize) {
         await queryInterface.sequelize.query('PRAGMA foreign_keys = OFF;');
+
+        await queryInterface.sequelize.query('DROP TABLE IF EXISTS users_new;');
 
         await queryInterface.sequelize.query(`
             CREATE TABLE users_new (

@@ -180,6 +180,23 @@ BASE_URL=http://localhost:3002  # Development
 BASE_URL=https://tududi.example.com  # Production
 ```
 
+**Trust Proxy Configuration (Required for Production):**
+
+If Tududi is deployed behind a reverse proxy (nginx, Traefik, Apache, etc.), you **must** configure Express to trust the proxy:
+
+```bash
+TUDUDI_TRUST_PROXY=true
+```
+
+This is required for:
+- Proper session handling after OIDC login
+- Rate limiting based on actual client IP addresses
+- Correct IP logging in audit trails
+
+Without this setting, you may experience:
+- Session loss after SSO login (401 errors)
+- Rate limiter errors: `ValidationError: The 'X-Forwarded-For' header is set but the Express 'trust proxy' setting is false`
+
 ---
 
 ## Provider Setup Guides
@@ -529,6 +546,37 @@ If a user was created via SSO and has no password:
 ---
 
 ## Troubleshooting
+
+### Session Lost After SSO Login (401 Errors)
+
+**Symptoms:**
+- Successfully authenticate with SSO provider
+- Redirected to `/today` page
+- Immediately see login screen again
+- API calls return 401 "Authentication required"
+- Browser logs show repeated 401 errors on `/api/profile`
+
+**Cause:** Express is not configured to trust the reverse proxy, causing session cookies to not be set properly.
+
+**Solution:**
+
+Add to your `.env` file:
+```bash
+TUDUDI_TRUST_PROXY=true
+```
+
+Then restart the Tududi server:
+```bash
+docker compose restart  # For Docker
+npm start              # For standalone
+```
+
+**Verification:**
+
+After restarting, the error log should no longer show:
+```
+ValidationError: The 'X-Forwarded-For' header is set but the Express 'trust proxy' setting is false
+```
 
 ### "Provider not found" Error
 

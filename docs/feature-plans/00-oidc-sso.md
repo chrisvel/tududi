@@ -771,15 +771,27 @@ OIDC_PROVIDER_3_AUTO_PROVISION=true
 - **Azure AD:** `https://login.microsoftonline.com/{tenant-id}/v2.0`
 - **Generic:** Any OIDC-compliant provider with `.well-known/openid-configuration`
 
-### Required Environment Variable
+### Required Environment Variables
 
-The `BASE_URL` environment variable must be set for OAuth redirects:
+The following environment variables must be set for OAuth redirects:
+
 ```bash
+# Base URL for callback redirects
 BASE_URL=http://localhost:3002  # Development
 BASE_URL=https://tududi.example.com  # Production
+
+# Trust proxy (REQUIRED for production behind reverse proxy)
+TUDUDI_TRUST_PROXY=true
 ```
 
-This is used to construct the callback URL: `${BASE_URL}/api/oidc/callback/{slug}`
+**Why TUDUDI_TRUST_PROXY is Required:**
+
+When deployed behind a reverse proxy (nginx, Traefar, Apache), Express must be configured to trust the proxy headers. Without this:
+- Sessions may not be saved properly after OIDC callback
+- Rate limiting will fail with `X-Forwarded-For` errors
+- Users will experience 401 errors after successful SSO login
+
+The `BASE_URL` is used to construct the callback URL: `${BASE_URL}/api/oidc/callback/{slug}`
 
 ---
 
