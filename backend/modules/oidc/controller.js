@@ -79,7 +79,16 @@ async function handleCallback(req, res) {
             slug
         );
 
-        res.redirect('/today');
+        req.session.save((err) => {
+            if (err) {
+                console.error('Error saving session after OIDC login:', err);
+                return res.redirect(
+                    '/login?error=' +
+                        encodeURIComponent('Failed to establish session')
+                );
+            }
+            res.redirect('/today');
+        });
     } catch (error) {
         console.error('Error handling OIDC callback:', error);
 
