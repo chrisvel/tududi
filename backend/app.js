@@ -64,14 +64,17 @@ app.use(
     cors({
         origin: config.allowedOrigins,
         credentials: true,
-        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'PROPFIND', 'REPORT'],
         allowedHeaders: [
             'Authorization',
             'Content-Type',
             'Accept',
             'X-Requested-With',
+            'Depth',
+            'If-Match',
+            'If-None-Match',
         ],
-        exposedHeaders: ['Content-Type'],
+        exposedHeaders: ['Content-Type', 'ETag', 'DAV'],
         maxAge: 1728000,
     })
 );
@@ -115,9 +118,7 @@ app.use((req, res, next) => {
     const isPublicPath = publicPaths.some((path) => req.path === path);
     const isOidcPath = req.path.startsWith('/api/oidc/');
     const isFeatureFlagsPath = req.path.startsWith('/api/feature-flags');
-    const isCalDAVPath =
-        req.path.startsWith('/caldav/') ||
-        req.path.startsWith('/.well-known/caldav');
+    const isCalDAVPath = req.path.startsWith('/caldav/') || req.path.startsWith('/.well-known/caldav');
 
     // Mark exempt requests so lusca wrapper can skip them
     if (
@@ -205,6 +206,7 @@ const usersModule = require('./modules/users');
 const viewsModule = require('./modules/views');
 const mcpModule = require('./modules/mcp');
 const oidcModule = require('./modules/oidc');
+const caldavRoutes = require('./modules/caldav/routes');
 
 // Swagger documentation - enabled by default, protected by authentication
 // Mounted on /api-docs to avoid conflicts with API routes
@@ -262,6 +264,9 @@ if (API_VERSION && API_BASE_PATH !== '/api') {
     healthPaths.add(API_BASE_PATH);
 }
 healthPaths.forEach(registerHealthCheck);
+
+// CalDAV routes (mounted at root, not under /api)
+app.use(caldavRoutes);
 
 const registerApiRoutes = (basePath) => {
     app.use(basePath, authModule.routes);

@@ -164,6 +164,7 @@
     "node-cron": "~4.1.0",
     "nodemailer": "^8.0.5",
     "openid-client": "^5.7.1",
+    "raw-body": "^3.0.2",
     "sequelize": "~6.37.7",
     "sequelize-cli": "~6.6.2",
     "slugify": "^1.6.6",
