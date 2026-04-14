@@ -22,13 +22,17 @@ async function cleanup() {
         `);
 
         if (results.length > 0) {
-            console.log('⚠️  Found leftover users_new table from failed migration');
+            console.log(
+                '⚠️  Found leftover users_new table from failed migration'
+            );
             console.log('🧹 Dropping users_new table...');
 
             await sequelize.query('DROP TABLE users_new');
 
             console.log('✅ Cleanup completed successfully');
-            console.log('💡 You can now run migrations again: npm run db:migrate');
+            console.log(
+                '💡 You can now run migrations again: npm run db:migrate'
+            );
         } else {
             console.log('✅ No cleanup needed - no leftover tables found');
         }
