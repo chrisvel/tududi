@@ -22,7 +22,7 @@ Tududi currently supports hierarchical task management with sophisticated recurr
 - RFC 6578 compliance for incremental sync
 - Database storage for calendar configurations (not .env like OIDC)
 
-**Estimated Effort:** 10 weeks (70 days, 1 developer)
+**Estimated Effort:** Significant development effort
 
 ---
 
@@ -471,61 +471,59 @@ if (isCalDAVPath) req._csrfExempt = true;
 
 ## Implementation Phases
 
-### Phase 1: Database & Models (1 week)
-**Days 1-2:** Schema design, create 4 migrations, write models
-**Days 3-4:** Repository layer (CRUD operations)
-**Day 5:** Encryption service (AES-256-GCM)
+### Phase 1: Database & Models
+- Schema design, create 4 migrations, write models
+- Repository layer (CRUD operations)
+- Encryption service (AES-256-GCM)
 **Testing:** Unit tests for models, repositories, encryption
 
-### Phase 2: iCalendar Transformation (1.5 weeks)
-**Days 6-8:** VTODO serialization (Task → VTODO)
-**Days 9-10:** RRULE generation (recurrence → RRULE)
-**Days 11-12:** VTODO parsing (VTODO → Task)
-**Day 13:** RRULE parsing (RRULE → recurrence)
+### Phase 2: iCalendar Transformation
+- VTODO serialization (Task → VTODO)
+- RRULE generation (recurrence → RRULE)
+- VTODO parsing (VTODO → Task)
+- RRULE parsing (RRULE → recurrence)
 **Testing:** Unit tests for serialization, parsing, round-trip conversion
 
-### Phase 3: WebDAV Protocol (2 weeks)
-**Days 14-16:** PROPFIND handler, XML utilities, multistatus responses
-**Days 17-18:** REPORT handler (calendar-query, filters)
-**Days 19-21:** GET/PUT/DELETE handlers (task CRUD)
-**Days 22-24:** Discovery, HTTP Basic Auth, ETag generation
-**Days 25-27:** Recurring task expansion (RECURRENCE-ID)
+### Phase 3: WebDAV Protocol
+- PROPFIND handler, XML utilities, multistatus responses
+- REPORT handler (calendar-query, filters)
+- GET/PUT/DELETE handlers (task CRUD)
+- Discovery, HTTP Basic Auth, ETag generation
+- Recurring task expansion (RECURRENCE-ID)
 **Testing:** Integration tests with mock CalDAV requests
 
-### Phase 4: Synchronization Engine (2 weeks)
-**Days 28-30:** Sync state management (ETags, CTags, sync-tokens)
-**Days 31-33:** Pull phase (fetch from remote)
-**Days 34-36:** Merge phase (conflict detection, resolution)
-**Days 37-39:** Push phase (send to remote)
-**Days 40-41:** Sync orchestrator (coordinate phases)
+### Phase 4: Synchronization Engine
+- Sync state management (ETags, CTags, sync-tokens)
+- Pull phase (fetch from remote)
+- Merge phase (conflict detection, resolution)
+- Push phase (send to remote)
+- Sync orchestrator (coordinate phases)
 **Testing:** Integration tests with mock CalDAV server
 
-### Phase 5: Background Scheduler & API (1 week)
-**Days 42-43:** Cron scheduler (node-cron, periodic sync)
-**Days 44-45:** REST API endpoints (calendar CRUD, remote config)
-**Days 46-48:** Error handling, retry logic, status reporting
+### Phase 5: Background Scheduler & API
+- Cron scheduler (node-cron, periodic sync)
+- REST API endpoints (calendar CRUD, remote config)
+- Error handling, retry logic, status reporting
 **Testing:** API integration tests
 
-### Phase 6: Frontend (1.5 weeks)
-**Days 49-51:** CalDAV settings tab (calendar list, forms)
-**Days 52-53:** Sync controls (manual trigger, intervals, toggles)
-**Days 54-55:** Conflict resolution UI (diff view, resolution)
-**Days 56-57:** Setup wizard (step-by-step remote config)
+### Phase 6: Frontend
+- CalDAV settings tab (calendar list, forms)
+- Sync controls (manual trigger, intervals, toggles)
+- Conflict resolution UI (diff view, resolution)
+- Setup wizard (step-by-step remote config)
 **Testing:** E2E tests with Playwright
 
-### Phase 7: Client Compatibility (1.5 weeks)
-**Days 58-60:** Test with tasks.org, Apple Reminders, Thunderbird, Evolution
-**Days 61-62:** Performance optimization (indexes, caching, 1000+ tasks < 30s)
-**Days 63-64:** Bug fixes, edge cases (timezones, deleted instances)
+### Phase 7: Client Compatibility
+- Test with tasks.org, Apple Reminders, Thunderbird, Evolution
+- Performance optimization (indexes, caching, 1000+ tasks < 30s)
+- Bug fixes, edge cases (timezones, deleted instances)
 **Testing:** E2E tests with real CalDAV clients
 
-### Phase 8: Documentation & Polish (1 week)
-**Days 65-66:** User docs (setup guides for Nextcloud, Baikal, client configs)
-**Days 67-68:** Developer docs (protocol implementation, VTODO mappings)
-**Days 69-70:** Final testing, README updates, release notes
+### Phase 8: Documentation & Polish
+- User docs (setup guides for Nextcloud, Baikal, client configs)
+- Developer docs (protocol implementation, VTODO mappings)
+- Final testing, README updates, release notes
 **Testing:** Full E2E regression
-
-**Total: 70 days (10 weeks, 1 developer)**
 
 ---
 
@@ -540,7 +538,7 @@ ENCRYPTION_KEY=your-256-bit-key  # Falls back to SECRET_KEY
 
 # Defaults
 CALDAV_DEFAULT_SYNC_INTERVAL=15         # Minutes
-CALDAV_MAX_RECURRING_INSTANCES=365      # Days ahead to expand
+CALDAV_MAX_RECURRING_INSTANCES=365      # Number of future instances to expand
 CALDAV_CONFLICT_RESOLUTION=last_write_wins
 
 # Performance
@@ -674,7 +672,7 @@ CALDAV_LOG_REQUESTS=false
 4. **Projects:** Stored in X-TUDUDI-PROJECT-UID, external clients won't show association
 5. **Status Granularity:** 7 tududi statuses mapped to 4 iCalendar statuses (some nuance lost)
 6. **Timezone Handling:** Always use UTC in VTODO, convert in UI (document per-client quirks)
-7. **Large Recurring Sequences:** Expanding 365 days creates many VTODOs (configurable limit)
+7. **Large Recurring Sequences:** Expanding far into the future creates many VTODOs (configurable limit)
 
 ---
 
