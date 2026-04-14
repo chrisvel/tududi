@@ -1,6 +1,7 @@
 import { Project } from '../entities/Project';
 import { handleAuthResponse } from './authUtils';
 import { getApiPath } from '../config/paths';
+import { getCsrfToken } from './csrfService';
 
 export const fetchProjects = async (
     stateFilter = 'all',
@@ -60,12 +61,14 @@ export const fetchProjectById = async (projectId: string): Promise<Project> => {
 export const createProject = async (
     projectData: Partial<Project>
 ): Promise<Project> => {
+    const token = await getCsrfToken();
     const response = await fetch(getApiPath('project'), {
         method: 'POST',
         credentials: 'include',
         headers: {
             'Content-Type': 'application/json',
             Accept: 'application/json',
+            'x-csrf-token': token,
         },
         body: JSON.stringify(projectData),
     });
@@ -78,12 +81,14 @@ export const updateProject = async (
     projectUid: string,
     projectData: Partial<Project>
 ): Promise<Project> => {
+    const token = await getCsrfToken();
     const response = await fetch(getApiPath(`project/${projectUid}`), {
         method: 'PATCH',
         credentials: 'include',
         headers: {
             'Content-Type': 'application/json',
             Accept: 'application/json',
+            'x-csrf-token': token,
         },
         body: JSON.stringify(projectData),
     });
@@ -99,11 +104,13 @@ export const deleteProject = async (projectUid: string): Promise<void> => {
 
     console.log('Attempting to delete project with UID:', projectUid);
 
+    const token = await getCsrfToken();
     const response = await fetch(getApiPath(`project/${projectUid}`), {
         method: 'DELETE',
         credentials: 'include',
         headers: {
             Accept: 'application/json',
+            'x-csrf-token': token,
         },
     });
 

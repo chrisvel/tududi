@@ -11,6 +11,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getApiPath } from '../../config/paths';
+import { fetchWithCsrf } from '../../utils/csrfService';
 
 interface Notification {
     id: number;
@@ -98,7 +99,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
 
     const handleMarkAsRead = async (id: number) => {
         try {
-            const response = await fetch(
+            const response = await fetchWithCsrf(
                 getApiPath(`notifications/${id}/read`),
                 {
                     method: 'POST',
@@ -131,7 +132,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
 
     const handleMarkAllAsRead = async () => {
         try {
-            const response = await fetch(
+            const response = await fetchWithCsrf(
                 getApiPath('notifications/mark-all-read'),
                 {
                     method: 'POST',
@@ -153,7 +154,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
 
     const handleDelete = async (id: number) => {
         try {
-            const response = await fetch(getApiPath(`notifications/${id}`), {
+            const response = await fetchWithCsrf(getApiPath(`notifications/${id}`), {
                 method: 'DELETE',
                 credentials: 'include',
             });

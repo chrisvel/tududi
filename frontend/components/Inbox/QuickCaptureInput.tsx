@@ -28,6 +28,7 @@ import {
 import { useStore } from '../../store/useStore';
 import { isUrl, extractUrlTitle } from '../../utils/urlService';
 import { getApiPath } from '../../config/paths';
+import { getCsrfToken } from '../../utils/csrfService';
 import InboxSelectedChips from './InboxSelectedChips';
 import SuggestionsDropdown from './SuggestionsDropdown';
 import InboxCard from './InboxCard';
@@ -839,12 +840,14 @@ const QuickCaptureInput = React.forwardRef<
                     if (analysisRequestIdRef.current === requestId) {
                         setIsAnalyzing(true);
                     }
+                    const token = await getCsrfToken();
                     const response = await fetch(
                         getApiPath('inbox/analyze-text'),
                         {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
+                                'x-csrf-token': token,
                             },
                             credentials: 'include',
                             body: JSON.stringify({ content: text }),

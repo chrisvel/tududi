@@ -1,5 +1,6 @@
-import { handleAuthResponse } from './authUtils';
+import { handleAuthResponse, getPostHeadersWithCsrf } from './authUtils';
 import { getApiPath } from '../config/paths';
+import { getCsrfToken } from './csrfService';
 
 export interface BackupData {
     version: string;
@@ -94,6 +95,7 @@ export const createBackup = async (): Promise<SavedBackup> => {
         credentials: 'include',
         headers: {
             Accept: 'application/json',
+            'x-csrf-token': await getCsrfToken(),
         },
     });
 
@@ -172,10 +174,7 @@ export const restoreSavedBackup = async (
     const response = await fetch(getApiPath(`backup/${backupUid}/restore`), {
         method: 'POST',
         credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-        },
+        headers: await getPostHeadersWithCsrf(),
         body: JSON.stringify({ merge }),
     });
 
@@ -192,6 +191,7 @@ export const deleteSavedBackup = async (backupUid: string): Promise<void> => {
         credentials: 'include',
         headers: {
             Accept: 'application/json',
+            'x-csrf-token': await getCsrfToken(),
         },
     });
 
@@ -212,6 +212,9 @@ export const importBackup = async (
     const response = await fetch(getApiPath('backup/import'), {
         method: 'POST',
         credentials: 'include',
+        headers: {
+            'x-csrf-token': await getCsrfToken(),
+        },
         body: formData,
     });
 
@@ -229,6 +232,9 @@ export const validateBackup = async (file: File): Promise<ValidationResult> => {
     const response = await fetch(getApiPath('backup/validate'), {
         method: 'POST',
         credentials: 'include',
+        headers: {
+            'x-csrf-token': await getCsrfToken(),
+        },
         body: formData,
     });
 

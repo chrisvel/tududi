@@ -1,5 +1,6 @@
 import { Attachment, AttachmentType } from '../entities/Attachment';
 import { getApiPath } from '../config/paths';
+import { getCsrfToken } from './csrfService';
 
 /**
  * Upload a file attachment to a task
@@ -15,6 +16,9 @@ export async function uploadAttachment(
     const response = await fetch(getApiPath('upload/task-attachment'), {
         method: 'POST',
         credentials: 'include',
+        headers: {
+            'x-csrf-token': await getCsrfToken(),
+        },
         body: formData,
     });
 
@@ -55,6 +59,9 @@ export async function deleteAttachment(
         {
             method: 'DELETE',
             credentials: 'include',
+            headers: {
+                'x-csrf-token': await getCsrfToken(),
+            },
         }
     );
 

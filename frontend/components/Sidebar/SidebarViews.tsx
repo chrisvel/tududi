@@ -21,6 +21,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { getApiPath } from '../../config/paths';
+import { getCsrfToken } from '../../utils/csrfService';
 
 interface View {
     id: number;
@@ -179,6 +180,7 @@ const SidebarViews: React.FC<SidebarViewsProps> = ({
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
+                    'x-csrf-token': await getCsrfToken(),
                 },
                 credentials: 'include',
                 body: JSON.stringify({
@@ -213,6 +215,7 @@ const SidebarViews: React.FC<SidebarViewsProps> = ({
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
+                        'x-csrf-token': await getCsrfToken(),
                     },
                     credentials: 'include',
                     body: JSON.stringify({

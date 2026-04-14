@@ -1,6 +1,7 @@
 import { Area } from '../entities/Area';
-import { handleAuthResponse } from './authUtils';
+import { handleAuthResponse, getPostHeadersWithCsrf } from './authUtils';
 import { getApiPath } from '../config/paths';
+import { getCsrfToken } from './csrfService';
 
 export const fetchAreas = async (): Promise<Area[]> => {
     const response = await fetch(getApiPath('areas'), {
@@ -17,10 +18,7 @@ export const createArea = async (areaData: Partial<Area>): Promise<Area> => {
     const response = await fetch(getApiPath('areas'), {
         method: 'POST',
         credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-        },
+        headers: await getPostHeadersWithCsrf(),
         body: JSON.stringify(areaData),
     });
 
@@ -35,10 +33,7 @@ export const updateArea = async (
     const response = await fetch(getApiPath(`areas/${areaUid}`), {
         method: 'PATCH',
         credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-        },
+        headers: await getPostHeadersWithCsrf(),
         body: JSON.stringify(areaData),
     });
 
@@ -52,6 +47,7 @@ export const deleteArea = async (areaUid: string): Promise<void> => {
         credentials: 'include',
         headers: {
             Accept: 'application/json',
+            'x-csrf-token': await getCsrfToken(),
         },
     });
 

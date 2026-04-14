@@ -9,6 +9,7 @@ import {
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import { getApiPath } from '../config/paths';
+import { getCsrfToken } from '../utils/csrfService';
 
 interface View {
     id: number;
@@ -69,6 +70,9 @@ const Views: React.FC = () => {
                 {
                     method: 'DELETE',
                     credentials: 'include',
+                    headers: {
+                        'x-csrf-token': await getCsrfToken(),
+                    },
                 }
             );
             if (response.ok) {
@@ -90,6 +94,7 @@ const Views: React.FC = () => {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
+                    'x-csrf-token': await getCsrfToken(),
                 },
                 credentials: 'include',
                 body: JSON.stringify({

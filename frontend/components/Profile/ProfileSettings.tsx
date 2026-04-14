@@ -8,6 +8,7 @@ import React, {
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getLocalesPath, getApiPath } from '../../config/paths';
+import { getCsrfToken } from '../../utils/csrfService';
 import {
     UserIcon,
     ClockIcon,
@@ -590,6 +591,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
+                                'x-csrf-token': await getCsrfToken(),
                             },
                             body: JSON.stringify({
                                 token: profile.telegram_bot_token,
@@ -692,6 +694,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'x-csrf-token': await getCsrfToken(),
                 },
                 body: JSON.stringify({ token: formData.telegram_bot_token }),
             });
@@ -740,6 +743,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
+                                'x-csrf-token': await getCsrfToken(),
                             },
                             body: JSON.stringify({
                                 chatId: profile.telegram_chat_id,
@@ -770,6 +774,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'x-csrf-token': await getCsrfToken(),
                 },
             });
 
@@ -802,6 +807,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'x-csrf-token': await getCsrfToken(),
                 },
             });
 
@@ -838,6 +844,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'x-csrf-token': await getCsrfToken(),
                     },
                 }
             );
@@ -909,6 +916,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         const response = await fetch(getApiPath('profile/avatar'), {
             method: 'POST',
             credentials: 'include',
+            headers: {
+                'x-csrf-token': await getCsrfToken(),
+            },
             body: formData,
         });
 
@@ -925,6 +935,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         const response = await fetch(getApiPath('profile/avatar'), {
             method: 'DELETE',
             credentials: 'include',
+            headers: {
+                'x-csrf-token': await getCsrfToken(),
+            },
         });
 
         if (!response.ok) {
@@ -962,6 +975,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
+                    'x-csrf-token': await getCsrfToken(),
                     Accept: 'application/json',
                 },
                 body: JSON.stringify(dataToSend),

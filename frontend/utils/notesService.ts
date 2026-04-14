@@ -2,7 +2,7 @@ import { Note } from '../entities/Note';
 import {
     handleAuthResponse,
     getDefaultHeaders,
-    getPostHeaders,
+    getPostHeadersWithCsrf,
 } from './authUtils';
 import { getApiPath } from '../config/paths';
 
@@ -38,7 +38,7 @@ export const createNote = async (noteData: Note): Promise<Note> => {
     const response = await fetch(getApiPath('note'), {
         method: 'POST',
         credentials: 'include',
-        headers: getPostHeaders(),
+        headers: await getPostHeadersWithCsrf(),
         body: JSON.stringify(requestData),
     });
 
@@ -70,7 +70,7 @@ export const updateNote = async (
     const response = await fetch(getApiPath(`note/${noteIdentifier}`), {
         method: 'PATCH',
         credentials: 'include',
-        headers: getPostHeaders(),
+        headers: await getPostHeadersWithCsrf(),
         body: JSON.stringify(requestData),
     });
 
@@ -82,7 +82,7 @@ export const deleteNote = async (noteUid: string): Promise<void> => {
     const response = await fetch(getApiPath(`note/${noteUid}`), {
         method: 'DELETE',
         credentials: 'include',
-        headers: getDefaultHeaders(),
+        headers: await getPostHeadersWithCsrf(),
     });
 
     await handleAuthResponse(response, 'Failed to delete note.');

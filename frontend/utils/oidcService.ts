@@ -1,4 +1,5 @@
 import { getApiPath } from '../config/paths';
+import { getCsrfToken } from './csrfService';
 
 export interface OIDCProvider {
     slug: string;
@@ -48,6 +49,9 @@ export async function unlinkOIDCIdentity(identityId: number): Promise<void> {
     const response = await fetch(getApiPath(`oidc/unlink/${identityId}`), {
         method: 'DELETE',
         credentials: 'include',
+        headers: {
+            'x-csrf-token': await getCsrfToken(),
+        },
     });
     if (!response.ok) {
         const errorBody = await response.json().catch(() => null);
@@ -60,6 +64,9 @@ export async function initiateOIDCLink(providerSlug: string): Promise<void> {
     const response = await fetch(getApiPath(`oidc/link/${providerSlug}`), {
         method: 'POST',
         credentials: 'include',
+        headers: {
+            'x-csrf-token': await getCsrfToken(),
+        },
     });
 
     if (!response.ok) {

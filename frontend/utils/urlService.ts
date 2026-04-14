@@ -1,4 +1,4 @@
-import { handleAuthResponse } from './authUtils';
+import { handleAuthResponse, getPostHeadersWithCsrf } from './authUtils';
 import { getApiPath } from '../config/paths';
 
 export interface UrlTitleResult {
@@ -37,10 +37,7 @@ export const extractTitleFromText = async (
         const response = await fetch(getApiPath('url/extract-from-text'), {
             method: 'POST',
             credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-            },
+            headers: await getPostHeadersWithCsrf(),
             body: JSON.stringify({ text }),
         });
 

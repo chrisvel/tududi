@@ -1,4 +1,5 @@
 import { getApiPath } from '../config/paths';
+import { getCsrfToken } from './csrfService';
 
 export interface ApiKeySummary {
     id: number;
@@ -38,7 +39,10 @@ export async function createApiKey(payload: {
 }): Promise<CreateApiKeyResponse> {
     const response = await fetch(getApiPath('profile/api-keys'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            'x-csrf-token': await getCsrfToken(),
+        },
         credentials: 'include',
         body: JSON.stringify(payload),
     });
@@ -49,6 +53,9 @@ export async function revokeApiKey(id: number): Promise<ApiKeySummary> {
     const response = await fetch(getApiPath(`profile/api-keys/${id}/revoke`), {
         method: 'POST',
         credentials: 'include',
+        headers: {
+            'x-csrf-token': await getCsrfToken(),
+        },
     });
     return handleResponse<ApiKeySummary>(response);
 }
@@ -57,6 +64,9 @@ export async function deleteApiKey(id: number): Promise<void> {
     const response = await fetch(getApiPath(`profile/api-keys/${id}`), {
         method: 'DELETE',
         credentials: 'include',
+        headers: {
+            'x-csrf-token': await getCsrfToken(),
+        },
     });
     if (!response.ok) {
         const errorBody = await response.json().catch(() => null);
