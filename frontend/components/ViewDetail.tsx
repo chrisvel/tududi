@@ -30,6 +30,7 @@ import { getApiPath } from '../config/paths';
 import { SortOption } from './Shared/SortFilterButton';
 import IconSortDropdown from './Shared/IconSortDropdown';
 import { useStore } from '../store/useStore';
+import { getCsrfToken } from '../utils/csrfService';
 
 interface View {
     id: number;
@@ -531,7 +532,10 @@ const ViewDetail: React.FC = () => {
                 getApiPath(`task/${updatedTask.uid}`),
                 {
                     method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-csrf-token': await getCsrfToken(),
+                    },
                     body: JSON.stringify(updatedTask),
                 }
             );
@@ -554,6 +558,9 @@ const ViewDetail: React.FC = () => {
                 getApiPath(`task/${encodeURIComponent(taskUid)}`),
                 {
                     method: 'DELETE',
+                    headers: {
+                        'x-csrf-token': await getCsrfToken(),
+                    },
                 }
             );
 
@@ -606,6 +613,7 @@ const ViewDetail: React.FC = () => {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
+                    'x-csrf-token': await getCsrfToken(),
                 },
                 credentials: 'include',
                 body: JSON.stringify({
@@ -636,6 +644,7 @@ const ViewDetail: React.FC = () => {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
+                    'x-csrf-token': await getCsrfToken(),
                 },
                 credentials: 'include',
                 body: JSON.stringify({
@@ -659,6 +668,9 @@ const ViewDetail: React.FC = () => {
             const response = await fetch(getApiPath(`views/${view.uid}`), {
                 method: 'DELETE',
                 credentials: 'include',
+                headers: {
+                    'x-csrf-token': await getCsrfToken(),
+                },
             });
 
             if (response.ok) {

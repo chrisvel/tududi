@@ -3,7 +3,7 @@ import { Task } from '../entities/Task';
 import {
     handleAuthResponse,
     getDefaultHeaders,
-    getPostHeaders,
+    getPostHeadersWithCsrf,
 } from './authUtils';
 import { getApiPath } from '../config/paths';
 import { isTaskDone, TASK_STATUS } from '../constants/taskStatus';
@@ -80,7 +80,7 @@ export const createTask = async (taskData: Task): Promise<Task> => {
     const response = await fetch(getApiPath('task'), {
         method: 'POST',
         credentials: 'include',
-        headers: getPostHeaders(),
+        headers: await getPostHeadersWithCsrf(),
         body: JSON.stringify(taskData),
     });
 
@@ -104,7 +104,7 @@ export const updateTask = async (
         {
             method: 'PATCH',
             credentials: 'include',
-            headers: getPostHeaders(),
+            headers: await getPostHeadersWithCsrf(),
             body: JSON.stringify(payload),
         }
     );
@@ -160,7 +160,7 @@ export const deleteTask = async (taskUid: string): Promise<void> => {
         {
             method: 'DELETE',
             credentials: 'include',
-            headers: getDefaultHeaders(),
+            headers: await getPostHeadersWithCsrf(),
         }
     );
 

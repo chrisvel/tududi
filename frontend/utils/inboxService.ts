@@ -1,7 +1,8 @@
 import { InboxItem } from '../entities/InboxItem';
 import { useStore } from '../store/useStore';
-import { handleAuthResponse } from './authUtils';
+import { handleAuthResponse, getPostHeadersWithCsrf } from './authUtils';
 import { getApiPath } from '../config/paths';
+import { getCsrfToken } from './csrfService';
 
 // API functions
 export const fetchInboxItems = async (
@@ -59,10 +60,7 @@ export const createInboxItem = async (
     const response = await fetch(getApiPath('inbox'), {
         method: 'POST',
         credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-        },
+        headers: await getPostHeadersWithCsrf(),
         body: JSON.stringify(source ? { content, source } : { content }),
     });
 
@@ -77,10 +75,7 @@ export const updateInboxItem = async (
     const response = await fetch(getApiPath(`inbox/${itemUid}`), {
         method: 'PATCH',
         credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-        },
+        headers: await getPostHeadersWithCsrf(),
         body: JSON.stringify({ content }),
     });
 
@@ -94,6 +89,7 @@ export const processInboxItem = async (itemUid: string): Promise<InboxItem> => {
         credentials: 'include',
         headers: {
             Accept: 'application/json',
+            'x-csrf-token': await getCsrfToken(),
         },
     });
 
@@ -107,6 +103,7 @@ export const deleteInboxItem = async (itemUid: string): Promise<void> => {
         credentials: 'include',
         headers: {
             Accept: 'application/json',
+            'x-csrf-token': await getCsrfToken(),
         },
     });
 

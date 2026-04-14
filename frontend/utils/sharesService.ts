@@ -1,4 +1,5 @@
 import { getApiPath } from '../config/paths';
+import { getCsrfToken } from './csrfService';
 
 export type AccessLevel = 'ro' | 'rw';
 
@@ -16,6 +17,7 @@ export async function grantShare(req: ShareGrantRequest): Promise<void> {
         headers: {
             'Content-Type': 'application/json',
             Accept: 'application/json',
+            'x-csrf-token': await getCsrfToken(),
         },
         body: JSON.stringify(req),
     });
@@ -75,6 +77,7 @@ export async function revokeShare(
         headers: {
             'Content-Type': 'application/json',
             Accept: 'application/json',
+            'x-csrf-token': await getCsrfToken(),
         },
         body: JSON.stringify({ resource_type, resource_uid, target_user_id }),
     });

@@ -1,16 +1,9 @@
 const lusca = require('lusca');
 
-const csrfMiddleware = (req, res, next) => {
-    if (!req.session) {
-        return res.status(500).json({ error: 'Session not initialized' });
-    }
-
-    if (!req.session._csrf) {
-        req.session._csrf = require('crypto').randomBytes(16).toString('hex');
-    }
-
-    next();
-};
+const csrfMiddleware = lusca.csrf({
+    header: 'x-csrf-token',
+    cookie: false,
+});
 
 const csrfProtection = (req, res, next) => {
     if (
@@ -27,16 +20,14 @@ const csrfProtection = (req, res, next) => {
     })(req, res, next);
 };
 
-const generateToken = (req) => {
-    if (!req.session) {
-        return '';
+const generateToken = (req, res) => {
+    if (typeof req.csrfToken === 'function') {
+        return req.csrfToken();
     }
-
-    if (!req.session._csrf) {
-        req.session._csrf = require('crypto').randomBytes(16).toString('hex');
+    if (res.locals._csrf) {
+        return res.locals._csrf;
     }
-
-    return req.session._csrf;
+    return '';
 };
 
 module.exports = {

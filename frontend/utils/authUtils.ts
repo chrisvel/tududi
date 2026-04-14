@@ -1,3 +1,5 @@
+import { getCsrfToken } from './csrfService';
+
 export const getDefaultHeaders = (): Record<string, string> => {
     return {
         Accept: 'application/json',
@@ -10,6 +12,16 @@ export const getPostHeaders = (): Record<string, string> => {
     return {
         ...getDefaultHeaders(),
         'Content-Type': 'application/json',
+    };
+};
+
+export const getPostHeadersWithCsrf = async (): Promise<
+    Record<string, string>
+> => {
+    const token = await getCsrfToken();
+    return {
+        ...getPostHeaders(),
+        'x-csrf-token': token,
     };
 };
 

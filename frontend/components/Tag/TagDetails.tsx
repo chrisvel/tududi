@@ -28,6 +28,7 @@ import { useToast } from '../Shared/ToastContext';
 import { useStore } from '../../store/useStore';
 import { updateTag, deleteTag } from '../../utils/tagsService';
 import { getApiPath } from '../../config/paths';
+import { getCsrfToken } from '../../utils/csrfService';
 import { SortOption } from '../Shared/SortFilterButton';
 import IconSortDropdown from '../Shared/IconSortDropdown';
 
@@ -296,7 +297,10 @@ const TagDetails: React.FC = () => {
                 getApiPath(`task/${updatedTask.uid}`),
                 {
                     method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-csrf-token': await getCsrfToken(),
+                    },
                     body: JSON.stringify(updatedTask),
                 }
             );
@@ -319,6 +323,9 @@ const TagDetails: React.FC = () => {
                 getApiPath(`task/${encodeURIComponent(taskUid)}`),
                 {
                     method: 'DELETE',
+                    headers: {
+                        'x-csrf-token': await getCsrfToken(),
+                    },
                 }
             );
 

@@ -1,5 +1,6 @@
 import { getApiPath } from '../config/paths';
 import { Task } from '../entities/Task';
+import { getCsrfToken } from './csrfService';
 
 export interface HabitCompletion {
     id: number;
@@ -24,7 +25,10 @@ export async function createHabit(habitData: Partial<Task>): Promise<Task> {
     const response = await fetch(getApiPath('habits'), {
         method: 'POST',
         credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            'x-csrf-token': await getCsrfToken(),
+        },
         body: JSON.stringify(habitData),
     });
     if (!response.ok) throw new Error('Failed to create habit');
@@ -36,7 +40,10 @@ export async function logHabitCompletion(habitUid: string, completedAt?: Date) {
     const response = await fetch(getApiPath(`habits/${habitUid}/complete`), {
         method: 'POST',
         credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            'x-csrf-token': await getCsrfToken(),
+        },
         body: JSON.stringify({
             completed_at: completedAt?.toISOString(),
         }),
@@ -71,7 +78,10 @@ export async function updateHabit(
     const response = await fetch(getApiPath(`habits/${habitUid}`), {
         method: 'PUT',
         credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            'x-csrf-token': await getCsrfToken(),
+        },
         body: JSON.stringify(updates),
     });
     if (!response.ok) throw new Error('Failed to update habit');
@@ -83,6 +93,9 @@ export async function deleteHabit(habitUid: string): Promise<void> {
     const response = await fetch(getApiPath(`habits/${habitUid}`), {
         method: 'DELETE',
         credentials: 'include',
+        headers: {
+            'x-csrf-token': await getCsrfToken(),
+        },
     });
     if (!response.ok) throw new Error('Failed to delete habit');
 }
@@ -116,6 +129,9 @@ export async function deleteHabitCompletion(
         {
             method: 'DELETE',
             credentials: 'include',
+            headers: {
+                'x-csrf-token': await getCsrfToken(),
+            },
         }
     );
     if (!response.ok) throw new Error('Failed to delete completion');

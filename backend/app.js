@@ -94,6 +94,7 @@ app.use(sessionMiddleware);
 
 // CSRF protection using lusca (CodeQL recommended library)
 const lusca = require('lusca');
+const { csrfMiddleware } = require('./middleware/csrf');
 
 // Pre-check middleware to exempt test/Bearer requests before lusca runs
 app.use((req, res, next) => {
@@ -111,6 +112,9 @@ app.use((req, res, next) => {
     const isPublicPath = publicPaths.some((path) => req.path === path);
     const isOidcPath = req.path.startsWith('/api/oidc/');
     const isFeatureFlagsPath = req.path.startsWith('/api/feature-flags');
+    const isCalDAVPath =
+        req.path.startsWith('/caldav/') ||
+        req.path.startsWith('/.well-known/caldav');
 
     // Mark exempt requests so lusca wrapper can skip them
     if (
@@ -118,7 +122,8 @@ app.use((req, res, next) => {
         req.headers.authorization?.startsWith('Bearer ') ||
         isPublicPath ||
         isOidcPath ||
-        isFeatureFlagsPath
+        isFeatureFlagsPath ||
+        isCalDAVPath
     ) {
         req._csrfExempt = true;
     }
@@ -132,10 +137,7 @@ app.use((req, res, next) => {
     if (req._csrfExempt || !statefulMethods.includes(req.method)) {
         return next();
     }
-    return lusca.csrf({
-        header: 'x-csrf-token',
-        cookie: false,
-    })(req, res, next);
+    return csrfMiddleware(req, res, next);
 });
 
 // Static files

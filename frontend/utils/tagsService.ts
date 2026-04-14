@@ -1,7 +1,8 @@
 import { Tag } from '../entities/Tag';
-import { handleAuthResponse } from './authUtils';
+import { handleAuthResponse, getPostHeadersWithCsrf } from './authUtils';
 import { extractUidFromSlug } from './slugUtils';
 import { getApiPath } from '../config/paths';
+import { getCsrfToken } from './csrfService';
 
 export const fetchTags = async (): Promise<Tag[]> => {
     try {
@@ -25,10 +26,7 @@ export const createTag = async (tagData: Tag): Promise<Tag> => {
     const response = await fetch(getApiPath('tag'), {
         method: 'POST',
         credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-        },
+        headers: await getPostHeadersWithCsrf(),
         body: JSON.stringify(tagData),
     });
 
@@ -57,10 +55,7 @@ export const updateTag = async (tagUid: string, tagData: Tag): Promise<Tag> => {
     const response = await fetch(getApiPath(`tag/${tagUid}`), {
         method: 'PATCH',
         credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-        },
+        headers: await getPostHeadersWithCsrf(),
         body: JSON.stringify(tagData),
     });
 
@@ -90,6 +85,7 @@ export const deleteTag = async (tagUid: string): Promise<void> => {
         credentials: 'include',
         headers: {
             Accept: 'application/json',
+            'x-csrf-token': await getCsrfToken(),
         },
     });
 

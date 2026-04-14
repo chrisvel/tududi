@@ -101,7 +101,7 @@ const authController = {
     },
 
     getCsrfToken(req, res) {
-        const token = generateToken(req);
+        const token = generateToken(req, res);
         res.json({ csrfToken: token });
     },
 };

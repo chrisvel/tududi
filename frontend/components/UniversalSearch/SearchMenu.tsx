@@ -11,6 +11,7 @@ import FilterBadge from './FilterBadge';
 import SearchResults from './SearchResults';
 import { useToast } from '../Shared/ToastContext';
 import { getApiPath } from '../../config/paths';
+import { getCsrfToken } from '../../utils/csrfService';
 
 interface SearchMenuProps {
     searchQuery: string;
@@ -158,6 +159,7 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'x-csrf-token': await getCsrfToken(),
                 },
                 credentials: 'include',
                 body: JSON.stringify({

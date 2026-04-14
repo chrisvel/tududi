@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { getApiPath } from '../../config/paths';
+import { getCsrfToken } from '../../utils/csrfService';
 
 interface SaveViewModalProps {
     searchQuery: string;
@@ -39,6 +40,7 @@ const SaveViewModal: React.FC<SaveViewModalProps> = ({
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'x-csrf-token': await getCsrfToken(),
                 },
                 credentials: 'include',
                 body: JSON.stringify({

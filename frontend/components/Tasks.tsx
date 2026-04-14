@@ -20,6 +20,7 @@ import {
     CheckIcon,
 } from '@heroicons/react/24/outline';
 import { getApiPath } from '../config/paths';
+import { getCsrfToken } from '../utils/csrfService';
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
@@ -384,7 +385,10 @@ const Tasks: React.FC = () => {
                 getApiPath(`task/${updatedTask.uid}`),
                 {
                     method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-csrf-token': await getCsrfToken(),
+                    },
                     body: JSON.stringify(updatedTask),
                 }
             );
@@ -446,6 +450,9 @@ const Tasks: React.FC = () => {
                 getApiPath(`task/${encodeURIComponent(taskUid)}`),
                 {
                     method: 'DELETE',
+                    headers: {
+                        'x-csrf-token': await getCsrfToken(),
+                    },
                 }
             );
 

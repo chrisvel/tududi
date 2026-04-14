@@ -1,4 +1,4 @@
-import { handleAuthResponse } from './authUtils';
+import { handleAuthResponse, getPostHeadersWithCsrf } from './authUtils';
 import { getApiPath } from '../config/paths';
 
 interface Profile {
@@ -51,10 +51,7 @@ export const updateProfile = async (
     const response = await fetch(getApiPath('profile'), {
         method: 'PATCH',
         credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-        },
+        headers: await getPostHeadersWithCsrf(),
         body: JSON.stringify(profileData),
     });
     await handleAuthResponse(response, 'Failed to update profile.');
@@ -82,10 +79,7 @@ export const sendTaskSummaryNow = async (): Promise<any> => {
     const response = await fetch(getApiPath('profile/task-summary/send-now'), {
         method: 'POST',
         credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-        },
+        headers: await getPostHeadersWithCsrf(),
     });
     await handleAuthResponse(response, 'Failed to send task summary.');
     return await response.json();
@@ -109,10 +103,7 @@ export const setupTelegram = async (
     const response = await fetch(getApiPath('telegram/setup'), {
         method: 'POST',
         credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-        },
+        headers: await getPostHeadersWithCsrf(),
         body: JSON.stringify({
             bot_token: botToken,
             chat_id: chatId,
@@ -126,10 +117,7 @@ export const startTelegramPolling = async (): Promise<any> => {
     const response = await fetch(getApiPath('telegram/start-polling'), {
         method: 'POST',
         credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-        },
+        headers: await getPostHeadersWithCsrf(),
     });
     await handleAuthResponse(response, 'Failed to start telegram polling.');
     return await response.json();
@@ -139,10 +127,7 @@ export const stopTelegramPolling = async (): Promise<any> => {
     const response = await fetch(getApiPath('telegram/stop-polling'), {
         method: 'POST',
         credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-        },
+        headers: await getPostHeadersWithCsrf(),
     });
     await handleAuthResponse(response, 'Failed to stop telegram polling.');
     return await response.json();
@@ -155,10 +140,7 @@ export const testTelegram = async (
     const response = await fetch(getApiPath(`telegram/test/${userId}`), {
         method: 'POST',
         credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-        },
+        headers: await getPostHeadersWithCsrf(),
         body: JSON.stringify({ text: message }),
     });
     await handleAuthResponse(response, 'Failed to send test message.');
@@ -169,10 +151,7 @@ export const toggleTaskSummary = async (): Promise<any> => {
     const response = await fetch(getApiPath('profile/task-summary/toggle'), {
         method: 'POST',
         credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-        },
+        headers: await getPostHeadersWithCsrf(),
     });
     await handleAuthResponse(response, 'Failed to toggle task summary.');
     return await response.json();
@@ -184,10 +163,7 @@ export const updateTaskSummaryFrequency = async (
     const response = await fetch(getApiPath('profile/task-summary/frequency'), {
         method: 'POST',
         credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-        },
+        headers: await getPostHeadersWithCsrf(),
         body: JSON.stringify({ frequency }),
     });
     await handleAuthResponse(
