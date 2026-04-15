@@ -64,6 +64,11 @@ async function caldavAuth(req, res, next) {
         }
 
         req.currentUser = user;
+
+        if (req.params.username && req.params.username !== user.email) {
+            return res.status(403).json({ error: 'Access to other users calendars is forbidden' });
+        }
+
         next();
     } catch (error) {
         console.error('CalDAV auth error:', error);

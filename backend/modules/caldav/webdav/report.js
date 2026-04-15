@@ -97,7 +97,7 @@ async function buildCalendarQueryResponse(task, username, queryRequest) {
         );
 
         if (includeCalendarData) {
-            const vtodo = await vtodoSerializer.serialize(task);
+            const vtodo = await vtodoSerializer.serializeTaskToVTODO(task);
             props['C:calendar-data'] = vtodo;
         }
 

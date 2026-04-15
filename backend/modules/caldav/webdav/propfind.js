@@ -121,7 +121,7 @@ async function buildTaskResponse(task, username, propfindRequest) {
     const etag = generateETag(task);
 
     try {
-        const vtodo = await vtodoSerializer.serialize(task);
+        const vtodo = await vtodoSerializer.serializeTaskToVTODO(task);
 
         const props = {
             'D:resourcetype': '',

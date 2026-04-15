@@ -28,7 +28,7 @@ async function handleGetTask(req, res) {
             return res.status(304).end();
         }
 
-        const vtodo = await vtodoSerializer.serialize(task);
+        const vtodo = await vtodoSerializer.serializeTaskToVTODO(task);
 
         res.status(200)
             .set({
@@ -75,7 +75,7 @@ async function handlePutTask(req, res) {
 
         let taskData;
         try {
-            taskData = await vtodoParser.parse(vtodoData);
+            taskData = await vtodoParser.parseVTODOToTask(vtodoData);
         } catch (error) {
             console.error('VTODO parse error:', error);
             return res.status(400).send('Bad Request: Invalid VTODO data');
