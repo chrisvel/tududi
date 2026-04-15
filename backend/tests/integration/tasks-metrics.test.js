@@ -167,7 +167,7 @@ describe('Task Metrics Overdue and Due Today Tasks', () => {
 
     it('excludes due today tasks with active status from tasks_due_today (they show in Planned)', async () => {
         const today = new Date();
-        today.setHours(12, 0, 0, 0);
+        today.setUTCHours(12, 0, 0, 0);
 
         // Create a task due today with PLANNED status (shows in Planned section)
         await createTask({
