@@ -40,6 +40,9 @@ const authController = {
             if (error.statusCode === 400) {
                 return res.status(400).json({ error: error.message });
             }
+            if (error.statusCode === 403) {
+                return res.status(403).json({ error: error.message });
+            }
             if (
                 error.message ===
                 'Failed to send verification email. Please try again later.'

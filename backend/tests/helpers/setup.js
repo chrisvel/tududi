@@ -31,6 +31,10 @@ beforeEach(async () => {
             'tasks_tags',
             'notes_tags',
             'projects_tags',
+            'caldav_calendars',
+            'caldav_sync_state',
+            'caldav_occurrence_overrides',
+            'caldav_remote_calendars',
         ];
 
         await sequelize.query('PRAGMA foreign_keys = OFF');

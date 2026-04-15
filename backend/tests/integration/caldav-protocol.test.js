@@ -11,8 +11,7 @@ describe('CalDAV Protocol - Phase 3', () => {
     let authHeader;
     let testTask;
 
-    beforeAll(async () => {
-        await sequelize.sync({ force: true });
+    beforeEach(async () => {
         const hashedPassword = await bcrypt.hash('password123', 10);
         testUser = await User.create({
             email: 'caldav@test.com',

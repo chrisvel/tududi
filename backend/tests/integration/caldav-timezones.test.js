@@ -13,7 +13,7 @@ describe('CalDAV Timezone Handling', () => {
                 status: 0,
             };
 
-            const vtodo = vTodoSerializer.taskToVTodo(task);
+            const vtodo = vTodoSerializer.serializeTaskToVTODO(task);
             const jcalData = ICAL.parse(vtodo);
             const comp = new ICAL.Component(jcalData);
             const vtodoComp = comp.getFirstSubcomponent('vtodo');
@@ -40,7 +40,7 @@ DTSTAMP:20260420T080000Z
 END:VTODO
 END:VCALENDAR`;
 
-            const task = vTodoParser.vtodoToTask(vtodoString);
+            const task = vTodoParser.parseVTODOToTask(vtodoString);
 
             expect(task.due_date).toBeTruthy();
             const dueDate = new Date(task.due_date);
@@ -69,7 +69,7 @@ DTSTAMP:20260420T080000Z
 END:VTODO
 END:VCALENDAR`;
 
-            const task = vTodoParser.vtodoToTask(vtodoString);
+            const task = vTodoParser.parseVTODOToTask(vtodoString);
 
             expect(task.due_date).toBeTruthy();
             const dueDate = new Date(task.due_date);
@@ -86,7 +86,7 @@ END:VCALENDAR`;
                 status: 0,
             };
 
-            const vtodo = vTodoSerializer.taskToVTodo(task);
+            const vtodo = vTodoSerializer.serializeTaskToVTODO(task);
             const jcalData = ICAL.parse(vtodo);
             const comp = new ICAL.Component(jcalData);
             const vtodoComp = comp.getFirstSubcomponent('vtodo');
@@ -126,7 +126,7 @@ DTSTAMP:20260420T080000Z
 END:VTODO
 END:VCALENDAR`;
 
-            const task = vTodoParser.vtodoToTask(vtodoString);
+            const task = vTodoParser.parseVTODOToTask(vtodoString);
 
             expect(task.due_date).toBeTruthy();
             const dueDate = new Date(task.due_date);
@@ -146,7 +146,7 @@ END:VCALENDAR`;
                 recurrence_count: 5,
             };
 
-            const vtodo = vTodoSerializer.taskToVTodo(task);
+            const vtodo = vTodoSerializer.serializeTaskToVTODO(task);
             const jcalData = ICAL.parse(vtodo);
             const comp = new ICAL.Component(jcalData);
             const vtodoComp = comp.getFirstSubcomponent('vtodo');
@@ -174,7 +174,7 @@ DTSTAMP:20260420T080000Z
 END:VTODO
 END:VCALENDAR`;
 
-            const task = vTodoParser.vtodoToTask(vtodoString);
+            const task = vTodoParser.parseVTODOToTask(vtodoString);
 
             expect(task.recurrence_pattern).toBe('daily');
             expect(task.recurrence_count).toBe(5);
@@ -221,7 +221,7 @@ DTSTAMP:20260301T080000Z
 END:VTODO
 END:VCALENDAR`;
 
-            const task = vTodoParser.vtodoToTask(vtodoString);
+            const task = vTodoParser.parseVTODOToTask(vtodoString);
             expect(task.due_date).toBeTruthy();
             expect(new Date(task.due_date).toISOString()).toBe(
                 '2026-03-08T02:00:00.000Z'
@@ -242,7 +242,7 @@ DTSTAMP:20261001T080000Z
 END:VTODO
 END:VCALENDAR`;
 
-            const task = vTodoParser.vtodoToTask(vtodoString);
+            const task = vTodoParser.parseVTODOToTask(vtodoString);
             expect(task.due_date).toBeTruthy();
             expect(new Date(task.due_date).toISOString()).toBe(
                 '2026-11-01T02:00:00.000Z'
@@ -265,7 +265,7 @@ DTSTAMP:20260420T080000Z
 END:VTODO
 END:VCALENDAR`;
 
-            const task = vTodoParser.vtodoToTask(vtodoString);
+            const task = vTodoParser.parseVTODOToTask(vtodoString);
             expect(task.due_date).toBeTruthy();
         });
 
@@ -284,7 +284,7 @@ END:VTODO
 END:VCALENDAR`;
 
             expect(() => {
-                vTodoParser.vtodoToTask(vtodoString);
+                vTodoParser.parseVTODOToTask(vtodoString);
             }).not.toThrow();
         });
 
@@ -296,8 +296,8 @@ END:VCALENDAR`;
                 status: 0,
             };
 
-            const vtodo = vTodoSerializer.taskToVTodo(originalTask);
-            const parsedTask = vTodoParser.vtodoToTask(vtodo);
+            const vtodo = vTodoSerializer.serializeTaskToVTODO(originalTask);
+            const parsedTask = vTodoParser.parseVTODOToTask(vtodo);
 
             expect(new Date(parsedTask.due_date).getTime()).toBe(
                 new Date(originalTask.due_date).getTime()
@@ -318,7 +318,7 @@ DTSTAMP:20240101T080000Z
 END:VTODO
 END:VCALENDAR`;
 
-            const task = vTodoParser.vtodoToTask(vtodoString);
+            const task = vTodoParser.parseVTODOToTask(vtodoString);
             expect(task.due_date).toBeTruthy();
             const dueDate = new Date(task.due_date);
             expect(dueDate.getUTCDate()).toBe(29);
@@ -340,7 +340,7 @@ DTSTAMP:20261201T080000Z
 END:VTODO
 END:VCALENDAR`;
 
-            const task = vTodoParser.vtodoToTask(vtodoString);
+            const task = vTodoParser.parseVTODOToTask(vtodoString);
             expect(task.due_date).toBeTruthy();
             const dueDate = new Date(task.due_date);
             expect(dueDate.getUTCHours()).toBe(23);
@@ -364,7 +364,7 @@ DTSTAMP:20260420T143045Z
 END:VTODO
 END:VCALENDAR`;
 
-            const task = vTodoParser.vtodoToTask(vtodoString);
+            const task = vTodoParser.parseVTODOToTask(vtodoString);
             expect(task.completed_at).toBeTruthy();
             const completedDate = new Date(task.completed_at);
             expect(completedDate.getUTCHours()).toBe(14);
@@ -380,7 +380,7 @@ END:VCALENDAR`;
                 completed_at: '2026-04-20T14:30:45.000Z',
             };
 
-            const vtodo = vTodoSerializer.taskToVTodo(task);
+            const vtodo = vTodoSerializer.serializeTaskToVTODO(task);
             const jcalData = ICAL.parse(vtodo);
             const comp = new ICAL.Component(jcalData);
             const vtodoComp = comp.getFirstSubcomponent('vtodo');

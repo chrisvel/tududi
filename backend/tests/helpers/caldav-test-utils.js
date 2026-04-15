@@ -19,11 +19,17 @@ function extendSupertestWithCalDAV(Test) {
 }
 
 function propfind(app, url) {
-    return request(app).request('PROPFIND', url);
+    const agent = request(app);
+    const req = agent.get(url);
+    req.method = 'PROPFIND';
+    return req;
 }
 
 function report(app, url) {
-    return request(app).request('REPORT', url);
+    const agent = request(app);
+    const req = agent.get(url);
+    req.method = 'REPORT';
+    return req;
 }
 
 module.exports = {
