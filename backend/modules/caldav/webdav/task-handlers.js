@@ -45,9 +45,11 @@ async function handleGetTask(req, res) {
 
 async function handlePutTask(req, res) {
     try {
+        console.log('[PUT] Handler reached');
         const { username, uid } = req.params;
 
         if (!req.currentUser || req.currentUser.email !== username) {
+            console.log('[PUT] Forbidden - user mismatch');
             return res.status(403).json({ error: 'Forbidden' });
         }
 
@@ -55,7 +57,10 @@ async function handlePutTask(req, res) {
         const taskUid = uid.replace('.ics', '');
         const vtodoData = req.rawBody;
 
+        console.log('[PUT] rawBody:', !!vtodoData, vtodoData?.length);
+
         if (!vtodoData) {
+            console.log('[PUT] No data provided');
             return res.status(400).send('Bad Request: No data provided');
         }
 

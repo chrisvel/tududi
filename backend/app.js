@@ -88,9 +88,34 @@ app.use(
     })
 );
 
-// Body parsing
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+// Body parsing (skip for CalDAV routes which need raw body access)
+app.use((req, res, next) => {
+    const isCalDAVPath =
+        req.path.startsWith('/caldav/') ||
+        req.path.startsWith('/.well-known/caldav');
+
+    if (isCalDAVPath) {
+        return next();
+    }
+
+    express.json({ limit: '10mb' })(req, res, next);
+});
+
+app.use((req, res, next) => {
+    const isCalDAVPath =
+        req.path.startsWith('/caldav/') ||
+        req.path.startsWith('/.well-known/caldav');
+
+    if (isCalDAVPath) {
+        return next();
+    }
+
+    express.urlencoded({ extended: true, limit: '10mb' })(req, res, next);
+});
+
+// CalDAV routes (registered after conditional body parsers)
+const caldavRoutes = require('./modules/caldav/routes');
+app.use(caldavRoutes);
 
 // Session configuration
 const sessionMiddleware = session({
@@ -217,7 +242,6 @@ const usersModule = require('./modules/users');
 const viewsModule = require('./modules/views');
 const mcpModule = require('./modules/mcp');
 const oidcModule = require('./modules/oidc');
-const caldavRoutes = require('./modules/caldav/routes');
 
 // Swagger documentation - enabled by default, protected by authentication
 // Mounted on /api-docs to avoid conflicts with API routes
@@ -275,9 +299,6 @@ if (API_VERSION && API_BASE_PATH !== '/api') {
     healthPaths.add(API_BASE_PATH);
 }
 healthPaths.forEach(registerHealthCheck);
-
-// CalDAV routes (mounted at root, not under /api)
-app.use(caldavRoutes);
 
 const registerApiRoutes = (basePath) => {
     app.use(basePath, authModule.routes);

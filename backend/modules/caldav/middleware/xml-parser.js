@@ -1,5 +1,3 @@
-const getRawBody = require('raw-body');
-
 async function xmlParser(req, res, next) {
     const contentType = req.headers['content-type'] || '';
     const hasBody =
@@ -16,19 +14,23 @@ async function xmlParser(req, res, next) {
             req.method === 'REPORT')
     ) {
         try {
-            const buffer = await getRawBody(req, {
-                length: req.headers['content-length'],
-                limit: '1mb',
-                encoding: 'utf8',
-            });
+            console.log('[XML-PARSER] Processing', req.method, contentType);
+            const chunks = [];
 
-            req.rawBody = buffer.toString('utf8');
+            for await (const chunk of req) {
+                console.log('[XML-PARSER] Got chunk:', chunk.length);
+                chunks.push(chunk);
+            }
+
+            req.rawBody = Buffer.concat(chunks).toString('utf8');
+            console.log('[XML-PARSER] Total body length:', req.rawBody.length);
             next();
         } catch (error) {
             console.error('XML parser error:', error);
             return res.status(400).json({ error: 'Invalid request body' });
         }
     } else {
+        console.log('[XML-PARSER] Skipping', req.method, contentType);
         next();
     }
 }
