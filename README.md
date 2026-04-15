@@ -67,6 +67,13 @@ For the thinking behind tududi, read:
     - Account linking for hybrid authentication
     - Simple .env-based configuration perfect for self-hosters
     - Automatic admin role assignment based on email domains
+- **CalDAV Synchronization**: Industry-standard CalDAV protocol support for seamless task syncing:
+    - Bidirectional sync with CalDAV servers (Nextcloud, Baikal, and more)
+    - Access tasks from popular clients (tasks.org, Apple Reminders, Thunderbird, Evolution)
+    - Full recurring task support with RRULE
+    - Conflict detection and resolution
+    - Background automatic synchronization
+    - HTTP Basic Authentication for CalDAV clients
 
 ## 🗺️ Roadmap
 
@@ -159,6 +166,39 @@ docker run \
 - Hybrid authentication (email/password + SSO)
 
 **Documentation:** See [docs/10-oidc-sso.md](docs/10-oidc-sso.md) for detailed setup guides and provider-specific configuration.
+
+### CalDAV Synchronization
+
+Tududi supports the industry-standard CalDAV protocol, enabling seamless task synchronization with popular CalDAV clients and servers.
+
+**Quick Setup:**
+
+```bash
+docker run \
+  -e CALDAV_ENABLED=true \
+  -e ENCRYPTION_KEY=$(openssl rand -hex 32) \
+  ...
+```
+
+**Supported Clients:**
+- **tasks.org** (Android/iOS) - Full task management with recurring tasks
+- **Apple Reminders** (iOS/macOS) - Native iOS/macOS integration
+- **Thunderbird** (Desktop) - Advanced task features
+- **Evolution** (Linux) - Full CalDAV compatibility
+
+**Sync with External Servers:**
+
+Connect Tududi to external CalDAV servers like Nextcloud, Baikal, or other CalDAV-compatible services for bidirectional synchronization.
+
+**Key Features:**
+- Bidirectional sync (local ↔ remote)
+- Full recurring task support with RRULE
+- Conflict detection and resolution
+- Background automatic synchronization
+- HTTP Basic Authentication
+- Encrypted password storage (AES-256-GCM)
+
+**Documentation:** See [docs/11-caldav-sync.md](docs/11-caldav-sync.md) for client setup guides, server configuration, and troubleshooting.
 
 ### 📚 Documentation
 
