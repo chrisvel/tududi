@@ -351,6 +351,10 @@ async function startServer() {
         const caldavSyncScheduler = require('./modules/caldav/services/sync-scheduler');
         await caldavSyncScheduler.initialize();
 
+        // Validate authentication configuration
+        const { validateAuthConfiguration } = require('./config/authConfig');
+        validateAuthConfiguration();
+
         const server = app.listen(config.port, config.host, () => {
             console.log(`Server running on port ${config.port}`);
             console.log(`Server listening on http://localhost:${config.port}`);

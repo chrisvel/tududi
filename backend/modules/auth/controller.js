@@ -3,6 +3,7 @@
 const authService = require('./service');
 const { logError } = require('../../services/logService');
 const { generateToken } = require('../../middleware/csrf');
+const { isPasswordAuthEnabled } = require('../../config/authConfig');
 
 const authController = {
     getVersion(req, res) {
@@ -13,6 +14,14 @@ const authController = {
         try {
             const result = await authService.getRegistrationStatus();
             res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    getPasswordAuthStatus(req, res, next) {
+        try {
+            res.json({ enabled: isPasswordAuthEnabled() });
         } catch (error) {
             next(error);
         }

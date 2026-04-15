@@ -18,6 +18,14 @@
 
 More screenshots are [available here](#screenshots).
 
+---
+
+## 💖 Enjoying tududi?
+
+Help keep it free and actively developed by [buying me a coffee](https://coff.ee/chrisveleris) ☕, [becoming a sponsor](https://github.com/sponsors/chrisvel), or [supporting on Patreon](https://www.patreon.com/ChrisVeleris). You can also support the project by purchasing a **hosted subscription** for a hassle-free, managed solution. Every contribution helps maintain this project and build new features!
+
+---
+
 ## 🚀 How It Works
 
 This app allows users to manage their tasks, projects, areas, notes, and tags in an organized way. Users can create tasks, projects, areas (to group projects), notes, and tags. Each task can be associated with a project, and both tasks and notes can be tagged for better organization. Projects can belong to areas and can also have multiple notes and tags. This structure helps users categorize and track their work efficiently, whether they’re managing individual tasks, larger projects, or keeping detailed notes.
@@ -242,19 +250,6 @@ Contributions to tududi are welcome! Whether it's bug fixes, new features, docum
 - Database migrations
 - Translation guidelines
 - Pull request checklist
-
-## 💖 Support the Project
-
-If you find tududi useful, consider supporting its development:
-
-<p align="center">
-  <a href="https://github.com/sponsors/chrisvel"><img src="https://img.shields.io/badge/GitHub_Sponsors-Support-ea4aaa?logo=githubsponsors&logoColor=white&style=for-the-badge" alt="GitHub Sponsors"></a>
-  <a href="https://www.patreon.com/ChrisVeleris"><img src="https://img.shields.io/badge/Patreon-Support-F96854?logo=patreon&logoColor=white&style=for-the-badge" alt="Patreon"></a>
-  <a href="https://coff.ee/chrisveleris"><img src="https://img.shields.io/badge/Buy_Me_a_Coffee-Support-FFDD00?logo=buymeacoffee&logoColor=black&style=for-the-badge" alt="Buy Me a Coffee"></a>
-  <a href="https://www.paypal.com/donate/?hosted_button_id=QEQCKLXPB6XAE"><img src="https://img.shields.io/badge/PayPal-Donate-0070BA?logo=paypal&logoColor=white&style=for-the-badge" alt="PayPal"></a>
-</p>
-
-Your support helps keep tududi free, open-source, and actively maintained. Every contribution — big or small — makes a difference!
 
 ## 📜 License
 

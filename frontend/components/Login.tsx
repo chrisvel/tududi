@@ -11,6 +11,7 @@ const Login: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [registrationEnabled, setRegistrationEnabled] = useState(false);
+    const [passwordAuthEnabled, setPasswordAuthEnabled] = useState(true);
     const [oidcProviders, setOidcProviders] = useState<
         Array<{ slug: string; name: string }>
     >([]);
@@ -108,6 +109,27 @@ const Login: React.FC = () => {
         fetchProviders();
     }, []);
 
+    // Check if password authentication is enabled
+    useEffect(() => {
+        const checkPasswordAuth = async () => {
+            try {
+                const response = await fetch(
+                    getApiPath('password-auth-status'),
+                    {
+                        credentials: 'include',
+                    }
+                );
+                if (response.ok) {
+                    const data = await response.json();
+                    setPasswordAuthEnabled(data.enabled);
+                }
+            } catch (err) {
+                console.error('Error checking password auth status:', err);
+            }
+        };
+        checkPasswordAuth();
+    }, []);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -194,7 +216,7 @@ const Login: React.FC = () => {
 
                             <OIDCProviderButtons providers={oidcProviders} />
 
-                            {oidcProviders.length > 0 && (
+                            {oidcProviders.length > 0 && passwordAuthEnabled && (
                                 <div className="relative mb-6">
                                     <div className="absolute inset-0 flex items-center">
                                         <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
@@ -210,7 +232,8 @@ const Login: React.FC = () => {
                                 </div>
                             )}
 
-                            <form onSubmit={handleSubmit}>
+                            {passwordAuthEnabled && (
+                                <form onSubmit={handleSubmit}>
                                 <div className="mb-4">
                                     <label
                                         htmlFor="email"
@@ -259,7 +282,18 @@ const Login: React.FC = () => {
                                     {t('auth.login', 'Login')}
                                 </button>
                             </form>
-                            {registrationEnabled && (
+                            )}
+
+                            {!passwordAuthEnabled && oidcProviders.length === 0 && (
+                                <div className="text-center text-gray-600 dark:text-gray-400">
+                                    {t(
+                                        'auth.no_auth_methods',
+                                        'No authentication methods available. Please contact your administrator.'
+                                    )}
+                                </div>
+                            )}
+
+                            {registrationEnabled && passwordAuthEnabled && (
                                 <div className="mt-6 text-center text-gray-600 dark:text-gray-400">
                                     {t(
                                         'auth.no_account',

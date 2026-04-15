@@ -4,6 +4,7 @@ const { User, sequelize } = require('../../models');
 const { isAdmin } = require('../../services/rolesService');
 const { logError } = require('../../services/logService');
 const { getConfig } = require('../../config/config');
+const { isPasswordAuthEnabled } = require('../../config/authConfig');
 const {
     isRegistrationEnabled,
     createUnverifiedUser,

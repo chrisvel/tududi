@@ -9,6 +9,8 @@ const Register: React.FC = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
+    const [passwordAuthEnabled, setPasswordAuthEnabled] = useState(true);
+    const [loading, setLoading] = useState(true);
     const { t } = useTranslation();
     const [isDarkMode] = useState<boolean>(() => {
         const storedPreference = localStorage.getItem('isDarkMode');
@@ -20,6 +22,25 @@ const Register: React.FC = () => {
     useEffect(() => {
         document.documentElement.classList.toggle('dark', isDarkMode);
     }, [isDarkMode]);
+
+    useEffect(() => {
+        const checkPasswordAuth = async () => {
+            try {
+                const response = await fetch('/api/password-auth-status', {
+                    credentials: 'include',
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setPasswordAuthEnabled(data.enabled);
+                }
+            } catch (err) {
+                console.error('Error checking password auth status:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        checkPasswordAuth();
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -70,6 +91,60 @@ const Register: React.FC = () => {
             console.error('Error during registration:', err);
         }
     };
+
+    if (loading) {
+        return (
+            <div className="bg-gray-100 dark:bg-gray-900 min-h-screen flex items-center justify-center">
+                <div className="text-gray-600 dark:text-gray-400">
+                    {t('common.loading', 'Loading...')}
+                </div>
+            </div>
+        );
+    }
+
+    if (!passwordAuthEnabled) {
+        return (
+            <>
+                {/* Navbar */}
+                <nav className="fixed top-0 left-0 right-0 z-50 text-gray-900 dark:text-white">
+                    <div className="h-16 flex items-center px-4 sm:px-6 lg:px-8">
+                        <img
+                            src={getAssetPath(
+                                isDarkMode
+                                    ? 'wide-logo-light.png'
+                                    : 'wide-logo-dark.png'
+                            )}
+                            alt="tududi"
+                            className="h-9 w-auto"
+                        />
+                    </div>
+                </nav>
+
+                <div className="bg-gray-100 dark:bg-gray-900 min-h-screen px-4 pt-16 flex items-center justify-center">
+                    <div className="w-full max-w-2xl text-center">
+                        <h2 className="text-2xl font-semibold text-gray-700 dark:text-gray-200 mb-4">
+                            {t(
+                                'auth.password_registration_disabled',
+                                'Password Registration Disabled'
+                            )}
+                        </h2>
+                        <p className="text-gray-600 dark:text-gray-400 mb-6">
+                            {t(
+                                'auth.password_registration_disabled_message',
+                                'Password-based registration is not available. Please use SSO to sign in.'
+                            )}
+                        </p>
+                        <Link
+                            to="/login"
+                            className="text-blue-500 hover:text-blue-600"
+                        >
+                            {t('auth.back_to_login', 'Back to Login')}
+                        </Link>
+                    </div>
+                </div>
+            </>
+        );
+    }
 
     if (success) {
         return (

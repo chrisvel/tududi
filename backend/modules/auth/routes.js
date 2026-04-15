@@ -8,6 +8,7 @@ const { csrfMiddleware } = require('../../middleware/csrf');
 
 router.get('/version', authController.getVersion);
 router.get('/registration-status', authController.getRegistrationStatus);
+router.get('/password-auth-status', authController.getPasswordAuthStatus);
 router.get('/csrf-token', csrfMiddleware, authController.getCsrfToken);
 router.post('/register', authLimiter, authController.register);
 router.get('/verify-email', authLimiter, authController.verifyEmail);

@@ -1,7 +1,7 @@
 const { AppError } = require('../../../shared/errors/AppError');
 const CalendarRepository = require('../repositories/calendar-repository');
 const SyncStateRepository = require('../repositories/sync-state-repository');
-const { generateUid } = require('../../../utils/uid');
+const { uid } = require('../../../utils/uid');
 
 class CalendarController {
     async listCalendars(req, res) {
@@ -95,7 +95,7 @@ class CalendarController {
         }
 
         const calendar = await CalendarRepository.create({
-            uid: generateUid(),
+            uid: uid(),
             user_id: userId,
             name,
             description: description || null,

@@ -20,6 +20,7 @@ import {
     BellIcon,
     CommandLineIcon,
     CpuChipIcon,
+    CalendarIcon,
 } from '@heroicons/react/24/outline';
 import TelegramIcon from '../Shared/Icons/TelegramIcon';
 import { useToast } from '../Shared/ToastContext';
@@ -49,6 +50,7 @@ import AiTab from './tabs/AiTab';
 import NotificationsTab from './tabs/NotificationsTab';
 import KeyboardShortcutsTab from './tabs/KeyboardShortcutsTab';
 import McpTab from './tabs/McpTab';
+import CalDAVTab from './tabs/CalDAVTab';
 import { getDefaultConfig } from '../../utils/keyboardShortcutsService';
 import {
     getFeatureFlags,
@@ -98,6 +100,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             'ai',
             'notifications',
             'keyboard-shortcuts',
+            'caldav',
             'mcp',
         ];
         return section && validTabs.includes(section) ? section : 'general';
@@ -1168,6 +1171,12 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             icon: <CommandLineIcon className="w-5 h-5" />,
         },
         {
+            id: 'caldav',
+            name: t('profile.tabs.caldav', 'CalDAV Sync'),
+            icon: <CalendarIcon className="w-5 h-5" />,
+            featureFlag: 'calendar',
+        },
+        {
             id: 'mcp',
             name: t('profile.tabs.mcp', 'MCP Integration'),
             icon: <CpuChipIcon className="w-5 h-5" />,
@@ -1376,6 +1385,8 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                 />
 
                                 <McpTab isActive={activeTab === 'mcp'} />
+
+                                <CalDAVTab isActive={activeTab === 'caldav'} />
 
                                 <div className="flex justify-end dark:border-gray-700">
                                     <button
