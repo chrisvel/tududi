@@ -5,7 +5,7 @@ const {
 } = require('./field-mappings');
 const { parseRRULE } = require('./rrule-parser');
 
-async function parseVTODOToTask(vtodoString) {
+function parseVTODOToTask(vtodoString) {
     try {
         const jcalData = ICAL.parse(vtodoString);
         const comp = new ICAL.Component(jcalData);

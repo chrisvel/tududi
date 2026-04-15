@@ -83,8 +83,9 @@ app.use(
             'If-Match',
             'If-None-Match',
         ],
-        exposedHeaders: ['Content-Type', 'ETag', 'DAV'],
+        exposedHeaders: ['Content-Type', 'ETag', 'DAV', 'Allow'],
         maxAge: 1728000,
+        preflightContinue: true,
     })
 );
 
