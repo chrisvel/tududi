@@ -143,6 +143,22 @@ const ConflictResolver: React.FC<ConflictResolverProps> = ({
     };
 
     const handleResolveAll = async () => {
+        for (const conflict of conflicts) {
+            const resolution = resolutions[conflict.id];
+            const allLocal = resolution.every((r) => r.choice === 'local');
+            const allRemote = resolution.every((r) => r.choice === 'remote');
+
+            if (!allLocal && !allRemote) {
+                showErrorToast(
+                    t(
+                        'profile.conflictResolver.mixedResolutionError',
+                        'Please choose "Use all local" or "Use all remote" for each conflict. Mixed field selections are not yet supported.'
+                    )
+                );
+                return;
+            }
+        }
+
         setIsResolving(true);
 
         try {
@@ -150,9 +166,7 @@ const ConflictResolver: React.FC<ConflictResolverProps> = ({
                 const resolution = resolutions[conflict.id];
                 const choice = resolution.every((r) => r.choice === 'local')
                     ? 'local'
-                    : resolution.every((r) => r.choice === 'remote')
-                      ? 'remote'
-                      : 'manual';
+                    : 'remote';
 
                 await resolveConflict(conflict.task_id, calendarId, choice);
             }
