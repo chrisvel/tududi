@@ -71,7 +71,9 @@ async function parseVTODOToTask(vtodoString) {
                 const year = due.year;
                 const month = due.month - 1;
                 const day = due.day;
-                task.due_date = new Date(Date.UTC(year, month, day, 0, 0, 0, 0));
+                task.due_date = new Date(
+                    Date.UTC(year, month, day, 0, 0, 0, 0)
+                );
             } else {
                 task.due_date = due.toJSDate();
             }
@@ -83,7 +85,9 @@ async function parseVTODOToTask(vtodoString) {
                 const year = dtstart.year;
                 const month = dtstart.month - 1;
                 const day = dtstart.day;
-                task.defer_until = new Date(Date.UTC(year, month, day, 0, 0, 0, 0));
+                task.defer_until = new Date(
+                    Date.UTC(year, month, day, 0, 0, 0, 0)
+                );
             } else {
                 task.defer_until = dtstart.toJSDate();
             }
@@ -192,7 +196,9 @@ async function parseRecurrenceOverride(vtodoString) {
                 const year = due.year;
                 const month = due.month - 1;
                 const day = due.day;
-                override.due_date = new Date(Date.UTC(year, month, day, 0, 0, 0, 0));
+                override.due_date = new Date(
+                    Date.UTC(year, month, day, 0, 0, 0, 0)
+                );
             } else {
                 override.due_date = due.toJSDate();
             }
@@ -211,7 +217,9 @@ async function parseRecurrenceOverride(vtodoString) {
         return override;
     } catch (error) {
         console.error('Error parsing recurrence override:', error);
-        throw new Error(`Failed to parse recurrence override: ${error.message}`);
+        throw new Error(
+            `Failed to parse recurrence override: ${error.message}`
+        );
     }
 }
 

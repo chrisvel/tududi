@@ -197,7 +197,8 @@ DTSTAMP:20260421T150000Z
 END:VTODO
 END:VCALENDAR`;
 
-            const override = await vTodoParser.parseRecurrenceOverride(vtodoString);
+            const override =
+                await vTodoParser.parseRecurrenceOverride(vtodoString);
 
             expect(override).toBeTruthy();
             expect(override.recurrence_id).toBeTruthy();

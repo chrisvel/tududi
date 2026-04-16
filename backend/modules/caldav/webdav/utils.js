@@ -76,7 +76,8 @@ function parseCalendarQuery(xmlString) {
                 const parsedQuery = {
                     props: [],
                     filters: {
-                        componentType: extractValue(compFilter?.name) || 'VTODO',
+                        componentType:
+                            extractValue(compFilter?.name) || 'VTODO',
                         timeRange: null,
                         textMatch: null,
                     },

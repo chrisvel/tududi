@@ -44,7 +44,9 @@ async function handleReport(req, res) {
                     const hour = dateStr.substring(9, 11);
                     const minute = dateStr.substring(11, 13);
                     const second = dateStr.substring(13, 15);
-                    return new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}Z`);
+                    return new Date(
+                        `${year}-${month}-${day}T${hour}:${minute}:${second}Z`
+                    );
                 }
                 return new Date(dateStr);
             };
