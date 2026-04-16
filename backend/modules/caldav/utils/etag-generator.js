@@ -13,7 +13,7 @@ function generateETag(task) {
         status: task.status,
     });
 
-    const hash = crypto.createHash('md5').update(content).digest('hex');
+    const hash = crypto.createHash('sha256').update(content).digest('hex');
 
     return `"${hash}"`;
 }

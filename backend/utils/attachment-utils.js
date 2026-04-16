@@ -89,10 +89,10 @@ async function deleteFileFromDisk(filepath) {
 
     try {
         const isTestEnv = process.env.NODE_ENV === 'test';
-        const uploadDir = path.resolve(config.uploadPath);
-        const resolvedPath = path.resolve(filepath);
 
         if (!isTestEnv) {
+            const uploadDir = path.resolve(config.uploadPath);
+            const resolvedPath = path.resolve(filepath);
             const relativePath = path.relative(uploadDir, resolvedPath);
 
             if (
@@ -105,6 +105,9 @@ async function deleteFileFromDisk(filepath) {
                 );
                 return false;
             }
+
+            const safePath = path.join(uploadDir, relativePath);
+            await fs.unlink(safePath);
         } else {
             if (filepath.includes('..') || filepath.match(/\.\.[\/\\]/)) {
                 logError(
@@ -113,9 +116,9 @@ async function deleteFileFromDisk(filepath) {
                 );
                 return false;
             }
+            await fs.unlink(path.resolve(filepath));
         }
 
-        await fs.unlink(resolvedPath);
         return true;
     } catch (error) {
         logError('Error deleting file from disk:', error);

@@ -1,8 +1,72 @@
 const axios = require('axios');
+const { URL } = require('url');
 const { AppError } = require('../../../shared/errors/AppError');
 const RemoteCalendarRepository = require('../repositories/remote-calendar-repository');
 const CalendarRepository = require('../repositories/calendar-repository');
 const encryptionService = require('../services/encryption-service');
+
+function isPrivateOrLocalhost(hostname) {
+    if (!hostname) return true;
+
+    const lower = hostname.toLowerCase();
+
+    if (lower === 'localhost' || lower === '127.0.0.1' || lower === '::1') {
+        return true;
+    }
+
+    if (lower.startsWith('192.168.') || lower.startsWith('10.')) {
+        return true;
+    }
+
+    if (lower.startsWith('172.')) {
+        const parts = lower.split('.');
+        const second = parseInt(parts[1], 10);
+        if (second >= 16 && second <= 31) {
+            return true;
+        }
+    }
+
+    if (lower.startsWith('169.254.')) {
+        return true;
+    }
+
+    if (
+        lower.startsWith('[::1]') ||
+        lower.startsWith('[fc') ||
+        lower.startsWith('[fd')
+    ) {
+        return true;
+    }
+
+    return false;
+}
+
+function validateCalDAVUrl(urlString) {
+    try {
+        const url = new URL(urlString);
+
+        if (!['http:', 'https:'].includes(url.protocol)) {
+            throw new AppError(
+                'Only HTTP and HTTPS protocols are allowed',
+                400
+            );
+        }
+
+        if (isPrivateOrLocalhost(url.hostname)) {
+            throw new AppError(
+                'Cannot connect to private, local, or internal network addresses',
+                400
+            );
+        }
+
+        return url;
+    } catch (error) {
+        if (error instanceof AppError) {
+            throw error;
+        }
+        throw new AppError('Invalid URL format', 400);
+    }
+}
 
 class RemoteCalendarController {
     async listRemoteCalendars(req, res) {
@@ -105,16 +169,22 @@ class RemoteCalendarController {
             );
         }
 
+        const baseUrl = server_url.replace(/\/$/, '');
+        const path = calendar_path.startsWith('/')
+            ? calendar_path
+            : `/${calendar_path}`;
+        const fullUrl = `${baseUrl}${path}`;
+
+        validateCalDAVUrl(fullUrl);
+
         const passwordEncrypted = encryptionService.encrypt(password);
 
         const remoteCalendar = await RemoteCalendarRepository.create({
             user_id: userId,
             local_calendar_id,
             name,
-            server_url: server_url.replace(/\/$/, ''),
-            calendar_path: calendar_path.startsWith('/')
-                ? calendar_path
-                : `/${calendar_path}`,
+            server_url: baseUrl,
+            calendar_path: path,
             username,
             password_encrypted: passwordEncrypted,
             auth_type,
@@ -156,12 +226,28 @@ class RemoteCalendarController {
         const updates = {};
 
         if (name !== undefined) updates.name = name;
-        if (server_url !== undefined)
-            updates.server_url = server_url.replace(/\/$/, '');
-        if (calendar_path !== undefined)
-            updates.calendar_path = calendar_path.startsWith('/')
-                ? calendar_path
-                : `/${calendar_path}`;
+
+        const newServerUrl =
+            server_url !== undefined ? server_url.replace(/\/$/, '') : null;
+        const newCalendarPath =
+            calendar_path !== undefined
+                ? calendar_path.startsWith('/')
+                    ? calendar_path
+                    : `/${calendar_path}`
+                : null;
+
+        if (newServerUrl || newCalendarPath) {
+            const finalServerUrl = newServerUrl || remoteCalendar.server_url;
+            const finalCalendarPath =
+                newCalendarPath || remoteCalendar.calendar_path;
+            const fullUrl = `${finalServerUrl}${finalCalendarPath}`;
+
+            validateCalDAVUrl(fullUrl);
+
+            if (newServerUrl) updates.server_url = newServerUrl;
+            if (newCalendarPath) updates.calendar_path = newCalendarPath;
+        }
+
         if (username !== undefined) updates.username = username;
         if (password !== undefined) {
             updates.password_encrypted = encryptionService.encrypt(password);
@@ -236,6 +322,8 @@ class RemoteCalendarController {
                 ? calendar_path
                 : `/${calendar_path}`;
             const testUrl = `${baseUrl}${path}`;
+
+            validateCalDAVUrl(testUrl);
 
             const authConfig =
                 auth_type === 'bearer'
