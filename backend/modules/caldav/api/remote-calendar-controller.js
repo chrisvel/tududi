@@ -59,7 +59,7 @@ function validateCalDAVUrl(urlString) {
             );
         }
 
-        return url;
+        return url.href;
     } catch (error) {
         if (error instanceof AppError) {
             throw error;
@@ -323,7 +323,7 @@ class RemoteCalendarController {
                 : `/${calendar_path}`;
             const testUrl = `${baseUrl}${path}`;
 
-            validateCalDAVUrl(testUrl);
+            const validatedUrl = validateCalDAVUrl(testUrl);
 
             const authConfig =
                 auth_type === 'bearer'
@@ -332,7 +332,7 @@ class RemoteCalendarController {
 
             const response = await axios({
                 method: 'OPTIONS',
-                url: testUrl,
+                url: validatedUrl,
                 ...authConfig,
                 timeout: parseInt(
                     process.env.CALDAV_REQUEST_TIMEOUT || '30000',

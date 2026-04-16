@@ -116,7 +116,11 @@ async function deleteFileFromDisk(filepath) {
                 );
                 return false;
             }
-            await fs.unlink(path.resolve(filepath));
+            const sanitizedPath = path
+                .normalize(filepath)
+                .replace(/^(\.\.[/\\])+/, '');
+            const safePath = path.resolve(sanitizedPath);
+            await fs.unlink(safePath);
         }
 
         return true;
