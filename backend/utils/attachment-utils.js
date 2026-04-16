@@ -89,10 +89,10 @@ async function deleteFileFromDisk(filepath) {
 
     try {
         const isTestEnv = process.env.NODE_ENV === 'test';
+        const uploadDir = path.resolve(config.uploadPath);
+        const resolvedPath = path.resolve(filepath);
 
         if (!isTestEnv) {
-            const uploadDir = path.resolve(config.uploadPath);
-            const resolvedPath = path.resolve(filepath);
             const relativePath = path.relative(uploadDir, resolvedPath);
 
             if (
@@ -105,9 +105,17 @@ async function deleteFileFromDisk(filepath) {
                 );
                 return false;
             }
+        } else {
+            if (filepath.includes('..') || filepath.match(/\.\.[\/\\]/)) {
+                logError(
+                    'Attempt to use path traversal in filepath:',
+                    filepath
+                );
+                return false;
+            }
         }
 
-        await fs.unlink(filepath);
+        await fs.unlink(resolvedPath);
         return true;
     } catch (error) {
         logError('Error deleting file from disk:', error);
