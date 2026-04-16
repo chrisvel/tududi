@@ -4,7 +4,7 @@ const vTodoParser = require('../../modules/caldav/icalendar/vtodo-parser');
 
 describe('CalDAV Timezone Handling', () => {
     describe('UTC DateTime Conversion', () => {
-        it('should correctly convert local dates to UTC', () => {
+        it('should correctly convert local dates to UTC', async () => {
             const task = {
                 uid: 'tz-test-1',
                 name: 'Timezone Test',
@@ -25,7 +25,7 @@ describe('CalDAV Timezone Handling', () => {
             expect(dtstart.toICALString()).toBe('20260420T100000Z');
         });
 
-        it('should parse UTC dates from VTODO', () => {
+        it('should parse UTC dates from VTODO', async () => {
             const vtodoString = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Tududi//EN
@@ -40,7 +40,7 @@ DTSTAMP:20260420T080000Z
 END:VTODO
 END:VCALENDAR`;
 
-            const task = vTodoParser.parseVTODOToTask(vtodoString);
+            const task = await vTodoParser.parseVTODOToTask(vtodoString);
 
             expect(task.due_date).toBeTruthy();
             const dueDate = new Date(task.due_date);
@@ -55,7 +55,7 @@ END:VCALENDAR`;
     });
 
     describe('DATE-only (no time) Handling', () => {
-        it('should handle DATE values without time component', () => {
+        it('should handle DATE values without time component', async () => {
             const vtodoString = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Tududi//EN
@@ -69,7 +69,7 @@ DTSTAMP:20260420T080000Z
 END:VTODO
 END:VCALENDAR`;
 
-            const task = vTodoParser.parseVTODOToTask(vtodoString);
+            const task = await vTodoParser.parseVTODOToTask(vtodoString);
 
             expect(task.due_date).toBeTruthy();
             const dueDate = new Date(task.due_date);
@@ -78,7 +78,7 @@ END:VCALENDAR`;
             expect(dueDate.getUTCFullYear()).toBe(2026);
         });
 
-        it('should serialize date-only tasks correctly', () => {
+        it('should serialize date-only tasks correctly', async () => {
             const task = {
                 uid: 'date-only-serialize',
                 name: 'Date Only Serialize',
@@ -97,7 +97,7 @@ END:VCALENDAR`;
     });
 
     describe('Timezone VTIMEZONE Handling', () => {
-        it('should handle VTODO with VTIMEZONE component', () => {
+        it('should handle VTODO with VTIMEZONE component', async () => {
             const vtodoString = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Tududi//EN
@@ -126,7 +126,7 @@ DTSTAMP:20260420T080000Z
 END:VTODO
 END:VCALENDAR`;
 
-            const task = vTodoParser.parseVTODOToTask(vtodoString);
+            const task = await vTodoParser.parseVTODOToTask(vtodoString);
 
             expect(task.due_date).toBeTruthy();
             const dueDate = new Date(task.due_date);
@@ -135,13 +135,13 @@ END:VCALENDAR`;
     });
 
     describe('Recurring Tasks Timezone', () => {
-        it('should preserve timezone in recurring task instances', () => {
+        it('should preserve timezone in recurring task instances', async () => {
             const task = {
                 uid: 'recurring-tz-test',
                 name: 'Recurring Timezone Test',
                 due_date: '2026-04-20T14:00:00.000Z',
                 status: 0,
-                recurrence_pattern: 'daily',
+                recurrence_type: 'daily',
                 recurrence_interval: 1,
                 recurrence_count: 5,
             };
@@ -159,7 +159,7 @@ END:VCALENDAR`;
             expect(rrule.count).toBe(5);
         });
 
-        it('should handle RECURRENCE-ID with timezones', () => {
+        it('should handle RECURRENCE-ID with timezones', async () => {
             const vtodoString = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Tududi//EN
@@ -174,14 +174,14 @@ DTSTAMP:20260420T080000Z
 END:VTODO
 END:VCALENDAR`;
 
-            const task = vTodoParser.parseVTODOToTask(vtodoString);
+            const task = await vTodoParser.parseVTODOToTask(vtodoString);
 
-            expect(task.recurrence_pattern).toBe('daily');
+            expect(task.recurrence_type).toBe('daily');
             expect(task.recurrence_count).toBe(5);
             expect(task.due_date).toBeTruthy();
         });
 
-        it('should parse modified instance with RECURRENCE-ID', () => {
+        it('should parse modified instance with RECURRENCE-ID', async () => {
             const vtodoString = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Tududi//EN
@@ -197,7 +197,7 @@ DTSTAMP:20260421T150000Z
 END:VTODO
 END:VCALENDAR`;
 
-            const override = vTodoParser.parseRecurrenceOverride(vtodoString);
+            const override = await vTodoParser.parseRecurrenceOverride(vtodoString);
 
             expect(override).toBeTruthy();
             expect(override.recurrence_id).toBeTruthy();
@@ -207,7 +207,7 @@ END:VCALENDAR`;
     });
 
     describe('Daylight Saving Time Transitions', () => {
-        it('should handle spring forward DST transition', () => {
+        it('should handle spring forward DST transition', async () => {
             const vtodoString = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Tududi//EN
@@ -221,14 +221,14 @@ DTSTAMP:20260301T080000Z
 END:VTODO
 END:VCALENDAR`;
 
-            const task = vTodoParser.parseVTODOToTask(vtodoString);
+            const task = await vTodoParser.parseVTODOToTask(vtodoString);
             expect(task.due_date).toBeTruthy();
             expect(new Date(task.due_date).toISOString()).toBe(
                 '2026-03-08T02:00:00.000Z'
             );
         });
 
-        it('should handle fall back DST transition', () => {
+        it('should handle fall back DST transition', async () => {
             const vtodoString = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Tududi//EN
@@ -242,7 +242,7 @@ DTSTAMP:20261001T080000Z
 END:VTODO
 END:VCALENDAR`;
 
-            const task = vTodoParser.parseVTODOToTask(vtodoString);
+            const task = await vTodoParser.parseVTODOToTask(vtodoString);
             expect(task.due_date).toBeTruthy();
             expect(new Date(task.due_date).toISOString()).toBe(
                 '2026-11-01T02:00:00.000Z'
@@ -251,7 +251,7 @@ END:VCALENDAR`;
     });
 
     describe('Edge Cases', () => {
-        it('should handle missing timezone information gracefully', () => {
+        it('should handle missing timezone information gracefully', async () => {
             const vtodoString = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Tududi//EN
@@ -265,11 +265,11 @@ DTSTAMP:20260420T080000Z
 END:VTODO
 END:VCALENDAR`;
 
-            const task = vTodoParser.parseVTODOToTask(vtodoString);
+            const task = await vTodoParser.parseVTODOToTask(vtodoString);
             expect(task.due_date).toBeTruthy();
         });
 
-        it('should handle invalid timezone gracefully', () => {
+        it('should handle invalid timezone gracefully', async () => {
             const vtodoString = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Tududi//EN
@@ -288,7 +288,7 @@ END:VCALENDAR`;
             }).not.toThrow();
         });
 
-        it('should round-trip preserve UTC timestamps', () => {
+        it('should round-trip preserve UTC timestamps', async () => {
             const originalTask = {
                 uid: 'roundtrip-tz-test',
                 name: 'Roundtrip Timezone Test',
@@ -297,14 +297,14 @@ END:VCALENDAR`;
             };
 
             const vtodo = vTodoSerializer.serializeTaskToVTODO(originalTask);
-            const parsedTask = vTodoParser.parseVTODOToTask(vtodo);
+            const parsedTask = await vTodoParser.parseVTODOToTask(vtodo);
 
             expect(new Date(parsedTask.due_date).getTime()).toBe(
                 new Date(originalTask.due_date).getTime()
             );
         });
 
-        it('should handle leap year dates correctly', () => {
+        it('should handle leap year dates correctly', async () => {
             const vtodoString = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Tududi//EN
@@ -318,7 +318,7 @@ DTSTAMP:20240101T080000Z
 END:VTODO
 END:VCALENDAR`;
 
-            const task = vTodoParser.parseVTODOToTask(vtodoString);
+            const task = await vTodoParser.parseVTODOToTask(vtodoString);
             expect(task.due_date).toBeTruthy();
             const dueDate = new Date(task.due_date);
             expect(dueDate.getUTCDate()).toBe(29);
@@ -326,7 +326,7 @@ END:VCALENDAR`;
             expect(dueDate.getUTCFullYear()).toBe(2024);
         });
 
-        it('should handle year boundary correctly', () => {
+        it('should handle year boundary correctly', async () => {
             const vtodoString = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Tududi//EN
@@ -340,7 +340,7 @@ DTSTAMP:20261201T080000Z
 END:VTODO
 END:VCALENDAR`;
 
-            const task = vTodoParser.parseVTODOToTask(vtodoString);
+            const task = await vTodoParser.parseVTODOToTask(vtodoString);
             expect(task.due_date).toBeTruthy();
             const dueDate = new Date(task.due_date);
             expect(dueDate.getUTCHours()).toBe(23);
@@ -350,7 +350,7 @@ END:VCALENDAR`;
     });
 
     describe('COMPLETED timestamp handling', () => {
-        it('should preserve completion timestamp timezone', () => {
+        it('should preserve completion timestamp timezone', async () => {
             const vtodoString = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Tududi//EN
@@ -364,7 +364,7 @@ DTSTAMP:20260420T143045Z
 END:VTODO
 END:VCALENDAR`;
 
-            const task = vTodoParser.parseVTODOToTask(vtodoString);
+            const task = await vTodoParser.parseVTODOToTask(vtodoString);
             expect(task.completed_at).toBeTruthy();
             const completedDate = new Date(task.completed_at);
             expect(completedDate.getUTCHours()).toBe(14);
@@ -372,7 +372,7 @@ END:VCALENDAR`;
             expect(completedDate.getUTCSeconds()).toBe(45);
         });
 
-        it('should serialize completion timestamp to UTC', () => {
+        it('should serialize completion timestamp to UTC', async () => {
             const task = {
                 uid: 'completed-serialize-tz',
                 name: 'Completed Serialize Test',

@@ -120,19 +120,15 @@ const calculateWeeklyRecurrence = (fromDate, interval, weekday, weekdays) => {
         nextDate.setUTCDate(nextDate.getUTCDate() + daysToNext);
     } else if (weekday !== null && weekday !== undefined) {
         const currentWeekday = nextDate.getUTCDay();
-        const daysUntilTarget = (weekday - currentWeekday + 7) % 7;
+        let daysUntilTarget = (weekday - currentWeekday + 7) % 7;
 
-        if (
-            daysUntilTarget === 0 &&
-            nextDate.getTime() === fromDate.getTime()
-        ) {
-            nextDate.setUTCDate(nextDate.getUTCDate() + interval * 7);
-        } else {
-            nextDate.setUTCDate(nextDate.getUTCDate() + daysUntilTarget);
-            if (nextDate <= fromDate) {
-                nextDate.setUTCDate(nextDate.getUTCDate() + interval * 7);
-            }
+        if (daysUntilTarget === 0) {
+            daysUntilTarget = interval * 7;
+        } else if (interval > 1 && daysUntilTarget < 7) {
+            daysUntilTarget += (interval - 1) * 7;
         }
+
+        nextDate.setUTCDate(nextDate.getUTCDate() + daysUntilTarget);
     } else {
         nextDate.setUTCDate(nextDate.getUTCDate() + interval * 7);
     }

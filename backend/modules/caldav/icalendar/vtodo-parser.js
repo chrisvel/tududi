@@ -5,7 +5,7 @@ const {
 } = require('./field-mappings');
 const { parseRRULE } = require('./rrule-parser');
 
-function parseVTODOToTask(vtodoString) {
+async function parseVTODOToTask(vtodoString) {
     try {
         const jcalData = ICAL.parse(vtodoString);
         const comp = new ICAL.Component(jcalData);
@@ -67,12 +67,26 @@ function parseVTODOToTask(vtodoString) {
 
         const due = vtodo.getFirstPropertyValue('due');
         if (due) {
-            task.due_date = due.toJSDate();
+            if (due.isDate) {
+                const year = due.year;
+                const month = due.month - 1;
+                const day = due.day;
+                task.due_date = new Date(Date.UTC(year, month, day, 0, 0, 0, 0));
+            } else {
+                task.due_date = due.toJSDate();
+            }
         }
 
         const dtstart = vtodo.getFirstPropertyValue('dtstart');
         if (dtstart) {
-            task.defer_until = dtstart.toJSDate();
+            if (dtstart.isDate) {
+                const year = dtstart.year;
+                const month = dtstart.month - 1;
+                const day = dtstart.day;
+                task.defer_until = new Date(Date.UTC(year, month, day, 0, 0, 0, 0));
+            } else {
+                task.defer_until = dtstart.toJSDate();
+            }
         }
 
         const completed = vtodo.getFirstPropertyValue('completed');
@@ -138,6 +152,70 @@ function parseVTODOToTask(vtodoString) {
     }
 }
 
+async function parseRecurrenceOverride(vtodoString) {
+    try {
+        const jcalData = ICAL.parse(vtodoString);
+        const comp = new ICAL.Component(jcalData);
+        const vtodo = comp.getFirstSubcomponent('vtodo');
+
+        if (!vtodo) {
+            throw new Error('No VTODO component found');
+        }
+
+        const override = {
+            uid: null,
+            recurrence_id: null,
+            name: null,
+            due_date: null,
+            status: 0,
+            completed_at: null,
+        };
+
+        const uid = vtodo.getFirstPropertyValue('uid');
+        if (uid) {
+            override.uid = uid;
+        }
+
+        const recurrenceId = vtodo.getFirstPropertyValue('recurrence-id');
+        if (recurrenceId) {
+            override.recurrence_id = recurrenceId.toJSDate();
+        }
+
+        const summary = vtodo.getFirstPropertyValue('summary');
+        if (summary) {
+            override.name = summary;
+        }
+
+        const due = vtodo.getFirstPropertyValue('due');
+        if (due) {
+            if (due.isDate) {
+                const year = due.year;
+                const month = due.month - 1;
+                const day = due.day;
+                override.due_date = new Date(Date.UTC(year, month, day, 0, 0, 0, 0));
+            } else {
+                override.due_date = due.toJSDate();
+            }
+        }
+
+        const status = vtodo.getFirstPropertyValue('status');
+        if (status) {
+            override.status = STATUS_ICAL_TO_TUDUDI[status] || 0;
+        }
+
+        const completed = vtodo.getFirstPropertyValue('completed');
+        if (completed) {
+            override.completed_at = completed.toJSDate();
+        }
+
+        return override;
+    } catch (error) {
+        console.error('Error parsing recurrence override:', error);
+        throw new Error(`Failed to parse recurrence override: ${error.message}`);
+    }
+}
+
 module.exports = {
     parseVTODOToTask,
+    parseRecurrenceOverride,
 };

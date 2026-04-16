@@ -4,7 +4,6 @@ const {
     buildResponse,
     buildPropstat,
     buildHref,
-    buildCalendarData,
 } = require('./utils');
 const { generateETag } = require('../utils/etag-generator');
 const taskRepository = require('../../tasks/repository');
@@ -36,13 +35,27 @@ async function handleReport(req, res) {
         if (queryRequest.filters.timeRange) {
             const { start, end } = queryRequest.filters.timeRange;
 
+            const parseICalDate = (dateStr) => {
+                if (!dateStr) return null;
+                if (dateStr.length === 16 && dateStr.endsWith('Z')) {
+                    const year = dateStr.substring(0, 4);
+                    const month = dateStr.substring(4, 6);
+                    const day = dateStr.substring(6, 8);
+                    const hour = dateStr.substring(9, 11);
+                    const minute = dateStr.substring(11, 13);
+                    const second = dateStr.substring(13, 15);
+                    return new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}Z`);
+                }
+                return new Date(dateStr);
+            };
+
             if (start || end) {
                 where.due_date = {};
                 if (start) {
-                    where.due_date[Op.gte] = new Date(start);
+                    where.due_date[Op.gte] = parseICalDate(start);
                 }
                 if (end) {
-                    where.due_date[Op.lte] = new Date(end);
+                    where.due_date[Op.lte] = parseICalDate(end);
                 }
             }
         }

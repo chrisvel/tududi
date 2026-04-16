@@ -5,7 +5,7 @@ const {
 } = require('./field-mappings');
 const { generateRRULE } = require('./rrule-generator');
 
-async function serializeTaskToVTODO(task, options = {}) {
+function serializeTaskToVTODO(task, options = {}) {
     const comp = new ICAL.Component('vcalendar');
     comp.addPropertyWithValue('version', '2.0');
     comp.addPropertyWithValue('prodid', '-//Tududi//Task Manager//EN');

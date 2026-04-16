@@ -68,10 +68,15 @@ function parseCalendarQuery(xmlString) {
                 const compFilter =
                     filter?.['C:comp-filter'] || filter?.['comp-filter'];
 
+                const extractValue = (attr) => {
+                    if (!attr) return null;
+                    return typeof attr === 'string' ? attr : attr.value;
+                };
+
                 const parsedQuery = {
                     props: [],
                     filters: {
-                        componentType: compFilter?.name || 'VTODO',
+                        componentType: extractValue(compFilter?.name) || 'VTODO',
                         timeRange: null,
                         textMatch: null,
                     },
@@ -82,8 +87,8 @@ function parseCalendarQuery(xmlString) {
                         compFilter['C:time-range'] || compFilter['time-range'];
                     if (timeRange) {
                         parsedQuery.filters.timeRange = {
-                            start: timeRange.start,
-                            end: timeRange.end,
+                            start: extractValue(timeRange.start),
+                            end: extractValue(timeRange.end),
                         };
                     }
 
@@ -96,13 +101,13 @@ function parseCalendarQuery(xmlString) {
                             propFilter['text-match'];
                         if (textMatch) {
                             parsedQuery.filters.textMatch = {
-                                property: propFilter.name,
+                                property: extractValue(propFilter.name),
                                 value:
                                     typeof textMatch === 'string'
                                         ? textMatch
                                         : textMatch._,
                                 caseless:
-                                    textMatch['collation'] ===
+                                    extractValue(textMatch['collation']) ===
                                     'i;unicode-casefold',
                             };
                         }

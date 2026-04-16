@@ -85,7 +85,9 @@ function generateRRULE(task) {
             return null;
     }
 
-    if (task.recurrence_end_date) {
+    if (task.recurrence_count && task.recurrence_count > 0) {
+        parts.push(`COUNT=${task.recurrence_count}`);
+    } else if (task.recurrence_end_date) {
         try {
             const endDate = new Date(task.recurrence_end_date);
             const until = ICAL.Time.fromJSDate(endDate, true);

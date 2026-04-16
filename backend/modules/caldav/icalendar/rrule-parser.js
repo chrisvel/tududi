@@ -18,6 +18,7 @@ function parseRRULE(rruleString) {
             recurrence_type: null,
             recurrence_interval: 1,
             recurrence_end_date: null,
+            recurrence_count: null,
             recurrence_weekdays: null,
             recurrence_month_day: null,
             recurrence_weekday: null,
@@ -30,6 +31,10 @@ function parseRRULE(rruleString) {
 
         if (rruleData.INTERVAL) {
             result.recurrence_interval = parseInt(rruleData.INTERVAL, 10);
+        }
+
+        if (rruleData.COUNT) {
+            result.recurrence_count = parseInt(rruleData.COUNT, 10);
         }
 
         if (rruleData.UNTIL) {
