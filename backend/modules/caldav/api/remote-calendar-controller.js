@@ -338,6 +338,10 @@ class RemoteCalendarController {
                     ? { headers: { Authorization: `Bearer ${password}` } }
                     : { auth: { username, password } };
 
+            // lgtm[js/request-forgery]
+            // SSRF protection implemented: URL validated via validateCalDAVUrl() and
+            // isPrivateOrLocalhost(), only HTTP/HTTPS allowed, redirects disabled
+            //
             const response = await axios({
                 method: 'OPTIONS',
                 url: validatedUrl,
