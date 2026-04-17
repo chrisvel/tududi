@@ -9,7 +9,7 @@ import {
     type CalDAVCalendar,
 } from '../../../utils/caldavService';
 import CalendarCard from '../../CalDAV/CalendarCard';
-import SetupWizard from '../../CalDAV/SetupWizard';
+import CalendarForm from '../../CalDAV/CalendarForm';
 import ConflictResolver from '../../CalDAV/ConflictResolver';
 import ConfirmDialog from '../../Shared/ConfirmDialog';
 
@@ -23,7 +23,7 @@ const CalDAVTab: React.FC<CalDAVTabProps> = ({ isActive }) => {
 
     const [calendars, setCalendars] = useState<CalDAVCalendar[]>([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [showWizard, setShowWizard] = useState(false);
+    const [showForm, setShowForm] = useState(false);
     const [selectedCalendarForConflicts, setSelectedCalendarForConflicts] =
         useState<number | null>(null);
     const [calendarToDelete, setCalendarToDelete] =
@@ -100,8 +100,8 @@ const CalDAVTab: React.FC<CalDAVTabProps> = ({ isActive }) => {
         }
     };
 
-    const handleWizardComplete = async () => {
-        setShowWizard(false);
+    const handleFormComplete = async () => {
+        setShowForm(false);
         await loadCalendars();
     };
 
@@ -130,70 +130,77 @@ const CalDAVTab: React.FC<CalDAVTabProps> = ({ isActive }) => {
                 )}
             </p>
 
-            <div className="flex justify-between items-center mb-6">
-                <h4 className="text-lg font-medium text-gray-900 dark:text-white">
-                    {t('profile.caldav.calendars', 'Calendars')}
-                </h4>
-                <button
-                    type="button"
-                    onClick={() => setShowWizard(true)}
-                    className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-md transition-colors"
-                >
-                    <PlusIcon className="w-5 h-5 mr-2" />
-                    {t('profile.caldav.addCalendar', 'Add Calendar')}
-                </button>
-            </div>
-
-            {isLoading ? (
-                <div className="flex justify-center items-center py-12">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                </div>
-            ) : calendars.length === 0 ? (
-                <div className="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
-                    <CalendarIcon className="mx-auto h-12 w-12 text-gray-400" />
-                    <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
-                        {t('profile.caldav.noCalendars', 'No calendars')}
-                    </h3>
-                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        {t(
-                            'profile.caldav.noCalendarsDescription',
-                            'Get started by creating a new CalDAV calendar.'
-                        )}
-                    </p>
-                    <div className="mt-6">
-                        <button
-                            type="button"
-                            onClick={() => setShowWizard(true)}
-                            className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-md"
-                        >
-                            <PlusIcon className="w-5 h-5 mr-2" />
-                            {t('profile.caldav.addCalendar', 'Add Calendar')}
-                        </button>
-                    </div>
-                </div>
-            ) : (
-                <div className="space-y-4">
-                    {calendars.map((calendar) => (
-                        <CalendarCard
-                            key={calendar.id}
-                            calendar={calendar}
-                            onSync={handleSyncCalendar}
-                            onDelete={() => setCalendarToDelete(calendar)}
-                            onViewConflicts={handleViewConflicts}
-                            onUpdated={loadCalendars}
-                            isSyncing={syncingId === calendar.id}
-                            isDeleting={deletingId === calendar.id}
-                        />
-                    ))}
+            {!showForm && calendars.length > 0 && (
+                <div className="flex justify-between items-center mb-6">
+                    <h4 className="text-lg font-medium text-gray-900 dark:text-white">
+                        {t('profile.caldav.calendars', 'Calendars')}
+                    </h4>
+                    <button
+                        type="button"
+                        onClick={() => setShowForm(true)}
+                        className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-md transition-colors"
+                    >
+                        <PlusIcon className="w-5 h-5 mr-2" />
+                        {t('profile.caldav.addCalendar', 'Add Calendar')}
+                    </button>
                 </div>
             )}
 
-            {showWizard && (
-                <SetupWizard
-                    isOpen={showWizard}
-                    onClose={() => setShowWizard(false)}
-                    onComplete={handleWizardComplete}
-                />
+            {showForm && (
+                <div className="mb-6">
+                    <CalendarForm
+                        onComplete={handleFormComplete}
+                        onCancel={() => setShowForm(false)}
+                    />
+                </div>
+            )}
+
+            {!showForm && (
+                <>
+                    {isLoading ? (
+                        <div className="flex justify-center items-center py-12">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                        </div>
+                    ) : calendars.length === 0 ? (
+                        <div className="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
+                            <CalendarIcon className="mx-auto h-12 w-12 text-gray-400" />
+                            <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
+                                {t('profile.caldav.noCalendars', 'No calendars')}
+                            </h3>
+                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                {t(
+                                    'profile.caldav.noCalendarsDescription',
+                                    'Get started by creating a new CalDAV calendar.'
+                                )}
+                            </p>
+                            <div className="mt-6">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowForm(true)}
+                                    className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-md"
+                                >
+                                    <PlusIcon className="w-5 h-5 mr-2" />
+                                    {t('profile.caldav.addCalendar', 'Add Calendar')}
+                                </button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="space-y-4">
+                            {calendars.map((calendar) => (
+                                <CalendarCard
+                                    key={calendar.id}
+                                    calendar={calendar}
+                                    onSync={handleSyncCalendar}
+                                    onDelete={() => setCalendarToDelete(calendar)}
+                                    onViewConflicts={handleViewConflicts}
+                                    onUpdated={loadCalendars}
+                                    isSyncing={syncingId === calendar.id}
+                                    isDeleting={deletingId === calendar.id}
+                                />
+                            ))}
+                        </div>
+                    )}
+                </>
             )}
 
             {selectedCalendarForConflicts !== null && (
