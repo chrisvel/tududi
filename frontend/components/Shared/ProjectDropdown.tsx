@@ -212,6 +212,7 @@ const ProjectDropdown: React.FC<ProjectDropdownProps> = ({
                             disabled={disabled}
                             className="w-full bg-transparent border-none outline-none text-sm text-gray-900 dark:text-gray-100 disabled:cursor-not-allowed pr-8"
                             autoComplete="off"
+                            autoFocus={dropdownOpen}
                         />
                         <button
                             type="button"

@@ -8,6 +8,9 @@ function parseCommaSeparated(value) {
 
 function loadProvidersFromEnv() {
     if (process.env.OIDC_ENABLED !== 'true') {
+        console.log(
+            'OIDC is disabled. Set OIDC_ENABLED=true to enable SSO authentication.'
+        );
         return [];
     }
 
@@ -31,17 +34,24 @@ function loadProvidersFromEnv() {
             ),
         };
 
-        if (
-            !provider.slug ||
-            !provider.name ||
-            !provider.issuer ||
-            !provider.clientId ||
-            !provider.clientSecret
-        ) {
+        const missingFields = [];
+        if (!provider.slug) missingFields.push(`OIDC_PROVIDER_${i}_SLUG`);
+        if (!provider.name) missingFields.push(`OIDC_PROVIDER_${i}_NAME`);
+        if (!provider.issuer) missingFields.push(`OIDC_PROVIDER_${i}_ISSUER`);
+        if (!provider.clientId)
+            missingFields.push(`OIDC_PROVIDER_${i}_CLIENT_ID`);
+        if (!provider.clientSecret)
+            missingFields.push(`OIDC_PROVIDER_${i}_CLIENT_SECRET`);
+
+        if (missingFields.length > 0) {
+            console.warn(
+                `Skipping OIDC provider ${i} due to missing required fields: ${missingFields.join(', ')}`
+            );
             i++;
             continue;
         }
 
+        console.log(`Loaded OIDC provider ${i}: ${provider.name}`);
         providers.push(provider);
         i++;
     }
@@ -60,11 +70,26 @@ function loadProvidersFromEnv() {
             ),
         };
 
-        if (!provider.issuer || !provider.clientId || !provider.clientSecret) {
+        const missingFields = [];
+        if (!provider.issuer) missingFields.push('OIDC_ISSUER_URL');
+        if (!provider.clientId) missingFields.push('OIDC_CLIENT_ID');
+        if (!provider.clientSecret) missingFields.push('OIDC_CLIENT_SECRET');
+
+        if (missingFields.length > 0) {
+            console.error(
+                `Cannot load OIDC provider "${provider.name}": missing required fields: ${missingFields.join(', ')}`
+            );
             return [];
         }
 
+        console.log(`Loaded OIDC provider: ${provider.name}`);
         providers.push(provider);
+    }
+
+    if (providers.length === 0) {
+        console.warn(
+            'OIDC is enabled but no valid providers are configured. Please check your environment variables.'
+        );
     }
 
     return providers;
