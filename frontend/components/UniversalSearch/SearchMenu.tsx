@@ -426,6 +426,10 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                 // Prevent input blur on mobile when clicking inside the search menu
                 e.preventDefault();
             }}
+            onTouchStart={(e) => {
+                // Prevent input blur on mobile when touching inside the search menu
+                e.preventDefault();
+            }}
         >
             {/* Filter Badges Section */}
             <div className="border-b border-gray-200 dark:border-gray-700 overflow-y-auto max-h-[40vh] md:max-h-none">
