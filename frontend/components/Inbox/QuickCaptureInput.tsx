@@ -910,53 +910,29 @@ const QuickCaptureInput = React.forwardRef<
             const hashtagMatch = beforeCursor.match(/#([a-zA-Z0-9_]*)$/);
 
             if (hashtagMatch) {
-                const hashtagStart = beforeCursor.lastIndexOf('#');
-                const textBeforeHashtag = inputText
-                    .substring(0, hashtagStart)
-                    .trim();
-                const textAfterCursor = afterCursor.trim();
+                const newText =
+                    beforeCursor.replace(
+                        /#([a-zA-Z0-9_]*)$/,
+                        `#${tagName} `
+                    ) + afterCursor;
+                setInputText(newText);
+                setShowTagSuggestions(false);
+                setFilteredTags([]);
+                setSelectedSuggestionIndex(-1);
 
-                let allowReplacement = false;
-
-                if (textAfterCursor === '' || textBeforeHashtag === '') {
-                    allowReplacement = true;
-                } else {
-                    const wordsBeforeHashtag = textBeforeHashtag
-                        .split(/\s+/)
-                        .filter((word) => word.length > 0);
-                    const allWordsAreTagsOrProjects = wordsBeforeHashtag.every(
-                        (word) => word.startsWith('#') || word.startsWith('+')
-                    );
-                    if (allWordsAreTagsOrProjects) {
-                        allowReplacement = true;
-                    }
-                }
-
-                if (allowReplacement) {
-                    const newText =
-                        beforeCursor.replace(
+                setTimeout(() => {
+                    if (inputRef.current) {
+                        inputRef.current.focus();
+                        const newCursorPos = beforeCursor.replace(
                             /#([a-zA-Z0-9_]*)$/,
-                            `#${tagName}`
-                        ) + afterCursor;
-                    setInputText(newText);
-                    setShowTagSuggestions(false);
-                    setFilteredTags([]);
-                    setSelectedSuggestionIndex(-1);
-
-                    setTimeout(() => {
-                        if (inputRef.current) {
-                            inputRef.current.focus();
-                            const newCursorPos = beforeCursor.replace(
-                                /#([a-zA-Z0-9_]*)$/,
-                                `#${tagName}`
-                            ).length;
-                            inputRef.current.setSelectionRange(
-                                newCursorPos,
-                                newCursorPos
-                            );
-                        }
-                    }, 0);
-                }
+                            `#${tagName} `
+                        ).length;
+                        inputRef.current.setSelectionRange(
+                            newCursorPos,
+                            newCursorPos
+                        );
+                    }
+                }, 0);
             }
         };
 
@@ -968,57 +944,33 @@ const QuickCaptureInput = React.forwardRef<
             );
 
             if (projectMatch) {
-                const projectStart = beforeCursor.lastIndexOf('+');
-                const textBeforeProject = inputText
-                    .substring(0, projectStart)
-                    .trim();
-                const textAfterCursor = afterCursor.trim();
+                const formattedProjectName = projectName.includes(' ')
+                    ? `"${projectName}"`
+                    : projectName;
 
-                let allowReplacement = false;
+                const newText =
+                    beforeCursor.replace(
+                        /\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/,
+                        `+${formattedProjectName} `
+                    ) + afterCursor;
+                setInputText(newText);
+                setShowProjectSuggestions(false);
+                setFilteredProjects([]);
+                setSelectedSuggestionIndex(-1);
 
-                if (textAfterCursor === '' || textBeforeProject === '') {
-                    allowReplacement = true;
-                } else {
-                    const wordsBeforeProject = textBeforeProject
-                        .split(/\s+/)
-                        .filter((word) => word.length > 0);
-                    const allWordsAreTagsOrProjects = wordsBeforeProject.every(
-                        (word) => word.startsWith('#') || word.startsWith('+')
-                    );
-                    if (allWordsAreTagsOrProjects) {
-                        allowReplacement = true;
-                    }
-                }
-
-                if (allowReplacement) {
-                    const formattedProjectName = projectName.includes(' ')
-                        ? `"${projectName}"`
-                        : projectName;
-
-                    const newText =
-                        beforeCursor.replace(
+                setTimeout(() => {
+                    if (inputRef.current) {
+                        inputRef.current.focus();
+                        const newCursorPos = beforeCursor.replace(
                             /\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/,
-                            `+${formattedProjectName}`
-                        ) + afterCursor;
-                    setInputText(newText);
-                    setShowProjectSuggestions(false);
-                    setFilteredProjects([]);
-                    setSelectedSuggestionIndex(-1);
-
-                    setTimeout(() => {
-                        if (inputRef.current) {
-                            inputRef.current.focus();
-                            const newCursorPos = beforeCursor.replace(
-                                /\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/,
-                                `+${formattedProjectName}`
-                            ).length;
-                            inputRef.current.setSelectionRange(
-                                newCursorPos,
-                                newCursorPos
-                            );
-                        }
-                    }, 0);
-                }
+                            `+${formattedProjectName} `
+                        ).length;
+                        inputRef.current.setSelectionRange(
+                            newCursorPos,
+                            newCursorPos
+                        );
+                    }
+                }, 0);
             }
         };
 
