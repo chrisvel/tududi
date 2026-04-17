@@ -1,5 +1,6 @@
 const fs = require('fs').promises;
 const path = require('path');
+const { getConfig } = require('../../../config/config');
 const {
     ALLOWED_TYPES,
     validateFileType,
@@ -12,6 +13,8 @@ const {
     ensureUploadDir,
     getFileUrl,
 } = require('../../../utils/attachment-utils');
+
+const config = getConfig();
 
 describe('Attachment Utils', () => {
     describe('validateFileType', () => {
@@ -224,11 +227,11 @@ describe('Attachment Utils', () => {
     });
 
     describe('deleteFileFromDisk', () => {
-        const testDir = path.join(__dirname, '../../test-uploads');
+        const testDir = path.join(config.uploadPath, 'test-delete-uploads');
         const testFile = path.join(testDir, 'test-delete-file.txt');
 
         beforeEach(async () => {
-            // Create test directory and file
+            // Create test directory and file within uploads
             await fs.mkdir(testDir, { recursive: true });
             await fs.writeFile(testFile, 'test content');
         });
@@ -263,6 +266,18 @@ describe('Attachment Utils', () => {
 
         it('should handle empty filepath gracefully', async () => {
             const result = await deleteFileFromDisk('');
+            expect(result).toBe(false);
+        });
+
+        it('should reject path traversal attempts', async () => {
+            const maliciousPath = path.join(testDir, '../../../etc/passwd');
+            const result = await deleteFileFromDisk(maliciousPath);
+            expect(result).toBe(false);
+        });
+
+        it('should reject absolute paths outside upload dir', async () => {
+            const outsidePath = '/tmp/outside-file.txt';
+            const result = await deleteFileFromDisk(outsidePath);
             expect(result).toBe(false);
         });
     });

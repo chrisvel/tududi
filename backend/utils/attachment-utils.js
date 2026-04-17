@@ -88,40 +88,20 @@ async function deleteFileFromDisk(filepath) {
     if (!filepath) return false;
 
     try {
-        const isTestEnv = process.env.NODE_ENV === 'test';
+        const uploadDir = path.resolve(config.uploadPath);
+        const resolvedPath = path.resolve(filepath);
+        const relativePath = path.relative(uploadDir, resolvedPath);
 
-        if (!isTestEnv) {
-            const uploadDir = path.resolve(config.uploadPath);
-            const resolvedPath = path.resolve(filepath);
-            const relativePath = path.relative(uploadDir, resolvedPath);
-
-            if (
-                relativePath.startsWith('..') ||
-                path.isAbsolute(relativePath)
-            ) {
-                logError(
-                    'Attempt to delete file outside upload directory:',
-                    filepath
-                );
-                return false;
-            }
-
-            const safePath = path.join(uploadDir, relativePath);
-            await fs.unlink(safePath);
-        } else {
-            if (filepath.includes('..') || filepath.match(/\.\.[\/\\]/)) {
-                logError(
-                    'Attempt to use path traversal in filepath:',
-                    filepath
-                );
-                return false;
-            }
-            const sanitizedPath = path
-                .normalize(filepath)
-                .replace(/^(\.\.[/\\])+/, '');
-            const safePath = path.resolve(sanitizedPath);
-            await fs.unlink(safePath);
+        if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
+            logError(
+                'Attempt to delete file outside upload directory:',
+                filepath
+            );
+            return false;
         }
+
+        const safePath = path.join(uploadDir, relativePath);
+        await fs.unlink(safePath);
 
         return true;
     } catch (error) {

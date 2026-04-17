@@ -325,6 +325,14 @@ class RemoteCalendarController {
 
             const validatedUrl = validateCalDAVUrl(testUrl);
 
+            const parsedUrl = new URL(validatedUrl);
+            if (isPrivateOrLocalhost(parsedUrl.hostname)) {
+                throw new AppError(
+                    'Cannot connect to private, local, or internal network addresses',
+                    400
+                );
+            }
+
             const authConfig =
                 auth_type === 'bearer'
                     ? { headers: { Authorization: `Bearer ${password}` } }
@@ -338,6 +346,7 @@ class RemoteCalendarController {
                     process.env.CALDAV_REQUEST_TIMEOUT || '30000',
                     10
                 ),
+                maxRedirects: 0,
             });
 
             const davHeader = response.headers.dav || '';
