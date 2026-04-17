@@ -9,6 +9,7 @@ This document contains preferences, patterns, and memory items specific to worki
 ### PR Template
 - **ALWAYS use** the PR template from `.github/pull_request_template.md`
 - **Do NOT add** the "🤖 Generated with [Claude Code](https://claude.com/claude-code)" footer to pull requests
+- **Do NOT use emojis** in PR titles, descriptions, or comments (e.g., ✅, 🎉, 📦, ⚠️, 🚀)
 - Required sections:
   - **Description**: What does this PR do? Why is this change needed?
   - **Type of Change**: Bug fix / New feature / Breaking change / Documentation
@@ -28,6 +29,7 @@ This document contains preferences, patterns, and memory items specific to worki
 
 ### General Rules
 - **Do NOT add** `Co-authored-by` trailers to commit messages (set globally in `~/.claude/CLAUDE.md`)
+- **Do NOT use emojis** in commit messages or comments
 - Use conventional commit style when appropriate: `fix:`, `feat:`, `refactor:`, etc.
 - Keep commit messages concise and descriptive
 
@@ -94,5 +96,5 @@ This document contains preferences, patterns, and memory items specific to worki
 
 ---
 
-**Last Updated:** 2026-04-12
+**Last Updated:** 2026-04-20
 **Maintained by:** Claude Code sessions - update as new patterns emerge

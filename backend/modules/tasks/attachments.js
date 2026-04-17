@@ -14,7 +14,10 @@ const {
 } = require('../../utils/attachment-utils');
 const { getAuthenticatedUserId } = require('../../utils/request-utils');
 const permissionsService = require('../../services/permissionsService');
-const { createResourceLimiter } = require('../../middleware/rateLimiter');
+const {
+    createResourceLimiter,
+    authenticatedApiLimiter,
+} = require('../../middleware/rateLimiter');
 
 const router = express.Router();
 
@@ -259,44 +262,48 @@ router.delete(
 );
 
 // Download an attachment
-router.get('/attachments/:attachmentUid/download', async (req, res) => {
-    try {
-        const { attachmentUid } = req.params;
-        const userId = req.authUserId;
+router.get(
+    '/attachments/:attachmentUid/download',
+    authenticatedApiLimiter,
+    async (req, res) => {
+        try {
+            const { attachmentUid } = req.params;
+            const userId = req.authUserId;
 
-        // Find attachment
-        const attachment = await TaskAttachment.findOne({
-            where: { uid: attachmentUid },
-            include: [{ model: Task, required: true }],
-        });
+            // Find attachment
+            const attachment = await TaskAttachment.findOne({
+                where: { uid: attachmentUid },
+                include: [{ model: Task, required: true }],
+            });
 
-        if (!attachment) {
-            return res.status(404).json({ error: 'Attachment not found' });
+            if (!attachment) {
+                return res.status(404).json({ error: 'Attachment not found' });
+            }
+
+            // Check if user has read access to the task (includes shared projects)
+            const access = await permissionsService.getAccess(
+                userId,
+                'task',
+                attachment.Task.uid
+            );
+            const LEVELS = { none: 0, ro: 1, rw: 2, admin: 3 };
+            if (LEVELS[access] < LEVELS.ro) {
+                return res
+                    .status(403)
+                    .json({ error: 'Not authorized to download this file' });
+            }
+
+            // Send file
+            const filePath = path.join(config.uploadPath, attachment.file_path);
+            res.download(filePath, attachment.original_filename);
+        } catch (error) {
+            logError('Error downloading attachment:', error);
+            res.status(500).json({
+                error: 'Failed to download attachment',
+                details: error.message,
+            });
         }
-
-        // Check if user has read access to the task (includes shared projects)
-        const access = await permissionsService.getAccess(
-            userId,
-            'task',
-            attachment.Task.uid
-        );
-        const LEVELS = { none: 0, ro: 1, rw: 2, admin: 3 };
-        if (LEVELS[access] < LEVELS.ro) {
-            return res
-                .status(403)
-                .json({ error: 'Not authorized to download this file' });
-        }
-
-        // Send file
-        const filePath = path.join(config.uploadPath, attachment.file_path);
-        res.download(filePath, attachment.original_filename);
-    } catch (error) {
-        logError('Error downloading attachment:', error);
-        res.status(500).json({
-            error: 'Failed to download attachment',
-            details: error.message,
-        });
     }
-});
+);
 
 module.exports = router;

@@ -3,11 +3,16 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('./controller');
-const { authLimiter } = require('../../middleware/rateLimiter');
+const { authLimiter, apiLimiter } = require('../../middleware/rateLimiter');
 const { csrfMiddleware } = require('../../middleware/csrf');
 
 router.get('/version', authController.getVersion);
 router.get('/registration-status', authController.getRegistrationStatus);
+router.get(
+    '/password-auth-status',
+    apiLimiter,
+    authController.getPasswordAuthStatus
+);
 router.get('/csrf-token', csrfMiddleware, authController.getCsrfToken);
 router.post('/register', authLimiter, authController.register);
 router.get('/verify-email', authLimiter, authController.verifyEmail);

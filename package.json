@@ -140,6 +140,7 @@
     "@dr.pogodin/csurf": "^1.16.9",
     "@modelcontextprotocol/sdk": "^1.0.0",
     "@playwright/test": "^1.57.0",
+    "axios": "^1.15.0",
     "bcrypt": "~6.0.0",
     "compression": "~1.8.0",
     "compromise": "^14.14.4",
@@ -152,6 +153,7 @@
     "express-rate-limit": "^8.2.1",
     "express-session": "~1.18.1",
     "helmet": "~8.1.0",
+    "ical.js": "^2.1.0",
     "js-yaml": "~4.1.0",
     "linguaisync": "^0.1.2",
     "lodash": "~4.18.1",
@@ -163,6 +165,7 @@
     "node-cron": "~4.1.0",
     "nodemailer": "^8.0.5",
     "openid-client": "^5.7.1",
+    "raw-body": "^3.0.2",
     "sequelize": "~6.37.7",
     "sequelize-cli": "~6.6.2",
     "slugify": "^1.6.6",
@@ -171,7 +174,8 @@
     "swagger-ui-express": "^5.0.1",
     "use-debounce": "^10.0.6",
     "uuid": "~11.1.0",
-    "web-push": "^3.6.7"
+    "web-push": "^3.6.7",
+    "xml2js": "^0.6.0"
   },
   "overrides": {
     "tar": "^7.5.8"

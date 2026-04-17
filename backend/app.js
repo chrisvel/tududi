@@ -64,21 +64,59 @@ app.use(
     cors({
         origin: config.allowedOrigins,
         credentials: true,
-        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+        methods: [
+            'GET',
+            'POST',
+            'PUT',
+            'PATCH',
+            'DELETE',
+            'OPTIONS',
+            'PROPFIND',
+            'REPORT',
+        ],
         allowedHeaders: [
             'Authorization',
             'Content-Type',
             'Accept',
             'X-Requested-With',
+            'Depth',
+            'If-Match',
+            'If-None-Match',
         ],
-        exposedHeaders: ['Content-Type'],
+        exposedHeaders: ['Content-Type', 'ETag', 'DAV', 'Allow'],
         maxAge: 1728000,
+        preflightContinue: true,
     })
 );
 
-// Body parsing
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+// Body parsing (skip for CalDAV routes which need raw body access)
+app.use((req, res, next) => {
+    const isCalDAVPath =
+        req.path.startsWith('/caldav/') ||
+        req.path.startsWith('/.well-known/caldav');
+
+    if (isCalDAVPath) {
+        return next();
+    }
+
+    express.json({ limit: '10mb' })(req, res, next);
+});
+
+app.use((req, res, next) => {
+    const isCalDAVPath =
+        req.path.startsWith('/caldav/') ||
+        req.path.startsWith('/.well-known/caldav');
+
+    if (isCalDAVPath) {
+        return next();
+    }
+
+    express.urlencoded({ extended: true, limit: '10mb' })(req, res, next);
+});
+
+// CalDAV routes (registered after conditional body parsers)
+const caldavRoutes = require('./modules/caldav/routes');
+app.use(caldavRoutes);
 
 // Session configuration
 const sessionMiddleware = session({
@@ -330,6 +368,14 @@ async function startServer() {
 
         // Initialize task scheduler
         await taskScheduler.initialize();
+
+        // Initialize CalDAV sync scheduler
+        const caldavSyncScheduler = require('./modules/caldav/services/sync-scheduler');
+        await caldavSyncScheduler.initialize();
+
+        // Validate authentication configuration
+        const { validateAuthConfiguration } = require('./config/authConfig');
+        validateAuthConfiguration();
 
         const server = app.listen(config.port, config.host, () => {
             console.log(`Server running on port ${config.port}`);

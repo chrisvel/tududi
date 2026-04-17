@@ -3,6 +3,7 @@
 const authService = require('./service');
 const { logError } = require('../../services/logService');
 const { generateToken } = require('../../middleware/csrf');
+const { isPasswordAuthEnabled } = require('../../config/authConfig');
 
 const authController = {
     getVersion(req, res) {
@@ -13,6 +14,14 @@ const authController = {
         try {
             const result = await authService.getRegistrationStatus();
             res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    getPasswordAuthStatus(req, res, next) {
+        try {
+            res.json({ enabled: isPasswordAuthEnabled() });
         } catch (error) {
             next(error);
         }
@@ -30,6 +39,9 @@ const authController = {
             }
             if (error.statusCode === 400) {
                 return res.status(400).json({ error: error.message });
+            }
+            if (error.statusCode === 403) {
+                return res.status(403).json({ error: error.message });
             }
             if (
                 error.message ===

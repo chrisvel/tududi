@@ -4,6 +4,7 @@ const { User, sequelize } = require('../../models');
 const { isAdmin } = require('../../services/rolesService');
 const { logError } = require('../../services/logService');
 const { getConfig } = require('../../config/config');
+const { isPasswordAuthEnabled } = require('../../config/authConfig');
 const {
     isRegistrationEnabled,
     createUnverifiedUser,
@@ -31,6 +32,13 @@ class AuthService {
         const transaction = await sequelize.transaction();
 
         try {
+            if (!isPasswordAuthEnabled()) {
+                await transaction.rollback();
+                throw new ForbiddenError(
+                    'Password registration is disabled. Please use SSO to sign in.'
+                );
+            }
+
             if (!(await isRegistrationEnabled())) {
                 await transaction.rollback();
                 throw new NotFoundError('Registration is not enabled');
@@ -149,6 +157,12 @@ class AuthService {
     }
 
     async login(email, password, session) {
+        if (!isPasswordAuthEnabled()) {
+            throw new ForbiddenError(
+                'Password login is disabled. Please use SSO to sign in.'
+            );
+        }
+
         if (!email || !password) {
             throw new ValidationError('Invalid login parameters.');
         }

@@ -140,4 +140,83 @@ describe('Auth Routes', () => {
             expect(response.body.message).toBe('Logged out successfully');
         });
     });
+
+    describe('Password Authentication Disabled', () => {
+        let originalEnv;
+
+        beforeAll(() => {
+            originalEnv = process.env.PASSWORD_AUTH_ENABLED;
+        });
+
+        afterAll(() => {
+            if (originalEnv === undefined) {
+                delete process.env.PASSWORD_AUTH_ENABLED;
+            } else {
+                process.env.PASSWORD_AUTH_ENABLED = originalEnv;
+            }
+            delete require.cache[require.resolve('../../config/authConfig')];
+        });
+
+        beforeEach(() => {
+            process.env.PASSWORD_AUTH_ENABLED = 'false';
+            delete require.cache[require.resolve('../../config/authConfig')];
+        });
+
+        describe('POST /api/login', () => {
+            it('should return 403 when password auth is disabled', async () => {
+                const response = await request(app).post('/api/login').send({
+                    email: 'test@example.com',
+                    password: 'password123',
+                });
+
+                expect(response.status).toBe(403);
+                expect(response.body.error).toBe(
+                    'Password login is disabled. Please use SSO to sign in.'
+                );
+            });
+        });
+
+        describe('POST /api/register', () => {
+            it('should return 403 when password auth is disabled', async () => {
+                const response = await request(app).post('/api/register').send({
+                    email: 'newuser@example.com',
+                    password: 'password123',
+                });
+
+                expect(response.status).toBe(403);
+                expect(response.body.error).toBe(
+                    'Password registration is disabled. Please use SSO to sign in.'
+                );
+            });
+        });
+
+        describe('GET /api/password-auth-status', () => {
+            it('should return enabled: false when disabled', async () => {
+                const response = await request(app).get(
+                    '/api/password-auth-status'
+                );
+
+                expect(response.status).toBe(200);
+                expect(response.body).toEqual({ enabled: false });
+            });
+        });
+    });
+
+    describe('Password Authentication Enabled (Default)', () => {
+        beforeEach(() => {
+            delete process.env.PASSWORD_AUTH_ENABLED;
+            delete require.cache[require.resolve('../../config/authConfig')];
+        });
+
+        describe('GET /api/password-auth-status', () => {
+            it('should return enabled: true by default', async () => {
+                const response = await request(app).get(
+                    '/api/password-auth-status'
+                );
+
+                expect(response.status).toBe(200);
+                expect(response.body).toEqual({ enabled: true });
+            });
+        });
+    });
 });

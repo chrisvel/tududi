@@ -543,6 +543,70 @@ If a user was created via SSO and has no password:
 - Both auth methods work independently
 - Unlinking SSO doesn't affect password login
 
+### SSO-Only Mode
+
+For deployments that want to enforce SSO-only authentication, password-based login and registration can be completely disabled.
+
+**Configuration:**
+
+```bash
+# Disable password authentication
+PASSWORD_AUTH_ENABLED=false
+
+# Ensure OIDC is properly configured
+OIDC_ENABLED=true
+OIDC_PROVIDER_NAME=Your Provider
+# ... other OIDC settings
+```
+
+**Behavior When Disabled:**
+
+1. **Login Page:**
+   - Password login form is hidden
+   - Only OIDC provider buttons are shown
+   - Registration link is hidden
+
+2. **Registration:**
+   - `/register` page shows "Password Registration Disabled" message
+   - Direct registration attempts return 403 Forbidden
+   - New users must use SSO (auto-provisioning must be enabled)
+
+3. **API Behavior:**
+   - `POST /api/login` with credentials returns 403: "Password login is disabled. Please use SSO to sign in."
+   - `POST /api/register` returns 403: "Password registration is disabled. Please use SSO to sign in."
+   - `GET /api/password-auth-status` returns `{ "enabled": false }`
+
+**Use Cases:**
+
+- **Corporate Deployments:** Enforce centralized identity management
+- **Security Compliance:** Eliminate password management burden
+- **Simplified UX:** Single authentication method for all users
+
+**Important Considerations:**
+
+1. **OIDC Must Be Configured:** Ensure at least one OIDC provider is configured before disabling password auth
+2. **Auto-Provisioning Required:** Set `OIDC_AUTO_PROVISION=true` to allow new users to register via SSO
+3. **Existing Users:** Users with passwords can no longer log in with them, must link SSO or be manually migrated
+4. **Admin Access:** Ensure at least one admin can access via SSO before disabling password auth
+
+**Migration Steps:**
+
+If transitioning from password to SSO-only:
+
+1. **Step 1:** Configure OIDC providers with `OIDC_ENABLED=true`
+2. **Step 2:** Notify users to link their SSO accounts (Profile > Security > Connected Accounts)
+3. **Step 3:** Verify all users have SSO identities linked
+4. **Step 4:** Set `PASSWORD_AUTH_ENABLED=false` and restart server
+5. **Step 5:** Monitor logs for authentication issues
+
+**Rollback:**
+
+To re-enable password authentication:
+```bash
+PASSWORD_AUTH_ENABLED=true  # or remove the variable
+```
+Restart the server. Password login will immediately become available again.
+
 ---
 
 ## Troubleshooting

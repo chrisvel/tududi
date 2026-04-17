@@ -71,6 +71,12 @@ const Backup = require('./backup')(sequelize);
 const OIDCIdentity = require('./oidc_identity')(sequelize);
 const OIDCStateNonce = require('./oidc_state_nonce')(sequelize);
 const AuthAuditLog = require('./auth_audit_log')(sequelize);
+const CalDAVCalendar = require('./caldav_calendar')(sequelize);
+const CalDAVSyncState = require('./caldav_sync_state')(sequelize);
+const CalDAVOccurrenceOverride = require('./caldav_occurrence_override')(
+    sequelize
+);
+const CalDAVRemoteCalendar = require('./caldav_remote_calendar')(sequelize);
 
 User.hasMany(Area, { foreignKey: 'user_id' });
 Area.belongsTo(User, { foreignKey: 'user_id' });
@@ -198,6 +204,55 @@ OIDCIdentity.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 // Auth audit log associations
 AuthAuditLog.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 
+// CalDAV associations
+User.hasMany(CalDAVCalendar, { foreignKey: 'user_id', as: 'CalDAVCalendars' });
+CalDAVCalendar.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+
+CalDAVCalendar.hasMany(CalDAVSyncState, {
+    foreignKey: 'calendar_id',
+    as: 'SyncStates',
+});
+CalDAVSyncState.belongsTo(CalDAVCalendar, {
+    foreignKey: 'calendar_id',
+    as: 'Calendar',
+});
+Task.hasMany(CalDAVSyncState, {
+    foreignKey: 'task_id',
+    as: 'CalDAVSyncStates',
+});
+CalDAVSyncState.belongsTo(Task, { foreignKey: 'task_id', as: 'Task' });
+
+CalDAVCalendar.hasMany(CalDAVOccurrenceOverride, {
+    foreignKey: 'calendar_id',
+    as: 'OccurrenceOverrides',
+});
+CalDAVOccurrenceOverride.belongsTo(CalDAVCalendar, {
+    foreignKey: 'calendar_id',
+    as: 'Calendar',
+});
+Task.hasMany(CalDAVOccurrenceOverride, {
+    foreignKey: 'parent_task_id',
+    as: 'CalDAVOccurrenceOverrides',
+});
+CalDAVOccurrenceOverride.belongsTo(Task, {
+    foreignKey: 'parent_task_id',
+    as: 'ParentTask',
+});
+
+User.hasMany(CalDAVRemoteCalendar, {
+    foreignKey: 'user_id',
+    as: 'CalDAVRemoteCalendars',
+});
+CalDAVRemoteCalendar.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+CalDAVRemoteCalendar.belongsTo(CalDAVCalendar, {
+    foreignKey: 'local_calendar_id',
+    as: 'LocalCalendar',
+});
+CalDAVCalendar.hasOne(CalDAVRemoteCalendar, {
+    foreignKey: 'local_calendar_id',
+    as: 'RemoteCalendar',
+});
+
 module.exports = {
     sequelize,
     User,
@@ -221,4 +276,8 @@ module.exports = {
     OIDCIdentity,
     OIDCStateNonce,
     AuthAuditLog,
+    CalDAVCalendar,
+    CalDAVSyncState,
+    CalDAVOccurrenceOverride,
+    CalDAVRemoteCalendar,
 };

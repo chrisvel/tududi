@@ -18,6 +18,14 @@
 
 More screenshots are [available here](#screenshots).
 
+---
+
+## 💖 Enjoying tududi?
+
+Help keep it free and actively developed by [buying me a coffee](https://coff.ee/chrisveleris) ☕, [becoming a sponsor](https://github.com/sponsors/chrisvel), or [supporting on Patreon](https://www.patreon.com/ChrisVeleris). You can also support the project by purchasing a **hosted subscription** for a hassle-free, managed solution. Every contribution helps maintain this project and build new features!
+
+---
+
 ## 🚀 How It Works
 
 This app allows users to manage their tasks, projects, areas, notes, and tags in an organized way. Users can create tasks, projects, areas (to group projects), notes, and tags. Each task can be associated with a project, and both tasks and notes can be tagged for better organization. Projects can belong to areas and can also have multiple notes and tags. This structure helps users categorize and track their work efficiently, whether they’re managing individual tasks, larger projects, or keeping detailed notes.
@@ -59,6 +67,13 @@ For the thinking behind tududi, read:
     - Account linking for hybrid authentication
     - Simple .env-based configuration perfect for self-hosters
     - Automatic admin role assignment based on email domains
+- **CalDAV Synchronization**: Industry-standard CalDAV protocol support for seamless task syncing:
+    - Bidirectional sync with CalDAV servers (Nextcloud, Baikal, and more)
+    - Access tasks from popular clients (tasks.org, Apple Reminders, Thunderbird, Evolution)
+    - Full recurring task support with RRULE
+    - Conflict detection and resolution
+    - Background automatic synchronization
+    - HTTP Basic Authentication for CalDAV clients
 
 ## 🗺️ Roadmap
 
@@ -152,6 +167,39 @@ docker run \
 
 **Documentation:** See [docs/10-oidc-sso.md](docs/10-oidc-sso.md) for detailed setup guides and provider-specific configuration.
 
+### CalDAV Synchronization
+
+Tududi supports the industry-standard CalDAV protocol, enabling seamless task synchronization with popular CalDAV clients and servers.
+
+**Quick Setup:**
+
+```bash
+docker run \
+  -e CALDAV_ENABLED=true \
+  -e ENCRYPTION_KEY=$(openssl rand -hex 32) \
+  ...
+```
+
+**Supported Clients:**
+- **tasks.org** (Android/iOS) - Full task management with recurring tasks
+- **Apple Reminders** (iOS/macOS) - Native iOS/macOS integration
+- **Thunderbird** (Desktop) - Advanced task features
+- **Evolution** (Linux) - Full CalDAV compatibility
+
+**Sync with External Servers:**
+
+Connect Tududi to external CalDAV servers like Nextcloud, Baikal, or other CalDAV-compatible services for bidirectional synchronization.
+
+**Key Features:**
+- Bidirectional sync (local ↔ remote)
+- Full recurring task support with RRULE
+- Conflict detection and resolution
+- Background automatic synchronization
+- HTTP Basic Authentication
+- Encrypted password storage (AES-256-GCM)
+
+**Documentation:** See [docs/11-caldav-sync.md](docs/11-caldav-sync.md) for client setup guides, server configuration, and troubleshooting.
+
 ### 📚 Documentation
 
 For detailed setup instructions, configuration options, and getting started guides, visit:
@@ -242,19 +290,6 @@ Contributions to tududi are welcome! Whether it's bug fixes, new features, docum
 - Database migrations
 - Translation guidelines
 - Pull request checklist
-
-## 💖 Support the Project
-
-If you find tududi useful, consider supporting its development:
-
-<p align="center">
-  <a href="https://github.com/sponsors/chrisvel"><img src="https://img.shields.io/badge/GitHub_Sponsors-Support-ea4aaa?logo=githubsponsors&logoColor=white&style=for-the-badge" alt="GitHub Sponsors"></a>
-  <a href="https://www.patreon.com/ChrisVeleris"><img src="https://img.shields.io/badge/Patreon-Support-F96854?logo=patreon&logoColor=white&style=for-the-badge" alt="Patreon"></a>
-  <a href="https://coff.ee/chrisveleris"><img src="https://img.shields.io/badge/Buy_Me_a_Coffee-Support-FFDD00?logo=buymeacoffee&logoColor=black&style=for-the-badge" alt="Buy Me a Coffee"></a>
-  <a href="https://www.paypal.com/donate/?hosted_button_id=QEQCKLXPB6XAE"><img src="https://img.shields.io/badge/PayPal-Donate-0070BA?logo=paypal&logoColor=white&style=for-the-badge" alt="PayPal"></a>
-</p>
-
-Your support helps keep tududi free, open-source, and actively maintained. Every contribution — big or small — makes a difference!
 
 ## 📜 License
 

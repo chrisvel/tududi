@@ -32,7 +32,7 @@ This implementation uses **environment variables** for OIDC provider configurati
 |--------|---------------------------|-------------------|
 | **Configuration** | Edit `.env` file, restart server | Web UI, no restart needed |
 | **Tables** | 3 tables (identities, state, audit) | 4 tables (+ providers table) |
-| **Timeline** | 15-19 days (3-4 weeks) | 22-29 days (4-6 weeks) |
+| **Timeline** | Faster | Longer |
 | **Complexity** | Lower | Higher |
 | **Target Audience** | Self-hosters with shell access | Non-technical admins |
 | **Secret Storage** | .env plaintext (standard practice) | Database with AES-256-GCM |
@@ -40,7 +40,7 @@ This implementation uses **environment variables** for OIDC provider configurati
 | **Migration Path** | Can add admin UI later | N/A |
 
 **Why This Approach:**
-- ✅ **Faster delivery:** Ship OIDC 7-10 days sooner
+- ✅ **Faster delivery:** Ship OIDC faster
 - ✅ **Simpler codebase:** Less code to maintain
 - ✅ **Familiar pattern:** Self-hosters already edit .env for DB, SMTP, etc.
 - ✅ **Sufficient for MVP:** Most users need 1-2 providers
@@ -599,7 +599,7 @@ Log all authentication events:
 
 ## Implementation Steps
 
-### Phase 1: Database & Models (2 days)
+### Phase 1: Database & Models
 1. Create `oidc_identities` migration and model
 2. Create `oidc_state_nonces` migration and model
 3. Create migration to make `password_digest` nullable
@@ -609,7 +609,7 @@ Log all authentication events:
 
 **Testing:** Unit tests for models and validation rules
 
-### Phase 2: Backend Core Services (3-4 days)
+### Phase 2: Backend Core Services
 1. Install `openid-client` dependency
 2. Implement `providerConfig.js` (load from .env)
 3. Implement `stateManager.js` (state lifecycle)
@@ -617,7 +617,7 @@ Log all authentication events:
 
 **Testing:** Unit tests for each service
 
-### Phase 3: OIDC Authentication Flow (4-5 days)
+### Phase 3: OIDC Authentication Flow
 1. Implement `service.js` (discovery, auth flow, callback)
 2. Implement `provisioningService.js` (JIT provisioning logic)
 3. Implement `oidcIdentityService.js` (linking/unlinking)
@@ -627,7 +627,7 @@ Log all authentication events:
 
 **Testing:** Integration tests with mock OIDC provider
 
-### Phase 4: Frontend Login Flow (2-3 days)
+### Phase 4: Frontend Login Flow
 1. Create `OIDCProviderButtons` component
 2. Update `Login.tsx` to fetch and display providers
 3. Create `OIDCCallback.tsx` component
@@ -636,7 +636,7 @@ Log all authentication events:
 
 **Testing:** E2E tests with Playwright (mock provider)
 
-### Phase 5: Frontend Account Linking (2-3 days)
+### Phase 5: Frontend Account Linking
 1. Create "Connected Accounts" section in SecurityTab
 2. Implement link/unlink flows
 3. Add validation for last auth method
@@ -644,14 +644,13 @@ Log all authentication events:
 
 **Testing:** E2E tests for linking workflows
 
-### Phase 6: Documentation & Polish (2 days)
+### Phase 6: Documentation & Polish
 1. Create `/docs/10-oidc-sso.md` (user guide)
 2. Update README with .env configuration examples
 3. Add provider-specific setup guides (Google, Okta, Authentik, PocketID)
 4. Add i18n for all UI text
 5. Full regression testing
 
-**Total Estimated Time:** 15-19 days (3-4 weeks)
 
 ---
 
@@ -671,7 +670,7 @@ If .env configuration proves limiting, a future release can add admin UI:
 - Test connection button
 - Audit log viewer
 
-**Estimated Additional Time:** 3-4 days
+**Estimated Additional Time:** Moderate effort
 
 This keeps the initial release simple while providing a clear upgrade path.
 
@@ -930,7 +929,7 @@ Reads `.env` providers and inserts into database.
 Build `/admin/oidc-providers` page with CRUD operations.
 
 ### Benefits of This Approach
-- ✅ Ship OIDC faster (3-4 weeks vs 4-6 weeks)
+- ✅ Ship OIDC faster
 - ✅ Learn from user feedback before building UI
 - ✅ Keep initial implementation simple
 - ✅ Clear upgrade path when needed
