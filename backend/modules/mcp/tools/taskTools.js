@@ -15,23 +15,37 @@ const { Task, Project, Tag } = require('../../../models');
 async function findTaskByIdentifier(identifier, userId) {
     const isNumeric = !isNaN(identifier);
 
+    const includeOptions = [
+        { model: Project, as: 'Project' },
+        { model: Tag, as: 'Tags' },
+        {
+            model: Task,
+            as: 'Subtasks',
+            required: false,
+            include: [
+                {
+                    model: Tag,
+                    as: 'Tags',
+                    through: { attributes: [] },
+                },
+            ],
+            separate: true,
+            order: [
+                ['order', 'ASC'],
+                ['created_at', 'ASC'],
+            ],
+        },
+    ];
+
     if (isNumeric) {
         return await taskRepository.findByIdAndUser(
             parseInt(identifier),
             userId,
-            {
-                include: [
-                    { model: Project, as: 'Project' },
-                    { model: Tag, as: 'Tags' },
-                ],
-            }
+            { include: includeOptions }
         );
     } else {
         return await taskRepository.findByUid(identifier, {
-            include: [
-                { model: Project, as: 'Project' },
-                { model: Tag, as: 'Tags' },
-            ],
+            include: includeOptions,
         });
     }
 }
