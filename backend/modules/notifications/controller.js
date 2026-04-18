@@ -81,6 +81,27 @@ const notificationsController = {
             next(error);
         }
     },
+
+    async triggerTestNotification(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const { type } = req.body;
+
+            if (!type) {
+                return res
+                    .status(400)
+                    .json({ error: 'Notification type is required' });
+            }
+
+            const result = await notificationsService.triggerTestNotification(
+                userId,
+                type
+            );
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    },
 };
 
 module.exports = notificationsController;
