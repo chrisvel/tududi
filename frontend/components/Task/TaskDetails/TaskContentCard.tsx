@@ -156,6 +156,7 @@ const TaskContentCard: React.FC<TaskContentCardProps> = ({
                     <MarkdownRenderer
                         content={content}
                         className="prose dark:prose-invert max-w-none"
+                        onContentChange={onUpdate}
                     />
                 </div>
             ) : (
