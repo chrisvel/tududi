@@ -16,5 +16,9 @@ router.post(
     notificationsController.markAllAsRead
 );
 router.delete('/notifications/:id', notificationsController.dismiss);
+router.post(
+    '/test-notifications/trigger',
+    notificationsController.triggerTestNotification
+);
 
 module.exports = router;
