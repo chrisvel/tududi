@@ -118,6 +118,10 @@ app.use((req, res, next) => {
 const caldavRoutes = require('./modules/caldav/routes');
 app.use(caldavRoutes);
 
+// RFC 9728 — Protected Resource Metadata (no auth required)
+const oauthRoutes = require('./modules/oauth/routes');
+app.use(oauthRoutes);
+
 // Session configuration
 const sessionMiddleware = session({
     secret: config.secret,
@@ -133,52 +137,22 @@ const sessionMiddleware = session({
 });
 app.use(sessionMiddleware);
 
-// CSRF protection using lusca (CodeQL recommended library)
+// CSRF protection using lusca (CodeQL recommended library).
+// Only applies to session-authenticated state-changing requests (POST/PUT/PATCH/DELETE).
+// CSRF protects against cross-site requests that hijack an existing browser session;
+// unauthenticated requests and Bearer-token requests have no session to hijack.
 const lusca = require('lusca');
 const { csrfMiddleware } = require('./middleware/csrf');
 
-// Pre-check middleware to exempt test/Bearer requests before lusca runs
-app.use((req, res, next) => {
-    // Public unauthenticated endpoints that should bypass CSRF
-    // These are routes that don't require authentication and are used during login/registration
-    const publicPaths = [
-        '/api/login',
-        '/api/register',
-        '/api/verify-email',
-        '/api/version',
-        '/api/registration-status',
-        '/api/health',
-    ];
-
-    const isPublicPath = publicPaths.some((path) => req.path === path);
-    const isOidcPath = req.path.startsWith('/api/oidc/');
-    const isFeatureFlagsPath = req.path.startsWith('/api/feature-flags');
-    const isCalDAVPath =
-        req.path.startsWith('/caldav/') ||
-        req.path.startsWith('/.well-known/caldav');
-
-    // Mark exempt requests so lusca wrapper can skip them
-    if (
-        process.env.NODE_ENV === 'test' ||
-        req.headers.authorization?.startsWith('Bearer ') ||
-        isPublicPath ||
-        isOidcPath ||
-        isFeatureFlagsPath ||
-        isCalDAVPath
-    ) {
-        req._csrfExempt = true;
-    }
-    next();
-});
-
-// Apply lusca CSRF - wrapped to check exemption flag
-// Only apply to state-changing methods (POST, PUT, PATCH, DELETE)
 app.use((req, res, next) => {
     const statefulMethods = ['POST', 'PUT', 'PATCH', 'DELETE'];
-    if (req._csrfExempt || !statefulMethods.includes(req.method)) {
-        return next();
+    const hasSession = !!(req.session && req.session.userId);
+    const isTest = process.env.NODE_ENV === 'test';
+
+    if (!isTest && hasSession && statefulMethods.includes(req.method)) {
+        return csrfMiddleware(req, res, next);
     }
-    return csrfMiddleware(req, res, next);
+    return next();
 });
 
 // Static files

@@ -175,6 +175,15 @@ graph TD
 6. Attaches user to request
 ```
 
+**3. OAuth2 JWT Bearer (Resource Server)**
+
+- Accepts JWT access tokens issued by a configured OIDC provider
+- Enabled when `OIDC_ENABLED=true` and `OIDC_ISSUER_URL` is set
+- Token validated against provider's JWKS endpoint
+- Subject (`sub`) claim mapped to a linked `OIDCIdentity` record
+- RFC 9728 discovery document served at `/.well-known/oauth-protected-resource`
+- `WWW-Authenticate` header returned on 401 responses when `BASE_URL` is set
+
 ### Permission System
 
 **Permission Levels:**
