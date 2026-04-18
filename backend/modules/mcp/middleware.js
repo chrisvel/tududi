@@ -8,7 +8,6 @@
  */
 function authenticateMcpRequest(req, res, next) {
     req.mcpUser = req.currentUser;
-    req.mcpApiToken = req.authToken;
     next();
 }
 
