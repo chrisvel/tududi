@@ -87,7 +87,6 @@ async function handleMcpHttpRequest(req, res, user) {
 
         // Handle the HTTP request
         await transport.handleRequest(req, res, req.body);
-
     } catch (error) {
         console.error('MCP HTTP handler error:', error);
 
