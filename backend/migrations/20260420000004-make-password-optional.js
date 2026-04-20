@@ -59,11 +59,12 @@ module.exports = {
                 next_task_suggestion_enabled, today_settings, sidebar_settings,
                 ui_settings, notification_preferences, keyboard_shortcuts,
                 email_verified, email_verification_token,
-                email_verification_token_expires_at, created_at, updated_at
+                email_verification_token_expires_at, created_at, updated_at,
+                ai_provider, openai_api_key, ollama_base_url, ollama_model
             )
             SELECT
                 id, uid, name, surname, email,
-                COALESCE(password_digest, NULL) as password_digest,
+                password as password_digest,
                 appearance, language,
                 timezone, first_day_of_week, avatar_image, telegram_bot_token,
                 telegram_chat_id, task_summary_enabled, task_summary_frequency,
@@ -73,7 +74,8 @@ module.exports = {
                 next_task_suggestion_enabled, today_settings, sidebar_settings,
                 ui_settings, notification_preferences, keyboard_shortcuts,
                 email_verified, email_verification_token,
-                email_verification_token_expires_at, created_at, updated_at
+                email_verification_token_expires_at, created_at, updated_at,
+                ai_provider, openai_api_key, ollama_base_url, ollama_model
             FROM users;
         `);
 
