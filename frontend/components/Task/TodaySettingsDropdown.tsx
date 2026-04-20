@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { getCsrfToken } from '../../utils/csrfService';
 import { useTranslation } from 'react-i18next';
 import {
     ChartBarIcon,
@@ -86,6 +87,7 @@ const TodaySettingsDropdown: React.FC<TodaySettingsDropdownProps> = ({
                 credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
+                    'x-csrf-token': await getCsrfToken(),
                 },
                 body: JSON.stringify(settingsToSave),
             });
