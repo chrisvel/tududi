@@ -110,11 +110,30 @@ const config = {
 
     trustProxy: (() => {
         const val = process.env.TUDUDI_TRUST_PROXY;
-        if (val === undefined || val === '') return false;
-        if (val === 'true') return true;
-        if (val === 'false') return false;
+        if (val === undefined || val === '') {
+            console.log('[Config] TUDUDI_TRUST_PROXY not set, using false');
+            return false;
+        }
+        if (val === 'true') {
+            console.log(
+                '[Config] TUDUDI_TRUST_PROXY=true parsed as boolean true'
+            );
+            return true;
+        }
+        if (val === 'false') {
+            console.log(
+                '[Config] TUDUDI_TRUST_PROXY=false parsed as boolean false'
+            );
+            return false;
+        }
         const num = Number(val);
-        if (!isNaN(num) && val.trim() !== '') return num;
+        if (!isNaN(num) && val.trim() !== '') {
+            console.log(
+                `[Config] TUDUDI_TRUST_PROXY=${val} parsed as number ${num}`
+            );
+            return num;
+        }
+        console.log(`[Config] TUDUDI_TRUST_PROXY=${val} parsed as string`);
         return val;
     })(),
 
