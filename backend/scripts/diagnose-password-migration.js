@@ -17,20 +17,24 @@ async function diagnosePasswordMigration() {
         console.log('Database Schema Analysis:');
         console.log('-'.repeat(70));
 
-        const hasPassword = results.some((col) => col.name === 'password');
-        const hasPasswordDigest = results.some(
+        const passwordColumnExists = results.some(
+            (col) => col.name === 'password'
+        );
+        const passwordDigestColumnExists = results.some(
             (col) => col.name === 'password_digest'
         );
 
-        console.log(`✓ Column 'password' exists: ${hasPassword}`);
-        console.log(`✓ Column 'password_digest' exists: ${hasPasswordDigest}`);
+        console.log(`✓ Column 'password' exists: ${passwordColumnExists}`);
+        console.log(
+            `✓ Column 'password_digest' exists: ${passwordDigestColumnExists}`
+        );
         console.log('');
 
         const [users] = await sequelize.query(`
             SELECT
                 COUNT(*) as total_users,
-                SUM(CASE WHEN password_digest IS NOT NULL THEN 1 ELSE 0 END) as users_with_password,
-                SUM(CASE WHEN password_digest IS NULL THEN 1 ELSE 0 END) as users_without_password
+                SUM(CASE WHEN password_digest IS NOT NULL THEN 1 ELSE 0 END) as count_with_digest,
+                SUM(CASE WHEN password_digest IS NULL THEN 1 ELSE 0 END) as count_without_digest
             FROM users;
         `);
 
@@ -38,13 +42,13 @@ async function diagnosePasswordMigration() {
         console.log('User Password Statistics:');
         console.log('-'.repeat(70));
         console.log(`Total users: ${stats.total_users}`);
-        console.log(`Users with password_digest: ${stats.users_with_password}`);
+        console.log(`Users with password_digest: ${stats.count_with_digest}`);
         console.log(
-            `Users without password_digest: ${stats.users_without_password}`
+            `Users without password_digest: ${stats.count_without_digest}`
         );
         console.log('');
 
-        if (stats.users_without_password > 0) {
+        if (stats.count_without_digest > 0) {
             const [affectedUsers] = await sequelize.query(`
                 SELECT id, email, password_digest
                 FROM users
