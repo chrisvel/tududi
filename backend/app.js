@@ -21,6 +21,9 @@ const app = express();
 
 if (config.trustProxy !== false) {
     app.set('trust proxy', config.trustProxy);
+    console.log(`[Trust Proxy] Enabled with value:`, config.trustProxy);
+} else {
+    console.log(`[Trust Proxy] Disabled (value: false)`);
 }
 
 // Session store
@@ -291,6 +294,7 @@ const registerHealthCheck = (basePath) => {
             timestamp: new Date().toISOString(),
             uptime: process.uptime(),
             environment: config.environment,
+            trustProxy: config.trustProxy,
         });
     });
 };

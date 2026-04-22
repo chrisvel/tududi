@@ -64,7 +64,7 @@ module.exports = {
             )
             SELECT
                 id, uid, name, surname, email,
-                password as password_digest,
+                COALESCE(password_digest, password) as password_digest,
                 appearance, language,
                 timezone, first_day_of_week, avatar_image, telegram_bot_token,
                 telegram_chat_id, task_summary_enabled, task_summary_frequency,
