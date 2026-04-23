@@ -48,6 +48,26 @@ module.exports = {
             );
         `);
 
+        const [columns] = await queryInterface.sequelize.query(
+            'PRAGMA table_info(users);'
+        );
+        const hasPasswordDigest = columns.some(
+            (col) => col.name === 'password_digest'
+        );
+        const hasPassword = columns.some((col) => col.name === 'password');
+
+        const passwordColumn = hasPasswordDigest
+            ? 'password_digest'
+            : hasPassword
+              ? 'password'
+              : null;
+
+        if (!passwordColumn) {
+            throw new Error(
+                'Neither password nor password_digest column found in users table'
+            );
+        }
+
         await queryInterface.sequelize.query(`
             INSERT INTO users_new (
                 id, uid, name, surname, email, password_digest, appearance, language,
@@ -64,7 +84,7 @@ module.exports = {
             )
             SELECT
                 id, uid, name, surname, email,
-                COALESCE(password_digest, password) as password_digest,
+                ${passwordColumn} as password_digest,
                 appearance, language,
                 timezone, first_day_of_week, avatar_image, telegram_bot_token,
                 telegram_chat_id, task_summary_enabled, task_summary_frequency,
