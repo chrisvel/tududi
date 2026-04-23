@@ -26,6 +26,8 @@ if (config.trustProxy !== false) {
     console.log(`[Trust Proxy] Disabled (value: false)`);
 }
 
+console.log(`[Trust Proxy] Express setting confirmed:`, app.get('trust proxy'));
+
 // Session store
 const sessionStore = new SequelizeStore({
     db: sequelize,
