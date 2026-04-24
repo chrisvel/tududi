@@ -44,12 +44,10 @@ describe('Task User Isolation', () => {
     describe('Task creation and visibility', () => {
         it('should NOT allow User B to see User A tasks without a project', async () => {
             // User A creates a task without a project
-            const taskResponse = await agentA
-                .post('/api/task')
-                .send({
-                    name: 'User A Private Task',
-                    status: 'not_started',
-                });
+            const taskResponse = await agentA.post('/api/task').send({
+                name: 'User A Private Task',
+                status: 'not_started',
+            });
 
             expect(taskResponse.status).toBe(201);
             const taskA = taskResponse.body;
@@ -67,11 +65,9 @@ describe('Task User Isolation', () => {
 
         it('should NOT allow User B to see User A tasks created via inbox', async () => {
             // User A creates an inbox item
-            const inboxResponse = await agentA
-                .post('/api/inbox')
-                .send({
-                    content: 'User A Inbox Item',
-                });
+            const inboxResponse = await agentA.post('/api/inbox').send({
+                content: 'User A Inbox Item',
+            });
 
             expect(inboxResponse.status).toBe(201);
 
@@ -79,7 +75,8 @@ describe('Task User Isolation', () => {
             const inboxListResponse = await agentB.get('/api/inbox');
 
             expect(inboxListResponse.status).toBe(200);
-            const inboxItems = inboxListResponse.body.items || inboxListResponse.body;
+            const inboxItems =
+                inboxListResponse.body.items || inboxListResponse.body;
 
             // User B should NOT see User A's inbox item
             const userAInboxItem = Array.isArray(inboxItems)
@@ -90,12 +87,10 @@ describe('Task User Isolation', () => {
 
         it('should NOT allow User B to access User A task by UID', async () => {
             // User A creates a task
-            const taskResponse = await agentA
-                .post('/api/task')
-                .send({
-                    name: 'User A Secret Task',
-                    status: 'not_started',
-                });
+            const taskResponse = await agentA.post('/api/task').send({
+                name: 'User A Secret Task',
+                status: 'not_started',
+            });
 
             expect(taskResponse.status).toBe(201);
             const taskA = taskResponse.body;
@@ -109,12 +104,10 @@ describe('Task User Isolation', () => {
 
         it('should allow User A to see their own tasks', async () => {
             // User A creates a task
-            const taskResponse = await agentA
-                .post('/api/task')
-                .send({
-                    name: 'User A Own Task',
-                    status: 'not_started',
-                });
+            const taskResponse = await agentA.post('/api/task').send({
+                name: 'User A Own Task',
+                status: 'not_started',
+            });
 
             expect(taskResponse.status).toBe(201);
             const taskA = taskResponse.body;
@@ -133,36 +126,36 @@ describe('Task User Isolation', () => {
 
         it('should NOT allow User B to see User A tasks in search', async () => {
             // User A creates a unique task
-            const taskResponse = await agentA
-                .post('/api/task')
-                .send({
-                    name: 'UniqueTaskNameXYZ123',
-                    status: 'not_started',
-                });
+            const taskResponse = await agentA.post('/api/task').send({
+                name: 'UniqueTaskNameXYZ123',
+                status: 'not_started',
+            });
 
             expect(taskResponse.status).toBe(201);
 
             // User B searches for the task
-            const searchResponse = await agentB.get('/api/search?q=UniqueTaskNameXYZ123');
+            const searchResponse = await agentB.get(
+                '/api/search?q=UniqueTaskNameXYZ123'
+            );
 
             expect(searchResponse.status).toBe(200);
             const results = searchResponse.body.results;
 
             // User B should NOT see User A's task in search results
-            const foundTask = results.find((r) => r.name === 'UniqueTaskNameXYZ123');
+            const foundTask = results.find(
+                (r) => r.name === 'UniqueTaskNameXYZ123'
+            );
             expect(foundTask).toBeUndefined();
         });
 
         it('should NOT allow User B to see User A tasks in today view', async () => {
             // User A creates a task with today's date
             const today = new Date().toISOString().split('T')[0];
-            const taskResponse = await agentA
-                .post('/api/task')
-                .send({
-                    name: 'User A Today Task',
-                    status: 'planned',
-                    due_date: today,
-                });
+            const taskResponse = await agentA.post('/api/task').send({
+                name: 'User A Today Task',
+                status: 'planned',
+                due_date: today,
+            });
 
             expect(taskResponse.status).toBe(201);
             const taskA = taskResponse.body;
