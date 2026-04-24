@@ -6,6 +6,21 @@ function parseCommaSeparated(value) {
         .filter(Boolean);
 }
 
+function normalizeScope(scope) {
+    if (!scope) return 'openid profile email';
+
+    const normalized = scope.trim().split(/\s+/).filter(Boolean).join(' ');
+
+    if (!normalized.includes('openid')) {
+        console.warn(
+            `OIDC scope does not include 'openid'. Adding it automatically. Original scope: "${scope}"`
+        );
+        return `openid ${normalized}`;
+    }
+
+    return normalized;
+}
+
 function loadProvidersFromEnv() {
     if (process.env.OIDC_ENABLED !== 'true') {
         console.log(
@@ -24,9 +39,7 @@ function loadProvidersFromEnv() {
             issuer: process.env[`OIDC_PROVIDER_${i}_ISSUER`],
             clientId: process.env[`OIDC_PROVIDER_${i}_CLIENT_ID`],
             clientSecret: process.env[`OIDC_PROVIDER_${i}_CLIENT_SECRET`],
-            scope:
-                process.env[`OIDC_PROVIDER_${i}_SCOPE`] ||
-                'openid profile email',
+            scope: normalizeScope(process.env[`OIDC_PROVIDER_${i}_SCOPE`]),
             autoProvision:
                 process.env[`OIDC_PROVIDER_${i}_AUTO_PROVISION`] !== 'false',
             adminEmailDomains: parseCommaSeparated(
@@ -63,7 +76,7 @@ function loadProvidersFromEnv() {
             issuer: process.env.OIDC_ISSUER_URL,
             clientId: process.env.OIDC_CLIENT_ID,
             clientSecret: process.env.OIDC_CLIENT_SECRET,
-            scope: process.env.OIDC_SCOPE || 'openid profile email',
+            scope: normalizeScope(process.env.OIDC_SCOPE),
             autoProvision: process.env.OIDC_AUTO_PROVISION !== 'false',
             adminEmailDomains: parseCommaSeparated(
                 process.env.OIDC_ADMIN_EMAIL_DOMAINS

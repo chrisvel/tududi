@@ -169,10 +169,27 @@ OIDC_PROVIDER_3_AUTO_PROVISION=true
 | `OIDC_ISSUER_URL` | Yes | - | OIDC discovery endpoint |
 | `OIDC_CLIENT_ID` | Yes | - | OAuth client ID |
 | `OIDC_CLIENT_SECRET` | Yes | - | OAuth client secret |
-| `OIDC_SCOPE` | No | `openid profile email` | OAuth scopes |
+| `OIDC_SCOPE` | No | `openid profile email` | OAuth scopes (space-separated) |
 | `OIDC_AUTO_PROVISION` | No | `true` | Auto-create users on first login |
 | `OIDC_ADMIN_EMAIL_DOMAINS` | No | - | Comma-separated domains for auto-admin |
 | `BASE_URL` | Yes | - | Tududi base URL (for OAuth callbacks) |
+
+**Scope Formatting:**
+
+The `OIDC_SCOPE` parameter accepts space-separated OAuth scopes. Tududi automatically normalizes the scope value by:
+- Trimming leading/trailing whitespace
+- Collapsing multiple spaces into single spaces
+- Ensuring `openid` is always included (adding it if missing)
+- Properly URL-encoding the scope in authorization requests
+
+Examples of valid scope formats:
+```bash
+OIDC_SCOPE=openid profile email
+OIDC_SCOPE="openid profile email groups"
+OIDC_SCOPE=openid  profile  email    # Extra spaces are automatically normalized
+```
+
+**Note:** Do not manually URL-encode the scope value (e.g., using `%20` or `+`). Use regular spaces - Tududi handles the encoding automatically.
 
 **Important:** The `BASE_URL` variable must be set for OAuth redirects to work:
 ```bash
