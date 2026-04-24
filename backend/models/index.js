@@ -77,6 +77,7 @@ const CalDAVOccurrenceOverride = require('./caldav_occurrence_override')(
     sequelize
 );
 const CalDAVRemoteCalendar = require('./caldav_remote_calendar')(sequelize);
+const CalendarToken = require('./calendar_token')(sequelize);
 
 User.hasMany(Area, { foreignKey: 'user_id' });
 Area.belongsTo(User, { foreignKey: 'user_id' });
@@ -253,6 +254,13 @@ CalDAVCalendar.hasOne(CalDAVRemoteCalendar, {
     as: 'RemoteCalendar',
 });
 
+// CalendarToken associations
+User.hasMany(CalendarToken, {
+    foreignKey: 'user_id',
+    as: 'CalendarTokens',
+});
+CalendarToken.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+
 module.exports = {
     sequelize,
     User,
@@ -280,4 +288,5 @@ module.exports = {
     CalDAVSyncState,
     CalDAVOccurrenceOverride,
     CalDAVRemoteCalendar,
+    CalendarToken,
 };
