@@ -10,6 +10,7 @@ import {
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import { getApiPath } from '../../config/paths';
 import { useToast } from '../Shared/ToastContext';
+import { fetchWithCsrf } from '../../utils/csrfService';
 
 interface AdminUserItem {
     id: number;
@@ -43,7 +44,7 @@ const createAdminUser = async (
     surname?: string,
     role?: 'admin' | 'user'
 ): Promise<AdminUserItem> => {
-    const res = await fetch(getApiPath('admin/users'), {
+    const res = await fetchWithCsrf(getApiPath('admin/users'), {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -84,7 +85,7 @@ const updateAdminUser = async (
     const body: any = { email, name, surname, role };
     if (password) body.password = password;
 
-    const res = await fetch(getApiPath(`admin/users/${id}`), {
+    const res = await fetchWithCsrf(getApiPath(`admin/users/${id}`), {
         method: 'PUT',
         credentials: 'include',
         headers: {
@@ -116,7 +117,7 @@ const updateAdminUser = async (
 };
 
 const deleteAdminUser = async (id: number, t: any): Promise<void> => {
-    const res = await fetch(getApiPath(`admin/users/${id}`), {
+    const res = await fetchWithCsrf(getApiPath(`admin/users/${id}`), {
         method: 'DELETE',
         credentials: 'include',
         headers: { Accept: 'application/json' },
@@ -466,7 +467,7 @@ const AdminUsersPage: React.FC = () => {
     // Toggle registration
     const toggleRegistration = async () => {
         try {
-            const res = await fetch(getApiPath('admin/toggle-registration'), {
+            const res = await fetchWithCsrf(getApiPath('admin/toggle-registration'), {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
