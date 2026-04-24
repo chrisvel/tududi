@@ -86,6 +86,60 @@ describe('OIDC Provider Configuration', () => {
             expect(provider.scope).toBe('openid profile email groups');
         });
 
+        it('should normalize scope with extra whitespace', () => {
+            process.env.OIDC_ENABLED = 'true';
+            process.env.OIDC_PROVIDER_NAME = 'Test';
+            process.env.OIDC_PROVIDER_SLUG = 'test';
+            process.env.OIDC_ISSUER_URL = 'https://auth.example.com';
+            process.env.OIDC_CLIENT_ID = 'test-id';
+            process.env.OIDC_CLIENT_SECRET = 'test-secret';
+            process.env.OIDC_SCOPE = '  openid   profile    email  ';
+
+            providerConfig.reloadProviders();
+            const provider = providerConfig.getProvider('test');
+
+            expect(provider.scope).toBe('openid profile email');
+        });
+
+        it('should add openid scope if missing', () => {
+            const consoleWarnSpy = jest
+                .spyOn(console, 'warn')
+                .mockImplementation();
+
+            process.env.OIDC_ENABLED = 'true';
+            process.env.OIDC_PROVIDER_NAME = 'Test';
+            process.env.OIDC_PROVIDER_SLUG = 'test';
+            process.env.OIDC_ISSUER_URL = 'https://auth.example.com';
+            process.env.OIDC_CLIENT_ID = 'test-id';
+            process.env.OIDC_CLIENT_SECRET = 'test-secret';
+            process.env.OIDC_SCOPE = 'profile email';
+
+            providerConfig.reloadProviders();
+            const provider = providerConfig.getProvider('test');
+
+            expect(provider.scope).toBe('openid profile email');
+            expect(consoleWarnSpy).toHaveBeenCalledWith(
+                expect.stringContaining("does not include 'openid'")
+            );
+
+            consoleWarnSpy.mockRestore();
+        });
+
+        it('should handle scope with tabs and newlines', () => {
+            process.env.OIDC_ENABLED = 'true';
+            process.env.OIDC_PROVIDER_NAME = 'Test';
+            process.env.OIDC_PROVIDER_SLUG = 'test';
+            process.env.OIDC_ISSUER_URL = 'https://auth.example.com';
+            process.env.OIDC_CLIENT_ID = 'test-id';
+            process.env.OIDC_CLIENT_SECRET = 'test-secret';
+            process.env.OIDC_SCOPE = 'openid\tprofile\nemail';
+
+            providerConfig.reloadProviders();
+            const provider = providerConfig.getProvider('test');
+
+            expect(provider.scope).toBe('openid profile email');
+        });
+
         it('should parse admin email domains', () => {
             process.env.OIDC_ENABLED = 'true';
             process.env.OIDC_PROVIDER_NAME = 'Google';
@@ -226,6 +280,32 @@ describe('OIDC Provider Configuration', () => {
 
             expect(corp.autoProvision).toBe(false);
             expect(corp.adminEmailDomains).toEqual(['corp.com']);
+        });
+
+        it('should normalize scopes in multi-provider configuration', () => {
+            process.env.OIDC_ENABLED = 'true';
+
+            process.env.OIDC_PROVIDER_1_NAME = 'Google';
+            process.env.OIDC_PROVIDER_1_SLUG = 'google';
+            process.env.OIDC_PROVIDER_1_ISSUER = 'https://accounts.google.com';
+            process.env.OIDC_PROVIDER_1_CLIENT_ID = 'google-id';
+            process.env.OIDC_PROVIDER_1_CLIENT_SECRET = 'google-secret';
+            process.env.OIDC_PROVIDER_1_SCOPE = '  openid  profile  email  ';
+
+            process.env.OIDC_PROVIDER_2_NAME = 'Okta';
+            process.env.OIDC_PROVIDER_2_SLUG = 'okta';
+            process.env.OIDC_PROVIDER_2_ISSUER = 'https://company.okta.com';
+            process.env.OIDC_PROVIDER_2_CLIENT_ID = 'okta-id';
+            process.env.OIDC_PROVIDER_2_CLIENT_SECRET = 'okta-secret';
+            process.env.OIDC_PROVIDER_2_SCOPE = 'openid profile email groups';
+
+            providerConfig.reloadProviders();
+
+            const google = providerConfig.getProvider('google');
+            const okta = providerConfig.getProvider('okta');
+
+            expect(google.scope).toBe('openid profile email');
+            expect(okta.scope).toBe('openid profile email groups');
         });
     });
 
