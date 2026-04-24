@@ -7,6 +7,7 @@ import {
     TagIcon,
     FolderIcon,
 } from '@heroicons/react/24/solid';
+import { DocumentDuplicateIcon } from '@heroicons/react/24/outline';
 import { useToast } from '../Shared/ToastContext';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import NoteModal from './NoteModal';
@@ -91,6 +92,16 @@ const NoteDetails: React.FC = () => {
 
     const handleEditNote = () => {
         setIsNoteModalOpen(true);
+    };
+
+    const handleCopyNote = async () => {
+        if (!note) return;
+        try {
+            await navigator.clipboard.writeText(note.content);
+            showSuccessToast(t('notes.copiedToClipboard', 'Note content copied to clipboard'));
+        } catch (err) {
+            console.error('Error copying to clipboard:', err);
+        }
     };
 
     const handleCreateProject = async (name: string) => {
@@ -209,6 +220,14 @@ const NoteDetails: React.FC = () => {
                     </div>
                     {/* Action Buttons */}
                     <div className="flex space-x-2">
+                        <button
+                            onClick={handleCopyNote}
+                            className="text-gray-500 hover:text-green-700 dark:hover:text-green-300 focus:outline-none"
+                            aria-label={t('notes.copyContent', 'Copy note content')}
+                            title={t('notes.copyContent', 'Copy note content')}
+                        >
+                            <DocumentDuplicateIcon className="h-5 w-5" />
+                        </button>
                         <button
                             onClick={handleEditNote}
                             className="text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none"
