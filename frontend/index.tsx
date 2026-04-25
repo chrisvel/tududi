@@ -9,8 +9,14 @@ import './styles/markdown.css'; // Import markdown styles
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n'; // Import the i18n instance with its configuration
 import { getBasePath } from './config/paths';
+import * as serviceWorker from './utils/registerServiceWorker';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
+
+// In production, register the service worker
+if (!isDevelopment) {
+    serviceWorker.register();
+}
 
 // Clear out any lingering service workers/caches from other branches (e.g. PWA)
 if (isDevelopment && 'serviceWorker' in navigator) {
