@@ -30,6 +30,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
     const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({
         backups: false,
         calendar: false,
+        caldav: false,
         habits: false,
         mcp: false,
     });

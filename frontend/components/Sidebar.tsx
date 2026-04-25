@@ -56,6 +56,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({
         backups: false,
         calendar: false,
+        caldav: false,
         habits: false,
         mcp: false,
     });

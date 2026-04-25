@@ -35,6 +35,7 @@ export const getFeatureFlags = async (): Promise<FeatureFlags> => {
         const defaultFlags: FeatureFlags = {
             backups: false,
             calendar: false,
+            caldav: false,
             habits: false,
             mcp: false,
         };
@@ -48,6 +49,7 @@ export const getFeatureFlags = async (): Promise<FeatureFlags> => {
         return {
             backups: false,
             calendar: false,
+            caldav: false,
             habits: false,
             mcp: false,
         };
