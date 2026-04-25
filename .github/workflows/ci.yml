@@ -33,6 +33,7 @@ jobs:
       run: npm run backend:test
       env:
         FF_ENABLE_BACKUPS: 'true'
+        FF_ENABLE_CALDAV: 'true'
         FF_ENABLE_CALENDAR: 'true'
 
     - name: Build frontend
