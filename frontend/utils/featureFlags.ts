@@ -3,6 +3,7 @@ import { getApiPath } from '../config/paths';
 export interface FeatureFlags {
     backups: boolean;
     calendar: boolean;
+    caldav: boolean;
     habits: boolean;
     mcp: boolean;
 }
@@ -24,6 +25,7 @@ export const getFeatureFlags = async (): Promise<FeatureFlags> => {
             return {
                 backups: false,
                 calendar: false,
+                caldav: false,
                 habits: false,
                 mcp: false,
             };
@@ -33,6 +35,7 @@ export const getFeatureFlags = async (): Promise<FeatureFlags> => {
         const defaultFlags: FeatureFlags = {
             backups: false,
             calendar: false,
+            caldav: false,
             habits: false,
             mcp: false,
         };
@@ -46,6 +49,7 @@ export const getFeatureFlags = async (): Promise<FeatureFlags> => {
         return {
             backups: false,
             calendar: false,
+            caldav: false,
             habits: false,
             mcp: false,
         };

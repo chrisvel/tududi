@@ -42,6 +42,7 @@ const Navbar: React.FC<NavbarProps> = ({
     const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({
         backups: false,
         calendar: false,
+        caldav: false,
         habits: false,
         mcp: false,
     });

@@ -128,6 +128,7 @@ ENV NODE_ENV=production \
     TUDUDI_UPLOAD_PATH="/app/backend/uploads" \
     SWAGGER_ENABLED=false \
     FF_ENABLE_BACKUPS=false \
+    FF_ENABLE_CALDAV=false \
     FF_ENABLE_CALENDAR=false \
     FF_ENABLE_HABITS=false
 

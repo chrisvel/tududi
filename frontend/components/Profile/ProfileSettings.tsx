@@ -144,6 +144,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
     const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({
         backups: false,
         calendar: false,
+        caldav: false,
         habits: false,
         mcp: false,
     });
@@ -1174,7 +1175,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             id: 'caldav',
             name: t('profile.tabs.caldav', 'CalDAV Sync'),
             icon: <CalendarIcon className="w-5 h-5" />,
-            featureFlag: 'calendar',
+            featureFlag: 'caldav',
         },
         {
             id: 'mcp',
