@@ -207,6 +207,7 @@ For detailed setup instructions, configuration options, and getting started guid
 **[docs.tududi.com](https://docs.tududi.com)**
 
 - **[Installation Guide](https://docs.tududi.com/getting-started/installation)** - Docker, development setup, and deployment
+- **[Google Cloud Deployment](docs/deployment-google-cloud.md)** - Deploy to Google Cloud Run with Artifact Registry
 - **[Configuration](https://docs.tududi.com/getting-started/configuration)** - Environment variables and advanced settings
 - **[First Steps](https://docs.tududi.com/getting-started/first-steps)** - Learn the basics and get productive
 - **[Project Sharing](https://docs.tududi.com/features/project-sharing)** - Collaborate with your team
