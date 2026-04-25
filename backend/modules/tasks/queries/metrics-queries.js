@@ -26,10 +26,14 @@ function isTaskInTodayPlan(task) {
 async function countTotalOpenTasks(visibleTasksWhere) {
     return await Task.count({
         where: {
-            ...visibleTasksWhere,
-            status: { [Op.ne]: Task.STATUS.DONE },
-            parent_task_id: null,
-            recurring_parent_id: null,
+            [Op.and]: [
+                visibleTasksWhere,
+                {
+                    status: { [Op.ne]: Task.STATUS.DONE },
+                    parent_task_id: null,
+                    recurring_parent_id: null,
+                },
+            ],
         },
         raw: true,
     });
@@ -39,11 +43,15 @@ async function countTasksPendingOverMonth(visibleTasksWhere) {
     const oneMonthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     return await Task.count({
         where: {
-            ...visibleTasksWhere,
-            status: { [Op.ne]: Task.STATUS.DONE },
-            created_at: { [Op.lt]: oneMonthAgo },
-            parent_task_id: null,
-            recurring_parent_id: null,
+            [Op.and]: [
+                visibleTasksWhere,
+                {
+                    status: { [Op.ne]: Task.STATUS.DONE },
+                    created_at: { [Op.lt]: oneMonthAgo },
+                    parent_task_id: null,
+                    recurring_parent_id: null,
+                },
+            ],
         },
         raw: true,
     });
@@ -53,15 +61,23 @@ async function fetchTasksInProgress(visibleTasksWhere) {
     const now = new Date();
     return await Task.findAll({
         where: {
-            ...visibleTasksWhere,
-            status: { [Op.in]: [Task.STATUS.IN_PROGRESS, 'in_progress'] },
-            // Exclude tasks deferred to the future
-            [Op.or]: [
-                { defer_until: null },
-                { defer_until: { [Op.lte]: now } },
+            [Op.and]: [
+                visibleTasksWhere,
+                {
+                    status: {
+                        [Op.in]: [Task.STATUS.IN_PROGRESS, 'in_progress'],
+                    },
+                    parent_task_id: null,
+                    recurring_parent_id: null,
+                },
+                // Exclude tasks deferred to the future
+                {
+                    [Op.or]: [
+                        { defer_until: null },
+                        { defer_until: { [Op.lte]: now } },
+                    ],
+                },
             ],
-            parent_task_id: null,
-            recurring_parent_id: null,
         },
         include: getTaskIncludeConfigLight(),
         order: [
@@ -280,15 +296,22 @@ async function fetchNonProjectTasks(
     limit = null
 ) {
     const exclusionIds = [...excludedTaskIds, ...somedayTaskIds];
+    const filters = {
+        status: {
+            [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.WAITING],
+        },
+        [Op.or]: [{ project_id: null }, { project_id: '' }],
+        parent_task_id: null,
+        recurring_parent_id: null,
+    };
+
+    if (exclusionIds.length > 0) {
+        filters.id = { [Op.notIn]: exclusionIds };
+    }
+
     const queryOptions = {
         where: {
-            ...visibleTasksWhere,
-            status: {
-                [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.WAITING],
-            },
-            [Op.or]: [{ project_id: null }, { project_id: '' }],
-            parent_task_id: null,
-            recurring_parent_id: null,
+            [Op.and]: [visibleTasksWhere, filters],
         },
         include: getTaskIncludeConfigLight(),
         order: [
@@ -297,10 +320,6 @@ async function fetchNonProjectTasks(
             ['project_id', 'ASC'],
         ],
     };
-
-    if (exclusionIds.length > 0) {
-        queryOptions.where.id = { [Op.notIn]: exclusionIds };
-    }
 
     if (limit && Number.isInteger(limit)) {
         queryOptions.limit = limit;
@@ -316,15 +335,22 @@ async function fetchProjectTasks(
     limit = null
 ) {
     const exclusionIds = [...excludedTaskIds, ...somedayTaskIds];
+    const filters = {
+        status: {
+            [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.WAITING],
+        },
+        project_id: { [Op.not]: null, [Op.ne]: '' },
+        parent_task_id: null,
+        recurring_parent_id: null,
+    };
+
+    if (exclusionIds.length > 0) {
+        filters.id = { [Op.notIn]: exclusionIds };
+    }
+
     const queryOptions = {
         where: {
-            ...visibleTasksWhere,
-            status: {
-                [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.WAITING],
-            },
-            project_id: { [Op.not]: null, [Op.ne]: '' },
-            parent_task_id: null,
-            recurring_parent_id: null,
+            [Op.and]: [visibleTasksWhere, filters],
         },
         include: getTaskIncludeConfigLight(),
         order: [
@@ -333,10 +359,6 @@ async function fetchProjectTasks(
             ['project_id', 'ASC'],
         ],
     };
-
-    if (exclusionIds.length > 0) {
-        queryOptions.where.id = { [Op.notIn]: exclusionIds };
-    }
 
     if (limit && Number.isInteger(limit)) {
         queryOptions.limit = limit;

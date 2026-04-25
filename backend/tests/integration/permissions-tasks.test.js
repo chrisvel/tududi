@@ -96,4 +96,57 @@ describe('Tasks Permissions', () => {
         expect(res.status).toBe(403);
         expect(res.body.error).toBe('Forbidden');
     });
+
+    it("GET /api/tasks/metrics should not include another user's projectless in-progress task", async () => {
+        const myTask = await Task.create({
+            name: 'My In Progress Task',
+            user_id: user.id,
+            status: Task.STATUS.IN_PROGRESS,
+        });
+        const otherTask = await Task.create({
+            name: 'Other In Progress Task',
+            user_id: otherUser.id,
+            status: Task.STATUS.IN_PROGRESS,
+        });
+
+        const res = await agent.get('/api/tasks/metrics');
+        expect(res.status).toBe(200);
+
+        const taskIds = res.body.tasks_in_progress.map((task) => task.id);
+        expect(taskIds).toContain(myTask.id);
+        expect(taskIds).not.toContain(otherTask.id);
+    });
+
+    it("GET /api/tasks/metrics should not suggest another user's projectless task", async () => {
+        await Task.bulkCreate([
+            {
+                name: 'My Task 1',
+                user_id: user.id,
+                status: Task.STATUS.NOT_STARTED,
+            },
+            {
+                name: 'My Task 2',
+                user_id: user.id,
+                status: Task.STATUS.NOT_STARTED,
+            },
+            {
+                name: 'My Task 3',
+                user_id: user.id,
+                status: Task.STATUS.NOT_STARTED,
+            },
+        ]);
+        const otherTask = await Task.create({
+            name: 'Other Suggested Task',
+            user_id: otherUser.id,
+            status: Task.STATUS.NOT_STARTED,
+        });
+
+        const res = await agent.get('/api/tasks/metrics');
+        expect(res.status).toBe(200);
+
+        const suggestedTaskIds = res.body.suggested_tasks.map(
+            (task) => task.id
+        );
+        expect(suggestedTaskIds).not.toContain(otherTask.id);
+    });
 });
