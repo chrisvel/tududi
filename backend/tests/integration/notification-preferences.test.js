@@ -1,7 +1,8 @@
 const request = require('supertest');
 const app = require('../../app');
-const { User } = require('../../models');
+const { Notification, User } = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
+const telegramNotificationService = require('../../modules/telegram/telegramNotificationService');
 
 describe('Notification Preferences', () => {
     let user, agent;
@@ -17,6 +18,10 @@ describe('Notification Preferences', () => {
             email: user.email,
             password: 'password123',
         });
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
     });
 
     describe('GET /api/profile - notification_preferences', () => {
@@ -83,6 +88,57 @@ describe('Notification Preferences', () => {
 
             expect(response.status).toBe(200);
             expect(response.body.notification_preferences).toEqual(preferences);
+        });
+    });
+
+    describe('POST /api/test-notifications/trigger', () => {
+        it('should send Telegram without creating in-app notification when in-app is disabled', async () => {
+            jest.spyOn(
+                telegramNotificationService,
+                'isTelegramConfigured'
+            ).mockReturnValue(true);
+            jest.spyOn(
+                telegramNotificationService,
+                'sendTelegramNotification'
+            ).mockResolvedValue({ success: true });
+
+            await User.update(
+                {
+                    telegram_bot_token:
+                        '123456789:ABCdefGHIjklMNOPQRSTUVwxyz-12345678',
+                    telegram_chat_id: '123456789',
+                    notification_preferences: {
+                        dueTasks: {
+                            inApp: false,
+                            email: false,
+                            push: false,
+                            telegram: true,
+                        },
+                    },
+                },
+                { where: { id: user.id } }
+            );
+
+            const response = await agent
+                .post('/api/test-notifications/trigger')
+                .send({ type: 'task_due_soon' });
+
+            expect(response.status).toBe(200);
+            expect(response.body.channels).toEqual(['telegram']);
+            expect(response.body.notification.sources).toEqual(['telegram']);
+            expect(
+                telegramNotificationService.sendTelegramNotification
+            ).toHaveBeenCalledTimes(1);
+
+            const notificationCount = await Notification.count({
+                where: { user_id: user.id },
+            });
+            expect(notificationCount).toBe(0);
+
+            const unreadResponse = await agent.get(
+                '/api/notifications/unread-count'
+            );
+            expect(unreadResponse.body.count).toBe(0);
         });
     });
 

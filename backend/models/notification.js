@@ -179,6 +179,24 @@ module.exports = (sequelize) => {
         return notification;
     };
 
+    Notification.sendTelegramNotification = async function ({
+        userId,
+        title,
+        message,
+        data = null,
+        level = 'info',
+    }) {
+        await sendTelegramNotification(
+            userId,
+            title,
+            message,
+            data,
+            Notification,
+            null,
+            level
+        );
+    };
+
     async function sendEmailNotification(
         userId,
         title,
@@ -218,7 +236,8 @@ module.exports = (sequelize) => {
         message,
         data,
         NotificationModel,
-        notificationInstance
+        notificationInstance,
+        level = 'info'
     ) {
         try {
             const telegramService = require('../modules/telegram/telegramNotificationService');
@@ -255,7 +274,7 @@ module.exports = (sequelize) => {
                     title,
                     message,
                     data,
-                    level: 'info',
+                    level,
                 });
 
                 // Mark that Telegram was sent for this notification

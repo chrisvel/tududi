@@ -33,6 +33,19 @@ const notificationsController = {
         }
     },
 
+    async triggerTestNotification(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const result = await notificationsService.triggerTestNotification(
+                userId,
+                req.body?.type
+            );
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    },
+
     async markAsRead(req, res, next) {
         try {
             const userId = requireUserId(req);

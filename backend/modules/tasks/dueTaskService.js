@@ -62,13 +62,21 @@ async function checkDueTasks() {
                     ? 'task_overdue'
                     : 'task_due_soon';
                 const level = isOverdue ? 'error' : 'warning';
+                const sendInApp = shouldSendInAppNotification(
+                    task.User,
+                    notificationType
+                );
+                const sendTelegram = shouldSendTelegramNotification(
+                    task.User,
+                    notificationType
+                );
 
-                // Check if user wants this notification
-                if (!shouldSendInAppNotification(task.User, notificationType)) {
+                if (!sendInApp && !sendTelegram) {
                     continue;
                 }
 
-                // Check for existing notifications
+                // Deduplication applies to all channel combinations.
+                // Dismissed records act as rate-limiting anchors for Telegram-only sends.
                 const recentNotifications = await Notification.findAll({
                     where: {
                         user_id: task.user_id,
@@ -87,24 +95,17 @@ async function checkDueTasks() {
                         notif.type === notificationType
                 );
 
-                // Preserve channel_sent_at for rate limiting when recreating notifications
                 let preservedChannelSentAt = null;
 
                 if (existingNotification) {
-                    // If notification was dismissed, don't create it again
                     if (existingNotification.dismissed_at) {
                         continue;
                     }
-
-                    // If notification is unread, delete it before creating the new one
-                    // This prevents duplicate notifications from piling up
                     if (!existingNotification.read_at) {
-                        // Preserve channel_sent_at to maintain rate limiting across recreations
                         preservedChannelSentAt =
                             existingNotification.channel_sent_at;
                         await existingNotification.destroy();
                     } else {
-                        // If it was already read, skip creating a new one
                         continue;
                     }
                 }
@@ -116,15 +117,9 @@ async function checkDueTasks() {
                     isOverdue
                 );
 
-                // Build sources array based on user preferences
-                const sources = [];
-                if (
-                    shouldSendTelegramNotification(task.User, notificationType)
-                ) {
-                    sources.push('telegram');
-                }
+                const sources = sendTelegram ? ['telegram'] : [];
 
-                await Notification.createNotification({
+                const notification = await Notification.createNotification({
                     userId: task.user_id,
                     type: notificationType,
                     title,
@@ -140,6 +135,13 @@ async function checkDueTasks() {
                     sentAt: new Date(),
                     channel_sent_at: preservedChannelSentAt,
                 });
+
+                // Telegram-only: dismiss immediately so the record does not appear
+                // in the bell or increment the badge, but still serves as a
+                // deduplication anchor and Telegram rate-limiting record.
+                if (!sendInApp) {
+                    await notification.dismiss();
+                }
 
                 notificationsCreated++;
             } catch (error) {
@@ -161,9 +163,6 @@ async function checkDueTasks() {
     }
 }
 
-/**
- * Generate notification title and message based on task due date
- */
 function generateNotificationContent(taskName, dueDate, now, isOverdue) {
     if (isOverdue) {
         const daysOverdue = Math.floor((now - dueDate) / (1000 * 60 * 60 * 24));

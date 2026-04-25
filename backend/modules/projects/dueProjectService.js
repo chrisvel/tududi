@@ -6,15 +6,6 @@ const {
     shouldSendTelegramNotification,
 } = require('../../utils/notificationPreferences');
 
-/**
- * Service to check for due and overdue projects
- * and create notifications for users
- */
-
-/**
- * Check for projects that are due soon or overdue
- * and create notifications for the project owners
- */
 async function checkDueProjects() {
     try {
         const now = new Date();
@@ -70,7 +61,7 @@ async function checkDueProjects() {
                     continue;
                 }
 
-                // Check for existing notifications
+                // Deduplication applies to all channel combinations.
                 const recentNotifications = await Notification.findAll({
                     where: {
                         user_id: project.user_id,
@@ -89,24 +80,17 @@ async function checkDueProjects() {
                         notif.type === notificationType
                 );
 
-                // Preserve channel_sent_at for rate limiting when recreating notifications
                 let preservedChannelSentAt = null;
 
                 if (existingNotification) {
-                    // If notification was dismissed, don't create it again
                     if (existingNotification.dismissed_at) {
                         continue;
                     }
-
-                    // If notification is unread, delete it before creating the new one
-                    // This prevents duplicate notifications from piling up
                     if (!existingNotification.read_at) {
-                        // Preserve channel_sent_at to maintain rate limiting across recreations
                         preservedChannelSentAt =
                             existingNotification.channel_sent_at;
                         await existingNotification.destroy();
                     } else {
-                        // If it was already read, skip creating a new one
                         continue;
                     }
                 }
@@ -166,9 +150,6 @@ async function checkDueProjects() {
     }
 }
 
-/**
- * Generate notification title and message based on project due date
- */
 function generateNotificationContent(projectName, dueDate, now, isOverdue) {
     if (isOverdue) {
         const daysOverdue = Math.floor((now - dueDate) / (1000 * 60 * 60 * 24));

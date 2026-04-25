@@ -47,10 +47,30 @@ async function checkDeferredTasks() {
 
         for (const task of deferredTasks) {
             try {
-                if (!shouldSendInAppNotification(task.User, 'deferUntil')) {
+                const sendInApp = shouldSendInAppNotification(
+                    task.User,
+                    'deferUntil'
+                );
+                const sendTelegram = shouldSendTelegramNotification(
+                    task.User,
+                    'deferUntil'
+                );
+
+                if (!sendInApp && !sendTelegram) {
                     continue;
                 }
 
+                const title = 'Task is now active';
+                const message = `Your task "${task.name}" is now available to work on`;
+                const data = {
+                    taskUid: task.uid,
+                    taskName: task.name,
+                    deferUntil: task.defer_until,
+                    reason: 'defer_until_reached',
+                };
+
+                // Deduplication applies to all channel combinations.
+                // Dismissed records act as rate-limiting anchors for Telegram-only sends.
                 const recentNotifications = await Notification.findAll({
                     where: {
                         user_id: task.user_id,
@@ -67,48 +87,40 @@ async function checkDeferredTasks() {
                         notif.data?.reason === 'defer_until_reached'
                 );
 
-                // Preserve channel_sent_at for rate limiting when recreating notifications
                 let preservedChannelSentAt = null;
 
                 if (existingNotification) {
-                    // If notification was dismissed, don't create it again
                     if (existingNotification.dismissed_at) {
                         continue;
                     }
-
-                    // If notification is unread, delete it before creating the new one
-                    // This prevents duplicate notifications from piling up
                     if (!existingNotification.read_at) {
-                        // Preserve channel_sent_at to maintain rate limiting across recreations
                         preservedChannelSentAt =
                             existingNotification.channel_sent_at;
                         await existingNotification.destroy();
                     } else {
-                        // If it was already read, skip creating a new one
                         continue;
                     }
                 }
 
-                const sources = [];
-                if (shouldSendTelegramNotification(task.User, 'deferUntil')) {
-                    sources.push('telegram');
-                }
+                const sources = sendTelegram ? ['telegram'] : [];
 
-                await Notification.createNotification({
+                const notification = await Notification.createNotification({
                     userId: task.user_id,
                     type: 'task_due_soon',
-                    title: 'Task is now active',
-                    message: `Your task "${task.name}" is now available to work on`,
+                    title,
+                    message,
                     sources,
-                    data: {
-                        taskUid: task.uid,
-                        taskName: task.name,
-                        deferUntil: task.defer_until,
-                        reason: 'defer_until_reached',
-                    },
+                    data,
                     sentAt: new Date(),
                     channel_sent_at: preservedChannelSentAt,
                 });
+
+                // Telegram-only: dismiss immediately so the record does not appear
+                // in the bell or increment the badge, but still serves as a
+                // deduplication anchor and Telegram rate-limiting record.
+                if (!sendInApp) {
+                    await notification.dismiss();
+                }
 
                 notificationsCreated++;
             } catch (error) {

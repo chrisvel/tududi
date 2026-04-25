@@ -87,6 +87,19 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
     }, []);
 
     useEffect(() => {
+        const handleNotificationCreated = () => fetchUnreadCount();
+        window.addEventListener(
+            'notificationCreated',
+            handleNotificationCreated
+        );
+        return () =>
+            window.removeEventListener(
+                'notificationCreated',
+                handleNotificationCreated
+            );
+    }, []);
+
+    useEffect(() => {
         if (isOpen) {
             fetchNotifications();
         }
@@ -214,7 +227,9 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
     const handleNotificationClick = (notification: Notification) => {
         if (notification.data?.taskUid) {
             setIsOpen(false);
-            navigate(`/task/${notification.data.taskUid}`, { state: { from: location.pathname + location.search } });
+            navigate(`/task/${notification.data.taskUid}`, {
+                state: { from: location.pathname + location.search },
+            });
         } else if (notification.data?.projectUid) {
             setIsOpen(false);
             navigate(`/project/${notification.data.projectUid}`);

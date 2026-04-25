@@ -1340,7 +1340,9 @@
       "title": "Test Notifications",
       "description": "Send a test notification to see how it appears in-app and on enabled channels (Telegram, etc.)",
       "send": "Send Test",
-      "sending": "Sending..."
+      "sending": "Sending...",
+      "noChannels": "No notification channels enabled for this type.",
+      "sent": "Test notification sent ({{channels}})"
     },
     "info": {
       "title": "Note:",

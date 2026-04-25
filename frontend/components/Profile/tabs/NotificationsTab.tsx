@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import {
     BellIcon,
     BellAlertIcon,
+    CheckCircleIcon,
+    ExclamationCircleIcon,
     ExclamationTriangleIcon,
     FolderIcon,
     FolderOpenIcon,
@@ -126,7 +128,10 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
     const [selectedTestType, setSelectedTestType] =
         React.useState<string>('task_due_soon');
     const [testLoading, setTestLoading] = React.useState<boolean>(false);
-    const [testMessage, setTestMessage] = React.useState<string>('');
+    const [testResult, setTestResult] = React.useState<{
+        ok: boolean;
+        text: string;
+    } | null>(null);
 
     // Fetch profile data to check telegram configuration
     React.useEffect(() => {
@@ -166,37 +171,74 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
         onChange(updatedPreferences);
     };
 
+    // Human-readable labels for each notification channel key.
+    // Extend this map when new channels are added on the backend.
+    const CHANNEL_LABELS: Record<string, string> = {
+        inApp: t('notifications.channels.inApp', 'In-app'),
+        telegram: 'Telegram',
+        email: t('notifications.channels.email', 'Email'),
+        push: t('notifications.channels.push', 'Push'),
+    };
+
     const handleTestNotification = async () => {
         setTestLoading(true);
-        setTestMessage('');
+        setTestResult(null);
 
         try {
             const response = await fetch('/api/test-notifications/trigger', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ type: selectedTestType }),
             });
 
             const data = await response.json();
 
-            if (response.ok) {
-                const sources = data.notification.sources;
-                const sourcesList =
-                    sources.length > 0 ? sources.join(', ') : 'in-app only';
-                setTestMessage(`✅ Test notification sent! (${sourcesList})`);
-            } else {
-                setTestMessage(`❌ Failed: ${data.error}`);
+            if (!response.ok) {
+                setTestResult({
+                    ok: false,
+                    text: data.error || 'Request failed',
+                });
+                return;
+            }
+
+            const channels: string[] = data.channels ?? [];
+
+            if (channels.length === 0) {
+                setTestResult({
+                    ok: false,
+                    text: t(
+                        'notifications.test.noChannels',
+                        'No notification channels enabled for this type.'
+                    ),
+                });
+                return;
+            }
+
+            const channelList = channels
+                .map((c) => CHANNEL_LABELS[c] ?? c)
+                .join(', ');
+            setTestResult({
+                ok: true,
+                text: t(
+                    'notifications.test.sent',
+                    'Test notification sent ({{channels}})',
+                    { channels: channelList }
+                ),
+            });
+
+            if (data.notification?.id) {
+                window.dispatchEvent(new CustomEvent('notificationCreated'));
             }
         } catch (error) {
-            setTestMessage(
-                `❌ Error: ${error.message || 'Failed to send test'}`
-            );
+            setTestResult({
+                ok: false,
+                text:
+                    error instanceof Error
+                        ? error.message
+                        : 'Failed to send test',
+            });
         } finally {
             setTestLoading(false);
-            // Clear message after 5 seconds
-            setTimeout(() => setTestMessage(''), 5000);
         }
     };
 
@@ -433,9 +475,20 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                         )}
                     </button>
                 </div>
-                {testMessage && (
-                    <div className="mt-3 p-2 text-sm text-purple-900 dark:text-purple-100 bg-purple-100 dark:bg-purple-900/40 rounded">
-                        {testMessage}
+                {testResult && (
+                    <div
+                        className={`mt-3 p-2 text-sm rounded flex items-center gap-2 ${
+                            testResult.ok
+                                ? 'text-green-800 dark:text-green-200 bg-green-50 dark:bg-green-900/30'
+                                : 'text-red-800 dark:text-red-200 bg-red-50 dark:bg-red-900/30'
+                        }`}
+                    >
+                        {testResult.ok ? (
+                            <CheckCircleIcon className="w-4 h-4 flex-shrink-0" />
+                        ) : (
+                            <ExclamationCircleIcon className="w-4 h-4 flex-shrink-0" />
+                        )}
+                        {testResult.text}
                     </div>
                 )}
             </div>

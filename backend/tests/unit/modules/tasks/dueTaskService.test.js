@@ -388,6 +388,55 @@ describe('dueTaskService', () => {
                 });
                 expect(notifications.length).toBe(1);
             });
+
+            it('should send Telegram and create a dismissed tracking record when inApp is disabled', async () => {
+                user.telegram_bot_token =
+                    '123456789:ABCdefGHIjklMNOPQRSTUVwxyz-12345678';
+                user.telegram_chat_id = '123456789';
+                user.notification_preferences = {
+                    dueTasks: { inApp: false, telegram: true },
+                    overdueTasks: { inApp: false, telegram: true },
+                };
+                await user.save();
+
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+
+                await Task.create({
+                    name: 'Telegram Only Task',
+                    user_id: user.id,
+                    due_date: tomorrow,
+                    status: Task.STATUS.NOT_STARTED,
+                });
+
+                const sendTelegramSpy = jest.spyOn(
+                    telegramNotificationService,
+                    'sendTelegramNotification'
+                );
+
+                const result = await checkDueTasks();
+
+                expect(result.success).toBe(true);
+                expect(result.notificationsCreated).toBe(1);
+                expect(sendTelegramSpy).toHaveBeenCalledTimes(1);
+
+                // A dismissed tracking record is created for deduplication/rate-limiting.
+                // It must not appear as unread so the badge is not incremented.
+                const allNotifications = await Notification.findAll({
+                    where: { user_id: user.id },
+                });
+                expect(allNotifications.length).toBe(1);
+                expect(allNotifications[0].dismissed_at).not.toBeNull();
+
+                const unreadCount = await Notification.count({
+                    where: {
+                        user_id: user.id,
+                        read_at: null,
+                        dismissed_at: null,
+                    },
+                });
+                expect(unreadCount).toBe(0);
+            });
         });
     });
 });
