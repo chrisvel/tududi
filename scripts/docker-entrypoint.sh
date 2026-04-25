@@ -70,7 +70,13 @@ fi
 
 echo "Setting ownership of application directories to $TARGET_USER:$TARGET_GROUP"
 mkdir -p /app/backend/db /app/backend/certs /app/backend/uploads
-chown -R "$TARGET_USER":"$TARGET_GROUP" /app/backend /app/scripts
+
+# Targeted ownership changes to avoid exposing sensitive logic/data too broadly
+chown "$TARGET_USER":"$TARGET_GROUP" /app /app/backend /app/scripts /app/backend/cmd
+chown -R "$TARGET_USER":"$TARGET_GROUP" /app/backend/db /app/backend/certs /app/backend/uploads /app/backend/dist
+
+# Secure permissions for directories
+chmod 755 /app /app/backend /app/scripts /app/backend/cmd
 chmod 770 /app/backend/db /app/backend/certs /app/backend/uploads
 set_db_file_permissions
 

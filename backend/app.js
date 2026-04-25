@@ -39,7 +39,7 @@ app.use(
         contentSecurityPolicy: {
             directives: {
                 defaultSrc: ["'self'"],
-                scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+                scriptSrc: ["'self'"],
                 styleSrc: ["'self'", "'unsafe-inline'"],
                 imgSrc: ["'self'", 'data:', 'https:'],
                 connectSrc: ["'self'"],
@@ -51,6 +51,9 @@ app.use(
                     process.env.DISABLE_HSTS === 'true' ? null : [],
             },
         },
+        referrerPolicy: { policy: 'same-origin' },
+        xssFilter: true,
+        noSniff: true,
         hsts:
             config.production && process.env.DISABLE_HSTS !== 'true'
                 ? {
@@ -124,14 +127,17 @@ const caldavRoutes = require('./modules/caldav/routes');
 app.use(caldavRoutes);
 
 // Session configuration
+const isSecure = process.env.COOKIE_SECURE !== 'false' && config.production;
 const sessionMiddleware = session({
     secret: config.secret,
+    name: isSecure ? '__Host-session' : 'tududi.sid', // __Host- requires Secure flag
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
+    proxy: config.trustProxy !== false,
     cookie: {
         httpOnly: true,
-        secure: process.env.COOKIE_SECURE !== 'false' && config.production,
+        secure: isSecure,
         maxAge: 2592000000, // 30 days
         sameSite: 'lax',
     },
