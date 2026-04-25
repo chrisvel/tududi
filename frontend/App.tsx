@@ -295,6 +295,31 @@ const App: React.FC = () => {
                                     )
                                 }
                             />
+                            <Route
+                                path="/admin/security"
+                                element={
+                                    currentUser?.is_admin === true ? (
+                                        <React.Suspense
+                                            fallback={
+                                                <div className="p-4">
+                                                    Loading...
+                                                </div>
+                                            }
+                                        >
+                                            {React.createElement(
+                                                React.lazy(
+                                                    () =>
+                                                        import(
+                                                            './components/Admin/SecurityDashboard'
+                                                        )
+                                                )
+                                            )}
+                                        </React.Suspense>
+                                    ) : (
+                                        <Navigate to="/today" replace />
+                                    )
+                                }
+                            />
                             <Route path="*" element={<NotFound />} />
                         </Route>
                     </>

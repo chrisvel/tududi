@@ -10,6 +10,7 @@ import {
     Squares2X2Icon,
     TagIcon,
     InboxIcon,
+    ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
 import TelegramIcon from '../Shared/Icons/TelegramIcon';
 import { useTranslation } from 'react-i18next';
@@ -27,7 +28,7 @@ import {
 } from '../../utils/keyboardShortcutsService';
 
 interface SidebarFooterProps {
-    currentUser: { email: string };
+    currentUser: { email: string; is_admin?: boolean };
     isDarkMode: boolean;
     toggleDarkMode: () => void;
     isSidebarOpen: boolean;
@@ -108,6 +109,12 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
 
     const handleDropdownSelect = (type: string) => {
         switch (type) {
+            case 'Security':
+                navigate('/admin/security');
+                if (window.innerWidth < 1024) {
+                    setIsSidebarOpen(false);
+                }
+                break;
             case 'Inbox':
                 navigate('/inbox');
                 if (window.innerWidth < 1024) {
@@ -192,6 +199,13 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
             icon: <TagIcon className="h-5 w-5 mr-2" />,
             action: 'tag' as ShortcutAction,
         },
+        {
+            label: 'Security',
+            translationKey: 'dropdown.security',
+            icon: <ShieldCheckIcon className="h-5 w-5 mr-2" />,
+            action: 'security' as ShortcutAction,
+            adminOnly: true,
+        },
     ];
 
     return (
@@ -233,33 +247,43 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                                                 translationKey,
                                                 icon,
                                                 action,
-                                            }) => (
-                                                <button
-                                                    key={label}
-                                                    onClick={() =>
-                                                        handleDropdownSelect(
-                                                            label
-                                                        )
-                                                    }
-                                                    className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-between transition-colors duration-150"
-                                                >
-                                                    <div className="flex items-center">
-                                                        {icon}
-                                                        {t(
-                                                            translationKey,
-                                                            label
-                                                        )}
-                                                    </div>
-                                                    <span
-                                                        className="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded text-xs font-mono text-gray-500 dark:text-gray-400"
-                                                        style={{
-                                                            fontSize: '10px',
-                                                        }}
+                                                adminOnly,
+                                            }) => {
+                                                if (
+                                                    adminOnly &&
+                                                    !currentUser?.is_admin
+                                                )
+                                                    return null;
+                                                return (
+                                                    <button
+                                                        key={label}
+                                                        onClick={() =>
+                                                            handleDropdownSelect(
+                                                                label
+                                                            )
+                                                        }
+                                                        className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-between transition-colors duration-150"
                                                     >
-                                                        {getShortcutDisplay(action)}
-                                                    </span>
-                                                </button>
-                                            )
+                                                        <div className="flex items-center">
+                                                            {icon}
+                                                            {t(
+                                                                translationKey,
+                                                                label
+                                                            )}
+                                                        </div>
+                                                        <span
+                                                            className="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded text-xs font-mono text-gray-500 dark:text-gray-400"
+                                                            style={{
+                                                                fontSize: '10px',
+                                                            }}
+                                                        >
+                                                            {getShortcutDisplay(
+                                                                action
+                                                            )}
+                                                        </span>
+                                                    </button>
+                                                );
+                                            }
                                         )}
                                     </div>
                                 </div>
