@@ -1,37 +1,39 @@
 {
   "name": "tududi",
   "short_name": "tududi",
-  "description": "A simple and effective task management application",
-  "start_url": "/",
+  "description": "Self-hosted task management with hierarchical organization",
+  "start_url": "./",
   "display": "standalone",
-  "theme_color": "#4a5568",
+  "orientation": "any",
+  "theme_color": "#2563eb",
   "background_color": "#ffffff",
+  "scope": "./",
   "icons": [
     {
-      "src": "/icon-logo.png",
+      "src": "icon-logo.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/favicon.png",
+      "src": "favicon.png",
       "sizes": "32x32",
       "type": "image/png"
     },
     {
-      "src": "/favicon-32.png",
+      "src": "favicon-32.png",
       "sizes": "32x32",
       "type": "image/png"
     },
     {
-      "src": "/favicon-16.png",
+      "src": "favicon-16.png",
       "sizes": "16x16",
       "type": "image/png"
     },
     {
-      "src": "/favicon.ico",
-      "sizes": "16x16 32x32 48x48",
-      "type": "image/x-icon"
+      "src": "favicon-48.png",
+      "sizes": "48x48",
+      "type": "image/png"
     }
   ]
 }

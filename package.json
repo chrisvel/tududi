@@ -134,6 +134,7 @@
     "webpack": "^5.95.0",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.1.0",
+    "workbox-webpack-plugin": "^7.4.0",
     "zustand": "^5.0.3"
   },
   "dependencies": {
