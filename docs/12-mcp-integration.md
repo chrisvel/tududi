@@ -45,6 +45,18 @@ Tududi's MCP integration allows AI assistants (Claude, Cursor, VS Code extension
 
 ---
 
+## History
+
+MCP was introduced in Tududi v1.0.0 (March 27, 2026) as a way to expose Tududi's data to AI assistants through the Model Context Protocol. Since then, it has evolved through several improvements:
+
+- **v1.0.0** (2026-03-20): Initial MCP integration with basic task, project, and inbox tools
+- **v1.0.0+** (2026-04-12): Fixed inbox tool model name issues
+- **v1.1.0-dev.15+** (2026-04-18): Added subtask inclusion in `get_task` responses
+
+The feature has remained stable since its initial release and is considered production-ready.
+
+---
+
 ## What is MCP?
 
 MCP (Model Context Protocol) is an open protocol developed by Anthropic that standardizes how AI applications connect to external data sources and tools. Think of it as a "USB-C port" for AI assistants — a universal connector that lets any MCP-compatible AI application interact with Tududi without custom integrations.
@@ -77,7 +89,7 @@ Tududi's MCP server works with any MCP-compatible client:
 
 ### Prerequisites
 
-1. **Tududi installed and running** — v1.1.0-dev.16 or later
+1. **Tududi installed and running** — v1.0.0 or later (MCP shipped in v1.0.0)
 2. **An API token** — Generate one at `Profile → API Keys`
 3. **Feature flag enabled** — Set `FF_ENABLE_MCP=true` in your `.env`
 4. **An MCP-compatible client** — Claude Desktop, Cursor, etc.
@@ -793,4 +805,5 @@ FF_ENABLE_MCP=true
 **Document Version:** 1.0.0
 **Last Updated:** 2026-04-26
 **MCP SDK Version:** @modelcontextprotocol/sdk
-**Tududi Version:** v1.1.0-dev.16+
+**Minimum Tududi Version:** v1.0.0 (released 2026-03-27)
+**Latest MCP Fix:** v1.1.0-dev.15+ (PR #1040 — subtasks in get_task, 2026-04-18)
