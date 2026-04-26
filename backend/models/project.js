@@ -23,17 +23,9 @@ module.exports = (sequelize) => {
                     notEmpty: {
                         msg: 'Project name is required',
                     },
-                    wordCount(value) {
-                        const MAX_WORDS = 6;
-                        const wordCount = value
-                            .trim()
-                            .split(/\s+/)
-                            .filter((word) => word.length > 0).length;
-                        if (wordCount > MAX_WORDS) {
-                            throw new Error(
-                                `Project name must be ${MAX_WORDS} words or less`
-                            );
-                        }
+                    len: {
+                        args: [1, 150],
+                        msg: 'Project name must be between 1 and 150 characters',
                     },
                 },
             },

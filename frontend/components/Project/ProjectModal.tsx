@@ -268,16 +268,12 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             return;
         }
 
-        const MAX_WORDS = 6;
-        const wordCount = formData.name
-            .trim()
-            .split(/\s+/)
-            .filter((word) => word.length > 0).length;
-        if (wordCount > MAX_WORDS) {
+        const MAX_LENGTH = 150;
+        if (formData.name.trim().length > MAX_LENGTH) {
             setError(
                 t(
                     'errors.projectNameTooLong',
-                    `Project name must be ${MAX_WORDS} words or less`
+                    `Project name must be ${MAX_LENGTH} characters or less`
                 )
             );
             return;
