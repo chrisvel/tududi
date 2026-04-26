@@ -802,8 +802,8 @@ FF_ENABLE_MCP=true
 
 ---
 
-**Document Version:** 1.0.0
-**Last Updated:** 2026-04-26
-**MCP SDK Version:** @modelcontextprotocol/sdk
-**Minimum Tududi Version:** v1.0.0 (released 2026-03-27)
-**Latest MCP Fix:** v1.1.0-dev.15+ (PR #1040 — subtasks in get_task, 2026-04-18)
+- **Document Version:** 1.0.0
+- **Last Updated:** 2026-04-26
+- **MCP SDK Version:** @modelcontextprotocol/sdk
+- **Minimum Tududi Version:** v1.0.0 (released 2026-03-27)
+- **Latest MCP Fix:** v1.1.0-dev.15+ (PR #1040 — subtasks in get_task, 2026-04-18)
