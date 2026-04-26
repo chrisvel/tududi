@@ -12,7 +12,7 @@ const {
 
 async function sendWelcomeMessage(token, chatId) {
     return new Promise((resolve) => {
-        const welcomeText = `🎉 Welcome to tasknotetaker!\n\nYour personal task management bot is now connected and ready to help!\n\n📝 Simply send me any message and I'll add it to your tasknotetaker inbox as an item.\n\n✨ Commands:\n• /help - Show help information\n• Just type any text - Add it as an inbox item\n\nLet's get organized! 🚀`;
+        const welcomeText = `🎉 Welcome to TaskNoteTaker!\n\nYour personal task management bot is now connected and ready to help!\n\n📝 Simply send me any message and I'll add it to your TaskNoteTaker inbox as an item.\n\n✨ Commands:\n• /help - Show help information\n• Just type any text - Add it as an inbox item\n\nLet's get organized! 🚀`;
 
         const postData = JSON.stringify({
             chat_id: chatId,

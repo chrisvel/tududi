@@ -148,7 +148,7 @@ OIDC_PROVIDER_2_ADMIN_EMAIL_DOMAINS=company.com
 # Provider 3: Self-hosted Authentik
 OIDC_PROVIDER_3_NAME=Authentik
 OIDC_PROVIDER_3_SLUG=authentik
-OIDC_PROVIDER_3_ISSUER=https://auth.example.com/application/o/tasknotetaker/
+OIDC_PROVIDER_3_ISSUER=https://auth.example.com/application/o/TaskNoteTaker/
 OIDC_PROVIDER_3_CLIENT_ID=zzz
 OIDC_PROVIDER_3_CLIENT_SECRET=zzz
 OIDC_PROVIDER_3_AUTO_PROVISION=true
@@ -194,7 +194,7 @@ OIDC_SCOPE=openid  profile  email    # Extra spaces are automatically normalized
 **Important:** The `BASE_URL` variable must be set for OAuth redirects to work:
 ```bash
 BASE_URL=http://localhost:3002  # Development
-BASE_URL=https://tasknotetaker.example.com  # Production
+BASE_URL=https://TaskNoteTaker.example.com  # Production
 ```
 
 **Trust Proxy Configuration (Required for Production):**
@@ -301,7 +301,7 @@ OIDC_ADMIN_EMAIL_DOMAINS=company.com
 3. Go to **Clients** > **Create client**
 4. Configure:
    - **Client type:** OpenID Connect
-   - **Client ID:** `tasknotetaker`
+   - **Client ID:** `TaskNoteTaker`
    - **Client authentication:** ON (confidential)
    - **Valid redirect URIs:** `https://your-domain.com/api/oidc/callback/keycloak`
 5. Go to **Credentials** tab and copy **Client secret**
@@ -319,7 +319,7 @@ OIDC_ENABLED=true
 OIDC_PROVIDER_NAME=Keycloak
 OIDC_PROVIDER_SLUG=keycloak
 OIDC_ISSUER_URL=https://auth.example.com/realms/myrealm
-OIDC_CLIENT_ID=tasknotetaker
+OIDC_CLIENT_ID=TaskNoteTaker
 OIDC_CLIENT_SECRET=xxxxxxxxxxxxxxxxxxxx
 OIDC_SCOPE=openid profile email
 OIDC_AUTO_PROVISION=true
@@ -352,7 +352,7 @@ OIDC_AUTO_PROVISION=true
 
 Format: `https://{authentik-domain}/application/o/{application-slug}/`
 
-Example: `https://auth.example.com/application/o/tasknotetaker/`
+Example: `https://auth.example.com/application/o/TaskNoteTaker/`
 
 **4. Configure TaskNoteTaker**
 
@@ -360,7 +360,7 @@ Example: `https://auth.example.com/application/o/tasknotetaker/`
 OIDC_ENABLED=true
 OIDC_PROVIDER_NAME=Authentik
 OIDC_PROVIDER_SLUG=authentik
-OIDC_ISSUER_URL=https://auth.example.com/application/o/tasknotetaker/
+OIDC_ISSUER_URL=https://auth.example.com/application/o/TaskNoteTaker/
 OIDC_CLIENT_ID=xxxxxxxxxxxxxxxxxxxx
 OIDC_CLIENT_SECRET=xxxxxxxxxxxxxxxxxxxx
 OIDC_SCOPE=openid profile email
@@ -721,7 +721,7 @@ ValidationError: The 'X-Forwarded-For' header is set but the Express 'trust prox
 
 **Solution:**
 1. Callback URL format: `{BASE_URL}/api/oidc/callback/{slug}`
-2. Example: `https://tasknotetaker.example.com/api/oidc/callback/google`
+2. Example: `https://TaskNoteTaker.example.com/api/oidc/callback/google`
 3. Must match exactly in provider settings (including http/https)
 4. Update provider settings and restart TaskNoteTaker
 
@@ -863,8 +863,8 @@ See [Swagger API docs](http://localhost:3002/api-docs) for full API reference.
 
 ## Support
 
-**Issues:** [GitHub Issues](https://github.com/chrisvel/tasknotetaker/issues)
-**Discussions:** [GitHub Discussions](https://github.com/chrisvel/tasknotetaker/discussions)
+**Issues:** [GitHub Issues](https://github.com/chrisvel/TaskNoteTaker/issues)
+**Discussions:** [GitHub Discussions](https://github.com/chrisvel/TaskNoteTaker/discussions)
 **Discord:** [Join our community](https://discord.gg/fkbeJ9CmcH)
 
 **Related Documentation:**

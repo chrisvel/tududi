@@ -442,11 +442,11 @@ const STATUS_MAP = {
 **Priority Mapping (Inverse Scale):**
 
 ```javascript
-function mapPriority(tasknotetakerPriority) {
+function mapPriority(TaskNoteTakerPriority) {
   // TaskNoteTaker: 0=Low, 1=Medium, 2=High
   // iCalendar: 1=Highest, 5=Medium, 9=Lowest
   const priorityMap = { 0: 7, 1: 5, 2: 3 };
-  return priorityMap[tasknotetakerPriority] || 5;
+  return priorityMap[TaskNoteTakerPriority] || 5;
 }
 ```
 
@@ -529,10 +529,10 @@ function vtodoToTask(vtodoString) {
 
   // 6. Parse custom properties
   const customProps = vtodoComp.getAllProperties().filter(p =>
-    p.name.startsWith('x-tasknotetaker-')
+    p.name.startsWith('x-TaskNoteTaker-')
   );
   customProps.forEach(prop => {
-    // Handle X-TASKNOTETAKER-* properties
+    // Handle X-TUDUDI-* properties
   });
 
   return task;

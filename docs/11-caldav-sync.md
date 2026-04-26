@@ -303,7 +303,7 @@ npm start              # For standalone
 2. Tap **☰ Menu** > **Settings** > **Synchronization**
 3. Select **CalDAV**
 4. Enter connection details:
-   - **URL:** `https://your-tasknotetaker-domain.com/caldav/`
+   - **URL:** `https://your-TaskNoteTaker-domain.com/caldav/`
    - **Username:** Your TaskNoteTaker email
    - **Password:** Your TaskNoteTaker password
 5. Tap **Add Account**
@@ -327,7 +327,7 @@ npm start              # For standalone
 2. Tap **Add Account** > **Other**
 3. Select **Add CalDAV Account**
 4. Enter connection details:
-   - **Server:** `your-tasknotetaker-domain.com`
+   - **Server:** `your-TaskNoteTaker-domain.com`
    - **Username:** Your TaskNoteTaker email
    - **Password:** Your TaskNoteTaker password
    - **Description:** TaskNoteTaker Tasks
@@ -342,7 +342,7 @@ npm start              # For standalone
    - **Account Type:** Manual
    - **Username:** Your TaskNoteTaker email
    - **Password:** Your TaskNoteTaker password
-   - **Server Address:** `https://your-tasknotetaker-domain.com/caldav/`
+   - **Server Address:** `https://your-TaskNoteTaker-domain.com/caldav/`
 4. Click **Sign In**
 5. Open **Reminders** app to view synced tasks
 
@@ -364,7 +364,7 @@ npm start              # For standalone
 4. Select **On the Network**
 5. Choose **CalDAV**
 6. Enter connection details:
-   - **Location:** `https://your-tasknotetaker-domain.com/caldav/{your-username}/tasks/`
+   - **Location:** `https://your-TaskNoteTaker-domain.com/caldav/{your-username}/tasks/`
    - Replace `{your-username}` with your TaskNoteTaker username
 7. Enter credentials when prompted
 8. Select **Tasks** calendar type
@@ -385,7 +385,7 @@ npm start              # For standalone
 1. Open **Evolution** > **File** > **New** > **Task List**
 2. Select **CalDAV**
 3. Enter connection details:
-   - **URL:** `https://your-tasknotetaker-domain.com/caldav/{your-username}/tasks/`
+   - **URL:** `https://your-TaskNoteTaker-domain.com/caldav/{your-username}/tasks/`
    - **Username:** Your TaskNoteTaker email
    - **Password:** Your TaskNoteTaker password
 4. Click **Apply**
@@ -556,9 +556,9 @@ CalDAV uses inverse priority scale (1=highest, 9=lowest):
 
 TaskNoteTaker-specific features are stored as extended properties:
 
-- `X-TASKNOTETAKER-HABIT-MODE`: Habit tracking settings
-- `X-TASKNOTETAKER-PROJECT-UID`: Project association
-- `X-TASKNOTETAKER-TAGS`: Task tags (comma-separated)
+- `X-TUDUDI-HABIT-MODE`: Habit tracking settings
+- `X-TUDUDI-PROJECT-UID`: Project association
+- `X-TUDUDI-TAGS`: Task tags (comma-separated)
 
 These fields are preserved but may not be visible in external clients.
 
@@ -702,7 +702,7 @@ CALDAV_LOG_REQUESTS=false                    # Log all CalDAV requests
 1. **Subtasks:** Supported via RELATED-TO, but not all clients render hierarchically
 2. **Habit Mode:** Stored in custom fields, not visible in external clients
 3. **Tags:** Exported as CATEGORIES, but colors/metadata only in TaskNoteTaker
-4. **Projects:** Association stored in X-TASKNOTETAKER-PROJECT-UID, not shown externally
+4. **Projects:** Association stored in X-TUDUDI-PROJECT-UID, not shown externally
 5. **Status Granularity:** 7 TaskNoteTaker statuses mapped to 4 CalDAV statuses (some nuance lost)
 6. **Timezone Handling:** All dates stored as UTC; local timezone conversion in clients
 7. **Large Recurring Sequences:** Expanding far into future creates many VTODOs (configurable limit)
@@ -832,8 +832,8 @@ If conflict strategy is set to `manual`:
 
 ## Support
 
-**Issues:** [GitHub Issues](https://github.com/chrisvel/tasknotetaker/issues)
-**Discussions:** [GitHub Discussions](https://github.com/chrisvel/tasknotetaker/discussions)
+**Issues:** [GitHub Issues](https://github.com/chrisvel/TaskNoteTaker/issues)
+**Discussions:** [GitHub Discussions](https://github.com/chrisvel/TaskNoteTaker/discussions)
 **Discord:** [Join our community](https://discord.gg/fkbeJ9CmcH)
 
 **Related Documentation:**

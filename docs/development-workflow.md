@@ -16,8 +16,8 @@
 
 ```bash
 # Clone repository
-git clone https://github.com/chrisvel/tasknotetaker.git
-cd tasknotetaker
+git clone https://github.com/chrisvel/TaskNoteTaker.git
+cd TaskNoteTaker
 
 # Install all dependencies
 # This installs both frontend and backend dependencies (monorepo setup)
@@ -516,17 +516,17 @@ npm run build
 
 ```bash
 # Build Docker image
-docker build -t tasknotetaker:latest .
+docker build -t TaskNoteTaker:latest .
 
 # Run container
 docker run \
   -e TASKNOTETAKER_USER_EMAIL=admin@example.com \
   -e TASKNOTETAKER_USER_PASSWORD=secure-password \
   -e TASKNOTETAKER_SESSION_SECRET=$(openssl rand -hex 64) \
-  -v ~/tasknotetaker_db:/app/backend/db \
-  -v ~/tasknotetaker_uploads:/app/backend/uploads \
+  -v ~/TaskNoteTaker_db:/app/backend/db \
+  -v ~/TaskNoteTaker_uploads:/app/backend/uploads \
   -p 3002:3002 \
-  -d tasknotetaker:latest
+  -d TaskNoteTaker:latest
 ```
 
 ---

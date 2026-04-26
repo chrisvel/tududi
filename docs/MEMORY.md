@@ -1,6 +1,6 @@
 # Claude Memory & Preferences
 
-This document contains preferences, patterns, and memory items specific to working with Claude Code on the tasknotetaker project.
+This document contains preferences, patterns, and memory items specific to working with Claude Code on the TaskNoteTaker project.
 
 ---
 

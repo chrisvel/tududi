@@ -1,7 +1,7 @@
 const ICAL = require('ical.js');
 const {
     STATUS_TASKNOTETAKER_TO_ICAL,
-    tasknotetakerToIcalPriority,
+    TaskNoteTakerToIcalPriority,
 } = require('./field-mappings');
 const { generateRRULE } = require('./rrule-generator');
 
@@ -21,7 +21,7 @@ function serializeTaskToVTODO(task, options = {}) {
     vtodo.addPropertyWithValue('status', status);
 
     if (task.priority !== null && task.priority !== undefined) {
-        const priority = tasknotetakerToIcalPriority(task.priority);
+        const priority = TaskNoteTakerToIcalPriority(task.priority);
         vtodo.addPropertyWithValue('priority', priority);
     }
 
@@ -87,10 +87,10 @@ function serializeTaskToVTODO(task, options = {}) {
     }
 
     if (task.Project) {
-        vtodo.addPropertyWithValue('x-tasknotetaker-project-uid', task.Project.uid);
+        vtodo.addPropertyWithValue('x-TaskNoteTaker-project-uid', task.Project.uid);
         if (task.Project.name) {
             vtodo.addPropertyWithValue(
-                'x-tasknotetaker-project-name',
+                'x-TaskNoteTaker-project-name',
                 task.Project.name
             );
         }
@@ -101,32 +101,32 @@ function serializeTaskToVTODO(task, options = {}) {
         vtodo.addPropertyWithValue('categories', tagNames);
 
         const tagUids = task.Tags.map((t) => t.uid).join(',');
-        vtodo.addPropertyWithValue('x-tasknotetaker-tag-uids', tagUids);
+        vtodo.addPropertyWithValue('x-TaskNoteTaker-tag-uids', tagUids);
     }
 
     if (task.habit_mode) {
-        vtodo.addPropertyWithValue('x-tasknotetaker-habit-mode', 'true');
+        vtodo.addPropertyWithValue('x-TaskNoteTaker-habit-mode', 'true');
         if (task.habit_current_streak !== null) {
             vtodo.addPropertyWithValue(
-                'x-tasknotetaker-habit-streak',
+                'x-TaskNoteTaker-habit-streak',
                 task.habit_current_streak.toString()
             );
         }
         if (task.habit_total_completions !== null) {
             vtodo.addPropertyWithValue(
-                'x-tasknotetaker-habit-completions',
+                'x-TaskNoteTaker-habit-completions',
                 task.habit_total_completions.toString()
             );
         }
     }
 
     if (task.order !== null && task.order !== undefined) {
-        vtodo.addPropertyWithValue('x-tasknotetaker-order', task.order.toString());
+        vtodo.addPropertyWithValue('x-TaskNoteTaker-order', task.order.toString());
     }
 
     const statusName = getStatusName(task.status);
     if (statusName) {
-        vtodo.addPropertyWithValue('x-tasknotetaker-status-name', statusName);
+        vtodo.addPropertyWithValue('x-TaskNoteTaker-status-name', statusName);
     }
 
     if (task.created_at) {

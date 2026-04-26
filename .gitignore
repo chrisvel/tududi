@@ -36,12 +36,16 @@ public/assets/
 backend/uploads/
 uploads/
 backend/backups/
+
+# Docker volumes
+TaskNoteTaker_db/
+
+# Log files
 *.log
 server.log
 backend/server.log
 
 # Docker & Volumes
-tududi_db/
 tasknotetaker_db/
 
 # Test Artifacts

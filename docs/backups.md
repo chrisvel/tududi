@@ -91,10 +91,10 @@ npm start
 docker-compose down
 
 # 2. Access the host volume (find your volume location)
-docker volume inspect tasknotetaker_db_data
+docker volume inspect TaskNoteTaker_db_data
 
 # 3. Navigate to the mount point and list backups
-cd /var/lib/docker/volumes/tasknotetaker_db_data/_data
+cd /var/lib/docker/volumes/TaskNoteTaker_db_data/_data
 ls -lh db-backup-*.sqlite3
 
 # 4. Backup current state
@@ -157,15 +157,15 @@ Backup the entire Docker volume:
 ```bash
 # Backup Docker volume
 docker run --rm \
-  -v tasknotetaker_db_data:/data \
+  -v TaskNoteTaker_db_data:/data \
   -v $(pwd):/backup \
-  alpine tar czf /backup/tasknotetaker-db-backup-$(date +%Y%m%d).tar.gz -C /data .
+  alpine tar czf /backup/TaskNoteTaker-db-backup-$(date +%Y%m%d).tar.gz -C /data .
 
 # Restore Docker volume
 docker run --rm \
-  -v tasknotetaker_db_data:/data \
+  -v TaskNoteTaker_db_data:/data \
   -v $(pwd):/backup \
-  alpine tar xzf /backup/tasknotetaker-db-backup-20260314.tar.gz -C /data
+  alpine tar xzf /backup/TaskNoteTaker-db-backup-20260314.tar.gz -C /data
 ```
 
 ### 4. Migration Rollback Strategy
@@ -234,7 +234,7 @@ sqlite3 backend/db/db-backup-20260314193000.sqlite3 "PRAGMA integrity_check;"
 
 ```bash
 # Kill all node processes
-pkill -f "node.*tasknotetaker"
+pkill -f "node.*TaskNoteTaker"
 
 # Verify no processes are using the database
 lsof backend/db/development.sqlite3

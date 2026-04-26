@@ -1,6 +1,6 @@
 # CalDAV Synchronization Implementation Plan
 
-**GitHub Issue:** [#978 - Add CalDAV Synchronization Support](https://github.com/chrisvel/tasknotetaker/issues/978)
+**GitHub Issue:** [#978 - Add CalDAV Synchronization Support](https://github.com/chrisvel/TaskNoteTaker/issues/978)
 
 ---
 
@@ -13,7 +13,7 @@ TaskNoteTaker currently supports hierarchical task management with sophisticated
 - Support self-hosted CalDAV server sync (Nextcloud, Baikal)
 - Maintain task data across multiple devices
 - Enable offline task management with eventual sync
-- Requested in [Discussion #246](https://github.com/chrisvel/tasknotetaker/discussions/246)
+- Requested in [Discussion #246](https://github.com/chrisvel/TaskNoteTaker/discussions/246)
 
 **Implementation Approach:**
 - Custom CalDAV/WebDAV implementation (RFC 4791)
@@ -236,7 +236,7 @@ backend/modules/caldav/
 | `priority` (0-2) | `PRIORITY` | Inverse scale (0→7, 1→5, 2→3) |
 | `recurrence_*` | `RRULE` | Generate RRULE string |
 | `parent_task_id` | `RELATED-TO` | Parent UID |
-| Custom | `X-TASKNOTETAKER-*` | Extended properties |
+| Custom | `X-TUDUDI-*` | Extended properties |
 
 **Status Mapping:**
 ```javascript
@@ -254,7 +254,7 @@ backend/modules/caldav/
 ```javascript
 // TaskNoteTaker 0=Low, 1=Medium, 2=High
 // iCalendar 1=Highest, 5=Medium, 9=Lowest
-tasknotetakerToIcal: priority => 9 - (priority * 2)
+TaskNoteTakerToIcal: priority => 9 - (priority * 2)
 icalToTaskNoteTaker:
   1-3 → High (2)
   4-6 → Medium (1)
@@ -586,31 +586,31 @@ CALDAV_LOG_REQUESTS=false
 ## Verification Steps
 
 ### 1. CalDAV Discovery
-- Access `https://tasknotetaker.example.com/.well-known/caldav`
+- Access `https://TaskNoteTaker.example.com/.well-known/caldav`
 - Should redirect to `/caldav/`
 - OPTIONS request returns CalDAV capabilities
 
 ### 2. Client Connection (tasks.org)
-- Configure tasks.org with server URL: `https://tasknotetaker.example.com/caldav/`
+- Configure tasks.org with server URL: `https://TaskNoteTaker.example.com/caldav/`
 - Username: user's email
-- Password: user's tasknotetaker password
+- Password: user's TaskNoteTaker password
 - Client discovers `/caldav/{username}/tasks/` calendar
 - Tasks appear in tasks.org
 
 ### 3. Task Synchronization
-- Create task in tasknotetaker web UI
+- Create task in TaskNoteTaker web UI
 - Sync in tasks.org → Task appears with correct fields
 - Edit task in tasks.org
-- Sync in tasknotetaker → Changes reflected
+- Sync in TaskNoteTaker → Changes reflected
 
 ### 4. Recurring Tasks
-- Create "Daily meeting" recurring task in tasknotetaker
+- Create "Daily meeting" recurring task in TaskNoteTaker
 - Sync to tasks.org → Next 7 instances appear
 - Complete one instance in tasks.org
-- Sync to tasknotetaker → Completion recorded
+- Sync to TaskNoteTaker → Completion recorded
 
 ### 5. Conflict Resolution
-- Edit task in tasknotetaker (status: "In Progress")
+- Edit task in TaskNoteTaker (status: "In Progress")
 - Edit same task in tasks.org (status: "Completed")
 - Trigger sync → Conflict detected and stored
 - Resolve via UI (choose remote) → Status updated to "Completed"
@@ -626,7 +626,7 @@ CALDAV_LOG_REQUESTS=false
 - Sync completes in < 30 seconds
 
 ### 8. Edge Cases
-- Delete recurring task in tasknotetaker → Removed from tasks.org
+- Delete recurring task in TaskNoteTaker → Removed from tasks.org
 - Invalid VTODO from client → Error logged, sync continues
 - Network failure → Retry with exponential backoff
 - Timezone changes → Dates preserved correctly
@@ -667,10 +667,10 @@ CALDAV_LOG_REQUESTS=false
 ## Known Limitations
 
 1. **Subtasks:** RELATED-TO property used, but not all clients support hierarchical rendering
-2. **Habit Mode:** Stored in X-TASKNOTETAKER-* properties, not visible in external clients
-3. **Tags:** Exported as CATEGORIES, but tag colors/metadata only in tasknotetaker
-4. **Projects:** Stored in X-TASKNOTETAKER-PROJECT-UID, external clients won't show association
-5. **Status Granularity:** 7 tasknotetaker statuses mapped to 4 iCalendar statuses (some nuance lost)
+2. **Habit Mode:** Stored in X-TUDUDI-* properties, not visible in external clients
+3. **Tags:** Exported as CATEGORIES, but tag colors/metadata only in TaskNoteTaker
+4. **Projects:** Stored in X-TUDUDI-PROJECT-UID, external clients won't show association
+5. **Status Granularity:** 7 TaskNoteTaker statuses mapped to 4 iCalendar statuses (some nuance lost)
 6. **Timezone Handling:** Always use UTC in VTODO, convert in UI (document per-client quirks)
 7. **Large Recurring Sequences:** Expanding far into the future creates many VTODOs (configurable limit)
 
@@ -678,8 +678,8 @@ CALDAV_LOG_REQUESTS=false
 
 ## References
 
-- [Issue #978](https://github.com/chrisvel/tasknotetaker/issues/978)
-- [Discussion #246](https://github.com/chrisvel/tasknotetaker/discussions/246)
+- [Issue #978](https://github.com/chrisvel/TaskNoteTaker/issues/978)
+- [Discussion #246](https://github.com/chrisvel/TaskNoteTaker/discussions/246)
 - [RFC 4791 (CalDAV)](https://datatracker.ietf.org/doc/html/rfc4791)
 - [RFC 5545 (iCalendar)](https://datatracker.ietf.org/doc/html/rfc5545)
 - [RFC 6578 (Sync-Collection)](https://datatracker.ietf.org/doc/html/rfc6578)

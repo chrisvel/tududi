@@ -8,14 +8,14 @@ const STATUS_TASKNOTETAKER_TO_ICAL = {
     6: 'NEEDS-ACTION',
 };
 
-const STATUS_ICAL_TO_TASKNOTETAKER = {
+const STATUS_ICAL_TO_TUDUDI = {
     'NEEDS-ACTION': 0,
     'IN-PROCESS': 1,
     COMPLETED: 2,
     CANCELLED: 5,
 };
 
-function tasknotetakerToIcalPriority(priority) {
+function TaskNoteTakerToIcalPriority(priority) {
     if (priority === null || priority === undefined) {
         return 0;
     }
@@ -62,8 +62,8 @@ const WEEKDAY_REVERSE_MAP = {
 
 module.exports = {
     STATUS_TASKNOTETAKER_TO_ICAL,
-    STATUS_ICAL_TO_TASKNOTETAKER,
-    tasknotetakerToIcalPriority,
+    STATUS_ICAL_TO_TUDUDI,
+    TaskNoteTakerToIcalPriority,
     icalToTaskNoteTakerPriority,
     WEEKDAY_MAP,
     WEEKDAY_REVERSE_MAP,

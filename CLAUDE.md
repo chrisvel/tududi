@@ -1,6 +1,6 @@
 # TaskNoteTaker - Developer Guide
 
-This documentation is designed for AI assistants and developers working with the tasknotetaker codebase. For user-facing documentation, see [README.md](README.md). For contribution guidelines, see [CONTRIBUTING.md](.github/CONTRIBUTING.md).
+This documentation is designed for AI assistants and developers working with the TaskNoteTaker codebase. For user-facing documentation, see [README.md](README.md). For contribution guidelines, see [CONTRIBUTING.md](.github/CONTRIBUTING.md).
 
 ---
 
@@ -12,8 +12,8 @@ TaskNoteTaker is a self-hosted task management system with hierarchical organiza
 
 **Get Started:**
 ```bash
-git clone https://github.com/chrisvel/tasknotetaker.git
-cd tasknotetaker
+git clone https://github.com/chrisvel/TaskNoteTaker.git
+cd TaskNoteTaker
 npm install
 npm run db:init
 npm start  # Frontend on :8080, Backend on :3002
@@ -255,7 +255,7 @@ TaskNoteTaker is a self-hosted task management system designed around hierarchic
 |----------|----------|---------|
 | [README.md](README.md) | Users | Features, Docker setup, quick start |
 | [CONTRIBUTING.md](.github/CONTRIBUTING.md) | Contributors | PR workflow, code of conduct |
-| [docs.tasknotetaker.com](https://docs.tasknotetaker.com) | End users | Full user documentation |
+| [docs.TaskNoteTaker.com](https://docs.TaskNoteTaker.com) | End users | Full user documentation |
 | [Swagger API docs](http://localhost:3002/api-docs) | API consumers | API endpoints (after auth) |
 | **CLAUDE.md** | Developers, AI | Codebase architecture, patterns |
 
@@ -266,9 +266,9 @@ TaskNoteTaker is a self-hosted task management system designed around hierarchic
 - **Roadmap:** [GitHub Project](https://github.com/users/chrisvel/projects/2)
 - **Community:**
   - [Discord](https://discord.gg/fkbeJ9CmcH)
-  - [Reddit](https://www.reddit.com/r/tasknotetaker/)
-  - [Issues](https://github.com/chrisvel/tasknotetaker/issues)
-  - [Discussions](https://github.com/chrisvel/tasknotetaker/discussions)
+  - [Reddit](https://www.reddit.com/r/TaskNoteTaker/)
+  - [Issues](https://github.com/chrisvel/TaskNoteTaker/issues)
+  - [Discussions](https://github.com/chrisvel/TaskNoteTaker/discussions)
 
 ---
 

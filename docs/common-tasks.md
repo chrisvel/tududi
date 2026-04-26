@@ -65,7 +65,7 @@ npm run format:fix
 
 1. **Create directory structure**
    ```bash
-   mkdir -p /Users/chris/c0deLab/ProjectLand/tasknotetaker/backend/modules/labels
+   mkdir -p /Users/chris/c0deLab/ProjectLand/TaskNoteTaker/backend/modules/labels
    ```
 
 2. **Create files**
@@ -403,7 +403,7 @@ router.put('/task/:id/estimate', async (req, res, next) => {
 
 **Example: Add subtasks to a task**
 
-This is already implemented in tasknotetaker, but here's the pattern:
+This is already implemented in TaskNoteTaker, but here's the pattern:
 
 ### Files Involved
 
@@ -491,7 +491,7 @@ This is already implemented in tasknotetaker, but here's the pattern:
 
 **Example: Create database backup**
 
-Already implemented in tasknotetaker:
+Already implemented in TaskNoteTaker:
 
 ```bash
 # Via API (after login)

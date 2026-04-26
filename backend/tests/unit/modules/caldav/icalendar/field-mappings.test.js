@@ -1,7 +1,7 @@
 const {
     STATUS_TASKNOTETAKER_TO_ICAL,
-    STATUS_ICAL_TO_TASKNOTETAKER,
-    tasknotetakerToIcalPriority,
+    STATUS_ICAL_TO_TUDUDI,
+    TaskNoteTakerToIcalPriority,
     icalToTaskNoteTakerPriority,
     WEEKDAY_MAP,
     WEEKDAY_REVERSE_MAP,
@@ -9,7 +9,7 @@ const {
 
 describe('CalDAV Field Mappings', () => {
     describe('Status Mappings', () => {
-        it('should map tasknotetaker statuses to iCalendar statuses', () => {
+        it('should map TaskNoteTaker statuses to iCalendar statuses', () => {
             expect(STATUS_TASKNOTETAKER_TO_ICAL[0]).toBe('NEEDS-ACTION');
             expect(STATUS_TASKNOTETAKER_TO_ICAL[1]).toBe('IN-PROCESS');
             expect(STATUS_TASKNOTETAKER_TO_ICAL[2]).toBe('COMPLETED');
@@ -19,31 +19,31 @@ describe('CalDAV Field Mappings', () => {
             expect(STATUS_TASKNOTETAKER_TO_ICAL[6]).toBe('NEEDS-ACTION');
         });
 
-        it('should map iCalendar statuses to tasknotetaker statuses', () => {
-            expect(STATUS_ICAL_TO_TASKNOTETAKER['NEEDS-ACTION']).toBe(0);
-            expect(STATUS_ICAL_TO_TASKNOTETAKER['IN-PROCESS']).toBe(1);
-            expect(STATUS_ICAL_TO_TASKNOTETAKER['COMPLETED']).toBe(2);
-            expect(STATUS_ICAL_TO_TASKNOTETAKER['CANCELLED']).toBe(5);
+        it('should map iCalendar statuses to TaskNoteTaker statuses', () => {
+            expect(STATUS_ICAL_TO_TUDUDI['NEEDS-ACTION']).toBe(0);
+            expect(STATUS_ICAL_TO_TUDUDI['IN-PROCESS']).toBe(1);
+            expect(STATUS_ICAL_TO_TUDUDI['COMPLETED']).toBe(2);
+            expect(STATUS_ICAL_TO_TUDUDI['CANCELLED']).toBe(5);
         });
     });
 
     describe('Priority Mappings', () => {
-        describe('tasknotetakerToIcalPriority', () => {
-            it('should map tasknotetaker Low (0) to iCal 7', () => {
-                expect(tasknotetakerToIcalPriority(0)).toBe(7);
+        describe('TaskNoteTakerToIcalPriority', () => {
+            it('should map TaskNoteTaker Low (0) to iCal 7', () => {
+                expect(TaskNoteTakerToIcalPriority(0)).toBe(7);
             });
 
-            it('should map tasknotetaker Medium (1) to iCal 5', () => {
-                expect(tasknotetakerToIcalPriority(1)).toBe(5);
+            it('should map TaskNoteTaker Medium (1) to iCal 5', () => {
+                expect(TaskNoteTakerToIcalPriority(1)).toBe(5);
             });
 
-            it('should map tasknotetaker High (2) to iCal 3', () => {
-                expect(tasknotetakerToIcalPriority(2)).toBe(3);
+            it('should map TaskNoteTaker High (2) to iCal 3', () => {
+                expect(TaskNoteTakerToIcalPriority(2)).toBe(3);
             });
 
             it('should return 0 for null priority', () => {
-                expect(tasknotetakerToIcalPriority(null)).toBe(0);
-                expect(tasknotetakerToIcalPriority(undefined)).toBe(0);
+                expect(TaskNoteTakerToIcalPriority(null)).toBe(0);
+                expect(TaskNoteTakerToIcalPriority(undefined)).toBe(0);
             });
         });
 
@@ -74,14 +74,14 @@ describe('CalDAV Field Mappings', () => {
         });
 
         it('should maintain inverse relationship', () => {
-            expect(icalToTaskNoteTakerPriority(tasknotetakerToIcalPriority(0))).toBe(0);
-            expect(icalToTaskNoteTakerPriority(tasknotetakerToIcalPriority(1))).toBe(1);
-            expect(icalToTaskNoteTakerPriority(tasknotetakerToIcalPriority(2))).toBe(2);
+            expect(icalToTaskNoteTakerPriority(TaskNoteTakerToIcalPriority(0))).toBe(0);
+            expect(icalToTaskNoteTakerPriority(TaskNoteTakerToIcalPriority(1))).toBe(1);
+            expect(icalToTaskNoteTakerPriority(TaskNoteTakerToIcalPriority(2))).toBe(2);
         });
     });
 
     describe('Weekday Mappings', () => {
-        it('should map tasknotetaker weekdays to iCalendar weekdays', () => {
+        it('should map TaskNoteTaker weekdays to iCalendar weekdays', () => {
             expect(WEEKDAY_MAP[0]).toBe('SU');
             expect(WEEKDAY_MAP[1]).toBe('MO');
             expect(WEEKDAY_MAP[2]).toBe('TU');
@@ -91,7 +91,7 @@ describe('CalDAV Field Mappings', () => {
             expect(WEEKDAY_MAP[6]).toBe('SA');
         });
 
-        it('should map iCalendar weekdays to tasknotetaker weekdays', () => {
+        it('should map iCalendar weekdays to TaskNoteTaker weekdays', () => {
             expect(WEEKDAY_REVERSE_MAP['SU']).toBe(0);
             expect(WEEKDAY_REVERSE_MAP['MO']).toBe(1);
             expect(WEEKDAY_REVERSE_MAP['TU']).toBe(2);
@@ -104,8 +104,8 @@ describe('CalDAV Field Mappings', () => {
         it('should maintain reverse relationship', () => {
             Object.keys(WEEKDAY_MAP).forEach((key) => {
                 const icalDay = WEEKDAY_MAP[key];
-                const tasknotetakerDay = WEEKDAY_REVERSE_MAP[icalDay];
-                expect(tasknotetakerDay).toBe(parseInt(key, 10));
+                const TaskNoteTakerDay = WEEKDAY_REVERSE_MAP[icalDay];
+                expect(TaskNoteTakerDay).toBe(parseInt(key, 10));
             });
         });
     });

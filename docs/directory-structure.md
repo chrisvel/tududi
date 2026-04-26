@@ -7,7 +7,7 @@
 ## Project Root
 
 ```
-/Users/chris/c0deLab/ProjectLand/tasknotetaker/
+/Users/chris/c0deLab/ProjectLand/TaskNoteTaker/
 ├── README.md                # User-facing documentation
 ├── CLAUDE.md               # This developer guide (index)
 ├── LICENSE                 # MIT License
@@ -57,7 +57,7 @@
 ## Backend Structure
 
 ```
-/Users/chris/c0deLab/ProjectLand/tasknotetaker/backend/
+/Users/chris/c0deLab/ProjectLand/TaskNoteTaker/backend/
 │
 ├── app.js                 # Main Express application entry point
 │                          # - Middleware setup (Helmet, CORS, compression)
@@ -240,7 +240,7 @@
 ## Frontend Structure
 
 ```
-/Users/chris/c0deLab/ProjectLand/tasknotetaker/frontend/
+/Users/chris/c0deLab/ProjectLand/TaskNoteTaker/frontend/
 │
 ├── index.tsx            # React application entry point
 │                        # - React root initialization
@@ -415,7 +415,7 @@
 ## E2E Tests Structure
 
 ```
-/Users/chris/c0deLab/ProjectLand/tasknotetaker/e2e/
+/Users/chris/c0deLab/ProjectLand/TaskNoteTaker/e2e/
 ├── tests/              # Playwright test specs
 │   ├── login.spec.ts
 │   ├── tasks.spec.ts

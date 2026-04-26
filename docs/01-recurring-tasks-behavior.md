@@ -1,6 +1,6 @@
 # Recurring Tasks - Behavior Rules
 
-This document explains how recurring tasks work in tasknotetaker from a user behavior perspective. For technical implementation details, see the backend code in `/backend/modules/tasks/recurringTaskService.js`.
+This document explains how recurring tasks work in TaskNoteTaker from a user behavior perspective. For technical implementation details, see the backend code in `/backend/modules/tasks/recurringTaskService.js`.
 
 ---
 

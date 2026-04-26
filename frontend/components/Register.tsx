@@ -114,7 +114,7 @@ const Register: React.FC = () => {
                                     ? 'wide-logo-light.png'
                                     : 'wide-logo-dark.png'
                             )}
-                            alt="tasknotetaker"
+                            alt="TaskNoteTaker"
                             className="h-9 w-auto"
                         />
                     </div>
@@ -158,7 +158,7 @@ const Register: React.FC = () => {
                                     ? '/wide-logo-light.png'
                                     : '/wide-logo-dark.png'
                             }
-                            alt="tasknotetaker"
+                            alt="TaskNoteTaker"
                             className="h-9 w-auto"
                         />
                     </div>
@@ -231,7 +231,7 @@ const Register: React.FC = () => {
                                 ? '/wide-logo-light.png'
                                 : '/wide-logo-dark.png'
                         }
-                        alt="tasknotetaker"
+                        alt="TaskNoteTaker"
                         className="h-9 w-auto"
                     />
                 </div>

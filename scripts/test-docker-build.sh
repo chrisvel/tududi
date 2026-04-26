@@ -4,8 +4,8 @@
 set -e
 
 VERSION=${1:-"latest"}
-IMAGE_NAME="tasknotetaker-test:$VERSION"
-CONTAINER_NAME="tasknotetaker-test-$VERSION"
+IMAGE_NAME="TaskNoteTaker-test:$VERSION"
+CONTAINER_NAME="TaskNoteTaker-test-$VERSION"
 TEST_PORT="3003"
 
 echo "🐳 Testing Docker build for version: $VERSION"

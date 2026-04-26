@@ -16,7 +16,7 @@ async function getMcpConfig(req, res) {
         // Generate HTTP-based config for remote access
         const claudeConfig = {
             mcpServers: {
-                tasknotetaker: {
+                TaskNoteTaker: {
                     command: 'npx',
                     args: [
                         '-y',

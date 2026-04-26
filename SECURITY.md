@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-We release security updates for the following versions of tasknotetaker:
+We release security updates for the following versions of TaskNoteTaker:
 
 | Version | Supported          |
 | ------- | ------------------ |
@@ -15,11 +15,11 @@ We recommend always running the latest version to ensure you have the latest sec
 
 **Please do not report security vulnerabilities through public GitHub issues.**
 
-If you discover a security vulnerability in tasknotetaker, please report it privately to help us fix it before public disclosure.
+If you discover a security vulnerability in TaskNoteTaker, please report it privately to help us fix it before public disclosure.
 
 ### How to Report
 
-1. **Email:** Send details to the repository owner via GitHub or open a [Security Advisory](https://github.com/chrisvel/tasknotetaker/security/advisories/new)
+1. **Email:** Send details to the repository owner via GitHub or open a [Security Advisory](https://github.com/chrisvel/TaskNoteTaker/security/advisories/new)
 
 2. **Include in your report:**
    - Description of the vulnerability
@@ -37,7 +37,7 @@ If you discover a security vulnerability in tasknotetaker, please report it priv
 
 ## Security Best Practices
 
-When deploying tasknotetaker, we recommend:
+When deploying TaskNoteTaker, we recommend:
 
 ### Production Deployment
 
@@ -55,8 +55,8 @@ When deploying tasknotetaker, we recommend:
 TASKNOTETAKER_SESSION_SECRET=$(openssl rand -hex 64)
 
 # Use secure volumes with proper permissions
-chmod 700 ~/tasknotetaker_db
-chmod 700 ~/tasknotetaker_uploads
+chmod 700 ~/TaskNoteTaker_db
+chmod 700 ~/TaskNoteTaker_uploads
 ```
 
 ### Self-Hosting Checklist
@@ -92,8 +92,8 @@ chmod 700 ~/tasknotetaker_uploads
 
 Security updates are released as patch versions (e.g., 0.85.1 → 0.85.2). Critical vulnerabilities may warrant immediate releases.
 
-Subscribe to [GitHub Releases](https://github.com/chrisvel/tasknotetaker/releases) or watch the repository to be notified of security updates.
+Subscribe to [GitHub Releases](https://github.com/chrisvel/TaskNoteTaker/releases) or watch the repository to be notified of security updates.
 
 ---
 
-Thank you for helping keep tasknotetaker and its users secure!
+Thank you for helping keep TaskNoteTaker and its users secure!

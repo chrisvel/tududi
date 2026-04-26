@@ -1,6 +1,6 @@
 const ICAL = require('ical.js');
 const {
-    STATUS_ICAL_TO_TASKNOTETAKER,
+    STATUS_ICAL_TO_TUDUDI,
     icalToTaskNoteTakerPriority,
 } = require('./field-mappings');
 const { parseRRULE } = require('./rrule-parser');
@@ -57,7 +57,7 @@ async function parseVTODOToTask(vtodoString) {
 
         const status = vtodo.getFirstPropertyValue('status');
         if (status) {
-            task.status = STATUS_ICAL_TO_TASKNOTETAKER[status] || 0;
+            task.status = STATUS_ICAL_TO_TUDUDI[status] || 0;
         }
 
         const priority = vtodo.getFirstPropertyValue('priority');
@@ -111,7 +111,7 @@ async function parseVTODOToTask(vtodoString) {
             task.parent_task_uid = relatedTo;
         }
 
-        const projectUid = vtodo.getFirstPropertyValue('x-tasknotetaker-project-uid');
+        const projectUid = vtodo.getFirstPropertyValue('x-TaskNoteTaker-project-uid');
         if (projectUid) {
             task.project_uid = projectUid;
         }
@@ -127,24 +127,24 @@ async function parseVTODOToTask(vtodoString) {
             }
         }
 
-        const habitMode = vtodo.getFirstPropertyValue('x-tasknotetaker-habit-mode');
+        const habitMode = vtodo.getFirstPropertyValue('x-TaskNoteTaker-habit-mode');
         if (habitMode === 'true' || habitMode === true) {
             task.habit_mode = true;
 
-            const streak = vtodo.getFirstPropertyValue('x-tasknotetaker-habit-streak');
+            const streak = vtodo.getFirstPropertyValue('x-TaskNoteTaker-habit-streak');
             if (streak) {
                 task.habit_current_streak = parseInt(streak, 10) || 0;
             }
 
             const completions = vtodo.getFirstPropertyValue(
-                'x-tasknotetaker-habit-completions'
+                'x-TaskNoteTaker-habit-completions'
             );
             if (completions) {
                 task.habit_total_completions = parseInt(completions, 10) || 0;
             }
         }
 
-        const order = vtodo.getFirstPropertyValue('x-tasknotetaker-order');
+        const order = vtodo.getFirstPropertyValue('x-TaskNoteTaker-order');
         if (order) {
             task.order = parseInt(order, 10);
         }
@@ -206,7 +206,7 @@ async function parseRecurrenceOverride(vtodoString) {
 
         const status = vtodo.getFirstPropertyValue('status');
         if (status) {
-            override.status = STATUS_ICAL_TO_TASKNOTETAKER[status] || 0;
+            override.status = STATUS_ICAL_TO_TUDUDI[status] || 0;
         }
 
         const completed = vtodo.getFirstPropertyValue('completed');

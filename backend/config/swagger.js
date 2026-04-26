@@ -13,7 +13,7 @@ const options = {
             description: 'REST API for TaskNoteTaker task management application',
             contact: {
                 name: 'TaskNoteTaker',
-                url: 'https://github.com/chrisvel/tasknotetaker',
+                url: 'https://github.com/chrisvel/TaskNoteTaker',
             },
             license: {
                 name: 'MIT',

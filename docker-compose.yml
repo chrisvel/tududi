@@ -1,8 +1,8 @@
 services:
-  tasknotetaker:
+  TaskNoteTaker:
     build: .
-    image: tasknotetaker:local
-    container_name: tasknotetaker
+    image: TaskNoteTaker:local
+    container_name: TaskNoteTaker
     environment:
       - TASKNOTETAKER_USER_EMAIL=admin@example.com
       - TASKNOTETAKER_USER_PASSWORD=${TASKNOTETAKER_USER_PASSWORD}
@@ -16,7 +16,7 @@ services:
       - PUID=1001
       - PGID=1001
     volumes:
-      - ./tasknotetaker_db:/app/backend/db
+      - ./TaskNoteTaker_db:/app/backend/db
       - ./uploads:/app/backend/uploads
     ports:
       - "3002:3002"

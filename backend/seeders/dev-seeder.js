@@ -19,7 +19,7 @@ async function seedDatabase() {
 
         // Create SEPARATE test user for seeding (never overwrite existing users!)
         console.log('👤 Creating separate test user for testing...');
-        const testEmail = 'test@tasknotetaker.com';
+        const testEmail = 'test@TaskNoteTaker.com';
 
         let testUser = await User.findOne({ where: { email: testEmail } });
 
@@ -885,7 +885,7 @@ async function seedDatabase() {
 
         console.log('✨ Database seeding completed successfully!');
         console.log(`📊 Created test data for SEPARATE test user:
-    - 1 test user (test@tasknotetaker.com / password123)
+    - 1 test user (test@TaskNoteTaker.com / password123)
     - ${areas.length} areas
     - ${projects.length} projects
     - ${tasks.length} tasks (including 30 backlog tasks and 10 due today)
@@ -895,7 +895,7 @@ async function seedDatabase() {
 
         console.log('\n🚀 You can now:');
         console.log(
-            '- Login with test@tasknotetaker.com / password123 to see test data'
+            '- Login with test@TaskNoteTaker.com / password123 to see test data'
         );
         console.log('- Your original account data is preserved and untouched');
         console.log('- Explore the Today view with various task statuses');

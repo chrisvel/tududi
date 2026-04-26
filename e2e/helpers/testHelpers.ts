@@ -14,7 +14,7 @@ export async function login(page: Page, baseURL: string | undefined): Promise<st
 
     await page.goto(appUrl + '/login');
 
-    const email = process.env.E2E_EMAIL || 'test@tasknotetaker.com';
+    const email = process.env.E2E_EMAIL || 'test@TaskNoteTaker.com';
     const password = process.env.E2E_PASSWORD || 'password123';
 
     await page.getByLabel('Email').fill(email);

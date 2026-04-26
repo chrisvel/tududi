@@ -9,7 +9,7 @@ test.describe('Today', () => {
 
         await page
             .getByTestId('login-email')
-            .fill(process.env.E2E_EMAIL || 'test@tasknotetaker.com');
+            .fill(process.env.E2E_EMAIL || 'test@TaskNoteTaker.com');
         await page
             .getByTestId('login-password')
             .fill(process.env.E2E_PASSWORD || 'password123');

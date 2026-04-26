@@ -132,7 +132,7 @@ app.use(caldavRoutes);
 const isSecure = process.env.COOKIE_SECURE !== 'false' && config.production;
 const sessionMiddleware = session({
     secret: config.secret,
-    name: isSecure ? '__Host-session' : 'tasknotetaker.sid', // __Host- requires Secure flag
+    name: isSecure ? '__Host-session' : 'TaskNoteTaker.sid', // __Host- requires Secure flag
     store: sessionStore,
     resave: false,
     saveUninitialized: false,

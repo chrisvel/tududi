@@ -88,7 +88,7 @@ module.exports = {
             )
         ),
         new HtmlWebpackPlugin({
-            title: 'tasknotetaker',
+            title: 'TaskNoteTaker',
             filename: 'index.html',
             template: 'public/index.html',
             templateParameters: {

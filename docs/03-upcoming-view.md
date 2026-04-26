@@ -1,6 +1,6 @@
 # Upcoming View - Behavior Rules
 
-This document explains how the Upcoming view works in tasknotetaker. For technical implementation details, see `/backend/modules/tasks/queries/query-builders.js` and `/backend/modules/tasks/recurringTaskService.js`.
+This document explains how the Upcoming view works in TaskNoteTaker. For technical implementation details, see `/backend/modules/tasks/queries/query-builders.js` and `/backend/modules/tasks/recurringTaskService.js`.
 
 ---
 

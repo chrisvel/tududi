@@ -2,7 +2,7 @@
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="public/wide-logo-light.png">
     <source media="(prefers-color-scheme: light)" srcset="public/wide-logo-dark.png">
-    <img src="public/wide-logo-light.png" alt="tasknotetaker" width="400">
+    <img src="public/wide-logo-light.png" alt="TaskNoteTaker" width="400">
   </picture>
 </p>
 
@@ -20,7 +20,7 @@ More screenshots are [available here](#screenshots).
 
 ---
 
-## 💖 Enjoying tasknotetaker?
+## 💖 Enjoying TaskNoteTaker?
 
 Help keep it free and actively developed by [buying me a coffee](https://coff.ee/chrisveleris) ☕, [becoming a sponsor](https://github.com/sponsors/chrisvel), or [supporting on Patreon](https://www.patreon.com/ChrisVeleris). You can also support the project by purchasing a **hosted subscription** for a hassle-free, managed solution. Every contribution helps maintain this project and build new features!
 
@@ -32,7 +32,7 @@ This app allows users to manage their tasks, projects, areas, notes, and tags in
 
 ## 🧠 Philosophy
 
-For the thinking behind tasknotetaker, read:
+For the thinking behind TaskNoteTaker, read:
 
 - [Designing a Life Management System That Doesn't Fight Back](https://medium.com/@chrisveleris/designing-a-life-management-system-that-doesnt-fight-back-2fd58773e857)
 - [From Task to Table: How I Finally Got to the Korean Burger](https://medium.com/@chrisveleris/from-task-to-table-how-i-finally-got-to-the-korean-burger-01245a14d491)
@@ -60,7 +60,7 @@ For the thinking behind tasknotetaker, read:
     - Create tasks directly through Telegram messages
     - Receive daily digests of your tasks
     - Quick capture of ideas and todos on the go
-- **Open API & Access Tokens**: Versioned Swagger docs exposed at `/api/v1` plus personal API keys for integrating tasknotetaker with your own tooling or automations.
+- **Open API & Access Tokens**: Versioned Swagger docs exposed at `/api/v1` plus personal API keys for integrating TaskNoteTaker with your own tooling or automations.
 - **OIDC/SSO Authentication**: Enterprise-ready Single Sign-On support with:
     - Multiple OIDC providers (Google, Okta, Keycloak, Authentik, PocketID, Azure AD, and more)
     - Just-In-Time (JIT) user provisioning
@@ -86,16 +86,16 @@ Get up and running quickly with our comprehensive documentation:
 ### Quick Start
 
 ```bash
-docker pull chrisvel/tasknotetaker:latest
+docker pull chrisvel/TaskNoteTaker:latest
 
 docker run \
   -e TASKNOTETAKER_USER_EMAIL=admin@example.com \
   -e TASKNOTETAKER_USER_PASSWORD=your-secure-password \
   -e TASKNOTETAKER_SESSION_SECRET=$(openssl rand -hex 64) \
-  -v ~/tasknotetaker_db:/app/backend/db \
-  -v ~/tasknotetaker_uploads:/app/backend/uploads \
+  -v ~/TaskNoteTaker_db:/app/backend/db \
+  -v ~/TaskNoteTaker_uploads:/app/backend/uploads \
   -p 3002:3002 \
-  -d chrisvel/tasknotetaker:latest
+  -d chrisvel/TaskNoteTaker:latest
 ```
 
 Navigate to [http://localhost:3002](http://localhost:3002) and login with your credentials.
@@ -204,26 +204,25 @@ Connect TaskNoteTaker to external CalDAV servers like Nextcloud, Baikal, or othe
 
 For detailed setup instructions, configuration options, and getting started guides, visit:
 
-**[docs.tasknotetaker.com](https://docs.tasknotetaker.com)**
+**[docs.TaskNoteTaker.com](https://docs.TaskNoteTaker.com)**
 
-- **[Installation Guide](https://docs.tasknotetaker.com/getting-started/installation)** - Docker, development setup, and deployment
-- **[Google Cloud Deployment](docs/deployment-google-cloud.md)** - Deploy to Google Cloud Run with Artifact Registry
-- **[Configuration](https://docs.tasknotetaker.com/getting-started/configuration)** - Environment variables and advanced settings
-- **[First Steps](https://docs.tasknotetaker.com/getting-started/first-steps)** - Learn the basics and get productive
-- **[Project Sharing](https://docs.tasknotetaker.com/features/project-sharing)** - Collaborate with your team
+- **[Installation Guide](https://docs.TaskNoteTaker.com/getting-started/installation)** - Docker, development setup, and deployment
+- **[Configuration](https://docs.TaskNoteTaker.com/getting-started/configuration)** - Environment variables and advanced settings
+- **[First Steps](https://docs.TaskNoteTaker.com/getting-started/first-steps)** - Learn the basics and get productive
+- **[Project Sharing](https://docs.TaskNoteTaker.com/features/project-sharing)** - Collaborate with your team
 
 ## 🚧 Development
 
 Want to contribute or run TaskNoteTaker from source? Check out our comprehensive development guide:
 
-**[Development Setup Guide](https://docs.tasknotetaker.com/#-development-setup)**
+**[Development Setup Guide](https://docs.TaskNoteTaker.com/#-development-setup)**
 
 Quick overview:
 
 ```bash
 # Clone and install
-git clone https://github.com/chrisvel/tasknotetaker.git
-cd tasknotetaker
+git clone https://github.com/chrisvel/TaskNoteTaker.git
+cd TaskNoteTaker
 npm install
 
 # Start development servers
@@ -231,7 +230,7 @@ npm run backend:dev   # Terminal 1 - Backend on :3001
 npm run frontend:dev  # Terminal 2 - Frontend on :8080
 ```
 
-For database management, testing, and detailed development instructions, see [docs.tasknotetaker.com](https://docs.tasknotetaker.com)
+For database management, testing, and detailed development instructions, see [docs.TaskNoteTaker.com](https://docs.TaskNoteTaker.com)
 
 ## 🔌 API
 
@@ -266,13 +265,13 @@ For full API documentation, visit `/api-docs` after authentication or check the 
 
 ## 🤝 Contributing
 
-Contributions to tasknotetaker are welcome! Whether it's bug fixes, new features, documentation improvements, or translations, we appreciate your help.
+Contributions to TaskNoteTaker are welcome! Whether it's bug fixes, new features, documentation improvements, or translations, we appreciate your help.
 
 **Before you start:**
 
-- Check [existing issues](https://github.com/chrisvel/tasknotetaker/issues) and [discussions](https://github.com/chrisvel/tasknotetaker/discussions) to avoid duplicate work
-- For bugs, [open an issue](https://github.com/chrisvel/tasknotetaker/issues/new/choose) with the bug report template
-- For feature requests, start a [discussion](https://github.com/chrisvel/tasknotetaker/discussions/categories/feature-requests)
+- Check [existing issues](https://github.com/chrisvel/TaskNoteTaker/issues) and [discussions](https://github.com/chrisvel/TaskNoteTaker/discussions) to avoid duplicate work
+- For bugs, [open an issue](https://github.com/chrisvel/TaskNoteTaker/issues/new/choose) with the bug report template
+- For feature requests, start a [discussion](https://github.com/chrisvel/TaskNoteTaker/discussions/categories/feature-requests)
 
 **Quick contribution workflow:**
 
@@ -298,12 +297,12 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## 📬 Contact
 
-For questions or comments, please [open an issue](https://github.com/chrisvel/tasknotetaker/issues) or contact the developer directly.
+For questions or comments, please [open an issue](https://github.com/chrisvel/TaskNoteTaker/issues) or contact the developer directly.
 
-Join the tasknotetaker community:
+Join the TaskNoteTaker community:
 
 [![Discord](https://img.shields.io/badge/Discord-Join%20Server-7289da?logo=discord&logoColor=white&style=for-the-badge)](https://discord.gg/fkbeJ9CmcH)  
-[![Reddit](https://img.shields.io/reddit/subreddit-subscribers/tasknotetaker?color=ff4500&label=Reddit&logo=reddit&logoColor=white&style=for-the-badge)](https://www.reddit.com/r/tasknotetaker/)
+[![Reddit](https://img.shields.io/reddit/subreddit-subscribers/TaskNoteTaker?color=ff4500&label=Reddit&logo=reddit&logoColor=white&style=for-the-badge)](https://www.reddit.com/r/TaskNoteTaker/)
 
 ## 🌟 Please check my other projects!
 
@@ -319,4 +318,4 @@ Join the tasknotetaker community:
 
 ---
 
-README created by [Chris Veleris](https://github.com/chrisvel) for `tasknotetaker`.
+README created by [Chris Veleris](https://github.com/chrisvel) for `TaskNoteTaker`.

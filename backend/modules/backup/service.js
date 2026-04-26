@@ -173,7 +173,7 @@ class BackupService {
 
         const fileBuffer = await fs.readFile(filePath);
         const isCompressed = backup.file_path.endsWith('.gz');
-        const filename = `tasknotetaker-backup-${new Date().toISOString().split('T')[0]}${isCompressed ? '.json.gz' : '.json'}`;
+        const filename = `TaskNoteTaker-backup-${new Date().toISOString().split('T')[0]}${isCompressed ? '.json.gz' : '.json'}`;
         const contentType = isCompressed
             ? 'application/gzip'
             : 'application/json';
