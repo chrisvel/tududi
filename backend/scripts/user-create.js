@@ -19,15 +19,15 @@ async function createUser() {
     let [email, password, isAdminArg] = process.argv.slice(2);
 
     // Fallback to environment variables if not provided as arguments
-    email = email || process.env.TUDUDI_USER_EMAIL;
-    password = password || process.env.TUDUDI_USER_PASSWORD;
+    email = email || process.env.TASKNOTETAKER_USER_EMAIL;
+    password = password || process.env.TASKNOTETAKER_USER_PASSWORD;
 
     if (!email || password === undefined) {
         console.error(
             'Usage: npm run user:create <email> <password> [is_admin]'
         );
         console.error(
-            'Or set TUDUDI_USER_EMAIL and TUDUDI_USER_PASSWORD environment variables.'
+            'Or set TASKNOTETAKER_USER_EMAIL and TASKNOTETAKER_USER_PASSWORD environment variables.'
         );
         process.exit(1);
     }

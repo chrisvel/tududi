@@ -26,7 +26,7 @@ async function handleMcpHttpRequest(req, res, user, apiToken) {
         // Initialize MCP server
         const server = new Server(
             {
-                name: process.env.MCP_SERVER_NAME || 'tududi',
+                name: process.env.MCP_SERVER_NAME || 'TaskNoteTaker',
                 version: process.env.MCP_SERVER_VERSION || '1.0.0',
             },
             {

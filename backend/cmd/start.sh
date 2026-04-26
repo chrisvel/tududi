@@ -95,12 +95,12 @@ else
   echo "Migration failed, but continuing startup (may be expected for new installations)"
 fi
 
-if [ -n "${TUDUDI_USER_EMAIL:-}" ] && [ -n "${TUDUDI_USER_PASSWORD:-}" ]; then
+if [ -n "${TASKNOTETAKER_USER_EMAIL:-}" ] && [ -n "${TASKNOTETAKER_USER_PASSWORD:-}" ]; then
   # Trim whitespace/carriage returns that may come from docker-compose env vars
-  TUDUDI_USER_EMAIL=$(printf '%s' "$TUDUDI_USER_EMAIL" | tr -d '[:space:]')
-  export TUDUDI_USER_EMAIL
-  export TUDUDI_USER_PASSWORD
-  # user-create.js will read TUDUDI_USER_EMAIL and TUDUDI_USER_PASSWORD from environment
+  TASKNOTETAKER_USER_EMAIL=$(printf '%s' "$TASKNOTETAKER_USER_EMAIL" | tr -d '[:space:]')
+  export TASKNOTETAKER_USER_EMAIL
+  export TASKNOTETAKER_USER_PASSWORD
+  # user-create.js will read TASKNOTETAKER_USER_EMAIL and TASKNOTETAKER_USER_PASSWORD from environment
   node scripts/user-create.js "" "" true || exit 1
 fi
 

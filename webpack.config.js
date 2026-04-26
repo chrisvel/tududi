@@ -80,7 +80,7 @@ module.exports = {
             Object.fromEntries(
                 Object.entries({
                     ENABLE_NOTE_COLOR: process.env.ENABLE_NOTE_COLOR,
-                    TUDUDI_BASE_PATH: process.env.TUDUDI_BASE_PATH || '',
+                    TASKNOTETAKER_BASE_PATH: process.env.TASKNOTETAKER_BASE_PATH || '',
                 }).map(([key, value]) => [
                     `process.env.${key}`,
                     JSON.stringify(value),
@@ -88,11 +88,11 @@ module.exports = {
             )
         ),
         new HtmlWebpackPlugin({
-            title: 'tududi',
+            title: 'TaskNoteTaker',
             filename: 'index.html',
             template: 'public/index.html',
             templateParameters: {
-                BASE_PATH: process.env.TUDUDI_BASE_PATH || '',
+                BASE_PATH: process.env.TASKNOTETAKER_BASE_PATH || '',
             },
         }),
         new CopyWebpackPlugin({

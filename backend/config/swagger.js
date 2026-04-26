@@ -8,12 +8,12 @@ const options = {
     definition: {
         openapi: '3.0.0',
         info: {
-            title: 'Tududi API',
+            title: 'TaskNoteTaker API',
             version: '1.0.0',
-            description: 'REST API for Tududi task management application',
+            description: 'REST API for TaskNoteTaker task management application',
             contact: {
-                name: 'Tududi',
-                url: 'https://github.com/chrisvel/tududi',
+                name: 'TaskNoteTaker',
+                url: 'https://github.com/chrisvel/TaskNoteTaker',
             },
             license: {
                 name: 'MIT',

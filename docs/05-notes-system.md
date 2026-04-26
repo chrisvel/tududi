@@ -1,12 +1,12 @@
 # Notes System - Behavior Rules
 
-This document explains how the Notes system works in tududi from a user behavior perspective. For technical implementation details, see the backend code in `/backend/modules/notes/` and frontend components in `/frontend/components/Notes.tsx`.
+This document explains how the Notes system works in TaskNoteTaker from a user behavior perspective. For technical implementation details, see the backend code in `/backend/modules/notes/` and frontend components in `/frontend/components/Notes.tsx`.
 
 ---
 
 ## Overview
 
-**Notes** are tududi's flexible capture and reference system - a place to store information, ideas, bookmarks, meeting notes, and any other content that doesn't fit the structured task workflow. Unlike tasks, notes don't have due dates, priorities, or completion states - they're purely informational.
+**Notes** are TaskNoteTaker's flexible capture and reference system - a place to store information, ideas, bookmarks, meeting notes, and any other content that doesn't fit the structured task workflow. Unlike tasks, notes don't have due dates, priorities, or completion states - they're purely informational.
 
 **Key characteristics:**
 - Rich text support via Markdown

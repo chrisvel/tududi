@@ -1,11 +1,11 @@
 blank_issues_enabled: false
 contact_links:
   - name: Feature Request or Enhancement
-    url: https://github.com/chrisvel/tududi/discussions/categories/feature-requests
+    url: https://github.com/chrisvel/TaskNoteTaker/discussions/categories/feature-requests
     about: Please use Discussions to suggest new features or enhancements
   - name: Questions & Support
-    url: https://github.com/chrisvel/tududi/discussions
+    url: https://github.com/chrisvel/TaskNoteTaker/discussions
     about: Ask questions and get help from the community
   - name: Contributing Guide
-    url: https://github.com/chrisvel/tududi/blob/main/.github/CONTRIBUTING.md
-    about: Learn how to contribute to tududi
+    url: https://github.com/chrisvel/TaskNoteTaker/blob/main/.github/CONTRIBUTING.md
+    about: Learn how to contribute to TaskNoteTaker

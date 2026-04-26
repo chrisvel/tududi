@@ -1,0 +1,5 @@
+
+> TaskNoteTaker@v1.1.0-dev.17 backend:test
+> cd backend && cross-env NODE_ENV=test jest
+
+sh: 1: cross-env: not found

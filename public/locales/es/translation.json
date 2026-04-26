@@ -210,15 +210,15 @@
     "languageChangedNote": "Los cambios de idioma se aplican inmediatamente",
     "languageChanging": "Cambiando idioma...",
     "telegramIntegration": "Integración de Telegram",
-    "telegramDescription": "Conecta tu cuenta de tududi a un bot de Telegram para agregar elementos a tu bandeja de entrada a través de mensajes de Telegram.",
+    "telegramDescription": "Conecta tu cuenta de TaskNoteTaker a un bot de Telegram para agregar elementos a tu bandeja de entrada a través de mensajes de Telegram.",
     "telegramBotToken": "Token del Bot de Telegram",
     "telegramTokenDescription": "Crea un bot con @BotFather en Telegram y pega el token aquí.",
-    "telegramConnected": "¡Tu cuenta de Telegram está conectada! Envía mensajes a tu bot para agregar elementos a tu bandeja de entrada de tududi.",
+    "telegramConnected": "¡Tu cuenta de Telegram está conectada! Envía mensajes a tu bot para agregar elementos a tu bandeja de entrada de TaskNoteTaker.",
     "settingUp": "Configurando...",
     "telegramSetupSuccess": "Bot de Telegram \"{{botName}}\" configurado exitosamente!",
     "telegramSetupFailed": "Falló la configuración del bot de Telegram.",
     "invalidTelegramToken": "Formato de token del bot de Telegram inválido.",
-    "telegramInstructions": "Ve a https://t.me/{{botUsername}} y comienza a chatear con tu bot para conectarlo a tu cuenta de tududi.",
+    "telegramInstructions": "Ve a https://t.me/{{botUsername}} y comienza a chatear con tu bot para conectarlo a tu cuenta de TaskNoteTaker.",
     "botConfigured": "¡Bot configurado exitosamente!",
     "botUsername": "Nombre de Usuario del Bot:",
     "pollingStatus": "Estado de Sondeo:",
@@ -1042,7 +1042,7 @@
     }
   },
   "navbar": {
-    "appName": "tududi",
+    "appName": "TaskNoteTaker",
     "quickInboxCapture": "Captura Rápida de Bandeja de Entrada",
     "userMenu": "Menú de Usuario",
     "collapseSidebar": "Colapsar Barra Lateral",
@@ -1135,8 +1135,8 @@
     }
   },
   "telegram": {
-    "welcomeMessage": "🎉 ¡Bienvenido a tududi!\n\n¡Tu bot personal de gestión de tareas está ahora conectado y listo para ayudar!\n\n📝 Simplemente envíame cualquier mensaje y lo agregaré a tu bandeja de entrada de tududi como un elemento.\n\n✨ Comandos:\n• /help - Mostrar información de ayuda\n• /start - Mostrar mensaje de bienvenida\n• Simplemente escribe cualquier texto - Agrégalo como un elemento de bandeja de entrada\n\n¡Vamos a organizarnos! 🚀",
-    "helpMessage": "📋 Ayuda del Bot tududi\n\nEnvíame cualquier mensaje de texto y lo agregaré a tu bandeja de entrada de tududi como un elemento de bandeja de entrada.\n\nComandos:\n/start - Mensaje de bienvenida\n/help - Mostrar este mensaje de ayuda\n\n¡Simplemente escribe tu elemento y yo me encargaré del resto!",
+    "welcomeMessage": "🎉 ¡Bienvenido a TaskNoteTaker!\n\n¡Tu bot personal de gestión de tareas está ahora conectado y listo para ayudar!\n\n📝 Simplemente envíame cualquier mensaje y lo agregaré a tu bandeja de entrada de TaskNoteTaker como un elemento.\n\n✨ Comandos:\n• /help - Mostrar información de ayuda\n• /start - Mostrar mensaje de bienvenida\n• Simplemente escribe cualquier texto - Agrégalo como un elemento de bandeja de entrada\n\n¡Vamos a organizarnos! 🚀",
+    "helpMessage": "📋 Ayuda del Bot TaskNoteTaker\n\nEnvíame cualquier mensaje de texto y lo agregaré a tu bandeja de entrada de TaskNoteTaker como un elemento de bandeja de entrada.\n\nComandos:\n/start - Mensaje de bienvenida\n/help - Mostrar este mensaje de ayuda\n\n¡Simplemente escribe tu elemento y yo me encargaré del resto!",
     "commandProcessed": "Comando procesado con éxito",
     "messageProcessed": "Mensaje procesado con éxito",
     "failedToAddToInbox": "❌ Error al agregar a la bandeja de entrada: {{error}}"
@@ -1146,7 +1146,7 @@
     "version": "Versión",
     "description": "Gestión de tareas autohospedada con organización jerárquica, soporte multilingüe e integración con Telegram. Construido con amor para los entusiastas de la productividad.",
     "madeWithLove": "Hecho con amor",
-    "appreciation": "¡Gracias por usar tududi! Su apoyo ayuda a mantener este proyecto vivo y en crecimiento. Si lo encuentra útil, considere apoyar el desarrollo.",
+    "appreciation": "¡Gracias por usar TaskNoteTaker! Su apoyo ayuda a mantener este proyecto vivo y en crecimiento. Si lo encuentra útil, considere apoyar el desarrollo.",
     "supportDevelopment": "Apoyar el Desarrollo",
     "community": "Comunidad",
     "viewOnGitHub": "Ver en GitHub",
