@@ -177,7 +177,14 @@ npm start  # Frontend on :8080, Backend on :3002
     - Hashtag parsing from inbox items
     - Tag input component with autocomplete
 
-21. **[Claude Memory & Preferences](docs/MEMORY.md)**
+21. **[MCP Integration](docs/12-mcp-integration.md)**
+    - Model Context Protocol server for AI tool integration
+    - 16 tools: tasks, projects, inbox, and search operations
+    - Stdio and HTTP transport modes
+    - Claude Desktop, Cursor, VS Code configuration
+    - API token authentication and security
+
+22. **[Claude Memory & Preferences](docs/MEMORY.md)**
     - PR and commit message preferences
     - Testing preferences
     - Common patterns to remember
@@ -203,6 +210,7 @@ Tududi is a self-hosted task management system designed around hierarchical orga
 - **REST API:** Swagger docs + personal API tokens
 - **Telegram Integration:** Create tasks via messages, daily digests
 - **Tag System:** Flexible tagging across tasks, notes, projects
+- **MCP Integration:** AI tool connectivity via Model Context Protocol (16 tools)
 
 **Target Users:** Self-hosting individuals and teams managing personal or collaborative productivity
 
