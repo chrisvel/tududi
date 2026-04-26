@@ -4,10 +4,18 @@ const authService = require('./service');
 const { logError } = require('../../services/logService');
 const { generateToken } = require('../../middleware/csrf');
 const { isPasswordAuthEnabled } = require('../../config/authConfig');
+const { getConfig } = require('../../config/config');
 
 const authController = {
     getVersion(req, res) {
         res.json(authService.getVersion());
+    },
+
+    getPublicConfig(req, res) {
+        const config = getConfig();
+        res.json({
+            fileUploadLimitMB: config.fileUploadLimitMB,
+        });
     },
 
     async getRegistrationStatus(req, res, next) {

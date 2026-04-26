@@ -115,6 +115,7 @@ FRONTEND_URL=http://localhost:8080
 BACKEND_URL=http://localhost:3002
 PORT=3002
 HOST=0.0.0.0
+FILE_UPLOAD_LIMIT_MB=10
 
 # Optional - Email
 ENABLE_EMAIL=false
