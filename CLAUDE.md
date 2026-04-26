@@ -183,6 +183,10 @@ npm start  # Frontend on :8080, Backend on :3002
     - Common patterns to remember
     - Known issues and solutions
 
+22. **[Google Cloud Deployment](docs/deployment-google-cloud.md)**
+    - Building and pushing Docker images to Artifact Registry
+    - Deploying to Cloud Run with persistence
+
 ---
 
 ## Project Overview
