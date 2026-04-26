@@ -4,8 +4,8 @@
 set -e
 
 VERSION=${1:-"latest"}
-IMAGE_NAME="tududi-test:$VERSION"
-CONTAINER_NAME="tududi-test-$VERSION"
+IMAGE_NAME="TaskNoteTaker-test:$VERSION"
+CONTAINER_NAME="TaskNoteTaker-test-$VERSION"
 TEST_PORT="3003"
 
 echo "🐳 Testing Docker build for version: $VERSION"
@@ -23,8 +23,8 @@ echo "🚀 Starting container..."
 docker run -d \
   --name "$CONTAINER_NAME" \
   -p "$TEST_PORT:3002" \
-  -e TUDUDI_USER_EMAIL=test@example.com \
-  -e TUDUDI_USER_PASSWORD=testpass123 \
+  -e TASKNOTETAKER_USER_EMAIL=test@example.com \
+  -e TASKNOTETAKER_USER_PASSWORD=testpass123 \
   -e NODE_ENV=production \
   "$IMAGE_NAME"
 

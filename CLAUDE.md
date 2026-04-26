@@ -1,19 +1,19 @@
-# Tududi - Developer Guide
+# TaskNoteTaker - Developer Guide
 
-This documentation is designed for AI assistants and developers working with the tududi codebase. For user-facing documentation, see [README.md](README.md). For contribution guidelines, see [CONTRIBUTING.md](.github/CONTRIBUTING.md).
+This documentation is designed for AI assistants and developers working with the TaskNoteTaker codebase. For user-facing documentation, see [README.md](README.md). For contribution guidelines, see [CONTRIBUTING.md](.github/CONTRIBUTING.md).
 
 ---
 
 ## Quick Start
 
-Tududi is a self-hosted task management system with hierarchical organization (Areas > Projects > Tasks), smart recurring tasks, and multi-channel integration.
+TaskNoteTaker is a self-hosted task management system with hierarchical organization (Areas > Projects > Tasks), smart recurring tasks, and multi-channel integration.
 
 **Tech Stack:** React 18 + TypeScript, Express + Sequelize, SQLite
 
 **Get Started:**
 ```bash
-git clone https://github.com/chrisvel/tududi.git
-cd tududi
+git clone https://github.com/chrisvel/TaskNoteTaker.git
+cd TaskNoteTaker
 npm install
 npm run db:init
 npm start  # Frontend on :8080, Backend on :3002
@@ -189,7 +189,7 @@ npm start  # Frontend on :8080, Backend on :3002
 
 ### What This Project Does
 
-Tududi is a self-hosted task management system designed around hierarchical organization and smart automation. It prioritizes user flow over rigid structures - a productivity tool that doesn't "fight back."
+TaskNoteTaker is a self-hosted task management system designed around hierarchical organization and smart automation. It prioritizes user flow over rigid structures - a productivity tool that doesn't "fight back."
 
 **Core Philosophy:**
 - [Designing a Life Management System That Doesn't Fight Back](https://medium.com/@chrisveleris/designing-a-life-management-system-that-doesnt-fight-back-2fd58773e857)
@@ -251,7 +251,7 @@ Tududi is a self-hosted task management system designed around hierarchical orga
 |----------|----------|---------|
 | [README.md](README.md) | Users | Features, Docker setup, quick start |
 | [CONTRIBUTING.md](.github/CONTRIBUTING.md) | Contributors | PR workflow, code of conduct |
-| [docs.tududi.com](https://docs.tududi.com) | End users | Full user documentation |
+| [docs.TaskNoteTaker.com](https://docs.TaskNoteTaker.com) | End users | Full user documentation |
 | [Swagger API docs](http://localhost:3002/api-docs) | API consumers | API endpoints (after auth) |
 | **CLAUDE.md** | Developers, AI | Codebase architecture, patterns |
 
@@ -262,9 +262,9 @@ Tududi is a self-hosted task management system designed around hierarchical orga
 - **Roadmap:** [GitHub Project](https://github.com/users/chrisvel/projects/2)
 - **Community:**
   - [Discord](https://discord.gg/fkbeJ9CmcH)
-  - [Reddit](https://www.reddit.com/r/tududi/)
-  - [Issues](https://github.com/chrisvel/tududi/issues)
-  - [Discussions](https://github.com/chrisvel/tududi/discussions)
+  - [Reddit](https://www.reddit.com/r/TaskNoteTaker/)
+  - [Issues](https://github.com/chrisvel/TaskNoteTaker/issues)
+  - [Discussions](https://github.com/chrisvel/TaskNoteTaker/discussions)
 
 ---
 

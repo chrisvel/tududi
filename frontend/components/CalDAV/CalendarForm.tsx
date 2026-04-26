@@ -472,10 +472,10 @@ const CalendarForm: React.FC<CalendarFormProps> = ({ onComplete, onCancel }) => 
                             {t('profile.caldavWizard.bidirectional', 'Bidirectional (sync both ways)')}
                         </option>
                         <option value="pull">
-                            {t('profile.caldavWizard.pullOnly', 'Pull only (from server to Tududi)')}
+                            {t('profile.caldavWizard.pullOnly', 'Pull only (from server to TaskNoteTaker)')}
                         </option>
                         <option value="push">
-                            {t('profile.caldavWizard.pushOnly', 'Push only (from Tududi to server)')}
+                            {t('profile.caldavWizard.pushOnly', 'Push only (from TaskNoteTaker to server)')}
                         </option>
                     </select>
                 </div>

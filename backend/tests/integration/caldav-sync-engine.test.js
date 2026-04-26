@@ -79,7 +79,7 @@ describe('CalDAV Sync Engine', () => {
         <d:getetag>"etag-task-1"</d:getetag>
         <cal:calendar-data>BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Tududi//EN
+PRODID:-//TaskNoteTaker//EN
 BEGIN:VTODO
 UID:remote-task-1
 SUMMARY:Remote Task

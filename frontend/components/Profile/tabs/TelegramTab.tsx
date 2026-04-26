@@ -64,7 +64,7 @@ const TelegramTab: React.FC<TelegramTabProps> = ({
                         <p>
                             {t(
                                 'profile.telegramDescription',
-                                'Connect your tududi account to a Telegram bot to add items to your inbox via Telegram messages.'
+                                'Connect your TaskNoteTaker account to a Telegram bot to add items to your inbox via Telegram messages.'
                             )}
                         </p>
                     </div>
@@ -156,7 +156,7 @@ const TelegramTab: React.FC<TelegramTabProps> = ({
                             <p className="text-sm">
                                 {t(
                                     'profile.telegramConnected',
-                                    'Your Telegram account is connected! Send messages to your bot to add items to your tududi inbox.'
+                                    'Your Telegram account is connected! Send messages to your bot to add items to your TaskNoteTaker inbox.'
                                 )}
                             </p>
                         </div>

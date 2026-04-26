@@ -140,7 +140,7 @@ describe('CalDAV Protocol - Phase 3', () => {
                 .send(propfindXml)
                 .expect(207);
 
-            expect(response.text).toContain('Tududi Tasks');
+            expect(response.text).toContain('TaskNoteTaker Tasks');
             expect(response.text).toContain('getctag');
             expect(response.text).toContain('resourcetype');
         });
@@ -320,7 +320,7 @@ describe('CalDAV Protocol - Phase 3', () => {
         test('PUT should create new task from VTODO', async () => {
             const vtodo = `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Tududi//CalDAV//EN
+PRODID:-//TaskNoteTaker//CalDAV//EN
 BEGIN:VTODO
 UID:put-task-new
 SUMMARY:New Task via PUT
@@ -356,7 +356,7 @@ END:VCALENDAR`;
 
             const vtodo = `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Tududi//CalDAV//EN
+PRODID:-//TaskNoteTaker//CalDAV//EN
 BEGIN:VTODO
 UID:put-task-update
 SUMMARY:Updated Name

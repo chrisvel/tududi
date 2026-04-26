@@ -1,6 +1,6 @@
 {
-  "name": "tududi",
-  "short_name": "tududi",
+  "name": "TaskNoteTaker",
+  "short_name": "TaskNoteTaker",
   "description": "Self-hosted task management with hierarchical organization",
   "start_url": "./",
   "display": "standalone",

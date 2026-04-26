@@ -1,12 +1,12 @@
 # Inbox Page - Behavior Rules
 
-This document explains how the Inbox page works in tududi from a user behavior perspective. For technical implementation details, see the backend code in `/backend/modules/inbox/` and frontend components in `/frontend/components/Inbox/`.
+This document explains how the Inbox page works in TaskNoteTaker from a user behavior perspective. For technical implementation details, see the backend code in `/backend/modules/inbox/` and frontend components in `/frontend/components/Inbox/`.
 
 ---
 
 ## Overview
 
-The **Inbox** is tududi's quick capture system - a temporary holding area where you can rapidly dump ideas, tasks, notes, and links without worrying about organization. It's designed to get things out of your head fast, then process them later into structured tasks, projects, or notes.
+The **Inbox** is TaskNoteTaker's quick capture system - a temporary holding area where you can rapidly dump ideas, tasks, notes, and links without worrying about organization. It's designed to get things out of your head fast, then process them later into structured tasks, projects, or notes.
 
 **Key characteristics:**
 - Zero friction capture - just type and submit
@@ -60,7 +60,7 @@ Located at the top of the Inbox page:
 
 ### Telegram Integration
 
-Send messages to your tududi bot:
+Send messages to your TaskNoteTaker bot:
 - Each message creates an inbox item
 - Source is marked as `telegram`
 - Appears in your inbox within ~15 seconds

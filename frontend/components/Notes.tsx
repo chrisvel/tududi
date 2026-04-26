@@ -1438,7 +1438,7 @@ const Notes: React.FC = () => {
                                       },
                                       {
                                           id: 2,
-                                          name: 'tududi',
+                                          name: 'TaskNoteTaker',
                                           active: true,
                                           priority: 'high',
                                       },

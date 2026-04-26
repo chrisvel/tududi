@@ -191,7 +191,7 @@ const Navbar: React.FC<NavbarProps> = ({
                                     ? 'wide-logo-light.png'
                                     : 'wide-logo-dark.png'
                             )}
-                            alt="tududi"
+                            alt="TaskNoteTaker"
                             className="h-9 w-auto"
                         />
                     </Link>

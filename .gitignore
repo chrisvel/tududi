@@ -27,7 +27,7 @@ uploads/
 backend/backups/
 
 # Docker volumes
-tududi_db/
+TaskNoteTaker_db/
 
 # Log files
 *.log

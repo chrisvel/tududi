@@ -1,6 +1,6 @@
 # CalDAV Implementation - Developer Guide
 
-This document provides detailed technical information about Tududi's CalDAV implementation for developers working on the codebase.
+This document provides detailed technical information about TaskNoteTaker's CalDAV implementation for developers working on the codebase.
 
 ---
 
@@ -93,7 +93,7 @@ backend/modules/caldav/
 
 #### caldav_calendars
 
-Local calendar configurations (per-user calendars served by Tududi).
+Local calendar configurations (per-user calendars served by TaskNoteTaker).
 
 ```sql
 CREATE TABLE caldav_calendars (
@@ -359,7 +359,7 @@ ETag: "etag-value"
 
 BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Tududi//CalDAV Server//EN
+PRODID:-//TaskNoteTaker//CalDAV Server//EN
 BEGIN:VTODO
 UID:task-uid-123
 SUMMARY:Task Title
@@ -442,11 +442,11 @@ const STATUS_MAP = {
 **Priority Mapping (Inverse Scale):**
 
 ```javascript
-function mapPriority(tududiPriority) {
-  // Tududi: 0=Low, 1=Medium, 2=High
+function mapPriority(TaskNoteTakerPriority) {
+  // TaskNoteTaker: 0=Low, 1=Medium, 2=High
   // iCalendar: 1=Highest, 5=Medium, 9=Lowest
   const priorityMap = { 0: 7, 1: 5, 2: 3 };
-  return priorityMap[tududiPriority] || 5;
+  return priorityMap[TaskNoteTakerPriority] || 5;
 }
 ```
 
@@ -529,7 +529,7 @@ function vtodoToTask(vtodoString) {
 
   // 6. Parse custom properties
   const customProps = vtodoComp.getAllProperties().filter(p =>
-    p.name.startsWith('x-tududi-')
+    p.name.startsWith('x-TaskNoteTaker-')
   );
   customProps.forEach(prop => {
     // Handle X-TUDUDI-* properties
@@ -543,7 +543,7 @@ function vtodoToTask(vtodoString) {
 
 ```javascript
 function reverseMapPriority(icalPriority) {
-  // iCalendar 1-9 → Tududi 0-2
+  // iCalendar 1-9 → TaskNoteTaker 0-2
   if (icalPriority >= 1 && icalPriority <= 3) return 2; // High
   if (icalPriority >= 4 && icalPriority <= 6) return 1; // Medium
   if (icalPriority >= 7 && icalPriority <= 9) return 0; // Low
@@ -739,7 +739,7 @@ async function caldavAuth(req, res, next) {
   const authHeader = req.headers.authorization;
   if (!authHeader?.startsWith('Basic ')) {
     return res.status(401)
-      .set('WWW-Authenticate', 'Basic realm="Tududi CalDAV"')
+      .set('WWW-Authenticate', 'Basic realm="TaskNoteTaker CalDAV"')
       .json({ error: 'Authentication required' });
   }
 

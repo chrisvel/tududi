@@ -1,12 +1,12 @@
 # Areas - Behavior Rules
 
-This document explains how areas work in tududi from a user behavior perspective. For technical implementation details, see the backend code in `/backend/modules/areas/` and frontend components in `/frontend/components/Area/`.
+This document explains how areas work in TaskNoteTaker from a user behavior perspective. For technical implementation details, see the backend code in `/backend/modules/areas/` and frontend components in `/frontend/components/Area/`.
 
 ---
 
 ## Overview
 
-**Areas** are the highest level of organization in tududi, representing major life domains or responsibility categories. They provide a way to group projects into meaningful top-level segments.
+**Areas** are the highest level of organization in TaskNoteTaker, representing major life domains or responsibility categories. They provide a way to group projects into meaningful top-level segments.
 
 **Key characteristics:**
 - Represent broad life domains (Work, Personal, Health, Finance, etc.)

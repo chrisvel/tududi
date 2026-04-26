@@ -376,7 +376,7 @@ const ConflictResolver: React.FC<ConflictResolverProps> = ({
                                                 <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
                                                     {t(
                                                         'profile.conflictResolver.local',
-                                                        'Local (Tududi)'
+                                                        'Local (TaskNoteTaker)'
                                                     )}
                                                 </span>
                                                 {resolution?.choice ===

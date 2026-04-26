@@ -16,17 +16,17 @@ async function getMcpConfig(req, res) {
         // Generate HTTP-based config for remote access
         const claudeConfig = {
             mcpServers: {
-                tududi: {
+                TaskNoteTaker: {
                     command: 'npx',
                     args: [
                         '-y',
                         'mcp-remote',
                         `${baseUrl}/api/mcp`,
                         '--header',
-                        'Authorization:Bearer ${TUDUDI_API_TOKEN}',
+                        'Authorization:Bearer ${TASKNOTETAKER_API_TOKEN}',
                     ],
                     env: {
-                        TUDUDI_API_TOKEN: 'YOUR_API_TOKEN_HERE',
+                        TASKNOTETAKER_API_TOKEN: 'YOUR_API_TOKEN_HERE',
                     },
                 },
             },

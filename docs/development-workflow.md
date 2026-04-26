@@ -16,8 +16,8 @@
 
 ```bash
 # Clone repository
-git clone https://github.com/chrisvel/tududi.git
-cd tududi
+git clone https://github.com/chrisvel/TaskNoteTaker.git
+cd TaskNoteTaker
 
 # Install all dependencies
 # This installs both frontend and backend dependencies (monorepo setup)
@@ -51,7 +51,7 @@ npm run user:create
 
 ## Daily Development
 
-Tududi runs two separate processes during development:
+TaskNoteTaker runs two separate processes during development:
 
 ### Two-Server Development
 
@@ -104,9 +104,9 @@ Create `/backend/.env` file (not tracked in git):
 
 ```bash
 # Required
-TUDUDI_SESSION_SECRET=your-random-secret-here-use-openssl-rand-hex-64
-TUDUDI_USER_EMAIL=admin@example.com
-TUDUDI_USER_PASSWORD=your-secure-password
+TASKNOTETAKER_SESSION_SECRET=your-random-secret-here-use-openssl-rand-hex-64
+TASKNOTETAKER_USER_EMAIL=admin@example.com
+TASKNOTETAKER_USER_PASSWORD=your-secure-password
 
 # Optional - Server config
 NODE_ENV=development
@@ -124,7 +124,7 @@ EMAIL_SMTP_SECURE=false
 EMAIL_SMTP_USERNAME=user
 EMAIL_SMTP_PASSWORD=pass
 EMAIL_FROM_ADDRESS=noreply@example.com
-EMAIL_FROM_NAME=Tududi
+EMAIL_FROM_NAME=TaskNoteTaker
 
 # Optional - Integrations
 DISABLE_TELEGRAM=false
@@ -138,8 +138,8 @@ SWAGGER_ENABLED=true
 RATE_LIMITING_ENABLED=true
 
 # Optional - Proxy (if behind reverse proxy)
-TUDUDI_TRUST_PROXY=false
-TUDUDI_ALLOWED_ORIGINS=http://localhost:8080
+TASKNOTETAKER_TRUST_PROXY=false
+TASKNOTETAKER_ALLOWED_ORIGINS=http://localhost:8080
 
 # Optional - Registration
 REGISTRATION_TOKEN_EXPIRY_HOURS=24
@@ -516,17 +516,17 @@ npm run build
 
 ```bash
 # Build Docker image
-docker build -t tududi:latest .
+docker build -t TaskNoteTaker:latest .
 
 # Run container
 docker run \
-  -e TUDUDI_USER_EMAIL=admin@example.com \
-  -e TUDUDI_USER_PASSWORD=secure-password \
-  -e TUDUDI_SESSION_SECRET=$(openssl rand -hex 64) \
-  -v ~/tududi_db:/app/backend/db \
-  -v ~/tududi_uploads:/app/backend/uploads \
+  -e TASKNOTETAKER_USER_EMAIL=admin@example.com \
+  -e TASKNOTETAKER_USER_PASSWORD=secure-password \
+  -e TASKNOTETAKER_SESSION_SECRET=$(openssl rand -hex 64) \
+  -v ~/TaskNoteTaker_db:/app/backend/db \
+  -v ~/TaskNoteTaker_uploads:/app/backend/uploads \
   -p 3002:3002 \
-  -d tududi:latest
+  -d TaskNoteTaker:latest
 ```
 
 ---

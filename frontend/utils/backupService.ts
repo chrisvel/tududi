@@ -140,7 +140,7 @@ export const downloadSavedBackup = async (backupUid: string): Promise<void> => {
 
     // Get filename from Content-Disposition header or use default
     const contentDisposition = response.headers.get('Content-Disposition');
-    let filename = `tududi-backup-${new Date().toISOString().split('T')[0]}.json.gz`;
+    let filename = `TaskNoteTaker-backup-${new Date().toISOString().split('T')[0]}.json.gz`;
 
     if (contentDisposition) {
         const filenameMatch = contentDisposition.match(/filename="(.+)"/);

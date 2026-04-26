@@ -5,7 +5,7 @@ const {
 describe('VTODO Parser', () => {
     const basicVTODO = `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Tududi//Task Manager//EN
+PRODID:-//TaskNoteTaker//Task Manager//EN
 CALSCALE:GREGORIAN
 BEGIN:VTODO
 UID:test-task-123
@@ -41,37 +41,37 @@ END:VCALENDAR`;
         );
     });
 
-    it('should map iCalendar STATUS to tududi status', async () => {
+    it('should map iCalendar STATUS to TaskNoteTaker status', async () => {
         const statuses = [
-            { ical: 'NEEDS-ACTION', tududi: 0 },
-            { ical: 'IN-PROCESS', tududi: 1 },
-            { ical: 'COMPLETED', tududi: 2 },
-            { ical: 'CANCELLED', tududi: 5 },
+            { ical: 'NEEDS-ACTION', TaskNoteTaker: 0 },
+            { ical: 'IN-PROCESS', TaskNoteTaker: 1 },
+            { ical: 'COMPLETED', TaskNoteTaker: 2 },
+            { ical: 'CANCELLED', TaskNoteTaker: 5 },
         ];
 
-        for (const { ical, tududi } of statuses) {
+        for (const { ical, TaskNoteTaker } of statuses) {
             const vtodo = basicVTODO.replace(
                 'STATUS:NEEDS-ACTION',
                 `STATUS:${ical}`
             );
             const task = await parseVTODOToTask(vtodo);
-            expect(task.status).toBe(tududi);
+            expect(task.status).toBe(TaskNoteTaker);
         }
     });
 
-    it('should map iCalendar PRIORITY to tududi priority', async () => {
+    it('should map iCalendar PRIORITY to TaskNoteTaker priority', async () => {
         const priorities = [
-            { ical: 1, tududi: 2 },
-            { ical: 3, tududi: 2 },
-            { ical: 5, tududi: 1 },
-            { ical: 7, tududi: 0 },
-            { ical: 9, tududi: 0 },
+            { ical: 1, TaskNoteTaker: 2 },
+            { ical: 3, TaskNoteTaker: 2 },
+            { ical: 5, TaskNoteTaker: 1 },
+            { ical: 7, TaskNoteTaker: 0 },
+            { ical: 9, TaskNoteTaker: 0 },
         ];
 
-        for (const { ical, tududi } of priorities) {
+        for (const { ical, TaskNoteTaker } of priorities) {
             const vtodo = basicVTODO.replace('PRIORITY:5', `PRIORITY:${ical}`);
             const task = await parseVTODOToTask(vtodo);
-            expect(task.priority).toBe(tududi);
+            expect(task.priority).toBe(TaskNoteTaker);
         }
     });
 

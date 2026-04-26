@@ -1,12 +1,12 @@
 # Projects - Behavior Rules
 
-This document explains how projects work in tududi from a user behavior perspective. For technical implementation details, see the backend code in `/backend/modules/projects/` and frontend components in `/frontend/components/Project/`.
+This document explains how projects work in TaskNoteTaker from a user behavior perspective. For technical implementation details, see the backend code in `/backend/modules/projects/` and frontend components in `/frontend/components/Project/`.
 
 ---
 
 ## Overview
 
-**Projects** are containers for organizing related tasks and notes in tududi. They sit in the middle of the hierarchy (Areas > Projects > Tasks) and provide a focused workspace for achieving specific goals.
+**Projects** are containers for organizing related tasks and notes in TaskNoteTaker. They sit in the middle of the hierarchy (Areas > Projects > Tasks) and provide a focused workspace for achieving specific goals.
 
 **Key characteristics:**
 - Group related tasks and notes together
@@ -398,7 +398,7 @@ No Area
 5. User receives notification
 
 **Requirements:**
-- Other user must have a tududi account
+- Other user must have a TaskNoteTaker account
 - Must use exact email address
 - Cannot share with yourself
 
@@ -841,7 +841,7 @@ Displayed on project cards and detail page:
 
 **Checklist:**
 1. Did you use exact email address?
-2. Does user have tududi account with that email?
+2. Does user have TaskNoteTaker account with that email?
 3. Check share count - is it > 0?
 4. Have them refresh their projects list
 5. Check notifications - did they receive share notification?
