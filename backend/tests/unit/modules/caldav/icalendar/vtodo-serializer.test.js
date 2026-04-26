@@ -30,7 +30,7 @@ describe('VTODO Serializer', () => {
         expect(vtodoString).toContain('DTSTAMP:');
     });
 
-    it('should map tududi status to iCalendar STATUS', async () => {
+    it('should map tasknotetaker status to iCalendar STATUS', async () => {
         const tasks = [
             { ...basicTask, status: 0 },
             { ...basicTask, status: 1 },
@@ -56,7 +56,7 @@ describe('VTODO Serializer', () => {
         }
     });
 
-    it('should map tududi priority to iCalendar PRIORITY', async () => {
+    it('should map tasknotetaker priority to iCalendar PRIORITY', async () => {
         const lowPriorityTask = { ...basicTask, priority: 0 };
         const mediumPriorityTask = { ...basicTask, priority: 1 };
         const highPriorityTask = { ...basicTask, priority: 2 };
@@ -130,8 +130,8 @@ describe('VTODO Serializer', () => {
             Project: { uid: 'project-789', name: 'My Project' },
         };
         const vtodoString = await serializeTaskToVTODO(task);
-        expect(vtodoString).toContain('X-TUDUDI-PROJECT-UID:project-789');
-        expect(vtodoString).toContain('X-TUDUDI-PROJECT-NAME:My Project');
+        expect(vtodoString).toContain('X-TASKNOTETAKER-PROJECT-UID:project-789');
+        expect(vtodoString).toContain('X-TASKNOTETAKER-PROJECT-NAME:My Project');
     });
 
     it('should export tags as CATEGORIES', async () => {
@@ -144,7 +144,7 @@ describe('VTODO Serializer', () => {
         };
         const vtodoString = await serializeTaskToVTODO(task);
         expect(vtodoString).toContain('CATEGORIES:work\\,urgent');
-        expect(vtodoString).toContain('X-TUDUDI-TAG-UIDS:tag-1,tag-2');
+        expect(vtodoString).toContain('X-TASKNOTETAKER-TAG-UIDS:tag-1,tag-2');
     });
 
     it('should include habit mode custom properties', async () => {
@@ -155,9 +155,9 @@ describe('VTODO Serializer', () => {
             habit_total_completions: 42,
         };
         const vtodoString = await serializeTaskToVTODO(habitTask);
-        expect(vtodoString).toContain('X-TUDUDI-HABIT-MODE:true');
-        expect(vtodoString).toContain('X-TUDUDI-HABIT-STREAK:5');
-        expect(vtodoString).toContain('X-TUDUDI-HABIT-COMPLETIONS:42');
+        expect(vtodoString).toContain('X-TASKNOTETAKER-HABIT-MODE:true');
+        expect(vtodoString).toContain('X-TASKNOTETAKER-HABIT-STREAK:5');
+        expect(vtodoString).toContain('X-TASKNOTETAKER-HABIT-COMPLETIONS:42');
     });
 
     it('should include CREATED and LAST-MODIFIED timestamps', async () => {

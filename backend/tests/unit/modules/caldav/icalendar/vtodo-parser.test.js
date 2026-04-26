@@ -5,7 +5,7 @@ const {
 describe('VTODO Parser', () => {
     const basicVTODO = `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Tududi//Task Manager//EN
+PRODID:-//TaskNoteTaker//Task Manager//EN
 CALSCALE:GREGORIAN
 BEGIN:VTODO
 UID:test-task-123
@@ -41,37 +41,37 @@ END:VCALENDAR`;
         );
     });
 
-    it('should map iCalendar STATUS to tududi status', async () => {
+    it('should map iCalendar STATUS to tasknotetaker status', async () => {
         const statuses = [
-            { ical: 'NEEDS-ACTION', tududi: 0 },
-            { ical: 'IN-PROCESS', tududi: 1 },
-            { ical: 'COMPLETED', tududi: 2 },
-            { ical: 'CANCELLED', tududi: 5 },
+            { ical: 'NEEDS-ACTION', tasknotetaker: 0 },
+            { ical: 'IN-PROCESS', tasknotetaker: 1 },
+            { ical: 'COMPLETED', tasknotetaker: 2 },
+            { ical: 'CANCELLED', tasknotetaker: 5 },
         ];
 
-        for (const { ical, tududi } of statuses) {
+        for (const { ical, tasknotetaker } of statuses) {
             const vtodo = basicVTODO.replace(
                 'STATUS:NEEDS-ACTION',
                 `STATUS:${ical}`
             );
             const task = await parseVTODOToTask(vtodo);
-            expect(task.status).toBe(tududi);
+            expect(task.status).toBe(tasknotetaker);
         }
     });
 
-    it('should map iCalendar PRIORITY to tududi priority', async () => {
+    it('should map iCalendar PRIORITY to tasknotetaker priority', async () => {
         const priorities = [
-            { ical: 1, tududi: 2 },
-            { ical: 3, tududi: 2 },
-            { ical: 5, tududi: 1 },
-            { ical: 7, tududi: 0 },
-            { ical: 9, tududi: 0 },
+            { ical: 1, tasknotetaker: 2 },
+            { ical: 3, tasknotetaker: 2 },
+            { ical: 5, tasknotetaker: 1 },
+            { ical: 7, tasknotetaker: 0 },
+            { ical: 9, tasknotetaker: 0 },
         ];
 
-        for (const { ical, tududi } of priorities) {
+        for (const { ical, tasknotetaker } of priorities) {
             const vtodo = basicVTODO.replace('PRIORITY:5', `PRIORITY:${ical}`);
             const task = await parseVTODOToTask(vtodo);
-            expect(task.priority).toBe(tududi);
+            expect(task.priority).toBe(tasknotetaker);
         }
     });
 
@@ -122,10 +122,10 @@ END:VCALENDAR`;
         expect(task.parent_task_uid).toBe('parent-task-456');
     });
 
-    it('should parse X-TUDUDI-PROJECT-UID custom property', async () => {
+    it('should parse X-TASKNOTETAKER-PROJECT-UID custom property', async () => {
         const vtodo = basicVTODO.replace(
             'END:VTODO',
-            'X-TUDUDI-PROJECT-UID:project-789\nEND:VTODO'
+            'X-TASKNOTETAKER-PROJECT-UID:project-789\nEND:VTODO'
         );
         const task = await parseVTODOToTask(vtodo);
         expect(task.project_uid).toBe('project-789');
@@ -143,9 +143,9 @@ END:VCALENDAR`;
     it('should parse habit mode custom properties', async () => {
         const vtodo = basicVTODO.replace(
             'END:VTODO',
-            `X-TUDUDI-HABIT-MODE:true
-X-TUDUDI-HABIT-STREAK:5
-X-TUDUDI-HABIT-COMPLETIONS:42
+            `X-TASKNOTETAKER-HABIT-MODE:true
+X-TASKNOTETAKER-HABIT-STREAK:5
+X-TASKNOTETAKER-HABIT-COMPLETIONS:42
 END:VTODO`
         );
         const task = await parseVTODOToTask(vtodo);
@@ -154,10 +154,10 @@ END:VTODO`
         expect(task.habit_total_completions).toBe(42);
     });
 
-    it('should parse X-TUDUDI-ORDER custom property', async () => {
+    it('should parse X-TASKNOTETAKER-ORDER custom property', async () => {
         const vtodo = basicVTODO.replace(
             'END:VTODO',
-            'X-TUDUDI-ORDER:10\nEND:VTODO'
+            'X-TASKNOTETAKER-ORDER:10\nEND:VTODO'
         );
         const task = await parseVTODOToTask(vtodo);
         expect(task.order).toBe(10);

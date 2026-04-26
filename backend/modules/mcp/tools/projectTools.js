@@ -10,7 +10,7 @@ function registerProjectTools(server, context, tools) {
     // 1. list_projects - List projects
     tools.push({
         name: 'list_projects',
-        description: 'List projects from tududi with optional filtering',
+        description: 'List projects from tasknotetaker with optional filtering',
         inputSchema: {
             type: 'object',
             properties: {
@@ -101,7 +101,7 @@ function registerProjectTools(server, context, tools) {
     // 2. create_project - Create new project
     tools.push({
         name: 'create_project',
-        description: 'Create a new project in tududi',
+        description: 'Create a new project in tasknotetaker',
         inputSchema: {
             type: 'object',
             properties: {

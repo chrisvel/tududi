@@ -1,5 +1,5 @@
 {
-  "name": "tududi",
+  "name": "tasknotetaker",
   "version": "v1.1.0-dev.17",
   "description": "Self-hosted task management with hierarchical organization, multi-language support, and Telegram integration.",
   "directories": {

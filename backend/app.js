@@ -132,7 +132,7 @@ app.use(caldavRoutes);
 const isSecure = process.env.COOKIE_SECURE !== 'false' && config.production;
 const sessionMiddleware = session({
     secret: config.secret,
-    name: isSecure ? '__Host-session' : 'tududi.sid', // __Host- requires Secure flag
+    name: isSecure ? '__Host-session' : 'tasknotetaker.sid', // __Host- requires Secure flag
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
@@ -264,7 +264,7 @@ if (config.swagger.enabled) {
     const swaggerSpec = require('./config/swagger');
 
     const swaggerUiOptions = {
-        customSiteTitle: 'Tududi API Documentation',
+        customSiteTitle: 'TaskNoteTaker API Documentation',
         customfavIcon: '/favicon.ico',
         customCss: '.swagger-ui .topbar { display: none }',
         swaggerOptions: {

@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-We release security updates for the following versions of tududi:
+We release security updates for the following versions of tasknotetaker:
 
 | Version | Supported          |
 | ------- | ------------------ |
@@ -15,11 +15,11 @@ We recommend always running the latest version to ensure you have the latest sec
 
 **Please do not report security vulnerabilities through public GitHub issues.**
 
-If you discover a security vulnerability in tududi, please report it privately to help us fix it before public disclosure.
+If you discover a security vulnerability in tasknotetaker, please report it privately to help us fix it before public disclosure.
 
 ### How to Report
 
-1. **Email:** Send details to the repository owner via GitHub or open a [Security Advisory](https://github.com/chrisvel/tududi/security/advisories/new)
+1. **Email:** Send details to the repository owner via GitHub or open a [Security Advisory](https://github.com/chrisvel/tasknotetaker/security/advisories/new)
 
 2. **Include in your report:**
    - Description of the vulnerability
@@ -37,11 +37,11 @@ If you discover a security vulnerability in tududi, please report it privately t
 
 ## Security Best Practices
 
-When deploying tududi, we recommend:
+When deploying tasknotetaker, we recommend:
 
 ### Production Deployment
 
-- **Use strong passwords:** Set secure `TUDUDI_USER_PASSWORD` and `TUDUDI_SESSION_SECRET`
+- **Use strong passwords:** Set secure `TASKNOTETAKER_USER_PASSWORD` and `TASKNOTETAKER_SESSION_SECRET`
 - **HTTPS only:** Always use HTTPS in production (reverse proxy with Let's Encrypt)
 - **Keep updated:** Regularly update to the latest version
 - **Secure database:** Protect database files with proper permissions
@@ -52,11 +52,11 @@ When deploying tududi, we recommend:
 
 ```bash
 # Generate strong session secret
-TUDUDI_SESSION_SECRET=$(openssl rand -hex 64)
+TASKNOTETAKER_SESSION_SECRET=$(openssl rand -hex 64)
 
 # Use secure volumes with proper permissions
-chmod 700 ~/tududi_db
-chmod 700 ~/tududi_uploads
+chmod 700 ~/tasknotetaker_db
+chmod 700 ~/tasknotetaker_uploads
 ```
 
 ### Self-Hosting Checklist
@@ -92,8 +92,8 @@ chmod 700 ~/tududi_uploads
 
 Security updates are released as patch versions (e.g., 0.85.1 → 0.85.2). Critical vulnerabilities may warrant immediate releases.
 
-Subscribe to [GitHub Releases](https://github.com/chrisvel/tududi/releases) or watch the repository to be notified of security updates.
+Subscribe to [GitHub Releases](https://github.com/chrisvel/tasknotetaker/releases) or watch the repository to be notified of security updates.
 
 ---
 
-Thank you for helping keep tududi and its users secure!
+Thank you for helping keep tasknotetaker and its users secure!

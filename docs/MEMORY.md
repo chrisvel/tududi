@@ -1,6 +1,6 @@
 # Claude Memory & Preferences
 
-This document contains preferences, patterns, and memory items specific to working with Claude Code on the tududi project.
+This document contains preferences, patterns, and memory items specific to working with Claude Code on the tasknotetaker project.
 
 ---
 
@@ -78,7 +78,7 @@ This document contains preferences, patterns, and memory items specific to worki
   - **Operating System**: User's OS
   - **Browser**: Browser name and version
 - Optional fields:
-  - **Version**: Tududi version (if known)
+  - **Version**: TaskNoteTaker version (if known)
   - **Screenshots**: Visual evidence of the issue
   - **Additional Context**: Technical details (root cause, solution, files affected)
 

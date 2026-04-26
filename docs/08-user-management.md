@@ -1,6 +1,6 @@
 # User Management - Behavior Rules
 
-This document explains how user management works in tududi from a user behavior perspective. For technical implementation details, see the backend code in `/backend/modules/users/`, `/backend/modules/auth/`, and `/backend/modules/admin/`.
+This document explains how user management works in tasknotetaker from a user behavior perspective. For technical implementation details, see the backend code in `/backend/modules/users/`, `/backend/modules/auth/`, and `/backend/modules/admin/`.
 
 ---
 

@@ -97,7 +97,7 @@ const SecurityDashboard: React.FC = () => {
                     </div>
                     <div className="ml-3">
                         <p className="text-sm text-blue-700 dark:text-blue-300">
-                            This instance is running the Enterprise Secure version of Tududi.
+                            This instance is running the Enterprise Secure version of TaskNoteTaker.
                         </p>
                     </div>
                 </div>

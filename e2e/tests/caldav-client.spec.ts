@@ -5,7 +5,7 @@ test.describe('CalDAV Client Compatibility', () => {
     const baseURL = process.env.APP_URL ?? 'http://localhost:8080';
     const apiURL = process.env.API_URL ?? 'http://localhost:3002';
     const testUser = {
-        email: process.env.E2E_EMAIL || 'test@tududi.com',
+        email: process.env.E2E_EMAIL || 'test@tasknotetaker.com',
         password: process.env.E2E_PASSWORD || 'password123',
         username: 'test'
     };
@@ -164,7 +164,7 @@ test.describe('CalDAV Client Compatibility', () => {
         let taskUID: string;
 
         test('should create task via PUT', async ({ request }) => {
-            taskUID = `test-${Date.now()}@tududi.local`;
+            taskUID = `test-${Date.now()}@tasknotetaker.local`;
             const vtodo = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Tududi//E2E Test//EN
@@ -267,7 +267,7 @@ END:VCALENDAR`;
         let recurringUID: string;
 
         test('should create recurring task with RRULE', async ({ request }) => {
-            recurringUID = `recurring-${Date.now()}@tududi.local`;
+            recurringUID = `recurring-${Date.now()}@tasknotetaker.local`;
             const vtodo = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Tududi//E2E Test//EN
@@ -407,7 +407,7 @@ END:VCALENDAR`;
         });
 
         test('should preserve timezone information', async ({ request }) => {
-            const tzUID = `tz-${Date.now()}@tududi.local`;
+            const tzUID = `tz-${Date.now()}@tasknotetaker.local`;
             const vtodo = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Tududi//E2E Test//EN

@@ -59,7 +59,7 @@ NODE_ENV=test \
 PORT=$BACKEND_PORT \
 HOST=$BACKEND_HOST \
 DB_FILE=db/test.sqlite3 \
-TUDUDI_USER_EMAIL="${E2E_EMAIL:-test@tududi.com}" \
+TASKNOTETAKER_USER_EMAIL="${E2E_EMAIL:-test@tasknotetaker.com}" \
 TUDUDI_USER_PASSWORD="${E2E_PASSWORD:-password123}" \
 SEQUELIZE_LOGGING=false \
 ./cmd/start.sh) >/dev/null 2>&1 &
@@ -130,6 +130,6 @@ cd "$E2E_DIR"
 
 yellow "Running Playwright tests matching: ${TEST_PATTERN} on ${BROWSER}..."
 APP_URL="$FRONTEND_URL" \
-E2E_EMAIL="${E2E_EMAIL:-test@tududi.com}" \
+E2E_EMAIL="${E2E_EMAIL:-test@tasknotetaker.com}" \
 E2E_PASSWORD="${E2E_PASSWORD:-password123}" \
 npx playwright test --grep "$TEST_PATTERN" --project="$BROWSER"

@@ -1,6 +1,6 @@
 # CalDAV Synchronization
 
-This guide explains how to configure and use CalDAV synchronization in Tududi to access your tasks across multiple devices and applications.
+This guide explains how to configure and use CalDAV synchronization in TaskNoteTaker to access your tasks across multiple devices and applications.
 
 **Related:** [Tasks Behavior](00-tasks-behavior.md), [Recurring Tasks](01-recurring-tasks-behavior.md), [Architecture Overview](architecture.md)
 
@@ -40,10 +40,10 @@ This guide explains how to configure and use CalDAV synchronization in Tududi to
 
 ## Overview
 
-CalDAV (Calendar Distributed Authoring and Versioning) is an industry-standard protocol for accessing and managing calendar data. Tududi implements CalDAV to enable task synchronization with external applications and servers.
+CalDAV (Calendar Distributed Authoring and Versioning) is an industry-standard protocol for accessing and managing calendar data. TaskNoteTaker implements CalDAV to enable task synchronization with external applications and servers.
 
 **Key Features:**
-- **Bidirectional Sync:** Changes sync in both directions (Tududi ↔ CalDAV clients/servers)
+- **Bidirectional Sync:** Changes sync in both directions (TaskNoteTaker ↔ CalDAV clients/servers)
 - **Popular Client Support:** tasks.org, Apple Reminders, Thunderbird, Evolution, and more
 - **Recurring Tasks:** Full support via RRULE (RFC 5545)
 - **Conflict Detection:** Automatic conflict detection with configurable resolution strategies
@@ -56,9 +56,9 @@ CalDAV (Calendar Distributed Authoring and Versioning) is an industry-standard p
 
 ### The Protocol
 
-CalDAV extends WebDAV to provide a standard way of accessing and managing calendar objects over HTTP. In Tududi:
+CalDAV extends WebDAV to provide a standard way of accessing and managing calendar objects over HTTP. In TaskNoteTaker:
 
-1. **Tasks as VTODO:** Tududi tasks are represented as iCalendar VTODO components
+1. **Tasks as VTODO:** TaskNoteTaker tasks are represented as iCalendar VTODO components
 2. **HTTP Methods:** Standard HTTP methods (GET, PUT, DELETE) plus WebDAV extensions (PROPFIND, REPORT)
 3. **Discovery:** Clients find calendars via `.well-known/caldav` endpoint
 4. **Authentication:** HTTP Basic Auth for CalDAV clients, sessions/tokens for web UI
@@ -75,7 +75,7 @@ CalDAV extends WebDAV to provide a standard way of accessing and managing calend
          │ PROPFIND, REPORT, GET, PUT, DELETE
          ▼
 ┌─────────────────┐
-│     Tududi      │  Serves as CalDAV server
+│     TaskNoteTaker      │  Serves as CalDAV server
 │  CalDAV Server  │  /caldav/{username}/tasks/
 └────────┬────────┘
          │
@@ -89,7 +89,7 @@ CalDAV extends WebDAV to provide a standard way of accessing and managing calend
 **Remote Server Sync:**
 ```
 ┌─────────────────┐
-│     Tududi      │  Acts as CalDAV client
+│     TaskNoteTaker      │  Acts as CalDAV client
 │  CalDAV Client  │
 └────────┬────────┘
          │ Periodic sync (every 5-60 min)
@@ -108,11 +108,11 @@ CalDAV extends WebDAV to provide a standard way of accessing and managing calend
 
 ### Synchronization Process
 
-Tududi uses a **three-phase sync algorithm**:
+TaskNoteTaker uses a **three-phase sync algorithm**:
 
 **1. Pull Phase:**
 - Fetch changes from remote CalDAV server
-- Parse VTODO items into Tududi task format
+- Parse VTODO items into TaskNoteTaker task format
 - Store in temporary buffer
 
 **2. Merge Phase:**
@@ -120,7 +120,7 @@ Tududi uses a **three-phase sync algorithm**:
 - Detect conflicts (both modified since last sync)
 - Apply conflict resolution strategy:
   - `last_write_wins`: Keep most recent change
-  - `local_wins`: Always keep Tududi version
+  - `local_wins`: Always keep TaskNoteTaker version
   - `remote_wins`: Always keep remote version
   - `manual`: Flag for user resolution
 
@@ -132,9 +132,9 @@ Tududi uses a **three-phase sync algorithm**:
 
 ### Task Transformation
 
-**Tududi Task → VTODO:**
+**TaskNoteTaker Task → VTODO:**
 ```javascript
-// Tududi task
+// TaskNoteTaker task
 {
   uid: "abc123",
   name: "Buy groceries",
@@ -146,7 +146,7 @@ Tududi uses a **three-phase sync algorithm**:
 // Becomes VTODO
 BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Tududi//CalDAV Server//EN
+PRODID:-//TaskNoteTaker//CalDAV Server//EN
 BEGIN:VTODO
 UID:abc123
 SUMMARY:Buy groceries
@@ -175,7 +175,7 @@ END:VCALENDAR
 
 ### Recurring Task Handling
 
-Tududi stores recurring tasks as **single parent tasks** with recurrence rules:
+TaskNoteTaker stores recurring tasks as **single parent tasks** with recurrence rules:
 
 **Storage:**
 - Parent task stored once with RRULE
@@ -224,16 +224,16 @@ CalDAV Expansion:
 - Standards-based interoperability
 
 **For Teams:**
-- Share Tududi tasks via CalDAV-compatible platforms
+- Share TaskNoteTaker tasks via CalDAV-compatible platforms
 - Collaborate using familiar tools (Nextcloud Tasks)
-- Maintain single source of truth (Tududi)
+- Maintain single source of truth (TaskNoteTaker)
 - Cross-platform compatibility
 
 ---
 
 ## Configuration
 
-CalDAV is configured via environment variables in your `.env` file. After making changes, **restart the Tududi server** for them to take effect.
+CalDAV is configured via environment variables in your `.env` file. After making changes, **restart the TaskNoteTaker server** for them to take effect.
 
 ### Quick Setup
 
@@ -252,7 +252,7 @@ CALDAV_MAX_RECURRING_INSTANCES=365           # Future recurring instances
 CALDAV_CONFLICT_RESOLUTION=last_write_wins   # Default strategy
 ```
 
-**Restart Tududi:**
+**Restart TaskNoteTaker:**
 
 ```bash
 docker compose restart  # For Docker
@@ -285,7 +285,7 @@ npm start              # For standalone
 
 **Conflict Resolution Strategies:**
 - `last_write_wins`: Most recent change wins (default, recommended)
-- `local_wins`: Always keep Tududi's version
+- `local_wins`: Always keep TaskNoteTaker's version
 - `remote_wins`: Always keep remote server's version
 - `manual`: Flag conflicts for manual resolution in UI
 
@@ -303,9 +303,9 @@ npm start              # For standalone
 2. Tap **☰ Menu** > **Settings** > **Synchronization**
 3. Select **CalDAV**
 4. Enter connection details:
-   - **URL:** `https://your-tududi-domain.com/caldav/`
-   - **Username:** Your Tududi email
-   - **Password:** Your Tududi password
+   - **URL:** `https://your-tasknotetaker-domain.com/caldav/`
+   - **Username:** Your TaskNoteTaker email
+   - **Password:** Your TaskNoteTaker password
 5. Tap **Add Account**
 6. Select the **tasks** calendar
 7. Tap **Sync** to start synchronization
@@ -327,10 +327,10 @@ npm start              # For standalone
 2. Tap **Add Account** > **Other**
 3. Select **Add CalDAV Account**
 4. Enter connection details:
-   - **Server:** `your-tududi-domain.com`
-   - **Username:** Your Tududi email
-   - **Password:** Your Tududi password
-   - **Description:** Tududi Tasks
+   - **Server:** `your-tasknotetaker-domain.com`
+   - **Username:** Your TaskNoteTaker email
+   - **Password:** Your TaskNoteTaker password
+   - **Description:** TaskNoteTaker Tasks
 5. Tap **Next** > **Save**
 6. Open **Reminders** app to view synced tasks
 
@@ -340,9 +340,9 @@ npm start              # For standalone
 2. Click **+** > **Add Other Account** > **CalDAV Account**
 3. Enter connection details:
    - **Account Type:** Manual
-   - **Username:** Your Tududi email
-   - **Password:** Your Tududi password
-   - **Server Address:** `https://your-tududi-domain.com/caldav/`
+   - **Username:** Your TaskNoteTaker email
+   - **Password:** Your TaskNoteTaker password
+   - **Server Address:** `https://your-tasknotetaker-domain.com/caldav/`
 4. Click **Sign In**
 5. Open **Reminders** app to view synced tasks
 
@@ -364,8 +364,8 @@ npm start              # For standalone
 4. Select **On the Network**
 5. Choose **CalDAV**
 6. Enter connection details:
-   - **Location:** `https://your-tududi-domain.com/caldav/{your-username}/tasks/`
-   - Replace `{your-username}` with your Tududi username
+   - **Location:** `https://your-tasknotetaker-domain.com/caldav/{your-username}/tasks/`
+   - Replace `{your-username}` with your TaskNoteTaker username
 7. Enter credentials when prompted
 8. Select **Tasks** calendar type
 9. Click **Finish**
@@ -385,9 +385,9 @@ npm start              # For standalone
 1. Open **Evolution** > **File** > **New** > **Task List**
 2. Select **CalDAV**
 3. Enter connection details:
-   - **URL:** `https://your-tududi-domain.com/caldav/{your-username}/tasks/`
-   - **Username:** Your Tududi email
-   - **Password:** Your Tududi password
+   - **URL:** `https://your-tasknotetaker-domain.com/caldav/{your-username}/tasks/`
+   - **Username:** Your TaskNoteTaker email
+   - **Password:** Your TaskNoteTaker password
 4. Click **Apply**
 5. View tasks in **Tasks** view
 
@@ -401,20 +401,20 @@ npm start              # For standalone
 
 ## Remote Server Synchronization
 
-Tududi can sync with external CalDAV servers like Nextcloud, Baikal, or other CalDAV-compatible services.
+TaskNoteTaker can sync with external CalDAV servers like Nextcloud, Baikal, or other CalDAV-compatible services.
 
 ### Overview
 
-When configured as a CalDAV client, Tududi periodically fetches changes from remote servers and pushes local changes back. This enables:
+When configured as a CalDAV client, TaskNoteTaker periodically fetches changes from remote servers and pushes local changes back. This enables:
 - **Cloud Backup:** Keep tasks synced with cloud CalDAV services
-- **Multi-Instance Sync:** Run multiple Tududi instances synced via central server
+- **Multi-Instance Sync:** Run multiple TaskNoteTaker instances synced via central server
 - **Legacy Integration:** Sync with existing calendar infrastructure
 
 ### Nextcloud
 
 **Setup Instructions:**
 
-1. In Tududi, go to **Profile > Settings > CalDAV** tab
+1. In TaskNoteTaker, go to **Profile > Settings > CalDAV** tab
 2. Click **Add Remote Calendar**
 3. Select **Nextcloud** as server type
 4. Enter connection details:
@@ -426,8 +426,8 @@ When configured as a CalDAV client, Tududi periodically fetches changes from rem
    - **Password:** Your Nextcloud password or app password
 5. Choose sync direction:
    - **Bidirectional:** Changes sync both ways
-   - **Pull Only:** Import from Nextcloud to Tududi
-   - **Push Only:** Export from Tududi to Nextcloud
+   - **Pull Only:** Import from Nextcloud to TaskNoteTaker
+   - **Push Only:** Export from TaskNoteTaker to Nextcloud
 6. Set sync interval (default: 15 minutes)
 7. Click **Save**
 8. Click **Sync Now** to test connection
@@ -436,16 +436,16 @@ When configured as a CalDAV client, Tududi periodically fetches changes from rem
 
 1. In Nextcloud, go to **Settings > Security**
 2. Scroll to **Devices & sessions**
-3. Enter app name: `Tududi`
+3. Enter app name: `TaskNoteTaker`
 4. Click **Create new app password**
 5. Copy the generated password
-6. Use this password in Tududi CalDAV settings
+6. Use this password in TaskNoteTaker CalDAV settings
 
 ### Baikal
 
 **Setup Instructions:**
 
-1. In Tududi, go to **Profile > Settings > CalDAV** tab
+1. In TaskNoteTaker, go to **Profile > Settings > CalDAV** tab
 2. Click **Add Remote Calendar**
 3. Select **Baikal** as server type
 4. Enter connection details:
@@ -462,7 +462,7 @@ When configured as a CalDAV client, Tududi periodically fetches changes from rem
 
 **Setup Instructions:**
 
-1. In Tududi, go to **Profile > Settings > CalDAV** tab
+1. In TaskNoteTaker, go to **Profile > Settings > CalDAV** tab
 2. Click **Add Remote Calendar**
 3. Select **Generic CalDAV** as server type
 4. Enter connection details:
@@ -491,8 +491,8 @@ Check your CalDAV server's documentation for the exact path format.
 ### Sync Direction
 
 - **Bidirectional:** Changes sync in both directions (default)
-- **Pull Only:** Import tasks from remote to Tududi
-- **Push Only:** Export tasks from Tududi to remote
+- **Pull Only:** Import tasks from remote to TaskNoteTaker
+- **Push Only:** Export tasks from TaskNoteTaker to remote
 
 ### Sync Interval
 
@@ -508,7 +508,7 @@ Choose how frequently automatic sync runs:
 When the same task is modified both locally and remotely:
 
 - **Last Write Wins:** Most recent change overwrites older change (default)
-- **Local Wins:** Always keep Tududi's version
+- **Local Wins:** Always keep TaskNoteTaker's version
 - **Remote Wins:** Always keep remote server's version
 - **Manual:** Flag conflicts for manual resolution in UI
 
@@ -518,7 +518,7 @@ When the same task is modified both locally and remotely:
 
 ### Task Fields → VTODO Properties
 
-| Tududi Field | VTODO Property | Notes |
+| TaskNoteTaker Field | VTODO Property | Notes |
 |--------------|----------------|-------|
 | Name | SUMMARY | Task title |
 | Note | DESCRIPTION | Task description |
@@ -532,7 +532,7 @@ When the same task is modified both locally and remotely:
 
 ### Status Mapping
 
-| Tududi Status | VTODO STATUS |
+| TaskNoteTaker Status | VTODO STATUS |
 |---------------|--------------|
 | Not Started | NEEDS-ACTION |
 | In Progress | IN-PROCESS |
@@ -546,7 +546,7 @@ When the same task is modified both locally and remotely:
 
 CalDAV uses inverse priority scale (1=highest, 9=lowest):
 
-| Tududi Priority | VTODO PRIORITY |
+| TaskNoteTaker Priority | VTODO PRIORITY |
 |-----------------|----------------|
 | High (2) | 3 |
 | Medium (1) | 5 |
@@ -554,11 +554,11 @@ CalDAV uses inverse priority scale (1=highest, 9=lowest):
 
 ### Custom Fields
 
-Tududi-specific features are stored as extended properties:
+TaskNoteTaker-specific features are stored as extended properties:
 
-- `X-TUDUDI-HABIT-MODE`: Habit tracking settings
-- `X-TUDUDI-PROJECT-UID`: Project association
-- `X-TUDUDI-TAGS`: Task tags (comma-separated)
+- `X-TASKNOTETAKER-HABIT-MODE`: Habit tracking settings
+- `X-TASKNOTETAKER-PROJECT-UID`: Project association
+- `X-TASKNOTETAKER-TAGS`: Task tags (comma-separated)
 
 These fields are preserved but may not be visible in external clients.
 
@@ -566,7 +566,7 @@ These fields are preserved but may not be visible in external clients.
 
 ## Recurring Tasks
 
-Tududi supports CalDAV recurring tasks via RRULE (RFC 5545):
+TaskNoteTaker supports CalDAV recurring tasks via RRULE (RFC 5545):
 
 ### Supported Patterns
 
@@ -701,9 +701,9 @@ CALDAV_LOG_REQUESTS=false                    # Log all CalDAV requests
 
 1. **Subtasks:** Supported via RELATED-TO, but not all clients render hierarchically
 2. **Habit Mode:** Stored in custom fields, not visible in external clients
-3. **Tags:** Exported as CATEGORIES, but colors/metadata only in Tududi
-4. **Projects:** Association stored in X-TUDUDI-PROJECT-UID, not shown externally
-5. **Status Granularity:** 7 Tududi statuses mapped to 4 CalDAV statuses (some nuance lost)
+3. **Tags:** Exported as CATEGORIES, but colors/metadata only in TaskNoteTaker
+4. **Projects:** Association stored in X-TASKNOTETAKER-PROJECT-UID, not shown externally
+5. **Status Granularity:** 7 TaskNoteTaker statuses mapped to 4 CalDAV statuses (some nuance lost)
 6. **Timezone Handling:** All dates stored as UTC; local timezone conversion in clients
 7. **Large Recurring Sequences:** Expanding far into future creates many VTODOs (configurable limit)
 
@@ -713,11 +713,11 @@ CALDAV_LOG_REQUESTS=false                    # Log all CalDAV requests
 
 ### Can I use multiple CalDAV clients simultaneously?
 
-Yes, multiple clients can sync with the same Tududi calendar. Changes from any client will sync to all others.
+Yes, multiple clients can sync with the same TaskNoteTaker calendar. Changes from any client will sync to all others.
 
 ### What happens if I delete a task in a CalDAV client?
 
-The task will be deleted in Tududi after the next sync (if bidirectional sync is enabled).
+The task will be deleted in TaskNoteTaker after the next sync (if bidirectional sync is enabled).
 
 ### Can I sync multiple calendars?
 
@@ -725,7 +725,7 @@ Yes, you can configure multiple remote calendars in the CalDAV settings tab. Eac
 
 ### Do I need a CalDAV server to use this feature?
 
-No, you can use Tududi directly as a CalDAV server. Clients like tasks.org, Apple Reminders, and Thunderbird can connect directly to Tududi.
+No, you can use TaskNoteTaker directly as a CalDAV server. Clients like tasks.org, Apple Reminders, and Thunderbird can connect directly to TaskNoteTaker.
 
 ### How do I resolve sync conflicts?
 
@@ -744,7 +744,7 @@ Yes, set sync interval to "Manual only" in calendar settings. You can still trig
 **View Calendars:**
 
 Navigate to **Profile > Settings > CalDAV** tab to see:
-- Local calendars (Tududi as CalDAV server)
+- Local calendars (TaskNoteTaker as CalDAV server)
 - Remote calendars (syncing with external servers)
 - Sync status (last sync time, errors)
 - Configuration options
@@ -798,7 +798,7 @@ Each calendar card shows:
 
 **When Conflicts Occur:**
 
-A conflict happens when the same task is modified both locally (in Tududi) and remotely (in client/server) between syncs.
+A conflict happens when the same task is modified both locally (in TaskNoteTaker) and remotely (in client/server) between syncs.
 
 **Automatic Resolution:**
 
@@ -814,10 +814,10 @@ If conflict strategy is set to `manual`:
 1. Navigate to **Profile > Settings > CalDAV** tab
 2. Click **View Conflicts** (if conflicts exist)
 3. See side-by-side comparison:
-   - **Local Version:** Current Tududi state
+   - **Local Version:** Current TaskNoteTaker state
    - **Remote Version:** CalDAV client/server state
 4. Choose resolution:
-   - **Keep Local:** Use Tududi version
+   - **Keep Local:** Use TaskNoteTaker version
    - **Keep Remote:** Use client/server version
    - **Merge:** (not yet implemented)
 5. Click **Resolve**
@@ -832,8 +832,8 @@ If conflict strategy is set to `manual`:
 
 ## Support
 
-**Issues:** [GitHub Issues](https://github.com/chrisvel/tududi/issues)
-**Discussions:** [GitHub Discussions](https://github.com/chrisvel/tududi/discussions)
+**Issues:** [GitHub Issues](https://github.com/chrisvel/tasknotetaker/issues)
+**Discussions:** [GitHub Discussions](https://github.com/chrisvel/tasknotetaker/discussions)
 **Discord:** [Join our community](https://discord.gg/fkbeJ9CmcH)
 
 **Related Documentation:**

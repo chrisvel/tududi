@@ -8,7 +8,7 @@ describe('First-time Setup (Docker scenario)', () => {
     });
 
     it('should automatically create admin role for first user and regular role for second user', async () => {
-        // Create first user (simulating Docker with TUDUDI_USER_EMAIL/PASSWORD)
+        // Create first user (simulating Docker with TASKNOTETAKER_USER_EMAIL/PASSWORD)
         const firstUser = await User.create({
             email: 'admin@example.com',
             password: 'password123',

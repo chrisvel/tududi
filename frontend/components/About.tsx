@@ -45,7 +45,7 @@ const About: React.FC<AboutProps> = ({ isDarkMode = false }) => {
                                         ? '/wide-logo-light.png'
                                         : '/wide-logo-dark.png'
                                 }
-                                alt="tududi"
+                                alt="tasknotetaker"
                                 className="h-16 w-auto"
                             />
                         </div>
@@ -75,7 +75,7 @@ const About: React.FC<AboutProps> = ({ isDarkMode = false }) => {
                         <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
                             {t(
                                 'about.appreciation',
-                                'Thank you for using tududi! Your support helps keep this project alive and growing. If you find it useful, consider supporting the development.'
+                                'Thank you for using tasknotetaker! Your support helps keep this project alive and growing. If you find it useful, consider supporting the development.'
                             )}
                         </p>
                     </div>
@@ -159,7 +159,7 @@ const About: React.FC<AboutProps> = ({ isDarkMode = false }) => {
                         </h3>
                         <div className="grid grid-cols-2 gap-4">
                             <a
-                                href="https://tududi.com"
+                                href="https://tasknotetaker.com"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex items-center justify-center px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors duration-200 font-medium"
@@ -174,7 +174,7 @@ const About: React.FC<AboutProps> = ({ isDarkMode = false }) => {
                                 Official Website
                             </a>
                             <a
-                                href="https://reddit.com/r/tududi"
+                                href="https://reddit.com/r/tasknotetaker"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex items-center justify-center px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-200 font-medium"
@@ -210,7 +210,7 @@ const About: React.FC<AboutProps> = ({ isDarkMode = false }) => {
                     <div className="text-center">
                         <div className="space-y-2">
                             <a
-                                href="https://github.com/chrisvel/tududi"
+                                href="https://github.com/chrisvel/tasknotetaker"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors duration-200"

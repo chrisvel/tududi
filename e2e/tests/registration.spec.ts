@@ -7,7 +7,7 @@ test.describe.serial('Enabled', () => {
 
         const loginResponse = await request.post(`${appUrl}/api/login`, {
             data: {
-                email: process.env.E2E_EMAIL || 'test@tududi.com',
+                email: process.env.E2E_EMAIL || 'test@tasknotetaker.com',
                 password: process.env.E2E_PASSWORD || 'password123',
             },
         });
@@ -114,7 +114,7 @@ test.describe.serial('Enabled', () => {
     });
 
     test('Duplicate email error', async ({ page }) => {
-        const email = process.env.E2E_EMAIL || 'test@tududi.com';
+        const email = process.env.E2E_EMAIL || 'test@tasknotetaker.com';
         const password = 'password123';
 
         await page.getByTestId('register-email').fill(email);
@@ -133,7 +133,7 @@ test.describe.serial('Disabled', () => {
 
         const loginResponse = await request.post(`${appUrl}/api/login`, {
             data: {
-                email: process.env.E2E_EMAIL || 'test@tududi.com',
+                email: process.env.E2E_EMAIL || 'test@tasknotetaker.com',
                 password: process.env.E2E_PASSWORD || 'password123',
             },
         });

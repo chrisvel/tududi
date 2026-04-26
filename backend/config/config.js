@@ -42,7 +42,7 @@ const emailConfig = {
     },
     from: {
         address: process.env.EMAIL_FROM_ADDRESS,
-        name: process.env.EMAIL_FROM_NAME || 'Tududi',
+        name: process.env.EMAIL_FROM_NAME || 'TaskNoteTaker',
     },
 };
 
@@ -53,8 +53,8 @@ const registrationConfig = {
 };
 
 const config = {
-    allowedOrigins: process.env.TUDUDI_ALLOWED_ORIGINS
-        ? process.env.TUDUDI_ALLOWED_ORIGINS.split(',').map((origin) =>
+    allowedOrigins: process.env.TASKNOTETAKER_ALLOWED_ORIGINS
+        ? process.env.TASKNOTETAKER_ALLOWED_ORIGINS.split(',').map((origin) =>
               origin.trim()
           )
         : [
@@ -72,7 +72,7 @@ const config = {
 
     disableTelegram: process.env.DISABLE_TELEGRAM === 'true',
 
-    email: process.env.TUDUDI_USER_EMAIL,
+    email: process.env.TASKNOTETAKER_USER_EMAIL,
 
     environment,
 
@@ -86,12 +86,12 @@ const config = {
 
     port: process.env.PORT || 3002,
 
-    password: process.env.TUDUDI_USER_PASSWORD,
+    password: process.env.TASKNOTETAKER_USER_PASSWORD,
 
     production,
 
     secret:
-        process.env.TUDUDI_SESSION_SECRET ||
+        process.env.TASKNOTETAKER_SESSION_SECRET ||
         require('crypto').randomBytes(64).toString('hex'),
 
     credentials,
@@ -101,7 +101,7 @@ const config = {
     registrationConfig,
 
     uploadPath:
-        process.env.TUDUDI_UPLOAD_PATH || path.join(projectRootPath, 'uploads'),
+        process.env.TASKNOTETAKER_UPLOAD_PATH || path.join(projectRootPath, 'uploads'),
 
     // API Documentation (Swagger)
     swagger: {
@@ -109,31 +109,31 @@ const config = {
     },
 
     trustProxy: (() => {
-        const val = process.env.TUDUDI_TRUST_PROXY;
+        const val = process.env.TASKNOTETAKER_TRUST_PROXY;
         if (val === undefined || val === '') {
-            console.log('[Config] TUDUDI_TRUST_PROXY not set, using false');
+            console.log('[Config] TASKNOTETAKER_TRUST_PROXY not set, using false');
             return false;
         }
         if (val === 'true') {
             console.log(
-                '[Config] TUDUDI_TRUST_PROXY=true parsed as boolean true'
+                '[Config] TASKNOTETAKER_TRUST_PROXY=true parsed as boolean true'
             );
             return true;
         }
         if (val === 'false') {
             console.log(
-                '[Config] TUDUDI_TRUST_PROXY=false parsed as boolean false'
+                '[Config] TASKNOTETAKER_TRUST_PROXY=false parsed as boolean false'
             );
             return false;
         }
         const num = Number(val);
         if (!isNaN(num) && val.trim() !== '') {
             console.log(
-                `[Config] TUDUDI_TRUST_PROXY=${val} parsed as number ${num}`
+                `[Config] TASKNOTETAKER_TRUST_PROXY=${val} parsed as number ${num}`
             );
             return num;
         }
-        console.log(`[Config] TUDUDI_TRUST_PROXY=${val} parsed as string`);
+        console.log(`[Config] TASKNOTETAKER_TRUST_PROXY=${val} parsed as string`);
         return val;
     })(),
 

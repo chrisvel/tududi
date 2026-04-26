@@ -1,6 +1,6 @@
 # Today Page Sections - Behavior Rules
 
-This document explains how the four main sections of the Today page work in tududi. For technical implementation details, see `/backend/modules/tasks/queries/metrics-queries.js` and `/backend/modules/tasks/queries/metrics-computation.js`.
+This document explains how the four main sections of the Today page work in tasknotetaker. For technical implementation details, see `/backend/modules/tasks/queries/metrics-queries.js` and `/backend/modules/tasks/queries/metrics-computation.js`.
 
 ---
 

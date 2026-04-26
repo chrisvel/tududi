@@ -1,6 +1,6 @@
 # Tasks - Behavior Rules
 
-This document explains how tasks work in tududi from a user behavior perspective (excluding recurring tasks, which are covered in [01-recurring-tasks-behavior.md](01-recurring-tasks-behavior.md)). For technical implementation details, see the backend code in `/backend/modules/tasks/` and `/backend/models/task.js`.
+This document explains how tasks work in tasknotetaker from a user behavior perspective (excluding recurring tasks, which are covered in [01-recurring-tasks-behavior.md](01-recurring-tasks-behavior.md)). For technical implementation details, see the backend code in `/backend/modules/tasks/` and `/backend/models/task.js`.
 
 ---
 

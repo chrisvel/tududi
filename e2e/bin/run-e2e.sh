@@ -43,7 +43,7 @@ NODE_ENV=test \
 PORT=$BACKEND_PORT \
 HOST=$BACKEND_HOST \
 DB_FILE=db/test.sqlite3 \
-TUDUDI_USER_EMAIL="${E2E_EMAIL:-test@tududi.com}" \
+TASKNOTETAKER_USER_EMAIL="${E2E_EMAIL:-test@tasknotetaker.com}" \
 TUDUDI_USER_PASSWORD="${E2E_PASSWORD:-password123}" \
 SEQUELIZE_LOGGING=false \
 ./cmd/start.sh) >/dev/null 2>&1 &
@@ -114,7 +114,7 @@ cd "$ROOT_DIR"
 
 yellow "Running Playwright tests..."
 APP_URL="$FRONTEND_URL" \
-E2E_EMAIL="${E2E_EMAIL:-test@tududi.com}" \
+E2E_EMAIL="${E2E_EMAIL:-test@tasknotetaker.com}" \
 E2E_PASSWORD="${E2E_PASSWORD:-password123}" \
 bash -c '
   if [ "${E2E_MODE:-}" = "ui" ]; then

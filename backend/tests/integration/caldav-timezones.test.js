@@ -28,7 +28,7 @@ describe('CalDAV Timezone Handling', () => {
         it('should parse UTC dates from VTODO', async () => {
             const vtodoString = `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Tududi//EN
+PRODID:-//TaskNoteTaker//EN
 BEGIN:VTODO
 UID:tz-test-2
 SUMMARY:Timezone Parse Test
@@ -58,7 +58,7 @@ END:VCALENDAR`;
         it('should handle DATE values without time component', async () => {
             const vtodoString = `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Tududi//EN
+PRODID:-//TaskNoteTaker//EN
 BEGIN:VTODO
 UID:date-only-test
 SUMMARY:Date Only Test
@@ -100,7 +100,7 @@ END:VCALENDAR`;
         it('should handle VTODO with VTIMEZONE component', async () => {
             const vtodoString = `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Tududi//EN
+PRODID:-//TaskNoteTaker//EN
 BEGIN:VTIMEZONE
 TZID:America/New_York
 BEGIN:STANDARD
@@ -162,7 +162,7 @@ END:VCALENDAR`;
         it('should handle RECURRENCE-ID with timezones', async () => {
             const vtodoString = `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Tududi//EN
+PRODID:-//TaskNoteTaker//EN
 BEGIN:VTODO
 UID:recurring-tz-parent
 SUMMARY:Recurring Parent
@@ -184,7 +184,7 @@ END:VCALENDAR`;
         it('should parse modified instance with RECURRENCE-ID', async () => {
             const vtodoString = `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Tududi//EN
+PRODID:-//TaskNoteTaker//EN
 BEGIN:VTODO
 UID:recurring-tz-parent
 SUMMARY:Modified Instance
@@ -211,7 +211,7 @@ END:VCALENDAR`;
         it('should handle spring forward DST transition', async () => {
             const vtodoString = `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Tududi//EN
+PRODID:-//TaskNoteTaker//EN
 BEGIN:VTODO
 UID:dst-spring-test
 SUMMARY:DST Spring Test
@@ -232,7 +232,7 @@ END:VCALENDAR`;
         it('should handle fall back DST transition', async () => {
             const vtodoString = `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Tududi//EN
+PRODID:-//TaskNoteTaker//EN
 BEGIN:VTODO
 UID:dst-fall-test
 SUMMARY:DST Fall Test
@@ -255,7 +255,7 @@ END:VCALENDAR`;
         it('should handle missing timezone information gracefully', async () => {
             const vtodoString = `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Tududi//EN
+PRODID:-//TaskNoteTaker//EN
 BEGIN:VTODO
 UID:no-tz-test
 SUMMARY:No Timezone Test
@@ -273,7 +273,7 @@ END:VCALENDAR`;
         it('should handle invalid timezone gracefully', async () => {
             const vtodoString = `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Tududi//EN
+PRODID:-//TaskNoteTaker//EN
 BEGIN:VTODO
 UID:invalid-tz-test
 SUMMARY:Invalid Timezone Test
@@ -308,7 +308,7 @@ END:VCALENDAR`;
         it('should handle leap year dates correctly', async () => {
             const vtodoString = `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Tududi//EN
+PRODID:-//TaskNoteTaker//EN
 BEGIN:VTODO
 UID:leap-year-test
 SUMMARY:Leap Year Test
@@ -330,7 +330,7 @@ END:VCALENDAR`;
         it('should handle year boundary correctly', async () => {
             const vtodoString = `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Tududi//EN
+PRODID:-//TaskNoteTaker//EN
 BEGIN:VTODO
 UID:year-boundary-test
 SUMMARY:Year Boundary Test
@@ -354,7 +354,7 @@ END:VCALENDAR`;
         it('should preserve completion timestamp timezone', async () => {
             const vtodoString = `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Tududi//EN
+PRODID:-//TaskNoteTaker//EN
 BEGIN:VTODO
 UID:completed-tz-test
 SUMMARY:Completed Timezone Test

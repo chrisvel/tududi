@@ -42,8 +42,8 @@ function errorHandler(err, req, res, next) {
             error: 'Trust proxy configuration error',
             message:
                 'X-Forwarded-For header detected but trust proxy is not configured. ' +
-                'Please set TUDUDI_TRUST_PROXY=true in your environment variables. ' +
-                'See documentation: https://github.com/chrisvel/tududi#reverse-proxy-setup',
+                'Please set TASKNOTETAKER_TRUST_PROXY=true in your environment variables. ' +
+                'See documentation: https://github.com/chrisvel/tasknotetaker#reverse-proxy-setup',
             code: 'TRUST_PROXY_ERROR',
         });
     }

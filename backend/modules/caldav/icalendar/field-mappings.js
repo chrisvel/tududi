@@ -1,4 +1,4 @@
-const STATUS_TUDUDI_TO_ICAL = {
+const STATUS_TASKNOTETAKER_TO_ICAL = {
     0: 'NEEDS-ACTION',
     1: 'IN-PROCESS',
     2: 'COMPLETED',
@@ -8,14 +8,14 @@ const STATUS_TUDUDI_TO_ICAL = {
     6: 'NEEDS-ACTION',
 };
 
-const STATUS_ICAL_TO_TUDUDI = {
+const STATUS_ICAL_TO_TASKNOTETAKER = {
     'NEEDS-ACTION': 0,
     'IN-PROCESS': 1,
     COMPLETED: 2,
     CANCELLED: 5,
 };
 
-function tududiToIcalPriority(priority) {
+function tasknotetakerToIcalPriority(priority) {
     if (priority === null || priority === undefined) {
         return 0;
     }
@@ -26,7 +26,7 @@ function tududiToIcalPriority(priority) {
     return 0;
 }
 
-function icalToTududiPriority(priority) {
+function icalToTaskNoteTakerPriority(priority) {
     if (!priority || priority === 0) {
         return 0;
     }
@@ -61,10 +61,10 @@ const WEEKDAY_REVERSE_MAP = {
 };
 
 module.exports = {
-    STATUS_TUDUDI_TO_ICAL,
-    STATUS_ICAL_TO_TUDUDI,
-    tududiToIcalPriority,
-    icalToTududiPriority,
+    STATUS_TASKNOTETAKER_TO_ICAL,
+    STATUS_ICAL_TO_TASKNOTETAKER,
+    tasknotetakerToIcalPriority,
+    icalToTaskNoteTakerPriority,
     WEEKDAY_MAP,
     WEEKDAY_REVERSE_MAP,
 };

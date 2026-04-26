@@ -1,10 +1,10 @@
-# OIDC/SSO Implementation Plan for Tududi
+# OIDC/SSO Implementation Plan for TaskNoteTaker
 
-**GitHub Issue:** [#977 - Add SSO/OIDC Support for Enterprise Authentication](https://github.com/chrisvel/tududi/issues/977)
+**GitHub Issue:** [#977 - Add SSO/OIDC Support for Enterprise Authentication](https://github.com/chrisvel/tasknotetaker/issues/977)
 
 ## Context
 
-Tududi currently only supports email/password authentication. This feature request adds OpenID Connect (OIDC) support to enable Single Sign-On via external identity providers (Google, Okta, Keycloak, Authentik, PocketID, etc.). This is a highly requested feature for both enterprise deployments and homelab users who standardize on SSO.
+TaskNoteTaker currently only supports email/password authentication. This feature request adds OpenID Connect (OIDC) support to enable Single Sign-On via external identity providers (Google, Okta, Keycloak, Authentik, PocketID, etc.). This is a highly requested feature for both enterprise deployments and homelab users who standardize on SSO.
 
 **Key Requirements:**
 - Support multiple OIDC providers configured via environment variables
@@ -753,7 +753,7 @@ OIDC_PROVIDER_2_ADMIN_EMAIL_DOMAINS=company.com
 # Provider 3: Self-hosted Authentik
 OIDC_PROVIDER_3_NAME=Authentik
 OIDC_PROVIDER_3_SLUG=authentik
-OIDC_PROVIDER_3_ISSUER=https://auth.example.com/application/o/tududi/
+OIDC_PROVIDER_3_ISSUER=https://auth.example.com/application/o/tasknotetaker/
 OIDC_PROVIDER_3_CLIENT_ID=zzz
 OIDC_PROVIDER_3_CLIENT_SECRET=zzz
 OIDC_PROVIDER_3_AUTO_PROVISION=true
@@ -777,13 +777,13 @@ The following environment variables must be set for OAuth redirects:
 ```bash
 # Base URL for callback redirects
 BASE_URL=http://localhost:3002  # Development
-BASE_URL=https://tududi.example.com  # Production
+BASE_URL=https://tasknotetaker.example.com  # Production
 
 # Trust proxy (REQUIRED for production behind reverse proxy)
-TUDUDI_TRUST_PROXY=true
+TASKNOTETAKER_TRUST_PROXY=true
 ```
 
-**Why TUDUDI_TRUST_PROXY is Required:**
+**Why TASKNOTETAKER_TRUST_PROXY is Required:**
 
 When deployed behind a reverse proxy (nginx, Traefar, Apache), Express must be configured to trust the proxy headers. Without this:
 - Sessions may not be saved properly after OIDC callback
@@ -845,9 +845,9 @@ After implementation, verify:
    - User can log in with either email/password OR Google
 
 3. **JIT Provisioning:**
-   - New user (no tududi account) clicks "Sign in with Google"
+   - New user (no tasknotetaker account) clicks "Sign in with Google"
    - User approves at Google
-   - New tududi account auto-created with email from OIDC claims
+   - New tasknotetaker account auto-created with email from OIDC claims
    - User logged in and redirected to /today
 
 4. **Admin Rules:**
@@ -939,8 +939,8 @@ Build `/admin/oidc-providers` page with CRUD operations.
 
 ## References
 
-- **Issue:** https://github.com/chrisvel/tududi/issues/977
-- **Discussion:** https://github.com/chrisvel/tududi/discussions/238
+- **Issue:** https://github.com/chrisvel/tasknotetaker/issues/977
+- **Discussion:** https://github.com/chrisvel/tasknotetaker/discussions/238
 - **Library:** https://www.npmjs.com/package/openid-client
 - **OAuth 2.0 Spec:** https://oauth.net/2/
 - **OpenID Connect Spec:** https://openid.net/connect/

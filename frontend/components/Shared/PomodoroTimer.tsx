@@ -11,7 +11,7 @@ interface PomodoroTimerProps {
     className?: string;
 }
 
-const POMODORO_STORAGE_KEY = 'tududi_pomodoro_timer';
+const POMODORO_STORAGE_KEY = 'tasknotetaker_pomodoro_timer';
 const DEFAULT_TIME = 25 * 60; // 25 minutes in seconds
 
 interface PomodoroState {

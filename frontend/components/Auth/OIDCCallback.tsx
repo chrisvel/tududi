@@ -37,7 +37,7 @@ const OIDCCallback: React.FC = () => {
                                 ? 'wide-logo-light.png'
                                 : 'wide-logo-dark.png'
                         )}
-                        alt="tududi"
+                        alt="tasknotetaker"
                         className="h-9 w-auto"
                     />
                 </div>

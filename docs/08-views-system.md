@@ -1,6 +1,6 @@
 # Views - Smart Saved Searches
 
-This document explains how Views work in tududi from a user behavior perspective. For technical implementation details, see the backend code in `/backend/modules/views/` and frontend components in `/frontend/components/Views.tsx` and `/frontend/components/ViewDetail.tsx`.
+This document explains how Views work in tasknotetaker from a user behavior perspective. For technical implementation details, see the backend code in `/backend/modules/views/` and frontend components in `/frontend/components/Views.tsx` and `/frontend/components/ViewDetail.tsx`.
 
 ---
 

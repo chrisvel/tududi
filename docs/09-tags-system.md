@@ -1,12 +1,12 @@
 # Tags System - Behavior Rules
 
-This document explains how the Tags system works in tududi from a user behavior perspective. For technical implementation details, see the backend code in `/backend/modules/tags/` and frontend components in `/frontend/components/Tags.tsx` and `/frontend/components/Tag/`.
+This document explains how the Tags system works in tasknotetaker from a user behavior perspective. For technical implementation details, see the backend code in `/backend/modules/tags/` and frontend components in `/frontend/components/Tags.tsx` and `/frontend/components/Tag/`.
 
 ---
 
 ## Overview
 
-**Tags** are tududi's flexible labeling and categorization system - a way to organize and group related items across tasks, notes, and projects. Unlike the hierarchical organization of Areas > Projects > Tasks, tags provide a flat, cross-cutting way to find and filter content.
+**Tags** are tasknotetaker's flexible labeling and categorization system - a way to organize and group related items across tasks, notes, and projects. Unlike the hierarchical organization of Areas > Projects > Tasks, tags provide a flat, cross-cutting way to find and filter content.
 
 **Key characteristics:**
 - Work across all content types (tasks, notes, projects)

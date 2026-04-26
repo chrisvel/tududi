@@ -44,6 +44,7 @@ interface SidebarFooterProps {
 }
 
 const SidebarFooter: React.FC<SidebarFooterProps> = ({
+    currentUser,
     isDarkMode,
     toggleDarkMode,
     isSidebarOpen,

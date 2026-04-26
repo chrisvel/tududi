@@ -1,4 +1,4 @@
-## tududi E2E (Playwright)
+## tasknotetaker E2E (Playwright)
 
 End-to-end tests live in this isolated `e2e/` folder.
 The suite uses Playwright and assumes the app is running locally.
@@ -10,7 +10,7 @@ The suite uses Playwright and assumes the app is running locally.
 1) Backend (with a test user):
 
 ```bash
-TUDUDI_USER_EMAIL=test@tududi.com TUDUDI_USER_PASSWORD=password123 npm run backend:start
+TASKNOTETAKER_USER_EMAIL=test@tasknotetaker.com TASKNOTETAKER_USER_PASSWORD=password123 npm run backend:start
 ```
 
 2) Frontend dev server:
@@ -25,7 +25,7 @@ npm run frontend:dev
 cd e2e
 npm ci
 npm run install-browsers
-APP_URL=http://localhost:8080 E2E_EMAIL=test@tududi.com E2E_PASSWORD=password123 npm test
+APP_URL=http://localhost:8080 E2E_EMAIL=test@tasknotetaker.com E2E_PASSWORD=password123 npm test
 ```
 
 - Only Chromium:

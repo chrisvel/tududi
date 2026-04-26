@@ -19,10 +19,10 @@ const { registerAllTools } = require('./toolRegistry');
 async function startMcpServer() {
     try {
         // Validate environment
-        const apiToken = process.env.TUDUDI_API_TOKEN;
+        const apiToken = process.env.TASKNOTETAKER_API_TOKEN;
         if (!apiToken) {
             throw new Error(
-                'TUDUDI_API_TOKEN environment variable is required. ' +
+                'TASKNOTETAKER_API_TOKEN environment variable is required. ' +
                     'Generate a token in Profile → API Keys and add it to your Claude Desktop config.'
             );
         }
@@ -31,7 +31,7 @@ async function startMcpServer() {
         const tokenRecord = await findValidTokenByValue(apiToken);
         if (!tokenRecord) {
             throw new Error(
-                'Invalid or expired TUDUDI_API_TOKEN. ' +
+                'Invalid or expired TASKNOTETAKER_API_TOKEN. ' +
                     'Please generate a new token in Profile → API Keys.'
             );
         }
@@ -51,7 +51,7 @@ async function startMcpServer() {
         // Initialize MCP server
         const server = new Server(
             {
-                name: process.env.MCP_SERVER_NAME || 'tududi',
+                name: process.env.MCP_SERVER_NAME || 'tasknotetaker',
                 version: process.env.MCP_SERVER_VERSION || '1.0.0',
             },
             {
@@ -108,7 +108,7 @@ async function startMcpServer() {
         const transport = new StdioServerTransport();
         await server.connect(transport);
 
-        console.error('Tududi MCP server running on stdio');
+        console.error('TaskNoteTaker MCP server running on stdio');
         console.error(`Authenticated as: ${user.email} (ID: ${user.id})`);
         console.error(`Available tools: ${tools.length}`);
 

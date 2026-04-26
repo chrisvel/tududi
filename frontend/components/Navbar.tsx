@@ -191,9 +191,12 @@ const Navbar: React.FC<NavbarProps> = ({
                                     ? 'wide-logo-light.png'
                                     : 'wide-logo-dark.png'
                             )}
-                            alt="tududi"
-                            className="h-9 w-auto"
+                            alt="TaskNoteTaker Logo"
+                            className="h-8 w-auto"
                         />
+                        <span className="hidden sm:inline-block ml-3 text-lg font-bold tracking-tight text-gray-900 dark:text-white font-display">
+                            TaskNoteTaker
+                        </span>
                     </Link>
                 </div>
 
