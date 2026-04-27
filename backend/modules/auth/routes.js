@@ -7,6 +7,7 @@ const { authLimiter, apiLimiter } = require('../../middleware/rateLimiter');
 const { csrfMiddleware } = require('../../middleware/csrf');
 
 router.get('/version', authController.getVersion);
+router.get('/config', authController.getPublicConfig);
 router.get('/registration-status', authController.getRegistrationStatus);
 router.get(
     '/password-auth-status',

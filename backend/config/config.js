@@ -103,6 +103,11 @@ const config = {
     uploadPath:
         process.env.TUDUDI_UPLOAD_PATH || path.join(projectRootPath, 'uploads'),
 
+    // File upload limit in MB (default 10MB)
+    fileUploadLimitMB: process.env.FILE_UPLOAD_LIMIT_MB
+        ? parseInt(process.env.FILE_UPLOAD_LIMIT_MB, 10)
+        : 10,
+
     // API Documentation (Swagger)
     swagger: {
         enabled: process.env.SWAGGER_ENABLED !== 'false',

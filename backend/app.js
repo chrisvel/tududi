@@ -104,7 +104,7 @@ app.use((req, res, next) => {
         return next();
     }
 
-    express.json({ limit: '10mb' })(req, res, next);
+    express.json({ limit: `${config.fileUploadLimitMB}mb` })(req, res, next);
 });
 
 app.use((req, res, next) => {
@@ -116,7 +116,10 @@ app.use((req, res, next) => {
         return next();
     }
 
-    express.urlencoded({ extended: true, limit: '10mb' })(req, res, next);
+    express.urlencoded({
+        extended: true,
+        limit: `${config.fileUploadLimitMB}mb`,
+    })(req, res, next);
 });
 
 // CalDAV routes (registered after conditional body parsers)

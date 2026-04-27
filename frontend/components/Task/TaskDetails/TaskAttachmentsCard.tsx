@@ -73,7 +73,7 @@ const TaskAttachmentsCard: React.FC<TaskAttachmentsCardProps> = ({
         if (!file) return;
 
         // Validate file
-        const validation = validateFile(file);
+        const validation = await validateFile(file);
         if (!validation.valid) {
             showErrorToast(validation.error || 'Invalid file');
             if (fileInputRef.current) {

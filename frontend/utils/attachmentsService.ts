@@ -1,6 +1,7 @@
 import { Attachment, AttachmentType } from '../entities/Attachment';
 import { getApiPath } from '../config/paths';
 import { getCsrfToken } from './csrfService';
+import { getServerConfig } from './configService';
 
 /**
  * Upload a file attachment to a task
@@ -146,13 +147,15 @@ export function formatFileSize(bytes: number): string {
 /**
  * Validate file before upload
  */
-export function validateFile(file: File): { valid: boolean; error?: string } {
-    // Check file size (10MB max)
-    const maxSize = 10 * 1024 * 1024;
+export async function validateFile(
+    file: File
+): Promise<{ valid: boolean; error?: string }> {
+    const config = await getServerConfig();
+    const maxSize = config.fileUploadLimitMB * 1024 * 1024;
     if (file.size > maxSize) {
         return {
             valid: false,
-            error: 'File size exceeds 10MB limit',
+            error: `File size exceeds ${config.fileUploadLimitMB}MB limit`,
         };
     }
 

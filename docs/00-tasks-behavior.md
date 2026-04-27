@@ -157,7 +157,7 @@ This document explains how tasks work in tududi from a user behavior perspective
 
 22. **Tasks can have file attachments:**
     - Multiple files can be attached to a single task
-    - File size limit: 10MB per file
+    - File size limit: 10MB per file (configurable via `FILE_UPLOAD_LIMIT_MB` environment variable)
     - Stored in `/uploads/tasks/` directory
 
 23. **Allowed file types:**
