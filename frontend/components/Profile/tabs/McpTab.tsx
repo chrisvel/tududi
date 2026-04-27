@@ -10,11 +10,11 @@ interface McpTabProps {
 
 interface McpConfig {
     mcpServers: {
-        tududi: {
+        TaskNoteTaker: {
             command: string;
             args: string[];
             env: {
-                TUDUDI_API_TOKEN: string;
+                TASKNOTETAKER_API_TOKEN: string;
             };
         };
     };
@@ -96,7 +96,7 @@ const McpTab: React.FC<McpTabProps> = ({ isActive }) => {
             <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
                 {t(
                     'profile.mcp.description',
-                    'Connect tududi with any MCP-compatible application using the Model Context Protocol. This enables AI assistants to interact with your tasks, projects, and notes - works with both local and remote tududi servers.'
+                    'Connect TaskNoteTaker with any MCP-compatible application using the Model Context Protocol. This enables AI assistants to interact with your tasks, projects, and notes - works with both local and remote TaskNoteTaker servers.'
                 )}
             </p>
 
@@ -131,7 +131,7 @@ const McpTab: React.FC<McpTabProps> = ({ isActive }) => {
                     <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
                         {t(
                             'profile.mcp.step2.description',
-                            'Add this configuration to your MCP client. Replace YOUR_API_TOKEN_HERE with the token you generated in step 1. This uses mcp-remote to connect to your tududi server via HTTP. Example shown for Claude Desktop:'
+                            'Add this configuration to your MCP client. Replace YOUR_API_TOKEN_HERE with the token you generated in step 1. This uses mcp-remote to connect to your TaskNoteTaker server via HTTP. Example shown for Claude Desktop:'
                         )}
                     </p>
 
@@ -184,8 +184,8 @@ const McpTab: React.FC<McpTabProps> = ({ isActive }) => {
                             This means you can:
                         </p>
                         <ul className="text-xs text-green-700 dark:text-green-400 mt-2 ml-4 space-y-1">
-                            <li>• Access local tududi (localhost)</li>
-                            <li>• Access remote tududi (cloud servers)</li>
+                            <li>• Access local TaskNoteTaker (localhost)</li>
+                            <li>• Access remote TaskNoteTaker (cloud servers)</li>
                             <li>• Use from Docker deployments</li>
                             <li>• Connect securely with API tokens</li>
                         </ul>
@@ -239,7 +239,7 @@ const McpTab: React.FC<McpTabProps> = ({ isActive }) => {
                     <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
                         {t(
                             'profile.mcp.step4.description',
-                            'After adding the configuration, restart your MCP client. You can then use natural language to interact with tududi:'
+                            'After adding the configuration, restart your MCP client. You can then use natural language to interact with TaskNoteTaker:'
                         )}
                     </p>
                     <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
@@ -274,7 +274,7 @@ const McpTab: React.FC<McpTabProps> = ({ isActive }) => {
                         </p>
                         <ul className="text-xs text-yellow-700 dark:text-yellow-400 mt-2 ml-4 space-y-1">
                             <li>• Your API token is valid and not expired</li>
-                            <li>• The tududi server is running and accessible</li>
+                            <li>• The TaskNoteTaker server is running and accessible</li>
                             <li>• You&apos;ve restarted your MCP client completely</li>
                             <li>• For remote servers, check your firewall settings</li>
                         </ul>

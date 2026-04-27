@@ -1,5 +1,5 @@
 {
-  "name": "tududi",
+  "name": "TaskNoteTaker",
   "version": "v1.1.0-dev.17",
   "description": "Self-hosted task management with hierarchical organization, multi-language support, and Telegram integration.",
   "directories": {
@@ -134,6 +134,7 @@
     "webpack": "^5.95.0",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.1.0",
+    "workbox-webpack-plugin": "^7.4.0",
     "zustand": "^5.0.3"
   },
   "dependencies": {

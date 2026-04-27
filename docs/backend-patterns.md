@@ -426,8 +426,8 @@ const sharedService = require('../../services/sharedService');
 ### Step 1: Create Directory Structure
 
 ```bash
-mkdir -p /Users/chris/c0deLab/ProjectLand/tududi/backend/modules/labels
-mkdir -p /Users/chris/c0deLab/ProjectLand/tududi/backend/modules/labels/utils
+mkdir -p /Users/chris/c0deLab/ProjectLand/TaskNoteTaker/backend/modules/labels
+mkdir -p /Users/chris/c0deLab/ProjectLand/TaskNoteTaker/backend/modules/labels/utils
 ```
 
 ### Step 2: Create routes.js

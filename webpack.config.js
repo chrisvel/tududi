@@ -3,6 +3,7 @@ const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin'
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
+const { GenerateSW } = require('workbox-webpack-plugin');
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 const frontendPort = parseInt(process.env.FRONTEND_PORT || '8080', 10);
@@ -79,7 +80,7 @@ module.exports = {
             Object.fromEntries(
                 Object.entries({
                     ENABLE_NOTE_COLOR: process.env.ENABLE_NOTE_COLOR,
-                    TUDUDI_BASE_PATH: process.env.TUDUDI_BASE_PATH || '',
+                    TASKNOTETAKER_BASE_PATH: process.env.TASKNOTETAKER_BASE_PATH || '',
                 }).map(([key, value]) => [
                     `process.env.${key}`,
                     JSON.stringify(value),
@@ -87,11 +88,11 @@ module.exports = {
             )
         ),
         new HtmlWebpackPlugin({
-            title: 'tududi',
+            title: 'TaskNoteTaker',
             filename: 'index.html',
             template: 'public/index.html',
             templateParameters: {
-                BASE_PATH: process.env.TUDUDI_BASE_PATH || '',
+                BASE_PATH: process.env.TASKNOTETAKER_BASE_PATH || '',
             },
         }),
         new CopyWebpackPlugin({
@@ -105,6 +106,43 @@ module.exports = {
                 },
             ],
         }),
+        !isDevelopment &&
+            new GenerateSW({
+                clientsClaim: true,
+                skipWaiting: true,
+                swDest: 'service-worker.js',
+                exclude: [/\.map$/, /asset-manifest\.json$/, /index\.html$/],
+                navigateFallback: '/index.html',
+                navigateFallbackDenylist: [/^\/api/, /^\/locales/, /^\/uploads/],
+                runtimeCaching: [
+                    {
+                        urlPattern: /^\/api\//,
+                        handler: 'NetworkOnly',
+                    },
+                    {
+                        urlPattern: /^\/locales\//,
+                        handler: 'CacheFirst',
+                        options: {
+                            cacheName: 'translations',
+                            expiration: {
+                                maxEntries: 50,
+                                maxAgeSeconds: 24 * 60 * 60, // 24 Hours
+                            },
+                        },
+                    },
+                    {
+                        urlPattern: /\.(?:png|jpg|jpeg|svg|gif|ico)$/,
+                        handler: 'CacheFirst',
+                        options: {
+                            cacheName: 'images',
+                            expiration: {
+                                maxEntries: 100,
+                                maxAgeSeconds: 30 * 24 * 60 * 60, // 30 Days
+                            },
+                        },
+                    },
+                ],
+            }),
     ].filter(Boolean),
     module: {
         rules: [

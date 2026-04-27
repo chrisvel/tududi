@@ -19,7 +19,7 @@ const SidebarHeader: React.FC<SidebarHeaderProps> = ({ isDarkMode }) => {
                             ? 'wide-logo-light.png'
                             : 'wide-logo-dark.png'
                     )}
-                    alt="tududi"
+                    alt="TaskNoteTaker"
                     className="h-12 w-auto"
                 />
             </Link>

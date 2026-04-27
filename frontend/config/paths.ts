@@ -6,11 +6,11 @@
 
 declare global {
     interface Window {
-        __TUDUDI_BASE_PATH__?: string;
+        __TASKNOTETAKER_BASE_PATH__?: string;
     }
 }
 
-const envBasePath = process.env.TUDUDI_BASE_PATH || '';
+const envBasePath = process.env.TASKNOTETAKER_BASE_PATH || '';
 
 const sanitizeBasePath = (value: string): string => {
     if (!value) {
@@ -47,8 +47,8 @@ const runtimeBasePath = (() => {
         return sanitizeBasePath(envBasePath);
     }
 
-    if (typeof window.__TUDUDI_BASE_PATH__ === 'string') {
-        return sanitizeBasePath(window.__TUDUDI_BASE_PATH__);
+    if (typeof window.__TASKNOTETAKER_BASE_PATH__ === 'string') {
+        return sanitizeBasePath(window.__TASKNOTETAKER_BASE_PATH__);
     }
 
     const hassBase = sanitizeBasePath(detectHassioIngressBase());

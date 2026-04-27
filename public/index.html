@@ -3,6 +3,11 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="TaskNoteTaker">
+    <link rel="apple-touch-icon" href="icon-logo.png">
     <base href="/">
     <script>
       (function () {
@@ -21,12 +26,12 @@
         }
 
         var envBase = '<%= htmlWebpackPlugin.options.BASE_PATH || "" %>';
-        var runtimeBase = sanitize(window.__TUDUDI_BASE_PATH__ || envBase);
+        var runtimeBase = sanitize(window.__TASKNOTETAKER_BASE_PATH__ || envBase);
         if (!runtimeBase) {
           runtimeBase = sanitize(detectIngress());
         }
 
-        window.__TUDUDI_BASE_PATH__ = runtimeBase;
+        window.__TASKNOTETAKER_BASE_PATH__ = runtimeBase;
         var baseHref = runtimeBase ? runtimeBase + '/' : '/';
         var baseTag = document.querySelector('base') || document.createElement('base');
         if (!baseTag.parentNode) {
@@ -35,7 +40,7 @@
         baseTag.setAttribute('href', baseHref);
       })();
     </script>
-    <title>tududi</title>
+    <title>TaskNoteTaker</title>
     <!-- Self-hosted Lora font -->
     <style>
       /* latin */

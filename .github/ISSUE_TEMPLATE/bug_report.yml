@@ -1,5 +1,5 @@
 name: Bug Report
-description: Report a bug to help us improve tududi
+description: Report a bug to help us improve TaskNoteTaker
 title: "[BUG] "
 labels: ["bug"]
 body:
@@ -82,8 +82,8 @@ body:
   - type: input
     id: version
     attributes:
-      label: Tududi Version
-      description: What version of Tududi are you using?
+      label: TaskNoteTaker Version
+      description: What version of TaskNoteTaker are you using?
       placeholder: e.g. 0.85.1
     validations:
       required: false

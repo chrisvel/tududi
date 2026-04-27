@@ -129,11 +129,11 @@ const sendVerificationEmail = async (user, verificationToken) => {
     const verificationUrl = `${config.backendUrl}/api/verify-email?token=${verificationToken}`;
     const tokenExpiryHours = config.registrationConfig.tokenExpiryHours;
 
-    const subject = 'Welcome to Tududi - Verify your email';
+    const subject = 'Welcome to TaskNoteTaker - Verify your email';
 
-    const text = `Welcome to Tududi!
+    const text = `Welcome to TaskNoteTaker!
 
-Thank you for registering. To complete your registration and start using Tududi, please verify your email address by clicking the link below:
+Thank you for registering. To complete your registration and start using TaskNoteTaker, please verify your email address by clicking the link below:
 
 ${verificationUrl}
 
@@ -145,15 +145,15 @@ After verification, you'll be able to:
 - Set up recurring tasks
 - Track your productivity
 
-If you didn't create an account with Tududi, you can safely ignore this email.
+If you didn't create an account with TaskNoteTaker, you can safely ignore this email.
 
 Best regards,
-The Tududi Team`;
+The TaskNoteTaker Team`;
 
     const html = `
-<p>Welcome to Tududi!</p>
+<p>Welcome to TaskNoteTaker!</p>
 
-<p>Thank you for registering. To complete your registration and start using Tududi, please verify your email address by clicking the button below:</p>
+<p>Thank you for registering. To complete your registration and start using TaskNoteTaker, please verify your email address by clicking the button below:</p>
 
 <p style="text-align: center; margin: 30px 0;">
     <a href="${verificationUrl}" style="background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Verify Email Address</a>
@@ -172,9 +172,9 @@ The Tududi Team`;
     <li>Track your productivity</li>
 </ul>
 
-<p>If you didn't create an account with Tududi, you can safely ignore this email.</p>
+<p>If you didn't create an account with TaskNoteTaker, you can safely ignore this email.</p>
 
-<p>Best regards,<br>The Tududi Team</p>
+<p>Best regards,<br>The TaskNoteTaker Team</p>
 `;
 
     const result = await sendEmail({

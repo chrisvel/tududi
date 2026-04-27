@@ -1,6 +1,6 @@
 # OIDC/SSO Authentication
 
-This guide explains how to configure and use OpenID Connect (OIDC) Single Sign-On (SSO) authentication in Tududi.
+This guide explains how to configure and use OpenID Connect (OIDC) Single Sign-On (SSO) authentication in TaskNoteTaker.
 
 **Related:** [User Management](08-user-management.md), [Architecture Overview](architecture.md)
 
@@ -37,7 +37,7 @@ This guide explains how to configure and use OpenID Connect (OIDC) Single Sign-O
 
 ## Overview
 
-OIDC (OpenID Connect) is a modern authentication protocol that allows users to sign in to Tududi using external identity providers like Google, Okta, Keycloak, or any OIDC-compliant service.
+OIDC (OpenID Connect) is a modern authentication protocol that allows users to sign in to TaskNoteTaker using external identity providers like Google, Okta, Keycloak, or any OIDC-compliant service.
 
 **Key Features:**
 - **Single Sign-On:** Use your existing corporate or personal accounts
@@ -71,7 +71,7 @@ OIDC (OpenID Connect) is a modern authentication protocol that allows users to s
 
 ## Supported Providers
 
-Tududi supports any OIDC-compliant identity provider, including:
+TaskNoteTaker supports any OIDC-compliant identity provider, including:
 
 | Provider | Type | Typical Use Case |
 |----------|------|------------------|
@@ -87,7 +87,7 @@ Tududi supports any OIDC-compliant identity provider, including:
 
 ## Configuration
 
-OIDC providers are configured via environment variables in your `.env` file. After making changes, **restart the Tududi server** for them to take effect.
+OIDC providers are configured via environment variables in your `.env` file. After making changes, **restart the TaskNoteTaker server** for them to take effect.
 
 ### Single Provider Setup
 
@@ -148,7 +148,7 @@ OIDC_PROVIDER_2_ADMIN_EMAIL_DOMAINS=company.com
 # Provider 3: Self-hosted Authentik
 OIDC_PROVIDER_3_NAME=Authentik
 OIDC_PROVIDER_3_SLUG=authentik
-OIDC_PROVIDER_3_ISSUER=https://auth.example.com/application/o/tududi/
+OIDC_PROVIDER_3_ISSUER=https://auth.example.com/application/o/TaskNoteTaker/
 OIDC_PROVIDER_3_CLIENT_ID=zzz
 OIDC_PROVIDER_3_CLIENT_SECRET=zzz
 OIDC_PROVIDER_3_AUTO_PROVISION=true
@@ -172,11 +172,11 @@ OIDC_PROVIDER_3_AUTO_PROVISION=true
 | `OIDC_SCOPE` | No | `openid profile email` | OAuth scopes (space-separated) |
 | `OIDC_AUTO_PROVISION` | No | `true` | Auto-create users on first login |
 | `OIDC_ADMIN_EMAIL_DOMAINS` | No | - | Comma-separated domains for auto-admin |
-| `BASE_URL` | Yes | - | Tududi base URL (for OAuth callbacks) |
+| `BASE_URL` | Yes | - | TaskNoteTaker base URL (for OAuth callbacks) |
 
 **Scope Formatting:**
 
-The `OIDC_SCOPE` parameter accepts space-separated OAuth scopes. Tududi automatically normalizes the scope value by:
+The `OIDC_SCOPE` parameter accepts space-separated OAuth scopes. TaskNoteTaker automatically normalizes the scope value by:
 - Trimming leading/trailing whitespace
 - Collapsing multiple spaces into single spaces
 - Ensuring `openid` is always included (adding it if missing)
@@ -189,20 +189,20 @@ OIDC_SCOPE="openid profile email groups"
 OIDC_SCOPE=openid  profile  email    # Extra spaces are automatically normalized
 ```
 
-**Note:** Do not manually URL-encode the scope value (e.g., using `%20` or `+`). Use regular spaces - Tududi handles the encoding automatically.
+**Note:** Do not manually URL-encode the scope value (e.g., using `%20` or `+`). Use regular spaces - TaskNoteTaker handles the encoding automatically.
 
 **Important:** The `BASE_URL` variable must be set for OAuth redirects to work:
 ```bash
 BASE_URL=http://localhost:3002  # Development
-BASE_URL=https://tududi.example.com  # Production
+BASE_URL=https://TaskNoteTaker.example.com  # Production
 ```
 
 **Trust Proxy Configuration (Required for Production):**
 
-If Tududi is deployed behind a reverse proxy (nginx, Traefik, Apache, etc.), you **must** configure Express to trust the proxy:
+If TaskNoteTaker is deployed behind a reverse proxy (nginx, Traefik, Apache, etc.), you **must** configure Express to trust the proxy:
 
 ```bash
-TUDUDI_TRUST_PROXY=true
+TASKNOTETAKER_TRUST_PROXY=true
 ```
 
 This is required for:
@@ -232,7 +232,7 @@ Without this setting, you may experience:
    - Production: `https://your-domain.com/api/oidc/callback/google`
 7. Copy **Client ID** and **Client Secret**
 
-**2. Configure Tududi**
+**2. Configure TaskNoteTaker**
 
 ```bash
 OIDC_ENABLED=true
@@ -247,7 +247,7 @@ OIDC_AUTO_PROVISION=true
 
 **3. Test**
 
-- Restart Tududi
+- Restart TaskNoteTaker
 - Navigate to login page
 - Click "Sign in with Google"
 - Approve permissions
@@ -276,7 +276,7 @@ Format: `https://{your-domain}.okta.com`
 
 Example: `https://company.okta.com`
 
-**3. Configure Tududi**
+**3. Configure TaskNoteTaker**
 
 ```bash
 OIDC_ENABLED=true
@@ -301,7 +301,7 @@ OIDC_ADMIN_EMAIL_DOMAINS=company.com
 3. Go to **Clients** > **Create client**
 4. Configure:
    - **Client type:** OpenID Connect
-   - **Client ID:** `tududi`
+   - **Client ID:** `TaskNoteTaker`
    - **Client authentication:** ON (confidential)
    - **Valid redirect URIs:** `https://your-domain.com/api/oidc/callback/keycloak`
 5. Go to **Credentials** tab and copy **Client secret**
@@ -312,14 +312,14 @@ Format: `https://{keycloak-domain}/realms/{realm-name}`
 
 Example: `https://auth.example.com/realms/myrealm`
 
-**3. Configure Tududi**
+**3. Configure TaskNoteTaker**
 
 ```bash
 OIDC_ENABLED=true
 OIDC_PROVIDER_NAME=Keycloak
 OIDC_PROVIDER_SLUG=keycloak
 OIDC_ISSUER_URL=https://auth.example.com/realms/myrealm
-OIDC_CLIENT_ID=tududi
+OIDC_CLIENT_ID=TaskNoteTaker
 OIDC_CLIENT_SECRET=xxxxxxxxxxxxxxxxxxxx
 OIDC_SCOPE=openid profile email
 OIDC_AUTO_PROVISION=true
@@ -335,7 +335,7 @@ OIDC_AUTO_PROVISION=true
 2. Go to **Applications** > **Providers**
 3. Click **Create** and select **OAuth2/OpenID Provider**
 4. Configure:
-   - **Name:** Tududi
+   - **Name:** TaskNoteTaker
    - **Authorization flow:** Choose your flow
    - **Redirect URIs:** `https://your-domain.com/api/oidc/callback/authentik`
    - **Signing Key:** Select a certificate
@@ -352,15 +352,15 @@ OIDC_AUTO_PROVISION=true
 
 Format: `https://{authentik-domain}/application/o/{application-slug}/`
 
-Example: `https://auth.example.com/application/o/tududi/`
+Example: `https://auth.example.com/application/o/TaskNoteTaker/`
 
-**4. Configure Tududi**
+**4. Configure TaskNoteTaker**
 
 ```bash
 OIDC_ENABLED=true
 OIDC_PROVIDER_NAME=Authentik
 OIDC_PROVIDER_SLUG=authentik
-OIDC_ISSUER_URL=https://auth.example.com/application/o/tududi/
+OIDC_ISSUER_URL=https://auth.example.com/application/o/TaskNoteTaker/
 OIDC_CLIENT_ID=xxxxxxxxxxxxxxxxxxxx
 OIDC_CLIENT_SECRET=xxxxxxxxxxxxxxxxxxxx
 OIDC_SCOPE=openid profile email
@@ -376,11 +376,11 @@ OIDC_AUTO_PROVISION=true
 1. Go to [PocketID Developer Console](https://pocketid.app/developer)
 2. Create a new application
 3. Configure:
-   - **Name:** Tududi
+   - **Name:** TaskNoteTaker
    - **Redirect URI:** `https://your-domain.com/api/oidc/callback/pocketid`
 4. Note the **Client ID** and **Client Secret**
 
-**2. Configure Tududi**
+**2. Configure TaskNoteTaker**
 
 ```bash
 OIDC_ENABLED=true
@@ -403,7 +403,7 @@ OIDC_AUTO_PROVISION=true
 2. Navigate to **Azure Active Directory** > **App registrations**
 3. Click **New registration**
 4. Configure:
-   - **Name:** Tududi
+   - **Name:** TaskNoteTaker
    - **Supported account types:** Choose your option
    - **Redirect URI:** Web - `https://your-domain.com/api/oidc/callback/azure`
 5. After creation, go to **Certificates & secrets**
@@ -414,7 +414,7 @@ OIDC_AUTO_PROVISION=true
 
 Go to **Azure Active Directory** > **Overview** and copy the **Tenant ID**
 
-**3. Configure Tududi**
+**3. Configure TaskNoteTaker**
 
 ```bash
 OIDC_ENABLED=true
@@ -437,11 +437,11 @@ Replace `{tenant-id}` with your actual tenant ID.
 
 **First-Time Users:**
 
-1. Navigate to Tududi login page
+1. Navigate to TaskNoteTaker login page
 2. Click the provider button (e.g., "Sign in with Google")
 3. You'll be redirected to the provider's login page
 4. Approve the requested permissions
-5. You'll be redirected back to Tududi and logged in
+5. You'll be redirected back to TaskNoteTaker and logged in
 6. A new account is automatically created (if auto-provisioning is enabled)
 
 **Returning Users:**
@@ -498,7 +498,7 @@ When `OIDC_AUTO_PROVISION=true` (default), new users are automatically created o
 **How It Works:**
 
 1. User completes SSO login
-2. Tududi checks if an OIDC identity exists for this provider + user ID
+2. TaskNoteTaker checks if an OIDC identity exists for this provider + user ID
 3. If not, checks if a user with the email exists:
    - **User exists:** Links OIDC identity to existing user
    - **User doesn't exist:** Creates new user with:
@@ -540,7 +540,7 @@ OIDC_ADMIN_EMAIL_DOMAINS=company.com,example.org
 
 ### Hybrid Authentication
 
-Tududi supports hybrid authentication where users choose their preferred method:
+TaskNoteTaker supports hybrid authentication where users choose their preferred method:
 
 **Scenarios:**
 
@@ -643,10 +643,10 @@ Restart the server. Password login will immediately become available again.
 
 Add to your `.env` file:
 ```bash
-TUDUDI_TRUST_PROXY=true
+TASKNOTETAKER_TRUST_PROXY=true
 ```
 
-Then restart the Tududi server:
+Then restart the TaskNoteTaker server:
 ```bash
 docker compose restart  # For Docker
 npm start              # For standalone
@@ -717,13 +717,13 @@ ValidationError: The 'X-Forwarded-For' header is set but the Express 'trust prox
 
 ### Callback URL Mismatch
 
-**Cause:** Redirect URI configured in provider doesn't match Tududi's callback.
+**Cause:** Redirect URI configured in provider doesn't match TaskNoteTaker's callback.
 
 **Solution:**
 1. Callback URL format: `{BASE_URL}/api/oidc/callback/{slug}`
-2. Example: `https://tududi.example.com/api/oidc/callback/google`
+2. Example: `https://TaskNoteTaker.example.com/api/oidc/callback/google`
 3. Must match exactly in provider settings (including http/https)
-4. Update provider settings and restart Tududi
+4. Update provider settings and restart TaskNoteTaker
 
 ### Can't Unlink Last Auth Method
 
@@ -747,7 +747,7 @@ ValidationError: The 'X-Forwarded-For' header is set but the Express 'trust prox
 
 ### OAuth Flow Security
 
-Tududi implements standard OAuth 2.0 security measures:
+TaskNoteTaker implements standard OAuth 2.0 security measures:
 
 1. **CSRF Protection:** Cryptographically random state parameter (32 bytes)
 2. **Replay Protection:** State is one-time use, 10-minute TTL
@@ -863,8 +863,8 @@ See [Swagger API docs](http://localhost:3002/api-docs) for full API reference.
 
 ## Support
 
-**Issues:** [GitHub Issues](https://github.com/chrisvel/tududi/issues)
-**Discussions:** [GitHub Discussions](https://github.com/chrisvel/tududi/discussions)
+**Issues:** [GitHub Issues](https://github.com/chrisvel/TaskNoteTaker/issues)
+**Discussions:** [GitHub Discussions](https://github.com/chrisvel/TaskNoteTaker/discussions)
 **Discord:** [Join our community](https://discord.gg/fkbeJ9CmcH)
 
 **Related Documentation:**

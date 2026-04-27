@@ -1,6 +1,6 @@
-# Contributing to tududi
+# Contributing to TaskNoteTaker
 
-Thank you for your interest in contributing to tududi! This guide will help you get started.
+Thank you for your interest in contributing to TaskNoteTaker! This guide will help you get started.
 
 ## Table of Contents
 
@@ -30,8 +30,8 @@ Please be respectful and constructive in all interactions. We want to foster an 
 
 1. **Fork and clone the repository**
    ```bash
-   git clone https://github.com/chrisvel/tududi.git
-   cd tududi
+   git clone https://github.com/chrisvel/TaskNoteTaker.git
+   cd TaskNoteTaker
    ```
 
 2. **Install dependencies**
@@ -63,7 +63,7 @@ Please be respectful and constructive in all interactions. We want to foster an 
 
 **Feature pull requests will not be merged** unless there is:
 - An existing GitHub issue
-- A feature request discussed in [Discussions](https://github.com/chrisvel/tududi/discussions)
+- A feature request discussed in [Discussions](https://github.com/chrisvel/TaskNoteTaker/discussions)
 - Prior communication with the maintainer or community
 
 ### Why This Requirement?
@@ -79,9 +79,9 @@ This requirement exists to:
 
 Before writing any code:
 
-1. **Start a discussion** in [Feature Requests](https://github.com/chrisvel/tududi/discussions/categories/feature-requests)
+1. **Start a discussion** in [Feature Requests](https://github.com/chrisvel/TaskNoteTaker/discussions/categories/feature-requests)
    - Describe the feature and the problem it solves
-   - Explain why it would benefit tududi users
+   - Explain why it would benefit TaskNoteTaker users
    - Outline your proposed approach
 
 2. **Send a direct message** to [@chrisvel](https://github.com/chrisvel) via:
@@ -247,7 +247,7 @@ If your changes require database schema changes:
 
 ## Translations
 
-tududi supports multiple languages via i18next.
+TaskNoteTaker supports multiple languages via i18next.
 
 ### Adding/Updating Translations
 
@@ -323,9 +323,9 @@ tududi supports multiple languages via i18next.
 
 ## Questions?
 
-- **Feature ideas**: Start a [discussion](https://github.com/chrisvel/tududi/discussions/categories/feature-requests) or message [@chrisvel](https://github.com/chrisvel)
-- **General questions**: Use [GitHub Discussions](https://github.com/chrisvel/tududi/discussions)
-- **Bug reports**: Create an [issue](https://github.com/chrisvel/tududi/issues)
+- **Feature ideas**: Start a [discussion](https://github.com/chrisvel/TaskNoteTaker/discussions/categories/feature-requests) or message [@chrisvel](https://github.com/chrisvel)
+- **General questions**: Use [GitHub Discussions](https://github.com/chrisvel/TaskNoteTaker/discussions)
+- **Bug reports**: Create an [issue](https://github.com/chrisvel/TaskNoteTaker/issues)
 - **Direct contact**: Join our [Discord](https://discord.gg/fkbeJ9CmcH) or find maintainer contact info in the repository
 
 ---

@@ -16,14 +16,18 @@ const {
 const { Role } = require('../models');
 
 async function createUser() {
-    const [email, password, isAdminArg] = process.argv.slice(2);
+    let [email, password, isAdminArg] = process.argv.slice(2);
+
+    // Fallback to environment variables if not provided as arguments
+    email = email || process.env.TASKNOTETAKER_USER_EMAIL;
+    password = password || process.env.TASKNOTETAKER_USER_PASSWORD;
 
     if (!email || password === undefined) {
         console.error(
             'Usage: npm run user:create <email> <password> [is_admin]'
         );
         console.error(
-            'Example: npm run user:create admin@example.com mypassword123 true'
+            'Or set TASKNOTETAKER_USER_EMAIL and TASKNOTETAKER_USER_PASSWORD environment variables.'
         );
         process.exit(1);
     }

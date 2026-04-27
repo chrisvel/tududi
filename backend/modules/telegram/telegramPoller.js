@@ -332,7 +332,7 @@ const handleBotCommand = async (command, user, chatId, messageId) => {
             await sendTelegramMessage(
                 botToken,
                 chatId,
-                `🎉 Welcome to tududi!\n\nYour personal task management bot is now connected and ready to help!\n\n📝 Simply send me any message and I'll add it to your tududi inbox as an item.\n\n✨ Commands:\n• /help - Show help information\n• /start - Show welcome message\n• Just type any text - Add it as an inbox item\n\nLet's get organized! 🚀`,
+                `🎉 Welcome to TaskNoteTaker!\n\nYour personal task management bot is now connected and ready to help!\n\n📝 Simply send me any message and I'll add it to your TaskNoteTaker inbox as an item.\n\n✨ Commands:\n• /help - Show help information\n• /start - Show welcome message\n• Just type any text - Add it as an inbox item\n\nLet's get organized! 🚀`,
                 messageId
             );
             break;
@@ -340,7 +340,7 @@ const handleBotCommand = async (command, user, chatId, messageId) => {
             await sendTelegramMessage(
                 botToken,
                 chatId,
-                `📋 tududi Bot Help\n\nSend me any text message and I'll add it to your tududi inbox as an inbox item.\n\nCommands:\n/start - Welcome message\n/help - Show this help message\n\nJust type your item and I'll take care of the rest!`,
+                `📋 TaskNoteTaker Bot Help\n\nSend me any text message and I'll add it to your TaskNoteTaker inbox as an inbox item.\n\nCommands:\n/start - Welcome message\n/help - Show this help message\n\nJust type your item and I'll take care of the rest!`,
                 messageId
             );
             break;
@@ -402,7 +402,7 @@ const processMessage = async (user, update) => {
         await sendTelegramMessage(
             user.telegram_bot_token,
             chatId,
-            `🎉 Welcome to tududi!\n\nYour personal task management bot is now connected and ready to help!\n\n📝 Simply send me any message and I'll add it to your tududi inbox as an inbox item.\n\n✨ Commands:\n• /help - Show help information\n• /start - Show welcome message\n• Just type any text - Add it as an inbox item\n\nLet's get organized! 🚀`
+            `🎉 Welcome to TaskNoteTaker!\n\nYour personal task management bot is now connected and ready to help!\n\n📝 Simply send me any message and I'll add it to your TaskNoteTaker inbox as an inbox item.\n\n✨ Commands:\n• /help - Show help information\n• /start - Show welcome message\n• Just type any text - Add it as an inbox item\n\nLet's get organized! 🚀`
         );
 
         console.log(
@@ -432,7 +432,7 @@ const processMessage = async (user, update) => {
         await sendTelegramMessage(
             user.telegram_bot_token,
             chatId,
-            `✅ Added to tududi inbox: "${text}"`,
+            `✅ Added to TaskNoteTaker inbox: "${text}"`,
             messageId
         );
 
