@@ -1366,7 +1366,7 @@ const TasksToday: React.FC = () => {
                         </div>
                     </div>
                 ) : todaySettings.showMetrics ? (
-                    <div className="mb-2 grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div className="mb-2 grid grid-cols-1 lg:grid-cols-3 gap-4 overflow-x-hidden">
                         {/* Combined Task & Project Metrics */}
                         <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
                             <h3 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
@@ -1512,7 +1512,7 @@ const TasksToday: React.FC = () => {
                                                                 'down' && (
                                                                 <ArrowDownIcon className="h-3 w-3 text-red-500" />
                                                             )}
-                                                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 dark:bg-gray-700 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
+                                                            <div className="absolute bottom-full right-0 lg:left-1/2 lg:transform lg:-translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 dark:bg-gray-700 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
                                                                 {getTooltipText()}
                                                             </div>
                                                         </div>
