@@ -120,6 +120,9 @@ Tududi's MCP server works with any MCP-compatible client:
 | `TUDUDI_API_TOKEN` | Stdio only | — | API token for stdio authentication |
 | `MCP_SERVER_NAME` | No | `tududi` | Display name for the MCP server |
 | `MCP_SERVER_VERSION` | No | `1.0.0` | Version string for the MCP server |
+| `TUDUDI_TRUST_PROXY` | HTTP only | `true` | Required when behind reverse proxy (Nginx, Caddy, Traefik, etc.) |
+
+> **Note:** `TUDUDI_TRUST_PROXY=true` is the default in `.env.example`. This is required when running MCP HTTP mode behind a reverse proxy, as it allows Express to correctly read client IPs from `X-Forwarded-For` headers.
 
 ---
 
@@ -149,12 +152,15 @@ Tududi supports two transport modes for different deployment scenarios:
 - **Communication:** HTTP POST to `/api/mcp`
 - **Protocol:** Streamable HTTP (stateless mode)
 - **Setup:** Requires `mcp-remote` npm package
+- **Trust Proxy:** Set `TUDUDI_TRUST_PROXY=true` when behind a reverse proxy (Nginx, Caddy, Traefik, etc.)
 
 **Best for:**
 - Docker deployments
 - Cloud-hosted Tududi
 - Remote Claude Desktop access
 - Team environments
+
+> **Important for reverse proxy setups:** If you're running Tududi behind a reverse proxy (common in Docker or cloud deployments), set `TUDUDI_TRUST_PROXY=true` in your `.env` file. Without this, Express cannot correctly read client IPs from `X-Forwarded-For` headers, which may cause rate limiting errors.
 
 **HTTP Configuration Example (Claude Desktop):**
 ```json
