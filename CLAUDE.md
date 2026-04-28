@@ -11,6 +11,7 @@ Tududi is a self-hosted task management system with hierarchical organization (A
 **Tech Stack:** React 18 + TypeScript, Express + Sequelize, SQLite
 
 **Get Started:**
+
 ```bash
 git clone https://github.com/chrisvel/tududi.git
 cd tududi
@@ -26,62 +27,62 @@ npm start  # Frontend on :8080, Backend on :3002
 ### Core Documentation
 
 1. **[Architecture Overview](docs/architecture.md)**
-   - Tech stack details
-   - Request flow diagram
-   - Data model hierarchy
-   - Authentication methods
+    - Tech stack details
+    - Request flow diagram
+    - Data model hierarchy
+    - Authentication methods
 
 2. **[Directory Structure](docs/directory-structure.md)**
-   - Complete file tree with absolute paths
-   - Critical paths reference
-   - Backend and frontend organization
+    - Complete file tree with absolute paths
+    - Critical paths reference
+    - Backend and frontend organization
 
 3. **[Backend Patterns](docs/backend-patterns.md)**
-   - Module architecture pattern
-   - How to add new modules
-   - Module communication
-   - Repository and service patterns
+    - Module architecture pattern
+    - How to add new modules
+    - Module communication
+    - Repository and service patterns
 
 4. **[Database & Migrations](docs/database.md)**
-   - Key models and relationships
-   - Migration workflow
-   - Migration best practices
-   - Common migration operations
+    - Key models and relationships
+    - Migration workflow
+    - Migration best practices
+    - Common migration operations
 
 5. **[Backups & Restoration](docs/backups.md)**
-   - Automatic SQLite file backups before migrations
-   - Backup retention policies (4 per day, 1 per day for 7 days)
-   - Restoration procedures for development, Docker, and production
-   - Emergency restore after failed migrations
-   - Best practices for data safety
+    - Automatic SQLite file backups before migrations
+    - Backup retention policies (4 per day, 1 per day for 7 days)
+    - Restoration procedures for development, Docker, and production
+    - Emergency restore after failed migrations
+    - Best practices for data safety
 
 6. **[Development Workflow](docs/development-workflow.md)**
-   - Initial setup
-   - Daily development (two-server process)
-   - Environment variables
-   - Adding new features (complete walkthrough)
-   - Database management commands
+    - Initial setup
+    - Daily development (two-server process)
+    - Environment variables
+    - Adding new features (complete walkthrough)
+    - Database management commands
 
 7. **[Code Conventions](docs/code-conventions.md)**
-   - Language usage (TypeScript/JavaScript)
-   - Backend patterns (async/await, repository)
-   - Frontend patterns (components, state)
-   - Naming conventions
-   - API route conventions
+    - Language usage (TypeScript/JavaScript)
+    - Backend patterns (async/await, repository)
+    - Frontend patterns (components, state)
+    - Naming conventions
+    - API route conventions
 
 8. **[Testing](docs/testing.md)**
-   - Test organization
-   - Running tests
-   - Testing requirements
-   - Test patterns (Arrange-Act-Assert)
+    - Test organization
+    - Running tests
+    - Testing requirements
+    - Test patterns (Arrange-Act-Assert)
 
 9. **[Common Tasks](docs/common-tasks.md)**
-   - Add field to model
-   - Create new backend module
-   - Add React component
-   - Update database schema
-   - Fix a bug (TDD workflow)
-   - Add translations
+    - Add field to model
+    - Create new backend module
+    - Add React component
+    - Update database schema
+    - Fix a bug (TDD workflow)
+    - Add translations
 
 10. **[Tasks Behavior](docs/00-tasks-behavior.md)**
     - Task creation and basic fields
@@ -199,10 +200,12 @@ npm start  # Frontend on :8080, Backend on :3002
 Tududi is a self-hosted task management system designed around hierarchical organization and smart automation. It prioritizes user flow over rigid structures - a productivity tool that doesn't "fight back."
 
 **Core Philosophy:**
+
 - [Designing a Life Management System That Doesn't Fight Back](https://medium.com/@chrisveleris/designing-a-life-management-system-that-doesnt-fight-back-2fd58773e857)
 - [From Task to Table: How I Finally Got to the Korean Burger](https://medium.com/@chrisveleris/from-task-to-table-how-i-finally-got-to-the-korean-burger-01245a14d491)
 
 **Key Capabilities:**
+
 - **Hierarchical Organization:** Areas > Projects > Tasks > Subtasks
 - **Smart Recurring Tasks:** Multiple patterns with parent-child tracking
 - **Multi-Language Support:** 24 languages via i18next
@@ -219,6 +222,7 @@ Tududi is a self-hosted task management system designed around hierarchical orga
 ## Technology Stack
 
 **Frontend:**
+
 - React 18 + TypeScript 5.6
 - Webpack 5 (build) + webpack-dev-server (development)
 - Tailwind CSS 3.4 + Heroicons
@@ -226,6 +230,7 @@ Tududi is a self-hosted task management system designed around hierarchical orga
 - React Router 6, i18next (24 languages)
 
 **Backend:**
+
 - Express 4.21 + Sequelize 6.37 (ORM)
 - SQLite 5.1 (WAL mode, optimized)
 - bcrypt + express-session (auth)
@@ -233,6 +238,7 @@ Tududi is a self-hosted task management system designed around hierarchical orga
 - node-cron (scheduling), Nodemailer (email)
 
 **Testing:**
+
 - Jest (backend + frontend)
 - Playwright (E2E)
 - Supertest (API integration tests)
@@ -241,27 +247,27 @@ Tududi is a self-hosted task management system designed around hierarchical orga
 
 ## Critical Paths Quick Reference
 
-| Task | Location |
-|------|----------|
-| Add backend feature | `/backend/modules/[feature]/` |
-| Create model | `/backend/models/[model].js` |
-| Database migration | `/backend/migrations/` |
-| React component | `/frontend/components/[Feature]/` |
-| API routes | `/backend/modules/[module]/routes.js` |
-| Global state | `/frontend/store/useStore.ts` |
-| API client | `/frontend/utils/[resource]Service.ts` |
+| Task                | Location                               |
+| ------------------- | -------------------------------------- |
+| Add backend feature | `/backend/modules/[feature]/`          |
+| Create model        | `/backend/models/[model].js`           |
+| Database migration  | `/backend/migrations/`                 |
+| React component     | `/frontend/components/[Feature]/`      |
+| API routes          | `/backend/modules/[module]/routes.js`  |
+| Global state        | `/frontend/store/useStore.ts`          |
+| API client          | `/frontend/utils/[resource]Service.ts` |
 
 ---
 
 ## Related Documentation
 
-| Document | Audience | Purpose |
-|----------|----------|---------|
-| [README.md](README.md) | Users | Features, Docker setup, quick start |
-| [CONTRIBUTING.md](.github/CONTRIBUTING.md) | Contributors | PR workflow, code of conduct |
-| [docs.tududi.com](https://docs.tududi.com) | End users | Full user documentation |
-| [Swagger API docs](http://localhost:3002/api-docs) | API consumers | API endpoints (after auth) |
-| **CLAUDE.md** | Developers, AI | Codebase architecture, patterns |
+| Document                                           | Audience       | Purpose                             |
+| -------------------------------------------------- | -------------- | ----------------------------------- |
+| [README.md](README.md)                             | Users          | Features, Docker setup, quick start |
+| [CONTRIBUTING.md](.github/CONTRIBUTING.md)         | Contributors   | PR workflow, code of conduct        |
+| [docs.tududi.com](https://docs.tududi.com)         | End users      | Full user documentation             |
+| [Swagger API docs](http://localhost:3002/api-docs) | API consumers  | API endpoints (after auth)          |
+| **CLAUDE.md**                                      | Developers, AI | Codebase architecture, patterns     |
 
 ---
 
@@ -269,10 +275,10 @@ Tududi is a self-hosted task management system designed around hierarchical orga
 
 - **Roadmap:** [GitHub Project](https://github.com/users/chrisvel/projects/2)
 - **Community:**
-  - [Discord](https://discord.gg/fkbeJ9CmcH)
-  - [Reddit](https://www.reddit.com/r/tududi/)
-  - [Issues](https://github.com/chrisvel/tududi/issues)
-  - [Discussions](https://github.com/chrisvel/tududi/discussions)
+    - [Discord](https://discord.gg/fkbeJ9CmcH)
+    - [Reddit](https://www.reddit.com/r/tududi/)
+    - [Issues](https://github.com/chrisvel/tududi/issues)
+    - [Discussions](https://github.com/chrisvel/tududi/discussions)
 
 ---
 
