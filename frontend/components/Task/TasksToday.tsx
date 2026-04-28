@@ -1366,7 +1366,7 @@ const TasksToday: React.FC = () => {
                         </div>
                     </div>
                 ) : todaySettings.showMetrics ? (
-                    <div className="mb-2 grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div className="mb-2 grid grid-cols-1 lg:grid-cols-3 gap-4 overflow-x-hidden">
                         {/* Combined Task & Project Metrics */}
                         <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
                             <h3 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
