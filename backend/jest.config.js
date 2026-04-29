@@ -21,6 +21,7 @@ module.exports = {
     testTimeout: 30000,
     maxWorkers: '100%',
     moduleNameMapper: {
+        '^jose$': '<rootDir>/tests/mocks/jose.js',
         '^nanoid$': '<rootDir>/tests/mocks/nanoid.js',
     },
 };

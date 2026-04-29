@@ -1,8 +1,10 @@
 const { Issuer, generators } = require('openid-client');
+const { createRemoteJWKSet, jwtVerify } = require('jose');
 const providerConfig = require('./providerConfig');
 const stateManager = require('./stateManager');
 
 const issuerCache = new Map();
+let jwksCache = null;
 
 async function discoverProvider(config) {
     if (issuerCache.has(config.issuer)) {
@@ -138,8 +140,32 @@ async function refreshAccessToken(providerSlug, refreshToken) {
     };
 }
 
+/**
+ * Validates an OAuth2 access token (JWT) issued by the configured OIDC provider.
+ * Used by the MCP middleware to authenticate requests from OAuth2 clients.
+ * Returns the token payload on success, or throws on failure.
+ */
+async function validateAccessToken(token) {
+    const issuerUrl = process.env.OIDC_ISSUER_URL;
+    if (!issuerUrl) {
+        throw new Error('OIDC_ISSUER_URL is not configured');
+    }
+
+    if (!jwksCache) {
+        const issuer = await Issuer.discover(issuerUrl);
+        jwksCache = createRemoteJWKSet(new URL(issuer.jwks_uri));
+    }
+
+    const { payload } = await jwtVerify(token, jwksCache, {
+        issuer: issuerUrl,
+    });
+
+    return payload;
+}
+
 function clearIssuerCache() {
     issuerCache.clear();
+    jwksCache = null;
 }
 
 module.exports = {
@@ -148,6 +174,7 @@ module.exports = {
     handleCallback,
     validateIdToken,
     refreshAccessToken,
+    validateAccessToken,
     getRedirectUri,
     clearIssuerCache,
 };

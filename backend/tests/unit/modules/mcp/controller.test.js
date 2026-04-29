@@ -226,8 +226,7 @@ describe('MCP Controller', () => {
 
         it('should delegate to handleMcpHttpRequest', async () => {
             const mockUser = { id: 1, email: 'test@example.com' };
-            const mockToken = { name: 'test-token' };
-            const mockReq = { mcpUser: mockUser, mcpApiToken: mockToken };
+            const mockReq = { mcpUser: mockUser };
             const mockRes = {};
 
             handleMcpHttpRequest.mockResolvedValue(undefined);
@@ -237,13 +236,12 @@ describe('MCP Controller', () => {
             expect(handleMcpHttpRequest).toHaveBeenCalledWith(
                 mockReq,
                 mockRes,
-                mockUser,
-                mockToken
+                mockUser
             );
         });
 
         it('should return 500 when handleMcpHttpRequest throws', async () => {
-            const mockReq = { mcpUser: {}, mcpApiToken: {} };
+            const mockReq = { mcpUser: {} };
             const mockRes = {
                 headersSent: false,
                 status: jest.fn().mockReturnThis(),
@@ -266,7 +264,7 @@ describe('MCP Controller', () => {
         });
 
         it('should not send response when headers already sent', async () => {
-            const mockReq = { mcpUser: {}, mcpApiToken: {} };
+            const mockReq = { mcpUser: {} };
             const mockRes = {
                 headersSent: true,
                 status: jest.fn(),

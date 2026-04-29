@@ -214,6 +214,12 @@ This document explains how user management works in tududi from a user behavior 
     - Expired or revoked tokens are rejected
     - Last used timestamp is updated on successful authentication
 
+30. **OAuth2 JWT authentication (resource server):**
+    - When `OIDC_ENABLED=true`, Bearer tokens without the `tt_` prefix are treated as JWTs
+    - Validated against the OIDC provider's JWKS endpoint (`OIDC_ISSUER_URL`)
+    - The token's `sub` claim must match a linked OIDC identity in the database
+    - Discovery metadata available at `/.well-known/oauth-protected-resource` (RFC 9728)
+
 ---
 
 ## **Admin User Management**
