@@ -1,8 +1,8 @@
 'use strict';
 
 const request = require('supertest');
-const app = require('../../../app');
-const { createTestUser } = require('../../helpers/testUtils');
+const app = require('../../../../app');
+const { createTestUser } = require('../../../helpers/testUtils');
 
 describe('MCP Routes - Feature Flag', () => {
     let user, agent;

@@ -112,7 +112,7 @@ describe('MCP Controller', () => {
             const config = res.json.mock.calls[0][0];
             const args = config.mcpServers.tududi.args;
             expect(args).toContain('--header');
-            expect(args).toContain(expect.stringContaining('Authorization:Bearer'));
+            expect(args.some((a) => a.includes('Authorization:Bearer'))).toBe(true);
         });
 
         it('should include TUDUDI_API_TOKEN placeholder in env', async () => {

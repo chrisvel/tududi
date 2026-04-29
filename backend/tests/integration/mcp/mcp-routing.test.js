@@ -2,7 +2,7 @@
 
 const request = require('supertest');
 const app = require('../../../app');
-const { User, ApiToken } = require('../../../models');
+const { User } = require('../../../models');
 const { createTestUser } = require('../../helpers/testUtils');
 
 describe('MCP Routing', () => {
@@ -164,20 +164,21 @@ describe('MCP Routing', () => {
                 .post('/api/mcp')
                 .send({ jsonrpc: '2.0', method: 'tools/list', id: 1 });
 
+            // requireAuth middleware returns "Authentication required" before
+            // MCP's own authenticateMcpRequest middleware is reached
             expect(response.status).toBe(401);
-            expect(response.body.error).toBe('Unauthorized');
+            expect(response.body.error).toBe('Authentication required');
         });
 
-        it('should reject invalid Bearer token format', async () => {
+        it('should reject non-Bearer Authorization header', async () => {
             const response = await request(app)
                 .post('/api/mcp')
                 .set('Authorization', 'Token invalid-token')
                 .send({ jsonrpc: '2.0', method: 'tools/list', id: 1 });
 
+            // requireAuth only recognises Bearer scheme, so returns generic 401
             expect(response.status).toBe(401);
-            expect(response.body.message).toContain(
-                'Invalid Authorization header format'
-            );
+            expect(response.body.error).toBe('Authentication required');
         });
 
         it('should reject expired or invalid API tokens', async () => {
@@ -190,24 +191,19 @@ describe('MCP Routing', () => {
         });
 
         it('should handle MCP protocol with valid API token', async () => {
-            // Create an API token for the test user
-            const { findValidTokenByValue } = require('../../../modules/users/apiTokenService');
-            const bcrypt = require('bcrypt');
+            const { createApiToken } = require('../../../modules/users/apiTokenService');
 
-            const tokenValue = `tt_test_${Math.random().toString(36).slice(2, 68)}`;
-            const tokenHash = await bcrypt.hash(tokenValue, 10);
-
-            await ApiToken.create({
-                user_id: user.id,
+            const { rawToken } = await createApiToken({
+                userId: user.id,
                 name: 'MCP Test Token',
-                token_hash: tokenHash,
-                token_prefix: tokenValue.slice(0, 10),
-                expires_at: null,
+                expiresAt: null,
             });
 
             const response = await request(app)
                 .post('/api/mcp')
-                .set('Authorization', `Bearer ${tokenValue}`)
+                .set('Authorization', `Bearer ${rawToken}`)
+                .set('Content-Type', 'application/json')
+                .set('Accept', 'application/json, text/event-stream')
                 .send({ jsonrpc: '2.0', method: 'tools/list', id: 1 });
 
             // MCP protocol response - should succeed
