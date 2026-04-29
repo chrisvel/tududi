@@ -97,7 +97,9 @@ describe('MCP Routing', () => {
             expect(response.body.mcpServers).toBeDefined();
             expect(response.body.mcpServers.tududi).toBeDefined();
             expect(response.body.mcpServers.tududi.command).toBe('npx');
-            expect(response.body.mcpServers.tududi.args).toContain('mcp-remote');
+            expect(response.body.mcpServers.tududi.args).toContain(
+                'mcp-remote'
+            );
             expect(response.body.mcpServers.tududi.env).toBeDefined();
         });
     });
@@ -191,7 +193,9 @@ describe('MCP Routing', () => {
         });
 
         it('should handle MCP protocol with valid API token', async () => {
-            const { createApiToken } = require('../../../modules/users/apiTokenService');
+            const {
+                createApiToken,
+            } = require('../../../modules/users/apiTokenService');
 
             const { rawToken } = await createApiToken({
                 userId: user.id,

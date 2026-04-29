@@ -2,9 +2,18 @@
 
 const request = require('supertest');
 const app = require('../../../app');
-const { User, Task, Project, Area, Tag, InboxItem } = require('../../../models');
+const {
+    User,
+    Task,
+    Project,
+    Area,
+    Tag,
+    InboxItem,
+} = require('../../../models');
 const { createTestUser } = require('../../helpers/testUtils');
-const { createApiToken: createApiTokenFromService } = require('../../../modules/users/apiTokenService');
+const {
+    createApiToken: createApiTokenFromService,
+} = require('../../../modules/users/apiTokenService');
 
 /**
  * Parse the SSE response text into a JSON-RPC object.
@@ -33,7 +42,9 @@ function parseSseResponse(text) {
 function getToolContent(response) {
     const jsonRpc = parseSseResponse(response.text);
     if (!jsonRpc || !jsonRpc.result) {
-        throw new Error(`Unexpected MCP response: ${response.text.slice(0, 200)}`);
+        throw new Error(
+            `Unexpected MCP response: ${response.text.slice(0, 200)}`
+        );
     }
     const isError = jsonRpc.result.isError === true;
     let content = null;
@@ -101,7 +112,11 @@ describe('MCP Tools Integration', () => {
     describe('Task Tools', () => {
         describe('list_tasks', () => {
             it('should return empty list when no tasks exist', async () => {
-                const response = await callMcpTool(apiTokenValue, 'list_tasks', {});
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'list_tasks',
+                    {}
+                );
 
                 expect(response.status).toBe(200);
                 const { content } = getToolContent(response);
@@ -116,7 +131,11 @@ describe('MCP Tools Integration', () => {
                     status: 0,
                 });
 
-                const response = await callMcpTool(apiTokenValue, 'list_tasks', {});
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'list_tasks',
+                    {}
+                );
 
                 expect(response.status).toBe(200);
                 const { content } = getToolContent(response);
@@ -167,9 +186,13 @@ describe('MCP Tools Integration', () => {
 
         describe('create_task', () => {
             it('should create a task with required fields', async () => {
-                const response = await callMcpTool(apiTokenValue, 'create_task', {
-                    name: 'New Task from MCP',
-                });
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'create_task',
+                    {
+                        name: 'New Task from MCP',
+                    }
+                );
 
                 expect(response.status).toBe(200);
                 const { content } = getToolContent(response);
@@ -179,10 +202,14 @@ describe('MCP Tools Integration', () => {
             });
 
             it('should create a task with priority', async () => {
-                const response = await callMcpTool(apiTokenValue, 'create_task', {
-                    name: 'High Priority Task',
-                    priority: 'high',
-                });
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'create_task',
+                    {
+                        name: 'High Priority Task',
+                        priority: 'high',
+                    }
+                );
 
                 expect(response.status).toBe(200);
                 const { content } = getToolContent(response);
@@ -190,10 +217,14 @@ describe('MCP Tools Integration', () => {
             });
 
             it('should create a task with description', async () => {
-                const response = await callMcpTool(apiTokenValue, 'create_task', {
-                    name: 'Task with Note',
-                    description: 'This is a detailed note',
-                });
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'create_task',
+                    {
+                        name: 'Task with Note',
+                        description: 'This is a detailed note',
+                    }
+                );
 
                 expect(response.status).toBe(200);
                 const { content } = getToolContent(response);
@@ -202,10 +233,14 @@ describe('MCP Tools Integration', () => {
 
             it('should create a task with due date', async () => {
                 const dueDate = new Date(Date.now() + 86400000).toISOString();
-                const response = await callMcpTool(apiTokenValue, 'create_task', {
-                    name: 'Task with Due Date',
-                    due_date: dueDate,
-                });
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'create_task',
+                    {
+                        name: 'Task with Due Date',
+                        due_date: dueDate,
+                    }
+                );
 
                 expect(response.status).toBe(200);
                 const { content } = getToolContent(response);
@@ -221,11 +256,9 @@ describe('MCP Tools Integration', () => {
                     status: 0,
                 });
 
-                const response = await callMcpTool(
-                    apiTokenValue,
-                    'get_task',
-                    { id: task.id }
-                );
+                const response = await callMcpTool(apiTokenValue, 'get_task', {
+                    id: task.id,
+                });
 
                 expect(response.status).toBe(200);
                 const { content } = getToolContent(response);
@@ -239,11 +272,9 @@ describe('MCP Tools Integration', () => {
                     status: 0,
                 });
 
-                const response = await callMcpTool(
-                    apiTokenValue,
-                    'get_task',
-                    { id: task.uid }
-                );
+                const response = await callMcpTool(apiTokenValue, 'get_task', {
+                    id: task.uid,
+                });
 
                 expect(response.status).toBe(200);
                 const { content } = getToolContent(response);
@@ -251,11 +282,9 @@ describe('MCP Tools Integration', () => {
             });
 
             it('should throw error for non-existent task', async () => {
-                const response = await callMcpTool(
-                    apiTokenValue,
-                    'get_task',
-                    { id: 999999 }
-                );
+                const response = await callMcpTool(apiTokenValue, 'get_task', {
+                    id: 999999,
+                });
 
                 expect(response.status).toBe(200);
                 const jsonRpc = parseSseResponse(response.text);
@@ -272,11 +301,9 @@ describe('MCP Tools Integration', () => {
                     status: 0,
                 });
 
-                const response = await callMcpTool(
-                    apiTokenValue,
-                    'get_task',
-                    { id: otherTask.id }
-                );
+                const response = await callMcpTool(apiTokenValue, 'get_task', {
+                    id: otherTask.id,
+                });
 
                 expect(response.status).toBe(200);
                 const jsonRpc = parseSseResponse(response.text);
@@ -292,10 +319,14 @@ describe('MCP Tools Integration', () => {
                     status: 0,
                 });
 
-                const response = await callMcpTool(apiTokenValue, 'update_task', {
-                    id: task.id,
-                    name: 'New Name',
-                });
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'update_task',
+                    {
+                        id: task.id,
+                        name: 'New Name',
+                    }
+                );
 
                 expect(response.status).toBe(200);
                 const { content } = getToolContent(response);
@@ -309,10 +340,14 @@ describe('MCP Tools Integration', () => {
                     status: 0,
                 });
 
-                const response = await callMcpTool(apiTokenValue, 'update_task', {
-                    id: task.id,
-                    status: 'in_progress',
-                });
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'update_task',
+                    {
+                        id: task.id,
+                        status: 'in_progress',
+                    }
+                );
 
                 expect(response.status).toBe(200);
                 const { content } = getToolContent(response);
@@ -392,10 +427,14 @@ describe('MCP Tools Integration', () => {
                     status: 0,
                 });
 
-                const response = await callMcpTool(apiTokenValue, 'add_subtask', {
-                    parent_id: parent.id,
-                    name: 'Child Subtask',
-                });
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'add_subtask',
+                    {
+                        parent_id: parent.id,
+                        name: 'Child Subtask',
+                    }
+                );
 
                 expect(response.status).toBe(200);
                 const { content } = getToolContent(response);
@@ -588,7 +627,9 @@ describe('MCP Tools Integration', () => {
 
                 expect(response.status).toBe(200);
                 const { content } = getToolContent(response);
-                expect(content.message).toBe('Item added to inbox successfully');
+                expect(content.message).toBe(
+                    'Item added to inbox successfully'
+                );
                 expect(content.item.content).toBe('Captured from MCP');
                 expect(content.item.source).toBe('mcp');
             });
@@ -669,7 +710,9 @@ describe('MCP Tools Integration', () => {
                 expect(response.status).toBe(200);
                 const { content } = getToolContent(response);
                 expect(content.count).toBeGreaterThanOrEqual(1);
-                expect(content.tags.some((t) => t.name === 'urgent')).toBe(true);
+                expect(content.tags.some((t) => t.name === 'urgent')).toBe(
+                    true
+                );
             });
         });
 
@@ -681,11 +724,10 @@ describe('MCP Tools Integration', () => {
                     status: 0,
                 });
 
-                const response = await callMcpTool(
-                    apiTokenValue,
-                    'search',
-                    { query: 'Searchable', type: 'task' }
-                );
+                const response = await callMcpTool(apiTokenValue, 'search', {
+                    query: 'Searchable',
+                    type: 'task',
+                });
 
                 expect(response.status).toBe(200);
                 const { content } = getToolContent(response);
@@ -705,16 +747,17 @@ describe('MCP Tools Integration', () => {
                     status: 'planned',
                 });
 
-                const response = await callMcpTool(
-                    apiTokenValue,
-                    'search',
-                    { query: 'Searchable', type: 'project' }
-                );
+                const response = await callMcpTool(apiTokenValue, 'search', {
+                    query: 'Searchable',
+                    type: 'project',
+                });
 
                 expect(response.status).toBe(200);
                 const { content } = getToolContent(response);
                 expect(content.results.projects).toBeDefined();
-                expect(content.results.projects.length).toBeGreaterThanOrEqual(1);
+                expect(content.results.projects.length).toBeGreaterThanOrEqual(
+                    1
+                );
             });
 
             it('should search across all types', async () => {
@@ -729,41 +772,32 @@ describe('MCP Tools Integration', () => {
                     status: 'planned',
                 });
 
-                const response = await callMcpTool(
-                    apiTokenValue,
-                    'search',
-                    { query: 'Universal', type: 'all' }
-                );
+                const response = await callMcpTool(apiTokenValue, 'search', {
+                    query: 'Universal',
+                    type: 'all',
+                });
 
                 expect(response.status).toBe(200);
                 // NOTE: type='all' currently triggers a SQL error in the search tool
                 // when Notes table lacks the expected columns. This is a known bug
                 // tracked in the bug/mcp-search-sql-crash branch.
                 const { content, isError } = getToolContent(response);
-                if (isError) {
-                    // Document the error — this test tracks the known bug
-                    expect(content._rawError).toMatch(/SQL/i);
-                } else {
-                    expect(content.query).toBe('Universal');
-                    expect(content.results).toBeDefined();
-                }
+                // Until the SQL bug is fixed, assert we get an error response
+                expect(isError).toBe(true);
+                expect(content._rawError).toMatch(/SQL/i);
             });
 
             it('should return empty results when nothing matches', async () => {
-                const response = await callMcpTool(
-                    apiTokenValue,
-                    'search',
-                    { query: 'xyznonexistent123' }
-                );
+                const response = await callMcpTool(apiTokenValue, 'search', {
+                    query: 'xyznonexistent123',
+                });
 
                 expect(response.status).toBe(200);
                 // NOTE: type='all' (default) triggers a SQL error. See above.
                 const { content, isError } = getToolContent(response);
-                if (isError) {
-                    expect(content._rawError).toMatch(/SQL/i);
-                } else {
-                    expect(content.results).toBeDefined();
-                }
+                // Until the SQL bug is fixed, assert we get an error response
+                expect(isError).toBe(true);
+                expect(content._rawError).toMatch(/SQL/i);
             });
         });
     });

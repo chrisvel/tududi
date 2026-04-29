@@ -1,6 +1,8 @@
 'use strict';
 
-const { authenticateMcpRequest } = require('../../../../modules/mcp/middleware');
+const {
+    authenticateMcpRequest,
+} = require('../../../../modules/mcp/middleware');
 
 // Mock dependencies
 jest.mock('../../../../modules/users/apiTokenService', () => ({
@@ -13,7 +15,9 @@ jest.mock('../../../../models', () => ({
     },
 }));
 
-const { findValidTokenByValue } = require('../../../../modules/users/apiTokenService');
+const {
+    findValidTokenByValue,
+} = require('../../../../modules/users/apiTokenService');
 const { User } = require('../../../../models');
 
 describe('MCP Middleware', () => {
@@ -40,7 +44,9 @@ describe('MCP Middleware', () => {
             expect(res.json).toHaveBeenCalledWith(
                 expect.objectContaining({
                     error: 'Unauthorized',
-                    message: expect.stringContaining('Missing Authorization header'),
+                    message: expect.stringContaining(
+                        'Missing Authorization header'
+                    ),
                 })
             );
             expect(next).not.toHaveBeenCalled();
@@ -55,7 +61,9 @@ describe('MCP Middleware', () => {
             expect(res.json).toHaveBeenCalledWith(
                 expect.objectContaining({
                     error: 'Unauthorized',
-                    message: expect.stringContaining('Invalid Authorization header format'),
+                    message: expect.stringContaining(
+                        'Invalid Authorization header format'
+                    ),
                 })
             );
             expect(next).not.toHaveBeenCalled();
@@ -71,7 +79,9 @@ describe('MCP Middleware', () => {
             expect(res.json).toHaveBeenCalledWith(
                 expect.objectContaining({
                     error: 'Unauthorized',
-                    message: expect.stringContaining('Invalid or expired API token'),
+                    message: expect.stringContaining(
+                        'Invalid or expired API token'
+                    ),
                 })
             );
             expect(next).not.toHaveBeenCalled();
@@ -114,7 +124,9 @@ describe('MCP Middleware', () => {
 
         it('should handle errors from token validation gracefully', async () => {
             req.headers.authorization = 'Bearer token';
-            findValidTokenByValue.mockRejectedValue(new Error('DB connection failed'));
+            findValidTokenByValue.mockRejectedValue(
+                new Error('DB connection failed')
+            );
 
             await authenticateMcpRequest(req, res, next);
 

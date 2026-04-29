@@ -31,28 +31,31 @@ describe('MCP Routes - Feature Flag', () => {
     });
 
     describe('feature flag enforcement', () => {
-        const protectedEndpoints = [
-            { method: 'GET', path: '/api/mcp/config' },
-            { method: 'GET', path: '/api/mcp/tools' },
-            { method: 'POST', path: '/api/mcp' },
-        ];
+        it('should block GET /api/mcp/config when feature flag is disabled', async () => {
+            delete process.env.FF_ENABLE_MCP;
 
-        protectedEndpoints.forEach(({ method, path }) => {
-            it(`should block ${method} ${path} when feature flag is disabled`, async () => {
-                delete process.env.FF_ENABLE_MCP;
+            const response = await agent.get('/api/mcp/config').send({});
 
-                const response = await agent[path === '/api/mcp' ? 'post' : 'get'](
-                    path
-                ).send({});
+            expect(response.status).toBe(403);
+            expect(response.body.error).toBe('MCP feature is not enabled');
+        });
 
-                if (path === '/api/mcp') {
-                    // POST /api/mcp will hit auth middleware first (401) or feature flag (403)
-                    expect([401, 403]).toContain(response.status);
-                } else {
-                    expect(response.status).toBe(403);
-                    expect(response.body.error).toBe('MCP feature is not enabled');
-                }
-            });
+        it('should block GET /api/mcp/tools when feature flag is disabled', async () => {
+            delete process.env.FF_ENABLE_MCP;
+
+            const response = await agent.get('/api/mcp/tools').send({});
+
+            expect(response.status).toBe(403);
+            expect(response.body.error).toBe('MCP feature is not enabled');
+        });
+
+        it('should block POST /api/mcp when feature flag is disabled', async () => {
+            delete process.env.FF_ENABLE_MCP;
+
+            const response = await agent.post('/api/mcp').send({});
+
+            // POST /api/mcp hits auth middleware first (401) or feature flag (403)
+            expect([401, 403]).toContain(response.status);
         });
 
         it('should allow GET /api/mcp/status regardless of feature flag', async () => {

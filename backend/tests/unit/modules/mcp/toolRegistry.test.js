@@ -16,16 +16,18 @@ jest.mock('../../../../modules/mcp/tools/miscTools', () => ({
     registerMiscTools: jest.fn(),
 }));
 
-const { registerTaskTools } = require('../../../../modules/mcp/tools/taskTools');
-const { registerProjectTools } = require(
-    '../../../../modules/mcp/tools/projectTools'
-);
-const { registerInboxTools } = require(
-    '../../../../modules/mcp/tools/inboxTools'
-);
-const { registerMiscTools } = require(
-    '../../../../modules/mcp/tools/miscTools'
-);
+const {
+    registerTaskTools,
+} = require('../../../../modules/mcp/tools/taskTools');
+const {
+    registerProjectTools,
+} = require('../../../../modules/mcp/tools/projectTools');
+const {
+    registerInboxTools,
+} = require('../../../../modules/mcp/tools/inboxTools');
+const {
+    registerMiscTools,
+} = require('../../../../modules/mcp/tools/miscTools');
 
 describe('MCP ToolRegistry', () => {
     describe('registerAllTools', () => {

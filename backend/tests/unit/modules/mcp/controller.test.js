@@ -7,7 +7,9 @@ jest.mock('../../../../modules/mcp/httpTransport', () => ({
     handleMcpHttpRequest: jest.fn(),
 }));
 
-const { handleMcpHttpRequest } = require('../../../../modules/mcp/httpTransport');
+const {
+    handleMcpHttpRequest,
+} = require('../../../../modules/mcp/httpTransport');
 
 describe('MCP Controller', () => {
     describe('getMcpStatus', () => {
@@ -112,7 +114,9 @@ describe('MCP Controller', () => {
             const config = res.json.mock.calls[0][0];
             const args = config.mcpServers.tududi.args;
             expect(args).toContain('--header');
-            expect(args.some((a) => a.includes('Authorization:Bearer'))).toBe(true);
+            expect(args.some((a) => a.includes('Authorization:Bearer'))).toBe(
+                true
+            );
         });
 
         it('should include TUDUDI_API_TOKEN placeholder in env', async () => {
@@ -151,7 +155,9 @@ describe('MCP Controller', () => {
             await controller.listMcpTools({}, res);
 
             const result = res.json.mock.calls[0][0];
-            const taskCategory = result.tools.find((t) => t.category === 'Tasks');
+            const taskCategory = result.tools.find(
+                (t) => t.category === 'Tasks'
+            );
 
             expect(taskCategory).toBeDefined();
             expect(taskCategory.count).toBe(8);
