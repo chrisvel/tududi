@@ -9,6 +9,7 @@ import {
     ClockIcon,
 } from '@heroicons/react/24/outline';
 import type { NotificationPreferences } from '../types';
+import { getCsrfToken } from '../../../utils/csrfService';
 
 interface NotificationsTabProps {
     isActive: boolean;
@@ -175,6 +176,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'x-csrf-token': await getCsrfToken(),
                 },
                 body: JSON.stringify({ type: selectedTestType }),
             });
