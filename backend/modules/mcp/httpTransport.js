@@ -14,13 +14,12 @@ const { registerAllTools } = require('./toolRegistry');
  * Handle MCP HTTP request
  * This creates a stateless MCP server for each request
  */
-async function handleMcpHttpRequest(req, res, user, apiToken) {
+async function handleMcpHttpRequest(req, res, user) {
     try {
         // Create context for tools
         const context = {
             userId: user.id,
             user: user,
-            apiToken: apiToken,
         };
 
         // Initialize MCP server
@@ -88,13 +87,6 @@ async function handleMcpHttpRequest(req, res, user, apiToken) {
 
         // Handle the HTTP request
         await transport.handleRequest(req, res, req.body);
-
-        // Update token last_used_at (fire and forget)
-        apiToken
-            .update({ last_used_at: new Date() })
-            .catch((err) =>
-                console.error('Failed to update token last_used_at:', err)
-            );
     } catch (error) {
         console.error('MCP HTTP handler error:', error);
 
