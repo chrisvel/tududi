@@ -445,15 +445,15 @@ Replace `{tenant-id}` with your actual tenant ID.
 3. Make sure to change the PKCE and cipher settings:
    - Since tududi doesn't support PKCE, run: `kanidm system oauth2 warning-insecure-client-disable-pkce [appname]`
    - Since tududi only supports RS256, not ES256, run: `kanidm system oauth2 warning-enable-legacy-crypto [appname]`
-4. Add a redirect URI with `kanidm system oauth2 add-redirect-url https://your-tududi-domain.tld/api/oidc/callback/kanidm`
+4. Add a redirect URI with `kanidm system oauth2 add-redirect-url https://your-tududi-domain.tld/api/oidc/callback/[oidcproviderslug]`
 5. Configure claims with `kanidm system oauth2 update-scope-map [appname] [groupname] [scopes]`. If you're unsure, you can use `idm_all_persons` as the group to grant access to all users, or create a new groups with `kanidm group create [groupname]` and add users with `kanidm group add-members [groupname] [members]`. In scopes, you can use `openid profile email`.
 
 **3. Configure Tududi**
 
 ```bash
 OIDC_ENABLED=true
-OIDC_PROVIDER_NAME=Kanidm
-OIDC_PROVIDER_SLUG=kanidm
+OIDC_PROVIDER_NAME=nameyouwantontheloginpage
+OIDC_PROVIDER_SLUG=oidcproviderslug #from step 1.4
 OIDC_ISSUER_URL=https://your-kanidm-domain.tld
 OIDC_CLIENT_ID=appname #from step 1.1
 OIDC_CLIENT_SECRET=xxxxxxxxxxxxxxxxxxxx #from step 1.2
