@@ -435,9 +435,6 @@ Replace `{tenant-id}` with your actual tenant ID.
 
 ### Kanidm
 
-> [!NOTE]  
-> To use Kanidm, you will need to have a reverse proxy in front of your Kanidm instance, to rewrite Tududi’s request for the OIDC discovery endpoint. You will see more information on this in step 4.
-
 **1. Register Application**
 
 1. In your terminal (using [kanidm cli](https://kanidm.github.io/kanidm/stable/client_tools.html)), create a new oauth2 application with `kanidm system oauth2 create [appname] [displayname] [url]` (e.g: `kanidm system oauth2 create tududi_app Tududi https://your-tududi-domain.tld`)
@@ -445,16 +442,16 @@ Replace `{tenant-id}` with your actual tenant ID.
 3. Make sure to change the PKCE and cipher settings:
    - Since tududi doesn't support PKCE, run: `kanidm system oauth2 warning-insecure-client-disable-pkce [appname]`
    - Since tududi only supports RS256, not ES256, run: `kanidm system oauth2 warning-enable-legacy-crypto [appname]`
-4. Add a redirect URI with `kanidm system oauth2 add-redirect-url https://your-tududi-domain.tld/api/oidc/callback/[oidcproviderslug]`
+4. Add a redirect URI with `kanidm system oauth2 add-redirect-url https://your-tududi-domain.tld/api/oidc/callback/[appname]`
 5. Configure claims with `kanidm system oauth2 update-scope-map [appname] [groupname] [scopes]`. If you're unsure, you can use `idm_all_persons` as the group to grant access to all users, or create a new groups with `kanidm group create [groupname]` and add users with `kanidm group add-members [groupname] [members]`. In scopes, you can use `openid profile email`.
 
 **3. Configure Tududi**
 
 ```bash
 OIDC_ENABLED=true
-OIDC_PROVIDER_NAME=nameyouwantontheloginpage
-OIDC_PROVIDER_SLUG=oidcproviderslug #from step 1.4
-OIDC_ISSUER_URL=https://your-kanidm-domain.tld
+OIDC_PROVIDER_NAME=xxx #Put some UI friendly name here to show up on the login page
+OIDC_PROVIDER_SLUG=appname #from step 1.1
+OIDC_ISSUER_URL=https://your-kanidm-domain.tld/oauth2/openid/appname/ #make sure to replace appname with the name of the app from step 1.1
 OIDC_CLIENT_ID=appname #from step 1.1
 OIDC_CLIENT_SECRET=xxxxxxxxxxxxxxxxxxxx #from step 1.2
 OIDC_SCOPE=openid profile email
