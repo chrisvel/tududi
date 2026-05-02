@@ -458,29 +458,6 @@ OIDC_SCOPE=openid profile email
 OIDC_AUTO_PROVISION=true
 ```
 
-**4. Configure your reverse proxy**
-
-Since Tududi will try and get OIDC information from `/.well-known/openid-configuration`, which doesn't work with Kanidm, you'll need to rewrite this path to the right one.
-
-For example, in Caddy, you can do it this way:
-```
-your-tududi-domain.tld {
-    # ... (your imports, if any)
-
-    # 1. Define a named matcher for Tududi's IP and the broken discovery path
-    @tududi_discovery {
-        remote_ip [your tududi instance's IP address]
-        path /.well-known/openid-configuration
-    }
-
-    # 2. Rewrite ONLY requests matching both conditions
-    rewrite @tududi_discovery /oauth2/openid/[appname]/.well-known/openid-configuration
-
-    # ... your existing reverse_proxy statement
-
-}
-```
-
 ---
 
 ## User Features
