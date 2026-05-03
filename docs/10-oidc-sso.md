@@ -22,6 +22,7 @@ This guide explains how to configure and use OpenID Connect (OIDC) Single Sign-O
   - [Authentik](#authentik)
   - [PocketID](#pocketid)
   - [Azure AD](#azure-ad)
+  - [Kanidm](#kanidm)
 - [User Features](#user-features)
   - [Logging In with SSO](#logging-in-with-sso)
   - [Account Linking](#account-linking)
@@ -81,6 +82,7 @@ Tududi supports any OIDC-compliant identity provider, including:
 | **Authentik** | Self-hosted | Homelab, small business |
 | **PocketID** | Public | Decentralized identity |
 | **Azure AD** | Enterprise | Microsoft 365 organizations |
+| **Kanidm** | Self-hosted / Enterprise | Homelab, corporate SSO |
 | **Generic OIDC** | Any | Custom providers with `.well-known/openid-configuration` |
 
 ---
@@ -428,6 +430,33 @@ OIDC_AUTO_PROVISION=true
 ```
 
 Replace `{tenant-id}` with your actual tenant ID.
+
+---
+
+### Kanidm
+
+**1. Register Application**
+
+1. In your terminal (using [kanidm cli](https://kanidm.github.io/kanidm/stable/client_tools.html)), create a new oauth2 application with `kanidm system oauth2 create [appname] [displayname] [url]` (e.g: `kanidm system oauth2 create tududi_app Tududi https://tududi.domain.tld`)
+2. Get a client secret with `kanidm system oauth2 show-basic-secret [appname]`
+3. Make sure to change the PKCE and cipher settings:
+   - Since tududi doesn't support PKCE, run: `kanidm system oauth2 warning-insecure-client-disable-pkce [appname]`
+   - Since tududi only supports RS256, not ES256, run: `kanidm system oauth2 warning-enable-legacy-crypto [appname]`
+4. Add a redirect URL with `kanidm system oauth2 add-redirect-url https://tududi.domain.tld/api/oidc/callback/[appname]`
+5. Configure claims with `kanidm system oauth2 update-scope-map [appname] [groupname] [scopes]`. If you're unsure, you can use `idm_all_persons` as the group to grant access to all users, or create a new groups with `kanidm group create [groupname]` and add users with `kanidm group add-members [groupname] [members]`. In scopes, you can use `openid profile email`.
+
+**2. Configure Tududi**
+
+```bash
+OIDC_ENABLED=true
+OIDC_PROVIDER_NAME=xxx #Put some UI friendly name here to show up on the login page, e.g.: Kanidm
+OIDC_PROVIDER_SLUG=appname #from step 1.1
+OIDC_ISSUER_URL=https://kanidm.domain.tld/oauth2/openid/appname/ #make sure to replace appname with the name of the app from step 1.1
+OIDC_CLIENT_ID=appname #from step 1.1
+OIDC_CLIENT_SECRET=xxxxxxxxxxxxxxxxxxxx #from step 1.2
+OIDC_SCOPE=openid profile email #from step 1.5, update as needed
+OIDC_AUTO_PROVISION=true
+```
 
 ---
 
