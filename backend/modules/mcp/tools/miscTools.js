@@ -175,7 +175,7 @@ function registerMiscTools(server, context, tools) {
                     where: {
                         user_id: context.userId,
                         [Op.or]: [
-                            { name: { [Op.like]: `%${query}%` } },
+                            { title: { [Op.like]: `%${query}%` } },
                             { content: { [Op.like]: `%${query}%` } },
                         ],
                     },
@@ -186,7 +186,7 @@ function registerMiscTools(server, context, tools) {
                 results.notes = notes.map((n) => ({
                     id: n.id,
                     uid: n.uid,
-                    name: n.name,
+                    title: n.title,
                 }));
             }
 
