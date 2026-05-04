@@ -15,12 +15,10 @@ const {
     createApiToken: createApiTokenFromService,
 } = require('../../../modules/users/apiTokenService');
 
-/**
- * Parse the SSE response text into a JSON-RPC object.
- * The MCP StreamableHTTP transport returns responses as SSE events:
- *   event: message
- *   data: {"jsonrpc":"2.0","id":1,"result":{...}}
- */
+// Parse the SSE response text into a JSON-RPC object.
+// The MCP StreamableHTTP transport returns responses as SSE events:
+//   event: message
+//   data: {"jsonrpc":"2.0","id":1,"result":{...}}
 function parseSseResponse(text) {
     const lines = text.split('\n');
     for (let i = 0; i < lines.length; i++) {
@@ -35,10 +33,8 @@ function parseSseResponse(text) {
     return null;
 }
 
-/**
- * Extract the tool result content (parsed JSON string from content[0].text).
- * Returns { content, isError } for flexible assertions.
- */
+// Extract the tool result content (parsed JSON string from content[0].text).
+// Returns { content, isError } for flexible assertions.
 function getToolContent(response) {
     const jsonRpc = parseSseResponse(response.text);
     if (!jsonRpc || !jsonRpc.result) {
