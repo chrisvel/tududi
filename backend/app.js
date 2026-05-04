@@ -12,6 +12,7 @@ const {
     initializeTelegramPolling,
 } = require('./modules/telegram/telegramInitializer');
 const taskScheduler = require('./modules/tasks/taskScheduler');
+const { initializeEmailService } = require('./services/emailService');
 const { setConfig, getConfig } = require('./config/config');
 const config = getConfig();
 const API_VERSION = process.env.API_VERSION || 'v1';
@@ -379,6 +380,9 @@ async function startServer() {
     try {
         // Create session store table
         await sessionStore.sync();
+
+        // Initialize email service
+        initializeEmailService();
 
         // Initialize Telegram polling after database is ready
         await initializeTelegramPolling();
