@@ -134,7 +134,15 @@ const sessionMiddleware = session({
     saveUninitialized: false,
     cookie: {
         httpOnly: true,
-        secure: process.env.COOKIE_SECURE !== 'false' && config.production,
+        secure: (() => {
+            if (process.env.COOKIE_SECURE === 'false') {
+                return false;
+            }
+            if (process.env.COOKIE_SECURE === 'true') {
+                return true;
+            }
+            return 'auto';
+        })(),
         maxAge: 2592000000, // 30 days
         sameSite: 'lax',
     },
