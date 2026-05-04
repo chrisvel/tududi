@@ -14,6 +14,7 @@ interface TaskListProps {
     onToggleToday?: (taskId: number, task?: Task) => Promise<void>;
     showCompletedTasks?: boolean;
     isInCompletedSection?: boolean;
+    isUpcomingView?: boolean;
 }
 
 const TaskList: React.FC<TaskListProps> = ({
@@ -26,6 +27,7 @@ const TaskList: React.FC<TaskListProps> = ({
     onToggleToday,
     showCompletedTasks = false,
     isInCompletedSection = false,
+    isUpcomingView = false,
 }) => {
     // Conditionally filter tasks based on showCompletedTasks prop
     const filteredTasks = showCompletedTasks
@@ -57,6 +59,8 @@ const TaskList: React.FC<TaskListProps> = ({
                             hideProjectName={hideProjectName}
                             onToggleToday={onToggleToday}
                             isInCompletedSection={isInCompletedSection}
+                            isUpcomingView={isUpcomingView}
+                            showCompletedTasks={showCompletedTasks}
                         />
                     </div>
                 ))
