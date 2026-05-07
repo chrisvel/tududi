@@ -403,6 +403,10 @@ async function startServer() {
             console.log(`Server listening on http://localhost:${config.port}`);
         });
 
+        // Configure keep-alive timeouts for persistent connections (e.g., MCP clients)
+        server.keepAliveTimeout = 120_000; // 120 seconds
+        server.headersTimeout = 125_000; // must be > keepAliveTimeout
+
         server.on('error', (err) => {
             console.error('Server error:', err);
         });
