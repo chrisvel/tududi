@@ -388,7 +388,7 @@ describe('Projects Routes', () => {
             expect(response.body.error).toBe('Authentication required');
         });
 
-        it('should delete project with associated tasks (orphan tasks)', async () => {
+        it('should delete project with associated tasks (cascade delete tasks)', async () => {
             // Create tasks associated with the project
             const task1 = await Task.create({
                 name: 'Task 1',
@@ -414,17 +414,12 @@ describe('Projects Routes', () => {
             const deletedProject = await Project.findByPk(project.id);
             expect(deletedProject).toBeNull();
 
-            // Verify tasks are orphaned (project_id set to null) but still exist
-            const orphanedTask1 = await Task.findByPk(task1.id);
-            const orphanedTask2 = await Task.findByPk(task2.id);
+            // Verify tasks are deleted (not orphaned)
+            const deletedTask1 = await Task.findByPk(task1.id);
+            const deletedTask2 = await Task.findByPk(task2.id);
 
-            expect(orphanedTask1).not.toBeNull();
-            expect(orphanedTask1.project_id).toBeNull();
-            expect(orphanedTask1.name).toBe('Task 1');
-
-            expect(orphanedTask2).not.toBeNull();
-            expect(orphanedTask2.project_id).toBeNull();
-            expect(orphanedTask2.name).toBe('Task 2');
+            expect(deletedTask1).toBeNull();
+            expect(deletedTask2).toBeNull();
         });
 
         it('should delete project with completed tasks only', async () => {
@@ -446,11 +441,9 @@ describe('Projects Routes', () => {
             const deletedProject = await Project.findByPk(project.id);
             expect(deletedProject).toBeNull();
 
-            // Verify completed task is orphaned but still exists
-            const orphanedTask = await Task.findByPk(completedTask.id);
-            expect(orphanedTask).not.toBeNull();
-            expect(orphanedTask.project_id).toBeNull();
-            expect(orphanedTask.status).toBe(2); // Still completed
+            // Verify completed task is deleted (not orphaned)
+            const deletedTask = await Task.findByPk(completedTask.id);
+            expect(deletedTask).toBeNull();
         });
 
         it('should delete project with mixed status tasks', async () => {
@@ -486,7 +479,7 @@ describe('Projects Routes', () => {
             const deletedProject = await Project.findByPk(project.id);
             expect(deletedProject).toBeNull();
 
-            // Verify all tasks are orphaned but still exist with their original statuses
+            // Verify all tasks are deleted (not orphaned)
             const tasks = await Task.findAll({
                 where: {
                     id: [
@@ -497,17 +490,7 @@ describe('Projects Routes', () => {
                 },
             });
 
-            expect(tasks).toHaveLength(3);
-
-            const taskById = {};
-            tasks.forEach((task) => {
-                taskById[task.id] = task;
-                expect(task.project_id).toBeNull(); // All should be orphaned
-            });
-
-            expect(taskById[notStartedTask.id].status).toBe(0);
-            expect(taskById[inProgressTask.id].status).toBe(1);
-            expect(taskById[completedTask.id].status).toBe(2);
+            expect(tasks).toHaveLength(0);
         });
 
         it('should delete project with associated notes (orphan notes)', async () => {
@@ -562,7 +545,7 @@ describe('Projects Routes', () => {
             expect(orphanedNote3.title).toBe('Note 3');
         });
 
-        it('should delete project with both tasks and notes (orphan both)', async () => {
+        it('should delete project with both tasks and notes (delete tasks, orphan notes)', async () => {
             // Create tasks associated with the project
             const task = await Task.create({
                 name: 'Task with project',
@@ -589,11 +572,9 @@ describe('Projects Routes', () => {
             const deletedProject = await Project.findByPk(project.id);
             expect(deletedProject).toBeNull();
 
-            // Verify task is orphaned but still exists
-            const orphanedTask = await Task.findByPk(task.id);
-            expect(orphanedTask).not.toBeNull();
-            expect(orphanedTask.project_id).toBeNull();
-            expect(orphanedTask.name).toBe('Task with project');
+            // Verify task is deleted (not orphaned)
+            const deletedTask = await Task.findByPk(task.id);
+            expect(deletedTask).toBeNull();
 
             // Verify note is orphaned but still exists
             const orphanedNote = await Note.findByPk(note.id);

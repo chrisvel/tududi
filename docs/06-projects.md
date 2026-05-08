@@ -252,15 +252,23 @@ These properties are computed automatically based on project content:
 
 **What happens:**
 1. Project record is deleted from database
-2. **Tasks belonging to project are orphaned** (project_id set to null)
-3. **Notes belonging to project are orphaned** (project_id set to null)
-4. Project tags associations are removed
-5. Share permissions are deleted
+2. **Tasks belonging to project are CASCADE DELETED** (including all subtasks)
+3. **Task attachments are deleted** from disk
+4. **Project cover image is deleted** from disk
+5. **Notes belonging to project are orphaned** (project_id set to null)
+6. Project tags associations are removed
+7. Share permissions are deleted
+
+**What IS deleted:**
+- Tasks and all their subtasks
+- Task attachments (files removed from disk)
+- Project cover image (file removed from disk)
+- Task events and recurring completions
+- Task tag associations
 
 **What is NOT deleted:**
-- Tasks (they become orphaned, appear in "No Project" filter)
-- Notes (they become orphaned)
-- Tags (they remain in system)
+- Notes (they become orphaned, as they are reference material)
+- Tags (they remain in system for other resources)
 - Area (parent area is unaffected)
 
 **Who can delete:**
@@ -269,6 +277,7 @@ These properties are computed automatically based on project content:
 
 **No undo:**
 - Deletion is permanent
+- All tasks and files are irrecoverably deleted
 - Use status `cancelled` if you want to preserve but deactivate
 
 ---
