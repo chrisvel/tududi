@@ -224,7 +224,7 @@ class ProjectsRepository extends BaseRepository {
                     where: {
                         project_id: project.id,
                         user_id: userId,
-                        parent_task_id: null  // Only get parent tasks
+                        parent_task_id: null, // Only get parent tasks
                     },
                     include: [
                         {
