@@ -774,13 +774,15 @@ describe('MCP Tools Integration', () => {
                 });
 
                 expect(response.status).toBe(200);
-                // NOTE: type='all' currently triggers a SQL error in the search tool
-                // when Notes table lacks the expected columns. This is a known bug
-                // tracked in the bug/mcp-search-sql-crash branch.
                 const { content, isError } = getToolContent(response);
-                // Until the SQL bug is fixed, assert we get an error response
-                expect(isError).toBe(true);
-                expect(content._rawError).toMatch(/SQL/i);
+                expect(isError).toBe(false);
+                // Should find the project we created
+                expect(content.results.projects).toBeDefined();
+                expect(
+                    content.results.projects.some(
+                        (p) => p.name === 'Universal Search Result'
+                    )
+                ).toBe(true);
             });
 
             it('should return empty results when nothing matches', async () => {
@@ -789,11 +791,12 @@ describe('MCP Tools Integration', () => {
                 });
 
                 expect(response.status).toBe(200);
-                // NOTE: type='all' (default) triggers a SQL error. See above.
                 const { content, isError } = getToolContent(response);
-                // Until the SQL bug is fixed, assert we get an error response
-                expect(isError).toBe(true);
-                expect(content._rawError).toMatch(/SQL/i);
+                expect(isError).toBe(false);
+                // Should return empty results for non-existent query
+                expect(content.results.tasks.length).toBe(0);
+                expect(content.results.projects.length).toBe(0);
+                expect(content.results.notes.length).toBe(0);
             });
         });
     });
