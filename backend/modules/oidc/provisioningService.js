@@ -83,7 +83,8 @@ async function provisionUser(providerSlug, claims, req) {
                     email: claims.email,
                     verified_email: true,
                     password_digest: null,
-                    notification_preferences: getDefaultNotificationPreferences(),
+                    notification_preferences:
+                        getDefaultNotificationPreferences(),
                 },
                 { transaction }
             );

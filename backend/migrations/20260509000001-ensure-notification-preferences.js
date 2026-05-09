@@ -47,7 +47,9 @@ module.exports = {
             );
         }
 
-        console.log(`Updated ${users.length} users with default notification_preferences`);
+        console.log(
+            `Updated ${users.length} users with default notification_preferences`
+        );
 
         // Also check for users with incomplete notification_preferences
         // (missing deferUntil, which was added later)
@@ -67,9 +69,15 @@ module.exports = {
                     needsUpdate = true;
                 } else {
                     // Ensure all channels exist
-                    for (const channel of ['inApp', 'email', 'push', 'telegram']) {
+                    for (const channel of [
+                        'inApp',
+                        'email',
+                        'push',
+                        'telegram',
+                    ]) {
                         if (prefs[key][channel] === undefined) {
-                            prefs[key][channel] = DEFAULT_PREFERENCES[key][channel];
+                            prefs[key][channel] =
+                                DEFAULT_PREFERENCES[key][channel];
                             needsUpdate = true;
                         }
                     }
@@ -100,6 +108,8 @@ module.exports = {
     async down(queryInterface, Sequelize) {
         // This migration is idempotent and safe - no need to rollback
         // Rolling back would set preferences to NULL which could break functionality
-        console.log('Skipping rollback for notification_preferences migration (idempotent)');
+        console.log(
+            'Skipping rollback for notification_preferences migration (idempotent)'
+        );
     },
 };

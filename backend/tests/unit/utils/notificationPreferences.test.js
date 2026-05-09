@@ -236,8 +236,18 @@ describe('notificationPreferences utils', () => {
 
         it('should preserve existing preferences and merge with defaults', () => {
             const input = {
-                dueTasks: { inApp: false, email: true, push: false, telegram: true },
-                overdueTasks: { inApp: true, email: false, push: false, telegram: false },
+                dueTasks: {
+                    inApp: false,
+                    email: true,
+                    push: false,
+                    telegram: true,
+                },
+                overdueTasks: {
+                    inApp: true,
+                    email: false,
+                    push: false,
+                    telegram: false,
+                },
             };
 
             const result = ensureNotificationPreferences(input);
@@ -292,11 +302,36 @@ describe('notificationPreferences utils', () => {
 
         it('should handle completely valid preferences without modification', () => {
             const input = {
-                dueTasks: { inApp: false, email: true, push: false, telegram: true },
-                overdueTasks: { inApp: true, email: false, push: true, telegram: false },
-                dueProjects: { inApp: true, email: false, push: false, telegram: false },
-                overdueProjects: { inApp: false, email: false, push: false, telegram: false },
-                deferUntil: { inApp: true, email: true, push: false, telegram: true },
+                dueTasks: {
+                    inApp: false,
+                    email: true,
+                    push: false,
+                    telegram: true,
+                },
+                overdueTasks: {
+                    inApp: true,
+                    email: false,
+                    push: true,
+                    telegram: false,
+                },
+                dueProjects: {
+                    inApp: true,
+                    email: false,
+                    push: false,
+                    telegram: false,
+                },
+                overdueProjects: {
+                    inApp: false,
+                    email: false,
+                    push: false,
+                    telegram: false,
+                },
+                deferUntil: {
+                    inApp: true,
+                    email: true,
+                    push: false,
+                    telegram: true,
+                },
             };
 
             const result = ensureNotificationPreferences(input);
@@ -307,7 +342,12 @@ describe('notificationPreferences utils', () => {
         it('should replace invalid preference type objects with defaults', () => {
             const input = {
                 dueTasks: 'invalid',
-                overdueTasks: { inApp: true, email: false, push: false, telegram: false },
+                overdueTasks: {
+                    inApp: true,
+                    email: false,
+                    push: false,
+                    telegram: false,
+                },
             };
 
             const result = ensureNotificationPreferences(input);
