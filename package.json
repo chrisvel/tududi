@@ -186,7 +186,7 @@
       "prettier --write"
     ],
     "backend/**/*.{js,ts}": [
-      "eslint --fix",
+      "eslint --config backend/eslint.config.js --fix",
       "prettier --write"
     ]
   }
