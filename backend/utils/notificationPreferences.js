@@ -87,9 +87,55 @@ function getDefaultNotificationPreferences() {
     return { ...DEFAULT_PREFERENCES };
 }
 
+/**
+ * Ensure notification preferences are properly initialized
+ * Returns default preferences if input is null/undefined, otherwise merges with defaults
+ * @param {Object|null|undefined} preferences - Existing notification preferences
+ * @returns {Object} - Valid notification preferences object with all required keys
+ */
+function ensureNotificationPreferences(preferences) {
+    if (!preferences || typeof preferences !== 'object') {
+        return getDefaultNotificationPreferences();
+    }
+
+    // Merge with defaults to ensure all keys exist
+    const result = {};
+    const defaults = getDefaultNotificationPreferences();
+
+    for (const key of Object.keys(defaults)) {
+        if (preferences[key] && typeof preferences[key] === 'object') {
+            // Preserve existing preferences but ensure all channels exist
+            result[key] = {
+                inApp:
+                    preferences[key].inApp !== undefined
+                        ? preferences[key].inApp
+                        : defaults[key].inApp,
+                email:
+                    preferences[key].email !== undefined
+                        ? preferences[key].email
+                        : defaults[key].email,
+                push:
+                    preferences[key].push !== undefined
+                        ? preferences[key].push
+                        : defaults[key].push,
+                telegram:
+                    preferences[key].telegram !== undefined
+                        ? preferences[key].telegram
+                        : defaults[key].telegram,
+            };
+        } else {
+            // Missing preference type, use default
+            result[key] = { ...defaults[key] };
+        }
+    }
+
+    return result;
+}
+
 module.exports = {
     shouldSendInAppNotification,
     shouldSendTelegramNotification,
     getDefaultNotificationPreferences,
+    ensureNotificationPreferences,
     NOTIFICATION_TYPE_MAPPING,
 };

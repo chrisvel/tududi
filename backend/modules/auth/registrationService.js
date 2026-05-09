@@ -4,6 +4,9 @@ const { getConfig } = require('../../config/config');
 const { logError, logInfo } = require('../../services/logService');
 const { sendEmail } = require('../../services/emailService');
 const { validateEmail, validatePassword } = require('../users/userService');
+const {
+    getDefaultNotificationPreferences,
+} = require('../../utils/notificationPreferences');
 
 const isRegistrationEnabled = async () => {
     const setting = await Setting.findOne({
@@ -60,6 +63,7 @@ const createUnverifiedUser = async (email, password, transaction = null) => {
             email_verified: false,
             email_verification_token: verificationToken,
             email_verification_token_expires_at: tokenExpiresAt,
+            notification_preferences: getDefaultNotificationPreferences(),
         },
         { transaction }
     );

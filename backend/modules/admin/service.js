@@ -17,6 +17,9 @@ const {
     ConflictError,
 } = require('../../shared/errors');
 const { isAdmin } = require('../../services/rolesService');
+const {
+    getDefaultNotificationPreferences,
+} = require('../../utils/notificationPreferences');
 
 class AdminService {
     /**
@@ -117,7 +120,11 @@ class AdminService {
         const { email, password, name, surname, role } =
             validateCreateUser(body);
 
-        const userData = { email, password };
+        const userData = {
+            email,
+            password,
+            notification_preferences: getDefaultNotificationPreferences(),
+        };
         if (name) userData.name = name;
         if (surname) userData.surname = surname;
 
