@@ -330,6 +330,7 @@ const Tasks: React.FC = () => {
             const newTask = event.detail;
             if (newTask) {
                 setTasks((prevTasks) => [newTask, ...prevTasks]);
+                setTotalCount((prevCount) => prevCount + 1);
             }
         };
 
@@ -358,6 +359,7 @@ const Tasks: React.FC = () => {
         try {
             const newTask = await createTask(taskData as Task);
             setTasks((prevTasks) => [newTask, ...prevTasks]);
+            setTotalCount((prevCount) => prevCount + 1);
 
             const taskLink = (
                 <span>
@@ -460,6 +462,7 @@ const Tasks: React.FC = () => {
                 setTasks((prevTasks) =>
                     prevTasks.filter((task) => task.uid !== taskUid)
                 );
+                setTotalCount((prevCount) => prevCount - 1);
             } else {
                 const errorData = await response.json();
                 console.error('Failed to delete task:', errorData.error);

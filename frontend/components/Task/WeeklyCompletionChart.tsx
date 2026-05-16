@@ -25,7 +25,7 @@ const WeeklyCompletionChart: React.FC<WeeklyCompletionChartProps> = ({
         if (active && payload && payload.length) {
             const data = payload[0].payload;
             return (
-                <div className="bg-white dark:bg-gray-800 p-3 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg">
+                <div className="bg-white dark:bg-gray-800 p-3 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg max-w-xs">
                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                         {data.dayName}
                     </p>

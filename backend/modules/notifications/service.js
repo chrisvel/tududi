@@ -65,6 +65,7 @@ class NotificationsService {
         const { User, Notification } = require('../../models');
         const {
             shouldSendTelegramNotification,
+            ensureNotificationPreferences,
         } = require('../../utils/notificationPreferences');
 
         const user = await User.findByPk(userId, {
@@ -80,6 +81,12 @@ class NotificationsService {
         if (!user) {
             throw new NotFoundError('User not found');
         }
+
+        // Ensure notification_preferences are properly initialized
+        // This handles cases where the field might be NULL or incomplete
+        user.notification_preferences = ensureNotificationPreferences(
+            user.notification_preferences
+        );
 
         const typeMapping = {
             task_due_soon: {

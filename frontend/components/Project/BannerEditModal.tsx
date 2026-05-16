@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { getPresetBanners, PresetBanner } from '../../utils/bannersService';
 import { getApiPath, getAssetPath } from '../../config/paths';
+import { getCsrfToken } from '../../utils/csrfService';
 
 interface BannerEditModalProps {
     isOpen: boolean;
@@ -93,6 +94,9 @@ const BannerEditModal: React.FC<BannerEditModalProps> = ({
             const response = await fetch(getApiPath('upload/project-image'), {
                 method: 'POST',
                 credentials: 'include',
+                headers: {
+                    'x-csrf-token': await getCsrfToken(),
+                },
                 body: formData,
             });
 

@@ -1,6 +1,7 @@
 const {
     shouldSendInAppNotification,
     getDefaultNotificationPreferences,
+    ensureNotificationPreferences,
     NOTIFICATION_TYPE_MAPPING,
 } = require('../../../utils/notificationPreferences');
 
@@ -203,6 +204,164 @@ describe('notificationPreferences utils', () => {
                 project_due_soon: 'dueProjects',
                 project_overdue: 'overdueProjects',
             });
+        });
+    });
+
+    describe('ensureNotificationPreferences', () => {
+        it('should return default preferences when input is null', () => {
+            const result = ensureNotificationPreferences(null);
+            const defaults = getDefaultNotificationPreferences();
+
+            expect(result).toEqual(defaults);
+        });
+
+        it('should return default preferences when input is undefined', () => {
+            const result = ensureNotificationPreferences(undefined);
+            const defaults = getDefaultNotificationPreferences();
+
+            expect(result).toEqual(defaults);
+        });
+
+        it('should return default preferences when input is not an object', () => {
+            expect(ensureNotificationPreferences('string')).toEqual(
+                getDefaultNotificationPreferences()
+            );
+            expect(ensureNotificationPreferences(123)).toEqual(
+                getDefaultNotificationPreferences()
+            );
+            expect(ensureNotificationPreferences(true)).toEqual(
+                getDefaultNotificationPreferences()
+            );
+        });
+
+        it('should preserve existing preferences and merge with defaults', () => {
+            const input = {
+                dueTasks: {
+                    inApp: false,
+                    email: true,
+                    push: false,
+                    telegram: true,
+                },
+                overdueTasks: {
+                    inApp: true,
+                    email: false,
+                    push: false,
+                    telegram: false,
+                },
+            };
+
+            const result = ensureNotificationPreferences(input);
+
+            // Existing preferences should be preserved
+            expect(result.dueTasks).toEqual(input.dueTasks);
+            expect(result.overdueTasks).toEqual(input.overdueTasks);
+
+            // Missing preferences should be added with defaults
+            expect(result.dueProjects).toEqual({
+                inApp: true,
+                email: false,
+                push: false,
+                telegram: false,
+            });
+            expect(result.overdueProjects).toEqual({
+                inApp: true,
+                email: false,
+                push: false,
+                telegram: false,
+            });
+            expect(result.deferUntil).toEqual({
+                inApp: true,
+                email: false,
+                push: false,
+                telegram: false,
+            });
+        });
+
+        it('should add missing channels to existing preference types', () => {
+            const input = {
+                dueTasks: { inApp: false, email: true },
+                overdueTasks: { inApp: true },
+            };
+
+            const result = ensureNotificationPreferences(input);
+
+            // Should add missing push and telegram channels
+            expect(result.dueTasks).toEqual({
+                inApp: false,
+                email: true,
+                push: false,
+                telegram: false,
+            });
+            expect(result.overdueTasks).toEqual({
+                inApp: true,
+                email: false,
+                push: false,
+                telegram: false,
+            });
+        });
+
+        it('should handle completely valid preferences without modification', () => {
+            const input = {
+                dueTasks: {
+                    inApp: false,
+                    email: true,
+                    push: false,
+                    telegram: true,
+                },
+                overdueTasks: {
+                    inApp: true,
+                    email: false,
+                    push: true,
+                    telegram: false,
+                },
+                dueProjects: {
+                    inApp: true,
+                    email: false,
+                    push: false,
+                    telegram: false,
+                },
+                overdueProjects: {
+                    inApp: false,
+                    email: false,
+                    push: false,
+                    telegram: false,
+                },
+                deferUntil: {
+                    inApp: true,
+                    email: true,
+                    push: false,
+                    telegram: true,
+                },
+            };
+
+            const result = ensureNotificationPreferences(input);
+
+            expect(result).toEqual(input);
+        });
+
+        it('should replace invalid preference type objects with defaults', () => {
+            const input = {
+                dueTasks: 'invalid',
+                overdueTasks: {
+                    inApp: true,
+                    email: false,
+                    push: false,
+                    telegram: false,
+                },
+            };
+
+            const result = ensureNotificationPreferences(input);
+
+            // Invalid type should be replaced with default
+            expect(result.dueTasks).toEqual({
+                inApp: true,
+                email: false,
+                push: false,
+                telegram: false,
+            });
+
+            // Valid type should be preserved
+            expect(result.overdueTasks).toEqual(input.overdueTasks);
         });
     });
 });

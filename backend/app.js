@@ -123,10 +123,6 @@ app.use((req, res, next) => {
     })(req, res, next);
 });
 
-// CalDAV routes (registered after conditional body parsers)
-const caldavRoutes = require('./modules/caldav/routes');
-app.use(caldavRoutes);
-
 // Session configuration
 const sessionMiddleware = session({
     secret: config.secret,
@@ -149,6 +145,10 @@ const sessionMiddleware = session({
     },
 });
 app.use(sessionMiddleware);
+
+// CalDAV routes (registered after session middleware to support session-based auth for API routes)
+const caldavRoutes = require('./modules/caldav/routes');
+app.use(caldavRoutes);
 
 // CSRF protection using lusca (CodeQL recommended library)
 const lusca = require('lusca');
@@ -402,6 +402,10 @@ async function startServer() {
             console.log(`Server running on port ${config.port}`);
             console.log(`Server listening on http://localhost:${config.port}`);
         });
+
+        // Configure keep-alive timeouts for persistent connections (e.g., MCP clients)
+        server.keepAliveTimeout = 120_000; // 120 seconds
+        server.headersTimeout = 125_000; // must be > keepAliveTimeout
 
         server.on('error', (err) => {
             console.error('Server error:', err);

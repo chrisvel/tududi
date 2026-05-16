@@ -1,6 +1,9 @@
 const { User, OIDCIdentity } = require('../../models');
 const providerConfig = require('./providerConfig');
 const { sequelize } = require('../../models');
+const {
+    getDefaultNotificationPreferences,
+} = require('../../utils/notificationPreferences');
 
 function shouldBeAdmin(config, email) {
     if (!config.adminEmailDomains || config.adminEmailDomains.length === 0) {
@@ -80,6 +83,8 @@ async function provisionUser(providerSlug, claims, req) {
                     email: claims.email,
                     verified_email: true,
                     password_digest: null,
+                    notification_preferences:
+                        getDefaultNotificationPreferences(),
                 },
                 { transaction }
             );

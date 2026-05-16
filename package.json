@@ -1,6 +1,6 @@
 {
   "name": "tududi",
-  "version": "v1.1.0-rc.1",
+  "version": "v1.1.0-rc.3",
   "description": "Self-hosted task management with hierarchical organization, multi-language support, and Telegram integration.",
   "directories": {
     "test": "test"
@@ -186,7 +186,7 @@
       "prettier --write"
     ],
     "backend/**/*.{js,ts}": [
-      "eslint --fix",
+      "eslint --config backend/eslint.config.js --fix",
       "prettier --write"
     ]
   }
