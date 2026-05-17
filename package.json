@@ -154,6 +154,7 @@
     "express-session": "~1.18.1",
     "helmet": "~8.1.0",
     "ical.js": "^2.1.0",
+    "jose": "^6.0.0",
     "js-yaml": "~4.1.0",
     "linguaisync": "^0.1.2",
     "lodash": "~4.18.1",

@@ -49,10 +49,9 @@ async function getMcpConfig(req, res) {
 async function handleMcpMessage(req, res) {
     try {
         const user = req.mcpUser;
-        const apiToken = req.mcpApiToken;
 
         // Delegate to HTTP transport handler
-        await handleMcpHttpRequest(req, res, user, apiToken);
+        await handleMcpHttpRequest(req, res, user);
     } catch (error) {
         console.error('Error handling MCP message:', error);
 
