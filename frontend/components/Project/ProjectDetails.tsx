@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { getCsrfToken } from '../../utils/csrfService';
 import {
     MagnifyingGlassIcon,
     EllipsisHorizontalCircleIcon,
@@ -323,7 +324,10 @@ const ProjectDetails: React.FC = () => {
         }
         const response = await fetch(getApiPath(`task/${updatedTask.uid}`), {
             method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'x-csrf-token': await getCsrfToken(),
+            },
             credentials: 'include',
             body: JSON.stringify(updatedTask),
         });
