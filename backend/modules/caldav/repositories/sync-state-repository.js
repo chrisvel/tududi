@@ -135,6 +135,46 @@ class SyncStateRepository extends BaseRepository {
             options
         );
     }
+
+    async getSyncStats(calendarId, options = {}) {
+        const syncStates = await this.findByCalendarId(calendarId, options);
+
+        const stats = {
+            total: syncStates.length,
+            synced: 0,
+            pending: 0,
+            conflict: 0,
+            error: 0,
+            lastSyncedAt: null,
+        };
+
+        syncStates.forEach((state) => {
+            if (state.sync_status === 'synced') stats.synced++;
+            else if (state.sync_status === 'pending') stats.pending++;
+            else if (state.sync_status === 'conflict') stats.conflict++;
+            else if (state.sync_status === 'error') stats.error++;
+
+            if (
+                state.last_synced_at &&
+                (!stats.lastSyncedAt ||
+                    state.last_synced_at > stats.lastSyncedAt)
+            ) {
+                stats.lastSyncedAt = state.last_synced_at;
+            }
+        });
+
+        return stats;
+    }
+
+    async deleteByCalendarId(calendarId, options = {}) {
+        const syncStates = await this.findByCalendarId(calendarId, options);
+
+        await Promise.all(
+            syncStates.map((state) => this.delete(state, options))
+        );
+
+        return syncStates.length;
+    }
 }
 
 module.exports = new SyncStateRepository();
