@@ -364,7 +364,9 @@ describe('Recurring Task Display Fixes', () => {
             expect(updateResponse.status).toBe(200);
 
             // Fetch the task to verify
-            const fetchResponse = await agent.get(`/api/task/${weeklyTask.uid}`);
+            const fetchResponse = await agent.get(
+                `/api/task/${weeklyTask.uid}`
+            );
 
             expect(fetchResponse.status).toBe(200);
             expect(fetchResponse.body.name).toBe('Weekly Team Meeting');
