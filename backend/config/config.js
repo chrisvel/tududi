@@ -142,6 +142,12 @@ const config = {
         return val;
     })(),
 
+    // Encryption key for CalDAV credentials (falls back to SECRET_KEY or session secret)
+    encryptionKey: process.env.ENCRYPTION_KEY,
+
+    // Alternative encryption key (for backward compatibility)
+    secretKey: process.env.SECRET_KEY,
+
     // Rate limiting configuration
     rateLimiting: {
         // Disable rate limiting in test environment
