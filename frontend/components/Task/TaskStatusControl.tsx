@@ -172,6 +172,10 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
             const updatedTask = {
                 ...task,
                 status: statusValue,
+                // Preserve the original task name if it exists (for recurring tasks)
+                // The backend serializer transforms recurring task names to "Daily", "Weekly", etc.
+                // but we need to send the actual task name when updating
+                name: task.original_name || task.name,
             };
             await onTaskUpdate(updatedTask);
         }
