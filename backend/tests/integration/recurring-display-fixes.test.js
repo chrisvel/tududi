@@ -312,4 +312,94 @@ describe('Recurring Task Display Fixes', () => {
             expect(response.body.recurrence_type).toBe('monthly');
         });
     });
+
+    describe('Issue #1123: Updating Recurring Task Status', () => {
+        it('should preserve task name when changing status of a daily recurring task', async () => {
+            const recurringTask = await Task.create({
+                name: 'Daily Exercise Routine',
+                user_id: user.id,
+                recurrence_type: 'daily',
+                recurring_parent_id: null,
+                status: Task.STATUS.NOT_STARTED,
+                priority: Task.PRIORITY.MEDIUM,
+            });
+
+            // Change status to in_progress
+            const updateResponse = await agent
+                .patch(`/api/task/${recurringTask.uid}`)
+                .send({
+                    status: Task.STATUS.IN_PROGRESS,
+                });
+
+            expect(updateResponse.status).toBe(200);
+
+            // Fetch the task again to verify the name wasn't changed
+            const fetchResponse = await agent.get(
+                `/api/task/${recurringTask.uid}`
+            );
+
+            expect(fetchResponse.status).toBe(200);
+            expect(fetchResponse.body.name).toBe('Daily Exercise Routine');
+            expect(fetchResponse.body.status).toBe(Task.STATUS.IN_PROGRESS);
+            expect(fetchResponse.body.recurrence_type).toBe('daily');
+        });
+
+        it('should preserve task name when changing status of a weekly recurring task', async () => {
+            const weeklyTask = await Task.create({
+                name: 'Weekly Team Meeting',
+                user_id: user.id,
+                recurrence_type: 'weekly',
+                recurring_parent_id: null,
+                status: Task.STATUS.NOT_STARTED,
+                priority: Task.PRIORITY.HIGH,
+            });
+
+            // Change status to planned
+            const updateResponse = await agent
+                .patch(`/api/task/${weeklyTask.uid}`)
+                .send({
+                    status: Task.STATUS.PLANNED,
+                });
+
+            expect(updateResponse.status).toBe(200);
+
+            // Fetch the task to verify
+            const fetchResponse = await agent.get(
+                `/api/task/${weeklyTask.uid}`
+            );
+
+            expect(fetchResponse.status).toBe(200);
+            expect(fetchResponse.body.name).toBe('Weekly Team Meeting');
+            expect(fetchResponse.body.status).toBe(Task.STATUS.PLANNED);
+        });
+
+        it('should preserve task name when changing status of a monthly recurring task', async () => {
+            const monthlyTask = await Task.create({
+                name: 'Monthly Budget Review',
+                user_id: user.id,
+                recurrence_type: 'monthly',
+                recurring_parent_id: null,
+                status: Task.STATUS.NOT_STARTED,
+                priority: Task.PRIORITY.MEDIUM,
+            });
+
+            // Change status to cancelled
+            const updateResponse = await agent
+                .patch(`/api/task/${monthlyTask.uid}`)
+                .send({
+                    status: Task.STATUS.CANCELLED,
+                });
+
+            expect(updateResponse.status).toBe(200);
+
+            // Fetch the task to verify
+            const fetchResponse = await agent.get(
+                `/api/task/${monthlyTask.uid}`
+            );
+
+            expect(fetchResponse.status).toBe(200);
+            expect(fetchResponse.body.name).toBe('Monthly Budget Review');
+            expect(fetchResponse.body.status).toBe(Task.STATUS.CANCELLED);
+        });
+    });
 });
