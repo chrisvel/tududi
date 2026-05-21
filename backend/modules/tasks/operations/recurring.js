@@ -4,6 +4,8 @@ const { calculateNextDueDate } = require('../recurringTaskService');
 const {
     processDueDateForResponse,
     getSafeTimezone,
+    dateStringToUTC,
+    getCurrentDateInTimezone,
 } = require('../../../utils/timezone-utils');
 
 async function handleRecurrenceUpdate(task, recurrenceFields, reqBody) {
@@ -70,9 +72,18 @@ async function handleRecurrenceUpdate(task, recurrenceFields, reqBody) {
 
 async function calculateNextIterations(task, startFromDate, userTimezone) {
     const iterations = [];
+    const safeTimezone = getSafeTimezone(userTimezone);
 
-    const startDate = startFromDate ? new Date(startFromDate) : new Date();
-    startDate.setUTCHours(0, 0, 0, 0);
+    // Parse start date properly in user's timezone
+    let startDate;
+    if (startFromDate) {
+        // Convert the date string from user timezone to UTC
+        startDate = dateStringToUTC(startFromDate, safeTimezone, 'start');
+    } else {
+        // Get today's date in user's timezone and convert to UTC
+        const todayInUserTz = getCurrentDateInTimezone(safeTimezone);
+        startDate = dateStringToUTC(todayInUserTz, safeTimezone, 'start');
+    }
 
     let nextDate = new Date(startDate);
     let includesToday = false;
