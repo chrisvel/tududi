@@ -108,10 +108,15 @@ async function getRecurringParentEndDate(recurringParentId, userId) {
     return parent.recurrence_end_date;
 }
 
-function expandRecurringTasks(tasks, maxDays = 7, statusFilter = null) {
+function expandRecurringTasks(
+    tasks,
+    maxDays = 7,
+    statusFilter = null,
+    userTimezone = 'UTC'
+) {
     const expandedTasks = [];
-    const now = new Date();
-    now.setUTCHours(0, 0, 0, 0);
+    const moment = require('moment-timezone');
+    const now = moment.tz(userTimezone).startOf('day').toDate();
 
     tasks.forEach((task) => {
         const isRecurring =
@@ -176,7 +181,8 @@ function expandRecurringTasks(tasks, maxDays = 7, statusFilter = null) {
         const occurrences = calculateVirtualOccurrences(
             task,
             maxDays,
-            startFrom
+            startFrom,
+            userTimezone
         );
         console.log('[DEBUG] Generated occurrences:', occurrences.length);
 
@@ -261,7 +267,13 @@ router.get('/tasks', async (req, res) => {
                     }))
             );
             const days = maxDays ? parseInt(maxDays, 10) : 7;
-            tasks = expandRecurringTasks(tasks, days, req.query.status);
+            const safeTimezone = getSafeTimezone(timezone);
+            tasks = expandRecurringTasks(
+                tasks,
+                days,
+                req.query.status,
+                safeTimezone
+            );
             console.log('[DEBUG] Total tasks after expansion:', tasks.length);
         }
 

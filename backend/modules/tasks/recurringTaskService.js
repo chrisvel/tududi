@@ -258,13 +258,32 @@ const shouldGenerateNextTask = (task, nextDate) => {
     return nextDate < task.recurrence_end_date;
 };
 
-const calculateVirtualOccurrences = (task, count = 7, startFrom = null) => {
+const calculateVirtualOccurrences = (
+    task,
+    count = 7,
+    startFrom = null,
+    userTimezone = 'UTC'
+) => {
+    const moment = require('moment-timezone');
     const occurrences = [];
-    let currentDate = startFrom
-        ? new Date(startFrom)
-        : task.due_date
-          ? new Date(task.due_date)
-          : new Date();
+
+    // Parse start date properly in user's timezone
+    let currentDate;
+    if (startFrom) {
+        if (typeof startFrom === 'string') {
+            // Parse date string in user's timezone
+            currentDate = moment.tz(startFrom, userTimezone).toDate();
+        } else {
+            currentDate = new Date(startFrom);
+        }
+    } else if (task.due_date) {
+        // Parse task due_date in UTC (since it comes from database)
+        currentDate = new Date(task.due_date);
+    } else {
+        // Get current date in user's timezone
+        currentDate = moment.tz(userTimezone).startOf('day').toDate();
+    }
+
     let iterationCount = 0;
     const MAX_ITERATIONS = 100;
 
@@ -276,8 +295,14 @@ const calculateVirtualOccurrences = (task, count = 7, startFrom = null) => {
             break;
         }
 
+        // Convert UTC date to user timezone date string
+        const dateInUserTz = moment
+            .utc(currentDate)
+            .tz(userTimezone)
+            .format('YYYY-MM-DD');
+
         occurrences.push({
-            due_date: currentDate.toISOString().split('T')[0],
+            due_date: dateInUserTz,
             is_virtual: true,
         });
 

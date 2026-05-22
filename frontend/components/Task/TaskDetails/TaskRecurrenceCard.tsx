@@ -5,7 +5,7 @@ import TaskRecurrenceSection from '../TaskForm/TaskRecurrenceSection';
 import TaskRecurringInstanceInfo from './TaskRecurringInstanceInfo';
 import { Task, RecurrenceType } from '../../../entities/Task';
 import { TaskIteration } from '../../../utils/tasksService';
-import { getTodayDateString } from '../../../utils/dateUtils';
+import { getTodayDateString, parseDateString } from '../../../utils/dateUtils';
 import { resolveUserLocale } from '../../../utils/localeUtils';
 
 interface TaskRecurrenceCardProps {
@@ -53,7 +53,17 @@ const TaskRecurrenceCard: React.FC<TaskRecurrenceCardProps> = ({
     );
 
     const formatDateWithDayName = (dateString: string) => {
-        const date = new Date(dateString);
+        // Parse date string as local midnight to avoid timezone shifts
+        const date = parseDateString(dateString);
+        if (!date) {
+            return {
+                dayName: '',
+                formattedDate: dateString,
+                fullText: dateString,
+                isToday: false,
+            };
+        }
+
         const today = getTodayDateString();
         const isToday = dateString === today;
 
