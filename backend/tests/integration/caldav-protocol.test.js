@@ -44,6 +44,48 @@ describe('CalDAV Protocol - Phase 3', () => {
 
             expect(response.headers.location).toContain('/caldav/');
         });
+
+        test('PROPFIND /caldav/ should return current-user-principal', async () => {
+            const propfindBody = `<?xml version="1.0" encoding="utf-8"?>
+                <D:propfind xmlns:D="DAV:">
+                    <D:prop>
+                        <D:current-user-principal/>
+                    </D:prop>
+                </D:propfind>`;
+
+            const response = await request(app)
+                .propfind('/caldav/')
+                .set('Authorization', authHeader)
+                .set('Content-Type', 'application/xml')
+                .send(propfindBody)
+                .expect(207);
+
+            expect(response.text).toContain('current-user-principal');
+            expect(response.text).toContain(
+                `/caldav/${encodeURIComponent(testUser.email)}/`
+            );
+        });
+
+        test('PROPFIND /caldav/:username/ should return calendar-home-set', async () => {
+            const propfindBody = `<?xml version="1.0" encoding="utf-8"?>
+                <D:propfind xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">
+                    <D:prop>
+                        <C:calendar-home-set/>
+                    </D:prop>
+                </D:propfind>`;
+
+            const response = await request(app)
+                .propfind(`/caldav/${testUser.email}/`)
+                .set('Authorization', authHeader)
+                .set('Content-Type', 'application/xml')
+                .send(propfindBody)
+                .expect(207);
+
+            expect(response.text).toContain('calendar-home-set');
+            expect(response.text).toContain(
+                `/caldav/${encodeURIComponent(testUser.email)}/tasks/`
+            );
+        });
     });
 
     describe('Authentication', () => {
