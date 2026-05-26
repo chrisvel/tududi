@@ -37,6 +37,7 @@ import IconSortDropdown from '../Shared/IconSortDropdown';
 import LoadingSpinner from '../Shared/LoadingSpinner';
 import { usePersistedModal } from '../../hooks/usePersistedModal';
 import { getApiPath } from '../../config/paths';
+import { getCsrfToken } from '../../utils/csrfService';
 import ProjectInsightsPanel from './ProjectInsightsPanel';
 import ProjectBanner from './ProjectBanner';
 import BannerEditModal from './BannerEditModal';
@@ -323,7 +324,10 @@ const ProjectDetails: React.FC = () => {
         }
         const response = await fetch(getApiPath(`task/${updatedTask.uid}`), {
             method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'x-csrf-token': await getCsrfToken(),
+            },
             credentials: 'include',
             body: JSON.stringify(updatedTask),
         });
