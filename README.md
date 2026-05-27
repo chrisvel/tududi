@@ -134,7 +134,7 @@ docker run \
   -e OIDC_CLIENT_SECRET=your-client-secret \
   -e OIDC_SCOPE="openid profile email" \
   -e OIDC_AUTO_PROVISION=true \
-  -e TUDUDI_BASE_URL=https://your-domain.com \
+  -e BASE_URL=https://your-domain.com \
   ...
 ```
 
@@ -301,7 +301,7 @@ For questions or comments, please [open an issue](https://github.com/chrisvel/tu
 
 Join the tududi community:
 
-[![Discord](https://img.shields.io/badge/Discord-Join%20Server-7289da?logo=discord&logoColor=white&style=for-the-badge)](https://discord.gg/fkbeJ9CmcH)  
+[![Discord](https://img.shields.io/badge/Discord-Join%20Server-7289da?logo=discord&logoColor=white&style=for-the-badge)](https://discord.gg/fkbeJ9CmcH)
 [![Reddit](https://img.shields.io/reddit/subreddit-subscribers/tududi?color=ff4500&label=Reddit&logo=reddit&logoColor=white&style=for-the-badge)](https://www.reddit.com/r/tududi/)
 
 ## 🌟 Please check my other projects!
