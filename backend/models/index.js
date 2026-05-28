@@ -78,6 +78,7 @@ const CalDAVOccurrenceOverride = require('./caldav_occurrence_override')(
 );
 const CalDAVRemoteCalendar = require('./caldav_remote_calendar')(sequelize);
 const CalendarToken = require('./calendar_token')(sequelize);
+const UserProjectArea = require('./userProjectArea')(sequelize);
 
 User.hasMany(Area, { foreignKey: 'user_id' });
 Area.belongsTo(User, { foreignKey: 'user_id' });
@@ -86,6 +87,14 @@ User.hasMany(Project, { foreignKey: 'user_id' });
 Project.belongsTo(User, { foreignKey: 'user_id' });
 Project.belongsTo(Area, { foreignKey: 'area_id', allowNull: true });
 Area.hasMany(Project, { foreignKey: 'area_id' });
+
+// UserProjectArea associations (user-specific project-area assignments)
+UserProjectArea.belongsTo(User, { foreignKey: 'user_id' });
+UserProjectArea.belongsTo(Project, { foreignKey: 'project_id' });
+UserProjectArea.belongsTo(Area, { foreignKey: 'area_id' });
+User.hasMany(UserProjectArea, { foreignKey: 'user_id' });
+Project.hasMany(UserProjectArea, { foreignKey: 'project_id' });
+Area.hasMany(UserProjectArea, { foreignKey: 'area_id' });
 
 User.hasMany(Task, { foreignKey: 'user_id' });
 Task.belongsTo(User, { foreignKey: 'user_id' });
@@ -289,4 +298,5 @@ module.exports = {
     CalDAVOccurrenceOverride,
     CalDAVRemoteCalendar,
     CalendarToken,
+    UserProjectArea,
 };

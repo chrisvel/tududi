@@ -1,6 +1,7 @@
 'use strict';
 
 const { Op } = require('sequelize');
+const { Area } = require('../../models');
 const projectsRepository = require('./repository');
 const { validateUid, validateName, formatDate } = require('./validation');
 const { NotFoundError, ValidationError } = require('../../shared/errors');
@@ -118,28 +119,29 @@ class ProjectsService {
             whereClause.pin_to_sidebar = false;
         }
 
+        // Note: Area filtering is now handled via UserProjectArea join in repository
+        // We'll filter the results after fetching if area/area_id is specified
+        let areaFilterId = null;
         if (area && area !== '') {
             const uid = extractUidFromSlug(area);
             if (uid) {
                 const areaRecord = await projectsRepository.findAreaByUid(uid);
                 if (areaRecord) {
-                    whereClause = {
-                        [Op.and]: [whereClause, { area_id: areaRecord.id }],
-                    };
+                    areaFilterId = areaRecord.id;
                 }
             }
         } else if (area_id && area_id !== '') {
-            whereClause = { [Op.and]: [whereClause, { area_id }] };
+            areaFilterId = parseInt(area_id, 10);
         }
 
         const projects =
-            await projectsRepository.findAllWithFilters(whereClause);
+            await projectsRepository.findAllWithFilters(whereClause, userId);
 
         const projectUids = projects.map((p) => p.uid).filter(Boolean);
         const shareCountMap =
             await projectsRepository.getShareCounts(projectUids);
 
-        const enhancedProjects = projects.map((project) => {
+        let enhancedProjects = projects.map((project) => {
             const taskStatus = calculateTaskStatus(project.Tasks);
             const projectJson = project.toJSON();
             const shareCount = shareCountMap[project.uid] || 0;
@@ -151,8 +153,12 @@ class ProjectsService {
                 taskStatus.in_progress + taskStatus.not_started;
             const isStalled = isActiveStatus && activeTaskCount === 0;
 
+            // Extract Area from UserProjectArea if it exists
+            const area = projectJson.UserProjectAreas?.[0]?.Area || null;
+
             return {
                 ...projectJson,
+                Area: area, // Set Area from user-specific assignment
                 tags: sortTags(projectJson.Tags),
                 due_date_at: formatDate(project.due_date_at),
                 task_status: taskStatus,
@@ -166,6 +172,13 @@ class ProjectsService {
                 is_stalled: isStalled,
             };
         });
+
+        // Filter by area if specified
+        if (areaFilterId !== null) {
+            enhancedProjects = enhancedProjects.filter(
+                (project) => project.Area && project.Area.id === areaFilterId
+            );
+        }
 
         if (grouped === 'true') {
             const groupedProjects = {};
@@ -185,10 +198,10 @@ class ProjectsService {
     /**
      * Get project by UID.
      */
-    async getByUid(uid, userTimezone) {
+    async getByUid(uid, userTimezone, userId) {
         const validatedUid = validateUid(uid);
         const project =
-            await projectsRepository.findByUidWithIncludes(validatedUid);
+            await projectsRepository.findByUidWithIncludes(validatedUid, userId);
 
         if (!project) {
             throw new NotFoundError('Project not found');
@@ -229,8 +242,12 @@ class ProjectsService {
             ? await projectsRepository.getShareCount(project.uid)
             : 0;
 
+        // Extract Area from UserProjectArea if it exists
+        const area = projectJson.UserProjectAreas?.[0]?.Area || null;
+
         return {
             ...projectJson,
+            Area: area, // Set Area from user-specific assignment
             tags: sortTags(projectJson.Tags),
             Tasks: normalizedTasks,
             Notes: normalizedNotes,
@@ -271,11 +288,22 @@ class ProjectsService {
         const tagsData = tags || Tags;
         const projectUid = generateUid();
 
+        // Validate area ownership if area_id is provided
+        if (area_id) {
+            const area = await Area.findOne({
+                where: { id: area_id, user_id: userId },
+            });
+            if (!area) {
+                throw new ValidationError(
+                    'Area not found or does not belong to you'
+                );
+            }
+        }
+
         const projectData = {
             uid: projectUid,
             name: validatedName,
             description: description || '',
-            area_id: area_id || null,
             pin_to_sidebar: false,
             priority: priority || null,
             due_date_at: due_date_at || null,
@@ -285,6 +313,15 @@ class ProjectsService {
         };
 
         const project = await projectsRepository.create(projectData);
+
+        // Create user-specific area assignment if area_id is provided
+        if (area_id) {
+            await projectsRepository.setUserProjectArea(
+                userId,
+                project.id,
+                area_id
+            );
+        }
 
         try {
             await updateProjectTags(project, tagsData, userId);
@@ -333,8 +370,6 @@ class ProjectsService {
 
         if (name !== undefined) updateData.name = name;
         if (description !== undefined) updateData.description = description;
-        if (area_id !== undefined)
-            updateData.area_id = area_id === '' ? null : area_id;
         if (pin_to_sidebar !== undefined)
             updateData.pin_to_sidebar = pin_to_sidebar;
         if (priority !== undefined)
@@ -346,15 +381,49 @@ class ProjectsService {
         if (status !== undefined) updateData.status = status;
         else if (state !== undefined) updateData.status = state;
 
+        // Handle area_id changes through user_project_areas table
+        if (area_id !== undefined) {
+            if (area_id === '' || area_id === null) {
+                // Remove area assignment for this user
+                await projectsRepository.removeUserProjectArea(
+                    userId,
+                    project.id
+                );
+            } else {
+                // Validate area belongs to user before assigning
+                const area = await Area.findOne({
+                    where: { id: area_id, user_id: userId },
+                });
+                if (!area) {
+                    throw new ValidationError(
+                        'Area not found or does not belong to you'
+                    );
+                }
+                // Set/update area assignment for this user
+                await projectsRepository.setUserProjectArea(
+                    userId,
+                    project.id,
+                    area_id
+                );
+            }
+        }
+
         await projectsRepository.update(project, updateData);
         await updateProjectTags(project, tagsData, userId);
 
         const projectWithAssociations =
-            await projectsRepository.findByUidWithTagsAndArea(validatedUid);
+            await projectsRepository.findByUidWithTagsAndArea(
+                validatedUid,
+                userId
+            );
         const projectJson = projectWithAssociations.toJSON();
+
+        // Extract Area from UserProjectArea if it exists
+        const area = projectJson.UserProjectAreas?.[0]?.Area || null;
 
         return {
             ...projectJson,
+            Area: area, // Set Area from user-specific assignment
             tags: sortTags(projectJson.Tags),
             due_date_at: formatDate(projectWithAssociations.due_date_at),
         };

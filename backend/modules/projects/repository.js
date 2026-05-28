@@ -10,6 +10,7 @@ const {
     User,
     Permission,
     TaskAttachment,
+    UserProjectArea,
     sequelize,
 } = require('../../models');
 const { Op } = require('sequelize');
@@ -27,8 +28,10 @@ class ProjectsRepository extends BaseRepository {
 
     /**
      * Find all projects with filters and includes.
+     * @param {Object} whereClause - WHERE clause for project filtering
+     * @param {number} userId - User ID for filtering area assignments
      */
-    async findAllWithFilters(whereClause) {
+    async findAllWithFilters(whereClause, userId) {
         return this.model.findAll({
             where: whereClause,
             include: [
@@ -42,9 +45,16 @@ class ProjectsRepository extends BaseRepository {
                     },
                 },
                 {
-                    model: Area,
+                    model: UserProjectArea,
                     required: false,
-                    attributes: ['id', 'uid', 'name'],
+                    where: { user_id: userId },
+                    include: [
+                        {
+                            model: Area,
+                            required: false,
+                            attributes: ['id', 'uid', 'name'],
+                        },
+                    ],
                 },
                 {
                     model: Tag,
@@ -100,8 +110,10 @@ class ProjectsRepository extends BaseRepository {
 
     /**
      * Find project by UID with full includes.
+     * @param {string} uid - Project UID
+     * @param {number} userId - User ID for filtering area assignments
      */
-    async findByUidWithIncludes(uid) {
+    async findByUidWithIncludes(uid, userId) {
         return this.model.findOne({
             where: { uid },
             include: [
@@ -154,9 +166,16 @@ class ProjectsRepository extends BaseRepository {
                     ],
                 },
                 {
-                    model: Area,
+                    model: UserProjectArea,
                     required: false,
-                    attributes: ['id', 'uid', 'name'],
+                    where: { user_id: userId },
+                    include: [
+                        {
+                            model: Area,
+                            required: false,
+                            attributes: ['id', 'uid', 'name'],
+                        },
+                    ],
                 },
                 {
                     model: Tag,
@@ -169,8 +188,10 @@ class ProjectsRepository extends BaseRepository {
 
     /**
      * Find project by UID with tags and area.
+     * @param {string} uid - Project UID
+     * @param {number} userId - User ID for filtering area assignments
      */
-    async findByUidWithTagsAndArea(uid) {
+    async findByUidWithTagsAndArea(uid, userId) {
         return this.model.findOne({
             where: { uid },
             include: [
@@ -180,9 +201,16 @@ class ProjectsRepository extends BaseRepository {
                     through: { attributes: [] },
                 },
                 {
-                    model: Area,
+                    model: UserProjectArea,
                     required: false,
-                    attributes: ['id', 'uid', 'name'],
+                    where: { user_id: userId },
+                    include: [
+                        {
+                            model: Area,
+                            required: false,
+                            attributes: ['id', 'uid', 'name'],
+                        },
+                    ],
                 },
             ],
         });
@@ -334,6 +362,49 @@ class ProjectsRepository extends BaseRepository {
      */
     async createTag(name, userId) {
         return Tag.create({ name, user_id: userId });
+    }
+
+    /**
+     * Set user-specific area assignment for a project.
+     * @param {number} userId - User ID
+     * @param {number} projectId - Project ID
+     * @param {number} areaId - Area ID
+     */
+    async setUserProjectArea(userId, projectId, areaId) {
+        const [userProjectArea, created] = await UserProjectArea.upsert({
+            user_id: userId,
+            project_id: projectId,
+            area_id: areaId,
+        });
+        return userProjectArea;
+    }
+
+    /**
+     * Get user-specific area assignment for a project.
+     * @param {number} userId - User ID
+     * @param {number} projectId - Project ID
+     */
+    async getUserProjectArea(userId, projectId) {
+        return UserProjectArea.findOne({
+            where: { user_id: userId, project_id: projectId },
+            include: [
+                {
+                    model: Area,
+                    attributes: ['id', 'uid', 'name'],
+                },
+            ],
+        });
+    }
+
+    /**
+     * Remove user-specific area assignment for a project.
+     * @param {number} userId - User ID
+     * @param {number} projectId - Project ID
+     */
+    async removeUserProjectArea(userId, projectId) {
+        return UserProjectArea.destroy({
+            where: { user_id: userId, project_id: projectId },
+        });
     }
 }
 
