@@ -6,6 +6,7 @@ const {
     getTodayBoundsInUTC,
 } = require('../../../utils/timezone-utils');
 const { getTaskIncludeConfigLight } = require('./query-builders');
+const permissionsService = require('../../../services/permissionsService');
 
 // Statuses that indicate a task is in the "today plan" (actively being worked on)
 // Used to exclude from overdue/due-today sections to avoid duplicates
@@ -182,9 +183,37 @@ async function fetchTodayPlanTasks(visibleTasksWhere) {
     );
 }
 
-async function fetchTasksDueToday(visibleTasksWhere, userTimezone) {
+async function fetchTasksDueToday(visibleTasksWhere, userTimezone, userId) {
     const safeTimezone = getSafeTimezone(userTimezone);
     const todayBounds = getTodayBoundsInUTC(safeTimezone);
+
+    // Get project permissions
+    const projectWhere = await permissionsService.ownershipOrPermissionWhere(
+        'project',
+        userId
+    );
+
+    // Build project access SQL condition
+    let projectAccessSQL = '';
+    if (projectWhere && projectWhere[Op.or]) {
+        const conditions = [];
+        projectWhere[Op.or].forEach((condition) => {
+            if (condition.user_id) {
+                conditions.push(`projects.user_id = ${condition.user_id}`);
+            }
+            if (condition.uid && condition.uid[Op.in]) {
+                const uids = condition.uid[Op.in]
+                    .map((uid) => `'${uid}'`)
+                    .join(',');
+                if (uids) {
+                    conditions.push(`projects.uid IN (${uids})`);
+                }
+            }
+        });
+        if (conditions.length > 0) {
+            projectAccessSQL = ` AND (${conditions.join(' OR ')})`;
+        }
+    }
 
     return await Task.findAll({
         where: {
@@ -217,7 +246,7 @@ async function fetchTasksDueToday(visibleTasksWhere, userTimezone) {
           SELECT 1 FROM projects
           WHERE projects.id = Task.project_id
           AND projects.due_date_at >= '${todayBounds.start.toISOString()}'
-          AND projects.due_date_at <= '${todayBounds.end.toISOString()}'
+          AND projects.due_date_at <= '${todayBounds.end.toISOString()}'${projectAccessSQL}
         )`),
                     ],
                 },
@@ -232,9 +261,37 @@ async function fetchTasksDueToday(visibleTasksWhere, userTimezone) {
     });
 }
 
-async function fetchOverdueTasks(visibleTasksWhere, userTimezone) {
+async function fetchOverdueTasks(visibleTasksWhere, userTimezone, userId) {
     const safeTimezone = getSafeTimezone(userTimezone);
     const todayBounds = getTodayBoundsInUTC(safeTimezone);
+
+    // Get project permissions
+    const projectWhere = await permissionsService.ownershipOrPermissionWhere(
+        'project',
+        userId
+    );
+
+    // Build project access SQL condition
+    let projectAccessSQL = '';
+    if (projectWhere && projectWhere[Op.or]) {
+        const conditions = [];
+        projectWhere[Op.or].forEach((condition) => {
+            if (condition.user_id) {
+                conditions.push(`projects.user_id = ${condition.user_id}`);
+            }
+            if (condition.uid && condition.uid[Op.in]) {
+                const uids = condition.uid[Op.in]
+                    .map((uid) => `'${uid}'`)
+                    .join(',');
+                if (uids) {
+                    conditions.push(`projects.uid IN (${uids})`);
+                }
+            }
+        });
+        if (conditions.length > 0) {
+            projectAccessSQL = ` AND (${conditions.join(' OR ')})`;
+        }
+    }
 
     return await Task.findAll({
         where: {
@@ -260,7 +317,7 @@ async function fetchOverdueTasks(visibleTasksWhere, userTimezone) {
                         sequelize.literal(`EXISTS (
           SELECT 1 FROM projects
           WHERE projects.id = Task.project_id
-          AND projects.due_date_at < '${todayBounds.start.toISOString()}'
+          AND projects.due_date_at < '${todayBounds.start.toISOString()}'${projectAccessSQL}
         )`),
                     ],
                 },

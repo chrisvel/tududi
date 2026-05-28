@@ -215,8 +215,8 @@ async function computeTaskMetrics(
         countTasksPendingOverMonth(visibleTasksWhere),
         fetchTasksInProgress(visibleTasksWhere),
         fetchTodayPlanTasks(visibleTasksWhere),
-        fetchTasksDueToday(visibleTasksWhere, userTimezone),
-        fetchOverdueTasks(visibleTasksWhere, userTimezone),
+        fetchTasksDueToday(visibleTasksWhere, userTimezone, userId),
+        fetchOverdueTasks(visibleTasksWhere, userTimezone, userId),
         fetchTasksCompletedToday(userId, userTimezone),
         computeWeeklyCompletions(userId, userTimezone),
     ]);
