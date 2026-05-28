@@ -77,7 +77,9 @@ module.exports = {
             WHERE p.area_id IS NOT NULL
         `);
 
-        console.log('Successfully migrated existing project-area assignments to user_project_areas');
+        console.log(
+            'Successfully migrated existing project-area assignments to user_project_areas'
+        );
     },
 
     async down(queryInterface, Sequelize) {

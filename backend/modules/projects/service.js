@@ -134,8 +134,10 @@ class ProjectsService {
             areaFilterId = parseInt(area_id, 10);
         }
 
-        const projects =
-            await projectsRepository.findAllWithFilters(whereClause, userId);
+        const projects = await projectsRepository.findAllWithFilters(
+            whereClause,
+            userId
+        );
 
         const projectUids = projects.map((p) => p.uid).filter(Boolean);
         const shareCountMap =
@@ -200,8 +202,10 @@ class ProjectsService {
      */
     async getByUid(uid, userTimezone, userId) {
         const validatedUid = validateUid(uid);
-        const project =
-            await projectsRepository.findByUidWithIncludes(validatedUid, userId);
+        const project = await projectsRepository.findByUidWithIncludes(
+            validatedUid,
+            userId
+        );
 
         if (!project) {
             throw new NotFoundError('Project not found');

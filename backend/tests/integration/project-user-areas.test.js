@@ -140,7 +140,7 @@ describe('User-Specific Project-Area Assignments', () => {
     });
 
     describe('Area Ownership Validation', () => {
-        test('User should not be able to assign project to another user\'s area', async () => {
+        test("User should not be able to assign project to another user's area", async () => {
             // User A creates a project
             const projectResponse = await userAAgent.post('/api/project').send({
                 name: 'Test Project',
@@ -161,7 +161,7 @@ describe('User-Specific Project-Area Assignments', () => {
             );
         });
 
-        test('User should not be able to create project with another user\'s area', async () => {
+        test("User should not be able to create project with another user's area", async () => {
             // User A tries to create a project assigned to User B's area
             const projectResponse = await userAAgent.post('/api/project').send({
                 name: 'Invalid Project',
@@ -308,17 +308,21 @@ describe('User-Specific Project-Area Assignments', () => {
     });
 
     describe('Filtering and Grouping', () => {
-        test('Filtering projects by area should return only user\'s assignments', async () => {
+        test("Filtering projects by area should return only user's assignments", async () => {
             // User A creates two projects: one with area, one without
-            const project1Response = await userAAgent.post('/api/project').send({
-                name: 'Project in Area A',
-                area_id: areaA.id,
-            });
+            const project1Response = await userAAgent
+                .post('/api/project')
+                .send({
+                    name: 'Project in Area A',
+                    area_id: areaA.id,
+                });
             const project1 = project1Response.body;
 
-            const project2Response = await userAAgent.post('/api/project').send({
-                name: 'Project without Area',
-            });
+            const project2Response = await userAAgent
+                .post('/api/project')
+                .send({
+                    name: 'Project without Area',
+                });
             const project2 = project2Response.body;
 
             // Filter by Area A
@@ -331,7 +335,7 @@ describe('User-Specific Project-Area Assignments', () => {
             expect(filteredProjects.body.projects[0].uid).toBe(project1.uid);
         });
 
-        test('Grouping projects by area should group by user\'s assignments', async () => {
+        test("Grouping projects by area should group by user's assignments", async () => {
             // User A creates projects with and without area
             await userAAgent.post('/api/project').send({
                 name: 'Project in Area A',
@@ -351,7 +355,9 @@ describe('User-Specific Project-Area Assignments', () => {
             expect(groupedProjects.body['User A Area']).toBeDefined();
             expect(groupedProjects.body['User A Area'].length).toBe(1);
             expect(groupedProjects.body['No Area']).toBeDefined();
-            expect(groupedProjects.body['No Area'].length).toBeGreaterThanOrEqual(1);
+            expect(
+                groupedProjects.body['No Area'].length
+            ).toBeGreaterThanOrEqual(1);
         });
     });
 });
