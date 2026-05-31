@@ -1,6 +1,6 @@
 const request = require('supertest');
 const app = require('../../app');
-const { Project, User, Area, Task, Note } = require('../../models');
+const { Project, User, Area, Task, Note, UserProjectArea } = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
 
 describe('Projects Routes', () => {
@@ -81,6 +81,13 @@ describe('Projects Routes', () => {
                 name: 'Project 1',
                 description: 'First project',
                 user_id: user.id,
+                area_id: area.id,
+            });
+
+            // Create user_project_areas entry for project1
+            await UserProjectArea.create({
+                user_id: user.id,
+                project_id: project1.id,
                 area_id: area.id,
             });
 

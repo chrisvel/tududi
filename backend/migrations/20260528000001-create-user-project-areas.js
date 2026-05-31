@@ -4,11 +4,12 @@ const { safeCreateTable, safeAddIndex } = require('../utils/migration-utils');
 
 module.exports = {
     async up(queryInterface, Sequelize) {
-        // Create user_project_areas junction table
+        // Create user_project_areas junction table with composite primary key
         await safeCreateTable(queryInterface, 'user_project_areas', {
             user_id: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
+                primaryKey: true,
                 references: {
                     model: 'users',
                     key: 'id',
@@ -19,6 +20,7 @@ module.exports = {
             project_id: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
+                primaryKey: true,
                 references: {
                     model: 'projects',
                     key: 'id',
@@ -46,12 +48,6 @@ module.exports = {
                 type: Sequelize.DATE,
                 defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
             },
-        });
-
-        // Add composite primary key (user_id, project_id)
-        await safeAddIndex('user_project_areas', ['user_id', 'project_id'], {
-            unique: true,
-            name: 'user_project_areas_pkey',
         });
 
         // Add index on project_id for reverse lookups

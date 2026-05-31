@@ -335,6 +335,12 @@ class ProjectsRepository extends BaseRepository {
                     }
                 }
 
+                // Delete user_project_areas entries (CASCADE doesn't work with foreign_keys OFF)
+                await UserProjectArea.destroy({
+                    where: { project_id: project.id },
+                    transaction,
+                });
+
                 // Delete the project
                 await project.destroy({ transaction });
             } catch (error) {
@@ -371,11 +377,16 @@ class ProjectsRepository extends BaseRepository {
      * @param {number} areaId - Area ID
      */
     async setUserProjectArea(userId, projectId, areaId) {
-        const [userProjectArea, created] = await UserProjectArea.upsert({
-            user_id: userId,
-            project_id: projectId,
-            area_id: areaId,
+        // Use findOrCreate + update instead of upsert due to SQLite composite key issues
+        const [userProjectArea, created] = await UserProjectArea.findOrCreate({
+            where: { user_id: userId, project_id: projectId },
+            defaults: { area_id: areaId },
         });
+
+        if (!created && userProjectArea.area_id !== areaId) {
+            await userProjectArea.update({ area_id: areaId });
+        }
+
         return userProjectArea;
     }
 

@@ -1,9 +1,9 @@
 'use strict';
 
-const { Area } = require('../../models');
+const { Area, UserProjectArea } = require('../../models');
 const BaseRepository = require('../../shared/database/BaseRepository');
 
-const PUBLIC_ATTRIBUTES = ['uid', 'name', 'description'];
+const PUBLIC_ATTRIBUTES = ['id', 'uid', 'name', 'description'];
 const LIST_ATTRIBUTES = ['id', 'uid', 'name', 'description'];
 
 class AreasRepository extends BaseRepository {
@@ -55,6 +55,15 @@ class AreasRepository extends BaseRepository {
             name,
             description: description || '',
             user_id: userId,
+        });
+    }
+
+    /**
+     * Delete all user_project_areas entries for a given area.
+     */
+    async deleteUserProjectAreasByAreaId(areaId) {
+        return UserProjectArea.destroy({
+            where: { area_id: areaId },
         });
     }
 }

@@ -161,6 +161,7 @@ class ProjectsService {
             return {
                 ...projectJson,
                 Area: area, // Set Area from user-specific assignment
+                area_id: area ? area.id : null,
                 tags: sortTags(projectJson.Tags),
                 due_date_at: formatDate(project.due_date_at),
                 task_status: taskStatus,
@@ -252,6 +253,7 @@ class ProjectsService {
         return {
             ...projectJson,
             Area: area, // Set Area from user-specific assignment
+            area_id: area ? area.id : null,
             tags: sortTags(projectJson.Tags),
             Tasks: normalizedTasks,
             Notes: normalizedNotes,
@@ -339,6 +341,7 @@ class ProjectsService {
         return {
             ...project.toJSON(),
             uid: projectUid,
+            area_id: area_id || null,
             tags: [],
             due_date_at: formatDate(project.due_date_at),
         };
@@ -428,6 +431,7 @@ class ProjectsService {
         return {
             ...projectJson,
             Area: area, // Set Area from user-specific assignment
+            area_id: area ? area.id : null,
             tags: sortTags(projectJson.Tags),
             due_date_at: formatDate(projectWithAssociations.due_date_at),
         };

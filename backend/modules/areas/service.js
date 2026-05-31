@@ -83,6 +83,9 @@ class AreasService {
             throw new NotFoundError('Area not found.');
         }
 
+        // Delete user_project_areas entries first
+        await areasRepository.deleteUserProjectAreasByAreaId(area.id);
+
         await areasRepository.destroy(area);
 
         return null; // 204 No Content

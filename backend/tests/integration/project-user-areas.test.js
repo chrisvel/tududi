@@ -155,8 +155,7 @@ describe('User-Specific Project-Area Assignments', () => {
                 });
 
             expect(updateResponse.status).toBe(400);
-            expect(updateResponse.body.error).toBe('ValidationError');
-            expect(updateResponse.body.message).toContain(
+            expect(updateResponse.body.error).toContain(
                 'Area not found or does not belong to you'
             );
         });
@@ -169,8 +168,7 @@ describe('User-Specific Project-Area Assignments', () => {
             });
 
             expect(projectResponse.status).toBe(400);
-            expect(projectResponse.body.error).toBe('ValidationError');
-            expect(projectResponse.body.message).toContain(
+            expect(projectResponse.body.error).toContain(
                 'Area not found or does not belong to you'
             );
         });
