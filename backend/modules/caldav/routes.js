@@ -19,8 +19,33 @@ const { requireAuth } = require('../../middleware/auth');
 
 const router = express.Router();
 
-router.get('/.well-known/caldav', handleWellKnown);
+// GET redirects to /caldav/ per RFC 6764; PROPFIND returns root discovery for iOS accountsd
+router.all('/.well-known/caldav', (req, res, next) => {
+    if (req.method === 'GET') return handleWellKnown(req, res, next);
+    if (req.method !== 'PROPFIND') return next();
+    xmlParser(req, res, () =>
+        caldavAuth(req, res, () => handleRootPropfind(req, res, next))
+    );
+});
 
+// iOS accountsd probes PROPFIND / and PROPFIND /principals/ during account setup and refresh.
+// Gate on PROPFIND only — running caldavAuth on GET / would send WWW-Authenticate: Basic
+// and replace the web app login page with a browser Basic-Auth prompt.
+router.all('/', (req, res, next) => {
+    if (req.method !== 'PROPFIND') return next();
+    xmlParser(req, res, () =>
+        caldavAuth(req, res, () => handleRootPropfind(req, res, next))
+    );
+});
+
+router.all('/principals/', (req, res, next) => {
+    if (req.method !== 'PROPFIND') return next();
+    xmlParser(req, res, () =>
+        caldavAuth(req, res, () => handleRootPropfind(req, res, next))
+    );
+});
+
+router.options('/caldav/:username/', xmlParser, caldavAuth, handleOptions);
 router.options(
     '/caldav/:username/tasks/',
     xmlParser,

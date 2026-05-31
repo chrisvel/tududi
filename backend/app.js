@@ -67,7 +67,9 @@ app.use(
         filter: (req, res) => {
             if (
                 req.path.startsWith('/caldav/') ||
-                req.path.startsWith('/.well-known/caldav')
+                req.path.startsWith('/.well-known/caldav') ||
+                (req.method === 'PROPFIND' &&
+                    (req.path === '/' || req.path === '/principals/'))
             ) {
                 return false;
             }
