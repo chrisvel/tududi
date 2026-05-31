@@ -110,11 +110,9 @@ function parseCalendarQuery(xmlString) {
                     return resolve(parsedQuery);
                 }
 
-                const query =
-                    result['C:calendar-query'] || result['calendar-query'];
-                const filter = query?.['C:filter'] || query?.filter;
-                const compFilter =
-                    filter?.['C:comp-filter'] || filter?.['comp-filter'];
+                const query = findResultNode(result, 'calendar-query');
+                const filter = findResultNode(query, 'filter');
+                const compFilter = findResultNode(filter, 'comp-filter');
 
                 const parsedQuery = {
                     isMultiget: false,
@@ -129,8 +127,7 @@ function parseCalendarQuery(xmlString) {
                 };
 
                 if (compFilter) {
-                    const timeRange =
-                        compFilter['C:time-range'] || compFilter['time-range'];
+                    const timeRange = findResultNode(compFilter, 'time-range');
                     if (timeRange) {
                         parsedQuery.filters.timeRange = {
                             start: extractValue(timeRange.start),
@@ -138,13 +135,15 @@ function parseCalendarQuery(xmlString) {
                         };
                     }
 
-                    const propFilter =
-                        compFilter['C:prop-filter'] ||
-                        compFilter['prop-filter'];
+                    const propFilter = findResultNode(
+                        compFilter,
+                        'prop-filter'
+                    );
                     if (propFilter) {
-                        const textMatch =
-                            propFilter['C:text-match'] ||
-                            propFilter['text-match'];
+                        const textMatch = findResultNode(
+                            propFilter,
+                            'text-match'
+                        );
                         if (textMatch) {
                             parsedQuery.filters.textMatch = {
                                 property: extractValue(propFilter.name),
@@ -160,7 +159,7 @@ function parseCalendarQuery(xmlString) {
                     }
                 }
 
-                const prop = query?.['D:prop'] || query?.prop;
+                const prop = findResultNode(query, 'prop');
                 if (prop) {
                     parsedQuery.props = Object.keys(prop).map((key) =>
                         key.replace(/^[^:]+:/, '')
@@ -183,17 +182,21 @@ function parsePropfind(xmlString) {
             }
 
             try {
-                const propfind = result['D:propfind'] || result.propfind;
+                const propfind = findResultNode(result, 'propfind');
 
-                if (propfind['D:allprop'] || propfind.allprop) {
+                if (!propfind) {
                     return resolve({ type: 'allprop' });
                 }
 
-                if (propfind['D:propname'] || propfind.propname) {
+                if (findResultNode(propfind, 'allprop')) {
+                    return resolve({ type: 'allprop' });
+                }
+
+                if (findResultNode(propfind, 'propname')) {
                     return resolve({ type: 'propname' });
                 }
 
-                const prop = propfind['D:prop'] || propfind.prop;
+                const prop = findResultNode(propfind, 'prop');
                 if (prop) {
                     const requestedProps = Object.keys(prop).map((key) => {
                         const [namespace, name] = key.split(':').reverse();
