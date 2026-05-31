@@ -331,43 +331,47 @@ OIDC_AUTO_PROVISION=true
 
 ### Authentik
 
-**1. Create OAuth2/OIDC Provider**
+**1. Register Application with OAuth2/OpenID Provider**
+
+1. Log in to Authentik admin interface
+2. Go to **Applications** > **Applications**
+3. Click **Create with Provider**
+4. Configure:
+   - **Application Name:** Tududi
+   - **Slug:** (this will default to the app name in lower case, but you can override it--remember it as you will use it when configuring Tududi)
+5. Click **Next** and then choose **OAuth2/OpenID Provider**
+6. Note the **Client ID** and **Client Secret**; they will be needed for the Tududi configuration
+7. Click **Next** and set the following:
+   - **Authorization flow:** Choose your flow
+   - **Redirect URIs:**
+      - Click **Add entry**
+      - Leave it as a **Strict** origin
+      - `https://your-domain.com/api/oidc/callback/{application-slug}`
+   - **Signing Key:** Select a certificate
+8. Click **Next** and then click **Next** again at the bindings screen.
+9. Finally click **Submit** to create the application
+
+**2. Find Your Issuer URL**
 
 1. Log in to Authentik admin interface
 2. Go to **Applications** > **Providers**
-3. Click **Create** and select **OAuth2/OpenID Provider**
-4. Configure:
-   - **Name:** Tududi
-   - **Authorization flow:** Choose your flow
-   - **Redirect URIs:** `https://your-domain.com/api/oidc/callback/authentik`
-   - **Signing Key:** Select a certificate
-5. Note the **Client ID** and **Client Secret**
+3. Click on the provider you created above
+4. You will want to copy the **OpenID Configuration Issuer** which will have the format `https://{authentik-domain}/application/o/{application-slug}/`. This is the value for `OIDC_ISSUER_URL` in the Tududi configuration.
 
-**2. Create Application**
-
-1. Go to **Applications** > **Applications**
-2. Click **Create**
-3. Link the provider you just created
-4. Configure slug and other settings
-
-**3. Find Your Issuer URL**
-
-Format: `https://{authentik-domain}/application/o/{application-slug}/`
-
-Example: `https://auth.example.com/application/o/tududi/`
-
-**4. Configure Tududi**
+**3. Configure Tududi**
 
 ```bash
 OIDC_ENABLED=true
 OIDC_PROVIDER_NAME=Authentik
-OIDC_PROVIDER_SLUG=authentik
-OIDC_ISSUER_URL=https://auth.example.com/application/o/tududi/
+OIDC_PROVIDER_SLUG={application-slug}
+OIDC_ISSUER_URL=https://{authentik-domain}/application/o/{application-slug}/
 OIDC_CLIENT_ID=xxxxxxxxxxxxxxxxxxxx
 OIDC_CLIENT_SECRET=xxxxxxxxxxxxxxxxxxxx
 OIDC_SCOPE=openid profile email
 OIDC_AUTO_PROVISION=true
 ```
+
+**Note:** You will need to replace `{application-slug}`, `{authentik-domain}`, `OIDC_CLIENT_ID` and `OIDC_CLIENT_SECRET` with appropriate values you gathered when creating the application in Authentik.
 
 ---
 
