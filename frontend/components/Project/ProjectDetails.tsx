@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { getCsrfToken } from '../../utils/csrfService';
 import {
     MagnifyingGlassIcon,
     EllipsisHorizontalCircleIcon,
