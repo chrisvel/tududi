@@ -3,8 +3,8 @@ const vTodoSerializer = require('../../modules/caldav/icalendar/vtodo-serializer
 const vTodoParser = require('../../modules/caldav/icalendar/vtodo-parser');
 
 describe('CalDAV Timezone Handling', () => {
-    describe('UTC DateTime Conversion', () => {
-        it('should correctly convert local dates to UTC', async () => {
+    describe('DATE-only Serialization', () => {
+        it('should serialize due_date and defer_until as VALUE=DATE (no time)', async () => {
             const task = {
                 uid: 'tz-test-1',
                 name: 'Timezone Test',
@@ -19,10 +19,12 @@ describe('CalDAV Timezone Handling', () => {
             const vtodoComp = comp.getFirstSubcomponent('vtodo');
 
             const due = vtodoComp.getFirstPropertyValue('due');
-            expect(due.toICALString()).toBe('20260420T140000Z');
+            expect(due.isDate).toBe(true);
+            expect(due.toICALString()).toBe('20260420');
 
             const dtstart = vtodoComp.getFirstPropertyValue('dtstart');
-            expect(dtstart.toICALString()).toBe('20260420T100000Z');
+            expect(dtstart.isDate).toBe(true);
+            expect(dtstart.toICALString()).toBe('20260420');
         });
 
         it('should parse UTC dates from VTODO', async () => {
@@ -152,7 +154,8 @@ END:VCALENDAR`;
             const vtodoComp = comp.getFirstSubcomponent('vtodo');
 
             const due = vtodoComp.getFirstPropertyValue('due');
-            expect(due.toICALString()).toBe('20260420T140000Z');
+            expect(due.isDate).toBe(true);
+            expect(due.toICALString()).toBe('20260420');
 
             const rrule = vtodoComp.getFirstPropertyValue('rrule');
             expect(rrule.freq).toBe('DAILY');
@@ -289,7 +292,7 @@ END:VCALENDAR`;
             }).not.toThrow();
         });
 
-        it('should round-trip preserve UTC timestamps', async () => {
+        it('should round-trip preserve the calendar date (date-only, no time)', async () => {
             const originalTask = {
                 uid: 'roundtrip-tz-test',
                 name: 'Roundtrip Timezone Test',
@@ -300,9 +303,11 @@ END:VCALENDAR`;
             const vtodo = vTodoSerializer.serializeTaskToVTODO(originalTask);
             const parsedTask = await vTodoParser.parseVTODOToTask(vtodo);
 
-            expect(new Date(parsedTask.due_date).getTime()).toBe(
-                new Date(originalTask.due_date).getTime()
-            );
+            // Only the calendar date is preserved (VALUE=DATE, no time component)
+            const dueDate = new Date(parsedTask.due_date);
+            expect(dueDate.getUTCFullYear()).toBe(2026);
+            expect(dueDate.getUTCMonth()).toBe(3); // April
+            expect(dueDate.getUTCDate()).toBe(20);
         });
 
         it('should handle leap year dates correctly', async () => {

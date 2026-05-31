@@ -27,8 +27,14 @@ function serializeTaskToVTODO(task, options = {}) {
 
     if (task.due_date) {
         try {
-            const dueTime = ICAL.Time.fromJSDate(new Date(task.due_date), true);
-            vtodo.addPropertyWithValue('due', dueTime);
+            const d = new Date(task.due_date);
+            const dueDate = new ICAL.Time({
+                year: d.getUTCFullYear(),
+                month: d.getUTCMonth() + 1,
+                day: d.getUTCDate(),
+                isDate: true,
+            });
+            vtodo.addPropertyWithValue('due', dueDate);
         } catch (error) {
             console.error('Error formatting due date:', error);
         }
@@ -36,11 +42,14 @@ function serializeTaskToVTODO(task, options = {}) {
 
     if (task.defer_until) {
         try {
-            const startTime = ICAL.Time.fromJSDate(
-                new Date(task.defer_until),
-                true
-            );
-            vtodo.addPropertyWithValue('dtstart', startTime);
+            const d = new Date(task.defer_until);
+            const startDate = new ICAL.Time({
+                year: d.getUTCFullYear(),
+                month: d.getUTCMonth() + 1,
+                day: d.getUTCDate(),
+                isDate: true,
+            });
+            vtodo.addPropertyWithValue('dtstart', startDate);
         } catch (error) {
             console.error('Error formatting defer_until date:', error);
         }
