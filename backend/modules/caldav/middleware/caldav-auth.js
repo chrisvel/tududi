@@ -1,23 +1,31 @@
 const bcrypt = require('bcrypt');
 const { User } = require('../../../models');
+const { findValidTokenByValue } = require('../../users/apiTokenService');
 
 async function caldavAuth(req, res, next) {
     try {
-        if (
-            req.session?.userId ||
-            req.headers.authorization?.startsWith('Bearer ')
-        ) {
-            if (req.session?.userId) {
-                const user = await User.findByPk(req.session.userId);
+        if (req.session?.userId) {
+            const user = await User.findByPk(req.session.userId);
+            if (user) {
+                req.currentUser = user;
+                return next();
+            }
+        }
+
+        if (req.headers.authorization?.startsWith('Bearer ')) {
+            const tokenValue = req.headers.authorization.slice(7);
+            const tokenRecord = await findValidTokenByValue(tokenValue);
+            if (tokenRecord) {
+                const user = await User.findByPk(tokenRecord.user_id);
                 if (user) {
                     req.currentUser = user;
                     return next();
                 }
             }
-
-            if (req.headers.authorization?.startsWith('Bearer ')) {
-                return next();
-            }
+            return res
+                .status(401)
+                .set('WWW-Authenticate', 'Basic realm="Tududi CalDAV"')
+                .json({ error: 'Invalid or expired token' });
         }
 
         const authHeader = req.headers.authorization;
