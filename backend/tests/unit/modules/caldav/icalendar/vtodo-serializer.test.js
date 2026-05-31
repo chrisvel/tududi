@@ -75,18 +75,20 @@ describe('VTODO Serializer', () => {
         expect(vtodoString).toContain('DESCRIPTION:Test note');
     });
 
-    it('should include DUE date', async () => {
+    it('should include DUE date as VALUE=DATE (no time, no UTC shift)', async () => {
         const vtodoString = await serializeTaskToVTODO(basicTask);
-        expect(vtodoString).toContain('DUE:20260501T120000Z');
+        expect(vtodoString).toContain('DUE;VALUE=DATE:20260501');
+        expect(vtodoString).not.toContain('DUE:20260501T');
     });
 
-    it('should include DTSTART for defer_until', async () => {
+    it('should include DTSTART for defer_until as VALUE=DATE', async () => {
         const task = {
             ...basicTask,
             defer_until: new Date('2026-04-25T09:00:00Z'),
         };
         const vtodoString = await serializeTaskToVTODO(task);
-        expect(vtodoString).toContain('DTSTART:20260425T090000Z');
+        expect(vtodoString).toContain('DTSTART;VALUE=DATE:20260425');
+        expect(vtodoString).not.toContain('DTSTART:20260425T');
     });
 
     it('should include COMPLETED date for completed tasks', async () => {

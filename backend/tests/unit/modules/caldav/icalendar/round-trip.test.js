@@ -27,12 +27,13 @@ describe('CalDAV Round-Trip Conversion', () => {
         expect(parsedTask.status).toBe(originalTask.status);
         expect(parsedTask.priority).toBe(originalTask.priority);
         expect(parsedTask.note).toBe(originalTask.note);
-        expect(parsedTask.due_date.getTime()).toBe(
-            originalTask.due_date.getTime()
-        );
-        expect(parsedTask.defer_until.getTime()).toBe(
-            originalTask.defer_until.getTime()
-        );
+        // due_date and defer_until are date-only — only the calendar date is preserved
+        expect(parsedTask.due_date.getUTCFullYear()).toBe(2026);
+        expect(parsedTask.due_date.getUTCMonth()).toBe(5); // June
+        expect(parsedTask.due_date.getUTCDate()).toBe(1);
+        expect(parsedTask.defer_until.getUTCFullYear()).toBe(2026);
+        expect(parsedTask.defer_until.getUTCMonth()).toBe(4); // May
+        expect(parsedTask.defer_until.getUTCDate()).toBe(25);
     });
 
     it('should preserve completed task data', async () => {
