@@ -54,6 +54,14 @@ function buildError(errorType, description) {
     };
 }
 
+function findResultNode(obj, localName) {
+    if (!obj) return null;
+    const key = Object.keys(obj).find(
+        (k) => k === localName || k.endsWith(`:${localName}`)
+    );
+    return key ? obj[key] : null;
+}
+
 function parseCalendarQuery(xmlString) {
     return new Promise((resolve, reject) => {
         xmlParser.parseString(xmlString, (err, result) => {
@@ -62,18 +70,55 @@ function parseCalendarQuery(xmlString) {
             }
 
             try {
+                const extractValue = (attr) => {
+                    if (!attr) return null;
+                    return typeof attr === 'string' ? attr : attr.value;
+                };
+
+                const multiget = findResultNode(result, 'calendar-multiget');
+                if (multiget) {
+                    const parsedQuery = {
+                        isMultiget: true,
+                        hrefs: [],
+                        props: ['calendar-data', 'getetag'],
+                        filters: {
+                            componentType: 'VTODO',
+                            timeRange: null,
+                            textMatch: null,
+                        },
+                    };
+
+                    const propNode = findResultNode(multiget, 'prop');
+                    if (propNode) {
+                        parsedQuery.props = Object.keys(propNode).map((key) =>
+                            key.replace(/^[^:]+:/, '')
+                        );
+                    }
+
+                    const hrefNode = findResultNode(multiget, 'href');
+                    if (hrefNode) {
+                        const hrefArray = Array.isArray(hrefNode)
+                            ? hrefNode
+                            : [hrefNode];
+                        parsedQuery.hrefs = hrefArray
+                            .map((h) =>
+                                (typeof h === 'string' ? h : h._).trim()
+                            )
+                            .filter(Boolean);
+                    }
+
+                    return resolve(parsedQuery);
+                }
+
                 const query =
                     result['C:calendar-query'] || result['calendar-query'];
                 const filter = query?.['C:filter'] || query?.filter;
                 const compFilter =
                     filter?.['C:comp-filter'] || filter?.['comp-filter'];
 
-                const extractValue = (attr) => {
-                    if (!attr) return null;
-                    return typeof attr === 'string' ? attr : attr.value;
-                };
-
                 const parsedQuery = {
+                    isMultiget: false,
+                    hrefs: [],
                     props: [],
                     filters: {
                         componentType:
@@ -206,6 +251,7 @@ module.exports = {
     buildError,
     buildCalendarData,
     buildHref,
+    findResultNode,
     parseCalendarQuery,
     parsePropfind,
     escapeXml,

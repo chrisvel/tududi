@@ -30,6 +30,67 @@ async function handleReport(req, res) {
                 .json({ error: 'Invalid calendar-query request' });
         }
 
+        if (queryRequest.isMultiget) {
+            const responses = [];
+
+            for (const href of queryRequest.hrefs) {
+                const match = href.match(/\/([^/]+)\.ics$/);
+                if (!match) {
+                    responses.push(
+                        buildResponse(
+                            href,
+                            buildPropstat({}, 'HTTP/1.1 404 Not Found')
+                        )
+                    );
+                    continue;
+                }
+
+                const uid = decodeURIComponent(match[1]);
+                const task = await taskRepository.findByUid(uid);
+
+                if (!task || task.user_id !== userId) {
+                    responses.push(
+                        buildResponse(
+                            href,
+                            buildPropstat({}, 'HTTP/1.1 404 Not Found')
+                        )
+                    );
+                    continue;
+                }
+
+                try {
+                    const etag = generateETag(task);
+                    const vtodo =
+                        await vtodoSerializer.serializeTaskToVTODO(task);
+                    const propstat = buildPropstat({
+                        'D:getetag': etag,
+                        'C:calendar-data': vtodo,
+                    });
+                    responses.push(buildResponse(href, propstat));
+                } catch (error) {
+                    console.error(
+                        `Error building multiget response for ${uid}:`,
+                        error
+                    );
+                    responses.push(
+                        buildResponse(
+                            href,
+                            buildPropstat(
+                                {},
+                                'HTTP/1.1 500 Internal Server Error'
+                            )
+                        )
+                    );
+                }
+            }
+
+            const xml = buildMultistatus(responses);
+            return res
+                .status(207)
+                .set('Content-Type', 'application/xml; charset=utf-8')
+                .send(xml);
+        }
+
         const where = { user_id: userId };
 
         if (queryRequest.filters.timeRange) {
