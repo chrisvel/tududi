@@ -162,6 +162,27 @@ function serializeTaskToVTODO(task, options = {}) {
         }
     }
 
+    if (task.reminder_at) {
+        try {
+            const valarm = new ICAL.Component('valarm');
+            valarm.addPropertyWithValue('action', 'DISPLAY');
+            valarm.addPropertyWithValue('description', 'Reminder');
+
+            const triggerTime = ICAL.Time.fromJSDate(
+                new Date(task.reminder_at),
+                true
+            );
+            const triggerProp = new ICAL.Property('trigger');
+            triggerProp.resetType('date-time');
+            triggerProp.setValue(triggerTime);
+            valarm.addProperty(triggerProp);
+
+            vtodo.addSubcomponent(valarm);
+        } catch (error) {
+            console.error('Error formatting reminder_at:', error);
+        }
+    }
+
     comp.addSubcomponent(vtodo);
 
     return comp.toString();

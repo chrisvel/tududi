@@ -4,6 +4,7 @@ import { ClockIcon } from '@heroicons/react/24/outline';
 import TaskDeferUntilSection from '../TaskForm/TaskDeferUntilSection';
 import { Task } from '../../../entities/Task';
 import {
+    formatDateByCountry,
     formatDateTimeByCountry,
     getUserTimezone,
 } from '../../../utils/dateUtils';
@@ -34,47 +35,89 @@ const TaskDeferUntilCard: React.FC<TaskDeferUntilCardProps> = ({
         const date = new Date(deferUntil);
         if (Number.isNaN(date.getTime())) return null;
 
-        // Format datetime based on user's timezone-derived country
         const timezone = getUserTimezone();
         const country = getCountryFromTimezone(timezone);
-        const formattedDateTime = formatDateTimeByCountry(date, country);
 
-        const now = new Date();
-        const diffMs = date.getTime() - now.getTime();
-        const diffMins = Math.round(diffMs / (1000 * 60));
-        const diffHours = Math.round(diffMs / (1000 * 60 * 60));
-        const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+        // A value stored as UTC midnight came from a CalDAV DATE-only field.
+        // Display it without a time component to avoid spurious offset noise
+        // (e.g. UTC+2 would otherwise show "02:00").
+        const isDateOnly =
+            date.getUTCHours() === 0 &&
+            date.getUTCMinutes() === 0 &&
+            date.getUTCSeconds() === 0 &&
+            date.getUTCMilliseconds() === 0;
 
+        let formattedDateTime: string;
         let relativeText = '';
-        if (diffMins < 0) {
-            if (diffDays < -1) {
+
+        if (isDateOnly) {
+            formattedDateTime = formatDateByCountry(date, country);
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const target = new Date(date);
+            target.setUTCHours(0, 0, 0, 0);
+            const diffDays = Math.round(
+                (target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+            );
+
+            if (diffDays === 0) {
+                relativeText = t('dateIndicators.today', 'today');
+            } else if (diffDays === 1) {
+                relativeText = t('dateIndicators.tomorrow', 'tomorrow');
+            } else if (diffDays === -1) {
+                relativeText = t('dateIndicators.yesterday', 'yesterday');
+            } else if (diffDays > 0) {
+                relativeText = t('task.inDays', 'in {{count}} days', {
+                    count: diffDays,
+                });
+            } else {
                 relativeText = t('task.daysAgo', '{{count}} days ago', {
                     count: Math.abs(diffDays),
                 });
-            } else if (diffHours < -1) {
-                relativeText = t('task.hoursAgo', '{{count}} hours ago', {
-                    count: Math.abs(diffHours),
+            }
+        } else {
+            formattedDateTime = formatDateTimeByCountry(date, country);
+
+            const now = new Date();
+            const diffMs = date.getTime() - now.getTime();
+            const diffMins = Math.round(diffMs / (1000 * 60));
+            const diffHours = Math.round(diffMs / (1000 * 60 * 60));
+            const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+
+            if (diffMins < 0) {
+                if (diffDays < -1) {
+                    relativeText = t('task.daysAgo', '{{count}} days ago', {
+                        count: Math.abs(diffDays),
+                    });
+                } else if (diffHours < -1) {
+                    relativeText = t('task.hoursAgo', '{{count}} hours ago', {
+                        count: Math.abs(diffHours),
+                    });
+                } else {
+                    relativeText = t(
+                        'task.minutesAgo',
+                        '{{count}} minutes ago',
+                        { count: Math.abs(diffMins) }
+                    );
+                }
+            } else if (diffMins < 60) {
+                relativeText = t('task.inMinutes', 'in {{count}} minutes', {
+                    count: diffMins,
+                });
+            } else if (diffHours < 24) {
+                relativeText = t('task.inHours', 'in {{count}} hours', {
+                    count: diffHours,
                 });
             } else {
-                relativeText = t('task.minutesAgo', '{{count}} minutes ago', {
-                    count: Math.abs(diffMins),
+                relativeText = t('task.inDays', 'in {{count}} days', {
+                    count: diffDays,
                 });
             }
-        } else if (diffMins < 60) {
-            relativeText = t('task.inMinutes', 'in {{count}} minutes', {
-                count: diffMins,
-            });
-        } else if (diffHours < 24) {
-            relativeText = t('task.inHours', 'in {{count}} hours', {
-                count: diffHours,
-            });
-        } else {
-            relativeText = t('task.inDays', 'in {{count}} days', {
-                count: diffDays,
-            });
         }
 
-        return { formattedDateTime, relativeText, isPast: diffMs < 0 };
+        const isPast = date.getTime() < new Date().getTime();
+        return { formattedDateTime, relativeText, isPast };
     };
 
     return (

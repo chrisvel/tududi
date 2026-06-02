@@ -28,6 +28,10 @@ module.exports = (sequelize) => {
                 type: DataTypes.DATE,
                 allowNull: true,
             },
+            reminder_at: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
             priority: {
                 type: DataTypes.INTEGER,
                 allowNull: true,

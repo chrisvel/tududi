@@ -21,6 +21,7 @@ async function parseVTODOToTask(vtodoString) {
             note: null,
             due_date: null,
             defer_until: null,
+            reminder_at: null,
             completed_at: null,
             status: 0,
             priority: 0,
@@ -147,6 +148,23 @@ async function parseVTODOToTask(vtodoString) {
         const order = vtodo.getFirstPropertyValue('x-tududi-order');
         if (order) {
             task.order = parseInt(order, 10);
+        }
+
+        const valarm = vtodo.getFirstSubcomponent('valarm');
+        if (valarm) {
+            const triggerProp = valarm.getFirstProperty('trigger');
+            if (triggerProp) {
+                const valueParam = triggerProp.getParameter('value');
+                if (valueParam && valueParam.toUpperCase() === 'DATE-TIME') {
+                    const triggerVal = triggerProp.getFirstValue();
+                    if (
+                        triggerVal &&
+                        typeof triggerVal.toJSDate === 'function'
+                    ) {
+                        task.reminder_at = triggerVal.toJSDate();
+                    }
+                }
+            }
         }
 
         return task;
