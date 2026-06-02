@@ -140,6 +140,8 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
+            if (showDiscardDialog) return;
+
             const target = event.target as Node;
 
             // Check if click is inside modal
@@ -168,7 +170,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [isOpen, modalJustOpened]);
+    }, [isOpen, modalJustOpened, showDiscardDialog]);
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
