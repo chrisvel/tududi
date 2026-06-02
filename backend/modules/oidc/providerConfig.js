@@ -6,6 +6,10 @@ function parseCommaSeparated(value) {
         .filter(Boolean);
 }
 
+function isEnvTrue(value) {
+    return (value || '').toLowerCase() === 'true';
+}
+
 function normalizeScope(scope) {
     if (!scope) return 'openid profile email';
 
@@ -22,7 +26,7 @@ function normalizeScope(scope) {
 }
 
 function loadProvidersFromEnv() {
-    if (process.env.OIDC_ENABLED !== 'true') {
+    if (!isEnvTrue(process.env.OIDC_ENABLED)) {
         console.log(
             'OIDC is disabled. Set OIDC_ENABLED=true to enable SSO authentication.'
         );
@@ -89,8 +93,8 @@ function loadProvidersFromEnv() {
         if (!provider.clientSecret) missingFields.push('OIDC_CLIENT_SECRET');
 
         if (missingFields.length > 0) {
-            console.error(
-                `Cannot load OIDC provider "${provider.name}": missing required fields: ${missingFields.join(', ')}`
+            console.log(
+                `[OIDC] Cannot load provider "${provider.name}": missing required fields: ${missingFields.join(', ')}`
             );
             return [];
         }
@@ -100,8 +104,8 @@ function loadProvidersFromEnv() {
     }
 
     if (providers.length === 0) {
-        console.warn(
-            'OIDC is enabled but no valid providers are configured. Please check your environment variables.'
+        console.log(
+            '[OIDC] Enabled but no valid providers configured. Check OIDC_PROVIDER_NAME, OIDC_ISSUER_URL, OIDC_CLIENT_ID, OIDC_CLIENT_SECRET.'
         );
     }
 
@@ -129,7 +133,7 @@ function getProvider(slug) {
 }
 
 function isOidcEnabled() {
-    return process.env.OIDC_ENABLED === 'true' && getAllProviders().length > 0;
+    return isEnvTrue(process.env.OIDC_ENABLED) && getAllProviders().length > 0;
 }
 
 function reloadProviders() {

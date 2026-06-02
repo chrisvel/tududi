@@ -14,7 +14,7 @@ const getBearerToken = (req) => {
 // Sends a 401 and, when OIDC is enabled, sets WWW-Authenticate so OAuth2 clients
 // can discover the authorization server (RFC 9728).
 const unauthorized = (res, message) => {
-    if (process.env.OIDC_ENABLED === 'true') {
+    if ((process.env.OIDC_ENABLED || '').toLowerCase() === 'true') {
         const baseUrl = process.env.BASE_URL?.replace(/\/$/, ''); // trim trailing slash
         if (baseUrl) {
             res.set(
@@ -81,7 +81,7 @@ const requireAuth = async (req, res, next) => {
         }
 
         // OAuth2 JWT — validate via OIDC provider JWKS
-        if (process.env.OIDC_ENABLED === 'true') {
+        if ((process.env.OIDC_ENABLED || '').toLowerCase() === 'true') {
             let payload;
             try {
                 payload = await validateAccessToken(bearerToken);

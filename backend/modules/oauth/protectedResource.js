@@ -8,7 +8,10 @@
  */
 function handleProtectedResource(req, res) {
     const issuerUrl = process.env.OIDC_ISSUER_URL?.replace(/\/$/, ''); // trim trailing slash
-    if (!issuerUrl || process.env.OIDC_ENABLED !== 'true') {
+    if (
+        !issuerUrl ||
+        (process.env.OIDC_ENABLED || '').toLowerCase() !== 'true'
+    ) {
         return res.status(404).end();
     }
 

@@ -33,6 +33,46 @@ describe('OIDC Provider Configuration', () => {
         });
     });
 
+    describe('OIDC_ENABLED case-insensitivity', () => {
+        const validProvider = () => {
+            process.env.OIDC_PROVIDER_NAME = 'TestProvider';
+            process.env.OIDC_PROVIDER_SLUG = 'test';
+            process.env.OIDC_ISSUER_URL = 'https://idp.example.com';
+            process.env.OIDC_CLIENT_ID = 'client123';
+            process.env.OIDC_CLIENT_SECRET = 'secret123';
+        };
+
+        afterEach(() => {
+            delete process.env.OIDC_PROVIDER_NAME;
+            delete process.env.OIDC_PROVIDER_SLUG;
+            delete process.env.OIDC_ISSUER_URL;
+            delete process.env.OIDC_CLIENT_ID;
+            delete process.env.OIDC_CLIENT_SECRET;
+        });
+
+        it('should enable OIDC when OIDC_ENABLED is "True" (docker-compose v1 YAML boolean)', () => {
+            const consoleLogSpy = jest
+                .spyOn(console, 'log')
+                .mockImplementation();
+            validProvider();
+            process.env.OIDC_ENABLED = 'True';
+            providerConfig.reloadProviders();
+            expect(providerConfig.isOidcEnabled()).toBe(true);
+            consoleLogSpy.mockRestore();
+        });
+
+        it('should enable OIDC when OIDC_ENABLED is "TRUE"', () => {
+            const consoleLogSpy = jest
+                .spyOn(console, 'log')
+                .mockImplementation();
+            validProvider();
+            process.env.OIDC_ENABLED = 'TRUE';
+            providerConfig.reloadProviders();
+            expect(providerConfig.isOidcEnabled()).toBe(true);
+            consoleLogSpy.mockRestore();
+        });
+    });
+
     describe('single provider configuration', () => {
         it('should load single provider from .env', () => {
             process.env.OIDC_ENABLED = 'true';
@@ -174,8 +214,8 @@ describe('OIDC Provider Configuration', () => {
         });
 
         it('should return empty array if configuration is incomplete', () => {
-            const consoleErrorSpy = jest
-                .spyOn(console, 'error')
+            const consoleLogSpy = jest
+                .spyOn(console, 'log')
                 .mockImplementation();
 
             process.env.OIDC_ENABLED = 'true';
@@ -185,11 +225,11 @@ describe('OIDC Provider Configuration', () => {
             const providers = providerConfig.getAllProviders();
 
             expect(providers).toEqual([]);
-            expect(consoleErrorSpy).toHaveBeenCalledWith(
-                expect.stringContaining('Cannot load OIDC provider')
+            expect(consoleLogSpy).toHaveBeenCalledWith(
+                expect.stringContaining('Cannot load provider')
             );
 
-            consoleErrorSpy.mockRestore();
+            consoleLogSpy.mockRestore();
         });
     });
 
@@ -364,20 +404,20 @@ describe('OIDC Provider Configuration', () => {
         });
 
         it('should return false when no providers configured', () => {
-            const consoleWarnSpy = jest
-                .spyOn(console, 'warn')
+            const consoleLogSpy = jest
+                .spyOn(console, 'log')
                 .mockImplementation();
 
             process.env.OIDC_ENABLED = 'true';
             providerConfig.reloadProviders();
             expect(providerConfig.isOidcEnabled()).toBe(false);
-            expect(consoleWarnSpy).toHaveBeenCalledWith(
+            expect(consoleLogSpy).toHaveBeenCalledWith(
                 expect.stringContaining(
-                    'OIDC is enabled but no valid providers are configured'
+                    'Enabled but no valid providers configured'
                 )
             );
 
-            consoleWarnSpy.mockRestore();
+            consoleLogSpy.mockRestore();
         });
     });
 
