@@ -53,6 +53,7 @@ const TagModal: React.FC<TagModalProps> = ({
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
+            if (showDiscardDialog) return;
             if (
                 modalRef.current &&
                 !modalRef.current.contains(event.target as Node)
@@ -67,7 +68,7 @@ const TagModal: React.FC<TagModalProps> = ({
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [isOpen]);
+    }, [isOpen, showDiscardDialog]);
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {

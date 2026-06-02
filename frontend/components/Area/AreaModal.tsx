@@ -56,6 +56,7 @@ const AreaModal: React.FC<AreaModalProps> = ({
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
+            if (showDiscardDialog) return;
             if (
                 modalRef.current &&
                 !modalRef.current.contains(event.target as Node)
@@ -70,7 +71,7 @@ const AreaModal: React.FC<AreaModalProps> = ({
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [isOpen]);
+    }, [isOpen, showDiscardDialog]);
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
