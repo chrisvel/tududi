@@ -9,34 +9,54 @@ module.exports = {
         );
 
         for (const user of users) {
-            const prefs = user.notification_preferences;
-
-            if (prefs.dueTasks) {
-                prefs.dueTasks.telegram = false;
-            }
-            if (prefs.overdueTasks) {
-                prefs.overdueTasks.telegram = false;
-            }
-            if (prefs.dueProjects) {
-                prefs.dueProjects.telegram = false;
-            }
-            if (prefs.overdueProjects) {
-                prefs.overdueProjects.telegram = false;
-            }
-            if (prefs.deferUntil) {
-                prefs.deferUntil.telegram = false;
-            }
-
-            // Update the user's preferences
-            await queryInterface.sequelize.query(
-                'UPDATE users SET notification_preferences = :prefs WHERE id = :id',
-                {
-                    replacements: {
-                        prefs: JSON.stringify(prefs),
-                        id: user.id,
-                    },
+            let prefs = user.notification_preferences;
+            if (typeof prefs === 'string') {
+                try {
+                    prefs = JSON.parse(prefs);
+                } catch {
+                    continue;
                 }
-            );
+            }
+
+            let needsUpdate = false;
+            if (prefs.dueTasks && prefs.dueTasks.telegram === undefined) {
+                prefs.dueTasks.telegram = false;
+                needsUpdate = true;
+            }
+            if (
+                prefs.overdueTasks &&
+                prefs.overdueTasks.telegram === undefined
+            ) {
+                prefs.overdueTasks.telegram = false;
+                needsUpdate = true;
+            }
+            if (prefs.dueProjects && prefs.dueProjects.telegram === undefined) {
+                prefs.dueProjects.telegram = false;
+                needsUpdate = true;
+            }
+            if (
+                prefs.overdueProjects &&
+                prefs.overdueProjects.telegram === undefined
+            ) {
+                prefs.overdueProjects.telegram = false;
+                needsUpdate = true;
+            }
+            if (prefs.deferUntil && prefs.deferUntil.telegram === undefined) {
+                prefs.deferUntil.telegram = false;
+                needsUpdate = true;
+            }
+
+            if (needsUpdate) {
+                await queryInterface.sequelize.query(
+                    'UPDATE users SET notification_preferences = :prefs WHERE id = :id',
+                    {
+                        replacements: {
+                            prefs: JSON.stringify(prefs),
+                            id: user.id,
+                        },
+                    }
+                );
+            }
         }
 
         await safeChangeColumn(
@@ -90,33 +110,54 @@ module.exports = {
         );
 
         for (const user of users) {
-            const prefs = user.notification_preferences;
-
-            if (prefs.dueTasks) {
-                delete prefs.dueTasks.telegram;
-            }
-            if (prefs.overdueTasks) {
-                delete prefs.overdueTasks.telegram;
-            }
-            if (prefs.dueProjects) {
-                delete prefs.dueProjects.telegram;
-            }
-            if (prefs.overdueProjects) {
-                delete prefs.overdueProjects.telegram;
-            }
-            if (prefs.deferUntil) {
-                delete prefs.deferUntil.telegram;
-            }
-
-            await queryInterface.sequelize.query(
-                'UPDATE users SET notification_preferences = :prefs WHERE id = :id',
-                {
-                    replacements: {
-                        prefs: JSON.stringify(prefs),
-                        id: user.id,
-                    },
+            let prefs = user.notification_preferences;
+            if (typeof prefs === 'string') {
+                try {
+                    prefs = JSON.parse(prefs);
+                } catch {
+                    continue;
                 }
-            );
+            }
+
+            let needsUpdate = false;
+            if (prefs.dueTasks && prefs.dueTasks.telegram !== undefined) {
+                delete prefs.dueTasks.telegram;
+                needsUpdate = true;
+            }
+            if (
+                prefs.overdueTasks &&
+                prefs.overdueTasks.telegram !== undefined
+            ) {
+                delete prefs.overdueTasks.telegram;
+                needsUpdate = true;
+            }
+            if (prefs.dueProjects && prefs.dueProjects.telegram !== undefined) {
+                delete prefs.dueProjects.telegram;
+                needsUpdate = true;
+            }
+            if (
+                prefs.overdueProjects &&
+                prefs.overdueProjects.telegram !== undefined
+            ) {
+                delete prefs.overdueProjects.telegram;
+                needsUpdate = true;
+            }
+            if (prefs.deferUntil && prefs.deferUntil.telegram !== undefined) {
+                delete prefs.deferUntil.telegram;
+                needsUpdate = true;
+            }
+
+            if (needsUpdate) {
+                await queryInterface.sequelize.query(
+                    'UPDATE users SET notification_preferences = :prefs WHERE id = :id',
+                    {
+                        replacements: {
+                            prefs: JSON.stringify(prefs),
+                            id: user.id,
+                        },
+                    }
+                );
+            }
         }
 
         await safeChangeColumn(
