@@ -67,6 +67,14 @@ module.exports = {
                     prefs = {};
                 }
             }
+            // Handle double-encoded JSON caused by bug in 20251209000001
+            if (typeof prefs === 'string') {
+                try {
+                    prefs = JSON.parse(prefs);
+                } catch {
+                    prefs = {};
+                }
+            }
             let needsUpdate = false;
 
             // Check if all required keys exist
