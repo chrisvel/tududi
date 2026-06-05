@@ -3,6 +3,7 @@ const provisioningService = require('./provisioningService');
 const oidcIdentityService = require('./oidcIdentityService');
 const providerConfig = require('./providerConfig');
 const auditService = require('./auditService');
+const { User } = require('../../models');
 
 async function listProviders(req, res) {
     try {
@@ -43,7 +44,20 @@ async function handleCallback(req, res) {
         const result = await oidcService.handleCallback(slug, req.query);
 
         if (result.linkMode) {
-            if (!req.currentUser) {
+            // OIDC routes run before the global requireAuth middleware so
+            // req.currentUser is never set here; resolve from the session instead.
+            const sessionUserId = req.session && req.session.userId;
+            if (!sessionUserId) {
+                return res.redirect(
+                    '/login?error=' +
+                        encodeURIComponent(
+                            'Authentication required to link account'
+                        )
+                );
+            }
+
+            const linkUser = await User.findByPk(sessionUserId);
+            if (!linkUser) {
                 return res.redirect(
                     '/login?error=' +
                         encodeURIComponent(
@@ -53,12 +67,12 @@ async function handleCallback(req, res) {
             }
 
             await provisioningService.linkIdentityToUser(
-                req.currentUser.id,
+                linkUser.id,
                 slug,
                 result.claims
             );
 
-            await auditService.logOidcLinked(req.currentUser.id, slug, req);
+            await auditService.logOidcLinked(linkUser.id, slug, req);
 
             return res.redirect('/profile/security?success=linked');
         }
