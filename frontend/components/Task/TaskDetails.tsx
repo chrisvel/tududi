@@ -328,7 +328,10 @@ const TaskDetails: React.FC = () => {
             const dueDate = new Date(editedDueDate);
 
             if (!isNaN(deferDate.getTime()) && !isNaN(dueDate.getTime())) {
-                if (deferDate > dueDate) {
+                // Due dates are date-only; allow defer until any time on the same calendar day
+                const dueDateEndOfDay = new Date(dueDate);
+                dueDateEndOfDay.setUTCHours(23, 59, 59, 999);
+                if (deferDate > dueDateEndOfDay) {
                     showErrorToast(
                         t(
                             'task.dueDateBeforeDeferError',
@@ -418,8 +421,10 @@ const TaskDetails: React.FC = () => {
                 // For recurring instances, skip strict frontend validation
                 // Backend will validate against parent's recurrence_end_date
                 if (!task.recurring_parent_id) {
-                    // Only validate for non-recurring tasks
-                    if (deferDate > dueDate) {
+                    // Due dates are date-only; allow any time on the same calendar day
+                    const dueDateEndOfDay = new Date(dueDate);
+                    dueDateEndOfDay.setUTCHours(23, 59, 59, 999);
+                    if (deferDate > dueDateEndOfDay) {
                         showErrorToast(
                             t(
                                 'task.deferAfterDueError',

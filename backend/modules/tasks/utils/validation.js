@@ -125,9 +125,12 @@ function validateDeferUntilAndDueDate(
         return;
     }
 
-    // Not a recurring instance - apply strict validation
-    // Defer until must be before or equal to due date
-    if (deferDate > dueDateObj) {
+    // Not a recurring instance - apply strict validation.
+    // Due dates are date-only (no time picker), so treat them as end-of-day
+    // so that any defer_until time on the same calendar day is allowed.
+    const dueDateEndOfDay = new Date(dueDateObj);
+    dueDateEndOfDay.setUTCHours(23, 59, 59, 999);
+    if (deferDate > dueDateEndOfDay) {
         throw new Error('Defer until date cannot be after the due date.');
     }
 }

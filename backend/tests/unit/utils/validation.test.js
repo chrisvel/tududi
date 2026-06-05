@@ -139,6 +139,33 @@ describe('validation utils', () => {
                     validateDeferUntilAndDueDate('2026-03-10', '2026-03-10');
                 }).not.toThrow();
             });
+
+            it('should allow defer_until with a time on the same day as due_date', () => {
+                expect(() => {
+                    validateDeferUntilAndDueDate(
+                        '2026-03-10T23:00:00.000Z',
+                        '2026-03-10'
+                    );
+                }).not.toThrow();
+            });
+
+            it('should allow defer_until at noon on the same day as due_date', () => {
+                expect(() => {
+                    validateDeferUntilAndDueDate(
+                        '2026-03-10T12:00:00.000Z',
+                        '2026-03-10'
+                    );
+                }).not.toThrow();
+            });
+
+            it('should reject defer_until the day after due_date even at midnight', () => {
+                expect(() => {
+                    validateDeferUntilAndDueDate(
+                        '2026-03-11T00:00:00.000Z',
+                        '2026-03-10'
+                    );
+                }).toThrow('Defer until date cannot be after the due date.');
+            });
         });
 
         describe('recurring task instances', () => {
