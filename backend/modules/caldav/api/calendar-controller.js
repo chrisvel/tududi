@@ -219,7 +219,7 @@ class CalendarController {
 
             await SyncStateRepository.deleteByCalendarId(calendar.id);
 
-            await CalendarRepository.delete(calendar);
+            await CalendarRepository.destroy(calendar);
 
             res.status(204).send();
         } catch (error) {
