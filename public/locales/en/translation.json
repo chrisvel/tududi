@@ -25,7 +25,8 @@
     "discardChanges": "Discard changes?",
     "discardChangesMessage": "You have unsaved changes. Are you sure you want to discard them?",
     "no": "No, keep editing",
-    "yesDiscard": "Yes, discard"
+    "yesDiscard": "Yes, discard",
+    "togglePin": "Toggle pin"
   },
   "sidebar": {
     "dashboard": "Dashboard",
