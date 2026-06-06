@@ -330,7 +330,7 @@ class RemoteCalendarController {
                 );
             }
 
-            await RemoteCalendarRepository.delete(remoteCalendar);
+            await RemoteCalendarRepository.destroy(remoteCalendar);
 
             res.status(204).send();
         } catch (error) {
