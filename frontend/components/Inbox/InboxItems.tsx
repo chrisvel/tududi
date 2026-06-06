@@ -267,7 +267,7 @@ const InboxItems: React.FC = () => {
         try {
             await createTaskAndHandleConversion(task, {
                 inboxItemUid,
-                navigateAfterCreate: true,
+                navigateAfterCreate: false,
             });
         } catch {
             // Errors are already reported via toast notifications
