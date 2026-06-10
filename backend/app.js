@@ -101,6 +101,7 @@ app.use(
             'Content-Type',
             'Accept',
             'X-Requested-With',
+            'x-csrf-token',
             'Depth',
             'If-Match',
             'If-None-Match',
