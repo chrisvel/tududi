@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
@@ -15,6 +16,8 @@ const taskScheduler = require('./modules/tasks/taskScheduler');
 const { initializeEmailService } = require('./services/emailService');
 const { setConfig, getConfig } = require('./config/config');
 const config = getConfig();
+const distIndexPath = path.join(__dirname, 'dist', 'index.html');
+const serveFromDist = config.production || fs.existsSync(distIndexPath);
 const API_VERSION = process.env.API_VERSION || 'v1';
 const API_BASE_PATH = `/api/${API_VERSION}`;
 
@@ -190,14 +193,14 @@ app.use((req, res, next) => {
 });
 
 // Static files
-if (config.production) {
+if (serveFromDist) {
     app.use(express.static(path.join(__dirname, 'dist')));
 } else {
     app.use(express.static('public'));
 }
 
 // Serve locales
-if (config.production) {
+if (serveFromDist) {
     app.use('/locales', express.static(path.join(__dirname, 'dist/locales')));
 } else {
     app.use(
@@ -350,7 +353,7 @@ app.get('*', (req, res) => {
         !req.path.startsWith('/api/') &&
         !req.path.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg)$/)
     ) {
-        if (config.production) {
+        if (serveFromDist) {
             res.sendFile(path.join(__dirname, 'dist', 'index.html'));
         } else {
             res.sendFile(path.join(__dirname, '../public', 'index.html'));
