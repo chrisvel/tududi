@@ -252,7 +252,7 @@ tududi supports multiple languages via i18next.
 ### Adding/Updating Translations
 
 1. **Add keys to English** (source of truth):
-   `frontend/locales/en/translation.json`
+   `public/locales/en/translation.json`
 
 2. **Sync translations**
    ```bash
