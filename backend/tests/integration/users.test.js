@@ -122,11 +122,11 @@ describe('Users Routes', () => {
 
                 expect(response.status).toBe(200);
                 expect(response.body).toHaveProperty(
-                    'task_intelligence_enabled'
+                    'features.task_intelligence_enabled'
                 );
-                expect(typeof response.body.task_intelligence_enabled).toBe(
-                    'boolean'
-                );
+                expect(
+                    typeof response.body.features.task_intelligence_enabled
+                ).toBe('boolean');
             });
 
             it('should default to true for new users', async () => {
@@ -134,7 +134,9 @@ describe('Users Routes', () => {
 
                 expect(response.status).toBe(200);
                 // New users should have task intelligence enabled by default
-                expect(response.body.task_intelligence_enabled).toBe(true);
+                expect(response.body.features.task_intelligence_enabled).toBe(
+                    true
+                );
             });
         });
 
@@ -142,42 +144,54 @@ describe('Users Routes', () => {
             it('should disable task intelligence (AI popups)', async () => {
                 const response = await agent
                     .patch('/api/profile')
-                    .send({ task_intelligence_enabled: false });
+                    .send({ features: { task_intelligence_enabled: false } });
 
                 expect(response.status).toBe(200);
-                expect(response.body.task_intelligence_enabled).toBe(false);
+                expect(response.body.features.task_intelligence_enabled).toBe(
+                    false
+                );
 
                 // Verify it persisted
                 const getResponse = await agent.get('/api/profile');
-                expect(getResponse.body.task_intelligence_enabled).toBe(false);
+                expect(
+                    getResponse.body.features.task_intelligence_enabled
+                ).toBe(false);
             });
 
             it('should enable task intelligence (AI popups)', async () => {
                 // First disable it
-                await user.update({ task_intelligence_enabled: false });
+                await user.update({
+                    features: { task_intelligence_enabled: false },
+                });
 
                 // Then enable it via API
                 const response = await agent
                     .patch('/api/profile')
-                    .send({ task_intelligence_enabled: true });
+                    .send({ features: { task_intelligence_enabled: true } });
 
                 expect(response.status).toBe(200);
-                expect(response.body.task_intelligence_enabled).toBe(true);
+                expect(response.body.features.task_intelligence_enabled).toBe(
+                    true
+                );
 
                 // Verify it persisted
                 const getResponse = await agent.get('/api/profile');
-                expect(getResponse.body.task_intelligence_enabled).toBe(true);
+                expect(
+                    getResponse.body.features.task_intelligence_enabled
+                ).toBe(true);
             });
 
             it('should allow updating task intelligence with other fields', async () => {
                 const response = await agent.patch('/api/profile').send({
-                    task_intelligence_enabled: false,
+                    features: { task_intelligence_enabled: false },
                     appearance: 'dark',
                     language: 'es',
                 });
 
                 expect(response.status).toBe(200);
-                expect(response.body.task_intelligence_enabled).toBe(false);
+                expect(response.body.features.task_intelligence_enabled).toBe(
+                    false
+                );
                 expect(response.body.appearance).toBe('dark');
                 expect(response.body.language).toBe('es');
             });
@@ -186,12 +200,12 @@ describe('Users Routes', () => {
                 // Test that "false" string gets converted to boolean false
                 const response = await agent
                     .patch('/api/profile')
-                    .send({ task_intelligence_enabled: 'false' });
+                    .send({ features: { task_intelligence_enabled: 'false' } });
 
                 expect(response.status).toBe(200);
                 // Should handle string to boolean conversion
                 expect([false, 'false']).toContain(
-                    response.body.task_intelligence_enabled
+                    response.body.features.task_intelligence_enabled
                 );
             });
         });
@@ -201,11 +215,13 @@ describe('Users Routes', () => {
                 // Disable task intelligence
                 await agent
                     .patch('/api/profile')
-                    .send({ task_intelligence_enabled: false });
+                    .send({ features: { task_intelligence_enabled: false } });
 
                 // Verify the setting is stored correctly
                 const response = await agent.get('/api/profile');
-                expect(response.body.task_intelligence_enabled).toBe(false);
+                expect(response.body.features.task_intelligence_enabled).toBe(
+                    false
+                );
 
                 // This verifies that the backend correctly stores the setting
                 // Frontend tests verify that popups are actually hidden
@@ -215,7 +231,7 @@ describe('Users Routes', () => {
                 // Disable task intelligence
                 await agent
                     .patch('/api/profile')
-                    .send({ task_intelligence_enabled: false });
+                    .send({ features: { task_intelligence_enabled: false } });
 
                 // Simulate new session by creating new agent
                 const newAgent = request.agent(app);
@@ -226,7 +242,9 @@ describe('Users Routes', () => {
 
                 // Verify setting persisted
                 const response = await newAgent.get('/api/profile');
-                expect(response.body.task_intelligence_enabled).toBe(false);
+                expect(response.body.features.task_intelligence_enabled).toBe(
+                    false
+                );
             });
         });
     });

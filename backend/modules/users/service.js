@@ -12,8 +12,12 @@ const FEATURE_KEYS = [
 function sanitizeFeatures(raw) {
     if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
     const result = {};
+    const toBool = (v) =>
+        v === 'false' || v === '0' || v === 0 || v === false
+            ? false
+            : Boolean(v);
     for (const key of FEATURE_KEYS) {
-        if (key in raw) result[key] = Boolean(raw[key]);
+        if (key in raw) result[key] = toBool(raw[key]);
     }
     return result;
 }
@@ -171,7 +175,7 @@ class UsersService {
             }
             allowedUpdates.features = {
                 ...sanitizeFeatures(currentFeatures),
-                ...features,
+                ...sanitizeFeatures(features),
             };
         }
         if (task_summary_enabled !== undefined)
