@@ -27,8 +27,10 @@ import LoadingScreen from './components/Shared/LoadingScreen';
 import InboxItems from './components/Inbox/InboxItems';
 import Habits from './components/Habits/Habits';
 import HabitDetails from './components/Habits/HabitDetails';
+import EisenhowerMatrix from './components/Eisenhower/EisenhowerMatrix';
 import { setCurrentUser as setUserInStorage } from './utils/userUtils';
 import { getApiPath, getLocalesPath } from './config/paths';
+import { useStore } from './store/useStore';
 // Lazy load Tasks component to prevent issues with tags loading
 const Tasks = lazy(() => import('./components/Tasks'));
 
@@ -62,6 +64,9 @@ const App: React.FC = () => {
             if (data.user) {
                 setCurrentUser(data.user);
                 setUserInStorage(data.user);
+                useStore.getState().userSettingsStore.setEisenhowerEnabled(
+                    data.user.features?.eisenhower_enabled === true
+                );
             } else {
                 setCurrentUser(null);
                 setUserInStorage(null);
@@ -225,6 +230,7 @@ const App: React.FC = () => {
                                     </Suspense>
                                 }
                             />
+                            <Route path="/eisenhower" element={<EisenhowerMatrix />} />
                             <Route path="/inbox" element={<InboxItems />} />
                             <Route path="/habits" element={<Habits />} />
                             <Route

@@ -7,16 +7,20 @@ interface Profile {
     appearance: 'light' | 'dark';
     language: string;
     timezone: string;
-    first_day_of_week: number; // 0 = Sunday, 1 = Monday, etc.
+    first_day_of_week: number;
     avatar_image: string | null;
     telegram_bot_token: string | null;
     telegram_chat_id: string | null;
     task_summary_enabled: boolean;
     task_summary_frequency: string;
-    task_intelligence_enabled: boolean;
-    auto_suggest_next_actions_enabled: boolean;
-    productivity_assistant_enabled: boolean;
-    next_task_suggestion_enabled: boolean;
+    features?: {
+        task_intelligence_enabled?: boolean;
+        auto_suggest_next_actions_enabled?: boolean;
+        productivity_assistant_enabled?: boolean;
+        next_task_suggestion_enabled?: boolean;
+        pomodoro_enabled?: boolean;
+        eisenhower_enabled?: boolean;
+    };
 }
 
 interface SchedulerStatus {
@@ -57,7 +61,7 @@ export const updateProfile = async (
     await handleAuthResponse(response, 'Failed to update profile.');
     const updatedProfile = await response.json();
 
-    if ('task_intelligence_enabled' in profileData) {
+    if (profileData.features && 'task_intelligence_enabled' in profileData.features) {
         localStorage.removeItem('taskIntelligenceEnabled');
     }
 
@@ -178,51 +182,51 @@ export type { Profile };
 export const getTaskIntelligenceEnabled = async (): Promise<boolean> => {
     try {
         const profile = await fetchProfile();
-        return profile.task_intelligence_enabled !== undefined
-            ? profile.task_intelligence_enabled
+        return profile.features?.task_intelligence_enabled !== undefined
+            ? profile.features.task_intelligence_enabled
             : true;
     } catch (error) {
         console.error('Error fetching task intelligence setting:', error);
-        return true; // Default to enabled if we can't fetch the setting
+        return true;
     }
 };
 
 export const getAutoSuggestNextActionsEnabled = async (): Promise<boolean> => {
     try {
         const profile = await fetchProfile();
-        return profile.auto_suggest_next_actions_enabled !== undefined
-            ? profile.auto_suggest_next_actions_enabled
+        return profile.features?.auto_suggest_next_actions_enabled !== undefined
+            ? profile.features.auto_suggest_next_actions_enabled
             : true;
     } catch (error) {
         console.error(
             'Error fetching auto-suggest next actions setting:',
             error
         );
-        return true; // Default to enabled if we can't fetch the setting
+        return true;
     }
 };
 
 export const getProductivityAssistantEnabled = async (): Promise<boolean> => {
     try {
         const profile = await fetchProfile();
-        return profile.productivity_assistant_enabled !== undefined
-            ? profile.productivity_assistant_enabled
+        return profile.features?.productivity_assistant_enabled !== undefined
+            ? profile.features.productivity_assistant_enabled
             : true;
     } catch (error) {
         console.error('Error fetching productivity assistant setting:', error);
-        return true; // Default to enabled if we can't fetch the setting
+        return true;
     }
 };
 
 export const getNextTaskSuggestionEnabled = async (): Promise<boolean> => {
     try {
         const profile = await fetchProfile();
-        return profile.next_task_suggestion_enabled !== undefined
-            ? profile.next_task_suggestion_enabled
+        return profile.features?.next_task_suggestion_enabled !== undefined
+            ? profile.features.next_task_suggestion_enabled
             : true;
     } catch (error) {
         console.error('Error fetching next task suggestion setting:', error);
-        return true; // Default to enabled if we can't fetch the setting
+        return true;
     }
 };
 

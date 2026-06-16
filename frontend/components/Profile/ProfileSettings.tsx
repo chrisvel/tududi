@@ -8,13 +8,13 @@ import React, {
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getLocalesPath, getApiPath } from '../../config/paths';
+import { useStore } from '../../store/useStore';
 import { getCsrfToken } from '../../utils/csrfService';
 import {
     UserIcon,
     ClockIcon,
     ShieldCheckIcon,
     LinkIcon,
-    LightBulbIcon,
     KeyIcon,
     CheckIcon,
     BellIcon,
@@ -22,6 +22,7 @@ import {
     CpuChipIcon,
     CalendarIcon,
 } from '@heroicons/react/24/outline';
+import { Squares2X2Icon } from '@heroicons/react/24/solid';
 import TelegramIcon from '../Shared/Icons/TelegramIcon';
 import { useToast } from '../Shared/ToastContext';
 import { dispatchTelegramStatusChange } from '../../contexts/TelegramStatusContext';
@@ -45,8 +46,8 @@ import SecurityTab from './tabs/SecurityTab';
 import OIDCTab from './tabs/OIDCTab';
 import ApiKeysTab from './tabs/ApiKeysTab';
 import ProductivityTab from './tabs/ProductivityTab';
+import FeaturesTab from './tabs/FeaturesTab';
 import TelegramTab from './tabs/TelegramTab';
-import AiTab from './tabs/AiTab';
 import NotificationsTab from './tabs/NotificationsTab';
 import KeyboardShortcutsTab from './tabs/KeyboardShortcutsTab';
 import McpTab from './tabs/McpTab';
@@ -97,11 +98,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             'api-keys',
             'productivity',
             'telegram',
-            'ai',
             'notifications',
             'keyboard-shortcuts',
             'caldav',
             'mcp',
+            'features',
         ];
         return section && validTabs.includes(section) ? section : 'general';
     }, [location.search]);
@@ -126,13 +127,16 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         avatar_image: '',
         telegram_bot_token: '',
         telegram_allowed_users: '',
-        task_intelligence_enabled: true,
         task_summary_enabled: false,
         task_summary_frequency: 'daily',
-        auto_suggest_next_actions_enabled: true,
-        productivity_assistant_enabled: true,
-        next_task_suggestion_enabled: true,
-        pomodoro_enabled: true,
+        features: {
+            task_intelligence_enabled: true,
+            auto_suggest_next_actions_enabled: true,
+            productivity_assistant_enabled: true,
+            next_task_suggestion_enabled: true,
+            pomodoro_enabled: true,
+            eisenhower_enabled: false,
+        },
         notification_preferences: null,
         keyboard_shortcuts: null,
         currentPassword: '',
@@ -515,32 +519,38 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     avatar_image: data.avatar_image || '',
                     telegram_bot_token: data.telegram_bot_token || '',
                     telegram_allowed_users: data.telegram_allowed_users || '',
-                    task_intelligence_enabled:
-                        data.task_intelligence_enabled !== undefined
-                            ? data.task_intelligence_enabled
-                            : true,
                     task_summary_enabled:
                         data.task_summary_enabled !== undefined
                             ? data.task_summary_enabled
                             : false,
                     task_summary_frequency:
                         data.task_summary_frequency || 'daily',
-                    auto_suggest_next_actions_enabled:
-                        data.auto_suggest_next_actions_enabled !== undefined
-                            ? data.auto_suggest_next_actions_enabled
-                            : true,
-                    productivity_assistant_enabled:
-                        data.productivity_assistant_enabled !== undefined
-                            ? data.productivity_assistant_enabled
-                            : true,
-                    next_task_suggestion_enabled:
-                        data.next_task_suggestion_enabled !== undefined
-                            ? data.next_task_suggestion_enabled
-                            : true,
-                    pomodoro_enabled:
-                        data.pomodoro_enabled !== undefined
-                            ? data.pomodoro_enabled
-                            : true,
+                    features: {
+                        task_intelligence_enabled:
+                            data.features?.task_intelligence_enabled !== undefined
+                                ? data.features.task_intelligence_enabled
+                                : true,
+                        auto_suggest_next_actions_enabled:
+                            data.features?.auto_suggest_next_actions_enabled !== undefined
+                                ? data.features.auto_suggest_next_actions_enabled
+                                : true,
+                        productivity_assistant_enabled:
+                            data.features?.productivity_assistant_enabled !== undefined
+                                ? data.features.productivity_assistant_enabled
+                                : true,
+                        next_task_suggestion_enabled:
+                            data.features?.next_task_suggestion_enabled !== undefined
+                                ? data.features.next_task_suggestion_enabled
+                                : true,
+                        pomodoro_enabled:
+                            data.features?.pomodoro_enabled !== undefined
+                                ? data.features.pomodoro_enabled
+                                : true,
+                        eisenhower_enabled:
+                            data.features?.eisenhower_enabled !== undefined
+                                ? data.features.eisenhower_enabled
+                                : false,
+                    },
                     notification_preferences:
                         data.notification_preferences || null,
                     keyboard_shortcuts:
@@ -1026,12 +1036,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     updatedProfile.telegram_allowed_users !== undefined
                         ? updatedProfile.telegram_allowed_users
                         : prev.telegram_allowed_users || '',
-                task_intelligence_enabled:
-                    updatedProfile.task_intelligence_enabled !== undefined
-                        ? updatedProfile.task_intelligence_enabled
-                        : prev.task_intelligence_enabled !== undefined
-                          ? prev.task_intelligence_enabled
-                          : true,
                 task_summary_enabled:
                     updatedProfile.task_summary_enabled !== undefined
                         ? updatedProfile.task_summary_enabled
@@ -1042,31 +1046,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     updatedProfile.task_summary_frequency ||
                     prev.task_summary_frequency ||
                     'daily',
-                auto_suggest_next_actions_enabled:
-                    updatedProfile.auto_suggest_next_actions_enabled !==
-                    undefined
-                        ? updatedProfile.auto_suggest_next_actions_enabled
-                        : prev.auto_suggest_next_actions_enabled !== undefined
-                          ? prev.auto_suggest_next_actions_enabled
-                          : true,
-                productivity_assistant_enabled:
-                    updatedProfile.productivity_assistant_enabled !== undefined
-                        ? updatedProfile.productivity_assistant_enabled
-                        : prev.productivity_assistant_enabled !== undefined
-                          ? prev.productivity_assistant_enabled
-                          : true,
-                next_task_suggestion_enabled:
-                    updatedProfile.next_task_suggestion_enabled !== undefined
-                        ? updatedProfile.next_task_suggestion_enabled
-                        : prev.next_task_suggestion_enabled !== undefined
-                          ? prev.next_task_suggestion_enabled
-                          : true,
-                pomodoro_enabled:
-                    updatedProfile.pomodoro_enabled !== undefined
-                        ? updatedProfile.pomodoro_enabled
-                        : prev.pomodoro_enabled !== undefined
-                          ? prev.pomodoro_enabled
-                          : true,
+                features: {
+                    ...prev.features,
+                    ...updatedProfile.features,
+                },
             }));
 
             if (
@@ -1080,11 +1063,17 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 await handleLanguageChange(updatedProfile.language);
             }
 
-            if (updatedProfile.pomodoro_enabled !== undefined) {
+            if (updatedProfile.features?.pomodoro_enabled !== undefined) {
                 window.dispatchEvent(
                     new CustomEvent('pomodoroSettingChanged', {
-                        detail: { enabled: updatedProfile.pomodoro_enabled },
+                        detail: { enabled: updatedProfile.features.pomodoro_enabled },
                     })
+                );
+            }
+
+            if (updatedProfile.features?.eisenhower_enabled !== undefined) {
+                useStore.getState().userSettingsStore.setEisenhowerEnabled(
+                    updatedProfile.features.eisenhower_enabled
                 );
             }
 
@@ -1162,11 +1151,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             icon: <TelegramIcon className="w-5 h-5" />,
         },
         {
-            id: 'ai',
-            name: t('profile.tabs.ai', 'AI Features'),
-            icon: <LightBulbIcon className="w-5 h-5" />,
-        },
-        {
             id: 'keyboard-shortcuts',
             name: t('profile.tabs.keyboardShortcuts', 'Shortcuts'),
             icon: <CommandLineIcon className="w-5 h-5" />,
@@ -1182,6 +1166,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             name: t('profile.tabs.mcp', 'MCP Integration'),
             icon: <CpuChipIcon className="w-5 h-5" />,
             featureFlag: 'mcp',
+        },
+        {
+            id: 'features',
+            name: t('profile.tabs.features', 'Features & Add-ons'),
+            icon: <Squares2X2Icon className="w-5 h-5" />,
         },
     ];
 
@@ -1310,13 +1299,43 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                 <ProductivityTab
                                     isActive={activeTab === 'productivity'}
                                     pomodoroEnabled={Boolean(
-                                        formData.pomodoro_enabled
+                                        formData.features?.pomodoro_enabled
                                     )}
                                     onTogglePomodoro={() =>
                                         setFormData((prev) => ({
                                             ...prev,
-                                            pomodoro_enabled:
-                                                !prev.pomodoro_enabled,
+                                            features: {
+                                                ...prev.features,
+                                                pomodoro_enabled:
+                                                    !prev.features?.pomodoro_enabled,
+                                            },
+                                        }))
+                                    }
+                                />
+
+                                <FeaturesTab
+                                    isActive={activeTab === 'features'}
+                                    eisenhowerEnabled={Boolean(
+                                        formData.features?.eisenhower_enabled
+                                    )}
+                                    onToggleEisenhower={() =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            features: {
+                                                ...prev.features,
+                                                eisenhower_enabled:
+                                                    !prev.features?.eisenhower_enabled,
+                                            },
+                                        }))
+                                    }
+                                    formData={formData}
+                                    onToggleAi={(field) =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            features: {
+                                                ...prev.features,
+                                                [field]: !prev.features?.[field],
+                                            },
                                         }))
                                     }
                                 />
@@ -1361,17 +1380,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                     }
                                     onSendTestSummary={handleSendTestSummary}
                                     formatFrequency={formatFrequency}
-                                />
-
-                                <AiTab
-                                    isActive={activeTab === 'ai'}
-                                    formData={formData}
-                                    onToggle={(field) =>
-                                        setFormData((prev) => ({
-                                            ...prev,
-                                            [field]: !prev[field],
-                                        }))
-                                    }
                                 />
 
                                 <KeyboardShortcutsTab
