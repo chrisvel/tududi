@@ -54,6 +54,7 @@
     "inbox": "Inbox",
     "completed": "Completed",
     "allTasks": "All Tasks",
+    "eisenhower": "Eisenhower Matrix",
     "unpinView": "Unpin view",
     "pinView": "Pin view"
   },
@@ -140,7 +141,24 @@
     "groupBy": "Group by",
     "groupByProject": "Project",
     "grouping": {
-      "none": "None"
+      "none": "None",
+      "eisenhower": "Eisenhower Matrix"
+    },
+    "eisenhower": {
+      "doNow": "Do Now",
+      "doNowDesc": "Important & Urgent",
+      "schedule": "Schedule",
+      "scheduleDesc": "Important, Not Urgent",
+      "delegate": "Delegate",
+      "delegateDesc": "Urgent, Not Important",
+      "eliminate": "Eliminate",
+      "eliminateDesc": "Not Important, Not Urgent",
+      "urgent": "Urgent",
+      "notUrgent": "Not Urgent",
+      "important": "Important",
+      "notImportant": "Not Important",
+      "dropHere": "Drop here",
+      "urgentHint": "Tag tasks with 'urgent' to mark them as urgent"
     },
     "show": "Show",
     "open": "Open",
@@ -338,6 +356,12 @@
     "addNextAction": "Add Next Action",
     "skipNextAction": "Skip for now",
     "nextActionHint": "Think of the smallest, most concrete step you can take right now to move this project forward.",
+    "intelligenceSection": "Intelligence",
+    "taskIntelligenceLabel": "Task Intelligence Assistant",
+    "autoSuggestNextActionsLabel": "Next Action Prompts",
+    "productivityAssistantLabel": "Productivity Insights",
+    "nextTaskSuggestionLabel": "Next Task Suggestions",
+    "featuresAddons": "Features & Add-ons",
     "tabs": {
       "notifications": "Notification Preferences",
       "oidc": "OIDC/SSO",

@@ -125,30 +125,17 @@ module.exports = (sequelize) => {
                 comment:
                     'Comma-separated list of allowed Telegram usernames or user IDs',
             },
-            task_intelligence_enabled: {
-                type: DataTypes.BOOLEAN,
-                allowNull: false,
-                defaultValue: true,
-            },
-            auto_suggest_next_actions_enabled: {
-                type: DataTypes.BOOLEAN,
-                allowNull: false,
-                defaultValue: false,
-            },
-            pomodoro_enabled: {
-                type: DataTypes.BOOLEAN,
-                allowNull: false,
-                defaultValue: true,
-            },
-            productivity_assistant_enabled: {
-                type: DataTypes.BOOLEAN,
-                allowNull: false,
-                defaultValue: true,
-            },
-            next_task_suggestion_enabled: {
-                type: DataTypes.BOOLEAN,
-                allowNull: false,
-                defaultValue: true,
+            features: {
+                type: DataTypes.JSON,
+                allowNull: true,
+                defaultValue: {
+                    task_intelligence_enabled: true,
+                    auto_suggest_next_actions_enabled: false,
+                    productivity_assistant_enabled: true,
+                    next_task_suggestion_enabled: true,
+                    pomodoro_enabled: true,
+                    eisenhower_enabled: false,
+                },
             },
             today_settings: {
                 type: DataTypes.JSON,

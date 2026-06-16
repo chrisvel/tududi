@@ -558,18 +558,19 @@ const TasksToday: React.FC = () => {
                 if (response.ok) {
                     const userData = await response.json();
                     if (isMounted.current) {
+                        const userFeatures = userData.features || {};
+
                         // Set productivity assistant setting
                         setProductivityAssistantEnabled(
-                            userData.productivity_assistant_enabled !==
-                                undefined
-                                ? userData.productivity_assistant_enabled
+                            userFeatures.productivity_assistant_enabled !== undefined
+                                ? userFeatures.productivity_assistant_enabled
                                 : true
                         );
 
                         // Set next task suggestion setting
                         setNextTaskSuggestionEnabled(
-                            userData.next_task_suggestion_enabled !== undefined
-                                ? userData.next_task_suggestion_enabled
+                            userFeatures.next_task_suggestion_enabled !== undefined
+                                ? userFeatures.next_task_suggestion_enabled
                                 : true
                         );
 
@@ -608,26 +609,20 @@ const TasksToday: React.FC = () => {
                         // Store profile settings
                         const currentProfileSettings = {
                             productivity_assistant_enabled:
-                                userData.productivity_assistant_enabled ===
-                                true,
+                                userFeatures.productivity_assistant_enabled === true,
                             next_task_suggestion_enabled:
-                                userData.next_task_suggestion_enabled === true,
+                                userFeatures.next_task_suggestion_enabled === true,
                         };
                         setProfileSettings(currentProfileSettings);
 
-                        // Sync with profile AI & productivity features
-                        if (
-                            userData.productivity_assistant_enabled !==
-                            undefined
-                        ) {
+                        // Sync with profile features
+                        if (userFeatures.productivity_assistant_enabled !== undefined) {
                             settings.showProductivity =
-                                userData.productivity_assistant_enabled;
+                                userFeatures.productivity_assistant_enabled;
                         }
-                        if (
-                            userData.next_task_suggestion_enabled !== undefined
-                        ) {
+                        if (userFeatures.next_task_suggestion_enabled !== undefined) {
                             settings.showNextTaskSuggestion =
-                                userData.next_task_suggestion_enabled;
+                                userFeatures.next_task_suggestion_enabled;
                         }
 
                         // Ensure progress bar is always enabled

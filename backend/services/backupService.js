@@ -181,13 +181,7 @@ async function exportUserData(userId) {
                 telegram_allowed_users: user.telegram_allowed_users,
                 task_summary_enabled: user.task_summary_enabled,
                 task_summary_frequency: user.task_summary_frequency,
-                task_intelligence_enabled: user.task_intelligence_enabled,
-                auto_suggest_next_actions_enabled:
-                    user.auto_suggest_next_actions_enabled,
-                pomodoro_enabled: user.pomodoro_enabled,
-                productivity_assistant_enabled:
-                    user.productivity_assistant_enabled,
-                next_task_suggestion_enabled: user.next_task_suggestion_enabled,
+                features: user.features,
                 today_settings: user.today_settings,
                 sidebar_settings: user.sidebar_settings,
                 ui_settings: user.ui_settings,

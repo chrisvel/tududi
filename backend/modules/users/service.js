@@ -1,5 +1,27 @@
 'use strict';
 
+const FEATURE_KEYS = [
+    'task_intelligence_enabled',
+    'auto_suggest_next_actions_enabled',
+    'productivity_assistant_enabled',
+    'next_task_suggestion_enabled',
+    'pomodoro_enabled',
+    'eisenhower_enabled',
+];
+
+function sanitizeFeatures(raw) {
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
+    const result = {};
+    const toBool = (v) =>
+        v === 'false' || v === '0' || v === 0 || v === false
+            ? false
+            : Boolean(v);
+    for (const key of FEATURE_KEYS) {
+        if (key in raw) result[key] = toBool(raw[key]);
+    }
+    return result;
+}
+
 const usersRepository = require('./repository');
 const {
     validateFirstDayOfWeek,
@@ -68,7 +90,15 @@ class UsersService {
             throw new NotFoundError('Profile not found.');
         }
 
-        // Parse today_settings if it's a string
+        if (user.features && typeof user.features === 'string') {
+            try {
+                user.features = JSON.parse(user.features);
+            } catch (error) {
+                logError('Error parsing features:', error);
+                user.features = null;
+            }
+        }
+        user.features = sanitizeFeatures(user.features);
         if (user.today_settings && typeof user.today_settings === 'string') {
             try {
                 user.today_settings = JSON.parse(user.today_settings);
@@ -108,13 +138,9 @@ class UsersService {
             avatar_image,
             telegram_bot_token,
             telegram_allowed_users,
-            task_intelligence_enabled,
+            features,
             task_summary_enabled,
             task_summary_frequency,
-            auto_suggest_next_actions_enabled,
-            productivity_assistant_enabled,
-            next_task_suggestion_enabled,
-            pomodoro_enabled,
             ui_settings,
             notification_preferences,
             keyboard_shortcuts,
@@ -138,24 +164,24 @@ class UsersService {
             allowedUpdates.telegram_bot_token = telegram_bot_token;
         if (telegram_allowed_users !== undefined)
             allowedUpdates.telegram_allowed_users = telegram_allowed_users;
-        if (task_intelligence_enabled !== undefined)
-            allowedUpdates.task_intelligence_enabled =
-                task_intelligence_enabled;
+        if (features !== undefined) {
+            let currentFeatures = user.features;
+            if (typeof currentFeatures === 'string') {
+                try {
+                    currentFeatures = JSON.parse(currentFeatures);
+                } catch {
+                    currentFeatures = {};
+                }
+            }
+            allowedUpdates.features = {
+                ...sanitizeFeatures(currentFeatures),
+                ...sanitizeFeatures(features),
+            };
+        }
         if (task_summary_enabled !== undefined)
             allowedUpdates.task_summary_enabled = task_summary_enabled;
         if (task_summary_frequency !== undefined)
             allowedUpdates.task_summary_frequency = task_summary_frequency;
-        if (auto_suggest_next_actions_enabled !== undefined)
-            allowedUpdates.auto_suggest_next_actions_enabled =
-                auto_suggest_next_actions_enabled;
-        if (productivity_assistant_enabled !== undefined)
-            allowedUpdates.productivity_assistant_enabled =
-                productivity_assistant_enabled;
-        if (next_task_suggestion_enabled !== undefined)
-            allowedUpdates.next_task_suggestion_enabled =
-                next_task_suggestion_enabled;
-        if (pomodoro_enabled !== undefined)
-            allowedUpdates.pomodoro_enabled = pomodoro_enabled;
         if (ui_settings !== undefined) allowedUpdates.ui_settings = ui_settings;
         if (notification_preferences !== undefined)
             allowedUpdates.notification_preferences = notification_preferences;
@@ -182,7 +208,18 @@ class UsersService {
         }
 
         await usersRepository.update(user, allowedUpdates);
-        return usersRepository.findUpdatedProfile(user.id);
+        const updated = await usersRepository.findUpdatedProfile(user.id);
+        if (updated) {
+            if (typeof updated.features === 'string') {
+                try {
+                    updated.features = JSON.parse(updated.features);
+                } catch {
+                    updated.features = {};
+                }
+            }
+            updated.features = sanitizeFeatures(updated.features);
+        }
+        return updated;
     }
 
     /**
@@ -473,12 +510,20 @@ class UsersService {
         };
 
         const profileUpdates = { today_settings: todaySettings };
-        if (showProductivity !== undefined) {
-            profileUpdates.productivity_assistant_enabled = showProductivity;
-        }
-        if (showNextTaskSuggestion !== undefined) {
-            profileUpdates.next_task_suggestion_enabled =
-                showNextTaskSuggestion;
+        if (
+            showProductivity !== undefined ||
+            showNextTaskSuggestion !== undefined
+        ) {
+            const currentFeatures = user.features || {};
+            profileUpdates.features = { ...currentFeatures };
+            if (showProductivity !== undefined) {
+                profileUpdates.features.productivity_assistant_enabled =
+                    showProductivity;
+            }
+            if (showNextTaskSuggestion !== undefined) {
+                profileUpdates.features.next_task_suggestion_enabled =
+                    showNextTaskSuggestion;
+            }
         }
 
         await usersRepository.update(user, profileUpdates);

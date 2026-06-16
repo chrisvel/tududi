@@ -99,8 +99,8 @@ const Navbar: React.FC<NavbarProps> = ({
                 if (response.ok) {
                     const profile = await response.json();
                     setPomodoroEnabled(
-                        profile.pomodoro_enabled !== undefined
-                            ? profile.pomodoro_enabled
+                        profile.features?.pomodoro_enabled !== undefined
+                            ? profile.features.pomodoro_enabled
                             : true
                     );
                     // Set user timezone for date formatting

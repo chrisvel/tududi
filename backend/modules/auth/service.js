@@ -133,6 +133,7 @@ class AuthService {
                     'appearance',
                     'timezone',
                     'avatar_image',
+                    'features',
                 ],
             });
             if (user) {
@@ -147,6 +148,7 @@ class AuthService {
                         appearance: user.appearance,
                         timezone: user.timezone,
                         avatar_image: user.avatar_image,
+                        features: user.features || {},
                         is_admin: admin,
                     },
                 };

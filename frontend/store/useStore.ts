@@ -100,6 +100,11 @@ interface InboxStore {
     resetPagination: () => void;
 }
 
+interface UserSettingsStore {
+    eisenhowerEnabled: boolean;
+    setEisenhowerEnabled: (enabled: boolean) => void;
+}
+
 interface HabitsStore {
     habits: Task[];
     isLoading: boolean;
@@ -120,6 +125,7 @@ interface StoreState {
     tasksStore: TasksStore;
     inboxStore: InboxStore;
     habitsStore: HabitsStore;
+    userSettingsStore: UserSettingsStore;
 }
 
 export const useStore = create<StoreState>((set: any) => ({
@@ -779,5 +785,15 @@ export const useStore = create<StoreState>((set: any) => ({
                 throw error;
             }
         },
+    },
+    userSettingsStore: {
+        eisenhowerEnabled: false,
+        setEisenhowerEnabled: (enabled) =>
+            set((state) => ({
+                userSettingsStore: {
+                    ...state.userSettingsStore,
+                    eisenhowerEnabled: enabled,
+                },
+            })),
     },
 }));

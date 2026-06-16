@@ -614,16 +614,12 @@ const Tasks: React.FC = () => {
                                                 {t('tasks.groupBy', 'Group by')}
                                             </div>
                                             <div className="py-1">
-                                                {['none', 'project'].map(
+                                                {(['none', 'project'] as const).map(
                                                     (val) => (
                                                         <button
                                                             key={val}
                                                             onClick={() => {
-                                                                setGroupBy(
-                                                                    val as
-                                                                        | 'none'
-                                                                        | 'project'
-                                                                );
+                                                                setGroupBy(val);
                                                                 localStorage.setItem(
                                                                     'tasks_group_by',
                                                                     val
@@ -636,19 +632,11 @@ const Tasks: React.FC = () => {
                                                             }`}
                                                         >
                                                             <span>
-                                                                {val ===
-                                                                'project'
-                                                                    ? t(
-                                                                          'tasks.groupByProject',
-                                                                          'Project'
-                                                                      )
-                                                                    : t(
-                                                                          'tasks.grouping.none',
-                                                                          'None'
-                                                                      )}
+                                                                {val === 'project'
+                                                                    ? t('tasks.groupByProject', 'Project')
+                                                                    : t('tasks.grouping.none', 'None')}
                                                             </span>
-                                                            {groupBy ===
-                                                                val && (
+                                                            {groupBy === val && (
                                                                 <CheckIcon className="h-4 w-4" />
                                                             )}
                                                         </button>
@@ -961,7 +949,7 @@ const Tasks: React.FC = () => {
                                     <GroupedTaskList
                                         tasks={displayTasks}
                                         groupedTasks={null}
-                                        groupBy="project"
+                                        groupBy={groupBy}
                                         onTaskCreate={handleTaskCreate}
                                         onTaskUpdate={handleTaskUpdate}
                                         onTaskCompletionToggle={

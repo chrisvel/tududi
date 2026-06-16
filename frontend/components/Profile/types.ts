@@ -6,6 +6,15 @@ export interface ProfileSettingsProps {
     toggleDarkMode?: () => void;
 }
 
+export interface Features {
+    task_intelligence_enabled: boolean;
+    auto_suggest_next_actions_enabled: boolean;
+    productivity_assistant_enabled: boolean;
+    next_task_suggestion_enabled: boolean;
+    pomodoro_enabled: boolean;
+    eisenhower_enabled: boolean;
+}
+
 export interface NotificationPreferences {
     dueTasks: {
         inApp: boolean;
@@ -55,11 +64,7 @@ export interface Profile {
     telegram_allowed_users: string | null;
     task_summary_enabled: boolean;
     task_summary_frequency: string;
-    task_intelligence_enabled: boolean;
-    auto_suggest_next_actions_enabled: boolean;
-    productivity_assistant_enabled: boolean;
-    next_task_suggestion_enabled: boolean;
-    pomodoro_enabled: boolean;
+    features: Features;
     notification_preferences?: NotificationPreferences | null;
     keyboard_shortcuts?: KeyboardShortcutsConfig | null;
 }
