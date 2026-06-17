@@ -261,6 +261,18 @@ User.hasMany(CalendarToken, {
 });
 CalendarToken.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 
+// Seed system tags for every new user
+User.addHook('afterCreate', async (user) => {
+    try {
+        const { seedSystemTagsForUser } = require('../modules/tags/systemTags');
+        await seedSystemTagsForUser(user.id);
+    } catch (err) {
+        // Non-fatal: system tags can be seeded via migration if this fails
+        const { logError } = require('../services/logService');
+        logError(err, `Failed to seed system tags for user ${user.id}`);
+    }
+});
+
 module.exports = {
     sequelize,
     User,
