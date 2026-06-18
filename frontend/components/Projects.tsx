@@ -3,8 +3,10 @@ import {
     MagnifyingGlassIcon,
     Squares2X2Icon,
     Bars3Icon,
+    ClockIcon,
 } from '@heroicons/react/24/solid';
 import ConfirmDialog from './Shared/ConfirmDialog';
+import Tooltip from './Shared/Tooltip';
 import ProjectModal from './Project/ProjectModal';
 import SortFilter from './Shared/SortFilter';
 import FilterDropdown, { FilterOption } from './Shared/FilterDropdown';
@@ -73,6 +75,7 @@ const Projects: React.FC = () => {
 
     const [searchParams, setSearchParams] = useSearchParams();
     const statusFilter = searchParams.get('status') || 'not_completed';
+    const somedayFilter = searchParams.get('someday') === '1';
 
     // Get area UID from URL parameters
     const getAreaUidFromParams = () => {
@@ -269,6 +272,16 @@ const Projects: React.FC = () => {
         setSearchParams(params);
     };
 
+    const handleSomedayToggle = () => {
+        const params = new URLSearchParams(searchParams);
+        if (somedayFilter) {
+            params.delete('someday');
+        } else {
+            params.set('someday', '1');
+        }
+        setSearchParams(params);
+    };
+
     const handleAreaFilterChange = (value: string) => {
         const params = new URLSearchParams(searchParams);
 
@@ -308,6 +321,16 @@ const Projects: React.FC = () => {
                 const projectArea = project.area || (project as any).Area;
                 return projectArea?.uid === actualAreaFilter;
             });
+        }
+
+        // Hide someday-tagged projects unless the button is active
+        if (!somedayFilter) {
+            filteredProjects = filteredProjects.filter(
+                (project) =>
+                    !project.tags?.some(
+                        (tag) => tag.name.toLowerCase() === 'someday'
+                    )
+            );
         }
 
         // Apply search filter
@@ -369,7 +392,7 @@ const Projects: React.FC = () => {
         });
 
         return filteredProjects;
-    }, [projects, statusFilter, actualAreaFilter, searchQuery, orderBy]);
+    }, [projects, statusFilter, actualAreaFilter, somedayFilter, searchQuery, orderBy]);
 
     if (isLoading) {
         return (
@@ -444,6 +467,35 @@ const Projects: React.FC = () => {
                     </div>
 
                     <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
+                        {/* Someday Tag Toggle */}
+                        <div className="w-full md:w-auto mb-4 md:mb-0">
+                            <Tooltip
+                                content={
+                                    <div className="w-44">
+                                        <p className="font-bold mb-1">
+                                            {t('projects.filters.someday', 'Someday')}
+                                        </p>
+                                        <p className="font-normal opacity-80">
+                                            {t('projects.filters.somedayTooltip', 'Projects tagged "someday" are hidden by default. Click to reveal them.')}
+                                        </p>
+                                    </div>
+                                }
+                                position="bottom"
+                            >
+                                <button
+                                    onClick={handleSomedayToggle}
+                                    aria-label={t('projects.filters.someday', 'Someday')}
+                                    className={`p-2 rounded-md focus:outline-none transition-colors ${
+                                        somedayFilter
+                                            ? 'bg-blue-500 text-white'
+                                            : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                                    }`}
+                                >
+                                    <ClockIcon className="h-5 w-5" />
+                                </button>
+                            </Tooltip>
+                        </div>
+
                         {/* Status Filter */}
                         <div className="w-full md:w-auto mb-4 md:mb-0">
                             <FilterDropdown

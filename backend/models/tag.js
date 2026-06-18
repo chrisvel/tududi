@@ -28,6 +28,11 @@ module.exports = (sequelize) => {
                     key: 'id',
                 },
             },
+            tag_type: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                defaultValue: 'user',
+            },
         },
         {
             tableName: 'tags',

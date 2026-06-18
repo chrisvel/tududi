@@ -1019,7 +1019,11 @@
       "inactive": "Inactive",
       "all": "All",
       "allAreas": "All Areas",
-      "notCompleted": "Not Completed"
+      "notCompleted": "Not Completed",
+      "someday": "Someday",
+      "somedayTooltip": "Projects tagged \"someday\" are hidden by default. Click to reveal them.",
+      "systemTagCannotBeDeleted": "System tags cannot be deleted",
+      "systemTagCannotBeRenamed": "System tags cannot be renamed"
     }
   },
   "projectStatus": {
@@ -1084,6 +1088,10 @@
     "searchPlaceholder": "Search tags...",
     "title": "Tags",
     "noTagsFound": "No tags found",
+    "systemTag": "System tags",
+    "systemTagDescription": "Created automatically by the app. They power built-in features and cannot be renamed or deleted.",
+    "userTag": "User tags",
+    "userTagDescription": "Your own tags for organising tasks, notes, and projects.",
     "editTagAriaLabel": "Edit tag {{tagName}}",
     "editTagTitle": "Edit tag {{tagName}}",
     "deleteTagAriaLabel": "Delete tag {{tagName}}",

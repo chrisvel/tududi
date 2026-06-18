@@ -15,7 +15,7 @@ class TagsRepository extends BaseRepository {
     async findAllByUser(userId) {
         return this.model.findAll({
             where: { user_id: userId },
-            attributes: ['id', 'uid', 'name'],
+            attributes: ['id', 'uid', 'name', 'tag_type'],
             order: [[sequelize.fn('LOWER', sequelize.col('name')), 'ASC']],
         });
     }
@@ -38,7 +38,7 @@ class TagsRepository extends BaseRepository {
     async findByUid(userId, uid) {
         return this.model.findOne({
             where: { user_id: userId, uid },
-            attributes: ['id', 'uid', 'name'],
+            attributes: ['id', 'uid', 'name', 'tag_type'],
         });
     }
 
@@ -69,6 +69,15 @@ class TagsRepository extends BaseRepository {
         return this.model.create({
             name,
             user_id: userId,
+            tag_type: 'user',
+        });
+    }
+
+    async createSystemTag(userId, name) {
+        return this.model.create({
+            name,
+            user_id: userId,
+            tag_type: 'system',
         });
     }
 

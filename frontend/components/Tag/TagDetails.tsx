@@ -10,6 +10,7 @@ import {
     TrashIcon,
     TagIcon,
     MagnifyingGlassIcon,
+    LockClosedIcon,
 } from '@heroicons/react/24/solid';
 import { FolderIcon as FolderOutlineIcon } from '@heroicons/react/24/outline';
 import { Task } from '../../entities/Task';
@@ -464,9 +465,24 @@ const TagDetails: React.FC = () => {
             <div className="w-full max-w-5xl">
                 {/* Tag Header */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8">
-                    <h2 className="text-2xl font-light text-gray-900 dark:text-white mb-2 sm:mb-0">
-                        Tag: {tag.name}
-                    </h2>
+                    <div className="mb-2 sm:mb-0">
+                        <div className="flex items-center gap-2.5">
+                            <TagIcon className="h-5 w-5 text-gray-400 dark:text-gray-500 flex-shrink-0" />
+                            <h2 className="text-2xl font-light text-gray-900 dark:text-white">
+                                {tag.name}
+                            </h2>
+                            {tag.tag_type === 'system' ? (
+                                <span className="inline-flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-2 py-0.5 rounded-full">
+                                    <LockClosedIcon className="h-3 w-3" />
+                                    {t('tags.systemTag', 'System')}
+                                </span>
+                            ) : (
+                                <span className="inline-flex items-center text-xs text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-2 py-0.5 rounded-full">
+                                    {t('tags.userTag', 'User')}
+                                </span>
+                            )}
+                        </div>
+                    </div>
                     <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
                         <button
                             onClick={() => setIsSearchExpanded((v) => !v)}
@@ -500,23 +516,27 @@ const TagDetails: React.FC = () => {
                                     : t('common.search', 'Search tasks')}
                             </span>
                         </button>
-                        <button
-                            ref={editButtonRef}
-                            type="button"
-                            className="px-1 py-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                            aria-label="Edit tag"
-                            title="Edit tag"
-                        >
-                            <PencilSquareIcon className="h-5 w-5" />
-                        </button>
-                        <button
-                            onClick={() => setIsConfirmDialogOpen(true)}
-                            className="px-1 py-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
-                            aria-label="Delete tag"
-                            title="Delete tag"
-                        >
-                            <TrashIcon className="h-5 w-5" />
-                        </button>
+                        {tag?.tag_type !== 'system' && (
+                            <>
+                                <button
+                                    ref={editButtonRef}
+                                    type="button"
+                                    className="px-1 py-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                    aria-label="Edit tag"
+                                    title="Edit tag"
+                                >
+                                    <PencilSquareIcon className="h-5 w-5" />
+                                </button>
+                                <button
+                                    onClick={() => setIsConfirmDialogOpen(true)}
+                                    className="px-1 py-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                                    aria-label="Delete tag"
+                                    title="Delete tag"
+                                >
+                                    <TrashIcon className="h-5 w-5" />
+                                </button>
+                            </>
+                        )}
                     </div>
                 </div>
 

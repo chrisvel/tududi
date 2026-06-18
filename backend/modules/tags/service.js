@@ -2,7 +2,11 @@
 
 const tagsRepository = require('./repository');
 const { validateTagName } = require('./validation');
-const { NotFoundError, ConflictError } = require('../../shared/errors');
+const {
+    NotFoundError,
+    ConflictError,
+    ForbiddenError,
+} = require('../../shared/errors');
 
 class TagsService {
     /**
@@ -13,6 +17,7 @@ class TagsService {
         return tags.map((tag) => ({
             uid: tag.uid,
             name: tag.name,
+            tag_type: tag.tag_type,
         }));
     }
 
@@ -38,6 +43,7 @@ class TagsService {
         return {
             uid: tag.uid,
             name: tag.name,
+            tag_type: tag.tag_type,
         };
     }
 
@@ -76,6 +82,10 @@ class TagsService {
             throw new NotFoundError('Tag not found');
         }
 
+        if (tag.tag_type === 'system') {
+            throw new ForbiddenError('System tags cannot be renamed');
+        }
+
         const validatedName = validateTagName(newName);
 
         // Check for name conflict if changing name
@@ -112,6 +122,10 @@ class TagsService {
 
         if (!tag) {
             throw new NotFoundError('Tag not found');
+        }
+
+        if (tag.tag_type === 'system') {
+            throw new ForbiddenError('System tags cannot be deleted');
         }
 
         await tagsRepository.deleteWithAssociations(tag);
