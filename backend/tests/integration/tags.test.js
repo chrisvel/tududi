@@ -188,7 +188,8 @@ describe('Tags Routes', () => {
             const response = await agent.get('/api/tags');
 
             expect(response.status).toBe(200);
-            expect(response.body).toHaveLength(2);
+            // 3 = 2 user tags + 1 system tag (someday) auto-created on user registration
+            expect(response.body).toHaveLength(3);
             expect(response.body.map((t) => t.uid)).toContain(tag1.uid);
             expect(response.body.map((t) => t.uid)).toContain(tag2.uid);
         });
@@ -197,8 +198,10 @@ describe('Tags Routes', () => {
             const response = await agent.get('/api/tags');
 
             expect(response.status).toBe(200);
-            expect(response.body[0].name).toBe('personal'); // P comes before W
-            expect(response.body[1].name).toBe('work');
+            // alphabetical: personal < someday < work
+            expect(response.body[0].name).toBe('personal');
+            expect(response.body[1].name).toBe('someday');
+            expect(response.body[2].name).toBe('work');
         });
 
         it('should require authentication', async () => {
