@@ -58,11 +58,11 @@ const tagsController = {
     async update(req, res, next) {
         try {
             const { identifier } = req.params;
-            const { name, pinned } = req.body;
+            const { name, pinned, color } = req.body;
             const tag = await tagsService.update(
                 req.currentUser.id,
                 identifier,
-                { name, pinned }
+                { name, pinned, color }
             );
             res.json(tag);
         } catch (error) {
