@@ -9,6 +9,8 @@ interface TagInputProps {
     onFocus?: () => void;
 }
 
+const MAX_QUICK_TAGS = 5;
+
 const TagInput: React.FC<TagInputProps> = ({
     initialTags,
     onTagsChange,
@@ -27,12 +29,8 @@ const TagInput: React.FC<TagInputProps> = ({
 
     // Update internal tags state when initialTags prop changes
     useEffect(() => {
-        // Always set tags to match initialTags, even if empty
         setTags(initialTags || []);
     }, [initialTags]);
-
-    // Remove this effect to prevent infinite loops
-    // onTagsChange is called directly in addNewTag, selectTag, and removeTag
 
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -52,11 +50,9 @@ const TagInput: React.FC<TagInputProps> = ({
             setIsDropdownOpen(shouldOpen);
             setHighlightedIndex(-1);
 
-            // Auto-scroll to show dropdown when it opens
             if (shouldOpen) {
                 setTimeout(() => {
                     if (containerRef.current) {
-                        // Find the modal's scroll container
                         const modalScrollContainer =
                             containerRef.current.closest(
                                 '.absolute.inset-0.overflow-y-auto'
@@ -67,14 +63,12 @@ const TagInput: React.FC<TagInputProps> = ({
                             containerRef.current.closest('.overflow-y-auto');
 
                         if (modalScrollContainer) {
-                            // Get the position of the TagInput container relative to the scroll container
                             const containerRect =
                                 containerRef.current.getBoundingClientRect();
                             const scrollRect =
                                 modalScrollContainer.getBoundingClientRect();
 
-                            // Calculate how much to scroll to show the dropdown
-                            const dropdownHeight = 240; // max-h-60 = 240px
+                            const dropdownHeight = 240;
                             const neededSpace =
                                 containerRect.bottom -
                                 scrollRect.top +
@@ -83,14 +77,13 @@ const TagInput: React.FC<TagInputProps> = ({
 
                             if (neededSpace > availableSpace) {
                                 const scrollAmount =
-                                    neededSpace - availableSpace + 20; // 20px padding
+                                    neededSpace - availableSpace + 20;
                                 modalScrollContainer.scrollBy({
                                     top: scrollAmount,
                                     behavior: 'smooth',
                                 });
                             }
                         } else {
-                            // Fallback to scrollIntoView if modal container not found
                             containerRef.current.scrollIntoView({
                                 behavior: 'smooth',
                                 block: 'nearest',
@@ -155,7 +148,6 @@ const TagInput: React.FC<TagInputProps> = ({
                 addNewTag(inputValue.trim());
             }
         } else if (event.key === 'Backspace') {
-            // Remove the last tag if input is empty and there are tags
             if (inputValue === '' && tags.length > 0) {
                 event.preventDefault();
                 const updatedTags = tags.slice(0, -1);
@@ -195,13 +187,44 @@ const TagInput: React.FC<TagInputProps> = ({
         onTagsChange(updatedTags);
     };
 
+    // Compute quick-access tags: pinned first, then top 5 by usage (alphabetical when tied)
+    const quickTags = (() => {
+        const unselected = availableTags.filter((t) => !tags.includes(t.name));
+        const pinned = unselected.filter((t) => t.pinned);
+        if (pinned.length > 0) return pinned.slice(0, MAX_QUICK_TAGS);
+        // Sort by usage desc; backend already returns alphabetical order so ties stay sorted
+        const byUsage = [...unselected].sort(
+            (a, b) => (b.usage_count ?? 0) - (a.usage_count ?? 0)
+        );
+        return byUsage.slice(0, MAX_QUICK_TAGS);
+    })();
+
     return (
         <div className="space-y-2 relative">
+            {/* Quick-access tag chips */}
+            {quickTags.length > 0 && inputValue.trim() === '' && (
+                <div className="flex flex-wrap gap-1.5">
+                    {quickTags.map((tag) => (
+                        <button
+                            key={tag.uid ?? tag.name}
+                            type="button"
+                            onClick={() => selectTag(tag.name)}
+                            className="flex items-center gap-1 text-xs px-2 py-0.5 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-700 dark:hover:bg-blue-900/30 dark:hover:border-blue-600 dark:hover:text-blue-300 transition-colors duration-100"
+                            title={
+                                tag.pinned
+                                    ? t('tags.pinnedTag', 'Pinned tag')
+                                    : t('tags.frequentlyUsed', 'Frequently used')
+                            }
+                        >
+                            {tag.name}
+                        </button>
+                    ))}
+                </div>
+            )}
+
             <div
                 ref={containerRef}
-                className={`flex flex-wrap items-start gap-2 border border-gray-300 dark:border-gray-900 bg-white dark:bg-gray-900 rounded-md px-2 min-h-[40px] ${
-                    tags.length > 3 ? 'py-3' : 'py-2'
-                }`}
+                className="flex flex-wrap items-center gap-2 border border-gray-300 dark:border-gray-900 bg-white dark:bg-gray-900 rounded-md px-2 min-h-[40px] py-2"
             >
                 {tags.length > 0 ? (
                     tags.map((tag, index) => (
@@ -220,9 +243,7 @@ const TagInput: React.FC<TagInputProps> = ({
                             </button>
                         </span>
                     ))
-                ) : (
-                    <span className="text-gray-400 text-xs"></span>
-                )}
+                ) : null}
 
                 <input
                     type="text"
@@ -283,7 +304,6 @@ const TagInput: React.FC<TagInputProps> = ({
                             )}
                         </button>
                     ))}
-                    {/* Option to add a new tag if no matches */}
                     {filteredTags.length === 0 && inputValue.trim() !== '' && (
                         <button
                             type="button"

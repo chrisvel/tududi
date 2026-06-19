@@ -18,6 +18,8 @@ class TagsService {
             uid: tag.uid,
             name: tag.name,
             tag_type: tag.tag_type,
+            pinned: tag.pinned,
+            usage_count: Number(tag.get('usage_count') ?? 0),
         }));
     }
 
@@ -44,6 +46,7 @@ class TagsService {
             uid: tag.uid,
             name: tag.name,
             tag_type: tag.tag_type,
+            pinned: tag.pinned,
         };
     }
 
@@ -69,9 +72,9 @@ class TagsService {
     }
 
     /**
-     * Update a tag's name.
+     * Update a tag's name and/or pinned state.
      */
-    async update(userId, identifier, newName) {
+    async update(userId, identifier, { name, pinned } = {}) {
         const decodedIdentifier = decodeURIComponent(identifier);
         const tag = await tagsRepository.findByIdentifier(
             userId,
@@ -82,31 +85,41 @@ class TagsService {
             throw new NotFoundError('Tag not found');
         }
 
-        if (tag.tag_type === 'system') {
-            throw new ForbiddenError('System tags cannot be renamed');
-        }
+        const updates = {};
 
-        const validatedName = validateTagName(newName);
-
-        // Check for name conflict if changing name
-        if (validatedName !== tag.name) {
-            const exists = await tagsRepository.nameExists(
-                userId,
-                validatedName,
-                tag.id
-            );
-            if (exists) {
-                throw new ConflictError(
-                    `A tag with the name "${validatedName}" already exists.`
-                );
+        if (name !== undefined) {
+            if (tag.tag_type === 'system') {
+                // Silently ignore name field for system tags — the form always sends it
+            } else {
+                const validatedName = validateTagName(name);
+                if (validatedName !== tag.name) {
+                    const exists = await tagsRepository.nameExists(
+                        userId,
+                        validatedName,
+                        tag.id
+                    );
+                    if (exists) {
+                        throw new ConflictError(
+                            `A tag with the name "${validatedName}" already exists.`
+                        );
+                    }
+                    updates.name = validatedName;
+                }
             }
         }
 
-        await tagsRepository.update(tag, { name: validatedName });
+        if (pinned !== undefined) {
+            updates.pinned = Boolean(pinned);
+        }
+
+        if (Object.keys(updates).length > 0) {
+            await tagsRepository.update(tag, updates);
+        }
 
         return {
             id: tag.id,
-            name: tag.name,
+            name: updates.name ?? tag.name,
+            pinned: updates.pinned !== undefined ? updates.pinned : tag.pinned,
         };
     }
 
