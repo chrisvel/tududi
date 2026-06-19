@@ -75,6 +75,22 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                         style={project.color ? { backgroundColor: project.color } : undefined}
                     />
                 )}
+                {project.color && (
+                    <div
+                        className="absolute top-4 left-4 w-14 h-14 rounded-full ring-2 ring-white/80 shadow-lg flex items-center justify-center select-none z-10"
+                        style={{ backgroundColor: project.color }}
+                    >
+                        <span className="text-base font-bold text-white/80">
+                            {project.name
+                                .trim()
+                                .split(' ')
+                                .filter((w: string) => w.length > 0)
+                                .slice(0, 2)
+                                .map((w: string) => w[0].toUpperCase())
+                                .join('')}
+                        </span>
+                    </div>
+                )}
 
                 {creatorName && (
                     <div className="absolute top-2 right-2 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">

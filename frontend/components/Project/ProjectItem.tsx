@@ -287,7 +287,6 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                     >
                         <div
                             className="relative h-40 overflow-hidden rounded-t-lg bg-gray-200 dark:bg-gray-700"
-                            style={project.color && !project.image_url ? { backgroundColor: project.color } : undefined}
                         >
                             {project.image_url ? (
                                 <img
@@ -296,12 +295,16 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                     className="w-full h-full object-cover"
                                 />
                             ) : (
-                                <div className="w-full h-full flex items-center justify-center">
-                                    {project.color && (
-                                        <span className="text-4xl font-black text-white/50 select-none">
-                                            {getProjectInitials(project.name, 2)}
-                                        </span>
-                                    )}
+                                <div className="w-full h-full" />
+                            )}
+                            {project.color && (
+                                <div
+                                    className="absolute top-3 left-3 w-11 h-11 rounded-full ring-2 ring-white/80 shadow-md flex items-center justify-center select-none"
+                                    style={{ backgroundColor: project.color }}
+                                >
+                                    <span className="text-sm font-bold text-white/80">
+                                        {getProjectInitials(project.name, 2)}
+                                    </span>
                                 </div>
                             )}
                             <div className="absolute top-2 right-2 z-20 flex items-center space-x-2">
@@ -463,14 +466,8 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                               .replace(/^-|-$/g, '')}`
                                         : `/project/${project.id}`
                                 }
-                                className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100 hover:underline truncate"
+                                className="block text-lg font-semibold text-gray-900 dark:text-gray-100 hover:underline truncate"
                             >
-                                {project.color && (
-                                    <span
-                                        className="inline-block w-3 h-3 rounded-full flex-shrink-0"
-                                        style={{ backgroundColor: project.color }}
-                                    />
-                                )}
                                 {project.name}
                             </Link>
                         </Tooltip>
@@ -596,28 +593,24 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                     }
                     className="w-10 h-10 mr-3 flex-shrink-0"
                 >
-                    {project.image_url ? (
+                    {project.color ? (
+                        <div
+                            className="w-full h-full rounded-full flex items-center justify-center shadow-sm ring-2 ring-white/60 dark:ring-gray-700 hover:opacity-90 transition-opacity"
+                            style={{ backgroundColor: project.color }}
+                        >
+                            <span className="text-xs font-bold text-white/80">
+                                {getProjectInitials(project.name, 2)}
+                            </span>
+                        </div>
+                    ) : project.image_url ? (
                         <img
                             src={project.image_url}
                             alt={project.name}
-                            className="w-full h-full object-cover rounded-md cursor-pointer hover:opacity-90 transition-opacity"
+                            className="w-full h-full object-cover rounded-full cursor-pointer hover:opacity-90 transition-opacity"
                         />
                     ) : (
-                        <div
-                            className={`w-full h-full rounded-md flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity ${!project.color ? 'bg-gray-200 dark:bg-gray-700' : ''}`}
-                            style={
-                                project.color
-                                    ? { backgroundColor: project.color }
-                                    : undefined
-                            }
-                        >
-                            <span
-                                className={`text-xs font-extrabold ${
-                                    project.color
-                                        ? 'text-white/60'
-                                        : 'text-gray-500 dark:text-gray-400 opacity-20'
-                                }`}
-                            >
+                        <div className="w-full h-full rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center hover:opacity-90 transition-opacity">
+                            <span className="text-xs font-extrabold text-gray-500 dark:text-gray-400 opacity-40">
                                 {getProjectInitials(project.name, 2)}
                             </span>
                         </div>
