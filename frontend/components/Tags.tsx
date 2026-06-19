@@ -6,6 +6,7 @@ import {
     MagnifyingGlassIcon,
     PencilSquareIcon,
     LockClosedIcon,
+    MapPinIcon,
 } from '@heroicons/react/24/solid';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import TagModal from './Tag/TagModal';
@@ -61,7 +62,9 @@ const Tags: React.FC = () => {
             if (tagData.uid) {
                 await updateTag(tagData.uid, tagData);
                 setTags(
-                    tags.map((tag) => (tag.uid === tagData.uid ? tagData : tag))
+                    tags.map((tag) =>
+                        tag.uid === tagData.uid ? { ...tag, ...tagData } : tag
+                    )
                 );
             } else {
                 const newTag = await createTag(tagData);
@@ -274,11 +277,34 @@ const Tags: React.FC = () => {
 
                                                 {/* Action buttons */}
                                                 <div className="flex space-x-2 flex-shrink-0 items-center">
-                                                    {tag.tag_type === 'system' ? (
-                                                        <LockClosedIcon
-                                                            className="h-3.5 w-3.5 text-gray-300 dark:text-gray-600"
-                                                            title="System tag"
+                                                    {tag.pinned && (
+                                                        <MapPinIcon
+                                                            className="h-3.5 w-3.5 text-blue-400 dark:text-blue-500"
+                                                            title={t('tags.pinned', 'Pinned for quick access')}
                                                         />
+                                                    )}
+                                                    {tag.tag_type === 'system' ? (
+                                                        <>
+                                                            <LockClosedIcon
+                                                                className="h-3.5 w-3.5 text-gray-300 dark:text-gray-600"
+                                                                title={t('tags.systemTag', 'System tag')}
+                                                            />
+                                                            <button
+                                                                onClick={() =>
+                                                                    handleEditTag(tag)
+                                                                }
+                                                                className={`text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none transition-opacity duration-200 ${
+                                                                    hoveredTagUid ===
+                                                                    tag.uid
+                                                                        ? 'opacity-100'
+                                                                        : 'opacity-0 pointer-events-none'
+                                                                }`}
+                                                                aria-label={`Edit ${tag.name}`}
+                                                                title={t('tags.editPinSetting', 'Edit pin setting')}
+                                                            >
+                                                                <PencilSquareIcon className="h-4 w-4" />
+                                                            </button>
+                                                        </>
                                                     ) : (
                                                         <>
                                                             <button

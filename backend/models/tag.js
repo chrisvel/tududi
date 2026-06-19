@@ -33,6 +33,11 @@ module.exports = (sequelize) => {
                 allowNull: false,
                 defaultValue: 'user',
             },
+            pinned: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: false,
+            },
         },
         {
             tableName: 'tags',
