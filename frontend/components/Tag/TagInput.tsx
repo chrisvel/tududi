@@ -187,15 +187,16 @@ const TagInput: React.FC<TagInputProps> = ({
         onTagsChange(updatedTags);
     };
 
-    // Compute quick-access tags: pinned first, then fall back to top used
+    // Compute quick-access tags: pinned first, then top 5 by usage (alphabetical when tied)
     const quickTags = (() => {
         const unselected = availableTags.filter((t) => !tags.includes(t.name));
         const pinned = unselected.filter((t) => t.pinned);
         if (pinned.length > 0) return pinned.slice(0, MAX_QUICK_TAGS);
+        // Sort by usage desc; backend already returns alphabetical order so ties stay sorted
         const byUsage = [...unselected].sort(
             (a, b) => (b.usage_count ?? 0) - (a.usage_count ?? 0)
         );
-        return byUsage.slice(0, MAX_QUICK_TAGS).filter((t) => (t.usage_count ?? 0) > 0);
+        return byUsage.slice(0, MAX_QUICK_TAGS);
     })();
 
     return (

@@ -90,7 +90,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         }
     }, [isOpen]);
 
-    // Load tags only when user actually interacts with tag input to prevent refresh
     const handleTagInputFocus = () => {
         if (!tagsStore.hasLoaded && !tagsStore.isLoading) {
             tagsStore.loadTags();
@@ -392,6 +391,10 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
     const toggleSection = useCallback(
         (section: keyof typeof expandedSections) => {
+            // Load tags eagerly when the tags section is opened so quick-access chips appear
+            if (section === 'tags' && !tagsStore.hasLoaded && !tagsStore.isLoading) {
+                tagsStore.loadTags();
+            }
             setExpandedSections((prev) => {
                 const newExpanded = {
                     ...prev,
