@@ -4,6 +4,7 @@ import { useToast } from '../Shared/ToastContext';
 import { useTranslation } from 'react-i18next';
 import DiscardChangesDialog from '../Shared/DiscardChangesDialog';
 import { TrashIcon } from '@heroicons/react/24/outline';
+import ColorPicker from '../Shared/ColorPicker';
 
 interface AreaModalProps {
     isOpen: boolean;
@@ -26,6 +27,7 @@ const AreaModal: React.FC<AreaModalProps> = ({
         uid: area?.uid || '',
         name: area?.name || '',
         description: area?.description || '',
+        color: area?.color || '',
     });
 
     const [error, setError] = useState<string | null>(null);
@@ -44,6 +46,7 @@ const AreaModal: React.FC<AreaModalProps> = ({
                 uid: area?.uid || '',
                 name: area?.name || '',
                 description: area?.description || '',
+                color: area?.color || '',
             });
             setError(null);
 
@@ -154,7 +157,8 @@ const AreaModal: React.FC<AreaModalProps> = ({
         // Existing area - compare with original
         return (
             formData.name !== area.name ||
-            formData.description !== area.description
+            formData.description !== area.description ||
+            formData.color !== area.color
         );
     };
 
@@ -264,6 +268,22 @@ const AreaModal: React.FC<AreaModalProps> = ({
                                                         style={{
                                                             minHeight: '150px',
                                                         }}
+                                                    />
+                                                </div>
+
+                                                {/* Color Section */}
+                                                <div className="border-t border-gray-200 dark:border-gray-700 pt-4 pb-4 px-4">
+                                                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                                                        {t('forms.color', 'Color')}
+                                                    </h3>
+                                                    <ColorPicker
+                                                        value={formData.color || ''}
+                                                        onChange={(color) =>
+                                                            setFormData((prev) => ({
+                                                                ...prev,
+                                                                color: color || '',
+                                                            }))
+                                                        }
                                                     />
                                                 </div>
 

@@ -158,6 +158,7 @@ interface TaskItemProps {
     showCompletedTasks?: boolean;
     isInCompletedSection?: boolean;
     hideStatusControl?: boolean;
+    isKanbanView?: boolean;
 }
 
 const TaskItem: React.FC<TaskItemProps> = ({
@@ -172,6 +173,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
     showCompletedTasks = false,
     isInCompletedSection = false,
     hideStatusControl = false,
+    isKanbanView = false,
 }) => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -413,6 +415,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     isUpcomingView={isUpcomingView}
                     onMenuOpenChange={setIsStatusMenuOpen}
                     hideStatusControl={hideStatusControl}
+                    isKanbanView={isKanbanView}
                 />
 
                 {/* Progress bar at bottom of parent task */}

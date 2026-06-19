@@ -55,10 +55,11 @@ const areasController = {
     async create(req, res, next) {
         try {
             const userId = requireUserId(req);
-            const { name, description } = req.body;
+            const { name, description, color } = req.body;
             const area = await areasService.create(userId, {
                 name,
                 description,
+                color,
             });
             res.status(201).json(area);
         } catch (error) {
@@ -74,10 +75,11 @@ const areasController = {
         try {
             const userId = requireUserId(req);
             const { uid } = req.params;
-            const { name, description } = req.body;
+            const { name, description, color } = req.body;
             const area = await areasService.update(userId, uid, {
                 name,
                 description,
+                color,
             });
             res.json(area);
         } catch (error) {

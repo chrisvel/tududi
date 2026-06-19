@@ -26,14 +26,14 @@ const PROJECT_INCLUDE = {
 
 const TAG_INCLUDE_WITH_ID = {
     model: Tag,
-    attributes: ['id', 'name', 'uid'],
+    attributes: ['id', 'name', 'uid', 'color'],
     through: { attributes: [] },
 };
 
 const PROJECT_INCLUDE_WITH_ID = {
     model: Project,
     required: false,
-    attributes: ['id', 'name', 'uid'],
+    attributes: ['id', 'name', 'uid', 'color'],
 };
 
 class NotesRepository extends BaseRepository {

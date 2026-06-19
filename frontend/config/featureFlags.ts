@@ -9,7 +9,7 @@ const parseBooleanFlag = (
 
 export const ENABLE_NOTE_COLOR = parseBooleanFlag(
     process.env.ENABLE_NOTE_COLOR,
-    false
+    true
 );
 
 export type FeatureFlags = {

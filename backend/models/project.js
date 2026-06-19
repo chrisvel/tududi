@@ -70,6 +70,10 @@ module.exports = (sequelize) => {
                 type: DataTypes.TEXT,
                 allowNull: true,
             },
+            color: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
             task_show_completed: {
                 type: DataTypes.BOOLEAN,
                 allowNull: true,

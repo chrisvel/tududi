@@ -82,6 +82,7 @@ const Areas: React.FC = () => {
                 result = await updateArea(areaData.uid, {
                     name: areaData.name,
                     description: areaData.description,
+                    color: areaData.color,
                 });
                 // Update the existing area in the list
                 const currentAreas = useStore.getState().areasStore.areas;
@@ -96,6 +97,7 @@ const Areas: React.FC = () => {
                 result = await createArea({
                     name: areaData.name,
                     description: areaData.description,
+                    color: areaData.color,
                 });
 
                 // Add the new area immediately to global state
@@ -183,22 +185,23 @@ const Areas: React.FC = () => {
                                               .replace(/^-|-$/g, '')}`
                                         : `/projects?area_id=${area.uid}`
                                 }
-                                className={`bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col group hover:opacity-90 transition-opacity cursor-pointer ${
-                                    dropdownOpen === area.uid ? 'z-50' : ''
-                                }`}
+                                className={`rounded-lg shadow-md relative flex flex-col group hover:opacity-90 transition-opacity cursor-pointer ${
+                                    !area.color ? 'bg-gray-50 dark:bg-gray-900' : ''
+                                } ${dropdownOpen === area.uid ? 'z-50' : ''}`}
                                 style={{
                                     minHeight: '120px',
                                     maxHeight: '120px',
+                                    ...(area.color ? { backgroundColor: area.color } : {}),
                                 }}
                             >
                                 {/* Area Content - Centered */}
                                 <div className="p-4 flex-1 flex items-center justify-center">
                                     <div className="text-center">
-                                        <h3 className="text-lg font-light text-gray-900 dark:text-gray-100 line-clamp-2 uppercase">
+                                        <h3 className={`text-lg font-light line-clamp-2 uppercase ${area.color ? 'text-white' : 'text-gray-900 dark:text-gray-100'}`}>
                                             {area.name}
                                         </h3>
                                         {area.description && (
-                                            <p className="text-xs text-gray-600 dark:text-gray-400 mt-2 line-clamp-3">
+                                            <p className={`text-xs mt-2 line-clamp-3 ${area.color ? 'text-white/80' : 'text-gray-600 dark:text-gray-400'}`}>
                                                 {area.description}
                                             </p>
                                         )}
@@ -224,7 +227,7 @@ const Areas: React.FC = () => {
                                             }
                                             setDropdownOpen(newDropdownState);
                                         }}
-                                        className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-400 focus:outline-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                                        className={`focus:outline-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${area.color ? 'text-white/70 hover:text-white' : 'text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-400'}`}
                                         aria-label={t(
                                             'areas.toggleDropdownMenu'
                                         )}

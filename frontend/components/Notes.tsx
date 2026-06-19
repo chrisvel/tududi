@@ -33,21 +33,9 @@ import { deleteNoteWithStoreUpdate } from '../utils/noteDeleteUtils';
 import { useStore } from '../store/useStore';
 import { createProject } from '../utils/projectsService';
 import { ENABLE_NOTE_COLOR } from '../config/featureFlags';
+import { COLORS } from './Shared/ColorPicker';
 import NoteFocusMode from './Note/NoteFocusMode';
 
-const NOTE_COLORS = [
-    { name: 'None', value: '' },
-    { name: 'Red', value: '#B71C1C' },
-    { name: 'Orange', value: '#E65100' },
-    { name: 'Amber', value: '#FF8F00' },
-    { name: 'Green', value: '#2E7D32' },
-    { name: 'Teal', value: '#00695C' },
-    { name: 'Blue', value: '#1565C0' },
-    { name: 'Indigo', value: '#283593' },
-    { name: 'Purple', value: '#6A1B9A' },
-    { name: 'Pink', value: '#AD1457' },
-    { name: 'Grey', value: '#424242' },
-];
 
 const shouldUseLightText = (hexColor: string | undefined): boolean => {
     if (!hexColor) return false;
@@ -578,16 +566,21 @@ const Notes: React.FC = () => {
                                                   : 'border-b border-transparent hover:bg-gray-50 dark:hover:bg-gray-800 mx-4'
                                         }`}
                                     >
-                                        {previewNote?.uid === note.uid && (
-                                            <span className="absolute inset-y-0 left-0 w-1 bg-blue-400 dark:bg-blue-500 rounded-l-md pointer-events-none" />
-                                        )}
-                                        <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 truncate mb-1">
-                                            {note.title ||
-                                                t(
-                                                    'notes.untitled',
-                                                    'Untitled Note'
-                                                )}
-                                        </h3>
+                                        <div className="flex items-center gap-2 mb-1 min-w-0">
+                                            {note.color && (
+                                                <span
+                                                    className="w-2.5 h-2.5 rounded-full flex-shrink-0 ring-1 ring-black/30 dark:ring-white/30"
+                                                    style={{ backgroundColor: note.color }}
+                                                />
+                                            )}
+                                            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 truncate">
+                                                {note.title ||
+                                                    t(
+                                                        'notes.untitled',
+                                                        'Untitled Note'
+                                                    )}
+                                            </h3>
+                                        </div>
                                         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
                                             {note.content.substring(0, 100)}
                                             {note.content.length > 100
@@ -812,7 +805,7 @@ const Notes: React.FC = () => {
                                                             Background Color
                                                         </div>
                                                         <div className="grid grid-cols-5 gap-2">
-                                                            {NOTE_COLORS.map(
+                                                            {COLORS.map(
                                                                 (
                                                                     colorOption
                                                                 ) => (
@@ -1204,7 +1197,7 @@ const Notes: React.FC = () => {
                                                             Background Color
                                                         </div>
                                                         <div className="grid grid-cols-5 gap-2">
-                                                            {NOTE_COLORS.map(
+                                                            {COLORS.map(
                                                                 (
                                                                     colorOption
                                                                 ) => (

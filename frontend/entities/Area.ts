@@ -4,4 +4,5 @@ export interface Area {
     name: string;
     description?: string;
     active?: boolean;
+    color?: string;
 }

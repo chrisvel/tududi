@@ -216,6 +216,12 @@ const TagInput: React.FC<TagInputProps> = ({
                                     : t('tags.frequentlyUsed', 'Frequently used')
                             }
                         >
+                            {tag.color && (
+                                <span
+                                    className="inline-block w-2 h-2 rounded-full flex-shrink-0"
+                                    style={{ backgroundColor: tag.color }}
+                                />
+                            )}
                             {tag.name}
                         </button>
                     ))}
@@ -287,21 +293,29 @@ const TagInput: React.FC<TagInputProps> = ({
                             role="option"
                             aria-selected={highlightedIndex === index}
                         >
-                            {highlightedIndex === index ? (
-                                <>
-                                    {inputValue.length > 0 && (
-                                        <span className="font-semibold">
-                                            {tag.name.substring(
-                                                0,
-                                                inputValue.length
-                                            )}
-                                        </span>
-                                    )}
-                                    {tag.name.substring(inputValue.length)}
-                                </>
-                            ) : (
-                                tag.name
-                            )}
+                            <span className="inline-flex items-center gap-1.5">
+                                {tag.color && (
+                                    <span
+                                        className="inline-block w-2.5 h-2.5 rounded-full flex-shrink-0"
+                                        style={{ backgroundColor: tag.color }}
+                                    />
+                                )}
+                                {highlightedIndex === index ? (
+                                    <>
+                                        {inputValue.length > 0 && (
+                                            <span className="font-semibold">
+                                                {tag.name.substring(
+                                                    0,
+                                                    inputValue.length
+                                                )}
+                                            </span>
+                                        )}
+                                        {tag.name.substring(inputValue.length)}
+                                    </>
+                                ) : (
+                                    tag.name
+                                )}
+                            </span>
                         </button>
                     ))}
                     {filteredTags.length === 0 && inputValue.trim() !== '' && (

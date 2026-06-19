@@ -35,6 +35,7 @@ export interface Project {
     Notes?: Note[]; // Sequelize association naming (capitalized)
     due_date_at?: string | null;
     image_url?: string;
+    color?: string;
     task_show_completed?: boolean;
     task_sort_order?: string;
     status?: ProjectStatus;

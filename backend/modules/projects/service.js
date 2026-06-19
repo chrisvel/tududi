@@ -261,6 +261,7 @@ class ProjectsService {
             priority,
             due_date_at,
             image_url,
+            color,
             status,
             state,
             tags,
@@ -280,6 +281,7 @@ class ProjectsService {
             priority: priority || null,
             due_date_at: due_date_at || null,
             image_url: image_url || null,
+            color: color || null,
             status: status || state || 'not_started',
             user_id: userId,
         };
@@ -322,6 +324,7 @@ class ProjectsService {
             priority,
             due_date_at,
             image_url,
+            color,
             status,
             state,
             tags,
@@ -343,6 +346,7 @@ class ProjectsService {
             updateData.due_date_at = due_date_at === '' ? null : due_date_at;
         if (image_url !== undefined)
             updateData.image_url = image_url === '' ? null : image_url;
+        if (color !== undefined) updateData.color = color === '' ? null : color;
         if (status !== undefined) updateData.status = status;
         else if (state !== undefined) updateData.status = state;
 

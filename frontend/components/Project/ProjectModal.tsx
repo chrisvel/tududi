@@ -20,7 +20,9 @@ import {
     CalendarIcon,
     ExclamationTriangleIcon,
     PlayIcon,
+    SwatchIcon,
 } from '@heroicons/react/24/outline';
+import ColorPicker from '../Shared/ColorPicker';
 
 interface ProjectModalProps {
     isOpen: boolean;
@@ -76,6 +78,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         area: false,
         priority: false,
         dueDate: false,
+        color: false,
     });
 
     const { showSuccessToast, showErrorToast } = useToast();
@@ -343,7 +346,8 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 formData.status !== 'not_started' ||
                 tags.length > 0 ||
                 formData.priority !== null ||
-                formData.due_date_at !== null
+                formData.due_date_at !== null ||
+                !!formData.color
             );
         }
 
@@ -354,7 +358,8 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             formData.area_id !== project.area_id ||
             formData.status !== project.status ||
             formData.priority !== project.priority ||
-            formData.due_date_at !== project.due_date_at;
+            formData.due_date_at !== project.due_date_at ||
+            formData.color !== project.color;
 
         // Compare tags
         const originalTags = project.tags?.map((tag) => tag.name) || [];
@@ -652,6 +657,26 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                     </div>
                                                 </div>
                                             )}
+
+                                            {expandedSections.color && (
+                                                <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4">
+                                                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                                                        {t(
+                                                            'forms.color',
+                                                            'Color'
+                                                        )}
+                                                    </h3>
+                                                    <ColorPicker
+                                                        value={formData.color || ''}
+                                                        onChange={(color) =>
+                                                            setFormData((prev) => ({
+                                                                ...prev,
+                                                                color: color || undefined,
+                                                            }))
+                                                        }
+                                                    />
+                                                </div>
+                                            )}
                                         </fieldset>
                                     </form>
                                 </div>
@@ -766,6 +791,28 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                             <CalendarIcon className="h-5 w-5" />
                                             {formData.due_date_at && (
                                                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
+                                            )}
+                                        </button>
+
+                                        {/* Color Toggle */}
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                toggleSection('color')
+                                            }
+                                            className={`relative p-2 rounded-full transition-colors ${
+                                                expandedSections.color
+                                                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
+                                                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                            }`}
+                                            title={t('forms.color', 'Color')}
+                                        >
+                                            <SwatchIcon className="h-5 w-5" />
+                                            {formData.color && (
+                                                <span
+                                                    className="absolute -top-1 -right-1 w-3 h-3 rounded-full border border-white dark:border-gray-800"
+                                                    style={{ backgroundColor: formData.color }}
+                                                />
                                             )}
                                         </button>
                                     </div>

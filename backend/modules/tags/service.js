@@ -19,6 +19,7 @@ class TagsService {
             name: tag.name,
             tag_type: tag.tag_type,
             pinned: tag.pinned,
+            color: tag.color || null,
             usage_count: Number(tag.get('usage_count') ?? 0),
         }));
     }
@@ -47,6 +48,7 @@ class TagsService {
             name: tag.name,
             tag_type: tag.tag_type,
             pinned: tag.pinned,
+            color: tag.color || null,
         };
     }
 
@@ -74,7 +76,7 @@ class TagsService {
     /**
      * Update a tag's name and/or pinned state.
      */
-    async update(userId, identifier, { name, pinned } = {}) {
+    async update(userId, identifier, { name, pinned, color } = {}) {
         const decodedIdentifier = decodeURIComponent(identifier);
         const tag = await tagsRepository.findByIdentifier(
             userId,
@@ -112,6 +114,10 @@ class TagsService {
             updates.pinned = Boolean(pinned);
         }
 
+        if (color !== undefined) {
+            updates.color = color === '' ? null : color;
+        }
+
         if (Object.keys(updates).length > 0) {
             await tagsRepository.update(tag, updates);
         }
@@ -120,6 +126,7 @@ class TagsService {
             id: tag.id,
             name: updates.name ?? tag.name,
             pinned: updates.pinned !== undefined ? updates.pinned : tag.pinned,
+            color: updates.color !== undefined ? updates.color : tag.color,
         };
     }
 

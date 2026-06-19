@@ -70,7 +70,16 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                         className="w-full h-[282px] object-cover"
                     />
                 ) : (
-                    <div className="w-full h-[282px] bg-gradient-to-br from-blue-500 to-purple-600 dark:from-blue-600 dark:to-purple-700"></div>
+                    <div
+                        className={`w-full h-[282px] ${!project.color ? 'bg-gradient-to-br from-blue-500 to-purple-600 dark:from-blue-600 dark:to-purple-700' : ''}`}
+                        style={project.color ? { backgroundColor: project.color } : undefined}
+                    />
+                )}
+                {project.color && (
+                    <div
+                        className="absolute top-4 left-4 w-8 h-8 rounded-full ring-1 ring-black/30 shadow-md select-none z-10"
+                        style={{ backgroundColor: project.color }}
+                    />
                 )}
 
                 {creatorName && (

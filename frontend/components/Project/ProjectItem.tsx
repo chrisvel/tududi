@@ -262,11 +262,14 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
             className={`${
                 viewMode === 'cards'
                     ? 'bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col group ring-1 ring-transparent hover:ring-blue-600 dark:hover:ring-blue-900 transition-shadow duration-150 ease-in-out'
-                    : 'bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-row items-center p-4 group ring-1 ring-transparent hover:ring-blue-600 dark:hover:ring-blue-900 transition-shadow duration-150 ease-in-out'
+                    : 'bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-row items-center p-4 group ring-1 ring-transparent hover:ring-blue-600 dark:hover:ring-blue-900 transition-shadow duration-150 ease-in-out border-l-4'
             }`}
             style={{
                 minHeight: viewMode === 'cards' ? '260px' : 'auto',
                 maxHeight: viewMode === 'cards' ? '260px' : 'auto',
+                ...(viewMode === 'list'
+                    ? { borderLeftColor: project.color || 'transparent' }
+                    : {}),
             }}
         >
             {viewMode === 'cards' && (
@@ -282,7 +285,9 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                         }
                         className="block"
                     >
-                        <div className="relative h-40 overflow-hidden rounded-t-lg bg-gray-200 dark:bg-gray-700">
+                        <div
+                            className="relative h-40 overflow-hidden rounded-t-lg bg-gray-200 dark:bg-gray-700"
+                        >
                             {project.image_url ? (
                                 <img
                                     src={project.image_url}
@@ -290,7 +295,13 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                     className="w-full h-full object-cover"
                                 />
                             ) : (
-                                <div className="w-full h-full bg-gray-200 dark:bg-gray-700"></div>
+                                <div className="w-full h-full" />
+                            )}
+                            {project.color && (
+                                <div
+                                    className="absolute top-3 left-3 w-6 h-6 rounded-full ring-1 ring-black/30 shadow-md select-none"
+                                    style={{ backgroundColor: project.color }}
+                                />
                             )}
                             <div className="absolute top-2 right-2 z-20 flex items-center space-x-2">
                                 {project.is_shared && (
@@ -576,17 +587,22 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                   .replace(/^-|-$/g, '')}`
                             : `/project/${project.id}`
                     }
-                    className="w-10 h-10 mr-3 flex-shrink-0"
+                    className="w-6 h-6 mr-3 flex-shrink-0"
                 >
-                    {project.image_url ? (
+                    {project.color ? (
+                        <div
+                            className="w-full h-full rounded-full shadow-sm ring-1 ring-black/30 dark:ring-white/30 hover:opacity-90 transition-opacity"
+                            style={{ backgroundColor: project.color }}
+                        />
+                    ) : project.image_url ? (
                         <img
                             src={project.image_url}
                             alt={project.name}
-                            className="w-full h-full object-cover rounded-md cursor-pointer hover:opacity-90 transition-opacity"
+                            className="w-full h-full object-cover rounded-full cursor-pointer hover:opacity-90 transition-opacity"
                         />
                     ) : (
-                        <div className="w-full h-full bg-gray-200 dark:bg-gray-700 rounded-md flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity">
-                            <span className="text-xs font-extrabold text-gray-500 dark:text-gray-400 opacity-20">
+                        <div className="w-full h-full rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center hover:opacity-90 transition-opacity">
+                            <span className="text-xs font-extrabold text-gray-500 dark:text-gray-400 opacity-40">
                                 {getProjectInitials(project.name, 2)}
                             </span>
                         </div>

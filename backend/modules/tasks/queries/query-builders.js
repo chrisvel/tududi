@@ -80,7 +80,7 @@ async function filterTasksByParams(
     let includeClause = [
         {
             model: Tag,
-            attributes: ['id', 'name', 'uid'],
+            attributes: ['id', 'name', 'uid', 'color'],
             through: { attributes: [] },
         },
         {
@@ -94,7 +94,7 @@ async function filterTasksByParams(
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name', 'uid'],
+                    attributes: ['id', 'name', 'uid', 'color'],
                     through: { attributes: [] },
                     required: false,
                 },
@@ -413,7 +413,7 @@ function getTaskIncludeConfig() {
     return [
         {
             model: Tag,
-            attributes: ['id', 'name', 'uid'],
+            attributes: ['id', 'name', 'uid', 'color'],
             through: { attributes: [] },
             required: false,
         },
@@ -428,7 +428,7 @@ function getTaskIncludeConfig() {
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name', 'uid'],
+                    attributes: ['id', 'name', 'uid', 'color'],
                     through: { attributes: [] },
                     required: false,
                 },
@@ -448,7 +448,7 @@ function getTaskIncludeConfigLight() {
     return [
         {
             model: Tag,
-            attributes: ['id', 'name', 'uid'],
+            attributes: ['id', 'name', 'uid', 'color'],
             through: { attributes: [] },
             required: false,
         },

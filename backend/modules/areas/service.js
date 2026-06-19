@@ -34,12 +34,13 @@ class AreasService {
     /**
      * Create a new area.
      */
-    async create(userId, { name, description }) {
+    async create(userId, { name, description, color }) {
         const validatedName = validateName(name);
 
         const area = await areasRepository.createForUser(userId, {
             name: validatedName,
             description,
+            color: color || null,
         });
 
         return _.pick(area, PUBLIC_ATTRIBUTES);
@@ -48,7 +49,7 @@ class AreasService {
     /**
      * Update an area.
      */
-    async update(userId, uid, { name, description }) {
+    async update(userId, uid, { name, description, color }) {
         validateUid(uid);
 
         const area = await areasRepository.findByUid(userId, uid);
@@ -64,6 +65,9 @@ class AreasService {
         }
         if (description !== undefined) {
             updateData.description = description;
+        }
+        if (color !== undefined) {
+            updateData.color = color === '' ? null : color;
         }
 
         await areasRepository.update(area, updateData);
