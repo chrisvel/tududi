@@ -261,13 +261,15 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
         <div
             className={`${
                 viewMode === 'cards'
-                    ? 'bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col group ring-1 ring-transparent hover:ring-blue-600 dark:hover:ring-blue-900 transition-shadow duration-150 ease-in-out border-l-4'
+                    ? 'bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col group ring-1 ring-transparent hover:ring-blue-600 dark:hover:ring-blue-900 transition-shadow duration-150 ease-in-out'
                     : 'bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-row items-center p-4 group ring-1 ring-transparent hover:ring-blue-600 dark:hover:ring-blue-900 transition-shadow duration-150 ease-in-out border-l-4'
             }`}
             style={{
                 minHeight: viewMode === 'cards' ? '260px' : 'auto',
                 maxHeight: viewMode === 'cards' ? '260px' : 'auto',
-                borderLeftColor: project.color || 'transparent',
+                ...(viewMode === 'list'
+                    ? { borderLeftColor: project.color || 'transparent' }
+                    : {}),
             }}
         >
             {viewMode === 'cards' && (
@@ -461,8 +463,14 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                               .replace(/^-|-$/g, '')}`
                                         : `/project/${project.id}`
                                 }
-                                className="block text-lg font-semibold text-gray-900 dark:text-gray-100 hover:underline truncate"
+                                className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100 hover:underline truncate"
                             >
+                                {project.color && (
+                                    <span
+                                        className="inline-block w-3 h-3 rounded-full flex-shrink-0"
+                                        style={{ backgroundColor: project.color }}
+                                    />
+                                )}
                                 {project.name}
                             </Link>
                         </Tooltip>
