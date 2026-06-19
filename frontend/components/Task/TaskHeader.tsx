@@ -251,7 +251,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                 {task.tags && task.tags.length > 0 && (
                                     <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
                                         <TagIcon className="h-3 w-3 mr-1" />
-                                        <span>
+                                        <span className="flex items-center flex-wrap gap-x-1">
                                             {task.tags.map((tag, index) => (
                                                 <React.Fragment key={tag.name}>
                                                     <Link
@@ -278,11 +278,17 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                                           ''
                                                                       )}`
                                                         }
-                                                        className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
+                                                        className="inline-flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:underline transition-colors"
                                                         onClick={(e) =>
                                                             e.stopPropagation()
                                                         }
                                                     >
+                                                        {tag.color && (
+                                                            <span
+                                                                className="inline-block w-2 h-2 rounded-full flex-shrink-0"
+                                                                style={{ backgroundColor: tag.color }}
+                                                            />
+                                                        )}
                                                         {tag.name}
                                                     </Link>
                                                     {index <
@@ -350,7 +356,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                 {task.tags && task.tags.length > 0 && (
                                     <div className="flex items-center">
                                         <TagIcon className="h-3 w-3 mr-1" />
-                                        <span>
+                                        <span className="flex items-center flex-wrap gap-x-1">
                                             {task.tags.map((tag, index) => (
                                                 <React.Fragment key={tag.name}>
                                                     <Link
@@ -377,11 +383,17 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                                           ''
                                                                       )}`
                                                         }
-                                                        className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
+                                                        className="inline-flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:underline transition-colors"
                                                         onClick={(e) =>
                                                             e.stopPropagation()
                                                         }
                                                     >
+                                                        {tag.color && (
+                                                            <span
+                                                                className="inline-block w-2 h-2 rounded-full flex-shrink-0"
+                                                                style={{ backgroundColor: tag.color }}
+                                                            />
+                                                        )}
                                                         {tag.name}
                                                     </Link>
                                                     {index <
@@ -535,7 +547,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                             {task.tags && task.tags.length > 0 && (
                                 <div className="flex items-center">
                                     <TagIcon className="h-3 w-3 mr-1" />
-                                    <span>
+                                    <span className="flex items-center flex-wrap gap-x-1">
                                         {task.tags.map((tag, index) => (
                                             <React.Fragment key={tag.name}>
                                                 <Link
@@ -562,11 +574,17 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                                       ''
                                                                   )}`
                                                     }
-                                                    className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
+                                                    className="inline-flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:underline transition-colors"
                                                     onClick={(e) =>
                                                         e.stopPropagation()
                                                     }
                                                 >
+                                                    {tag.color && (
+                                                        <span
+                                                            className="inline-block w-2 h-2 rounded-full flex-shrink-0"
+                                                            style={{ backgroundColor: tag.color }}
+                                                        />
+                                                    )}
                                                     {tag.name}
                                                 </Link>
                                                 {index <

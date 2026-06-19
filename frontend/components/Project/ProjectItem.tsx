@@ -290,7 +290,20 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                     className="w-full h-full object-cover"
                                 />
                             ) : (
-                                <div className="w-full h-full bg-gray-200 dark:bg-gray-700"></div>
+                                <div
+                                    className="w-full h-full flex items-center justify-center"
+                                    style={
+                                        project.color
+                                            ? { backgroundColor: project.color }
+                                            : undefined
+                                    }
+                                >
+                                    {project.color && (
+                                        <span className="text-4xl font-black text-white/30 select-none">
+                                            {getProjectInitials(project.name, 2)}
+                                        </span>
+                                    )}
+                                </div>
                             )}
                             <div className="absolute top-2 right-2 z-20 flex items-center space-x-2">
                                 {project.is_shared && (
@@ -585,8 +598,21 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                             className="w-full h-full object-cover rounded-md cursor-pointer hover:opacity-90 transition-opacity"
                         />
                     ) : (
-                        <div className="w-full h-full bg-gray-200 dark:bg-gray-700 rounded-md flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity">
-                            <span className="text-xs font-extrabold text-gray-500 dark:text-gray-400 opacity-20">
+                        <div
+                            className={`w-full h-full rounded-md flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity ${!project.color ? 'bg-gray-200 dark:bg-gray-700' : ''}`}
+                            style={
+                                project.color
+                                    ? { backgroundColor: project.color }
+                                    : undefined
+                            }
+                        >
+                            <span
+                                className={`text-xs font-extrabold ${
+                                    project.color
+                                        ? 'text-white/60'
+                                        : 'text-gray-500 dark:text-gray-400 opacity-20'
+                                }`}
+                            >
                                 {getProjectInitials(project.name, 2)}
                             </span>
                         </div>

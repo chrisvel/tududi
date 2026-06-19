@@ -5,6 +5,7 @@ import { MapPinIcon } from '@heroicons/react/24/solid';
 import { useToast } from '../Shared/ToastContext';
 import { useTranslation } from 'react-i18next';
 import DiscardChangesDialog from '../Shared/DiscardChangesDialog';
+import ColorPicker from '../Shared/ColorPicker';
 
 interface TagModalProps {
     isOpen: boolean;
@@ -147,9 +148,9 @@ const TagModal: React.FC<TagModalProps> = ({
     // Check if there are unsaved changes
     const hasUnsavedChanges = () => {
         if (!tag) {
-            return formData.name.trim() !== '';
+            return formData.name.trim() !== '' || !!formData.color;
         }
-        return formData.name !== tag.name || formData.pinned !== tag.pinned;
+        return formData.name !== tag.name || formData.pinned !== tag.pinned || formData.color !== tag.color;
     };
 
     // Use ref to store hasUnsavedChanges so it's always current in the event handler
@@ -262,6 +263,22 @@ const TagModal: React.FC<TagModalProps> = ({
                                                 ? t('tags.pinned', 'Pinned for quick access')
                                                 : t('tags.pinTag', 'Pin for quick access')}
                                         </button>
+                                    </div>
+
+                                    {/* Color picker */}
+                                    <div className="border-t border-gray-200 dark:border-gray-700 px-4 pt-4 pb-4">
+                                        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                                            {t('forms.color', 'Color')}
+                                        </h3>
+                                        <ColorPicker
+                                            value={formData.color || ''}
+                                            onChange={(color) =>
+                                                setFormData((prev) => ({
+                                                    ...prev,
+                                                    color: color || undefined,
+                                                }))
+                                            }
+                                        />
                                     </div>
                                 </fieldset>
                             </form>

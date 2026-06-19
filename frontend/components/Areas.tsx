@@ -183,12 +183,13 @@ const Areas: React.FC = () => {
                                               .replace(/^-|-$/g, '')}`
                                         : `/projects?area_id=${area.uid}`
                                 }
-                                className={`bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col group hover:opacity-90 transition-opacity cursor-pointer ${
+                                className={`bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col group hover:opacity-90 transition-opacity cursor-pointer border-l-4 ${
                                     dropdownOpen === area.uid ? 'z-50' : ''
                                 }`}
                                 style={{
                                     minHeight: '120px',
                                     maxHeight: '120px',
+                                    borderLeftColor: area.color || 'transparent',
                                 }}
                             >
                                 {/* Area Content - Centered */}

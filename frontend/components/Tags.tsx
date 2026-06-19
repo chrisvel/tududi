@@ -269,9 +269,15 @@ const Tags: React.FC = () => {
                                                                   )}`
                                                             : `/tag/${encodeURIComponent(tag.name)}`
                                                     }
-                                                    className="text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline truncate min-w-0 flex-1"
+                                                    className="inline-flex items-center gap-2 text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline truncate min-w-0 flex-1"
                                                     title={tag.name}
                                                 >
+                                                    {tag.color && (
+                                                        <span
+                                                            className="inline-block w-3 h-3 rounded-full flex-shrink-0"
+                                                            style={{ backgroundColor: tag.color }}
+                                                        />
+                                                    )}
                                                     {tag.name}
                                                 </Link>
 

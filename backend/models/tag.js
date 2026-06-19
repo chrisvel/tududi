@@ -38,6 +38,10 @@ module.exports = (sequelize) => {
                 allowNull: false,
                 defaultValue: false,
             },
+            color: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
         },
         {
             tableName: 'tags',
