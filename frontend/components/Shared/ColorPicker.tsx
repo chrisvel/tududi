@@ -4,10 +4,10 @@ import { useTranslation } from 'react-i18next';
 export const COLORS = [
     { name: 'None', value: '' },
     { name: 'Red', value: '#b91c1c' },
-    { name: 'Orange', value: '#9a3412' },
-    { name: 'Amber', value: '#92400e' },
+    { name: 'Dark Yellow', value: '#854d0e' },
     { name: 'Green', value: '#15803d' },
     { name: 'Teal', value: '#0f766e' },
+    { name: 'Cyan', value: '#0e7490' },
     { name: 'Blue', value: '#1d4ed8' },
     { name: 'Indigo', value: '#4338ca' },
     { name: 'Purple', value: '#7e22ce' },

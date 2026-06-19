@@ -261,17 +261,13 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
         <div
             className={`${
                 viewMode === 'cards'
-                    ? 'bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col group ring-1 ring-transparent hover:ring-blue-600 dark:hover:ring-blue-900 transition-shadow duration-150 ease-in-out'
+                    ? 'bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col group ring-1 ring-transparent hover:ring-blue-600 dark:hover:ring-blue-900 transition-shadow duration-150 ease-in-out border-l-4'
                     : 'bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-row items-center p-4 group ring-1 ring-transparent hover:ring-blue-600 dark:hover:ring-blue-900 transition-shadow duration-150 ease-in-out border-l-4'
             }`}
             style={{
                 minHeight: viewMode === 'cards' ? '260px' : 'auto',
                 maxHeight: viewMode === 'cards' ? '260px' : 'auto',
-                ...(viewMode === 'list' && project.color
-                    ? { borderLeftColor: project.color }
-                    : viewMode === 'list'
-                    ? { borderLeftColor: 'transparent' }
-                    : {}),
+                borderLeftColor: project.color || 'transparent',
             }}
         >
             {viewMode === 'cards' && (
