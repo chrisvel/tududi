@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 export const COLORS = [
     { name: 'None', value: '' },
     { name: 'Red', value: '#b91c1c' },
-    { name: 'Dark Yellow', value: '#854d0e' },
+    { name: 'Yellow', value: '#ca8a04' },
     { name: 'Green', value: '#15803d' },
     { name: 'Teal', value: '#0f766e' },
     { name: 'Cyan', value: '#0e7490' },

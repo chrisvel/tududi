@@ -299,13 +299,9 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                             )}
                             {project.color && (
                                 <div
-                                    className="absolute top-3 left-3 w-11 h-11 rounded-full ring-2 ring-white/80 shadow-md flex items-center justify-center select-none"
+                                    className="absolute top-3 left-3 w-6 h-6 rounded-full ring-1 ring-black/30 shadow-md select-none"
                                     style={{ backgroundColor: project.color }}
-                                >
-                                    <span className="text-sm font-bold text-white/80">
-                                        {getProjectInitials(project.name, 2)}
-                                    </span>
-                                </div>
+                                />
                             )}
                             <div className="absolute top-2 right-2 z-20 flex items-center space-x-2">
                                 {project.is_shared && (
@@ -591,17 +587,13 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                   .replace(/^-|-$/g, '')}`
                             : `/project/${project.id}`
                     }
-                    className="w-10 h-10 mr-3 flex-shrink-0"
+                    className="w-6 h-6 mr-3 flex-shrink-0"
                 >
                     {project.color ? (
                         <div
-                            className="w-full h-full rounded-full flex items-center justify-center shadow-sm ring-2 ring-white/60 dark:ring-gray-700 hover:opacity-90 transition-opacity"
+                            className="w-full h-full rounded-full shadow-sm ring-1 ring-black/30 dark:ring-white/30 hover:opacity-90 transition-opacity"
                             style={{ backgroundColor: project.color }}
-                        >
-                            <span className="text-xs font-bold text-white/80">
-                                {getProjectInitials(project.name, 2)}
-                            </span>
-                        </div>
+                        />
                     ) : project.image_url ? (
                         <img
                             src={project.image_url}

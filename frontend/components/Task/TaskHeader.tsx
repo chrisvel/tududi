@@ -36,6 +36,7 @@ interface TaskHeaderProps {
     isUpcomingView?: boolean;
     onMenuOpenChange?: (isOpen: boolean) => void;
     hideStatusControl?: boolean;
+    isKanbanView?: boolean;
 }
 
 const TaskHeader: React.FC<TaskHeaderProps> = ({
@@ -55,6 +56,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
     isUpcomingView = false,
     onMenuOpenChange,
     hideStatusControl = false,
+    isKanbanView = false,
 }) => {
     const { t } = useTranslation();
     void _onToggleToday;
@@ -318,7 +320,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         )}
                         {/* Project, tags, due date, and recurrence in same row, with spacing when they exist */}
                         {!isUpcomingView && (
-                            <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap overflow-x-auto">
+                            <div className={`flex text-xs text-gray-500 dark:text-gray-400 ${isKanbanView ? 'flex-col space-y-0.5 mt-1.5' : 'items-center gap-3 whitespace-nowrap overflow-x-auto'}`}>
                                 {project && !hideProjectName && (
                                     <div className="flex items-center">
                                         <FolderIcon className="h-3 w-3 mr-1" />

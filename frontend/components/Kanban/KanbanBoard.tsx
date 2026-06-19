@@ -275,6 +275,7 @@ const KanbanBoard: React.FC = () => {
                                                     hideProjectName={false}
                                                     onToggleToday={undefined}
                                                     hideStatusControl={true}
+                                                    isKanbanView={true}
                                                 />
                                             </div>
                                         ))
