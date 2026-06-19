@@ -3,12 +3,12 @@ const { Tag, Project, Task } = require('../../../models');
 const TASK_INCLUDES = [
     {
         model: Tag,
-        attributes: ['id', 'name', 'uid'],
+        attributes: ['id', 'name', 'uid', 'color'],
         through: { attributes: [] },
     },
     {
         model: Project,
-        attributes: ['id', 'name', 'uid', 'image_url'],
+        attributes: ['id', 'name', 'uid', 'image_url', 'color'],
         required: false,
     },
 ];
@@ -22,7 +22,7 @@ const TASK_INCLUDES_WITH_SUBTASKS = [
         include: [
             {
                 model: Tag,
-                attributes: ['id', 'name', 'uid'],
+                attributes: ['id', 'name', 'uid', 'color'],
                 through: { attributes: [] },
             },
         ],

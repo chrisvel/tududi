@@ -262,11 +262,16 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
             className={`${
                 viewMode === 'cards'
                     ? 'bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col group ring-1 ring-transparent hover:ring-blue-600 dark:hover:ring-blue-900 transition-shadow duration-150 ease-in-out'
-                    : 'bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-row items-center p-4 group ring-1 ring-transparent hover:ring-blue-600 dark:hover:ring-blue-900 transition-shadow duration-150 ease-in-out'
+                    : 'bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-row items-center p-4 group ring-1 ring-transparent hover:ring-blue-600 dark:hover:ring-blue-900 transition-shadow duration-150 ease-in-out border-l-4'
             }`}
             style={{
                 minHeight: viewMode === 'cards' ? '260px' : 'auto',
                 maxHeight: viewMode === 'cards' ? '260px' : 'auto',
+                ...(viewMode === 'list' && project.color
+                    ? { borderLeftColor: project.color }
+                    : viewMode === 'list'
+                    ? { borderLeftColor: 'transparent' }
+                    : {}),
             }}
         >
             {viewMode === 'cards' && (
@@ -282,7 +287,10 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                         }
                         className="block"
                     >
-                        <div className="relative h-40 overflow-hidden rounded-t-lg bg-gray-200 dark:bg-gray-700">
+                        <div
+                            className="relative h-40 overflow-hidden rounded-t-lg bg-gray-200 dark:bg-gray-700"
+                            style={project.color && !project.image_url ? { backgroundColor: project.color } : undefined}
+                        >
                             {project.image_url ? (
                                 <img
                                     src={project.image_url}
@@ -290,14 +298,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                     className="w-full h-full object-cover"
                                 />
                             ) : (
-                                <div
-                                    className="w-full h-full flex items-center justify-center"
-                                    style={
-                                        project.color
-                                            ? { backgroundColor: project.color }
-                                            : undefined
-                                    }
-                                >
+                                <div className="w-full h-full flex items-center justify-center">
                                     {project.color && (
                                         <span className="text-4xl font-black text-white/30 select-none">
                                             {getProjectInitials(project.name, 2)}
