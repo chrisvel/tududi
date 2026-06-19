@@ -103,6 +103,8 @@ interface InboxStore {
 interface UserSettingsStore {
     eisenhowerEnabled: boolean;
     setEisenhowerEnabled: (enabled: boolean) => void;
+    kanbanEnabled: boolean;
+    setKanbanEnabled: (enabled: boolean) => void;
 }
 
 interface HabitsStore {
@@ -793,6 +795,14 @@ export const useStore = create<StoreState>((set: any) => ({
                 userSettingsStore: {
                     ...state.userSettingsStore,
                     eisenhowerEnabled: enabled,
+                },
+            })),
+        kanbanEnabled: false,
+        setKanbanEnabled: (enabled) =>
+            set((state) => ({
+                userSettingsStore: {
+                    ...state.userSettingsStore,
+                    kanbanEnabled: enabled,
                 },
             })),
     },

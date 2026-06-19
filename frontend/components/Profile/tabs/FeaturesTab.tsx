@@ -6,6 +6,8 @@ interface FeaturesTabProps {
     isActive: boolean;
     eisenhowerEnabled: boolean;
     onToggleEisenhower: () => void;
+    kanbanEnabled: boolean;
+    onToggleKanban: () => void;
     formData: ProfileFormData;
     onToggleAi: (field: keyof Features) => void;
 }
@@ -57,6 +59,8 @@ const FeaturesTab: React.FC<FeaturesTabProps> = ({
     isActive,
     eisenhowerEnabled,
     onToggleEisenhower,
+    kanbanEnabled,
+    onToggleKanban,
     formData,
     onToggleAi,
 }) => {
@@ -79,6 +83,15 @@ const FeaturesTab: React.FC<FeaturesTabProps> = ({
                     )}
                     value={eisenhowerEnabled}
                     onToggle={onToggleEisenhower}
+                />
+                <ToggleRow
+                    label={t('sidebar.kanban', 'Kanban Board')}
+                    description={t(
+                        'profile.kanbanDescription',
+                        'Enable the Kanban Board for tracking task progress across swimlanes.'
+                    )}
+                    value={kanbanEnabled}
+                    onToggle={onToggleKanban}
                 />
             </div>
 
