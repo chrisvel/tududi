@@ -261,8 +261,8 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
         <div
             className={`${
                 viewMode === 'cards'
-                    ? 'bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col group border border-transparent hover:border-blue-600 dark:hover:border-blue-950 transition-[border-color] duration-150 ease-in-out'
-                    : 'bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-row items-center p-4 group border border-transparent hover:border-blue-600 dark:hover:border-blue-950 transition-[border-color] duration-150 ease-in-out'
+                    ? 'bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col group border border-transparent hover:border-blue-600 dark:hover:border-blue-900 transition-[border-color] duration-150 ease-in-out'
+                    : 'bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-row items-center p-4 group border border-transparent hover:border-blue-600 dark:hover:border-blue-900 transition-[border-color] duration-150 ease-in-out'
             }`}
             style={{
                 minHeight: viewMode === 'cards' ? '260px' : 'auto',
