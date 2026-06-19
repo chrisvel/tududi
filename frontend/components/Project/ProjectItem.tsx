@@ -300,7 +300,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center">
                                     {project.color && (
-                                        <span className="text-4xl font-black text-white/30 select-none">
+                                        <span className="text-4xl font-black text-white/50 select-none">
                                             {getProjectInitials(project.name, 2)}
                                         </span>
                                     )}

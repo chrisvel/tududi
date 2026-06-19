@@ -3,16 +3,16 @@ import { useTranslation } from 'react-i18next';
 
 export const COLORS = [
     { name: 'None', value: '' },
-    { name: 'Rose', value: '#f28b82' },
-    { name: 'Peach', value: '#fbbc04' },
-    { name: 'Sage', value: '#ccff90' },
-    { name: 'Basil', value: '#34a853' },
-    { name: 'Peacock', value: '#4ecde6' },
-    { name: 'Blueberry', value: '#4285f4' },
-    { name: 'Lavender', value: '#aecbfa' },
-    { name: 'Grape', value: '#d7aefb' },
-    { name: 'Flamingo', value: '#f7c8cb' },
-    { name: 'Graphite', value: '#9e9e9e' },
+    { name: 'Red', value: '#b91c1c' },
+    { name: 'Orange', value: '#9a3412' },
+    { name: 'Amber', value: '#92400e' },
+    { name: 'Green', value: '#15803d' },
+    { name: 'Teal', value: '#0f766e' },
+    { name: 'Blue', value: '#1d4ed8' },
+    { name: 'Indigo', value: '#4338ca' },
+    { name: 'Purple', value: '#7e22ce' },
+    { name: 'Pink', value: '#be185d' },
+    { name: 'Gray', value: '#374151' },
 ];
 
 interface ColorPickerProps {
