@@ -55,6 +55,7 @@
     "completed": "Completed",
     "allTasks": "All Tasks",
     "eisenhower": "Eisenhower Matrix",
+    "kanban": "Kanban Board",
     "unpinView": "Unpin view",
     "pinView": "Pin view"
   },
@@ -159,6 +160,14 @@
       "notImportant": "Not Important",
       "dropHere": "Drop here",
       "urgentHint": "Tag tasks with 'urgent' to mark them as urgent"
+    },
+    "kanban": {
+      "title": "Kanban Board",
+      "todo": "To Do",
+      "inProgress": "In Progress",
+      "waiting": "Waiting",
+      "done": "Done",
+      "dropHere": "Drop here"
     },
     "show": "Show",
     "open": "Open",
@@ -325,6 +334,7 @@
     "enableAutoSuggestNextActions": "Enable Next Action Prompts",
     "productivityFeatures": "Productivity Features",
     "pomodoroDescription": "Enable the Pomodoro timer in the navigation bar for focused work sessions.",
+    "kanbanDescription": "Enable the Kanban Board for tracking task progress across swimlanes.",
     "enablePomodoro": "Enable Pomodoro Timer",
     "productivityAssistant": "Productivity Assistant",
     "productivityAssistantDescription": "Show productivity insights that help identify stalled projects, vague tasks, and workflow improvements on your Today page.",

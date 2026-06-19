@@ -157,6 +157,7 @@ interface TaskItemProps {
     isUpcomingView?: boolean;
     showCompletedTasks?: boolean;
     isInCompletedSection?: boolean;
+    hideStatusControl?: boolean;
 }
 
 const TaskItem: React.FC<TaskItemProps> = ({
@@ -170,6 +171,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
     isUpcomingView = false,
     showCompletedTasks = false,
     isInCompletedSection = false,
+    hideStatusControl = false,
 }) => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -410,6 +412,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     onDelete={handleDeleteClick}
                     isUpcomingView={isUpcomingView}
                     onMenuOpenChange={setIsStatusMenuOpen}
+                    hideStatusControl={hideStatusControl}
                 />
 
                 {/* Progress bar at bottom of parent task */}

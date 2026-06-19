@@ -35,6 +35,7 @@ interface TaskHeaderProps {
     onDelete?: (e: React.MouseEvent) => void;
     isUpcomingView?: boolean;
     onMenuOpenChange?: (isOpen: boolean) => void;
+    hideStatusControl?: boolean;
 }
 
 const TaskHeader: React.FC<TaskHeaderProps> = ({
@@ -53,6 +54,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
     onDelete: _onDelete,
     isUpcomingView = false,
     onMenuOpenChange,
+    hideStatusControl = false,
 }) => {
     const { t } = useTranslation();
     void _onToggleToday;
@@ -183,7 +185,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
             {/* Full view (md and larger) */}
             <div className="hidden md:flex flex-col md:flex-row md:items-center md:relative">
                 <div
-                    className={`flex items-center space-x-3 mb-2 md:mb-0 flex-1 min-w-0 ${!isUpcomingView ? 'pr-56' : ''}`}
+                    className={`flex items-center space-x-3 mb-2 md:mb-0 flex-1 min-w-0 ${!isUpcomingView && !hideStatusControl ? 'pr-56' : ''}`}
                 >
                     <div className="hidden">
                         <TaskPriorityIcon
@@ -450,7 +452,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         )}
                     </div>
                 </div>
-                {!isUpcomingView && !task.habit_mode && onToggleCompletion && (
+                {!isUpcomingView && !task.habit_mode && !hideStatusControl && onToggleCompletion && (
                     <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center">
                         <TaskStatusControl
                             task={task}

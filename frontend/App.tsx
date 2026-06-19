@@ -28,6 +28,7 @@ import InboxItems from './components/Inbox/InboxItems';
 import Habits from './components/Habits/Habits';
 import HabitDetails from './components/Habits/HabitDetails';
 import EisenhowerMatrix from './components/Eisenhower/EisenhowerMatrix';
+import KanbanBoard from './components/Kanban/KanbanBoard';
 import { setCurrentUser as setUserInStorage } from './utils/userUtils';
 import { getApiPath, getLocalesPath } from './config/paths';
 import { useStore } from './store/useStore';
@@ -66,6 +67,9 @@ const App: React.FC = () => {
                 setUserInStorage(data.user);
                 useStore.getState().userSettingsStore.setEisenhowerEnabled(
                     data.user.features?.eisenhower_enabled === true
+                );
+                useStore.getState().userSettingsStore.setKanbanEnabled(
+                    data.user.features?.kanban_enabled === true
                 );
             } else {
                 setCurrentUser(null);
@@ -231,6 +235,7 @@ const App: React.FC = () => {
                                 }
                             />
                             <Route path="/eisenhower" element={<EisenhowerMatrix />} />
+                            <Route path="/kanban" element={<KanbanBoard />} />
                             <Route path="/inbox" element={<InboxItems />} />
                             <Route path="/habits" element={<Habits />} />
                             <Route

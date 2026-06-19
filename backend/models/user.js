@@ -135,6 +135,7 @@ module.exports = (sequelize) => {
                     next_task_suggestion_enabled: true,
                     pomodoro_enabled: true,
                     eisenhower_enabled: false,
+                    kanban_enabled: false,
                 },
             },
             today_settings: {

@@ -7,6 +7,7 @@ const FEATURE_KEYS = [
     'next_task_suggestion_enabled',
     'pomodoro_enabled',
     'eisenhower_enabled',
+    'kanban_enabled',
 ];
 
 function sanitizeFeatures(raw) {

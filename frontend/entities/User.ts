@@ -5,6 +5,7 @@ export interface UserFeatures {
     next_task_suggestion_enabled?: boolean;
     pomodoro_enabled?: boolean;
     eisenhower_enabled?: boolean;
+    kanban_enabled?: boolean;
 }
 
 export interface User {

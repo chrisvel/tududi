@@ -136,6 +136,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             next_task_suggestion_enabled: true,
             pomodoro_enabled: true,
             eisenhower_enabled: false,
+            kanban_enabled: false,
         },
         notification_preferences: null,
         keyboard_shortcuts: null,
@@ -549,6 +550,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                         eisenhower_enabled:
                             data.features?.eisenhower_enabled !== undefined
                                 ? data.features.eisenhower_enabled
+                                : false,
+                        kanban_enabled:
+                            data.features?.kanban_enabled !== undefined
+                                ? data.features.kanban_enabled
                                 : false,
                     },
                     notification_preferences:
@@ -1077,6 +1082,12 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 );
             }
 
+            if (updatedProfile.features?.kanban_enabled !== undefined) {
+                useStore.getState().userSettingsStore.setKanbanEnabled(
+                    updatedProfile.features.kanban_enabled
+                );
+            }
+
             if (isPasswordChange) {
                 setFormData((prev) => ({
                     ...prev,
@@ -1325,6 +1336,19 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                                 ...prev.features,
                                                 eisenhower_enabled:
                                                     !prev.features?.eisenhower_enabled,
+                                            },
+                                        }))
+                                    }
+                                    kanbanEnabled={Boolean(
+                                        formData.features?.kanban_enabled
+                                    )}
+                                    onToggleKanban={() =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            features: {
+                                                ...prev.features,
+                                                kanban_enabled:
+                                                    !prev.features?.kanban_enabled,
                                             },
                                         }))
                                     }
