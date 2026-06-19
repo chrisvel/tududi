@@ -42,8 +42,10 @@ module.exports = {
         historyApiFallback: true,
         proxy: [
             {
-                context: ['/api', '/locales'],
-                target: backendUrl,
+                // HPM v3: use pathFilter + router so WDS calls createProxyMiddleware(options)
+                // instead of the v2 two-argument form createProxyMiddleware(context, options)
+                pathFilter: ['/api', '/locales'],
+                router: () => backendUrl,
                 changeOrigin: true,
                 secure: false,
                 cookieDomainRewrite: frontendCookieDomain,
