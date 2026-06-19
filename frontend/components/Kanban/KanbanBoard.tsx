@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
 import { getApiPath } from '../../config/paths';
 import { Task } from '../../entities/Task';
@@ -9,21 +10,118 @@ import { getCsrfToken } from '../../utils/csrfService';
 
 const COLUMN_STATUS: Record<string, number> = {
     not_started: 0,
+    planned:     6,
     in_progress: 1,
     waiting:     4,
+    cancelled:   5,
     done:        2,
+    archived:    3,
 };
 
-const COLS = ['not_started', 'in_progress', 'waiting', 'done'] as const;
-type ColKey = (typeof COLS)[number];
+const ALL_COLS = [
+    'not_started',
+    'planned',
+    'in_progress',
+    'waiting',
+    'cancelled',
+    'done',
+    'archived',
+] as const;
+type ColKey = (typeof ALL_COLS)[number];
+
+const DEFAULT_VISIBLE: ColKey[] = ['not_started', 'in_progress', 'waiting', 'done'];
+const STORAGE_KEY = 'kanban_visible_columns';
+
+function loadVisibleCols(): ColKey[] {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return DEFAULT_VISIBLE;
+        const parsed = JSON.parse(raw) as string[];
+        const valid = parsed.filter((c): c is ColKey =>
+            (ALL_COLS as readonly string[]).includes(c)
+        );
+        return valid.length > 0 ? valid : DEFAULT_VISIBLE;
+    } catch {
+        return DEFAULT_VISIBLE;
+    }
+}
+
+function saveVisibleCols(cols: ColKey[]) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(cols));
+}
 
 const getTaskColumn = (task: Task): ColKey | null => {
     const s = task.status;
-    if (s === 'not_started' || s === 0 || s === 'planned' || s === 6) return 'not_started';
+    if (s === 'not_started' || s === 0) return 'not_started';
+    if (s === 'planned' || s === 6) return 'planned';
     if (s === 'in_progress' || s === 1) return 'in_progress';
     if (s === 'waiting' || s === 4) return 'waiting';
+    if (s === 'cancelled' || s === 5) return 'cancelled';
     if (s === 'done' || s === 2) return 'done';
+    if (s === 'archived' || s === 3) return 'archived';
     return null;
+};
+
+const COL_CONFIG: Record<
+    ColKey,
+    { labelKey: string; labelDefault: string; bg: string; dragOverBg: string; headerBg: string; headerColor: string }
+> = {
+    not_started: {
+        labelKey: 'tasks.kanban.todo',
+        labelDefault: 'To Do',
+        bg: 'bg-gray-50 dark:bg-gray-900/20',
+        dragOverBg: 'bg-gray-100 dark:bg-gray-800/40',
+        headerBg: 'bg-gray-100 dark:bg-gray-800/60',
+        headerColor: 'text-gray-600 dark:text-gray-400',
+    },
+    planned: {
+        labelKey: 'tasks.kanban.planned',
+        labelDefault: 'Planned',
+        bg: 'bg-purple-50 dark:bg-purple-900/10',
+        dragOverBg: 'bg-purple-100 dark:bg-purple-900/20',
+        headerBg: 'bg-purple-100 dark:bg-purple-900/30',
+        headerColor: 'text-purple-700 dark:text-purple-400',
+    },
+    in_progress: {
+        labelKey: 'tasks.kanban.inProgress',
+        labelDefault: 'In Progress',
+        bg: 'bg-blue-50 dark:bg-blue-900/10',
+        dragOverBg: 'bg-blue-100 dark:bg-blue-900/20',
+        headerBg: 'bg-blue-100 dark:bg-blue-900/30',
+        headerColor: 'text-blue-700 dark:text-blue-400',
+    },
+    waiting: {
+        labelKey: 'tasks.kanban.waiting',
+        labelDefault: 'Waiting',
+        bg: 'bg-yellow-50 dark:bg-yellow-900/10',
+        dragOverBg: 'bg-yellow-100 dark:bg-yellow-900/20',
+        headerBg: 'bg-yellow-100 dark:bg-yellow-900/30',
+        headerColor: 'text-yellow-700 dark:text-yellow-400',
+    },
+    cancelled: {
+        labelKey: 'tasks.kanban.cancelled',
+        labelDefault: 'Cancelled',
+        bg: 'bg-red-50 dark:bg-red-900/10',
+        dragOverBg: 'bg-red-100 dark:bg-red-900/20',
+        headerBg: 'bg-red-100 dark:bg-red-900/30',
+        headerColor: 'text-red-700 dark:text-red-400',
+    },
+    done: {
+        labelKey: 'tasks.kanban.done',
+        labelDefault: 'Done',
+        bg: 'bg-green-50 dark:bg-green-900/10',
+        dragOverBg: 'bg-green-100 dark:bg-green-900/20',
+        headerBg: 'bg-green-100 dark:bg-green-900/30',
+        headerColor: 'text-green-700 dark:text-green-400',
+    },
+    archived: {
+        labelKey: 'tasks.kanban.archived',
+        labelDefault: 'Archived',
+        bg: 'bg-stone-50 dark:bg-stone-900/10',
+        dragOverBg: 'bg-stone-100 dark:bg-stone-900/20',
+        headerBg: 'bg-stone-100 dark:bg-stone-900/30',
+        headerColor: 'text-stone-600 dark:text-stone-400',
+    },
 };
 
 const KanbanBoard: React.FC = () => {
@@ -37,6 +135,10 @@ const KanbanBoard: React.FC = () => {
     const [draggingTaskId, setDraggingTaskId] = useState<number | null>(null);
     const [dragOverCol, setDragOverCol] = useState<ColKey | null>(null);
     const dragEnterCounters = useRef<Record<string, number>>({});
+
+    const [visibleCols, setVisibleCols] = useState<ColKey[]>(loadVisibleCols);
+    const [settingsOpen, setSettingsOpen] = useState(false);
+    const settingsRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const fetchTasks = async () => {
@@ -58,20 +160,32 @@ const KanbanBoard: React.FC = () => {
         fetchTasks();
     }, []);
 
-    const columns = useMemo(() => {
-        const filtered = tasks.filter((t) => {
-            const s = t.status;
-            return s !== 'archived' && s !== 3 && s !== 'cancelled' && s !== 5;
-        });
-
-        const result: Record<ColKey, Task[]> = {
-            not_started: [],
-            in_progress: [],
-            waiting:     [],
-            done:        [],
+    useEffect(() => {
+        if (!settingsOpen) return;
+        const handleClickOutside = (e: MouseEvent) => {
+            if (settingsRef.current && !settingsRef.current.contains(e.target as Node)) {
+                setSettingsOpen(false);
+            }
         };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [settingsOpen]);
 
-        for (const task of filtered) {
+    const toggleCol = (col: ColKey) => {
+        setVisibleCols((prev) => {
+            const next = prev.includes(col)
+                ? prev.filter((c) => c !== col)
+                : [...ALL_COLS.filter((c) => prev.includes(c) || c === col)];
+            saveVisibleCols(next);
+            return next;
+        });
+    };
+
+    const columns = useMemo(() => {
+        const result = {} as Record<ColKey, Task[]>;
+        for (const col of ALL_COLS) result[col] = [];
+
+        for (const task of tasks) {
             const col = getTaskColumn(task);
             if (col) result[col].push(task);
         }
@@ -172,36 +286,7 @@ const KanbanBoard: React.FC = () => {
         setDraggingTaskId(null);
     };
 
-    const colConfig: Record<ColKey, { label: string; bg: string; dragOverBg: string; headerBg: string; headerColor: string }> = {
-        not_started: {
-            label: t('tasks.kanban.todo', 'To Do'),
-            bg: 'bg-gray-50 dark:bg-gray-900/20',
-            dragOverBg: 'bg-gray-100 dark:bg-gray-800/40',
-            headerBg: 'bg-gray-100 dark:bg-gray-800/60',
-            headerColor: 'text-gray-600 dark:text-gray-400',
-        },
-        in_progress: {
-            label: t('tasks.kanban.inProgress', 'In Progress'),
-            bg: 'bg-blue-50 dark:bg-blue-900/10',
-            dragOverBg: 'bg-blue-100 dark:bg-blue-900/20',
-            headerBg: 'bg-blue-100 dark:bg-blue-900/30',
-            headerColor: 'text-blue-700 dark:text-blue-400',
-        },
-        waiting: {
-            label: t('tasks.kanban.waiting', 'Waiting'),
-            bg: 'bg-yellow-50 dark:bg-yellow-900/10',
-            dragOverBg: 'bg-yellow-100 dark:bg-yellow-900/20',
-            headerBg: 'bg-yellow-100 dark:bg-yellow-900/30',
-            headerColor: 'text-yellow-700 dark:text-yellow-400',
-        },
-        done: {
-            label: t('tasks.kanban.done', 'Done'),
-            bg: 'bg-green-50 dark:bg-green-900/10',
-            dragOverBg: 'bg-green-100 dark:bg-green-900/20',
-            headerBg: 'bg-green-100 dark:bg-green-900/30',
-            headerColor: 'text-green-700 dark:text-green-400',
-        },
-    };
+    const activeCols = ALL_COLS.filter((c) => visibleCols.includes(c));
 
     return (
         <div className="w-full h-[calc(100vh-5rem)] flex flex-col pt-6 pb-4">
@@ -209,6 +294,44 @@ const KanbanBoard: React.FC = () => {
                 <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100">
                     {t('sidebar.kanban', 'Kanban Board')}
                 </h2>
+
+                <div className="relative" ref={settingsRef}>
+                    <button
+                        onClick={() => setSettingsOpen((o) => !o)}
+                        className="p-1.5 rounded-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        title={t('tasks.kanban.customizeColumns', 'Customize columns')}
+                    >
+                        <Cog6ToothIcon className="w-5 h-5" />
+                    </button>
+
+                    {settingsOpen && (
+                        <div className="absolute right-0 top-full mt-1 z-50 w-52 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-lg py-1">
+                            <p className="px-3 pt-2 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+                                {t('tasks.kanban.columns', 'Columns')}
+                            </p>
+                            {ALL_COLS.map((col) => {
+                                const cfg = COL_CONFIG[col];
+                                const checked = visibleCols.includes(col);
+                                return (
+                                    <label
+                                        key={col}
+                                        className="flex items-center gap-2.5 px-3 py-1.5 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 select-none"
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            checked={checked}
+                                            onChange={() => toggleCol(col)}
+                                            className="w-3.5 h-3.5 rounded accent-gray-600"
+                                        />
+                                        <span className={`text-sm font-medium ${cfg.headerColor}`}>
+                                            {t(cfg.labelKey, cfg.labelDefault)}
+                                        </span>
+                                    </label>
+                                );
+                            })}
+                        </div>
+                    )}
+                </div>
             </div>
 
             {loading && (
@@ -220,8 +343,8 @@ const KanbanBoard: React.FC = () => {
 
             {!loading && !error && (
                 <div className="flex-1 flex min-h-0 overflow-auto px-4 sm:px-6 gap-3">
-                    {COLS.map((col) => {
-                        const cfg = colConfig[col];
+                    {activeCols.map((col) => {
+                        const cfg = COL_CONFIG[col];
                         const isDragOver = dragOverCol === col;
                         const isDraggingActive = draggingTaskId !== null;
                         const colTasks = columns[col];
@@ -239,17 +362,15 @@ const KanbanBoard: React.FC = () => {
                                     <div className="absolute inset-0 border-2 border-dashed border-gray-400 dark:border-gray-500 pointer-events-none z-10 rounded-xl" />
                                 )}
 
-                                {/* Column header */}
                                 <div className={`px-3 py-2 flex items-center justify-between flex-shrink-0 ${cfg.headerBg}`}>
                                     <span className={`text-xs font-semibold tracking-wide uppercase ${cfg.headerColor}`}>
-                                        {cfg.label}
+                                        {t(cfg.labelKey, cfg.labelDefault)}
                                     </span>
                                     <span className={`text-xs font-medium ${cfg.headerColor} opacity-70`}>
                                         {colTasks.length}
                                     </span>
                                 </div>
 
-                                {/* Tasks */}
                                 <div className="flex-1 overflow-y-auto p-2 space-y-1.5">
                                     {colTasks.length === 0 ? (
                                         <p className={`text-xs py-3 text-center ${isDraggingActive ? 'text-gray-400 dark:text-gray-500' : 'text-gray-300 dark:text-gray-600'}`}>
