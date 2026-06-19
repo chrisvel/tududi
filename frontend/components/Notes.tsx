@@ -37,16 +37,16 @@ import NoteFocusMode from './Note/NoteFocusMode';
 
 const NOTE_COLORS = [
     { name: 'None', value: '' },
-    { name: 'Red', value: '#B71C1C' },
-    { name: 'Orange', value: '#E65100' },
-    { name: 'Amber', value: '#FF8F00' },
-    { name: 'Green', value: '#2E7D32' },
-    { name: 'Teal', value: '#00695C' },
-    { name: 'Blue', value: '#1565C0' },
-    { name: 'Indigo', value: '#283593' },
-    { name: 'Purple', value: '#6A1B9A' },
-    { name: 'Pink', value: '#AD1457' },
-    { name: 'Grey', value: '#424242' },
+    { name: 'Rose', value: '#f28b82' },
+    { name: 'Peach', value: '#fbbc04' },
+    { name: 'Sage', value: '#ccff90' },
+    { name: 'Basil', value: '#34a853' },
+    { name: 'Peacock', value: '#4ecde6' },
+    { name: 'Blueberry', value: '#4285f4' },
+    { name: 'Lavender', value: '#aecbfa' },
+    { name: 'Grape', value: '#d7aefb' },
+    { name: 'Flamingo', value: '#f7c8cb' },
+    { name: 'Graphite', value: '#9e9e9e' },
 ];
 
 const shouldUseLightText = (hexColor: string | undefined): boolean => {

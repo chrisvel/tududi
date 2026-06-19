@@ -3,8 +3,8 @@
 const { Area } = require('../../models');
 const BaseRepository = require('../../shared/database/BaseRepository');
 
-const PUBLIC_ATTRIBUTES = ['uid', 'name', 'description'];
-const LIST_ATTRIBUTES = ['id', 'uid', 'name', 'description'];
+const PUBLIC_ATTRIBUTES = ['uid', 'name', 'description', 'color'];
+const LIST_ATTRIBUTES = ['id', 'uid', 'name', 'description', 'color'];
 
 class AreasRepository extends BaseRepository {
     constructor() {
@@ -50,10 +50,11 @@ class AreasRepository extends BaseRepository {
     /**
      * Create a new area for a user.
      */
-    async createForUser(userId, { name, description }) {
+    async createForUser(userId, { name, description, color }) {
         return this.model.create({
             name,
             description: description || '',
+            color: color || null,
             user_id: userId,
         });
     }
