@@ -224,9 +224,7 @@ const TagInput: React.FC<TagInputProps> = ({
 
             <div
                 ref={containerRef}
-                className={`flex flex-wrap items-start gap-2 border border-gray-300 dark:border-gray-900 bg-white dark:bg-gray-900 rounded-md px-2 min-h-[40px] ${
-                    tags.length > 3 ? 'py-3' : 'py-2'
-                }`}
+                className="flex flex-wrap items-center gap-2 border border-gray-300 dark:border-gray-900 bg-white dark:bg-gray-900 rounded-md px-2 min-h-[40px] py-2"
             >
                 {tags.length > 0 ? (
                     tags.map((tag, index) => (
@@ -245,9 +243,7 @@ const TagInput: React.FC<TagInputProps> = ({
                             </button>
                         </span>
                     ))
-                ) : (
-                    <span className="text-gray-400 text-xs"></span>
-                )}
+                ) : null}
 
                 <input
                     type="text"
