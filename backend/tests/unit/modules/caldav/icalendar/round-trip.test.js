@@ -6,15 +6,15 @@ const {
 } = require('../../../../../modules/caldav/icalendar/vtodo-parser');
 
 describe('CalDAV Round-Trip Conversion', () => {
-    it('should preserve basic task data through round-trip', async () => {
+    it('should preserve basic task data through round-trip (date-only)', async () => {
         const originalTask = {
             uid: 'round-trip-test',
             name: 'Test Round Trip',
             status: 1,
             priority: 2,
             note: 'Testing round-trip conversion',
-            due_date: new Date('2026-06-01T15:00:00Z'),
-            defer_until: new Date('2026-05-25T09:00:00Z'),
+            due_date: new Date('2026-06-01T00:00:00Z'),
+            defer_until: new Date('2026-05-25T00:00:00Z'),
             created_at: new Date('2026-04-01T10:00:00Z'),
             updated_at: new Date('2026-04-14T12:00:00Z'),
         };
@@ -27,13 +27,73 @@ describe('CalDAV Round-Trip Conversion', () => {
         expect(parsedTask.status).toBe(originalTask.status);
         expect(parsedTask.priority).toBe(originalTask.priority);
         expect(parsedTask.note).toBe(originalTask.note);
-        // due_date and defer_until are date-only — only the calendar date is preserved
-        expect(parsedTask.due_date.getUTCFullYear()).toBe(2026);
-        expect(parsedTask.due_date.getUTCMonth()).toBe(5); // June
-        expect(parsedTask.due_date.getUTCDate()).toBe(1);
-        expect(parsedTask.defer_until.getUTCFullYear()).toBe(2026);
-        expect(parsedTask.defer_until.getUTCMonth()).toBe(4); // May
-        expect(parsedTask.defer_until.getUTCDate()).toBe(25);
+        expect(parsedTask.due_date.toISOString()).toBe(
+            '2026-06-01T00:00:00.000Z'
+        );
+        expect(parsedTask.defer_until.toISOString()).toBe(
+            '2026-05-25T00:00:00.000Z'
+        );
+    });
+
+    it('should collapse timed due_date to date-only through round-trip', async () => {
+        const originalTask = {
+            uid: 'timed-round-trip',
+            name: 'Timed Task',
+            status: 0,
+            priority: 1,
+            due_date: new Date('2026-06-04T09:00:00Z'),
+            defer_until: new Date('2026-06-04T09:00:00Z'),
+            created_at: new Date('2026-04-01T10:00:00Z'),
+            updated_at: new Date('2026-04-14T12:00:00Z'),
+        };
+
+        const vtodoString = await serializeTaskToVTODO(originalTask);
+        const parsedTask = await parseVTODOToTask(vtodoString);
+
+        // DUE/DTSTART are always emitted as VALUE=DATE — time is stripped
+        expect(parsedTask.due_date.toISOString()).toBe(
+            '2026-06-04T00:00:00.000Z'
+        );
+        expect(parsedTask.defer_until.toISOString()).toBe(
+            '2026-06-04T00:00:00.000Z'
+        );
+    });
+
+    it('should preserve iOS VALARM reminder through a note-edit round-trip', async () => {
+        const iosVTODO = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Apple Inc.//iOS 17//EN
+BEGIN:VTODO
+DTSTART;TZID=Europe/Berlin:20260604T110000
+DUE;TZID=Europe/Berlin:20260604T110000
+SUMMARY:Testaufgabe
+UID:byyevjtafg34nr1
+DTSTAMP:20260604T080000Z
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER;VALUE=DATE-TIME:20260604T090000Z
+UID:D4D580EE-4FAD-4E34-AF53-FFF561013D2D
+END:VALARM
+END:VTODO
+END:VCALENDAR`;
+
+        const parsedTask = await parseVTODOToTask(iosVTODO);
+        expect(parsedTask.reminder_at).toBeInstanceOf(Date);
+        expect(parsedTask.reminder_at.toISOString()).toBe(
+            '2026-06-04T09:00:00.000Z'
+        );
+
+        parsedTask.note = 'Updated note via web UI';
+        const reserialized = await serializeTaskToVTODO(parsedTask);
+
+        expect(reserialized).toContain('BEGIN:VALARM');
+        expect(reserialized).toContain('20260604T090000Z');
+
+        const reparsed = await parseVTODOToTask(reserialized);
+        expect(reparsed.reminder_at).toBeInstanceOf(Date);
+        expect(reparsed.reminder_at.toISOString()).toBe(
+            '2026-06-04T09:00:00.000Z'
+        );
     });
 
     it('should preserve completed task data', async () => {

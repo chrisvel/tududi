@@ -163,6 +163,65 @@ END:VTODO`
         expect(task.order).toBe(10);
     });
 
+    it('should parse VALARM with VALUE=DATE-TIME trigger to reminder_at', async () => {
+        const vtodo = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Apple Inc.//iOS 17//EN
+BEGIN:VTODO
+DTSTART;TZID=Europe/Berlin:20260604T110000
+DUE;TZID=Europe/Berlin:20260604T110000
+SUMMARY:Testaufgabe
+UID:byyevjtafg34nr1
+DTSTAMP:20260604T080000Z
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER;VALUE=DATE-TIME:20260604T090000Z
+END:VALARM
+END:VTODO
+END:VCALENDAR`;
+        const task = await parseVTODOToTask(vtodo);
+        expect(task.reminder_at).toBeInstanceOf(Date);
+        expect(task.reminder_at.toISOString()).toBe('2026-06-04T09:00:00.000Z');
+    });
+
+    it('should parse VALARM with relative duration trigger to reminder_at', async () => {
+        const vtodo = `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VTODO
+UID:test-reminder-duration
+SUMMARY:Test Duration Reminder
+DTSTAMP:20260414T120000Z
+DUE:20260604T090000Z
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-PT15M
+END:VALARM
+END:VTODO
+END:VCALENDAR`;
+        const task = await parseVTODOToTask(vtodo);
+        expect(task.reminder_at).toBeInstanceOf(Date);
+        expect(task.reminder_at.toISOString()).toBe('2026-06-04T08:45:00.000Z');
+    });
+
+    it('should parse VALARM with zero-duration trigger to reminder_at equal to due_date', async () => {
+        const vtodo = `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VTODO
+UID:test-reminder-zero
+SUMMARY:Test Zero Trigger
+DTSTAMP:20260414T120000Z
+DUE:20260604T090000Z
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-PT0S
+END:VALARM
+END:VTODO
+END:VCALENDAR`;
+        const task = await parseVTODOToTask(vtodo);
+        expect(task.reminder_at).toBeInstanceOf(Date);
+        expect(task.reminder_at.toISOString()).toBe('2026-06-04T09:00:00.000Z');
+    });
+
     it('should handle VTODO without optional properties', async () => {
         const minimalVTODO = `BEGIN:VCALENDAR
 VERSION:2.0

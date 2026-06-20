@@ -154,15 +154,26 @@ async function parseVTODOToTask(vtodoString) {
         if (valarm) {
             const triggerProp = valarm.getFirstProperty('trigger');
             if (triggerProp) {
-                const valueParam = triggerProp.getParameter('value');
-                if (valueParam && valueParam.toUpperCase() === 'DATE-TIME') {
+                try {
                     const triggerVal = triggerProp.getFirstValue();
                     if (
                         triggerVal &&
                         typeof triggerVal.toJSDate === 'function'
                     ) {
                         task.reminder_at = triggerVal.toJSDate();
+                    } else if (
+                        triggerVal &&
+                        typeof triggerVal.toSeconds === 'function'
+                    ) {
+                        const base = task.due_date || task.defer_until;
+                        if (base) {
+                            task.reminder_at = new Date(
+                                base.getTime() + triggerVal.toSeconds() * 1000
+                            );
+                        }
                     }
+                } catch (e) {
+                    console.warn('Could not parse VALARM trigger:', e.message);
                 }
             }
         }

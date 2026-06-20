@@ -10,7 +10,7 @@ describe('VTODO Serializer', () => {
         status: 0,
         priority: 1,
         note: 'Test note',
-        due_date: new Date('2026-05-01T12:00:00Z'),
+        due_date: new Date('2026-05-01T00:00:00Z'),
         created_at: new Date('2026-04-01T10:00:00Z'),
         updated_at: new Date('2026-04-14T15:00:00Z'),
     };
@@ -84,11 +84,24 @@ describe('VTODO Serializer', () => {
     it('should include DTSTART for defer_until as VALUE=DATE', async () => {
         const task = {
             ...basicTask,
-            defer_until: new Date('2026-04-25T09:00:00Z'),
+            defer_until: new Date('2026-04-25T00:00:00Z'),
         };
         const vtodoString = await serializeTaskToVTODO(task);
         expect(vtodoString).toContain('DTSTART;VALUE=DATE:20260425');
         expect(vtodoString).not.toContain('DTSTART:20260425T');
+    });
+
+    it('should include VALARM with absolute TRIGGER when reminder_at is set', async () => {
+        const task = {
+            ...basicTask,
+            reminder_at: new Date('2026-06-04T09:00:00Z'),
+        };
+        const vtodoString = await serializeTaskToVTODO(task);
+        expect(vtodoString).toContain('BEGIN:VALARM');
+        expect(vtodoString).toContain('ACTION:DISPLAY');
+        expect(vtodoString).toContain('TRIGGER');
+        expect(vtodoString).toContain('20260604T090000Z');
+        expect(vtodoString).toContain('END:VALARM');
     });
 
     it('should include COMPLETED date for completed tasks', async () => {
