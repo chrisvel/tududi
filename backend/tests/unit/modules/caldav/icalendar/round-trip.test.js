@@ -35,7 +35,7 @@ describe('CalDAV Round-Trip Conversion', () => {
         );
     });
 
-    it('should preserve timed due date and defer_until through round-trip', async () => {
+    it('should collapse timed due_date to date-only through round-trip', async () => {
         const originalTask = {
             uid: 'timed-round-trip',
             name: 'Timed Task',
@@ -50,11 +50,12 @@ describe('CalDAV Round-Trip Conversion', () => {
         const vtodoString = await serializeTaskToVTODO(originalTask);
         const parsedTask = await parseVTODOToTask(vtodoString);
 
+        // DUE/DTSTART are always emitted as VALUE=DATE — time is stripped
         expect(parsedTask.due_date.toISOString()).toBe(
-            '2026-06-04T09:00:00.000Z'
+            '2026-06-04T00:00:00.000Z'
         );
         expect(parsedTask.defer_until.toISOString()).toBe(
-            '2026-06-04T09:00:00.000Z'
+            '2026-06-04T00:00:00.000Z'
         );
     });
 

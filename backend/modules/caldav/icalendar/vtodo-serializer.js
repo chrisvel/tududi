@@ -28,27 +28,13 @@ function serializeTaskToVTODO(task, options = {}) {
     if (task.due_date) {
         try {
             const d = new Date(task.due_date);
-            const hasTime =
-                d.getUTCHours() !== 0 ||
-                d.getUTCMinutes() !== 0 ||
-                d.getUTCSeconds() !== 0 ||
-                d.getUTCMilliseconds() !== 0;
-            if (hasTime) {
-                vtodo.addPropertyWithValue(
-                    'due',
-                    ICAL.Time.fromJSDate(d, true)
-                );
-            } else {
-                vtodo.addPropertyWithValue(
-                    'due',
-                    new ICAL.Time({
-                        year: d.getUTCFullYear(),
-                        month: d.getUTCMonth() + 1,
-                        day: d.getUTCDate(),
-                        isDate: true,
-                    })
-                );
-            }
+            const dueDate = new ICAL.Time({
+                year: d.getUTCFullYear(),
+                month: d.getUTCMonth() + 1,
+                day: d.getUTCDate(),
+                isDate: true,
+            });
+            vtodo.addPropertyWithValue('due', dueDate);
         } catch (error) {
             console.error('Error formatting due date:', error);
         }
@@ -57,27 +43,13 @@ function serializeTaskToVTODO(task, options = {}) {
     if (task.defer_until) {
         try {
             const d = new Date(task.defer_until);
-            const hasTime =
-                d.getUTCHours() !== 0 ||
-                d.getUTCMinutes() !== 0 ||
-                d.getUTCSeconds() !== 0 ||
-                d.getUTCMilliseconds() !== 0;
-            if (hasTime) {
-                vtodo.addPropertyWithValue(
-                    'dtstart',
-                    ICAL.Time.fromJSDate(d, true)
-                );
-            } else {
-                vtodo.addPropertyWithValue(
-                    'dtstart',
-                    new ICAL.Time({
-                        year: d.getUTCFullYear(),
-                        month: d.getUTCMonth() + 1,
-                        day: d.getUTCDate(),
-                        isDate: true,
-                    })
-                );
-            }
+            const startDate = new ICAL.Time({
+                year: d.getUTCFullYear(),
+                month: d.getUTCMonth() + 1,
+                day: d.getUTCDate(),
+                isDate: true,
+            });
+            vtodo.addPropertyWithValue('dtstart', startDate);
         } catch (error) {
             console.error('Error formatting defer_until date:', error);
         }

@@ -91,26 +91,6 @@ describe('VTODO Serializer', () => {
         expect(vtodoString).not.toContain('DTSTART:20260425T');
     });
 
-    it('should include DUE as date-time when due_date has a time component', async () => {
-        const task = {
-            ...basicTask,
-            due_date: new Date('2026-06-04T09:00:00Z'),
-        };
-        const vtodoString = await serializeTaskToVTODO(task);
-        expect(vtodoString).toContain('DUE:20260604T090000Z');
-        expect(vtodoString).not.toContain('DUE;VALUE=DATE:');
-    });
-
-    it('should include DTSTART as date-time when defer_until has a time component', async () => {
-        const task = {
-            ...basicTask,
-            defer_until: new Date('2026-06-04T09:00:00Z'),
-        };
-        const vtodoString = await serializeTaskToVTODO(task);
-        expect(vtodoString).toContain('DTSTART:20260604T090000Z');
-        expect(vtodoString).not.toContain('DTSTART;VALUE=DATE:');
-    });
-
     it('should include VALARM with absolute TRIGGER when reminder_at is set', async () => {
         const task = {
             ...basicTask,
