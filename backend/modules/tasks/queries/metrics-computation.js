@@ -10,6 +10,7 @@ const {
     fetchTasksDueToday,
     fetchOverdueTasks,
     fetchSomedayTaskIds,
+    fetchSomedayExcludedTaskIds,
     fetchNonProjectTasks,
     fetchProjectTasks,
     fetchSomedayFallbackTasks,
@@ -201,6 +202,8 @@ async function computeTaskMetrics(
             permissionCache
         );
 
+    const somedayExcludedIds = await fetchSomedayExcludedTaskIds(userId);
+
     const [
         totalOpenTasks,
         tasksPendingOverMonth,
@@ -214,9 +217,19 @@ async function computeTaskMetrics(
         countTotalOpenTasks(visibleTasksWhere),
         countTasksPendingOverMonth(visibleTasksWhere),
         fetchTasksInProgress(visibleTasksWhere),
-        fetchTodayPlanTasks(visibleTasksWhere),
-        fetchTasksDueToday(visibleTasksWhere, userTimezone, userId),
-        fetchOverdueTasks(visibleTasksWhere, userTimezone, userId),
+        fetchTodayPlanTasks(visibleTasksWhere, somedayExcludedIds),
+        fetchTasksDueToday(
+            visibleTasksWhere,
+            userTimezone,
+            userId,
+            somedayExcludedIds
+        ),
+        fetchOverdueTasks(
+            visibleTasksWhere,
+            userTimezone,
+            userId,
+            somedayExcludedIds
+        ),
         fetchTasksCompletedToday(userId, userTimezone),
         computeWeeklyCompletions(userId, userTimezone),
     ]);

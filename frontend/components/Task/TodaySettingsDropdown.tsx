@@ -9,6 +9,8 @@ import {
     TrophyIcon,
     ChatBubbleBottomCenterTextIcon,
     ListBulletIcon,
+    ScaleIcon,
+    RocketLaunchIcon,
 } from '@heroicons/react/24/outline';
 import { getApiPath } from '../../config/paths';
 
@@ -17,6 +19,8 @@ interface TodaySettingsDropdownProps {
     onClose: () => void;
     settings: {
         showMetrics: boolean;
+        showAreaBalance: boolean;
+        showActiveProjects: boolean;
         showProductivity: boolean;
         showNextTaskSuggestion: boolean;
         showSuggestions: boolean;
@@ -121,6 +125,16 @@ const TodaySettingsDropdown: React.FC<TodaySettingsDropdownProps> = ({
             key: 'showMetrics',
             label: t('settings.showMetrics', 'Show Metrics'),
             icon: ChartBarIcon,
+        },
+        {
+            key: 'showAreaBalance',
+            label: t('settings.showAreaBalance', 'Show Area Balance'),
+            icon: ScaleIcon,
+        },
+        {
+            key: 'showActiveProjects',
+            label: t('settings.showActiveProjects', 'Show Active Projects'),
+            icon: RocketLaunchIcon,
         },
         // Only show productivity option if enabled in profile
         ...(profileSettings?.productivity_assistant_enabled === true

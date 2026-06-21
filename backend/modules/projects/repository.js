@@ -44,7 +44,7 @@ class ProjectsRepository extends BaseRepository {
                 {
                     model: Area,
                     required: false,
-                    attributes: ['id', 'uid', 'name'],
+                    attributes: ['id', 'uid', 'name', 'color'],
                 },
                 {
                     model: Tag,
