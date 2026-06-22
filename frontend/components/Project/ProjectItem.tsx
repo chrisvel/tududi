@@ -1,6 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
+import {
+    EllipsisVerticalIcon,
+    StarIcon as StarIconSolid,
+} from '@heroicons/react/24/solid';
 import {
     PencilSquareIcon,
     TrashIcon,
@@ -12,6 +15,7 @@ import {
     XCircleIcon,
     ShareIcon,
     ExclamationTriangleIcon,
+    StarIcon,
 } from '@heroicons/react/24/outline';
 import { Project, ProjectStatus } from '../../entities/Project';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +25,7 @@ import Tooltip from '../Shared/Tooltip';
 import { differenceInCalendarDays } from 'date-fns';
 import { listShares, ListSharesResponseRow } from '../../utils/sharesService';
 import { getApiPath } from '../../config/paths';
+import { getCsrfToken } from '../../utils/csrfService';
 
 interface ProjectItemProps {
     project: Project;
@@ -115,6 +120,8 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
 }) => {
     const { t } = useTranslation();
     const { showErrorToast } = useToast();
+    const [isPinned, setIsPinned] = useState(Boolean(project.pin_to_sidebar));
+    const [isPinSubmitting, setIsPinSubmitting] = useState(false);
     const currentUser = getCurrentUser();
     const isOwner =
         currentUser && (project as any).user_uid === currentUser.uid;
@@ -144,6 +151,10 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
         }
         return null;
     });
+
+    useEffect(() => {
+        setIsPinned(Boolean(project.pin_to_sidebar));
+    }, [project.pin_to_sidebar]);
 
     useEffect(() => {
         if (project.uid && projectShareCache.has(project.uid)) {
@@ -257,6 +268,53 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
         if (!namePart) return email;
         return namePart.charAt(0).toUpperCase() + namePart.slice(1);
     };
+
+    const togglePin = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (isPinSubmitting) {
+            return;
+        }
+
+        if (!project.uid) {
+            console.error('Cannot pin project: UID is undefined.', project);
+            return;
+        }
+
+        const nextPinned = !isPinned;
+        setIsPinSubmitting(true);
+        try {
+            const response = await fetch(getApiPath(`project/${project.uid}`), {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-csrf-token': await getCsrfToken(),
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    pin_to_sidebar: nextPinned,
+                }),
+            });
+
+            if (response.ok) {
+                setIsPinned(nextPinned);
+                window.dispatchEvent(new CustomEvent('projectUpdated'));
+            } else {
+                showErrorToast(
+                    t('errors.projectUpdateError', 'Failed to update project')
+                );
+            }
+        } catch (error) {
+            console.error('Error toggling project pin:', error);
+            showErrorToast(
+                t('errors.projectUpdateError', 'Failed to update project')
+            );
+        } finally {
+            setIsPinSubmitting(false);
+        }
+    };
+
     return (
         <div
             className={`${
@@ -303,135 +361,130 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                     style={{ backgroundColor: project.color }}
                                 />
                             )}
-                            <div className="absolute top-2 right-2 z-20 flex items-center space-x-2">
-                                {project.is_shared && (
-                                    <ShareIcon
-                                        className="h-4 w-4 text-green-400 drop-shadow-sm"
-                                        title={t(
-                                            'projectItem.sharedProject',
-                                            'Shared with team'
-                                        )}
-                                    />
-                                )}
-                                {(() => {
-                                    const { icon: StatusIcon } = getStatusIcon(
-                                        project.status
-                                    );
-                                    return (
-                                        <StatusIcon
-                                            className="h-4 w-4 text-white/80 drop-shadow-sm"
-                                            title={getStatusLabel(
-                                                project.status,
-                                                t
-                                            )}
-                                        />
-                                    );
-                                })()}
-                                <div className="relative dropdown-container">
-                                    <button
-                                        className="p-1.5 rounded-full bg-black/30 text-white hover:bg-black/60 focus:outline-none backdrop-blur-sm"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            const projectId = project.id;
-                                            if (projectId !== undefined) {
-                                                setActiveDropdown(
-                                                    activeDropdown === projectId
-                                                        ? null
-                                                        : projectId
-                                                );
-                                            }
-                                        }}
-                                        aria-label={t(
-                                            'projectItem.toggleDropdownMenu'
-                                        )}
-                                        data-testid={`project-dropdown-${project.id}`}
-                                    >
-                                        <EllipsisVerticalIcon className="h-5 w-5" />
-                                    </button>
-                                    {project.id !== undefined &&
-                                        activeDropdown === project.id && (
-                                            <div className="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-800 shadow-lg rounded-md z-30">
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.preventDefault();
-                                                        e.stopPropagation();
-                                                        if (!isOwner) {
-                                                            showErrorToast(
-                                                                t(
-                                                                    'errors.permissionDenied',
-                                                                    'Permission denied'
-                                                                )
-                                                            );
-                                                            setActiveDropdown(
-                                                                null
-                                                            );
-                                                            return;
-                                                        }
-                                                        handleEditProject(
-                                                            project
-                                                        );
-                                                        setActiveDropdown(null);
-                                                    }}
-                                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-                                                    data-testid={`project-edit-${project.id}`}
-                                                >
-                                                    {t('projectItem.edit')}
-                                                </button>
-                                                {isOwner && (
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
-                                                            e.stopPropagation();
-                                                            onOpenShare(
-                                                                project
-                                                            );
-                                                            setActiveDropdown(
-                                                                null
-                                                            );
-                                                        }}
-                                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-                                                    >
-                                                        {t(
-                                                            'projectItem.share',
-                                                            'Share'
-                                                        )}
-                                                    </button>
-                                                )}
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.preventDefault();
-                                                        e.stopPropagation();
-                                                        if (
-                                                            project.id ===
-                                                                undefined ||
-                                                            project.id === null
-                                                        ) {
-                                                            console.error(
-                                                                'Cannot delete project: Invalid ID',
-                                                                project
-                                                            );
-                                                            return;
-                                                        }
-                                                        setProjectToDelete(
-                                                            project
-                                                        );
-                                                        setIsConfirmDialogOpen(
-                                                            true
-                                                        );
-                                                        setActiveDropdown(null);
-                                                    }}
-                                                    className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-                                                    data-testid={`project-delete-${project.id}`}
-                                                >
-                                                    {t('projectItem.delete')}
-                                                </button>
-                                            </div>
-                                        )}
-                                </div>
-                            </div>
                         </div>
                     </Link>
+                    <div className="absolute top-2 right-2 z-20 flex items-center space-x-2">
+                        <button
+                            onClick={togglePin}
+                            disabled={isPinSubmitting}
+                            className={`${isPinned ? 'text-yellow-400' : 'text-white/80'} hover:text-yellow-300 focus:outline-none drop-shadow-sm disabled:cursor-not-allowed disabled:opacity-60`}
+                            aria-label={t('common.togglePin', 'Toggle pin')}
+                            title={t('common.togglePin', 'Toggle pin')}
+                        >
+                            {isPinned ? (
+                                <StarIconSolid className="h-4 w-4" />
+                            ) : (
+                                <StarIcon className="h-4 w-4" />
+                            )}
+                        </button>
+                        {project.is_shared && (
+                            <ShareIcon
+                                className="h-4 w-4 text-green-400 drop-shadow-sm"
+                                title={t(
+                                    'projectItem.sharedProject',
+                                    'Shared with team'
+                                )}
+                            />
+                        )}
+                        {(() => {
+                            const { icon: StatusIcon } = getStatusIcon(
+                                project.status
+                            );
+                            return (
+                                <StatusIcon
+                                    className="h-4 w-4 text-white/80 drop-shadow-sm"
+                                    title={getStatusLabel(project.status, t)}
+                                />
+                            );
+                        })()}
+                        <div className="relative dropdown-container">
+                            <button
+                                className="p-1.5 rounded-full bg-black/30 text-white hover:bg-black/60 focus:outline-none backdrop-blur-sm"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    const projectId = project.id;
+                                    if (projectId !== undefined) {
+                                        setActiveDropdown(
+                                            activeDropdown === projectId
+                                                ? null
+                                                : projectId
+                                        );
+                                    }
+                                }}
+                                aria-label={t('projectItem.toggleDropdownMenu')}
+                                data-testid={`project-dropdown-${project.id}`}
+                            >
+                                <EllipsisVerticalIcon className="h-5 w-5" />
+                            </button>
+                            {project.id !== undefined &&
+                                activeDropdown === project.id && (
+                                    <div className="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-800 shadow-lg rounded-md z-30">
+                                        <button
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                if (!isOwner) {
+                                                    showErrorToast(
+                                                        t(
+                                                            'errors.permissionDenied',
+                                                            'Permission denied'
+                                                        )
+                                                    );
+                                                    setActiveDropdown(null);
+                                                    return;
+                                                }
+                                                handleEditProject(project);
+                                                setActiveDropdown(null);
+                                            }}
+                                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                                            data-testid={`project-edit-${project.id}`}
+                                        >
+                                            {t('projectItem.edit')}
+                                        </button>
+                                        {isOwner && (
+                                            <button
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    onOpenShare(project);
+                                                    setActiveDropdown(null);
+                                                }}
+                                                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                                            >
+                                                {t(
+                                                    'projectItem.share',
+                                                    'Share'
+                                                )}
+                                            </button>
+                                        )}
+                                        <button
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                if (
+                                                    project.id === undefined ||
+                                                    project.id === null
+                                                ) {
+                                                    console.error(
+                                                        'Cannot delete project: Invalid ID',
+                                                        project
+                                                    );
+                                                    return;
+                                                }
+                                                setProjectToDelete(project);
+                                                setIsConfirmDialogOpen(true);
+                                                setActiveDropdown(null);
+                                            }}
+                                            className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                                            data-testid={`project-delete-${project.id}`}
+                                        >
+                                            {t('projectItem.delete')}
+                                        </button>
+                                    </div>
+                                )}
+                        </div>
+                    </div>
                 </div>
             )}
 
@@ -616,7 +669,26 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                         {listTitleLink}
                     </div>
                     <div className="relative dropdown-container">
-                        <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div
+                            className={`flex items-center space-x-2 transition-opacity duration-300 ${
+                                isPinned
+                                    ? 'opacity-100'
+                                    : 'opacity-0 group-hover:opacity-100'
+                            }`}
+                        >
+                            <button
+                                onClick={togglePin}
+                                disabled={isPinSubmitting}
+                                className={`${isPinned ? 'text-yellow-500' : 'text-gray-500'} hover:text-yellow-600 dark:hover:text-yellow-400 transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-60`}
+                                aria-label={t('common.togglePin', 'Toggle pin')}
+                                title={t('common.togglePin', 'Toggle pin')}
+                            >
+                                {isPinned ? (
+                                    <StarIconSolid className="h-5 w-5" />
+                                ) : (
+                                    <StarIcon className="h-5 w-5" />
+                                )}
+                            </button>
                             <button
                                 onClick={(e) => {
                                     e.preventDefault();

@@ -25,7 +25,8 @@
     "yesDiscard": "はい、破棄する",
     "uploading": "アップロード中...",
     "refresh": "更新",
-    "unlinking": "リンク解除中..."
+    "unlinking": "リンク解除中...",
+    "togglePin": "ピン留めを切り替え"
   },
   "sidebar": {
     "dashboard": "ダッシュボード",
