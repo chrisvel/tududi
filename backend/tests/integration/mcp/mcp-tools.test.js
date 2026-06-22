@@ -688,9 +688,10 @@ describe('MCP Tools Integration', () => {
 
                 expect(response.status).toBe(200);
                 const { content } = getToolContent(response);
-                // 'someday' system tag is auto-created for every new user
-                expect(content.count).toBe(1);
-                expect(content.tags[0].name).toBe('someday');
+                // 'someday' and 'today' system tags are auto-created for every new user
+                expect(content.count).toBe(2);
+                expect(content.tags.map((t) => t.name)).toContain('someday');
+                expect(content.tags.map((t) => t.name)).toContain('today');
             });
 
             it('should return user tags', async () => {

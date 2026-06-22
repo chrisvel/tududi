@@ -56,7 +56,9 @@
     "createNew": "Opprett ny",
     "views": "Visninger",
     "unpinView": "Fjern feste fra visning",
-    "pinView": "Fest visning"
+    "pinView": "Fest visning",
+    "eisenhower": "Eisenhower-matrise",
+    "kanban": "Kanban-tavle"
   },
   "navigation": {
     "home": "Hjem",
@@ -137,7 +139,8 @@
     "groupBy": "Grupper etter",
     "groupByProject": "Prosjekt",
     "grouping": {
-      "none": "Ingen"
+      "none": "Ingen",
+      "eisenhower": "Eisenhower-matrise"
     },
     "show": "Vis",
     "all": "Alle",
@@ -154,7 +157,31 @@
     "noCompletedTasksToday": "Ingen fullførte oppgaver i dag.",
     "markAsDone": "Mark as done",
     "notStarted": "Ikke startet",
-    "done": "Ferdig"
+    "done": "Ferdig",
+    "eisenhower": {
+      "doNow": "Gjør nå",
+      "doNowDesc": "Viktig & Urgent",
+      "schedule": "Planlegg",
+      "scheduleDesc": "Viktig, ikke urgent",
+      "delegate": "Deleger",
+      "delegateDesc": "Urgent, ikke viktig",
+      "eliminate": "Eliminer",
+      "eliminateDesc": "Ikke viktig, ikke urgent",
+      "urgent": "Urgent",
+      "notUrgent": "Ikke urgent",
+      "important": "Viktig",
+      "notImportant": "Ikke viktig",
+      "dropHere": "Slipp her",
+      "urgentHint": "Merk oppgaver med 'urgent' for å markere dem som urgente"
+    },
+    "kanban": {
+      "title": "Kanban-tavle",
+      "todo": "Å gjøre",
+      "inProgress": "I gang",
+      "waiting": "Venter",
+      "done": "Ferdig",
+      "dropHere": "Slipp her"
+    }
   },
   "timeline": {
     "activityTimeline": "Aktivitetslinje",
@@ -322,7 +349,8 @@
       "telegram": "Telegram",
       "ai": "AI-funksjoner",
       "notifications": "Varslingsinnstillinger",
-      "oidc": "OIDC/SSO"
+      "oidc": "OIDC/SSO",
+      "caldav": "CalDAV-synkronisering"
     },
     "security": "Sikkerhetsinnstillinger",
     "changePassword": "Endre passord",
@@ -388,6 +416,108 @@
       "linkedOn": "Koblet den {{date}}",
       "cannotUnlinkLast": "Kan ikke fjerne koblingen til din siste autentiseringsmetode. Vennligst sett et passord først.",
       "noPasswordWarning": "Du har ikke satt et passord. Vurder å sette et for å ha en alternativ påloggingsmetode."
+    },
+    "kanbanDescription": "Aktiver Kanban-tavlen for å spore oppgavefremdrift på tvers av svømmerader.",
+    "intelligenceSection": "Intelligens",
+    "taskIntelligenceLabel": "Oppgaveintelligensassistent",
+    "autoSuggestNextActionsLabel": "Neste handlingsforslag",
+    "productivityAssistantLabel": "Produktivitetsinnsikter",
+    "nextTaskSuggestionLabel": "Forslag til neste oppgave",
+    "featuresAddons": "Funksjoner og tillegg",
+    "caldav": {
+      "title": "CalDAV-synkronisering",
+      "description": "Synkroniser oppgavene dine med eksterne CalDAV-servere som Nextcloud, iCloud eller Radicale. Konfigurer kalendere, administrer synkroniseringsintervaller og løs konflikter.",
+      "calendars": "Kalendere",
+      "addCalendar": "Legg til kalender",
+      "noCalendars": "Ingen kalendere",
+      "noCalendarsDescription": "Kom i gang med å opprette en ny CalDAV-kalender.",
+      "syncNow": "Synkroniser nå",
+      "lastSync": "Siste synkronisering",
+      "neverSynced": "Aldri synkronisert",
+      "interval": "Intervall",
+      "minutes": "min",
+      "direction": "Retning",
+      "tasks": "Oppgaver",
+      "bidirectional": "Toveis",
+      "pullOnly": "Bare henta",
+      "pushOnly": "Bare send",
+      "enabled": "Aktivert",
+      "disabled": "Deaktivert",
+      "edit": "Rediger",
+      "delete": "Slett",
+      "conflictsCount": "{{count}} konflikt(er)",
+      "synced": "Synkronisert",
+      "syncing": "Synkroniserer...",
+      "syncSuccess": "Synkronisert med suksess",
+      "syncError": "Synkronisering feilet",
+      "error": "Feil",
+      "conflicts": "Konflikter",
+      "hasConflicts": "Har konflikter",
+      "notSynced": "Ikke synkronisert",
+      "loadError": "Feil ved lasting av CalDAV-kalendere",
+      "deleteSuccess": "Kalenderen ble slettet",
+      "deleteError": "Feil ved sletting av kalender",
+      "confirmDelete": "Slett kalender",
+      "confirmDeleteMessage": "Er du sikker på at du vil slette \"{{name}}\"? Dette vil fjerne kalenderen og alle synkroniseringskonfigurasjoner."
+    },
+    "caldavWizard": {
+      "title": "CalDAV Oppsettveiviser",
+      "confirmClose": "Er du sikker på at du vil lukke? Fremdriften din vil gå tapt.",
+      "calendarName": "Kalendernavn",
+      "calendarNamePlaceholder": "f.eks. Arbeidsoppgaver",
+      "calendarNameRequired": "Kalendernavn er påkrevd",
+      "description": "Beskrivelse",
+      "descriptionPlaceholder": "Valgfri beskrivelse",
+      "color": "Farge",
+      "serverUrl": "Server-URL",
+      "serverUrlRequired": "Server-URL er påkrevd",
+      "calendarPath": "Kalenderbane",
+      "calendarPathRequired": "Kalenderbane er påkrevd",
+      "username": "Brukernavn",
+      "password": "Passord",
+      "credentialsRequired": "Brukernavn og passord er påkrevd",
+      "localWins": "Lokal vinner alltid",
+      "remoteWins": "Fjernvinner alltid",
+      "reviewDescription": "Gå gjennom innstillingene dine før du oppretter kalenderen.",
+      "calendarSettings": "Kalenderinnstillinger",
+      "serverSettings": "Serverinnstillinger",
+      "syncSettings": "Synkroniseringsinnstillinger",
+      "setupSuccess": "Kalender konfigurert vellykket!",
+      "setupFailed": "Feilet å opprette kalender"
+    },
+    "conflictResolver": {
+      "title": "Løs synkroniseringskonflikter",
+      "chooseVersion": "Velg hvilken versjon som skal beholdes for hvert felt:",
+      "local": "Lokal (Tududi)",
+      "remote": "Fjern (CalDAV)",
+      "useThis": "Bruk dette",
+      "useAllLocal": "Bruk alle lokale",
+      "useAllRemote": "Bruk alle fjerne",
+      "applyResolutions": "Bruk løsninger",
+      "conflictCount": "Konflikt {{current}} av {{total}}",
+      "detectedAt": "Oppdaget: {{time}}",
+      "fields": {
+        "name": "Navn",
+        "status": "Status",
+        "priority": "Prioritet",
+        "dueDate": "Forfallsdato",
+        "note": "Merknad",
+        "completedAt": "Fullført"
+      },
+      "noConflicts": "Ingen konflikter",
+      "noConflictsDescription": "Det er ingen konflikter å løse for denne kalenderen.",
+      "loadError": "Kunne ikke laste konflikter",
+      "resolveSuccess": "Alle konflikter er løst",
+      "resolveError": "Kunne ikke løse konflikter",
+      "nextConflict": "Neste",
+      "prevConflict": "Forrige"
+    },
+    "editCalendar": {
+      "title": "Rediger Kalender",
+      "enableSync": "Aktiver synkronisering",
+      "intervalError": "Synkroniseringsintervall må være mellom 1 og 1440 minutter",
+      "updateSuccess": "Kalender oppdatert",
+      "updateError": "Kunne ikke oppdatere kalender"
     }
   },
   "productivity": {
@@ -862,7 +992,11 @@
       "inactive": "Inaktiv",
       "all": "Alle",
       "allAreas": "Alle områder",
-      "notCompleted": "Ikke fullført"
+      "notCompleted": "Ikke fullført",
+      "someday": "En dag",
+      "somedayTooltip": "Prosjekter merket \"en dag\" er skjult som standard. Klikk for å vise dem.",
+      "systemTagCannotBeDeleted": "Systemmerker kan ikke slettes",
+      "systemTagCannotBeRenamed": "Systemmerker kan ikke omdøpes"
     },
     "selectState": "Velg tilstand",
     "state": "Prosjektstatus",
@@ -965,7 +1099,11 @@
     "inactive": "Inaktiv",
     "viewTasksWithTag": "Vis oppgaver med denne taggen",
     "typeToAdd": "Skriv for å legge til en tagg",
-    "noItemsWithTag": "Ingen elementer funnet med denne taggen"
+    "noItemsWithTag": "Ingen elementer funnet med denne taggen",
+    "systemTag": "Systemtagger",
+    "systemTagDescription": "Opprettet automatisk av appen. De driver innebygde funksjoner og kan ikke omdøpes eller slettes.",
+    "userTag": "Brukertagger",
+    "userTagDescription": "Dine egne tagger for å organisere oppgaver, notater og prosjekter."
   },
   "recurrence": {
     "none": "Ingen",
