@@ -41,6 +41,7 @@ import NextTaskSuggestion from './NextTaskSuggestion';
 import TodaySettingsDropdown from './TodaySettingsDropdown';
 import BurndownChart from './BurndownChart';
 import LifeBalance from './LifeBalance';
+import AreaDonut from './AreaDonut';
 import ActiveProjectsSection from './ActiveProjectsSection';
 
 const filterNonHabitTasks = (tasks: Task[] = []) =>
@@ -1412,7 +1413,14 @@ const TasksToday: React.FC = () => {
 
                 {/* Area Balance */}
                 {isSettingsLoaded && todaySettings.showAreaBalance && (
-                    <LifeBalance projects={localProjects} />
+                    <div className="mb-4 grid grid-cols-4 gap-4 items-stretch">
+                        <div className="col-span-3">
+                            <LifeBalance projects={localProjects} />
+                        </div>
+                        <div className="col-span-1">
+                            <AreaDonut projects={localProjects} />
+                        </div>
+                    </div>
                 )}
 
                 {/* Active Projects */}

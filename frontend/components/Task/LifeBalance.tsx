@@ -125,7 +125,7 @@ const LifeBalance: React.FC<Props> = ({ projects }) => {
     if (areas.length === 0) return null;
 
     return (
-        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl p-4 mb-4 shadow-sm">
+        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl p-4 shadow-sm h-full">
             <div>
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3">
                     Area Balance
