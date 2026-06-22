@@ -1320,12 +1320,12 @@ const TasksToday: React.FC = () => {
 
                 {/* Overview Stats + Weekly Chart */}
                 {isSettingsLoaded && todaySettings.showMetrics && (
-                    <div className="mb-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
-                        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
+                    <div className="mb-4 grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch">
+                        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 flex flex-col">
                             <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3">
                                 {t('dashboard.overview')}
                             </h3>
-                            <div className="grid grid-cols-3 gap-2">
+                            <div className="grid grid-cols-3 gap-2 flex-1 auto-rows-fr">
                                 {/* Total */}
                                 <div className="flex flex-col items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-900/20 p-2.5 gap-0.5">
                                     <ClipboardDocumentListIcon className="h-4 w-4 text-blue-400 dark:text-blue-500 mb-0.5" />
@@ -1404,7 +1404,7 @@ const TasksToday: React.FC = () => {
                                 })()}
                             </div>
                         </div>
-                        <div className="lg:col-span-2">
+                        <div className="lg:col-span-2 h-full">
                             <BurndownChart />
                         </div>
                     </div>

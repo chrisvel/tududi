@@ -4,9 +4,7 @@ import { getApiPath } from '../../config/paths';
 import { getDefaultHeaders } from '../../utils/authUtils';
 
 const M = { top: 16, right: 24, bottom: 44, left: 36 };
-const CHART_H = 160;
 const DAYS = 28;
-const PH = CHART_H - M.top - M.bottom;
 
 function smoothPath(pts: { x: number; y: number }[]): string {
     if (pts.length < 2) return '';
@@ -25,6 +23,7 @@ const BurndownChart: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const containerRef = useRef<HTMLDivElement>(null);
     const [containerW, setContainerW] = useState(300);
+    const [containerH, setContainerH] = useState(160);
 
     useEffect(() => {
         fetch(getApiPath('tasks?status=all'), {
@@ -41,13 +40,16 @@ const BurndownChart: React.FC = () => {
         const el = containerRef.current;
         if (!el) return;
         const ro = new ResizeObserver((entries) => {
-            const { width } = entries[0].contentRect;
+            const { width, height } = entries[0].contentRect;
             if (width > 0) setContainerW(width);
+            if (height > 0) setContainerH(height);
         });
         ro.observe(el);
         return () => ro.disconnect();
     }, []);
 
+    const CHART_H = containerH;
+    const PH = CHART_H - M.top - M.bottom;
     const PW = containerW - M.left - M.right;
 
     const hasCompletedAt = useMemo(
@@ -133,8 +135,8 @@ const BurndownChart: React.FC = () => {
     const gradId = 'bd-grad';
 
     return (
-        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
-            <h3 className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 h-full flex flex-col">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3">
                 4-Week Burndown
             </h3>
             {!hasCompletedAt && !loading && allTasks.length > 0 && (
@@ -142,7 +144,7 @@ const BurndownChart: React.FC = () => {
                     Tasks created (completion tracking coming soon)
                 </p>
             )}
-            <div ref={containerRef} className="h-40 relative">
+            <div ref={containerRef} className="flex-1 min-h-0 relative">
                 {loading && (
                     <div className="flex items-center justify-center h-full">
                         <span className="text-xs text-gray-400 dark:text-gray-500">
@@ -161,7 +163,7 @@ const BurndownChart: React.FC = () => {
                     <svg
                         width={containerW}
                         height={CHART_H}
-                        style={{ display: 'block', overflow: 'visible' }}
+                        style={{ display: 'block', overflow: 'visible', width: '100%', height: '100%' }}
                     >
                         <defs>
                             <linearGradient
