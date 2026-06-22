@@ -1328,37 +1328,45 @@ const TasksToday: React.FC = () => {
                             </h3>
                             <div className="grid grid-cols-3 gap-2 flex-1 auto-rows-fr">
                                 {/* Total */}
-                                <div className="flex flex-col items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-900/20 p-2.5 gap-0.5">
-                                    <ClipboardDocumentListIcon className="h-4 w-4 text-blue-400 dark:text-blue-500 mb-0.5" />
-                                    <span className="text-2xl font-bold text-blue-600 dark:text-blue-400 leading-none">{metrics.total_open_tasks}</span>
-                                    <span className="text-[10px] text-gray-500 dark:text-gray-400 text-center leading-tight mt-0.5">{t('tasks.total')}</span>
+                                <div className="flex flex-col items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-900/20 p-2.5 gap-1">
+                                    <div className="flex items-center gap-1.5 leading-none">
+                                        <ClipboardDocumentListIcon className="h-4 w-4 text-blue-400 dark:text-blue-500 flex-shrink-0" />
+                                        <span className="text-2xl font-bold text-blue-600 dark:text-blue-400 leading-none">{metrics.total_open_tasks}</span>
+                                    </div>
+                                    <span className="text-[10px] text-gray-500 dark:text-gray-400 text-center leading-tight">{t('tasks.total')}</span>
                                 </div>
                                 {/* In Progress */}
-                                <div className="flex flex-col items-center justify-center rounded-lg bg-green-50 dark:bg-green-900/20 p-2.5 gap-0.5">
-                                    <ArrowPathIcon className="h-4 w-4 text-green-400 dark:text-green-500 mb-0.5" />
-                                    <span className="text-2xl font-bold text-green-600 dark:text-green-400 leading-none">{metrics.tasks_in_progress_count}</span>
-                                    <span className="text-[10px] text-gray-500 dark:text-gray-400 text-center leading-tight mt-0.5">{t('tasks.inProgress')}</span>
+                                <div className="flex flex-col items-center justify-center rounded-lg bg-green-50 dark:bg-green-900/20 p-2.5 gap-1">
+                                    <div className="flex items-center gap-1.5 leading-none">
+                                        <ArrowPathIcon className="h-4 w-4 text-green-400 dark:text-green-500 flex-shrink-0" />
+                                        <span className="text-2xl font-bold text-green-600 dark:text-green-400 leading-none">{metrics.tasks_in_progress_count}</span>
+                                    </div>
+                                    <span className="text-[10px] text-gray-500 dark:text-gray-400 text-center leading-tight">{t('tasks.inProgress')}</span>
                                 </div>
                                 {/* Active Projects */}
-                                <div className="flex flex-col items-center justify-center rounded-lg bg-purple-50 dark:bg-purple-900/20 p-2.5 gap-0.5">
-                                    <FolderIcon className="h-4 w-4 text-purple-400 dark:text-purple-500 mb-0.5" />
-                                    <span className="text-2xl font-bold text-purple-600 dark:text-purple-400 leading-none">
-                                        {Array.isArray(localProjects)
-                                            ? localProjects.filter(
-                                                  (p) => p.status && ['planned', 'in_progress', 'waiting'].includes(p.status)
-                                              ).length
-                                            : 0}
-                                    </span>
-                                    <span className="text-[10px] text-gray-500 dark:text-gray-400 text-center leading-tight mt-0.5">{t('projects.active')}</span>
+                                <div className="flex flex-col items-center justify-center rounded-lg bg-purple-50 dark:bg-purple-900/20 p-2.5 gap-1">
+                                    <div className="flex items-center gap-1.5 leading-none">
+                                        <FolderIcon className="h-4 w-4 text-purple-400 dark:text-purple-500 flex-shrink-0" />
+                                        <span className="text-2xl font-bold text-purple-600 dark:text-purple-400 leading-none">
+                                            {Array.isArray(localProjects)
+                                                ? localProjects.filter(
+                                                      (p) => p.status && ['planned', 'in_progress', 'waiting'].includes(p.status)
+                                                  ).length
+                                                : 0}
+                                        </span>
+                                    </div>
+                                    <span className="text-[10px] text-gray-500 dark:text-gray-400 text-center leading-tight">{t('projects.active')}</span>
                                 </div>
                                 {/* Due Today */}
                                 {(() => {
                                     const hasDue = metrics.tasks_due_today.length > 0;
                                     return (
-                                        <div className={`flex flex-col items-center justify-center rounded-lg p-2.5 gap-0.5 ${hasDue ? 'bg-red-50 dark:bg-red-900/20' : 'bg-gray-50 dark:bg-gray-800/40'}`}>
-                                            <CalendarDaysIcon className={`h-4 w-4 mb-0.5 ${hasDue ? 'text-red-400 dark:text-red-500' : 'text-gray-400 dark:text-gray-500'}`} />
-                                            <span className={`text-2xl font-bold leading-none ${hasDue ? 'text-red-600 dark:text-red-400' : 'text-gray-600 dark:text-gray-400'}`}>{metrics.tasks_due_today.length}</span>
-                                            <span className="text-[10px] text-gray-500 dark:text-gray-400 text-center leading-tight mt-0.5">{t('tasks.dueToday')}</span>
+                                        <div className={`flex flex-col items-center justify-center rounded-lg p-2.5 gap-1 ${hasDue ? 'bg-red-50 dark:bg-red-900/20' : 'bg-gray-50 dark:bg-gray-800/40'}`}>
+                                            <div className="flex items-center gap-1.5 leading-none">
+                                                <CalendarDaysIcon className={`h-4 w-4 flex-shrink-0 ${hasDue ? 'text-red-400 dark:text-red-500' : 'text-gray-400 dark:text-gray-500'}`} />
+                                                <span className={`text-2xl font-bold leading-none ${hasDue ? 'text-red-600 dark:text-red-400' : 'text-gray-600 dark:text-gray-400'}`}>{metrics.tasks_due_today.length}</span>
+                                            </div>
+                                            <span className="text-[10px] text-gray-500 dark:text-gray-400 text-center leading-tight">{t('tasks.dueToday')}</span>
                                         </div>
                                     );
                                 })()}
@@ -1366,10 +1374,12 @@ const TasksToday: React.FC = () => {
                                 {(() => {
                                     const hasOverdue = metrics.tasks_overdue.length > 0;
                                     return (
-                                        <div className={`flex flex-col items-center justify-center rounded-lg p-2.5 gap-0.5 ${hasOverdue ? 'bg-orange-50 dark:bg-orange-900/20' : 'bg-gray-50 dark:bg-gray-800/40'}`}>
-                                            <ExclamationTriangleIcon className={`h-4 w-4 mb-0.5 ${hasOverdue ? 'text-orange-400 dark:text-orange-500' : 'text-gray-400 dark:text-gray-500'}`} />
-                                            <span className={`text-2xl font-bold leading-none ${hasOverdue ? 'text-orange-600 dark:text-orange-400' : 'text-gray-600 dark:text-gray-400'}`}>{metrics.tasks_overdue.length}</span>
-                                            <span className="text-[10px] text-gray-500 dark:text-gray-400 text-center leading-tight mt-0.5">{t('tasks.overdue', 'Overdue')}</span>
+                                        <div className={`flex flex-col items-center justify-center rounded-lg p-2.5 gap-1 ${hasOverdue ? 'bg-orange-50 dark:bg-orange-900/20' : 'bg-gray-50 dark:bg-gray-800/40'}`}>
+                                            <div className="flex items-center gap-1.5 leading-none">
+                                                <ExclamationTriangleIcon className={`h-4 w-4 flex-shrink-0 ${hasOverdue ? 'text-orange-400 dark:text-orange-500' : 'text-gray-400 dark:text-gray-500'}`} />
+                                                <span className={`text-2xl font-bold leading-none ${hasOverdue ? 'text-orange-600 dark:text-orange-400' : 'text-gray-600 dark:text-gray-400'}`}>{metrics.tasks_overdue.length}</span>
+                                            </div>
+                                            <span className="text-[10px] text-gray-500 dark:text-gray-400 text-center leading-tight">{t('tasks.overdue', 'Overdue')}</span>
                                         </div>
                                     );
                                 })()}
@@ -1378,9 +1388,9 @@ const TasksToday: React.FC = () => {
                                     const trend = getCompletionTrend();
                                     const hasDone = metrics.tasks_completed_today.length > 0;
                                     return (
-                                        <div className={`flex flex-col items-center justify-center rounded-lg p-2.5 gap-0.5 ${hasDone ? 'bg-emerald-50 dark:bg-emerald-900/20' : 'bg-gray-50 dark:bg-gray-800/40'}`}>
-                                            <CheckCircleIcon className={`h-4 w-4 mb-0.5 ${hasDone ? 'text-emerald-400 dark:text-emerald-500' : 'text-gray-400 dark:text-gray-500'}`} />
-                                            <div className="flex items-center gap-0.5 leading-none">
+                                        <div className={`flex flex-col items-center justify-center rounded-lg p-2.5 gap-1 ${hasDone ? 'bg-emerald-50 dark:bg-emerald-900/20' : 'bg-gray-50 dark:bg-gray-800/40'}`}>
+                                            <div className="flex items-center gap-1.5 leading-none">
+                                                <CheckCircleIcon className={`h-4 w-4 flex-shrink-0 ${hasDone ? 'text-emerald-400 dark:text-emerald-500' : 'text-gray-400 dark:text-gray-500'}`} />
                                                 <span className={`text-2xl font-bold ${hasDone ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-600 dark:text-gray-400'}`}>{metrics.tasks_completed_today.length}</span>
                                                 {trend.direction === 'up' && (
                                                     <div className="relative group/tip">
@@ -1399,7 +1409,7 @@ const TasksToday: React.FC = () => {
                                                     </div>
                                                 )}
                                             </div>
-                                            <span className="text-[10px] text-gray-500 dark:text-gray-400 text-center leading-tight mt-0.5">{t('tasks.completedToday', 'Completed Today')}</span>
+                                            <span className="text-[10px] text-gray-500 dark:text-gray-400 text-center leading-tight">{t('tasks.completedToday', 'Completed Today')}</span>
                                         </div>
                                     );
                                 })()}
