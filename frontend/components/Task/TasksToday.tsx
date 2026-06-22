@@ -1322,84 +1322,86 @@ const TasksToday: React.FC = () => {
                 {isSettingsLoaded && todaySettings.showMetrics && (
                     <div className="mb-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
                         <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
-                            <h3 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                            <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3">
                                 {t('dashboard.overview')}
                             </h3>
-                            <div className="space-y-2">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center">
-                                        <ClipboardDocumentListIcon className="h-4 w-4 text-blue-500 mr-2" />
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">{t('tasks.total')}</p>
-                                    </div>
-                                    <p className="text-sm font-semibold">{metrics.total_open_tasks}</p>
+                            <div className="grid grid-cols-3 gap-2">
+                                {/* Total */}
+                                <div className="flex flex-col items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-900/20 p-2.5 gap-0.5">
+                                    <ClipboardDocumentListIcon className="h-4 w-4 text-blue-400 dark:text-blue-500 mb-0.5" />
+                                    <span className="text-2xl font-bold text-blue-600 dark:text-blue-400 leading-none">{metrics.total_open_tasks}</span>
+                                    <span className="text-[10px] text-gray-500 dark:text-gray-400 text-center leading-tight mt-0.5">{t('tasks.total')}</span>
                                 </div>
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center">
-                                        <ArrowPathIcon className="h-4 w-4 text-green-500 mr-2" />
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">{t('tasks.inProgress')}</p>
-                                    </div>
-                                    <p className="text-sm font-semibold">{metrics.tasks_in_progress_count}</p>
+                                {/* In Progress */}
+                                <div className="flex flex-col items-center justify-center rounded-lg bg-green-50 dark:bg-green-900/20 p-2.5 gap-0.5">
+                                    <ArrowPathIcon className="h-4 w-4 text-green-400 dark:text-green-500 mb-0.5" />
+                                    <span className="text-2xl font-bold text-green-600 dark:text-green-400 leading-none">{metrics.tasks_in_progress_count}</span>
+                                    <span className="text-[10px] text-gray-500 dark:text-gray-400 text-center leading-tight mt-0.5">{t('tasks.inProgress')}</span>
                                 </div>
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center">
-                                        <FolderIcon className="h-4 w-4 text-purple-500 mr-2" />
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">{t('projects.active')}</p>
-                                    </div>
-                                    <p className="text-sm font-semibold">
+                                {/* Active Projects */}
+                                <div className="flex flex-col items-center justify-center rounded-lg bg-purple-50 dark:bg-purple-900/20 p-2.5 gap-0.5">
+                                    <FolderIcon className="h-4 w-4 text-purple-400 dark:text-purple-500 mb-0.5" />
+                                    <span className="text-2xl font-bold text-purple-600 dark:text-purple-400 leading-none">
                                         {Array.isArray(localProjects)
                                             ? localProjects.filter(
                                                   (p) => p.status && ['planned', 'in_progress', 'waiting'].includes(p.status)
                                               ).length
                                             : 0}
-                                    </p>
+                                    </span>
+                                    <span className="text-[10px] text-gray-500 dark:text-gray-400 text-center leading-tight mt-0.5">{t('projects.active')}</span>
                                 </div>
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center">
-                                        <CalendarDaysIcon className="h-4 w-4 text-red-500 mr-2" />
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">{t('tasks.dueToday')}</p>
-                                    </div>
-                                    <p className={`text-sm font-semibold ${metrics.tasks_due_today.length > 0 ? 'text-red-500' : ''}`}>
-                                        {metrics.tasks_due_today.length}
-                                    </p>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center">
-                                        <ExclamationTriangleIcon className="h-4 w-4 text-orange-500 mr-2" />
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">{t('tasks.overdue', 'Overdue')}</p>
-                                    </div>
-                                    <p className={`text-sm font-semibold ${metrics.tasks_overdue.length > 0 ? 'text-red-500' : ''}`}>
-                                        {metrics.tasks_overdue.length}
-                                    </p>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center">
-                                        <CheckCircleIcon className="h-4 w-4 text-green-600 mr-2" />
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">{t('tasks.completedToday', 'Completed Today')}</p>
-                                    </div>
-                                    <div className="flex items-center space-x-1">
-                                        {(() => {
-                                            const trend = getCompletionTrend();
-                                            return (
-                                                <>
-                                                    {(trend.direction === 'up' || trend.direction === 'down') && (
-                                                        <div className="relative group/tip">
-                                                            {trend.direction === 'up' && <ArrowUpIcon className="h-3 w-3 text-green-500" />}
-                                                            {trend.direction === 'down' && <ArrowDownIcon className="h-3 w-3 text-red-500" />}
-                                                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 dark:bg-gray-700 rounded opacity-0 group-hover/tip:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
-                                                                {trend.direction === 'up'
-                                                                    ? t('dashboard.betterThanAverage', '{{percentage}}% more than average', { percentage: trend.percentage })
-                                                                    : t('dashboard.worseThanAverage', '{{percentage}}% less than average', { percentage: trend.percentage })}
-                                                            </div>
+                                {/* Due Today */}
+                                {(() => {
+                                    const hasDue = metrics.tasks_due_today.length > 0;
+                                    return (
+                                        <div className={`flex flex-col items-center justify-center rounded-lg p-2.5 gap-0.5 ${hasDue ? 'bg-red-50 dark:bg-red-900/20' : 'bg-gray-50 dark:bg-gray-800/40'}`}>
+                                            <CalendarDaysIcon className={`h-4 w-4 mb-0.5 ${hasDue ? 'text-red-400 dark:text-red-500' : 'text-gray-400 dark:text-gray-500'}`} />
+                                            <span className={`text-2xl font-bold leading-none ${hasDue ? 'text-red-600 dark:text-red-400' : 'text-gray-600 dark:text-gray-400'}`}>{metrics.tasks_due_today.length}</span>
+                                            <span className="text-[10px] text-gray-500 dark:text-gray-400 text-center leading-tight mt-0.5">{t('tasks.dueToday')}</span>
+                                        </div>
+                                    );
+                                })()}
+                                {/* Overdue */}
+                                {(() => {
+                                    const hasOverdue = metrics.tasks_overdue.length > 0;
+                                    return (
+                                        <div className={`flex flex-col items-center justify-center rounded-lg p-2.5 gap-0.5 ${hasOverdue ? 'bg-orange-50 dark:bg-orange-900/20' : 'bg-gray-50 dark:bg-gray-800/40'}`}>
+                                            <ExclamationTriangleIcon className={`h-4 w-4 mb-0.5 ${hasOverdue ? 'text-orange-400 dark:text-orange-500' : 'text-gray-400 dark:text-gray-500'}`} />
+                                            <span className={`text-2xl font-bold leading-none ${hasOverdue ? 'text-orange-600 dark:text-orange-400' : 'text-gray-600 dark:text-gray-400'}`}>{metrics.tasks_overdue.length}</span>
+                                            <span className="text-[10px] text-gray-500 dark:text-gray-400 text-center leading-tight mt-0.5">{t('tasks.overdue', 'Overdue')}</span>
+                                        </div>
+                                    );
+                                })()}
+                                {/* Completed Today */}
+                                {(() => {
+                                    const trend = getCompletionTrend();
+                                    const hasDone = metrics.tasks_completed_today.length > 0;
+                                    return (
+                                        <div className={`flex flex-col items-center justify-center rounded-lg p-2.5 gap-0.5 ${hasDone ? 'bg-emerald-50 dark:bg-emerald-900/20' : 'bg-gray-50 dark:bg-gray-800/40'}`}>
+                                            <CheckCircleIcon className={`h-4 w-4 mb-0.5 ${hasDone ? 'text-emerald-400 dark:text-emerald-500' : 'text-gray-400 dark:text-gray-500'}`} />
+                                            <div className="flex items-center gap-0.5 leading-none">
+                                                <span className={`text-2xl font-bold ${hasDone ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-600 dark:text-gray-400'}`}>{metrics.tasks_completed_today.length}</span>
+                                                {trend.direction === 'up' && (
+                                                    <div className="relative group/tip">
+                                                        <ArrowUpIcon className="h-3 w-3 text-emerald-500" />
+                                                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 dark:bg-gray-700 rounded opacity-0 group-hover/tip:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                                                            {t('dashboard.betterThanAverage', '{{percentage}}% more than average', { percentage: trend.percentage })}
                                                         </div>
-                                                    )}
-                                                    <p className={`text-sm font-semibold ${metrics.tasks_completed_today.length > 0 ? 'text-green-500' : ''}`}>
-                                                        {metrics.tasks_completed_today.length}
-                                                    </p>
-                                                </>
-                                            );
-                                        })()}
-                                    </div>
-                                </div>
+                                                    </div>
+                                                )}
+                                                {trend.direction === 'down' && (
+                                                    <div className="relative group/tip">
+                                                        <ArrowDownIcon className="h-3 w-3 text-red-400" />
+                                                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 dark:bg-gray-700 rounded opacity-0 group-hover/tip:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                                                            {t('dashboard.worseThanAverage', '{{percentage}}% less than average', { percentage: trend.percentage })}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <span className="text-[10px] text-gray-500 dark:text-gray-400 text-center leading-tight mt-0.5">{t('tasks.completedToday', 'Completed Today')}</span>
+                                        </div>
+                                    );
+                                })()}
                             </div>
                         </div>
                         <div className="lg:col-span-2">
