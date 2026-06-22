@@ -2,7 +2,7 @@
 
 pkgs.buildNpmPackage {
   pname = "tududi";
-  version = "1.1.1";
+  version = (builtins.fromJSON (builtins.readFile ../package.json)).version;
   inherit src;
 
   npmDeps = pkgs.fetchNpmDeps {
