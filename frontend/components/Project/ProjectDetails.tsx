@@ -12,6 +12,7 @@ import {
     XCircleIcon,
     ChartBarIcon,
     CheckIcon,
+    ArrowLeftIcon,
 } from '@heroicons/react/24/outline';
 import { useToast } from '../Shared/ToastContext';
 import ProjectModal from './ProjectModal';
@@ -852,6 +853,13 @@ const ProjectDetails: React.FC = () => {
             />
 
             <div className="w-full px-4 sm:px-6 lg:px-10">
+                <button
+                    onClick={() => navigate(-1)}
+                    className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-4"
+                >
+                    <ArrowLeftIcon className="h-5 w-5" />
+                    {t('common.back', 'Back')}
+                </button>
                 <div className="w-full">
                     <div className="mb-4">
                         <div className="flex items-center justify-between min-h-[2.5rem]">
