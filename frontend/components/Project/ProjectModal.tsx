@@ -671,7 +671,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                         onChange={(color) =>
                                                             setFormData((prev) => ({
                                                                 ...prev,
-                                                                color: color || undefined,
+                                                                color,
                                                             }))
                                                         }
                                                     />
