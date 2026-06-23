@@ -95,6 +95,12 @@ async function serializeTask(
                   uid: taskJson.Project.uid,
               }
             : null,
+        Area: taskJson.Area
+            ? {
+                  ...taskJson.Area,
+                  uid: taskJson.Area.uid,
+              }
+            : null,
         subtasks: Subtasks
             ? Subtasks.map((subtask) => ({
                   ...subtask,

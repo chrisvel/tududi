@@ -6,6 +6,7 @@ import i18n from 'i18next';
 import { useNavigate } from 'react-router-dom';
 import { getLocalesPath, getApiPath } from '../../config/paths';
 import { sortTasksByPriorityDueDateProject } from '../../utils/taskSortUtils';
+import { scoreAndSortSuggestedTasks } from '../../utils/suggestionScoringUtils';
 import { getTodayDateString } from '../../utils/dateUtils';
 import {
     ClipboardDocumentListIcon,
@@ -96,7 +97,7 @@ const TasksToday: React.FC = () => {
         showActiveProjects: true,
         showProductivity: false,
         showNextTaskSuggestion: false,
-        showSuggestions: false,
+        showSuggestions: true,
         showDueToday: true,
         showCompleted: true,
         showProgressBar: true, // Always enabled
@@ -169,7 +170,7 @@ const TasksToday: React.FC = () => {
     const [overdueDisplayLimit, setOverdueDisplayLimit] = useState(20);
 
     // Client-side pagination for Suggested tasks
-    const [suggestedDisplayLimit, setSuggestedDisplayLimit] = useState(20);
+    const [suggestedDisplayLimit, setSuggestedDisplayLimit] = useState(5);
 
     // Client-side pagination for Completed Today tasks (since backend returns all)
     const [completedTodayDisplayLimit, setCompletedTodayDisplayLimit] =
@@ -197,12 +198,28 @@ const TasksToday: React.FC = () => {
         return filterNonHabitTasks(tasks);
     }, [metrics.tasks_completed_today, getTasksFromStore]);
 
-    // Sort tasks using multi-criteria sorting (Priority → Due Date → Project) for consistency
-    // Task data comes from global store so priority changes are immediately reflected
+    // Smart scoring: one-per-project candidate pool, priority-dominant score, reason chips.
+    // Use all store tasks minus tasks already shown in other sections — gives buildCandidatePool
+    // the widest possible view of pending work across all active projects.
     const sortedSuggestedTasks = useMemo(() => {
-        const tasks = getTasksFromStore(metrics.suggested_tasks || []);
-        return sortTasksByPriorityDueDateProject(tasks);
-    }, [metrics.suggested_tasks, getTasksFromStore]);
+        const excludedIds = new Set<number>();
+        [
+            ...(metrics.tasks_in_progress || []),
+            ...(metrics.tasks_due_today || []),
+            ...(metrics.tasks_overdue || []),
+            ...(metrics.today_plan_tasks || []),
+            ...(metrics.tasks_completed_today || []),
+        ].forEach((t: Task) => { if (t.id != null) excludedIds.add(t.id); });
+
+        const candidateTasks = storeTasks.filter(
+            (t: Task) => t.id != null && !excludedIds.has(t.id)
+        );
+
+        if (localProjects.length > 0) {
+            return scoreAndSortSuggestedTasks(candidateTasks, localProjects);
+        }
+        return sortTasksByPriorityDueDateProject(candidateTasks);
+    }, [metrics, storeTasks, localProjects]);
 
     const sortedDueTodayTasks = useMemo(() => {
         const tasks = getTasksFromStore(metrics.tasks_due_today || []);
@@ -464,7 +481,7 @@ const TasksToday: React.FC = () => {
             setIsLoading(true);
             try {
                 const result = await fetchTasks(
-                    `?type=today&limit=20&offset=0`
+                    `?type=today&limit=20&offset=0&include_lists=true`
                 );
                 if (isMounted.current) {
                     setMetrics({
@@ -568,7 +585,7 @@ const TasksToday: React.FC = () => {
                             showActiveProjects: true,
                             showProductivity: false,
                             showNextTaskSuggestion: false,
-                            showSuggestions: false,
+                            showSuggestions: true,
                             showDueToday: true,
                             showCompleted: true,
                             showProgressBar: true, // Always enabled
@@ -1213,6 +1230,15 @@ const TasksToday: React.FC = () => {
     const totalCompletedItems =
         completedTasksList.length + completedHabits.length;
 
+    // Auto-show suggestions when the day is completely empty
+    const isEmptyDay =
+        totalPlannedItems === 0 &&
+        sortedDueTodayTasks.length === 0 &&
+        sortedOverdueTasks.length === 0;
+    const effectiveShowSuggestions =
+        todaySettings.showSuggestions ||
+        (isEmptyDay && sortedSuggestedTasks.length > 0);
+
     // Handle settings change
     const handleSettingsChange = (newSettings: typeof todaySettings) => {
         setTodaySettings(newSettings);
@@ -1775,9 +1801,14 @@ const TasksToday: React.FC = () => {
                     >
                         <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 h-20"></div>
                     </div>
-                ) : todaySettings.showSuggestions &&
+                ) : effectiveShowSuggestions &&
                   sortedSuggestedTasks.length > 0 ? (
                     <div className="mt-2 mb-6">
+                        {isEmptyDay && (
+                            <p className="text-sm text-gray-400 dark:text-gray-500 mb-3 italic">
+                                {t('tasks.noPlanYet', 'No plan yet — here are some ideas:')}
+                            </p>
+                        )}
                         <div
                             className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
                             onClick={toggleSuggestedCollapsed}
@@ -1810,48 +1841,24 @@ const TasksToday: React.FC = () => {
                                     onTaskDelete={handleTaskDelete}
                                     projects={localProjects}
                                     onToggleToday={undefined}
+                                    showSuggestionChips={true}
                                 />
 
                                 {suggestedDisplayLimit <
                                     sortedSuggestedTasks.length && (
-                                    <div className="flex justify-center pt-4 pb-2 gap-3">
+                                    <div className="flex justify-center pt-3 pb-2">
                                         <button
                                             onClick={() =>
                                                 setSuggestedDisplayLimit(
-                                                    (prev) => prev + 20
+                                                    (prev) => prev + 5
                                                 )
                                             }
-                                            className="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                            className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                                         >
-                                            <QueueListIcon className="h-4 w-4 mr-2" />
-                                            {t('common.loadMore', 'Load More')}
-                                        </button>
-                                        <button
-                                            onClick={() =>
-                                                setSuggestedDisplayLimit(
-                                                    sortedSuggestedTasks.length
-                                                )
-                                            }
-                                            className="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                                        >
-                                            {t('common.showAll', 'Show All')}
+                                            {Math.min(5, sortedSuggestedTasks.length - suggestedDisplayLimit)} more
                                         </button>
                                     </div>
                                 )}
-
-                                <div className="text-center text-sm text-gray-500 dark:text-gray-400 pt-2 pb-4">
-                                    {t(
-                                        'tasks.showingItems',
-                                        'Showing {{current}} of {{total}} tasks',
-                                        {
-                                            current: Math.min(
-                                                suggestedDisplayLimit,
-                                                sortedSuggestedTasks.length
-                                            ),
-                                            total: sortedSuggestedTasks.length,
-                                        }
-                                    )}
-                                </div>
                             </>
                         )}
                     </div>

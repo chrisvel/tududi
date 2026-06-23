@@ -33,10 +33,12 @@ interface ProjectsStore {
     currentProject: Project | null;
     isLoading: boolean;
     isError: boolean;
+    hasLoaded: boolean;
     setProjects: (projects: Project[]) => void;
     setCurrentProject: (project: Project | null) => void;
     setLoading: (isLoading: boolean) => void;
     setError: (isError: boolean) => void;
+    loadProjects: () => Promise<void>;
 }
 
 interface TagsStore {
@@ -236,6 +238,7 @@ export const useStore = create<StoreState>((set: any) => ({
         currentProject: null,
         isLoading: false,
         isError: false,
+        hasLoaded: false,
         setProjects: (projects) =>
             set((state) => ({
                 projectsStore: { ...state.projectsStore, projects },
@@ -252,6 +255,42 @@ export const useStore = create<StoreState>((set: any) => ({
             set((state) => ({
                 projectsStore: { ...state.projectsStore, isError },
             })),
+        loadProjects: async () => {
+            const state = useStore.getState();
+            if (state.projectsStore.isLoading) return;
+
+            const { fetchProjects } = await import('../utils/projectsService');
+
+            set((state) => ({
+                projectsStore: {
+                    ...state.projectsStore,
+                    isLoading: true,
+                    isError: false,
+                },
+            }));
+
+            try {
+                const projects = await fetchProjects();
+                set((state) => ({
+                    projectsStore: {
+                        ...state.projectsStore,
+                        projects,
+                        isLoading: false,
+                        hasLoaded: true,
+                    },
+                }));
+            } catch (error) {
+                console.error('loadProjects: Failed to load projects:', error);
+                set((state) => ({
+                    projectsStore: {
+                        ...state.projectsStore,
+                        isError: true,
+                        isLoading: false,
+                        hasLoaded: true,
+                    },
+                }));
+            }
+        },
     },
     tagsStore: {
         tags: [],

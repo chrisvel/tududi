@@ -1,5 +1,6 @@
 import { Tag } from './Tag';
 import { Project } from './Project';
+import { Area } from './Area';
 import { Attachment } from './Attachment';
 
 export interface Task {
@@ -16,6 +17,8 @@ export interface Task {
     tags?: Tag[];
     project_id?: number;
     Project?: Project;
+    area_id?: number;
+    Area?: Area;
     created_at?: string;
     updated_at?: string;
     recurrence_type?: RecurrenceType;
@@ -42,6 +45,13 @@ export interface Task {
     habit_best_streak?: number;
     habit_total_completions?: number;
     habit_last_completion_at?: string;
+    // Transient UI field set by suggestion scoring — never persisted or sent to server
+    _suggestionMeta?: {
+        score: number;
+        reason: 'area_balance' | 'due' | 'fits_now' | 'revive' | 'high' | 'aging_review' | 'next_step';
+        reasonLabel: string;
+        reasonColor: string;
+    };
 }
 
 export type StatusType =

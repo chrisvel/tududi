@@ -15,6 +15,7 @@ interface TaskListProps {
     showCompletedTasks?: boolean;
     isInCompletedSection?: boolean;
     isUpcomingView?: boolean;
+    showSuggestionChips?: boolean;
 }
 
 const TaskList: React.FC<TaskListProps> = ({
@@ -28,6 +29,7 @@ const TaskList: React.FC<TaskListProps> = ({
     showCompletedTasks = false,
     isInCompletedSection = false,
     isUpcomingView = false,
+    showSuggestionChips = false,
 }) => {
     // Conditionally filter tasks based on showCompletedTasks prop
     const filteredTasks = showCompletedTasks
@@ -36,8 +38,10 @@ const TaskList: React.FC<TaskListProps> = ({
               const isCompleted =
                   task.status === 'done' ||
                   task.status === 'archived' ||
+                  task.status === 'cancelled' ||
                   task.status === 2 ||
-                  task.status === 3;
+                  task.status === 3 ||
+                  task.status === 5;
               return !isCompleted;
           });
 
@@ -61,6 +65,7 @@ const TaskList: React.FC<TaskListProps> = ({
                             isInCompletedSection={isInCompletedSection}
                             isUpcomingView={isUpcomingView}
                             showCompletedTasks={showCompletedTasks}
+                            showSuggestionChips={showSuggestionChips}
                         />
                     </div>
                 ))

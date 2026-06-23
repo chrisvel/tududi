@@ -1,4 +1,4 @@
-const { Project, Task } = require('../../../models');
+const { Project, Task, Area } = require('../../../models');
 const permissionsService = require('../../../services/permissionsService');
 
 async function validateProjectAccess(projectId, userId) {
@@ -135,8 +135,22 @@ function validateDeferUntilAndDueDate(
     }
 }
 
+async function validateAreaAccess(areaId, userId) {
+    if (!areaId || !areaId.toString().trim()) {
+        return null;
+    }
+
+    const area = await Area.findOne({ where: { id: areaId, user_id: userId } });
+    if (!area) {
+        throw new Error('Invalid area.');
+    }
+
+    return areaId;
+}
+
 module.exports = {
     validateProjectAccess,
     validateParentTaskAccess,
     validateDeferUntilAndDueDate,
+    validateAreaAccess,
 };
