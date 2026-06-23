@@ -89,18 +89,13 @@ const TaskProjectCard: React.FC<TaskProjectCardProps> = ({
         'shadow-sm',
         'bg-white',
         'dark:bg-gray-900',
+        'border-2',
+        'border-gray-50',
+        'dark:border-gray-800',
+        'hover:border-gray-200',
+        'dark:hover:border-gray-700',
         'transition-colors',
     ];
-
-    if (task.Project || projectDropdownOpen) {
-        containerClasses.push(
-            'border-2',
-            'border-gray-50',
-            'dark:border-gray-800',
-            'hover:border-gray-200',
-            'dark:hover:border-gray-700'
-        );
-    }
 
     return (
         <div ref={projectDropdownRef} className="space-y-2">
