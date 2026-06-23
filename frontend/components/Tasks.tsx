@@ -21,6 +21,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { getApiPath } from '../config/paths';
 import { getCsrfToken } from '../utils/csrfService';
+import { isTaskActive } from '../constants/taskStatus';
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
@@ -96,14 +97,9 @@ const Tasks: React.FC = () => {
                 return isCompleted;
             });
         } else if (status === 'active') {
-            filteredTasks = filteredTasks.filter((task: Task) => {
-                const isCompleted =
-                    task.status === 'done' ||
-                    task.status === 'archived' ||
-                    task.status === 2 ||
-                    task.status === 3;
-                return !isCompleted;
-            });
+            filteredTasks = filteredTasks.filter((task: Task) =>
+                isTaskActive(task.status)
+            );
         }
 
         if (taskSearchQuery.trim() && !isUpcomingView) {

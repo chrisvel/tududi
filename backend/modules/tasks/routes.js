@@ -42,6 +42,7 @@ const {
     validateProjectAccess,
     validateParentTaskAccess,
     validateDeferUntilAndDueDate,
+    validateAreaAccess,
 } = require('./utils/validation');
 const {
     buildTaskAttributes,
@@ -404,8 +405,15 @@ router.get('/tasks/metrics', async (req, res) => {
 
 router.post('/task', async (req, res) => {
     try {
-        const { name, project_id, parent_task_id, tags, Tags, subtasks } =
-            req.body;
+        const {
+            name,
+            project_id,
+            area_id,
+            parent_task_id,
+            tags,
+            Tags,
+            subtasks,
+        } = req.body;
         const tagsData = tags || Tags;
 
         if (!name || name.trim() === '') {
@@ -445,6 +453,16 @@ router.post('/task', async (req, res) => {
             return res
                 .status(error.message === 'Forbidden' ? 403 : 400)
                 .json({ error: error.message });
+        }
+
+        try {
+            const validAreaId = await validateAreaAccess(
+                area_id,
+                req.currentUser.id
+            );
+            if (validAreaId) taskAttributes.area_id = validAreaId;
+        } catch (error) {
+            return res.status(400).json({ error: error.message });
         }
 
         try {
@@ -541,6 +559,7 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
         const {
             status,
             project_id,
+            area_id,
             parent_task_id,
             tags,
             Tags,
@@ -654,6 +673,18 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
                 return res
                     .status(error.message === 'Forbidden' ? 403 : 400)
                     .json({ error: error.message });
+            }
+        }
+
+        if (area_id !== undefined) {
+            try {
+                const validAreaId = await validateAreaAccess(
+                    area_id,
+                    req.currentUser.id
+                );
+                taskAttributes.area_id = validAreaId;
+            } catch (error) {
+                return res.status(400).json({ error: error.message });
             }
         }
 

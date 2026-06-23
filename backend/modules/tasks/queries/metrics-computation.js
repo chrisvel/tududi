@@ -17,7 +17,7 @@ const {
     fetchTasksCompletedToday,
 } = require('./metrics-queries');
 
-const MAX_SUGGESTED_TASKS = 10;
+const MAX_SUGGESTED_TASKS = 50;
 
 const getPriorityValue = (priority) => {
     const priorityOrder = {

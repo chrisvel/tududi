@@ -179,11 +179,11 @@ const Areas: React.FC = () => {
                                 key={area.uid}
                                 to={
                                     area.uid
-                                        ? `/projects?area=${area.uid}-${area.name
+                                        ? `/area/${area.uid}-${area.name
                                               .toLowerCase()
                                               .replace(/[^a-z0-9]+/g, '-')
                                               .replace(/^-|-$/g, '')}`
-                                        : `/projects?area_id=${area.uid}`
+                                        : `/areas`
                                 }
                                 className={`rounded-lg shadow-md relative flex flex-col group hover:opacity-90 transition-opacity cursor-pointer ${
                                     !area.color ? 'bg-gray-50 dark:bg-gray-900' : ''

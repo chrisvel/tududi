@@ -248,7 +248,7 @@ const App: React.FC = () => {
                                 element={<ProjectDetails />}
                             />
                             <Route path="/areas" element={<Areas />} />
-                            <Route path="/area/:id" element={<AreaDetails />} />
+                            <Route path="/area/:uidSlug" element={<AreaDetails />} />
                             <Route path="/tags" element={<Tags />} />
                             <Route
                                 path="/tag/:uidSlug"

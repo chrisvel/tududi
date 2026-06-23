@@ -5,6 +5,7 @@ import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
+import { Area } from '../../entities/Area';
 import {
     updateTask,
     deleteTask,
@@ -24,6 +25,7 @@ import {
     TaskDetailsHeader,
     TaskContentCard,
     TaskProjectCard,
+    TaskAreaCard,
     TaskTagsCard,
     TaskSubtasksCard,
     TaskRecurrenceCard,
@@ -73,6 +75,7 @@ const TaskDetails: React.FC = () => {
     const projectsStore = useStore((state: any) => state.projectsStore);
     const tagsStore = useStore((state: any) => state.tagsStore);
     const tasksStore = useStore((state: any) => state.tasksStore);
+    const areasStore = useStore((state: any) => state.areasStore);
     const task = useStore((state: any) =>
         state.tasksStore.tasks.find((t: Task) => t.uid === uid)
     );
@@ -181,6 +184,12 @@ const TaskDetails: React.FC = () => {
             tagsStore.loadTags();
         }
     }, [tagsStore]);
+
+    useEffect(() => {
+        if (!areasStore.isLoading && areasStore.areas.length === 0) {
+            areasStore.loadAreas();
+        }
+    }, [areasStore]);
 
     const handleStartRecurrenceEdit = () => {
         setRecurrenceForm({
@@ -1041,6 +1050,61 @@ const TaskDetails: React.FC = () => {
         }
     };
 
+    const handleAreaSelection = async (area: Area) => {
+        if (!task?.uid) return;
+
+        try {
+            taskModifiedRef.current = true;
+            await updateTask(task.uid, { area_id: area.id });
+
+            if (uid) {
+                const updatedTask = await fetchTaskByUid(uid);
+                tasksStore.updateTaskInStore(updatedTask);
+            }
+
+            showSuccessToast(
+                t('task.areaUpdated', 'Area updated successfully')
+            );
+            setTimelineRefreshKey((prev) => prev + 1);
+        } catch (error) {
+            console.error('Error updating area:', error);
+            showErrorToast(t('task.areaUpdateError', 'Failed to update area'));
+        }
+    };
+
+    const handleClearArea = async () => {
+        if (!task?.uid) return;
+
+        try {
+            taskModifiedRef.current = true;
+            await updateTask(task.uid, { area_id: null });
+
+            if (uid) {
+                const updatedTask = await fetchTaskByUid(uid);
+                tasksStore.updateTaskInStore(updatedTask);
+            }
+
+            showSuccessToast(
+                t('task.areaCleared', 'Area cleared successfully')
+            );
+            setTimelineRefreshKey((prev) => prev + 1);
+        } catch (error) {
+            console.error('Error clearing area:', error);
+            showErrorToast(t('task.areaClearError', 'Failed to clear area'));
+        }
+    };
+
+    const getAreaLink = (area: Area) => {
+        if (area.uid) {
+            const slug = area.name
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-|-$/g, '');
+            return `/area/${area.uid}-${slug}`;
+        }
+        return `/area/${area.id}`;
+    };
+
     const handleTagsUpdate = async (tags: string[]) => {
         if (!task?.uid) {
             return;
@@ -1193,6 +1257,14 @@ const TaskDetails: React.FC = () => {
                                         handleProjectCreateInlineWrapper
                                     }
                                     getProjectLink={getProjectLink}
+                                />
+
+                                <TaskAreaCard
+                                    task={task}
+                                    areas={areasStore.areas}
+                                    onAreaSelect={handleAreaSelection}
+                                    onAreaClear={handleClearArea}
+                                    getAreaLink={getAreaLink}
                                 />
 
                                 <TaskTagsCard

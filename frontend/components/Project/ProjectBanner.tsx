@@ -161,20 +161,19 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                                 onClick={() => {
                                     const projectArea =
                                         project.area || (project as any).Area;
-                                    const area = areas.find(
-                                        (a) => a.id === projectArea.id
-                                    );
-                                    const areaUid = area?.uid;
+                                    const areaUid =
+                                        projectArea.uid ||
+                                        areas.find(
+                                            (a) => a.id === projectArea.id
+                                        )?.uid;
                                     if (!areaUid) return;
                                     const areaSlug = projectArea.name
                                         .toLowerCase()
                                         .replace(/[^a-z0-9]+/g, '-')
                                         .replace(/^-|-$/g, '');
-                                    navigate(
-                                        `/projects?area=${areaUid}-${areaSlug}`
-                                    );
+                                    navigate(`/area/${areaUid}-${areaSlug}`);
                                 }}
-                                className="text-xs text-white/90 hover:text-blue-200 transition-colors cursor-pointer font-medium"
+                                className="text-xs text-white/90 hover:text-white transition-colors cursor-pointer font-medium underline underline-offset-2"
                             >
                                 {(project.area || (project as any).Area)?.name}
                             </button>

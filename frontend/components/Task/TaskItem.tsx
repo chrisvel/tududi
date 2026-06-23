@@ -6,6 +6,15 @@ import TaskHeader from './TaskHeader';
 import { useToast } from '../Shared/ToastContext';
 import TaskPriorityIcon from '../Shared/Icons/TaskPriorityIcon';
 import { isTaskCompleted } from '../../constants/taskStatus';
+import {
+    ExclamationTriangleIcon,
+    BoltIcon,
+    ArrowPathIcon,
+    ClockIcon,
+    ScaleIcon,
+    ArrowRightCircleIcon,
+    SparklesIcon,
+} from '@heroicons/react/24/outline';
 
 // Import SubtasksDisplay component from TaskHeader
 interface SubtasksDisplayProps {
@@ -140,7 +149,7 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
         </div>
     );
 };
-import { toggleTaskCompletion, fetchSubtasks } from '../../utils/tasksService';
+import { toggleTaskCompletion, updateTask, fetchSubtasks } from '../../utils/tasksService';
 import { isTaskOverdueInTodayPlan } from '../../utils/dateUtils';
 import { useTranslation } from 'react-i18next';
 import ConfirmDialog from '../Shared/ConfirmDialog';
@@ -159,6 +168,7 @@ interface TaskItemProps {
     isInCompletedSection?: boolean;
     hideStatusControl?: boolean;
     isKanbanView?: boolean;
+    showSuggestionChips?: boolean;
 }
 
 const TaskItem: React.FC<TaskItemProps> = ({
@@ -174,13 +184,14 @@ const TaskItem: React.FC<TaskItemProps> = ({
     isInCompletedSection = false,
     hideStatusControl = false,
     isKanbanView = false,
+    showSuggestionChips = false,
 }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const { t } = useTranslation();
     const [projectList, setProjectList] = useState<Project[]>(projects);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-    const { showErrorToast } = useToast();
+    const { showErrorToast, showUndoToast } = useToast();
     const [isAnimatingOut, setIsAnimatingOut] = useState(false);
 
     // Status menu state
@@ -311,6 +322,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     task.status !== 'archived' &&
                     task.status !== 3;
 
+                const previousStatus = task.status;
+
                 // If completing the task in upcoming view and not showing completed tasks, trigger animation
                 if (isCompletingTask && isUpcomingView && !showCompletedTasks) {
                     setIsAnimatingOut(true);
@@ -319,6 +332,29 @@ const TaskItem: React.FC<TaskItemProps> = ({
                 }
 
                 const response = await toggleTaskCompletion(task.uid!, task);
+
+                // Show undo toast on completion
+                if (isCompletingTask) {
+                    showUndoToast(
+                        <>Task <span className="font-semibold">&apos;{task.name}&apos;</span> completed.</>,
+                        async () => {
+                            try {
+                                const reverted = await updateTask(task.uid!, {
+                                    ...task,
+                                    status: previousStatus,
+                                    completed_at: null,
+                                });
+                                if (onTaskCompletionToggle) {
+                                    onTaskCompletionToggle(reverted);
+                                } else {
+                                    await onTaskUpdate({ ...task, ...reverted });
+                                }
+                            } catch {
+                                showErrorToast('Failed to undo task completion.');
+                            }
+                        }
+                    );
+                }
 
                 // Handle the updated task
                 if (onTaskCompletionToggle) {
@@ -430,6 +466,32 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     </div>
                 )}
             </div>
+
+            {/* Suggestion reason row — only in Suggested section */}
+            {showSuggestionChips && task._suggestionMeta && (() => {
+                const { reason, reasonLabel, reasonColor } = task._suggestionMeta;
+                const iconProps = { className: 'h-3.5 w-3.5 flex-shrink-0' };
+                const icon =
+                    reason === 'due'        ? <ExclamationTriangleIcon {...iconProps} /> :
+                    reason === 'high'       ? <BoltIcon {...iconProps} /> :
+                    reason === 'revive'     ? <ArrowPathIcon {...iconProps} /> :
+                    reason === 'aging_review' ? <ClockIcon {...iconProps} /> :
+                    reason === 'area_balance' ? <ScaleIcon {...iconProps} /> :
+                    reason === 'fits_now'   ? <SparklesIcon {...iconProps} /> :
+                                              <ArrowRightCircleIcon {...iconProps} />;
+                return (
+                    <div
+                        className="flex items-center gap-2 ml-4 px-3 py-1.5 rounded-b-lg text-[11px] select-none"
+                        style={{
+                            backgroundColor: `${reasonColor}12`,
+                            color: `${reasonColor}cc`,
+                        }}
+                    >
+                        {icon}
+                        <span className="font-light leading-tight">{reasonLabel}</span>
+                    </div>
+                );
+            })()}
 
             {/* Hide subtasks display for archived tasks */}
             {showSubtasks &&
