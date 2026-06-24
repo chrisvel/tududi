@@ -786,7 +786,9 @@ describe('MCP Tools Integration', () => {
 
                 expect(response.status).toBe(200);
                 const { content } = getToolContent(response);
-                expect(content.message).toBe('Inbox item deleted successfully');
+                expect(content.message).toBe(
+                    'Inbox item deleted successfully'
+                );
 
                 // Soft-deleted: no longer active
                 await item.reload();
@@ -839,9 +841,11 @@ describe('MCP Tools Integration', () => {
                     content: 'body',
                 });
 
-                const response = await callMcpTool(apiTokenValue, 'get_note', {
-                    uid: note.uid,
-                });
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'get_note',
+                    { uid: note.uid }
+                );
 
                 expect(response.status).toBe(200);
                 const { content } = getToolContent(response);
@@ -849,9 +853,11 @@ describe('MCP Tools Integration', () => {
             });
 
             it('should error for non-existent note', async () => {
-                const response = await callMcpTool(apiTokenValue, 'get_note', {
-                    uid: 'non-existent-uid',
-                });
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'get_note',
+                    { uid: 'non-existent-uid' }
+                );
 
                 const { isError } = getToolContent(response);
                 expect(isError).toBe(true);

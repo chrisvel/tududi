@@ -235,7 +235,9 @@ describe('MCP Controller', () => {
             await controller.listMcpTools({}, res);
 
             const result = res.json.mock.calls[0][0];
-            const tagCategory = result.tools.find((t) => t.category === 'Tags');
+            const tagCategory = result.tools.find(
+                (t) => t.category === 'Tags'
+            );
 
             expect(tagCategory).toBeDefined();
             expect(tagCategory.count).toBe(5);
