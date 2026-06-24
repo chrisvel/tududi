@@ -71,6 +71,12 @@ const App: React.FC = () => {
                 useStore.getState().userSettingsStore.setKanbanEnabled(
                     data.user.features?.kanban_enabled === true
                 );
+                useStore.getState().userSettingsStore.setHabitsEnabled(
+                    data.user.features?.habits_enabled !== false
+                );
+                useStore.getState().userSettingsStore.setCalendarEnabled(
+                    data.user.features?.calendar_enabled === true
+                );
             } else {
                 setCurrentUser(null);
                 setUserInStorage(null);

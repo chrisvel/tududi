@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Area } from '../entities/Area';
 import { Note } from '../entities/Note';
@@ -11,8 +11,8 @@ import SidebarHabits from './Sidebar/SidebarHabits';
 import SidebarProjects from './Sidebar/SidebarProjects';
 import SidebarTags from './Sidebar/SidebarTags';
 import SidebarViews from './Sidebar/SidebarViews';
-import { getFeatureFlags, FeatureFlags } from '../utils/featureFlags';
 import { KeyboardShortcutsConfig } from '../utils/keyboardShortcutsService';
+import { useStore } from '../store/useStore';
 
 interface SidebarProps {
     isSidebarOpen: boolean;
@@ -51,15 +51,9 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
     const navigate = useNavigate();
     const location = useLocation();
+    const habitsEnabled = useStore((state) => state.userSettingsStore.habitsEnabled);
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({
-        backups: false,
-        calendar: false,
-        caldav: false,
-        habits: false,
-        mcp: false,
-    });
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
@@ -71,15 +65,6 @@ const Sidebar: React.FC<SidebarProps> = ({
             setIsSidebarOpen(false);
         }
     };
-
-    useEffect(() => {
-        const fetchFlags = async () => {
-            const flags = await getFeatureFlags();
-            setFeatureFlags(flags);
-        };
-
-        fetchFlags();
-    }, []);
 
     return (
         <div
@@ -112,7 +97,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                             location={location}
                             isDarkMode={isDarkMode}
                         />
-                        {featureFlags.habits && (
+                        {habitsEnabled && (
                             <SidebarHabits
                                 handleNavClick={handleNavClick}
                                 location={location}

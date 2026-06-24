@@ -14,6 +14,8 @@ export interface Features {
     pomodoro_enabled: boolean;
     eisenhower_enabled: boolean;
     kanban_enabled: boolean;
+    habits_enabled: boolean;
+    calendar_enabled: boolean;
 }
 
 export interface NotificationPreferences {

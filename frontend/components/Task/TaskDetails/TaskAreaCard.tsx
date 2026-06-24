@@ -69,12 +69,10 @@ const TaskAreaCard: React.FC<TaskAreaCardProps> = ({
             <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 p-4">
                 <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2 min-w-0">
-                        {effectiveArea.color && (
-                            <span
-                                className="inline-block w-3 h-3 rounded-full flex-shrink-0"
-                                style={{ backgroundColor: effectiveArea.color }}
-                            />
-                        )}
+                        <span
+                            className="inline-block w-3 h-3 rounded-full flex-shrink-0 border border-gray-300 dark:border-gray-600"
+                            style={effectiveArea.color ? { backgroundColor: effectiveArea.color, borderColor: effectiveArea.color } : {}}
+                        />
                         <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
                             {effectiveArea.name}
                         </span>
@@ -130,12 +128,10 @@ const TaskAreaCard: React.FC<TaskAreaCardProps> = ({
                                         onClick={() => handleSelect(area)}
                                         className="w-full text-left text-sm px-3 py-1.5 rounded text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2"
                                     >
-                                        {area.color && (
-                                            <span
-                                                className="inline-block w-2.5 h-2.5 rounded-full flex-shrink-0"
-                                                style={{ backgroundColor: area.color }}
-                                            />
-                                        )}
+                                        <span
+                                            className="inline-block w-2.5 h-2.5 rounded-full flex-shrink-0 border border-gray-300 dark:border-gray-600"
+                                            style={area.color ? { backgroundColor: area.color, borderColor: area.color } : {}}
+                                        />
                                         {area.name}
                                     </button>
                                 ))
@@ -150,12 +146,10 @@ const TaskAreaCard: React.FC<TaskAreaCardProps> = ({
                             className="flex items-center gap-2 min-w-0 cursor-pointer flex-1"
                             onClick={() => !isInherited && setDropdownOpen(true)}
                         >
-                            {effectiveArea.color && (
-                                <span
-                                    className="inline-block w-3 h-3 rounded-full flex-shrink-0"
-                                    style={{ backgroundColor: effectiveArea.color }}
-                                />
-                            )}
+                            <span
+                                className="inline-block w-3 h-3 rounded-full flex-shrink-0 border border-gray-300 dark:border-gray-600"
+                                style={effectiveArea.color ? { backgroundColor: effectiveArea.color, borderColor: effectiveArea.color } : {}}
+                            />
                             <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
                                 {effectiveArea.name}
                             </span>

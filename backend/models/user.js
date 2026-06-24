@@ -136,6 +136,8 @@ module.exports = (sequelize) => {
                     pomodoro_enabled: true,
                     eisenhower_enabled: false,
                     kanban_enabled: false,
+                    habits_enabled: true,
+                    calendar_enabled: false,
                 },
             },
             today_settings: {

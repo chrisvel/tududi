@@ -4,10 +4,10 @@ import { useStore } from '../../store/useStore';
 import { Task } from '../../entities/Task';
 import HabitCard from './HabitCard';
 import {
-    PlusIcon,
     FireIcon,
     CheckCircleIcon,
     ChartBarIcon,
+    PlusIcon,
 } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 
@@ -87,9 +87,9 @@ const Habits: React.FC = () => {
                     </h2>
                     <button
                         onClick={handleCreateHabit}
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-sm transition-all"
                     >
-                        <PlusIcon className="w-5 h-5" />
+                        <PlusIcon className="w-4 h-4" />
                         {t('habits.new', 'New Habit')}
                     </button>
                 </div>
@@ -105,95 +105,68 @@ const Habits: React.FC = () => {
                     </div>
                 ) : (
                     <>
-                        {/* Dashboard */}
+                        {/* Overview */}
                         <div className="mb-8">
-                            <h2 className="text-xl font-semibold dark:text-white mb-4 flex items-center gap-2">
-                                <ChartBarIcon className="h-6 w-6" />
+                            <h3 className="text-sm font-semibold tracking-widest uppercase text-gray-400 dark:text-gray-500 mb-4">
                                 {t('habits.overview', 'Overview')}
-                            </h2>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                {/* Total Habits */}
-                                <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                                            {t(
-                                                'habits.totalHabits',
-                                                'Total Habits'
-                                            )}
-                                        </h3>
-                                        <FireIcon className="h-5 w-5 text-orange-500" />
+                            </h3>
+                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                                {[
+                                    {
+                                        label: t('habits.totalHabits', 'Total Habits'),
+                                        value: dashboardStats.totalHabits,
+                                        icon: <FireIcon className="h-4 w-4" />,
+                                        sub: null,
+                                    },
+                                    {
+                                        label: t('habits.activeStreaks', 'Active Streaks'),
+                                        value: dashboardStats.activeStreaks,
+                                        icon: <FireIcon className="h-4 w-4" />,
+                                        sub: `${dashboardStats.totalCurrentStreak} ${t('habits.days', 'days')} total`,
+                                    },
+                                    {
+                                        label: t('habits.bestStreak', 'Best Streak'),
+                                        value: dashboardStats.totalBestStreak,
+                                        icon: <ChartBarIcon className="h-4 w-4" />,
+                                        sub: t('habits.days', 'days'),
+                                    },
+                                    {
+                                        label: t('habits.totalCompletions', 'Total Completions'),
+                                        value: dashboardStats.totalCompletions,
+                                        icon: <CheckCircleIcon className="h-4 w-4" />,
+                                        sub: t('habits.allTime', 'all time'),
+                                    },
+                                ].map(({ label, value, icon, sub }) => (
+                                    <div
+                                        key={label}
+                                        className="bg-white dark:bg-gray-700 rounded-xl shadow-sm border border-gray-200 dark:border-gray-600 px-4 pt-4 pb-3"
+                                    >
+                                        <div className="flex items-center justify-between mb-3">
+                                            <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                                                {label}
+                                            </span>
+                                            <span className="text-gray-300 dark:text-gray-500">
+                                                {icon}
+                                            </span>
+                                        </div>
+                                        <p className="text-3xl font-semibold text-gray-800 dark:text-gray-100 leading-none">
+                                            {value}
+                                        </p>
+                                        {sub && (
+                                            <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
+                                                {sub}
+                                            </p>
+                                        )}
                                     </div>
-                                    <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                                        {dashboardStats.totalHabits}
-                                    </p>
-                                </div>
-
-                                {/* Active Streaks */}
-                                <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                                            {t(
-                                                'habits.activeStreaks',
-                                                'Active Streaks'
-                                            )}
-                                        </h3>
-                                        <FireIcon className="h-5 w-5 text-orange-500" />
-                                    </div>
-                                    <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                                        {dashboardStats.activeStreaks}
-                                    </p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                        {t('habits.total', 'Total')}:{' '}
-                                        {dashboardStats.totalCurrentStreak}{' '}
-                                        {t('habits.days', 'days')}
-                                    </p>
-                                </div>
-
-                                {/* Best Streak */}
-                                <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                                            {t(
-                                                'habits.bestStreak',
-                                                'Best Streak'
-                                            )}
-                                        </h3>
-                                        <FireIcon className="h-5 w-5 text-yellow-500" />
-                                    </div>
-                                    <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                                        {dashboardStats.totalBestStreak}
-                                    </p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                        {t('habits.days', 'days')}
-                                    </p>
-                                </div>
-
-                                {/* Total Completions */}
-                                <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                                            {t(
-                                                'habits.totalCompletions',
-                                                'Total Completions'
-                                            )}
-                                        </h3>
-                                        <CheckCircleIcon className="h-5 w-5 text-green-500" />
-                                    </div>
-                                    <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                                        {dashboardStats.totalCompletions}
-                                    </p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                        {t('habits.allTime', 'all time')}
-                                    </p>
-                                </div>
+                                ))}
                             </div>
                         </div>
 
                         {/* Habits Grid */}
                         <div>
-                            <h2 className="text-xl font-semibold dark:text-white mb-4">
+                            <h3 className="text-sm font-semibold tracking-widest uppercase text-gray-400 dark:text-gray-500 mb-4">
                                 {t('habits.yourHabits', 'Your Habits')}
-                            </h2>
+                            </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {habits.map((habit) => (
                                     <HabitCard
