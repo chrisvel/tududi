@@ -394,7 +394,7 @@ const ProjectInsightsPanel: React.FC<ProjectInsightsPanelProps> = ({
                     <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
                         {t(
                             'projects.noNextAction',
-                            'All clear—no outstanding tasks.'
+                            'All clear-no outstanding tasks.'
                         )}
                     </p>
                 )}

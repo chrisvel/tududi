@@ -199,7 +199,7 @@ const TasksToday: React.FC = () => {
     }, [metrics.tasks_completed_today, getTasksFromStore]);
 
     // Smart scoring: one-per-project candidate pool, priority-dominant score, reason chips.
-    // Use all store tasks minus tasks already shown in other sections — gives buildCandidatePool
+    // Use all store tasks minus tasks already shown in other sections - gives buildCandidatePool
     // the widest possible view of pending work across all active projects.
     const sortedSuggestedTasks = useMemo(() => {
         const excludedIds = new Set<number>();
@@ -1806,7 +1806,7 @@ const TasksToday: React.FC = () => {
                     <div className="mt-2 mb-6">
                         {isEmptyDay && (
                             <p className="text-sm text-gray-400 dark:text-gray-500 mb-3 italic">
-                                {t('tasks.noPlanYet', 'No plan yet — here are some ideas:')}
+                                {t('tasks.noPlanYet', 'No plan yet - here are some ideas:')}
                             </p>
                         )}
                         <div

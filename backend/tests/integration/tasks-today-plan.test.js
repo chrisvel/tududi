@@ -222,7 +222,7 @@ describe('Tasks Today Plan - Status-Based Filtering', () => {
             const yesterday = new Date();
             yesterday.setDate(yesterday.getDate() - 1);
 
-            // Planned task with future defer_until — should be excluded
+            // Planned task with future defer_until - should be excluded
             await Task.create({
                 name: 'Deferred Future Planned',
                 user_id: user.id,
@@ -230,7 +230,7 @@ describe('Tasks Today Plan - Status-Based Filtering', () => {
                 defer_until: tomorrow,
             });
 
-            // Planned task with past defer_until — should be included
+            // Planned task with past defer_until - should be included
             const pastDeferredTask = await Task.create({
                 name: 'Deferred Past Planned',
                 user_id: user.id,
@@ -238,7 +238,7 @@ describe('Tasks Today Plan - Status-Based Filtering', () => {
                 defer_until: yesterday,
             });
 
-            // Planned task with no defer_until — should be included
+            // Planned task with no defer_until - should be included
             const noDeferTask = await Task.create({
                 name: 'No Defer Planned',
                 user_id: user.id,

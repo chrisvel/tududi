@@ -195,21 +195,21 @@ describe('Task Metrics Overdue and Due Today Tasks', () => {
         const tomorrow = dayFromNow(1);
         const yesterday = dayFromNow(-1);
 
-        // Planned task deferred to tomorrow — should NOT be in today_plan
+        // Planned task deferred to tomorrow - should NOT be in today_plan
         await createTask({
             name: 'Deferred Future Planned',
             status: Task.STATUS.PLANNED,
             defer_until: tomorrow,
         });
 
-        // Planned task deferred to yesterday — should be in today_plan
+        // Planned task deferred to yesterday - should be in today_plan
         await createTask({
             name: 'Deferred Past Planned',
             status: Task.STATUS.PLANNED,
             defer_until: yesterday,
         });
 
-        // In-progress task deferred to tomorrow — should NOT be in tasks_in_progress
+        // In-progress task deferred to tomorrow - should NOT be in tasks_in_progress
         await createTask({
             name: 'Deferred Future In Progress',
             status: Task.STATUS.IN_PROGRESS,

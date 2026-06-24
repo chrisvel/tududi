@@ -168,7 +168,7 @@ const CalendarDayView: React.FC<CalendarDayViewProps> = ({
                                                     left: `calc(0.5rem + ${(100 / eventCount) * index}%)`,
                                                     width: `${eventCount > 1 ? 100 / eventCount - 2 : 100}%`,
                                                 }}
-                                                title={`${event.title} — ${format(event.start, 'HH:mm')} – ${format(event.end, 'HH:mm')}`}
+                                                title={`${event.title} - ${format(event.start, 'HH:mm')} – ${format(event.end, 'HH:mm')}`}
                                             >
                                                 <div className="font-semibold truncate">{event.title}</div>
                                                 <div className="text-[10px] opacity-75 mt-0.5">

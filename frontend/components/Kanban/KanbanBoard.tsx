@@ -376,7 +376,7 @@ const KanbanBoard: React.FC = () => {
                                         <p className={`text-xs py-3 text-center ${isDraggingActive ? 'text-gray-400 dark:text-gray-500' : 'text-gray-300 dark:text-gray-600'}`}>
                                             {isDraggingActive
                                                 ? t('tasks.kanban.dropHere', 'Drop here')
-                                                : '—'}
+                                                : '-'}
                                         </p>
                                     ) : (
                                         colTasks.map((task) => (

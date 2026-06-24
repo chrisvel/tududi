@@ -192,7 +192,7 @@ const EisenhowerMatrix: React.FC = () => {
         const task = tasks.find((t) => t.id === draggingTaskId);
         if (!task) return;
 
-        // Find the source quadrant — skip if dropping onto same quadrant
+        // Find the source quadrant - skip if dropping onto same quadrant
         const sourceKey = quadrants.find((q) => q.tasks.some((t) => t.id === draggingTaskId))?.key;
         if (sourceKey === targetKey) return;
 

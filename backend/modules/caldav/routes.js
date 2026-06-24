@@ -29,7 +29,7 @@ router.all('/.well-known/caldav', (req, res, next) => {
 });
 
 // iOS accountsd probes PROPFIND / and PROPFIND /principals/ during account setup and refresh.
-// Gate on PROPFIND only — running caldavAuth on GET / would send WWW-Authenticate: Basic
+// Gate on PROPFIND only - running caldavAuth on GET / would send WWW-Authenticate: Basic
 // and replace the web app login page with a browser Basic-Auth prompt.
 router.all('/', (req, res, next) => {
     if (req.method !== 'PROPFIND') return next();

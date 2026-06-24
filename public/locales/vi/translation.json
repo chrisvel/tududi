@@ -1056,7 +1056,7 @@
     "nextUp": "Hành động tốt nhất tiếp theo",
     "focusTask": "Nhiệm vụ có tác động lớn nhất",
     "focusHint": "Chuyển nhiệm vụ này sang đang thực hiện và hôm nay",
-    "noNextAction": "Tất cả rõ ràng—không có nhiệm vụ nào chưa hoàn thành."
+    "noNextAction": "Tất cả rõ ràng-không có nhiệm vụ nào chưa hoàn thành."
   },
   "projectItem": {
     "edit": "Chỉnh sửa",

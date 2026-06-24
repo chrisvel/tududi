@@ -50,7 +50,7 @@ describe('CalDAV Round-Trip Conversion', () => {
         const vtodoString = await serializeTaskToVTODO(originalTask);
         const parsedTask = await parseVTODOToTask(vtodoString);
 
-        // DUE/DTSTART are always emitted as VALUE=DATE — time is stripped
+        // DUE/DTSTART are always emitted as VALUE=DATE - time is stripped
         expect(parsedTask.due_date.toISOString()).toBe(
             '2026-06-04T00:00:00.000Z'
         );

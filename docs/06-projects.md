@@ -89,7 +89,7 @@ Area: "Personal"
 
 5. **Goal** (optional)
    - Links the project to a specific goal within its area
-   - Set via the Goal section (flag icon) in the project modal — area must be selected first
+   - Set via the Goal section (flag icon) in the project modal - area must be selected first
    - Stored as `goal_id`; set to `null` when "No goal" is selected
    - If the linked goal is deleted, `goal_id` is set to `null` automatically (SET NULL)
 

@@ -743,7 +743,7 @@ At year end, review each area:
 
 Clicking an area card navigates to `/area/:uid-slug`, the Area detail page. This is a two-column layout:
 
-**Left column — Goals spine:**
+**Left column - Goals spine:**
 - Lists active goals, each with their linked project cards underneath
 - A "Maintenance" bucket for projects flagged as maintenance work
 - An "Unlinked" bucket for projects not yet assigned to a goal
@@ -751,7 +751,7 @@ Clicking an area card navigates to `/area/:uid-slug`, the Area detail page. This
 - "Add goal" button to create goals inline
 - Warning banner if there are more than 5 active goals (scarcity nudge)
 
-**Right column — Tasks:**
+**Right column - Tasks:**
 - All tasks directly assigned to this area (not inside projects)
 - Split into active and completed sections
 

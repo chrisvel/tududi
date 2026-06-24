@@ -91,7 +91,7 @@ class TagsService {
 
         if (name !== undefined) {
             if (tag.tag_type === 'system') {
-                // Silently ignore name field for system tags — the form always sends it
+                // Silently ignore name field for system tags - the form always sends it
             } else {
                 const validatedName = validateTagName(name);
                 if (validatedName !== tag.name) {

@@ -21,7 +21,7 @@ Areas (life domains)
 - Have a time horizon: `season` or `year`
 - Have a status lifecycle: `active → achieved / paused / dropped`
 - Projects can be linked to a goal, flagged as maintenance, or left unlinked
-- Managed entirely from the Area detail page — no separate Goals page
+- Managed entirely from the Area detail page - no separate Goals page
 
 ---
 
@@ -50,7 +50,7 @@ active → dropped    (abandoned or no longer relevant)
 paused → active     (resuming)
 ```
 
-There is no enforced ordering — any status can move to any other.
+There is no enforced ordering - any status can move to any other.
 
 ### Creating a goal
 
@@ -87,19 +87,19 @@ Each project in an area can be in one of three states relative to goals:
 | State | `goal_id` | `is_maintenance` | Meaning |
 |-------|-----------|------------------|---------|
 | Linked to goal | set | false | Project is working toward a specific goal |
-| Maintenance | null | true | Project keeps something running — not goal-directed |
+| Maintenance | null | true | Project keeps something running - not goal-directed |
 | Unlinked | null | false | Project not yet assigned to a goal or maintenance |
 
 ### Linking a project to a goal
 
 From the Area detail page, unlinked projects show a **link…** button. Clicking it opens an inline picker:
 1. Select a goal from the dropdown (only active goals shown)
-2. Click **Link** to save — or click **Maintenance** to mark it as maintenance instead
+2. Click **Link** to save - or click **Maintenance** to mark it as maintenance instead
 3. The project moves out of the "Unlinked" bucket immediately
 
 From the Project modal (when editing a project):
 1. Expand the **Goal** section (flag icon in toolbar)
-2. An area must already be selected — goals are fetched for that area
+2. An area must already be selected - goals are fetched for that area
 3. Choose from: No goal / Maintenance / active goals / inactive goals
 4. Save the project
 
@@ -147,10 +147,10 @@ The Area detail page (`/area/:uid-slug`) is the primary interface for goals. It 
 ```
 
 **Buckets in the Goals column (in order):**
-1. **Active goals** — each with its project cards underneath
-2. **Maintenance** — projects flagged `is_maintenance = true`
-3. **Unlinked** — projects with no goal and no maintenance flag
-4. **Inactive goals** — collapsed under a `<details>` element; shows `achieved`, `paused`, `dropped` goals
+1. **Active goals** - each with its project cards underneath
+2. **Maintenance** - projects flagged `is_maintenance = true`
+3. **Unlinked** - projects with no goal and no maintenance flag
+4. **Inactive goals** - collapsed under a `<details>` element; shows `achieved`, `paused`, `dropped` goals
 
 **Project cards** show:
 - A left-colored border using the project's color
@@ -264,10 +264,10 @@ is_maintenance BOOLEAN  DEFAULT false
 
 ## Related Documentation
 
-- [Areas](07-areas.md) — Goals live inside areas; the Area detail page is the main goals UI
-- [Projects](06-projects.md) — Projects carry `goal_id` and `is_maintenance` fields
-- [Database & Migrations](database.md) — Migration workflow
-- [Backend Patterns](backend-patterns.md) — Module structure followed by the goals module
+- [Areas](07-areas.md) - Goals live inside areas; the Area detail page is the main goals UI
+- [Projects](06-projects.md) - Projects carry `goal_id` and `is_maintenance` fields
+- [Database & Migrations](database.md) - Migration workflow
+- [Backend Patterns](backend-patterns.md) - Module structure followed by the goals module
 
 ---
 

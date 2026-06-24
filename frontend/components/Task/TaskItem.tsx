@@ -467,7 +467,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                 )}
             </div>
 
-            {/* Suggestion reason row — only in Suggested section */}
+            {/* Suggestion reason row - only in Suggested section */}
             {showSuggestionChips && task._suggestionMeta && (() => {
                 const { reason, reasonLabel, reasonColor } = task._suggestionMeta;
                 const iconProps = { className: 'h-3.5 w-3.5 flex-shrink-0' };

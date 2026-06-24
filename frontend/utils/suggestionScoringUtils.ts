@@ -87,6 +87,24 @@ export function computeAreaStats(projects: Project[]): AreaStats[] {
     }));
 }
 
+const DUE_DATE_HORIZON_DAYS = 3;
+
+function isEligibleForSuggestion(task: Task): boolean {
+    const now = Date.now();
+
+    if (task.defer_until) {
+        const deferUntil = new Date(task.defer_until).getTime();
+        if (!Number.isNaN(deferUntil) && deferUntil > now) return false;
+    }
+
+    if (task.due_date) {
+        const due = new Date(task.due_date).getTime();
+        if (!Number.isNaN(due) && due > now + DUE_DATE_HORIZON_DAYS * 86_400_000) return false;
+    }
+
+    return true;
+}
+
 // Build one-per-project candidate pool: one next action per active project + all orphan tasks.
 // Uses the task's own embedded Project.status (from getTaskIncludeConfigLight) so we don't
 // depend on ID-matching against localProjects, which can silently fail.
@@ -95,7 +113,7 @@ export function buildCandidatePool(
     projects: Project[]
 ): Task[] {
     const pendingTasks = tasks.filter(
-        (t) => isPendingStatus(t.status) && !isSomedayTask(t)
+        (t) => isPendingStatus(t.status) && !isSomedayTask(t) && isEligibleForSuggestion(t)
     );
 
     // Group pending tasks by project_id, reading status from the embedded Project object
@@ -217,7 +235,7 @@ export function scoreCandidate(
         }
     }
 
-    // High priority chip (no score change — score already captured in priority_score)
+    // High priority chip (no score change - score already captured in priority_score)
     if (
         reason === 'next_step' &&
         (task.priority === 'high' || task.priority === 2)
@@ -225,7 +243,7 @@ export function scoreCandidate(
         reason = 'high';
     }
 
-    // Aging review chip — only for orphan tasks (no project), informational only, no score change.
+    // Aging review chip - only for orphan tasks (no project), informational only, no score change.
     // Project next-actions keep 'next_step' regardless of age: an old project task is a real
     // next action, not a deletion candidate.
     const refDate = task.updated_at ?? task.created_at;
@@ -273,11 +291,11 @@ export function scoreCandidate(
             reasonColor = FALLBACK_COLOR;
             break;
         case 'high':
-            reasonLabel = 'High priority — worth tackling now';
+            reasonLabel = 'High priority - worth tackling now';
             reasonColor = '#ef4444';
             break;
         case 'aging_review':
-            reasonLabel = `Hasn't been touched in ${agingDays} days — still relevant?`;
+            reasonLabel = `Hasn't been touched in ${agingDays} days - still relevant?`;
             reasonColor = FALLBACK_COLOR;
             break;
         case 'area_balance':
@@ -297,6 +315,11 @@ export function scoreCandidate(
     return { score, reason, reasonLabel, reasonColor };
 }
 
+function hasPriority(task: Task): boolean {
+    const p = task.priority;
+    return p === 'high' || p === 2 || p === 'medium' || p === 1 || p === 'low' || p === 0;
+}
+
 export function scoreAndSortSuggestedTasks(
     tasks: Task[],
     projects: Project[],
@@ -304,7 +327,6 @@ export function scoreAndSortSuggestedTasks(
 ): Array<Task & { _suggestionMeta: SuggestionMeta }> {
     const areaStats = computeAreaStats(projects);
     const candidates = buildCandidatePool(tasks, projects);
-
 
     const scored = candidates.map((task) => ({
         ...task,
@@ -326,5 +348,10 @@ export function scoreAndSortSuggestedTasks(
     // Cap at 1 and push to the end so project next-actions lead.
     const nonStale = deduped.filter((t) => t._suggestionMeta.reason !== 'aging_review');
     const stale = deduped.filter((t) => t._suggestionMeta.reason === 'aging_review');
-    return [...nonStale, ...stale.slice(0, 1)];
+
+    // Tasks with a priority set always rank before no-priority tasks.
+    const nonStaleWithPri = nonStale.filter((t) => hasPriority(t));
+    const nonStaleNoPri = nonStale.filter((t) => !hasPriority(t));
+
+    return [...nonStaleWithPri, ...nonStaleNoPri, ...stale.slice(0, 1)];
 }

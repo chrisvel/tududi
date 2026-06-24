@@ -826,7 +826,7 @@
     "nextUp": "次の最善の行動",
     "focusTask": "最も影響力のあるタスク",
     "focusHint": "このタスクを進行中と今日に移動",
-    "noNextAction": "すべて完了—未処理のタスクはありません。"
+    "noNextAction": "すべて完了-未処理のタスクはありません。"
   },
   "projectItem": {
     "edit": "編集",
