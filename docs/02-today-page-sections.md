@@ -102,7 +102,7 @@ Same as Planned section:
 
 ### What Appears Here
 
-Up to **10 tasks** automatically selected as good candidates for you to work on next.
+Tasks automatically selected as good candidates to work on next, ordered by relevance.
 
 ### When Suggestions Appear
 
@@ -113,44 +113,71 @@ Suggestions are only shown if:
 
 If none of these are true, no suggestions are shown.
 
-### Selection Rules
+### Eligibility Rules
 
 1. **Excludes tasks already visible elsewhere**
-   - Tasks in Planned, Overdue, Due Today, or In Progress don't appear
+   - Tasks in Planned, Overdue, Due Today, In Progress, or Completed don't appear
    - Avoids duplication across sections
 
-2. **Excludes "someday" tasks by default**
-   - Tasks tagged as "someday" are only included if there aren't enough other suggestions
-   - Prioritizes actionable tasks over future ideas
-
-3. **Excludes deferred tasks**
+2. **Excludes deferred tasks**
    - Tasks with "Defer Until" set to the future don't appear
-   - Only shows tasks available to work on now
+   - Only shows tasks available to work on right now
 
-4. **No subtasks or recurring templates**
-   - Only shows parent tasks you can directly work on
+3. **Excludes far-future tasks**
+   - Tasks with a due date more than 3 days away are not suggested
+   - Tasks due today, tomorrow, or the day after are still eligible (and get a boost)
 
-### How Tasks Are Selected
+4. **Excludes "someday" tasks by default**
+   - Tasks tagged "someday" are only included as a fallback if fewer than 6 suggestions exist
 
-The system picks suggestions in this order:
+5. **One task per project**
+   - The system picks the single best next action per active project
+   - Inactive (done/cancelled) projects are excluded entirely
 
-1. **High-priority tasks without a project** (unscheduled important work)
-2. **High-priority tasks with a project** (project-related important work)
-3. **Medium-priority tasks** (both with and without projects)
-4. **Tasks with upcoming due dates** (time-sensitive work)
-5. **"Someday" tasks** (only if fewer than 6 suggestions found above)
+6. **No subtasks or recurring templates**
+   - Only parent tasks you can directly act on are shown
 
-Within each priority level, tasks with earlier due dates are preferred.
+### Scoring
 
-### Limits
+Every eligible task receives a base score from its priority, then context boosts are added:
 
-- Maximum 10 suggestions shown
-- If you have fewer than 10 qualifying tasks, all are shown
+| Signal | Score added |
+|--------|-------------|
+| High priority | 100 base |
+| Medium priority | 60 base |
+| Low priority | 30 base |
+| No priority | 0 base |
+| Orphan task (no project) | +5 |
+| Due today or overdue | +15 |
+| Advances an active goal | +12 |
+| Matches your current context tag | +10 |
+| Revives a stalled project | +8 |
+| Helps rebalance an under-represented area (balance mode) | +15–30 |
+
+### Display Order
+
+After scoring, tasks are sorted into **9 ordered buckets**. Within each bucket, tasks are ranked by their score:
+
+| Position | Bucket |
+|----------|--------|
+| 1 | Project tasks — **High** priority |
+| 2 | Orphan tasks — **High** priority |
+| 3 | Project tasks — **Medium** priority |
+| 4 | Orphan tasks — **Medium** priority |
+| 5 | Project tasks — **Low** priority |
+| 6 | Orphan tasks — **Low** priority |
+| 7 | Project tasks — **No** priority |
+| 8 | Orphan tasks — **No** priority |
+| 9 | **Aging nudge** — one old null-priority orphan task untouched for 60+ days |
+
+**Orphan tasks** are tasks with no project assigned.
+**Aging nudge** only applies to null-priority orphan tasks that haven't been updated in 60+ days. Tasks with any explicit priority set (high/medium/low) are never demoted to the aging bucket regardless of age.
 
 ### User Control
 
 - Can be hidden entirely via Today Settings (hidden by default)
 - Collapse/expand state is remembered in your browser
+- Shows 5 tasks initially, with "Show more" to load additional suggestions
 
 ---
 
@@ -352,13 +379,14 @@ The Today page automatically refreshes:
 - [Database & Migrations](database.md) - Data model details
 
 **Technical Implementation Files:**
+- Backend eligibility & sorting: `/backend/modules/tasks/queries/metrics-computation.js`
 - Backend queries: `/backend/modules/tasks/queries/metrics-queries.js`
-- Suggested tasks logic: `/backend/modules/tasks/queries/metrics-computation.js`
+- Frontend scoring & ordering: `/frontend/utils/suggestionScoringUtils.ts`
 - Frontend component: `/frontend/components/Task/TasksToday.tsx`
 - Task model: `/backend/models/task.js`
 
 ---
 
-**Document Version:** 1.0.0
-**Last Updated:** 2026-03-14
+**Document Version:** 1.1.0
+**Last Updated:** 2026-06-25
 **Audience:** Developers, AI assistants, and end users

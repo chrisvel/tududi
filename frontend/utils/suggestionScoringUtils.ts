@@ -253,7 +253,7 @@ export function scoreCandidate(
             (Date.now() - new Date(refDate).getTime()) / 86_400_000
         );
     }
-    if (reason === 'next_step' && agingDays >= 60 && !task.project_id) {
+    if (reason === 'next_step' && agingDays >= 60 && !task.project_id && !hasPriority(task)) {
         reason = 'aging_review';
     }
 
@@ -320,6 +320,15 @@ function hasPriority(task: Task): boolean {
     return p === 'high' || p === 2 || p === 'medium' || p === 1 || p === 'low' || p === 0;
 }
 
+// Returns 0=high, 1=medium, 2=low, 3=none — used as the primary sort key.
+function priorityTier(task: Task): number {
+    const p = task.priority;
+    if (p === 'high'   || p === 2) return 0;
+    if (p === 'medium' || p === 1) return 1;
+    if (p === 'low'    || p === 0) return 2;
+    return 3;
+}
+
 export function scoreAndSortSuggestedTasks(
     tasks: Task[],
     projects: Project[],
@@ -344,14 +353,21 @@ export function scoreAndSortSuggestedTasks(
         return true;
     });
 
-    // Stale tasks are informational nudges, not priorities.
-    // Cap at 1 and push to the end so project next-actions lead.
+    // Stale tasks are informational nudges — cap at 1 and push to the end.
     const nonStale = deduped.filter((t) => t._suggestionMeta.reason !== 'aging_review');
-    const stale = deduped.filter((t) => t._suggestionMeta.reason === 'aging_review');
+    const stale    = deduped.filter((t) => t._suggestionMeta.reason === 'aging_review');
 
-    // Tasks with a priority set always rank before no-priority tasks.
-    const nonStaleWithPri = nonStale.filter((t) => hasPriority(t));
-    const nonStaleNoPri = nonStale.filter((t) => !hasPriority(t));
+    // Final ordering by composite bucket key: (priorityTier * 2) + isOrphan
+    // Bucket 0: project + high    Bucket 1: orphan + high
+    // Bucket 2: project + medium  Bucket 3: orphan + medium
+    // Bucket 4: project + low     Bucket 5: orphan + low
+    // Bucket 6: project + none    Bucket 7: orphan + none
+    nonStale.sort((a, b) => {
+        const aBucket = priorityTier(a) * 2 + (a.project_id != null ? 0 : 1);
+        const bBucket = priorityTier(b) * 2 + (b.project_id != null ? 0 : 1);
+        if (aBucket !== bBucket) return aBucket - bBucket;
+        return b._suggestionMeta.score - a._suggestionMeta.score;
+    });
 
-    return [...nonStaleWithPri, ...nonStaleNoPri, ...stale.slice(0, 1)];
+    return [...nonStale, ...stale.slice(0, 1)];
 }
