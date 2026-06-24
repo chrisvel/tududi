@@ -1,4 +1,5 @@
 import { Area } from './Area';
+import { Goal } from './Goal';
 import { Tag } from './Tag';
 import { PriorityType, Task } from './Task';
 import { Note } from './Note';
@@ -27,6 +28,10 @@ export interface Project {
     area?: Area;
     area_id?: number | null;
     area_uid?: string | null;
+    goal_id?: number | null;
+    goal?: Goal | null;
+    Goal?: Goal | null;
+    is_maintenance?: boolean;
     tags?: Tag[];
     priority?: PriorityType;
     tasks?: Task[];

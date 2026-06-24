@@ -8,6 +8,8 @@ const FEATURE_KEYS = [
     'pomodoro_enabled',
     'eisenhower_enabled',
     'kanban_enabled',
+    'habits_enabled',
+    'calendar_enabled',
 ];
 
 function sanitizeFeatures(raw) {

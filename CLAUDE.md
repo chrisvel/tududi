@@ -6,7 +6,7 @@ This documentation is designed for AI assistants and developers working with the
 
 ## Quick Start
 
-Tududi is a self-hosted task management system with hierarchical organization (Areas > Projects > Tasks), smart recurring tasks, and multi-channel integration.
+Tududi is a self-hosted task management system with hierarchical organization (Areas > Goals > Projects > Tasks), smart recurring tasks, and multi-channel integration.
 
 **Tech Stack:** React 18 + TypeScript, Express + Sequelize, SQLite
 
@@ -143,11 +143,11 @@ npm start  # Frontend on :8080, Backend on :3002
 
 17. **[Areas](docs/07-areas.md)**
     - Top-level organizational categories for life domains
-    - Simple structure with name and description
-    - Optional containers for grouping projects
+    - Contain Goals and Projects
+    - Area detail page: goals spine, project cards, tasks column
+    - Optional containers (projects can exist without areas)
     - Cascade behavior when deleting (orphans projects)
-    - Grid view with alphabetical sorting
-    - Integration with Projects page filtering and grouping
+    - Grid view with alphabetical sorting and optional color
 
 18. **[Views System](docs/08-views-system.md)**
     - Smart saved searches for tasks, notes, and projects
@@ -177,7 +177,14 @@ npm start  # Frontend on :8080, Backend on :3002
     - Hashtag parsing from inbox items
     - Tag input component with autocomplete
 
-21. **[Claude Memory & Preferences](docs/MEMORY.md)**
+21. **[Goals System](docs/12-goals-system.md)**
+    - Outcome-level intentions between Areas and Projects
+    - Season/year horizons and status lifecycle
+    - Linking projects to goals or marking as maintenance
+    - Area detail page layout and scarcity rule
+    - API endpoints and database schema
+
+22. **[Claude Memory & Preferences](docs/MEMORY.md)**
     - PR and commit message preferences
     - Testing preferences
     - Common patterns to remember
@@ -196,7 +203,7 @@ Tududi is a self-hosted task management system designed around hierarchical orga
 - [From Task to Table: How I Finally Got to the Korean Burger](https://medium.com/@chrisveleris/from-task-to-table-how-i-finally-got-to-the-korean-burger-01245a14d491)
 
 **Key Capabilities:**
-- **Hierarchical Organization:** Areas > Projects > Tasks > Subtasks
+- **Hierarchical Organization:** Areas > Goals > Projects > Tasks > Subtasks
 - **Smart Recurring Tasks:** Multiple patterns with parent-child tracking
 - **Multi-Language Support:** 24 languages via i18next
 - **Collaboration:** Project sharing with granular permissions

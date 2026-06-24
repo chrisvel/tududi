@@ -3,6 +3,7 @@ import { Project } from '../entities/Project';
 
 export type SuggestionReason =
     | 'due'
+    | 'goal'
     | 'fits_now'
     | 'revive'
     | 'high'
@@ -175,6 +176,15 @@ export function scoreCandidate(
         }
     }
 
+    // Goal nudge: task belongs to a project serving an active goal
+    if (reason === 'next_step') {
+        const goalObj = project ? ((project as any).Goal ?? (project as any).goal) : null;
+        if (goalObj && goalObj.status === 'active') {
+            score += 12;
+            reason = 'goal';
+        }
+    }
+
     // Context filter nudge
     if (opts.contextFilter && reason === 'next_step') {
         const hasContextTag = (task.tags ?? []).some(
@@ -244,6 +254,12 @@ export function scoreCandidate(
                 ? 'This task is overdue'
                 : 'This task is due today';
             reasonColor = isOverdue ? '#f97316' : '#ef4444';
+            break;
+        }
+        case 'goal': {
+            const goalObj = project ? ((project as any).Goal ?? (project as any).goal) : null;
+            reasonLabel = goalObj ? `Advances: ${goalObj.title}` : 'Advances an active goal';
+            reasonColor = areaColor;
             break;
         }
         case 'fits_now':

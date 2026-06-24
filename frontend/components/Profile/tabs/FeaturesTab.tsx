@@ -8,6 +8,10 @@ interface FeaturesTabProps {
     onToggleEisenhower: () => void;
     kanbanEnabled: boolean;
     onToggleKanban: () => void;
+    habitsEnabled: boolean;
+    onToggleHabits: () => void;
+    calendarEnabled: boolean;
+    onToggleCalendar: () => void;
     formData: ProfileFormData;
     onToggleAi: (field: keyof Features) => void;
 }
@@ -61,6 +65,10 @@ const FeaturesTab: React.FC<FeaturesTabProps> = ({
     onToggleEisenhower,
     kanbanEnabled,
     onToggleKanban,
+    habitsEnabled,
+    onToggleHabits,
+    calendarEnabled,
+    onToggleCalendar,
     formData,
     onToggleAi,
 }) => {
@@ -75,6 +83,15 @@ const FeaturesTab: React.FC<FeaturesTabProps> = ({
             </h3>
 
             <div className="space-y-0">
+                <ToggleRow
+                    label={t('sidebar.habits', 'Habits')}
+                    description={t(
+                        'profile.habitsDescription',
+                        'Enable the Habits section for tracking recurring behaviours and streaks.'
+                    )}
+                    value={habitsEnabled}
+                    onToggle={onToggleHabits}
+                />
                 <ToggleRow
                     label={t('sidebar.eisenhower', 'Eisenhower Matrix')}
                     description={t(
@@ -92,6 +109,15 @@ const FeaturesTab: React.FC<FeaturesTabProps> = ({
                     )}
                     value={kanbanEnabled}
                     onToggle={onToggleKanban}
+                />
+                <ToggleRow
+                    label={t('sidebar.calendar', 'Calendar')}
+                    description={t(
+                        'profile.calendarDescription',
+                        'Enable the Calendar view for visualising tasks by due date across day, week, and month.'
+                    )}
+                    value={calendarEnabled}
+                    onToggle={onToggleCalendar}
                 />
             </div>
 

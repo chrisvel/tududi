@@ -473,6 +473,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                 const iconProps = { className: 'h-3.5 w-3.5 flex-shrink-0' };
                 const icon =
                     reason === 'due'        ? <ExclamationTriangleIcon {...iconProps} /> :
+                    reason === 'goal'       ? <ArrowRightCircleIcon {...iconProps} /> :
                     reason === 'high'       ? <BoltIcon {...iconProps} /> :
                     reason === 'revive'     ? <ArrowPathIcon {...iconProps} /> :
                     reason === 'aging_review' ? <ClockIcon {...iconProps} /> :

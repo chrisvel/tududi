@@ -107,6 +107,10 @@ interface UserSettingsStore {
     setEisenhowerEnabled: (enabled: boolean) => void;
     kanbanEnabled: boolean;
     setKanbanEnabled: (enabled: boolean) => void;
+    habitsEnabled: boolean;
+    setHabitsEnabled: (enabled: boolean) => void;
+    calendarEnabled: boolean;
+    setCalendarEnabled: (enabled: boolean) => void;
 }
 
 interface HabitsStore {
@@ -842,6 +846,22 @@ export const useStore = create<StoreState>((set: any) => ({
                 userSettingsStore: {
                     ...state.userSettingsStore,
                     kanbanEnabled: enabled,
+                },
+            })),
+        habitsEnabled: true,
+        setHabitsEnabled: (enabled) =>
+            set((state) => ({
+                userSettingsStore: {
+                    ...state.userSettingsStore,
+                    habitsEnabled: enabled,
+                },
+            })),
+        calendarEnabled: false,
+        setCalendarEnabled: (enabled) =>
+            set((state) => ({
+                userSettingsStore: {
+                    ...state.userSettingsStore,
+                    calendarEnabled: enabled,
                 },
             })),
     },

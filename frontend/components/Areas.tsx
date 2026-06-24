@@ -1,7 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
+import {
+    EllipsisVerticalIcon,
+    FolderIcon,
+    FlagIcon,
+    CheckCircleIcon,
+} from '@heroicons/react/24/outline';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import AreaModal from './Area/AreaModal';
 import { useStore } from '../store/useStore';
@@ -185,32 +190,16 @@ const Areas: React.FC = () => {
                                               .replace(/^-|-$/g, '')}`
                                         : `/areas`
                                 }
-                                className={`rounded-lg shadow-md relative flex flex-col group hover:opacity-90 transition-opacity cursor-pointer ${
-                                    !area.color ? 'bg-gray-50 dark:bg-gray-900' : ''
+                                className={`rounded-xl shadow-sm relative flex flex-col group hover:shadow-md transition-shadow cursor-pointer ${
+                                    !area.color
+                                        ? 'bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600'
+                                        : ''
                                 } ${dropdownOpen === area.uid ? 'z-50' : ''}`}
-                                style={{
-                                    minHeight: '120px',
-                                    maxHeight: '120px',
-                                    ...(area.color ? { backgroundColor: area.color } : {}),
-                                }}
+                                style={area.color ? { backgroundColor: area.color } : {}}
                             >
-                                {/* Area Content - Centered */}
-                                <div className="p-4 flex-1 flex items-center justify-center">
-                                    <div className="text-center">
-                                        <h3 className={`text-lg font-light line-clamp-2 uppercase ${area.color ? 'text-white' : 'text-gray-900 dark:text-gray-100'}`}>
-                                            {area.name}
-                                        </h3>
-                                        {area.description && (
-                                            <p className={`text-xs mt-2 line-clamp-3 ${area.color ? 'text-white/80' : 'text-gray-600 dark:text-gray-400'}`}>
-                                                {area.description}
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* Three Dots Dropdown - Bottom Right */}
+                                {/* Three Dots Dropdown - Top Right */}
                                 <div
-                                    className="absolute bottom-2 right-2"
+                                    className="absolute top-2 right-2 z-10"
                                     ref={dropdownRef}
                                 >
                                     <button
@@ -221,19 +210,20 @@ const Areas: React.FC = () => {
                                                 dropdownOpen === area.uid
                                                     ? null
                                                     : area.uid!;
-
                                             if (newDropdownState !== null) {
                                                 justOpenedRef.current = true;
                                             }
                                             setDropdownOpen(newDropdownState);
                                         }}
-                                        className={`focus:outline-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${area.color ? 'text-white/70 hover:text-white' : 'text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-400'}`}
-                                        aria-label={t(
-                                            'areas.toggleDropdownMenu'
-                                        )}
+                                        className={`focus:outline-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1 rounded ${
+                                            area.color
+                                                ? 'text-white/60 hover:text-white hover:bg-white/20'
+                                                : 'text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                        }`}
+                                        aria-label={t('areas.toggleDropdownMenu')}
                                         data-testid={`area-dropdown-${area.uid}`}
                                     >
-                                        <EllipsisVerticalIcon className="h-5 w-5" />
+                                        <EllipsisVerticalIcon className="h-4 w-4" />
                                     </button>
 
                                     {dropdownOpen === area.uid && (
@@ -264,6 +254,84 @@ const Areas: React.FC = () => {
                                             </button>
                                         </div>
                                     )}
+                                </div>
+
+                                {/* Name + Description */}
+                                <div className="px-5 pt-6 pb-4 flex-1 flex items-center justify-center text-center">
+                                    <div>
+                                        <h3
+                                            className={`text-sm font-semibold tracking-widest uppercase line-clamp-2 ${
+                                                area.color
+                                                    ? 'text-white'
+                                                    : 'text-gray-800 dark:text-gray-100'
+                                            }`}
+                                        >
+                                            {area.name}
+                                        </h3>
+                                        {area.description && (
+                                            <p
+                                                className={`text-xs mt-2 line-clamp-2 leading-relaxed ${
+                                                    area.color
+                                                        ? 'text-white/70'
+                                                        : 'text-gray-500 dark:text-gray-400'
+                                                }`}
+                                            >
+                                                {area.description}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Stats Footer */}
+                                <div
+                                    className={`rounded-b-xl flex items-stretch divide-x ${
+                                        area.color
+                                            ? 'bg-black/20 divide-white/10'
+                                            : 'bg-gray-50 dark:bg-gray-800 border-t border-gray-100 dark:border-gray-600 divide-gray-200 dark:divide-gray-600'
+                                    }`}
+                                >
+                                    {[
+                                        {
+                                            icon: <FolderIcon className="h-3.5 w-3.5" />,
+                                            count: area.projects_count ?? 0,
+                                            label: t('areas.stats.projects', 'projects'),
+                                        },
+                                        {
+                                            icon: <FlagIcon className="h-3.5 w-3.5" />,
+                                            count: area.goals_count ?? 0,
+                                            label: t('areas.stats.goals', 'goals'),
+                                        },
+                                        {
+                                            icon: <CheckCircleIcon className="h-3.5 w-3.5" />,
+                                            count: area.tasks_count ?? 0,
+                                            label: t('areas.stats.tasks', 'tasks'),
+                                        },
+                                    ].map(({ icon, count, label }) => (
+                                        <div
+                                            key={label}
+                                            className="flex-1 flex flex-col items-center py-3 gap-1"
+                                        >
+                                            <span
+                                                className={`text-base font-semibold leading-none ${
+                                                    area.color
+                                                        ? 'text-white'
+                                                        : 'text-gray-700 dark:text-gray-200'
+                                                }`}
+                                            >
+                                                {count}
+                                            </span>
+                                            <span
+                                                className={`flex items-center gap-1 text-[10px] leading-none ${
+                                                    area.color
+                                                        ? 'text-white/55'
+                                                        : 'text-gray-400 dark:text-gray-500'
+                                                }`}
+                                            >
+                                                {icon}
+                                                {label}
+                                            </span>
+                                        </div>
+                                    ))}
                                 </div>
                             </Link>
                         ))}

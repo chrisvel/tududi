@@ -41,9 +41,7 @@ const Navbar: React.FC<NavbarProps> = ({
     const [pomodoroEnabled, setPomodoroEnabled] = useState(true); // Default to true
     const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({
         backups: false,
-        calendar: false,
         caldav: false,
-        habits: false,
         mcp: false,
     });
     const dropdownRef = useRef<HTMLDivElement>(null);
