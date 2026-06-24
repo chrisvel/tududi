@@ -1,6 +1,7 @@
 'use strict';
 
 const goalsRepository = require('./repository');
+const { Area } = require('../../models');
 const { NotFoundError, ValidationError } = require('../../shared/errors');
 
 class GoalsService {
@@ -25,6 +26,10 @@ class GoalsService {
         if (!area_id) {
             throw new ValidationError('Goal must belong to an area');
         }
+        const area = await Area.findOne({
+            where: { id: area_id, user_id: userId },
+        });
+        if (!area) throw new ValidationError('Area not found');
         return goalsRepository.create({
             user_id: userId,
             area_id,
@@ -43,7 +48,13 @@ class GoalsService {
         const { title, area_id, why, horizon, target_date, status } = data;
         const updates = {};
         if (title !== undefined) updates.title = title.trim();
-        if (area_id !== undefined) updates.area_id = area_id;
+        if (area_id !== undefined) {
+            const area = await Area.findOne({
+                where: { id: area_id, user_id: userId },
+            });
+            if (!area) throw new ValidationError('Area not found');
+            updates.area_id = area_id;
+        }
         if (why !== undefined) updates.why = why;
         if (horizon !== undefined) updates.horizon = horizon;
         if (target_date !== undefined)

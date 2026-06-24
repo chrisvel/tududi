@@ -2,6 +2,7 @@
 
 const { Op } = require('sequelize');
 const projectsRepository = require('./repository');
+const { Goal } = require('../../models');
 const { validateUid, validateName, formatDate } = require('./validation');
 const { NotFoundError, ValidationError } = require('../../shared/errors');
 const { validateTagName } = require('../tags/tagsService');
@@ -274,6 +275,13 @@ class ProjectsService {
         const tagsData = tags || Tags;
         const projectUid = generateUid();
 
+        if (goal_id) {
+            const goal = await Goal.findOne({
+                where: { id: goal_id, user_id: userId },
+            });
+            if (!goal) throw new ValidationError('Goal not found');
+        }
+
         const projectData = {
             uid: projectUid,
             name: validatedName,
@@ -344,9 +352,15 @@ class ProjectsService {
         if (description !== undefined) updateData.description = description;
         if (area_id !== undefined)
             updateData.area_id = area_id === '' ? null : area_id;
-        if (goal_id !== undefined)
-            updateData.goal_id =
-                goal_id === '' || goal_id === null ? null : goal_id;
+        if (goal_id !== undefined) {
+            if (goal_id !== '' && goal_id !== null) {
+                const goal = await Goal.findOne({
+                    where: { id: goal_id, user_id: userId },
+                });
+                if (!goal) throw new ValidationError('Goal not found');
+            }
+            updateData.goal_id = goal_id === '' || goal_id === null ? null : goal_id;
+        }
         if (is_maintenance !== undefined)
             updateData.is_maintenance = is_maintenance;
         if (pin_to_sidebar !== undefined)
