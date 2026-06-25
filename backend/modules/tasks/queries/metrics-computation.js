@@ -133,7 +133,8 @@ async function computeSuggestedTasks(
         }
         if (task.due_date) {
             const due = new Date(task.due_date).getTime();
-            if (!Number.isNaN(due) && due > now + DUE_DATE_HORIZON_MS) return false;
+            if (!Number.isNaN(due) && due > now + DUE_DATE_HORIZON_MS)
+                return false;
         }
         return true;
     });
