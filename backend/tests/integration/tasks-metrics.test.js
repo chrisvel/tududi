@@ -58,13 +58,13 @@ describe('Task Metrics Suggested Tasks', () => {
         await createTask({
             name: 'Medium Alpha',
             priority: 'medium',
-            due_date: dayFromNow(4),
+            due_date: dayFromNow(2),
             project_id: projectAlpha.id,
         });
         await createTask({
             name: 'Medium Beta',
             priority: 'medium',
-            due_date: dayFromNow(4),
+            due_date: dayFromNow(2),
             project_id: projectBeta.id,
         });
 
