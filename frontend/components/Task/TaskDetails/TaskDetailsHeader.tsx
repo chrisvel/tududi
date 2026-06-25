@@ -13,6 +13,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { Link } from 'react-router-dom';
 import { Task, PriorityType } from '../../../entities/Task';
+import BackButton from '../../Shared/BackButton';
 import { formatDateTime } from '../../../utils/dateUtils';
 import TaskStatusControl from '../TaskStatusControl';
 import { getStatusValue } from '../../../constants/taskStatus';
@@ -271,7 +272,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
         <div className="mb-6">
             <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 px-6 py-5">
                 <div className="flex items-center justify-between gap-4">
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0 overflow-hidden">
                         {isEditingTitle ? (
                             <input
                                 ref={titleInputRef}
@@ -580,6 +581,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                             </>
                         )}
                     </div>
+                    <BackButton className="flex-shrink-0 self-start" />
                 </div>
 
                 {/* Divider - Edge to edge */}
