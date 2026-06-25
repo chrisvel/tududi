@@ -1056,7 +1056,7 @@
     "nextUp": "下一个最佳行动",
     "focusTask": "最具影响力的任务",
     "focusHint": "将此任务移至进行中和今天",
-    "noNextAction": "一切正常——没有未完成的任务。"
+    "noNextAction": "一切正常--没有未完成的任务。"
   },
   "projectItem": {
     "edit": "编辑",

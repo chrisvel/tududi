@@ -143,7 +143,7 @@ app.use((req, res, next) => {
     })(req, res, next);
 });
 
-// RFC 9728 — Protected Resource Metadata (no auth required)
+// RFC 9728 - Protected Resource Metadata (no auth required)
 const oauthRoutes = require('./modules/oauth/routes');
 app.use(oauthRoutes);
 

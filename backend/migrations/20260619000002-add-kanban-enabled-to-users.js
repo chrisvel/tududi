@@ -33,6 +33,6 @@ module.exports = {
     },
 
     async down() {
-        // No rollback — removing a key from JSON is destructive and not needed
+        // No rollback - removing a key from JSON is destructive and not needed
     },
 };

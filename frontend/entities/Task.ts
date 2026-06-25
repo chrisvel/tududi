@@ -45,7 +45,7 @@ export interface Task {
     habit_best_streak?: number;
     habit_total_completions?: number;
     habit_last_completion_at?: string;
-    // Transient UI field set by suggestion scoring — never persisted or sent to server
+    // Transient UI field set by suggestion scoring - never persisted or sent to server
     _suggestionMeta?: {
         score: number;
         reason: 'area_balance' | 'due' | 'goal' | 'fits_now' | 'revive' | 'high' | 'aging_review' | 'next_step';

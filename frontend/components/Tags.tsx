@@ -176,7 +176,7 @@ const Tags: React.FC = () => {
                             <span className="font-medium text-gray-700 dark:text-gray-300">
                                 {t('tags.systemTag', 'System tags')}
                             </span>
-                            {' — '}
+                            {' - '}
                             {t('tags.systemTagDescription', 'Created automatically by the app. They power built-in features and cannot be renamed or deleted.')}
                         </div>
                     </div>
@@ -187,7 +187,7 @@ const Tags: React.FC = () => {
                             <span className="font-medium text-gray-700 dark:text-gray-300">
                                 {t('tags.userTag', 'User tags')}
                             </span>
-                            {' — '}
+                            {' - '}
                             {t('tags.userTagDescription', 'Your own tags for organising tasks, notes, and projects.')}
                         </div>
                     </div>

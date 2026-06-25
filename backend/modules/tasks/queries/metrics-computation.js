@@ -125,11 +125,18 @@ async function computeSuggestedTasks(
     }
 
     const now = Date.now();
+    const DUE_DATE_HORIZON_MS = 3 * 24 * 60 * 60 * 1000;
     const filteredTasks = combinedTasks.filter((task) => {
-        if (!task.defer_until) return true;
-        const deferUntil = new Date(task.defer_until).getTime();
-        if (Number.isNaN(deferUntil)) return true;
-        return deferUntil <= now;
+        if (task.defer_until) {
+            const deferUntil = new Date(task.defer_until).getTime();
+            if (!Number.isNaN(deferUntil) && deferUntil > now) return false;
+        }
+        if (task.due_date) {
+            const due = new Date(task.due_date).getTime();
+            if (!Number.isNaN(due) && due > now + DUE_DATE_HORIZON_MS)
+                return false;
+        }
+        return true;
     });
 
     filteredTasks.sort(multiCriteriaTaskSort);

@@ -1023,7 +1023,7 @@
     "nextUp": "Next best action",
     "focusTask": "Most impactful task",
     "focusHint": "Shifts this task to in progress and today",
-    "noNextAction": "All clear—no outstanding tasks.",
+    "noNextAction": "All clear-no outstanding tasks.",
     "filters": {
       "active": "Active",
       "inactive": "Inactive",
