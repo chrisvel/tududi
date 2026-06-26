@@ -137,6 +137,7 @@
     "zustand": "^5.0.3"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.106.0",
     "@dr.pogodin/csurf": "^1.16.9",
     "@modelcontextprotocol/sdk": "^1.0.0",
     "@playwright/test": "^1.57.0",

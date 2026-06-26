@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { TagIcon, FolderIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
 import { Tag } from '../../entities/Tag';
 import { Project } from '../../entities/Project';
 
@@ -21,6 +22,7 @@ const InboxSelectedChips: React.FC<InboxSelectedChipsProps> = ({
     onRemoveTag,
     onRemoveProject,
 }) => {
+    const { t } = useTranslation();
     const slugify = (text: string) =>
         text
             .toLowerCase()
@@ -57,7 +59,7 @@ const InboxSelectedChips: React.FC<InboxSelectedChipsProps> = ({
                     <button
                         onClick={() => onRemoveTag(tagName)}
                         className="h-3 w-3 text-blue-400 hover:text-red-500 transition-colors"
-                        title="Remove tag"
+                        title={t('inbox.removeTag')}
                     >
                         <XMarkIcon className="h-3 w-3" />
                     </button>
@@ -76,7 +78,7 @@ const InboxSelectedChips: React.FC<InboxSelectedChipsProps> = ({
                 <button
                     onClick={() => onRemoveTag(tagName)}
                     className="h-3 w-3 text-orange-400 hover:text-red-500 transition-colors"
-                    title="Remove tag"
+                    title={t('inbox.removeTag')}
                 >
                     <XMarkIcon className="h-3 w-3" />
                 </button>
@@ -107,7 +109,7 @@ const InboxSelectedChips: React.FC<InboxSelectedChipsProps> = ({
                     <button
                         onClick={() => onRemoveProject(projectName)}
                         className="h-3 w-3 text-green-400 hover:text-red-500 transition-colors"
-                        title="Remove project"
+                        title={t('inbox.removeProject')}
                     >
                         <XMarkIcon className="h-3 w-3" />
                     </button>
@@ -126,7 +128,7 @@ const InboxSelectedChips: React.FC<InboxSelectedChipsProps> = ({
                 <button
                     onClick={() => onRemoveProject(projectName)}
                     className="h-3 w-3 text-orange-400 hover:text-red-500 transition-colors"
-                    title="Remove project"
+                    title={t('inbox.removeProject')}
                 >
                     <XMarkIcon className="h-3 w-3" />
                 </button>

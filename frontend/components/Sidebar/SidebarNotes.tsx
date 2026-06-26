@@ -49,8 +49,8 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
                             openNoteModal(null);
                         }}
                         className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none"
-                        aria-label="Add Note"
-                        title="Add Note"
+                        aria-label={t('sidebar.addNoteAriaLabel')}
+                        title={t('sidebar.addNoteTitle')}
                         data-testid="add-note-button"
                     >
                         <PlusCircleIcon className="h-5 w-5" />

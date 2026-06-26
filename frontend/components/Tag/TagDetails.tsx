@@ -522,16 +522,16 @@ const TagDetails: React.FC = () => {
                                     ref={editButtonRef}
                                     type="button"
                                     className="px-1 py-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                                    aria-label="Edit tag"
-                                    title="Edit tag"
+                                    aria-label={t('tags.editTagAriaLabel', { tagName: tag?.name || '' })}
+                                    title={t('tags.editTagTitle', { tagName: tag?.name || '' })}
                                 >
                                     <PencilSquareIcon className="h-5 w-5" />
                                 </button>
                                 <button
                                     onClick={() => setIsConfirmDialogOpen(true)}
                                     className="px-1 py-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
-                                    aria-label="Delete tag"
-                                    title="Delete tag"
+                                    aria-label={t('tags.deleteTagAriaLabel', { tagName: tag?.name || '' })}
+                                    title={t('tags.deleteTagTitle', { tagName: tag?.name || '' })}
                                 >
                                     <TrashIcon className="h-5 w-5" />
                                 </button>

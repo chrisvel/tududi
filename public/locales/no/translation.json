@@ -79,7 +79,8 @@
     "showNextTaskSuggestion": "Neste Oppgaveforslag",
     "showSuggestions": "Vis Forslagte",
     "showDueToday": "Vis Oppgaver Forfaller I Dag",
-    "showCompleted": "Vis Fullførte Oppgaver"
+    "showCompleted": "Vis Fullførte Oppgaver",
+    "showAiAssistant": "AI Daglig Sammendrag"
   },
   "dashboard": {
     "overview": "Oversikt",
@@ -483,7 +484,27 @@
       "serverSettings": "Serverinnstillinger",
       "syncSettings": "Synkroniseringsinnstillinger",
       "setupSuccess": "Kalender konfigurert vellykket!",
-      "setupFailed": "Feilet å opprette kalender"
+      "setupFailed": "Feilet å opprette kalender",
+      "authType": "Autentiseringstype",
+      "basicAuth": "Grunnleggende autentisering",
+      "bearerAuth": "Bearer Token",
+      "testDescription": "Test forbindelsen til CalDAV-serveren din før du fortsetter.",
+      "server": "Server",
+      "path": "Sti",
+      "testConnection": "Test forbindelse",
+      "testing": "Tester...",
+      "connectionSuccess": "Tilkobling vellykket!",
+      "connectionFailed": "Kunne ikke koble til server",
+      "testRequired": "Du må teste forbindelsen før du fortsetter",
+      "syncDirection": "Synkroniseringsretning",
+      "bidirectional": "Toveis (synkroniser begge veier)",
+      "pullOnly": "Bare hent (fra server til Tududi)",
+      "pushOnly": "Bare send (fra Tududi til server)",
+      "syncInterval": "Synkroniseringsintervall (minutter)",
+      "syncIntervalHelp": "Hvor ofte skal det synkroniseres automatisk (5-1440 minutter)",
+      "conflictPolicy": "Konfliktløsning",
+      "manual": "Spør meg (manuell løsning)",
+      "lastWriteWins": "Sist endret vinner (automatisk)"
     },
     "conflictResolver": {
       "title": "Løs synkroniseringskonflikter",
@@ -1536,5 +1557,29 @@
     "done_desc": "Ferdig og avsluttet",
     "cancelled": "Avbrutt",
     "cancelled_desc": "Vil ikke bli fullført"
+  },
+  "aiAssistant": {
+    "title": "AI Daglig Sammendrag",
+    "generate": "Generer Sammendrag",
+    "regenerate": "Regenerer",
+    "generating": "Genererer…",
+    "emptyState": "Klikk \"Generer Sammendrag\" for å få en personlig daglig plan basert på oppgavene, prosjektene og målene dine.",
+    "generatedAt": "Generert kl. {{time}}",
+    "focusForToday": "Fokus for I Dag",
+    "priorityActions": "Prioriterte Handlinger",
+    "goalAlignment": "Måljustering",
+    "keyInsights": "Nøkkelinnsikter",
+    "watchOut": "Se opp",
+    "errorDefault": "Kunne ikke generere daglig sammendrag. Vennligst prøv igjen.",
+    "taskInsightsTitle": "AI Innsikter",
+    "taskInsightsEmpty": "Klikk \"Generer\" for å få AI-forslag om denne oppgaven.",
+    "taskInsight": "Om denne oppgaven",
+    "taskNextStep": "Neste steg",
+    "taskBreakdown": "Hvordan nærme seg det",
+    "suggestedLinks": "Foreslåtte lenker",
+    "lowContextTitle": "Ikke nok kontekst for et godt forslag",
+    "lowContextHint": "Legg til en beskrivelse, notater, tagger eller tildel et prosjekt for å få bedre innsikt. Du kan fortsatt generere nedenfor.",
+    "generateAnyway": "Generer uansett",
+    "show": "Vis"
   }
 }

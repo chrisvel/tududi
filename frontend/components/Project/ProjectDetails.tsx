@@ -12,8 +12,12 @@ import {
     XCircleIcon,
     ChartBarIcon,
     CheckIcon,
+    SparklesIcon,
 } from '@heroicons/react/24/outline';
 import { useToast } from '../Shared/ToastContext';
+import ProjectAIInsights, {
+    ProjectAIInsightsHandle,
+} from '../AI/ProjectAIInsights';
 import ProjectModal from './ProjectModal';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import NoteModal from '../Note/NoteModal';
@@ -79,6 +83,8 @@ const ProjectDetails: React.FC = () => {
     const [orderBy, setOrderBy] = useState<string>('status:inProgressFirst');
     const [taskSearchQuery, setTaskSearchQuery] = useState('');
     const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+    const [aiInsightsActive, setAiInsightsActive] = useState(false);
+    const aiInsightsRef = useRef<ProjectAIInsightsHandle>(null);
     const {
         isOpen: isModalOpen,
         openModal,
@@ -931,6 +937,33 @@ const ProjectDetails: React.FC = () => {
                                     </button>
                                     <button
                                         onClick={() =>
+                                            aiInsightsRef.current?.activate()
+                                        }
+                                        className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-0 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-inset rounded-lg p-1.5 sm:p-2 ${
+                                            aiInsightsActive
+                                                ? 'bg-indigo-100 dark:bg-indigo-900/40'
+                                                : 'bg-gray-100 dark:bg-gray-800 hover:bg-indigo-50 dark:hover:bg-indigo-900/30'
+                                        }`}
+                                        aria-pressed={aiInsightsActive}
+                                        aria-label={t(
+                                            'aiAssistant.projectInsightsTitle',
+                                            'AI Insights'
+                                        )}
+                                        title={t(
+                                            'aiAssistant.projectInsightsTitle',
+                                            'AI Insights'
+                                        )}
+                                    >
+                                        <SparklesIcon
+                                            className={`h-4 w-4 sm:h-5 sm:w-5 ${
+                                                aiInsightsActive
+                                                    ? 'text-indigo-600 dark:text-indigo-300'
+                                                    : 'text-gray-600 dark:text-gray-200'
+                                            }`}
+                                        />
+                                    </button>
+                                    <button
+                                        onClick={() =>
                                             setIsSearchExpanded((v) => !v)
                                         }
                                         className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-0 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset rounded-lg p-1.5 sm:p-2 ${
@@ -972,6 +1005,15 @@ const ProjectDetails: React.FC = () => {
 
                     {activeTab === 'tasks' && (
                         <>
+                            <div className="mb-6">
+                                <ProjectAIInsights
+                                    ref={aiInsightsRef}
+                                    project={project}
+                                    taskStats={taskStats}
+                                    onActiveChange={setAiInsightsActive}
+                                />
+                            </div>
+
                             <div
                                 className={`transition-all duration-300 ease-in-out ${
                                     isSearchExpanded

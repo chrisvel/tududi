@@ -209,8 +209,8 @@ const Navbar: React.FC<NavbarProps> = ({
                             setIsMobileSearchOpen(!isMobileSearchOpen)
                         }
                         className="md:hidden flex items-center bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-full focus:outline-none transition-all duration-200 p-2"
-                        aria-label="Toggle Search"
-                        title="Search"
+                        aria-label={t('navigation.toggleSearch')}
+                        title={t('navigation.search')}
                     >
                         <MagnifyingGlassIcon className="h-5 w-5" />
                     </button>
@@ -218,8 +218,8 @@ const Navbar: React.FC<NavbarProps> = ({
                     <button
                         onClick={() => navigate('/inbox')}
                         className="flex items-center bg-blue-500 hover:bg-blue-600 text-white rounded-full focus:outline-none transition-all duration-200 px-2 py-2 md:px-3 md:py-2"
-                        aria-label="Quick Inbox Capture"
-                        title="Quick Inbox Capture"
+                        aria-label={t('navigation.quickInboxCapture')}
+                        title={t('navigation.quickInboxCapture')}
                     >
                         <BoltIcon className="h-4 w-4 text-white" />
                         <InboxIcon className="hidden md:inline-block ml-1.5 h-4 w-4 text-blue-200" />
@@ -232,7 +232,7 @@ const Navbar: React.FC<NavbarProps> = ({
                         <button
                             onClick={toggleDropdown}
                             className="flex items-center focus:outline-none"
-                            aria-label="User Menu"
+                            aria-label={t('navigation.userMenu')}
                         >
                             {currentUser?.avatar_image ? (
                                 <img

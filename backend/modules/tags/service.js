@@ -124,6 +124,7 @@ class TagsService {
 
         return {
             id: tag.id,
+            uid: tag.uid,
             name: updates.name ?? tag.name,
             pinned: updates.pinned !== undefined ? updates.pinned : tag.pinned,
             color: updates.color !== undefined ? updates.color : tag.color,

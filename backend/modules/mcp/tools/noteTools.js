@@ -26,8 +26,13 @@ function registerNoteTools(server, context, tools) {
             },
         },
         handler: async (params) => {
+            const orderBy =
+                params.order_by && params.order_by.includes(':')
+                    ? params.order_by
+                    : `${params.order_by || 'title'}:asc`;
+
             const notes = await notesService.getAll(context.userId, {
-                orderBy: params.order_by,
+                orderBy,
                 tagFilter: params.tag,
             });
 
@@ -64,7 +69,7 @@ function registerNoteTools(server, context, tools) {
             const note = await notesService.getByUid(params.uid);
 
             if (note.user_id !== context.userId) {
-                throw new Error('Access denied');
+                throw new Error('Note not found.');
             }
 
             return {
@@ -163,7 +168,7 @@ function registerNoteTools(server, context, tools) {
         handler: async (params) => {
             const existing = await notesService.getByUid(params.uid);
             if (existing.user_id !== context.userId) {
-                throw new Error('Access denied');
+                throw new Error('Note not found.');
             }
 
             const note = await notesService.update(context.userId, params.uid, {
@@ -206,7 +211,7 @@ function registerNoteTools(server, context, tools) {
         handler: async (params) => {
             const existing = await notesService.getByUid(params.uid);
             if (existing.user_id !== context.userId) {
-                throw new Error('Access denied');
+                throw new Error('Note not found.');
             }
 
             await notesService.delete(params.uid);

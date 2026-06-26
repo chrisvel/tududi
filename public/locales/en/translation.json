@@ -25,7 +25,12 @@
     "discardChanges": "Discard changes?",
     "discardChangesMessage": "You have unsaved changes. Are you sure you want to discard them?",
     "no": "No, keep editing",
-    "yesDiscard": "Yes, discard"
+    "yesDiscard": "Yes, discard",
+    "preview": "Preview",
+    "download": "Download",
+    "exitFocusMode": "Exit focus mode",
+    "searchTimezones": "Search timezones...",
+    "dismiss": "Dismiss"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -57,7 +62,10 @@
     "eisenhower": "Eisenhower Matrix",
     "kanban": "Kanban Board",
     "unpinView": "Unpin view",
-    "pinView": "Pin view"
+    "pinView": "Pin view",
+    "addHabitAriaLabel": "Add Habit",
+    "addHabitTitle": "Add Habit",
+    "toggleDarkMode": "Toggle Dark Mode"
   },
   "navigation": {
     "home": "Home",
@@ -67,7 +75,11 @@
     "settings": "Settings",
     "backupRestore": "Backup & Restore",
     "about": "About",
-    "logout": "Logout"
+    "logout": "Logout",
+    "toggleSearch": "Toggle Search",
+    "quickInboxCapture": "Quick Inbox Capture",
+    "userMenu": "User Menu",
+    "search": "Search"
   },
   "settings": {
     "todayPageSettings": "Today Page Settings",
@@ -770,7 +782,11 @@
     "projectSaveFailed": "Failed to save project.",
     "projectImageTooLarge": "Image is too large. Please choose a file under 10MB.",
     "projectImageUpload": "Failed to upload image. Please try a smaller file or a different format.",
-    "bannerSaveFailed": "Failed to save banner"
+    "bannerSaveFailed": "Failed to save banner",
+    "loginFailed": "Login failed. Please try again.",
+    "generalError": "An error occurred. Please try again.",
+    "viewNameRequired": "View name is required",
+    "viewSaveFailed": "Failed to save view. Please try again."
   },
   "inbox": {
     "title": "Inbox",
@@ -803,7 +819,9 @@
     "unprocessedItems": "You have {{count}} item(s) in your inbox",
     "processNow": "Process now",
     "deleteConfirmTitle": "Delete Item",
-    "deleteConfirmMessage": "Are you sure you want to delete this item from your inbox? This action cannot be undone."
+    "deleteConfirmMessage": "Are you sure you want to delete this item from your inbox? This action cannot be undone.",
+    "removeTag": "Remove tag",
+    "removeProject": "Remove project"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1091,7 +1109,13 @@
     "deleteNoteAriaLabel": "Delete note {{noteTitle}}",
     "deleteNoteTitle": "Delete note {{noteTitle}}",
     "editNoteAriaLabel": "Edit note {{noteTitle}}",
-    "editNoteTitle": "Edit note {{noteTitle}}"
+    "editNoteTitle": "Edit note {{noteTitle}}",
+    "titlePlaceholder": "Note title...",
+    "contentPlaceholder": "Write your note content here... (Markdown supported)",
+    "focusMode": "Focus mode",
+    "noteOptions": "Note options",
+    "clickToEdit": "Click to edit",
+    "contentPlaceholderFocus": "Write your note... (Markdown supported)"
   },
   "tags": {
     "loading": "Loading tags...",
@@ -1388,7 +1412,12 @@
     "recurring": "Recurring",
     "noCriteriaSet": "No specific criteria set",
     "priorityLabel": "Priority:",
-    "dueLabel": "Due:"
+    "dueLabel": "Due:",
+    "saveAsSmartView": "Save as Smart View",
+    "viewNamePlaceholder": "Enter view name",
+    "viewNameLabel": "View Name",
+    "viewWillSave": "This view will save:",
+    "saveView": "Save View"
   },
   "search": {
     "placeholder": "Search tasks, projects, notes...",
@@ -1522,5 +1551,28 @@
       "title": "Note:",
       "message": "Email and Push notifications are coming soon. In-app and Telegram notifications are currently available."
     }
+  },
+  "aiAssistant": {
+    "taskInsightsTitle": "AI Insights",
+    "projectInsightsTitle": "AI Insights",
+    "taskInsight": "About this task",
+    "taskNextStep": "Next step",
+    "taskBreakdown": "How to approach it",
+    "projectInsight": "About this project",
+    "projectNextAction": "Next action",
+    "projectHealth": "Project health",
+    "watchOut": "Watch out",
+    "suggestedLinks": "Suggested links",
+    "generate": "Generate Brief",
+    "regenerate": "Regenerate",
+    "generating": "Generating...",
+    "errorDefault": "Failed to generate insights. Please try again.",
+    "lowContextTitle": "Not enough context for a great suggestion",
+    "lowContextHint": "Add a description, notes, tags, or assign a project to get better insights. You can still generate below.",
+    "generateAnyway": "Generate anyway",
+    "statTotal": "Total",
+    "statDone": "Done",
+    "statActive": "Active",
+    "statOverdue": "Overdue"
   }
 }
