@@ -8,6 +8,7 @@ const {
     Project,
     Area,
     Tag,
+    Note,
     InboxItem,
 } = require('../../../models');
 const { createTestUser } = require('../../helpers/testUtils');
@@ -577,6 +578,58 @@ describe('MCP Tools Integration', () => {
                 expect(jsonRpc.result.isError).toBe(true);
             });
         });
+
+        describe('get_project', () => {
+            it('should return a project by UID', async () => {
+                const project = await Project.create({
+                    user_id: user.id,
+                    name: 'Fetchable Project',
+                    status: 'planned',
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'get_project',
+                    { uid: project.uid }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.project.name).toBe('Fetchable Project');
+                expect(content.project.uid).toBe(project.uid);
+            });
+
+            it('should error for non-existent project', async () => {
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'get_project',
+                    { uid: 'non-existent-uid' }
+                );
+
+                const { isError } = getToolContent(response);
+                expect(isError).toBe(true);
+            });
+        });
+
+        describe('delete_project', () => {
+            it('should delete a project by UID', async () => {
+                const project = await Project.create({
+                    user_id: user.id,
+                    name: 'Doomed Project',
+                    status: 'not_started',
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'delete_project',
+                    { uid: project.uid }
+                );
+
+                expect(response.status).toBe(200);
+                const deleted = await Project.findByPk(project.id);
+                expect(deleted).toBeNull();
+            });
+        });
     });
 
     describe('Inbox Tools', () => {
@@ -640,6 +693,250 @@ describe('MCP Tools Integration', () => {
                 expect(response.status).toBe(200);
                 const { content } = getToolContent(response);
                 expect(content.item.source).toBe('custom-app');
+            });
+        });
+
+        describe('get_inbox_item', () => {
+            it('should return an inbox item by UID', async () => {
+                const item = await InboxItem.create({
+                    user_id: user.id,
+                    content: 'Fetch me',
+                    source: 'mcp',
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'get_inbox_item',
+                    { uid: item.uid }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.item.content).toBe('Fetch me');
+            });
+
+            it('should error for non-existent item', async () => {
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'get_inbox_item',
+                    { uid: 'non-existent-uid' }
+                );
+
+                const { isError } = getToolContent(response);
+                expect(isError).toBe(true);
+            });
+        });
+
+        describe('update_inbox_item', () => {
+            it('should update inbox item content', async () => {
+                const item = await InboxItem.create({
+                    user_id: user.id,
+                    content: 'Original',
+                    source: 'mcp',
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'update_inbox_item',
+                    { uid: item.uid, content: 'Edited' }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.item.content).toBe('Edited');
+
+                await item.reload();
+                expect(item.content).toBe('Edited');
+            });
+        });
+
+        describe('process_inbox_item', () => {
+            it('should mark an inbox item as processed', async () => {
+                const item = await InboxItem.create({
+                    user_id: user.id,
+                    content: 'To process',
+                    source: 'mcp',
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'process_inbox_item',
+                    { uid: item.uid }
+                );
+
+                expect(response.status).toBe(200);
+                await item.reload();
+                expect(item.status).toBe('processed');
+            });
+        });
+
+        describe('delete_inbox_item', () => {
+            it('should delete an inbox item', async () => {
+                const item = await InboxItem.create({
+                    user_id: user.id,
+                    content: 'To delete',
+                    source: 'mcp',
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'delete_inbox_item',
+                    { uid: item.uid }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.message).toBe('Inbox item deleted successfully');
+
+                // Soft-deleted: no longer active
+                await item.reload();
+                expect(item.status).toBe('deleted');
+            });
+        });
+    });
+
+    describe('Note Tools', () => {
+        describe('list_notes', () => {
+            it('should return empty list when no notes exist', async () => {
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'list_notes',
+                    {}
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.count).toBe(0);
+            });
+
+            it('should return user notes', async () => {
+                await Note.create({
+                    user_id: user.id,
+                    title: 'My Note',
+                    content: 'Some content',
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'list_notes',
+                    {}
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.count).toBeGreaterThanOrEqual(1);
+                expect(content.notes.some((n) => n.title === 'My Note')).toBe(
+                    true
+                );
+            });
+        });
+
+        describe('get_note', () => {
+            it('should return a note by UID', async () => {
+                const note = await Note.create({
+                    user_id: user.id,
+                    title: 'Fetchable Note',
+                    content: 'body',
+                });
+
+                const response = await callMcpTool(apiTokenValue, 'get_note', {
+                    uid: note.uid,
+                });
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.note.title).toBe('Fetchable Note');
+            });
+
+            it('should error for non-existent note', async () => {
+                const response = await callMcpTool(apiTokenValue, 'get_note', {
+                    uid: 'non-existent-uid',
+                });
+
+                const { isError } = getToolContent(response);
+                expect(isError).toBe(true);
+            });
+        });
+
+        describe('create_note', () => {
+            it('should create a new note', async () => {
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'create_note',
+                    { title: 'Created Note', content: 'Hello' }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.message).toBe('Note created successfully');
+                expect(content.note.title).toBe('Created Note');
+
+                const created = await Note.findOne({
+                    where: { user_id: user.id, title: 'Created Note' },
+                });
+                expect(created).not.toBeNull();
+            });
+
+            it('should create a note with tags', async () => {
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'create_note',
+                    { title: 'Tagged Note', tags: ['ideas'] }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.note.Tags.some((t) => t.name === 'ideas')).toBe(
+                    true
+                );
+            });
+        });
+
+        describe('update_note', () => {
+            it('should update a note title and content', async () => {
+                const note = await Note.create({
+                    user_id: user.id,
+                    title: 'Old Title',
+                    content: 'old',
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'update_note',
+                    {
+                        uid: note.uid,
+                        title: 'New Title',
+                        content: 'new',
+                    }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.note.title).toBe('New Title');
+
+                await note.reload();
+                expect(note.title).toBe('New Title');
+                expect(note.content).toBe('new');
+            });
+        });
+
+        describe('delete_note', () => {
+            it('should delete a note', async () => {
+                const note = await Note.create({
+                    user_id: user.id,
+                    title: 'To Delete',
+                    content: 'bye',
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'delete_note',
+                    { uid: note.uid }
+                );
+
+                expect(response.status).toBe(200);
+                const deleted = await Note.findByPk(note.id);
+                expect(deleted).toBeNull();
             });
         });
     });
@@ -712,6 +1009,120 @@ describe('MCP Tools Integration', () => {
                 expect(content.tags.some((t) => t.name === 'urgent')).toBe(
                     true
                 );
+            });
+        });
+
+        describe('get_tag', () => {
+            it('should return a tag by uid', async () => {
+                const tag = await Tag.create({
+                    user_id: user.id,
+                    name: 'focus',
+                });
+
+                const response = await callMcpTool(apiTokenValue, 'get_tag', {
+                    uid: tag.uid,
+                });
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.tag.name).toBe('focus');
+            });
+
+            it('should return a tag by name', async () => {
+                await Tag.create({
+                    user_id: user.id,
+                    name: 'reading',
+                });
+
+                const response = await callMcpTool(apiTokenValue, 'get_tag', {
+                    name: 'reading',
+                });
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.tag.name).toBe('reading');
+            });
+
+            it('should error when tag does not exist', async () => {
+                const response = await callMcpTool(apiTokenValue, 'get_tag', {
+                    uid: 'nonexistent',
+                });
+
+                const { isError } = getToolContent(response);
+                expect(isError).toBe(true);
+            });
+        });
+
+        describe('create_tag', () => {
+            it('should create a new tag', async () => {
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'create_tag',
+                    { name: 'work' }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.tag.name).toBe('work');
+
+                const created = await Tag.findOne({
+                    where: { user_id: user.id, name: 'work' },
+                });
+                expect(created).not.toBeNull();
+            });
+
+            it('should error on duplicate tag name', async () => {
+                await Tag.create({ user_id: user.id, name: 'dup' });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'create_tag',
+                    { name: 'dup' }
+                );
+
+                const { isError } = getToolContent(response);
+                expect(isError).toBe(true);
+            });
+        });
+
+        describe('update_tag', () => {
+            it('should update a tag name', async () => {
+                const tag = await Tag.create({
+                    user_id: user.id,
+                    name: 'old-name',
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'update_tag',
+                    { uid: tag.uid, name: 'new-name' }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.tag.name).toBe('new-name');
+
+                await tag.reload();
+                expect(tag.name).toBe('new-name');
+            });
+        });
+
+        describe('delete_tag', () => {
+            it('should delete a tag', async () => {
+                const tag = await Tag.create({
+                    user_id: user.id,
+                    name: 'to-delete',
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'delete_tag',
+                    { uid: tag.uid }
+                );
+
+                expect(response.status).toBe(200);
+                const deleted = await Tag.findByPk(tag.id);
+                expect(deleted).toBeNull();
             });
         });
 
@@ -833,10 +1244,20 @@ describe('MCP Tools Integration', () => {
             expect(toolNames).toContain('add_subtask');
             expect(toolNames).toContain('get_task_metrics');
             expect(toolNames).toContain('list_projects');
+            expect(toolNames).toContain('get_project');
             expect(toolNames).toContain('create_project');
             expect(toolNames).toContain('update_project');
             expect(toolNames).toContain('list_inbox');
             expect(toolNames).toContain('add_to_inbox');
+            expect(toolNames).toContain('get_inbox_item');
+            expect(toolNames).toContain('update_inbox_item');
+            expect(toolNames).toContain('process_inbox_item');
+            expect(toolNames).toContain('delete_inbox_item');
+            expect(toolNames).toContain('list_notes');
+            expect(toolNames).toContain('get_note');
+            expect(toolNames).toContain('create_note');
+            expect(toolNames).toContain('update_note');
+            expect(toolNames).toContain('delete_note');
             expect(toolNames).toContain('list_areas');
             expect(toolNames).toContain('list_tags');
             expect(toolNames).toContain('search');

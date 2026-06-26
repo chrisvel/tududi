@@ -1,6 +1,7 @@
 'use strict';
 
 const { InboxItem } = require('../../../models');
+const inboxService = require('../../inbox/service');
 
 /**
  * Register all inbox-related MCP tools
@@ -111,6 +112,150 @@ function registerInboxTools(server, context, tools) {
                                 message: 'Item added to inbox successfully',
                                 item: serialized,
                             },
+                            null,
+                            2
+                        ),
+                    },
+                ],
+            };
+        },
+    });
+
+    // 3. get_inbox_item - Get a single inbox item by UID
+    tools.push({
+        name: 'get_inbox_item',
+        description: 'Get a specific inbox item by its UID',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                uid: {
+                    type: 'string',
+                    description: 'Inbox item UID',
+                },
+            },
+            required: ['uid'],
+        },
+        handler: async (params) => {
+            const item = await inboxService.getByUid(
+                context.userId,
+                params.uid
+            );
+
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: JSON.stringify({ item }, null, 2),
+                    },
+                ],
+            };
+        },
+    });
+
+    // 4. update_inbox_item - Update an inbox item
+    tools.push({
+        name: 'update_inbox_item',
+        description: "Update an inbox item's content or status",
+        inputSchema: {
+            type: 'object',
+            properties: {
+                uid: {
+                    type: 'string',
+                    description: 'Inbox item UID',
+                },
+                content: {
+                    type: 'string',
+                    description: 'New content',
+                },
+                status: {
+                    type: 'string',
+                    description: 'New status (e.g. added, processed, deleted)',
+                },
+            },
+            required: ['uid'],
+        },
+        handler: async (params) => {
+            const item = await inboxService.update(context.userId, params.uid, {
+                content: params.content,
+                status: params.status,
+            });
+
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: JSON.stringify(
+                            {
+                                message: 'Inbox item updated successfully',
+                                item,
+                            },
+                            null,
+                            2
+                        ),
+                    },
+                ],
+            };
+        },
+    });
+
+    // 5. process_inbox_item - Mark an inbox item as processed
+    tools.push({
+        name: 'process_inbox_item',
+        description: 'Mark an inbox item as processed',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                uid: {
+                    type: 'string',
+                    description: 'Inbox item UID',
+                },
+            },
+            required: ['uid'],
+        },
+        handler: async (params) => {
+            const item = await inboxService.process(context.userId, params.uid);
+
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: JSON.stringify(
+                            {
+                                message: 'Inbox item marked as processed',
+                                item,
+                            },
+                            null,
+                            2
+                        ),
+                    },
+                ],
+            };
+        },
+    });
+
+    // 6. delete_inbox_item - Delete an inbox item
+    tools.push({
+        name: 'delete_inbox_item',
+        description: 'Delete an inbox item',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                uid: {
+                    type: 'string',
+                    description: 'Inbox item UID',
+                },
+            },
+            required: ['uid'],
+        },
+        handler: async (params) => {
+            await inboxService.delete(context.userId, params.uid);
+
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: JSON.stringify(
+                            { message: 'Inbox item deleted successfully' },
                             null,
                             2
                         ),

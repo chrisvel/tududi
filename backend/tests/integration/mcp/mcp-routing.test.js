@@ -135,12 +135,16 @@ describe('MCP Routing', () => {
 
             expect(response.status).toBe(200);
             expect(response.body.tools).toBeInstanceOf(Array);
-            expect(response.body.tools.length).toBe(4);
+            expect(response.body.tools.length).toBe(8);
 
             const categories = response.body.tools.map((t) => t.category);
             expect(categories).toContain('Tasks');
             expect(categories).toContain('Projects');
+            expect(categories).toContain('Areas');
+            expect(categories).toContain('Habits');
             expect(categories).toContain('Inbox');
+            expect(categories).toContain('Notes');
+            expect(categories).toContain('Tags');
             expect(categories).toContain('Misc');
         });
     });

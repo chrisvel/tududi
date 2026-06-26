@@ -141,12 +141,16 @@ describe('MCP Controller', () => {
             await controller.listMcpTools({}, res);
 
             const result = res.json.mock.calls[0][0];
-            expect(result.tools).toHaveLength(4);
+            expect(result.tools).toHaveLength(8);
 
             const categories = result.tools.map((t) => t.category);
             expect(categories).toContain('Tasks');
             expect(categories).toContain('Projects');
+            expect(categories).toContain('Areas');
+            expect(categories).toContain('Habits');
             expect(categories).toContain('Inbox');
+            expect(categories).toContain('Notes');
+            expect(categories).toContain('Tags');
             expect(categories).toContain('Misc');
         });
 
@@ -181,10 +185,12 @@ describe('MCP Controller', () => {
             );
 
             expect(projectCategory).toBeDefined();
-            expect(projectCategory.count).toBe(3);
+            expect(projectCategory.count).toBe(5);
             expect(projectCategory.tools).toContain('list_projects');
+            expect(projectCategory.tools).toContain('get_project');
             expect(projectCategory.tools).toContain('create_project');
             expect(projectCategory.tools).toContain('update_project');
+            expect(projectCategory.tools).toContain('delete_project');
         });
 
         it('should list inbox tools', async () => {
@@ -197,9 +203,47 @@ describe('MCP Controller', () => {
             );
 
             expect(inboxCategory).toBeDefined();
-            expect(inboxCategory.count).toBe(2);
+            expect(inboxCategory.count).toBe(6);
             expect(inboxCategory.tools).toContain('list_inbox');
             expect(inboxCategory.tools).toContain('add_to_inbox');
+            expect(inboxCategory.tools).toContain('get_inbox_item');
+            expect(inboxCategory.tools).toContain('update_inbox_item');
+            expect(inboxCategory.tools).toContain('process_inbox_item');
+            expect(inboxCategory.tools).toContain('delete_inbox_item');
+        });
+
+        it('should list note tools', async () => {
+            const res = { json: jest.fn() };
+            await controller.listMcpTools({}, res);
+
+            const result = res.json.mock.calls[0][0];
+            const noteCategory = result.tools.find(
+                (t) => t.category === 'Notes'
+            );
+
+            expect(noteCategory).toBeDefined();
+            expect(noteCategory.count).toBe(5);
+            expect(noteCategory.tools).toContain('list_notes');
+            expect(noteCategory.tools).toContain('get_note');
+            expect(noteCategory.tools).toContain('create_note');
+            expect(noteCategory.tools).toContain('update_note');
+            expect(noteCategory.tools).toContain('delete_note');
+        });
+
+        it('should list tag tools', async () => {
+            const res = { json: jest.fn() };
+            await controller.listMcpTools({}, res);
+
+            const result = res.json.mock.calls[0][0];
+            const tagCategory = result.tools.find((t) => t.category === 'Tags');
+
+            expect(tagCategory).toBeDefined();
+            expect(tagCategory.count).toBe(5);
+            expect(tagCategory.tools).toContain('list_tags');
+            expect(tagCategory.tools).toContain('get_tag');
+            expect(tagCategory.tools).toContain('create_tag');
+            expect(tagCategory.tools).toContain('update_tag');
+            expect(tagCategory.tools).toContain('delete_tag');
         });
 
         it('should list misc tools', async () => {
@@ -212,9 +256,7 @@ describe('MCP Controller', () => {
             );
 
             expect(miscCategory).toBeDefined();
-            expect(miscCategory.count).toBe(3);
-            expect(miscCategory.tools).toContain('list_areas');
-            expect(miscCategory.tools).toContain('list_tags');
+            expect(miscCategory.count).toBe(1);
             expect(miscCategory.tools).toContain('search');
         });
     });
