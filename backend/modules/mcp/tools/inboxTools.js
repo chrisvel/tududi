@@ -213,10 +213,7 @@ function registerInboxTools(server, context, tools) {
             required: ['uid'],
         },
         handler: async (params) => {
-            const item = await inboxService.process(
-                context.userId,
-                params.uid
-            );
+            const item = await inboxService.process(context.userId, params.uid);
 
             return {
                 content: [

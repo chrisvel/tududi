@@ -389,8 +389,7 @@ function registerProjectTools(server, context, tools) {
     // 5. delete_project - Delete a project
     tools.push({
         name: 'delete_project',
-        description:
-            'Delete a project and all its tasks (notes are orphaned)',
+        description: 'Delete a project and all its tasks (notes are orphaned)',
         inputSchema: {
             type: 'object',
             properties: {

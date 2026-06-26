@@ -16,9 +16,7 @@ function registerHabitTools(server, context, tools) {
             properties: {},
         },
         handler: async (params) => {
-            const habits = await habitsRepository.findAllByUser(
-                context.userId
-            );
+            const habits = await habitsRepository.findAllByUser(context.userId);
 
             return {
                 content: [
@@ -206,8 +204,9 @@ function registerHabitTools(server, context, tools) {
             if (params.name !== undefined) updates.name = params.name;
             if (params.note !== undefined) updates.note = params.note;
             if (params.priority)
-                updates.priority =
-                    { low: 0, medium: 1, high: 2 }[params.priority];
+                updates.priority = { low: 0, medium: 1, high: 2 }[
+                    params.priority
+                ];
             if (params.habit_target_count !== undefined)
                 updates.habit_target_count = params.habit_target_count;
             if (params.habit_frequency_period !== undefined)
@@ -454,7 +453,8 @@ function registerHabitTools(server, context, tools) {
     // 9. get_habit_stats - Get habit statistics
     tools.push({
         name: 'get_habit_stats',
-        description: 'Get habit statistics including streaks and completion rate',
+        description:
+            'Get habit statistics including streaks and completion rate',
         inputSchema: {
             type: 'object',
             properties: {
