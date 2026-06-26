@@ -1,6 +1,6 @@
 'use strict';
 
-const OpenAI = require('openai');
+const Anthropic = require('@anthropic-ai/sdk');
 const moment = require('moment-timezone');
 const { User, Goal, Project, Area } = require('../../models');
 const { computeTaskMetrics } = require('../tasks/queries/metrics-computation');
@@ -16,12 +16,12 @@ const STATUS_LABELS = {
     6: 'planned',
 };
 
-function getOpenAIClient() {
-    const apiKey = process.env.OPENAPI_API_KEY || process.env.OPENAI_API_KEY;
+function getAnthropicClient() {
+    const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) {
-        throw new Error('OPENAPI_API_KEY environment variable is not set');
+        throw new Error('ANTHROPIC_API_KEY environment variable is not set');
     }
-    return new OpenAI({ apiKey });
+    return new Anthropic({ apiKey });
 }
 
 async function fetchUserContext(userId) {
@@ -211,7 +211,7 @@ async function generateDailyBrief(userId) {
     const context = await fetchUserContext(userId);
     const contextSummary = buildContextSummary(context);
 
-    const openai = getOpenAIClient();
+    const client = getAnthropicClient();
 
     const systemPrompt = `You are a productivity assistant in Tududi. Return a daily brief as JSON. Keep every field very short — no full sentences, no filler words.
 
@@ -233,20 +233,17 @@ Rules:
 - priority_actions: exactly 3 items, ordered by importance
 - suggestion: infer the task's nature from its name, then motivate — e.g. for "Write test cases" say "Start with the happy path, the rest will flow." Don't be generic.
 - watch_out: 0–2 items; empty array [] if nothing urgent
-- Plain text only — no markdown, no ** formatting`;
+- Plain text only — no markdown, no ** formatting
+- Return only the JSON object, no other text`;
 
-    const response = await openai.chat.completions.create({
-        model: 'gpt-4o-mini',
-        messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: contextSummary },
-        ],
-        response_format: { type: 'json_object' },
+    const response = await client.messages.create({
+        model: 'claude-haiku-4-5-20251001',
+        system: systemPrompt,
+        messages: [{ role: 'user', content: contextSummary }],
         max_tokens: 500,
-        temperature: 0.7,
     });
 
-    const raw = response.choices[0]?.message?.content || '{}';
+    const raw = response.content[0]?.text || '{}';
     console.log('[AI Assistant] raw response:', raw);
     let parsed;
     try {
@@ -270,8 +267,8 @@ Rules:
         generated_at: new Date().toISOString(),
         model: response.model,
         usage: {
-            prompt_tokens: response.usage?.prompt_tokens,
-            completion_tokens: response.usage?.completion_tokens,
+            prompt_tokens: response.usage?.input_tokens,
+            completion_tokens: response.usage?.output_tokens,
         },
     };
 
@@ -336,7 +333,7 @@ async function updateTaskInsightsDismissed(taskUid, userId, dismissed) {
 }
 
 async function generateTaskInsights(taskContext, userId) {
-    const openai = getOpenAIClient();
+    const client = getAnthropicClient();
 
     const {
         taskUid,
@@ -431,20 +428,17 @@ Rules:
 - breakdown: 3–5 items, ordered by sequence, specific to THIS task
 - links: 2–3 items. Prefer SPECIFIC, DIRECT links to the actual resources implied by this task — official websites of the museums/places/tools/docs mentioned, not generic homepages. Examples of good specificity: for "Plan museum visits in Paris" → link directly to https://www.louvre.fr/en, https://www.musee-orsay.fr/en, https://www.parismuseumpass.fr; for "Research flights to Tokyo" → https://www.google.com/travel/flights, https://www.skyscanner.com; for "Fix React useEffect bug" → https://react.dev/reference/react/useEffect. Use the exact official URL you know for this specific institution or tool. If you only know the root domain and not the specific page, use the root (e.g. https://www.centrepompidou.fr). Empty array [] only if no useful links genuinely apply.
 - Plain text only in text fields — no markdown, no ** formatting
-- Always reference the actual task name, project name, or tags in your response`;
+- Always reference the actual task name, project name, or tags in your response
+- Return only the JSON object, no other text`;
 
-    const response = await openai.chat.completions.create({
-        model: 'gpt-4o-mini',
-        messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: lines.join('\n') },
-        ],
-        response_format: { type: 'json_object' },
+    const response = await client.messages.create({
+        model: 'claude-haiku-4-5-20251001',
+        system: systemPrompt,
+        messages: [{ role: 'user', content: lines.join('\n') }],
         max_tokens: 1000,
-        temperature: 0.6,
     });
 
-    const raw = response.choices[0]?.message?.content || '{}';
+    const raw = response.content[0]?.text || '{}';
     let parsed;
     try {
         parsed = JSON.parse(raw);
@@ -511,7 +505,7 @@ async function updateProjectInsightsDismissed(projectUid, userId, dismissed) {
 }
 
 async function generateProjectInsights(projectContext, userId) {
-    const openai = getOpenAIClient();
+    const client = getAnthropicClient();
 
     const {
         projectUid,
@@ -561,20 +555,17 @@ Rules:
 - Plain text only — no markdown, no ** formatting
 - Always reference the actual project name, domain, or task data in your response
 - health must reference actual numbers if available
-- watch_out should be null (JSON null) if there's no meaningful risk to flag`;
+- watch_out should be null (JSON null) if there's no meaningful risk to flag
+- Return only the JSON object, no other text`;
 
-    const response = await openai.chat.completions.create({
-        model: 'gpt-4o-mini',
-        messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: lines.join('\n') },
-        ],
-        response_format: { type: 'json_object' },
+    const response = await client.messages.create({
+        model: 'claude-haiku-4-5-20251001',
+        system: systemPrompt,
+        messages: [{ role: 'user', content: lines.join('\n') }],
         max_tokens: 600,
-        temperature: 0.6,
     });
 
-    const raw = response.choices[0]?.message?.content || '{}';
+    const raw = response.content[0]?.text || '{}';
     let parsed;
     try {
         parsed = JSON.parse(raw);
