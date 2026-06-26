@@ -304,10 +304,17 @@ function registerHabitTools(server, context, tools) {
                 throw new Error(`Habit not found: ${params.uid}`);
             }
 
-            const result = await habitService.logCompletion(
-                habit,
-                params.completed_at ? new Date(params.completed_at) : new Date()
-            );
+            let completedAt = new Date();
+            if (params.completed_at) {
+                completedAt = new Date(params.completed_at);
+                if (isNaN(completedAt.getTime())) {
+                    throw new Error(
+                        `Invalid completed_at date: ${params.completed_at}`
+                    );
+                }
+            }
+
+            const result = await habitService.logCompletion(habit, completedAt);
 
             return {
                 content: [
@@ -370,6 +377,13 @@ function registerHabitTools(server, context, tools) {
             const end = params.end_date
                 ? new Date(params.end_date)
                 : new Date();
+
+            if (params.start_date && isNaN(start.getTime())) {
+                throw new Error(`Invalid start_date: ${params.start_date}`);
+            }
+            if (params.end_date && isNaN(end.getTime())) {
+                throw new Error(`Invalid end_date: ${params.end_date}`);
+            }
 
             const completions = await habitsRepository.findCompletions(
                 habit.id,
@@ -489,6 +503,13 @@ function registerHabitTools(server, context, tools) {
             const end = params.end_date
                 ? new Date(params.end_date)
                 : new Date();
+
+            if (params.start_date && isNaN(start.getTime())) {
+                throw new Error(`Invalid start_date: ${params.start_date}`);
+            }
+            if (params.end_date && isNaN(end.getTime())) {
+                throw new Error(`Invalid end_date: ${params.end_date}`);
+            }
 
             const stats = await habitService.getHabitStats(habit, start, end);
 
