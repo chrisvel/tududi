@@ -215,7 +215,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                             <button
                                 onClick={toggleDropdown}
                                 className="group flex items-center focus:outline-none text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 ease-out rounded-lg px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 hover:shadow-md"
-                                aria-label="Create New"
+                                aria-label={t('sidebar.createNew')}
                             >
                                 <PlusIcon className="h-6 w-6 flex-shrink-0 transition-transform duration-300 ease-out group-hover:rotate-90" />
                                 <span className="ml-2 text-sm font-medium whitespace-nowrap opacity-0 max-w-0 overflow-hidden group-hover:opacity-100 group-hover:max-w-[120px] transition-all duration-300 ease-out transform translate-x-[-10px] group-hover:translate-x-0">
@@ -292,7 +292,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                             <button
                                 onClick={toggleDarkMode}
                                 className="flex items-center justify-center focus:outline-none text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg px-2 py-1 transition-colors duration-200"
-                                aria-label="Toggle Dark Mode"
+                                aria-label={t('sidebar.toggleDarkMode')}
                             >
                                 {isDarkMode ? (
                                     <SunIcon className="h-6 w-6 text-yellow-500" />

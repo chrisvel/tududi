@@ -47,8 +47,8 @@ const SidebarHabits: React.FC<SidebarHabitsProps> = ({
                             openNewHabit();
                         }}
                         className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none"
-                        aria-label="Add Habit"
-                        title="Add Habit"
+                        aria-label={t('sidebar.addHabitAriaLabel')}
+                        title={t('sidebar.addHabitTitle')}
                     >
                         <PlusCircleIcon className="h-5 w-5" />
                     </button>

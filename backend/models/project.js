@@ -97,6 +97,11 @@ module.exports = (sequelize) => {
                 allowNull: false,
                 defaultValue: false,
             },
+            ai_insights: {
+                type: DataTypes.JSON,
+                allowNull: true,
+                defaultValue: null,
+            },
             status: {
                 type: DataTypes.ENUM(
                     'not_started',
@@ -118,9 +123,6 @@ module.exports = (sequelize) => {
                 },
                 {
                     fields: ['area_id'],
-                },
-                {
-                    fields: ['goal_id'],
                 },
             ],
         }

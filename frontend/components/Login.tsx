@@ -167,12 +167,12 @@ const Login: React.FC = () => {
                     setError(
                         data.error ||
                             data.errors?.[0] ||
-                            'Login failed. Please try again.'
+                            t('errors.loginFailed')
                     );
                 }
             }
         } catch (err) {
-            setError('An error occurred. Please try again.');
+            setError(t('errors.generalError'));
             console.error('Error during login:', err);
         }
     };

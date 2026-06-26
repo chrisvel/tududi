@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { XMarkIcon } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
 import MarkdownRenderer from '../Shared/MarkdownRenderer';
 import { Note } from '../../entities/Note';
 import { ENABLE_NOTE_COLOR } from '../../config/featureFlags';
@@ -36,6 +37,7 @@ const NoteFocusMode: React.FC<NoteFocusModeProps> = ({
     onExitEditing,
     onClose,
 }) => {
+    const { t } = useTranslation();
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const noteColor = ENABLE_NOTE_COLOR ? note.color : undefined;
     const lightText = shouldUseLightText(noteColor);
@@ -122,7 +124,7 @@ const NoteFocusMode: React.FC<NoteFocusModeProps> = ({
                     onClick={onClose}
                     className="p-2 rounded-md text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                     style={mutedColor ? { color: mutedColor } : undefined}
-                    aria-label="Exit focus mode"
+                    aria-label={t('common.exitFocusMode')}
                 >
                     <XMarkIcon className="h-5 w-5" />
                 </button>
@@ -139,7 +141,7 @@ const NoteFocusMode: React.FC<NoteFocusModeProps> = ({
                                 onChange={(e) =>
                                     onNoteChange({ title: e.target.value })
                                 }
-                                placeholder="Note title..."
+                                placeholder={t('notes.titlePlaceholder')}
                                 className="w-full bg-transparent text-gray-900 dark:text-gray-100 border-none focus:outline-none focus:ring-0 mb-6"
                                 style={{
                                     ...(textColor ? { color: textColor } : {}),
@@ -156,7 +158,7 @@ const NoteFocusMode: React.FC<NoteFocusModeProps> = ({
                                 onChange={(e) =>
                                     onNoteChange({ content: e.target.value })
                                 }
-                                placeholder="Write your note... (Markdown supported)"
+                                placeholder={t('notes.contentPlaceholderFocus')}
                                 className="w-full h-full min-h-[60vh] bg-transparent text-gray-900 dark:text-gray-100 border-none focus:outline-none focus:ring-0 resize-none text-lg leading-relaxed"
                                 style={textColor ? { color: textColor } : undefined}
                             />
@@ -172,7 +174,7 @@ const NoteFocusMode: React.FC<NoteFocusModeProps> = ({
                                     lineHeight: '2.5rem',
                                     fontWeight: 500,
                                 }}
-                                title="Click to edit"
+                                title={t('notes.clickToEdit')}
                             >
                                 {note.title || 'Untitled Note'}
                             </h1>
@@ -180,7 +182,7 @@ const NoteFocusMode: React.FC<NoteFocusModeProps> = ({
                                 onClick={onEditNote}
                                 className="cursor-pointer text-gray-900 dark:text-gray-100 text-lg leading-relaxed"
                                 style={textColor ? { color: textColor } : undefined}
-                                title="Click to edit"
+                                title={t('notes.clickToEdit')}
                             >
                                 <MarkdownRenderer
                                     content={note.content}
