@@ -5,6 +5,7 @@ import { useStore } from '../../store/useStore';
 import { getApiPath } from '../../config/paths';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
+import { Tag } from '../../entities/Tag';
 import TaskItem from '../Task/TaskItem';
 import { getCsrfToken } from '../../utils/csrfService';
 
@@ -181,11 +182,16 @@ const KanbanBoard: React.FC = () => {
         });
     };
 
+    const hasSomedayTag = (tags?: Tag[]) =>
+        tags?.some((t) => t.name.toLowerCase() === 'someday') ?? false;
+
     const columns = useMemo(() => {
         const result = {} as Record<ColKey, Task[]>;
         for (const col of ALL_COLS) result[col] = [];
 
         for (const task of tasks) {
+            if (hasSomedayTag(task.tags)) continue;
+            if (hasSomedayTag(task.Project?.tags)) continue;
             const col = getTaskColumn(task);
             if (col) result[col].push(task);
         }
