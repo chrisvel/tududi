@@ -1557,6 +1557,11 @@
     }
   },
   "aiAssistant": {
+    "title": "AI Assistant",
+    "generatedAt": "Generated at {{time}}",
+    "emptyState": "Click 'Generate Brief' to get your AI-powered daily summary.",
+    "focusForToday": "Focus for today",
+    "priorityActions": "Priority actions",
     "taskInsightsTitle": "AI Insights",
     "projectInsightsTitle": "AI Insights",
     "taskInsight": "About this task",

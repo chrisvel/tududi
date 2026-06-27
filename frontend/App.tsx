@@ -77,6 +77,9 @@ const App: React.FC = () => {
                 useStore.getState().userSettingsStore.setCalendarEnabled(
                     data.user.features?.calendar_enabled === true
                 );
+                useStore.getState().userSettingsStore.setAiAssistantEnabled(
+                    data.user.features?.ai_assistant_enabled === true
+                );
             } else {
                 setCurrentUser(null);
                 setUserInStorage(null);

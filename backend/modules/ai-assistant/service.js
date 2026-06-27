@@ -1,6 +1,6 @@
 'use strict';
 
-const Anthropic = require('@anthropic-ai/sdk');
+const OpenAI = require('openai');
 const moment = require('moment-timezone');
 const { User, Goal, Project, Area } = require('../../models');
 const { computeTaskMetrics } = require('../tasks/queries/metrics-computation');
@@ -16,12 +16,12 @@ const STATUS_LABELS = {
     6: 'planned',
 };
 
-function getAnthropicClient() {
-    const apiKey = process.env.ANTHROPIC_API_KEY;
+function getOpenAIClient() {
+    const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
-        throw new Error('ANTHROPIC_API_KEY environment variable is not set');
+        throw new Error('OPENAI_API_KEY environment variable is not set');
     }
-    return new Anthropic({ apiKey });
+    return new OpenAI({ apiKey });
 }
 
 async function fetchUserContext(userId) {
@@ -211,7 +211,7 @@ async function generateDailyBrief(userId) {
     const context = await fetchUserContext(userId);
     const contextSummary = buildContextSummary(context);
 
-    const client = getAnthropicClient();
+    const client = getOpenAIClient();
 
     const systemPrompt = `You are a productivity assistant in Tududi. Return a daily brief as JSON. Keep every field very short — no full sentences, no filler words.
 
@@ -236,14 +236,16 @@ Rules:
 - Plain text only — no markdown, no ** formatting
 - Return only the JSON object, no other text`;
 
-    const response = await client.messages.create({
-        model: 'claude-haiku-4-5-20251001',
-        system: systemPrompt,
-        messages: [{ role: 'user', content: contextSummary }],
+    const response = await client.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: contextSummary },
+        ],
         max_tokens: 500,
     });
 
-    const raw = response.content[0]?.text || '{}';
+    const raw = response.choices[0]?.message?.content || '{}';
     console.log('[AI Assistant] raw response:', raw);
     let parsed;
     try {
@@ -267,8 +269,8 @@ Rules:
         generated_at: new Date().toISOString(),
         model: response.model,
         usage: {
-            prompt_tokens: response.usage?.input_tokens,
-            completion_tokens: response.usage?.output_tokens,
+            prompt_tokens: response.usage?.prompt_tokens,
+            completion_tokens: response.usage?.completion_tokens,
         },
     };
 
@@ -333,7 +335,7 @@ async function updateTaskInsightsDismissed(taskUid, userId, dismissed) {
 }
 
 async function generateTaskInsights(taskContext, userId) {
-    const client = getAnthropicClient();
+    const client = getOpenAIClient();
 
     const {
         taskUid,
@@ -431,14 +433,16 @@ Rules:
 - Always reference the actual task name, project name, or tags in your response
 - Return only the JSON object, no other text`;
 
-    const response = await client.messages.create({
-        model: 'claude-haiku-4-5-20251001',
-        system: systemPrompt,
-        messages: [{ role: 'user', content: lines.join('\n') }],
+    const response = await client.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: lines.join('\n') },
+        ],
         max_tokens: 1000,
     });
 
-    const raw = response.content[0]?.text || '{}';
+    const raw = response.choices[0]?.message?.content || '{}';
     let parsed;
     try {
         parsed = JSON.parse(raw);
@@ -505,7 +509,7 @@ async function updateProjectInsightsDismissed(projectUid, userId, dismissed) {
 }
 
 async function generateProjectInsights(projectContext, userId) {
-    const client = getAnthropicClient();
+    const client = getOpenAIClient();
 
     const {
         projectUid,
@@ -558,14 +562,16 @@ Rules:
 - watch_out should be null (JSON null) if there's no meaningful risk to flag
 - Return only the JSON object, no other text`;
 
-    const response = await client.messages.create({
-        model: 'claude-haiku-4-5-20251001',
-        system: systemPrompt,
-        messages: [{ role: 'user', content: lines.join('\n') }],
+    const response = await client.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: lines.join('\n') },
+        ],
         max_tokens: 600,
     });
 
-    const raw = response.content[0]?.text || '{}';
+    const raw = response.choices[0]?.message?.content || '{}';
     let parsed;
     try {
         parsed = JSON.parse(raw);

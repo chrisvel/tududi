@@ -259,7 +259,6 @@ const TaskAIInsights = forwardRef<TaskAIInsightsHandle, TaskAIInsightsProps>(
                             setInsights(cached);
                             setDismissed(cached.dismissed ?? false);
                         } else {
-                            // No prior insights — show invite, don't auto-generate
                             setNoCache(true);
                         }
                     } catch {

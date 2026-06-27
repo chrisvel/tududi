@@ -134,6 +134,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             auto_suggest_next_actions_enabled: true,
             productivity_assistant_enabled: true,
             next_task_suggestion_enabled: true,
+            ai_assistant_enabled: false,
             pomodoro_enabled: true,
             eisenhower_enabled: false,
             kanban_enabled: false,
@@ -543,6 +544,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                             data.features?.next_task_suggestion_enabled !== undefined
                                 ? data.features.next_task_suggestion_enabled
                                 : true,
+                        ai_assistant_enabled:
+                            data.features?.ai_assistant_enabled !== undefined
+                                ? data.features.ai_assistant_enabled
+                                : false,
                         pomodoro_enabled:
                             data.features?.pomodoro_enabled !== undefined
                                 ? data.features.pomodoro_enabled
@@ -1105,6 +1110,12 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             if (updatedProfile.features?.calendar_enabled !== undefined) {
                 useStore.getState().userSettingsStore.setCalendarEnabled(
                     updatedProfile.features.calendar_enabled
+                );
+            }
+
+            if (updatedProfile.features?.ai_assistant_enabled !== undefined) {
+                useStore.getState().userSettingsStore.setAiAssistantEnabled(
+                    updatedProfile.features.ai_assistant_enabled
                 );
             }
 

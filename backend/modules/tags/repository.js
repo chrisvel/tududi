@@ -21,6 +21,25 @@ class TagsRepository extends BaseRepository {
                 'name',
                 'tag_type',
                 'pinned',
+                'color',
+                [
+                    sequelize.literal(
+                        `(SELECT COUNT(*) FROM tasks_tags WHERE tasks_tags.tag_id = "Tag"."id")`
+                    ),
+                    'tasks_count',
+                ],
+                [
+                    sequelize.literal(
+                        `(SELECT COUNT(*) FROM notes_tags WHERE notes_tags.tag_id = "Tag"."id")`
+                    ),
+                    'notes_count',
+                ],
+                [
+                    sequelize.literal(
+                        `(SELECT COUNT(*) FROM projects_tags WHERE projects_tags.tag_id = "Tag"."id")`
+                    ),
+                    'projects_count',
+                ],
                 [
                     sequelize.literal(`(
                         SELECT COUNT(*) FROM tasks_tags WHERE tasks_tags.tag_id = "Tag"."id"
@@ -54,7 +73,7 @@ class TagsRepository extends BaseRepository {
     async findByUid(userId, uid) {
         return this.model.findOne({
             where: { user_id: userId, uid },
-            attributes: ['id', 'uid', 'name', 'tag_type', 'pinned'],
+            attributes: ['id', 'uid', 'name', 'tag_type', 'pinned', 'color'],
         });
     }
 

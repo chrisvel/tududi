@@ -33,6 +33,7 @@ import {
     TaskDeferUntilCard,
     TaskAttachmentsCard,
 } from './TaskDetails/';
+import TaskAIInsights, { TaskAIInsightsHandle } from '../AI/TaskAIInsights';
 import {
     isTaskOverdueInTodayPlan,
     isTaskPastDue,
@@ -95,6 +96,22 @@ const TaskDetails: React.FC = () => {
     const [pendingSubtasks, setPendingSubtasks] = useState<Task[]>([]);
     const [actionsMenuOpen, setActionsMenuOpen] = useState(false);
     const actionsMenuRef = useRef<HTMLDivElement>(null);
+    const aiAssistantEnabled = useStore(
+        (state: any) => state.userSettingsStore.aiAssistantEnabled
+    );
+    const aiInsightsRef = useRef<TaskAIInsightsHandle>(null);
+    const [aiInsightsShown, setAiInsightsShown] = useState(
+        () => localStorage.getItem('taskAiInsightsOpen') === 'true'
+    );
+    const [aiInsightsActive, setAiInsightsActive] = useState(false);
+
+    const handleAiInsightsClick = useCallback(() => {
+        if (!aiInsightsShown) {
+            setAiInsightsShown(true);
+            localStorage.setItem('taskAiInsightsOpen', 'true');
+        }
+        aiInsightsRef.current?.activate();
+    }, [aiInsightsShown]);
     const lastKnownSubtaskCount = useRef<number>(0);
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
@@ -1232,10 +1249,25 @@ const TaskDetails: React.FC = () => {
                     isOverdueAlertVisible={isOverdue && isOverdueBubbleVisible}
                     onDismissOverdueAlert={handleDismissOverdueAlert}
                     onQuickStatusToggle={handleCompletionToggle}
+                    onAiInsightsClick={aiAssistantEnabled ? handleAiInsightsClick : undefined}
+                    aiInsightsActive={aiInsightsActive}
                     attachmentCount={attachmentCount}
                     subtasksCount={subtasks.length}
                     autoEditTitle={isNewTask}
                 />
+
+                {aiAssistantEnabled && aiInsightsShown && (
+                    <div className="mb-4 mt-6">
+                        <TaskAIInsights
+                            ref={aiInsightsRef}
+                            task={task}
+                            project={projectsStore.projects.find(
+                                (p: any) => p.id === task.project_id
+                            ) || null}
+                            onActiveChange={setAiInsightsActive}
+                        />
+                    </div>
+                )}
 
                 <div className="mb-6 mt-6">
                     {activePill === 'overview' && (
@@ -1347,6 +1379,7 @@ const TaskDetails: React.FC = () => {
                             />
                         </div>
                     )}
+
                 </div>
 
                 {isConfirmDialogOpen && taskToDelete && (

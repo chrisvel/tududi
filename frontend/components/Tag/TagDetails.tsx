@@ -4,13 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { usePersistedModal } from '../../hooks/usePersistedModal';
 import {
     CheckIcon,
-    BookOpenIcon,
-    FolderIcon,
     PencilSquareIcon,
     TrashIcon,
     TagIcon,
     MagnifyingGlassIcon,
-    LockClosedIcon,
 } from '@heroicons/react/24/solid';
 import { FolderIcon as FolderOutlineIcon } from '@heroicons/react/24/outline';
 import { Task } from '../../entities/Task';
@@ -461,156 +458,106 @@ const TagDetails: React.FC = () => {
     }
 
     return (
-        <div className="flex justify-center px-4 lg:px-2">
-            <div className="w-full max-w-5xl">
-                {/* Tag Header */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8">
-                    <div className="mb-2 sm:mb-0">
-                        <div className="flex items-center gap-2.5">
-                            <TagIcon className="h-5 w-5 text-gray-400 dark:text-gray-500 flex-shrink-0" />
-                            <h2 className="text-2xl font-light text-gray-900 dark:text-white">
+        <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">
+            {/* Tag Header - area-style banner */}
+            <div
+                className="rounded-xl mb-8 overflow-hidden"
+                style={tag.color ? { backgroundColor: tag.color } : undefined}
+            >
+                <div className={`p-6 ${tag.color ? '' : 'bg-gray-50 dark:bg-gray-900 rounded-xl'}`}>
+                    <div className="flex items-start justify-between gap-4">
+                        <div className="min-w-0">
+                            <p className={`text-xs font-medium uppercase tracking-widest mb-1 ${
+                                tag.color ? 'text-white/60' : 'text-gray-400 dark:text-gray-500'
+                            }`}>
+                                {tag.tag_type === 'system'
+                                    ? t('tags.systemTag', 'System Tag')
+                                    : t('tags.tag', 'Tag')}
+                            </p>
+                            <h1 className={`text-3xl font-light ${
+                                tag.color ? 'text-white' : 'text-gray-900 dark:text-gray-100'
+                            }`}>
                                 {tag.name}
-                            </h2>
-                            {tag.tag_type === 'system' ? (
-                                <span className="inline-flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-2 py-0.5 rounded-full">
-                                    <LockClosedIcon className="h-3 w-3" />
-                                    {t('tags.systemTag', 'System')}
-                                </span>
-                            ) : (
-                                <span className="inline-flex items-center text-xs text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-2 py-0.5 rounded-full">
-                                    {t('tags.userTag', 'User')}
-                                </span>
+                            </h1>
+                            <div className={`mt-3 flex gap-4 text-xs ${
+                                tag.color ? 'text-white/70' : 'text-gray-500 dark:text-gray-400'
+                            }`}>
+                                <span>{tasks.length} {t('tasks.title', 'tasks')}</span>
+                                <span>{notes.length} {t('notes.title', 'notes')}</span>
+                                <span>{projects.length} {t('projects.title', 'projects')}</span>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                            <button
+                                onClick={() => setIsSearchExpanded((v) => !v)}
+                                className={`p-2 rounded-lg transition-colors ${
+                                    tag.color
+                                        ? 'text-white/80 hover:text-white hover:bg-white/10'
+                                        : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                }`}
+                                aria-expanded={isSearchExpanded}
+                                title={t('common.search', 'Search tasks')}
+                            >
+                                <MagnifyingGlassIcon className="h-5 w-5" />
+                            </button>
+                            {tag.tag_type !== 'system' && (
+                                <>
+                                    <button
+                                        ref={editButtonRef}
+                                        type="button"
+                                        className={`p-2 rounded-lg transition-colors ${
+                                            tag.color
+                                                ? 'text-white/80 hover:text-white hover:bg-white/10'
+                                                : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                        }`}
+                                        aria-label={t('tags.editTagAriaLabel', { tagName: tag.name })}
+                                        title={t('tags.editTagTitle', { tagName: tag.name })}
+                                    >
+                                        <PencilSquareIcon className="h-5 w-5" />
+                                    </button>
+                                    <button
+                                        onClick={() => setIsConfirmDialogOpen(true)}
+                                        className={`p-2 rounded-lg transition-colors ${
+                                            tag.color
+                                                ? 'text-white/80 hover:text-white hover:bg-white/10'
+                                                : 'text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                        }`}
+                                        aria-label={t('tags.deleteTagAriaLabel', { tagName: tag.name })}
+                                        title={t('tags.deleteTagTitle', { tagName: tag.name })}
+                                    >
+                                        <TrashIcon className="h-5 w-5" />
+                                    </button>
+                                </>
                             )}
                         </div>
                     </div>
-                    <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-                        <button
-                            onClick={() => setIsSearchExpanded((v) => !v)}
-                            className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg p-2 ${
-                                isSearchExpanded
-                                    ? 'bg-blue-50/70 dark:bg-blue-900/20'
-                                    : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
-                            }`}
-                            aria-expanded={isSearchExpanded}
-                            aria-label={
-                                isSearchExpanded
-                                    ? t(
-                                          'common.hideSearch',
-                                          'Collapse search panel'
-                                      )
-                                    : t(
-                                          'common.showSearch',
-                                          'Show search input'
-                                      )
-                            }
-                            title={
-                                isSearchExpanded
-                                    ? t('common.hideSearch', 'Hide search')
-                                    : t('common.search', 'Search tasks')
-                            }
-                        >
-                            <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-200" />
-                            <span className="sr-only">
-                                {isSearchExpanded
-                                    ? t('common.hideSearch', 'Hide search')
-                                    : t('common.search', 'Search tasks')}
-                            </span>
-                        </button>
-                        {tag?.tag_type !== 'system' && (
-                            <>
-                                <button
-                                    ref={editButtonRef}
-                                    type="button"
-                                    className="px-1 py-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                                    aria-label={t('tags.editTagAriaLabel', { tagName: tag?.name || '' })}
-                                    title={t('tags.editTagTitle', { tagName: tag?.name || '' })}
-                                >
-                                    <PencilSquareIcon className="h-5 w-5" />
-                                </button>
-                                <button
-                                    onClick={() => setIsConfirmDialogOpen(true)}
-                                    className="px-1 py-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
-                                    aria-label={t('tags.deleteTagAriaLabel', { tagName: tag?.name || '' })}
-                                    title={t('tags.deleteTagTitle', { tagName: tag?.name || '' })}
-                                >
-                                    <TrashIcon className="h-5 w-5" />
-                                </button>
-                            </>
-                        )}
-                    </div>
                 </div>
+            </div>
 
-                {/* Search input section, collapsible */}
-                <div
-                    className={`transition-all duration-300 ease-in-out ${
-                        isSearchExpanded
-                            ? 'max-h-24 opacity-100 mb-4'
-                            : 'max-h-0 opacity-0 mb-0'
-                    } overflow-hidden`}
-                >
-                    <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-4 py-3">
-                        <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-400 mr-2" />
-                        <input
-                            type="text"
-                            placeholder={t(
-                                'tasks.searchPlaceholder',
-                                'Search tasks...'
-                            )}
-                            value={taskSearchQuery}
-                            onChange={(e) => setTaskSearchQuery(e.target.value)}
-                            className="w-full bg-transparent border-none focus:ring-0 focus:outline-none dark:text-white"
-                        />
-                    </div>
+            {/* Search input, collapsible */}
+            <div
+                className={`transition-all duration-300 ease-in-out ${
+                    isSearchExpanded
+                        ? 'max-h-24 opacity-100 mb-4'
+                        : 'max-h-0 opacity-0 mb-0'
+                } overflow-hidden`}
+            >
+                <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-4 py-3">
+                    <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-400 mr-2" />
+                    <input
+                        type="text"
+                        placeholder={t('tasks.searchPlaceholder', 'Search tasks...')}
+                        value={taskSearchQuery}
+                        onChange={(e) => setTaskSearchQuery(e.target.value)}
+                        className="w-full bg-transparent border-none focus:ring-0 focus:outline-none dark:text-white"
+                    />
                 </div>
-
-                {/* Summary Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div className="bg-white dark:bg-gray-900 shadow rounded-lg p-6">
-                        <div className="flex items-center">
-                            <CheckIcon className="h-8 w-8 text-blue-500 mr-3" />
-                            <div>
-                                <p className="text-2xl font-semibold text-gray-900 dark:text-white">
-                                    {tasks.length}
-                                </p>
-                                <p className="text-gray-600 dark:text-gray-400">
-                                    {t('tasks.title')}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="bg-white dark:bg-gray-900 shadow rounded-lg p-6">
-                        <div className="flex items-center">
-                            <BookOpenIcon className="h-8 w-8 text-green-500 mr-3" />
-                            <div>
-                                <p className="text-2xl font-semibold text-gray-900 dark:text-white">
-                                    {notes.length}
-                                </p>
-                                <p className="text-gray-600 dark:text-gray-400">
-                                    {t('notes.title')}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="bg-white dark:bg-gray-900 shadow rounded-lg p-6">
-                        <div className="flex items-center">
-                            <FolderIcon className="h-8 w-8 text-purple-500 mr-3" />
-                            <div>
-                                <p className="text-2xl font-semibold text-gray-900 dark:text-white">
-                                    {projects.length}
-                                </p>
-                                <p className="text-gray-600 dark:text-gray-400">
-                                    {t('projects.title')}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            </div>
 
                 {/* Tasks Section */}
                 <div className="mb-8">
                     <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                            <CheckIcon className="h-5 w-5 mr-2" />
+                        <h3 className="text-lg font-light text-gray-700 dark:text-gray-300">
                             {t('tasks.title')} ({displayTasks.length})
                         </h3>
                         <IconSortDropdown
@@ -817,8 +764,7 @@ const TagDetails: React.FC = () => {
                 {/* Notes Section */}
                 {notes.length > 0 && (
                     <div className="mb-8">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                            <BookOpenIcon className="h-5 w-5 mr-2" />
+                        <h3 className="text-lg font-light text-gray-700 dark:text-gray-300 mb-4">
                             {t('notes.title')} ({notes.length})
                         </h3>
                         <ul className="space-y-1">
@@ -950,8 +896,7 @@ const TagDetails: React.FC = () => {
                 {/* Projects Section */}
                 {projects.length > 0 && (
                     <div className="mb-8">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                            <FolderIcon className="h-5 w-5 mr-2" />
+                        <h3 className="text-lg font-light text-gray-700 dark:text-gray-300 mb-4">
                             {t('projects.title')} ({projects.length})
                         </h3>
                         <div className="flex flex-col space-y-1">
@@ -1003,7 +948,6 @@ const TagDetails: React.FC = () => {
                             </p>
                         </div>
                     )}
-            </div>
 
             {/* Tag Modal */}
             {isTagModalOpen && tag && (

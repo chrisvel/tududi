@@ -184,7 +184,13 @@ npm start  # Frontend on :8080, Backend on :3002
     - Area detail page layout and scarcity rule
     - API endpoints and database schema
 
-22. **[Claude Memory & Preferences](docs/MEMORY.md)**
+22. **[AI Assistant](docs/13-ai-assistant.md)**
+    - Daily Brief, Task Insights, and Project Insights features
+    - OpenAI integration (gpt-4o-mini, OPENAI_API_KEY)
+    - Caching strategy and API endpoints
+    - Adding new AI features
+
+23. **[Claude Memory & Preferences](docs/MEMORY.md)**
     - PR and commit message preferences
     - Testing preferences
     - Common patterns to remember

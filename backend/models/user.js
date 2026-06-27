@@ -133,6 +133,7 @@ module.exports = (sequelize) => {
                     auto_suggest_next_actions_enabled: false,
                     productivity_assistant_enabled: true,
                     next_task_suggestion_enabled: true,
+                    ai_assistant_enabled: false,
                     pomodoro_enabled: true,
                     eisenhower_enabled: false,
                     kanban_enabled: false,
@@ -214,6 +215,16 @@ module.exports = (sequelize) => {
                 defaultValue: null,
                 comment:
                     'User-configurable keyboard shortcuts for quick actions',
+            },
+            ai_daily_brief: {
+                type: DataTypes.JSON,
+                allowNull: true,
+                defaultValue: null,
+            },
+            ai_daily_brief_date: {
+                type: DataTypes.DATEONLY,
+                allowNull: true,
+                defaultValue: null,
             },
             email_verified: {
                 type: DataTypes.BOOLEAN,

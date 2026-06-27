@@ -12,7 +12,6 @@ import {
     TagIcon,
     QueueListIcon,
     StarIcon,
-    InformationCircleIcon,
     PencilSquareIcon,
     MagnifyingGlassIcon,
     CheckIcon,
@@ -56,6 +55,9 @@ const ViewDetail: React.FC = () => {
     const [notes, setNotes] = useState<Note[]>([]);
     const [projects, setProjects] = useState<Project[]>([]);
     const globalProjects = useStore((state) => state.projectsStore.projects);
+    const allTags = useStore((state) => state.tagsStore.tags);
+    const getTagColor = (name: string): string | undefined =>
+        allTags.find((t) => t.name === name)?.color;
     const updateQueryParams = useCallback(
         (updates: Record<string, string | null>) => {
             const params = new URLSearchParams(location.search);
@@ -90,7 +92,6 @@ const ViewDetail: React.FC = () => {
     const [isEditingName, setIsEditingName] = useState(false);
     const [editedName, setEditedName] = useState('');
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-    const [showCriteriaDropdown, setShowCriteriaDropdown] = useState(false);
 
     // Search, filter, and sort state
     const [taskSearchQuery, setTaskSearchQuery] = useState<string>('');
@@ -114,7 +115,6 @@ const ViewDetail: React.FC = () => {
     const [, setProjectToDelete] = useState<Project | null>(null);
 
     // Ref for dropdown and title edit
-    const criteriaDropdownRef = useRef<HTMLDivElement>(null);
     const titleInputRef = useRef<HTMLInputElement>(null);
 
     // Sort options for tasks
@@ -398,24 +398,6 @@ const ViewDetail: React.FC = () => {
         handleSearchChange,
     ]);
 
-    // Close dropdown when clicking outside
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (
-                criteriaDropdownRef.current &&
-                !criteriaDropdownRef.current.contains(event.target as Node)
-            ) {
-                setShowCriteriaDropdown(false);
-            }
-        };
-
-        if (showCriteriaDropdown) {
-            document.addEventListener('mousedown', handleClickOutside);
-            return () => {
-                document.removeEventListener('mousedown', handleClickOutside);
-            };
-        }
-    }, [showCriteriaDropdown]);
 
     // Save title when clicking outside
     useEffect(() => {
@@ -708,57 +690,100 @@ const ViewDetail: React.FC = () => {
 
     return (
         <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">
-            <div className="w-full max-w-5xl mx-auto">
-                {/* Header */}
-                <div className="flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap mb-8">
-                    <div className="flex items-center flex-1 min-w-0 gap-2">
-                        {isEditingName ? (
-                            <input
-                                ref={titleInputRef}
-                                type="text"
-                                value={editedName}
-                                onChange={(e) => setEditedName(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        handleSaveName();
-                                    } else if (e.key === 'Escape') {
-                                        handleCancelEdit();
-                                    }
-                                }}
-                                className="text-2xl font-light text-gray-900 dark:text-white bg-transparent border-b-2 border-blue-500 focus:outline-none w-full max-w-2xl"
-                                autoFocus
-                            />
-                        ) : (
-                            <h2
-                                onClick={handleEditName}
-                                className="text-2xl font-light text-gray-900 dark:text-white cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors truncate"
-                            >
-                                {view.name}
-                            </h2>
-                        )}
-                    </div>
-                    <div className="flex items-center gap-1.5 flex-shrink-0">
-                        <button
-                            onClick={() => setIsSearchExpanded((v) => !v)}
-                            className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg p-2 ${
-                                isSearchExpanded
-                                    ? 'bg-blue-50/70 dark:bg-blue-900/20'
-                                    : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
-                            }`}
-                            aria-expanded={isSearchExpanded}
-                            aria-label={
-                                isSearchExpanded
-                                    ? 'Collapse search panel'
-                                    : 'Show search input'
-                            }
-                            title={
-                                isSearchExpanded
-                                    ? 'Hide search'
-                                    : 'Search Tasks'
-                            }
-                        >
-                            <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-200" />
-                        </button>
+            <div className="w-full">
+                {/* View Banner Header */}
+                <div className="rounded-xl mb-8 overflow-hidden">
+                    <div className="p-6 bg-gray-50 dark:bg-gray-900 rounded-xl">
+                        <div className="flex items-start justify-between gap-4">
+                            <div className="min-w-0 flex-1">
+                                <p className="text-xs font-medium uppercase tracking-widest mb-1 text-gray-400 dark:text-gray-500">
+                                    {t('views.view', 'View')}
+                                </p>
+                                {isEditingName ? (
+                                    <input
+                                        ref={titleInputRef}
+                                        type="text"
+                                        value={editedName}
+                                        onChange={(e) => setEditedName(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') handleSaveName();
+                                            else if (e.key === 'Escape') handleCancelEdit();
+                                        }}
+                                        className="text-3xl font-light text-gray-900 dark:text-white bg-transparent border-b-2 border-blue-500 focus:outline-none w-full"
+                                        autoFocus
+                                    />
+                                ) : (
+                                    <h1
+                                        onClick={handleEditName}
+                                        className="text-3xl font-light text-gray-900 dark:text-gray-100 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                    >
+                                        {view.name}
+                                    </h1>
+                                )}
+
+                                {/* Filter chips */}
+                                {(view.tags.length > 0 || view.filters.length > 0 || view.search_query || view.priority || view.due || view.defer || (view.extras && view.extras.length > 0)) && (
+                                    <div className="mt-3 flex flex-wrap gap-1.5">
+                                        {view.tags.map((tag) => {
+                                            const color = getTagColor(tag);
+                                            return (
+                                                <span
+                                                    key={tag}
+                                                    className={color ? 'px-2 py-0.5 rounded text-xs font-medium text-white' : 'px-2 py-0.5 bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200 rounded text-xs font-medium'}
+                                                    style={color ? { backgroundColor: color } : undefined}
+                                                >{tag}</span>
+                                            );
+                                        })}
+                                        {view.search_query && (
+                                            <span className="px-2 py-0.5 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-xs font-medium">
+                                                &quot;{view.search_query}&quot;
+                                            </span>
+                                        )}
+                                        {view.priority && (
+                                            <span className="px-2 py-0.5 bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 rounded text-xs font-medium capitalize">
+                                                {view.priority}
+                                            </span>
+                                        )}
+                                        {view.due && (
+                                            <span className="px-2 py-0.5 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded text-xs font-medium capitalize">
+                                                {view.due.replace(/_/g, ' ')}
+                                            </span>
+                                        )}
+                                        {view.defer && (
+                                            <span className="px-2 py-0.5 bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200 rounded text-xs font-medium capitalize">
+                                                {view.defer.replace(/_/g, ' ')}
+                                            </span>
+                                        )}
+                                        {view.filters.map((filter) => (
+                                            <span key={filter} className="px-2 py-0.5 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded text-xs font-medium">
+                                                {filter}
+                                            </span>
+                                        ))}
+                                        {view.extras && view.extras.map((extra, i) => (
+                                            <span key={i} className="px-2 py-0.5 bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 rounded text-xs font-medium capitalize">
+                                                {extra.replace(/_/g, ' ')}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* Result counts */}
+                                <div className="mt-3 flex gap-4 text-xs text-gray-500 dark:text-gray-400">
+                                    {totalCount > 0 && <span>{totalCount} {t('tasks.title', 'tasks')}</span>}
+                                    {notes.length > 0 && <span>{notes.length} {t('notes.title', 'notes')}</span>}
+                                    {projects.length > 0 && <span>{projects.length} {t('projects.title', 'projects')}</span>}
+                                </div>
+                            </div>
+
+                            {/* Action buttons */}
+                            <div className="flex items-center gap-1 flex-shrink-0">
+                                <button
+                                    onClick={() => setIsSearchExpanded((v) => !v)}
+                                    className="p-2 rounded-lg transition-colors text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                    title={isSearchExpanded ? 'Hide search' : 'Search tasks'}
+                                >
+                                    <MagnifyingGlassIcon className="h-5 w-5" />
+                                </button>
                         <IconSortDropdown
                             options={sortOptions}
                             value={orderBy}
@@ -922,175 +947,9 @@ const ViewDetail: React.FC = () => {
                                 </div>
                             }
                         />
-                        <div className="relative" ref={criteriaDropdownRef}>
-                            <button
-                                onClick={() =>
-                                    setShowCriteriaDropdown(
-                                        !showCriteriaDropdown
-                                    )
-                                }
-                                className={`flex items-center hover:bg-blue-100/50 dark:hover:bg-blue-800/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg${showCriteriaDropdown ? ' bg-blue-50/70 dark:bg-blue-900/20' : ''} p-2`}
-                                aria-expanded={showCriteriaDropdown}
-                                aria-label="View search criteria"
-                                title={
-                                    showCriteriaDropdown
-                                        ? 'Hide criteria'
-                                        : 'View search criteria'
-                                }
-                            >
-                                <InformationCircleIcon className="h-5 w-5 text-blue-500" />
-                            </button>
-                            {showCriteriaDropdown && (
-                                <div className="absolute right-0 mt-2 w-96 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50">
-                                    <div className="p-4">
-                                        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center">
-                                            <InformationCircleIcon className="h-4 w-4 mr-2 text-blue-500" />
-                                            {t('views.searchCriteria')}
-                                        </h3>
-                                        <div className="space-y-3">
-                                            {view.filters.length > 0 && (
-                                                <div>
-                                                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">
-                                                        {t('views.entityTypes')}
-                                                    </p>
-                                                    <div className="flex flex-wrap gap-2">
-                                                        {view.filters.map(
-                                                            (filter) => (
-                                                                <span
-                                                                    key={filter}
-                                                                    className="px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded text-xs font-medium"
-                                                                >
-                                                                    {filter}
-                                                                </span>
-                                                            )
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            )}
-                                            {view.search_query && (
-                                                <div>
-                                                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">
-                                                        {t('views.searchText')}
-                                                    </p>
-                                                    <p className="text-sm text-gray-900 dark:text-gray-100 font-medium">
-                                                        &quot;
-                                                        {view.search_query}
-                                                        &quot;
-                                                    </p>
-                                                </div>
-                                            )}
-                                            {view.priority && (
-                                                <div>
-                                                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">
-                                                        {t('views.priority')}
-                                                    </p>
-                                                    <span className="px-2 py-1 bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 rounded text-xs font-medium capitalize">
-                                                        {view.priority}
-                                                    </span>
-                                                </div>
-                                            )}
-                                            {view.due && (
-                                                <div>
-                                                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">
-                                                        {t('views.dueDate')}
-                                                    </p>
-                                                    <span className="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded text-xs font-medium capitalize">
-                                                        {view.due.replace(
-                                                            /_/g,
-                                                            ' '
-                                                        )}
-                                                    </span>
-                                                </div>
-                                            )}
-                                            {view.defer && (
-                                                <div>
-                                                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">
-                                                        {t('search.deferUntil')}
-                                                    </p>
-                                                    <span className="px-2 py-1 bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200 rounded text-xs font-medium capitalize">
-                                                        {view.defer.replace(
-                                                            /_/g,
-                                                            ' '
-                                                        )}
-                                                    </span>
-                                                </div>
-                                            )}
-                                            {view.tags &&
-                                                view.tags.length > 0 && (
-                                                    <div>
-                                                        <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">
-                                                            {t('views.tags')}
-                                                        </p>
-                                                        <div className="flex flex-wrap gap-2">
-                                                            {view.tags.map(
-                                                                (tag) => (
-                                                                    <span
-                                                                        key={
-                                                                            tag
-                                                                        }
-                                                                        className="px-2 py-1 bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200 rounded text-xs font-medium"
-                                                                    >
-                                                                        {tag}
-                                                                    </span>
-                                                                )
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            {view.extras &&
-                                                view.extras.length > 0 && (
-                                                    <div>
-                                                        <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">
-                                                            {t('search.extras')}
-                                                        </p>
-                                                        <div className="flex flex-wrap gap-1.5">
-                                                            {view.extras.map(
-                                                                (
-                                                                    extra,
-                                                                    index
-                                                                ) => (
-                                                                    <span
-                                                                        key={
-                                                                            index
-                                                                        }
-                                                                        className="px-2 py-1 bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 rounded text-xs font-medium capitalize"
-                                                                    >
-                                                                        {extra.replace(
-                                                                            /_/g,
-                                                                            ' '
-                                                                        )}
-                                                                    </span>
-                                                                )
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            {!view.filters.length &&
-                                                !view.search_query &&
-                                                !view.priority &&
-                                                !view.due &&
-                                                (!view.tags ||
-                                                    view.tags.length === 0) &&
-                                                (!view.extras ||
-                                                    view.extras.length ===
-                                                        0) && (
-                                                    <p className="text-sm text-gray-600 dark:text-gray-400 italic">
-                                                        {t(
-                                                            'views.noCriteriaSet'
-                                                        )}
-                                                    </p>
-                                                )}
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
                         <button
                             onClick={togglePin}
-                            className={`p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${view.is_pinned ? 'text-yellow-500' : 'text-gray-400'}`}
-                            aria-label={
-                                view.is_pinned ? 'Unpin view' : 'Pin view'
-                            }
+                            className={`p-2 rounded-lg transition-colors ${view.is_pinned ? 'text-yellow-500' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'} hover:bg-gray-100 dark:hover:bg-gray-800`}
                             title={view.is_pinned ? 'Unpin view' : 'Pin view'}
                         >
                             {view.is_pinned ? (
@@ -1101,12 +960,13 @@ const ViewDetail: React.FC = () => {
                         </button>
                         <button
                             onClick={openConfirmDialog}
-                            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
-                            aria-label="Delete view"
+                            className="p-2 rounded-lg transition-colors text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800"
                             title="Delete view"
                         >
                             <TrashIcon className="h-5 w-5" />
                         </button>
+                    </div>
+                        </div>
                     </div>
                 </div>
 

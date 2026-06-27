@@ -10,6 +10,7 @@ import {
     FireIcon,
     ArrowUpIcon,
     ArrowDownIcon,
+    SparklesIcon,
 } from '@heroicons/react/24/outline';
 import { Link } from 'react-router-dom';
 import { Task, PriorityType } from '../../../entities/Task';
@@ -34,6 +35,8 @@ interface TaskDetailsHeaderProps {
     isOverdueAlertVisible?: boolean;
     onDismissOverdueAlert?: () => void;
     onQuickStatusToggle?: () => void;
+    onAiInsightsClick?: () => void;
+    aiInsightsActive?: boolean;
     attachmentCount?: number;
     subtasksCount?: number;
     autoEditTitle?: boolean;
@@ -55,6 +58,8 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
     isOverdueAlertVisible = false,
     onDismissOverdueAlert,
     onQuickStatusToggle,
+    onAiInsightsClick,
+    aiInsightsActive = false,
     attachmentCount = 0,
     subtasksCount = 0,
     autoEditTitle = false,
@@ -651,7 +656,29 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                             {t('task.activity', 'Activity')}
                         </button>
                     </div>
-                    {(showOverdueIcon || onQuickStatusToggle) && (
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                        {onAiInsightsClick && (
+                            <button
+                                onClick={onAiInsightsClick}
+                                className={`flex items-center transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded-lg p-1.5 ${
+                                    aiInsightsActive
+                                        ? 'bg-indigo-100 dark:bg-indigo-900/40'
+                                        : 'bg-gray-100 dark:bg-gray-800 hover:bg-indigo-50 dark:hover:bg-indigo-900/30'
+                                }`}
+                                aria-pressed={aiInsightsActive}
+                                aria-label={t('aiAssistant.taskInsightsTitle', 'AI Insights')}
+                                title={t('aiAssistant.taskInsightsTitle', 'AI Insights')}
+                            >
+                                <SparklesIcon
+                                    className={`h-4 w-4 ${
+                                        aiInsightsActive
+                                            ? 'text-indigo-600 dark:text-indigo-300'
+                                            : 'text-gray-600 dark:text-gray-200'
+                                    }`}
+                                />
+                            </button>
+                        )}
+                        {(showOverdueIcon || onQuickStatusToggle) && (
                         <div className="flex items-center gap-2 flex-shrink-0">
                             {showOverdueIcon && (
                                 <div
@@ -775,6 +802,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                 </div>
             </div>
         </div>
+    </div>
     );
 };
 

@@ -23,6 +23,7 @@ interface TodaySettingsDropdownProps {
         showActiveProjects: boolean;
         showProductivity: boolean;
         showNextTaskSuggestion: boolean;
+        showDailyBrief: boolean;
         showSuggestions: boolean;
         showDueToday: boolean;
         showCompleted: boolean;
@@ -32,6 +33,7 @@ interface TodaySettingsDropdownProps {
     profileSettings?: {
         productivity_assistant_enabled?: boolean;
         next_task_suggestion_enabled?: boolean;
+        ai_assistant_enabled?: boolean;
     };
     onSettingsChange: (settings: any) => void;
 }

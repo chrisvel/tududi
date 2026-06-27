@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
 import { useNavigate } from 'react-router-dom';
 import { getLocalesPath, getApiPath } from '../../config/paths';
+import { getCsrfToken } from '../../utils/csrfService';
 import { sortTasksByPriorityDueDateProject } from '../../utils/taskSortUtils';
 import { scoreAndSortSuggestedTasks } from '../../utils/suggestionScoringUtils';
 import { getTodayDateString } from '../../utils/dateUtils';
@@ -21,6 +22,7 @@ import {
     CalendarDaysIcon,
     QueueListIcon,
     ExclamationTriangleIcon,
+    SparklesIcon,
 } from '@heroicons/react/24/outline';
 import { fetchTasks, updateTask, deleteTask } from '../../utils/tasksService';
 import {
@@ -39,6 +41,7 @@ import TodayPlan from './TodayPlan';
 import { Metrics } from '../../entities/Metrics';
 import ProductivityAssistant from '../Productivity/ProductivityAssistant';
 import NextTaskSuggestion from './NextTaskSuggestion';
+import DailyAssistant from '../AI/DailyAssistant';
 import TodaySettingsDropdown from './TodaySettingsDropdown';
 import BurndownChart from './BurndownChart';
 import LifeBalance from './LifeBalance';
@@ -97,6 +100,7 @@ const TasksToday: React.FC = () => {
         showActiveProjects: true,
         showProductivity: false,
         showNextTaskSuggestion: false,
+        showDailyBrief: false,
         showSuggestions: true,
         showDueToday: true,
         showCompleted: true,
@@ -108,7 +112,9 @@ const TasksToday: React.FC = () => {
     const [profileSettings, setProfileSettings] = useState({
         productivity_assistant_enabled: false,
         next_task_suggestion_enabled: false,
+        ai_assistant_enabled: false,
     });
+    const [hasBriefMounted, setHasBriefMounted] = useState(false);
     const [showNextTaskSuggestion, setShowNextTaskSuggestion] = useState(true);
     const [isSuggestedCollapsed, setIsSuggestedCollapsed] = useState(() => {
         const stored = localStorage.getItem('suggestedTasksCollapsed');
@@ -594,6 +600,7 @@ const TasksToday: React.FC = () => {
                         // Back-fill keys missing from stored settings
                         if (settings.showAreaBalance === undefined) settings.showAreaBalance = true;
                         if (settings.showActiveProjects === undefined) settings.showActiveProjects = true;
+                        if (settings.showDailyBrief === undefined) settings.showDailyBrief = false;
 
                         // Store profile settings
                         const currentProfileSettings = {
@@ -601,6 +608,8 @@ const TasksToday: React.FC = () => {
                                 userFeatures.productivity_assistant_enabled === true,
                             next_task_suggestion_enabled:
                                 userFeatures.next_task_suggestion_enabled === true,
+                            ai_assistant_enabled:
+                                userFeatures.ai_assistant_enabled === true,
                         };
                         setProfileSettings(currentProfileSettings);
 
@@ -613,11 +622,11 @@ const TasksToday: React.FC = () => {
                             settings.showNextTaskSuggestion =
                                 userFeatures.next_task_suggestion_enabled;
                         }
-
                         // Ensure progress bar is always enabled
                         settings.showProgressBar = true;
 
                         setTodaySettings(settings);
+                        if (settings.showDailyBrief) setHasBriefMounted(true);
                         setIsSettingsLoaded(true);
                     }
                 } else {
@@ -1244,6 +1253,28 @@ const TasksToday: React.FC = () => {
         setTodaySettings(newSettings);
     };
 
+    const handleToggleDailyBrief = async () => {
+        if (!hasBriefMounted) setHasBriefMounted(true);
+        const newSettings = {
+            ...todaySettings,
+            showDailyBrief: !todaySettings.showDailyBrief,
+        };
+        setTodaySettings(newSettings);
+        try {
+            await fetch(getApiPath('profile/today-settings'), {
+                method: 'PUT',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-csrf-token': await getCsrfToken(),
+                },
+                body: JSON.stringify(newSettings),
+            });
+        } catch (error) {
+            console.error('Error saving daily brief setting:', error);
+        }
+    };
+
     // Show loading state until both data and settings are loaded (only for initial load)
     if (isInitialLoading || !isSettingsLoaded) {
         return (
@@ -1286,6 +1317,21 @@ const TasksToday: React.FC = () => {
 
                             {/* Today Navigation Icons */}
                             <div className="flex items-center space-x-2">
+                                {profileSettings.ai_assistant_enabled && (
+                                    <button
+                                        onClick={handleToggleDailyBrief}
+                                        className={`flex items-center justify-center w-8 h-8 rounded-md transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
+                                            todaySettings.showDailyBrief
+                                                ? 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-300'
+                                                : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400'
+                                        }`}
+                                        aria-pressed={todaySettings.showDailyBrief}
+                                        aria-label={t('aiAssistant.dailyBriefTitle', 'AI Daily Brief')}
+                                        title={t('aiAssistant.dailyBriefTitle', 'AI Daily Brief')}
+                                    >
+                                        <SparklesIcon className="h-5 w-5" />
+                                    </button>
+                                )}
                                 <div className="relative">
                                     <button
                                         onClick={() =>
@@ -1344,6 +1390,13 @@ const TasksToday: React.FC = () => {
                         </div>
                     </div>
                 </div>
+
+                {/* AI Daily Brief - top of page, kept mounted once opened to preserve content */}
+                {isSettingsLoaded && profileSettings.ai_assistant_enabled && hasBriefMounted && (
+                    <div className={todaySettings.showDailyBrief ? '' : 'hidden'}>
+                        <DailyAssistant />
+                    </div>
+                )}
 
                 {/* Overview Stats + Weekly Chart */}
                 {isSettingsLoaded && todaySettings.showMetrics && (

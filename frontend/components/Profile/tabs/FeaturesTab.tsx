@@ -179,6 +179,18 @@ const FeaturesTab: React.FC<FeaturesTabProps> = ({
                         onToggle={() =>
                             onToggleAi('next_task_suggestion_enabled')
                         }
+                    />
+                    <ToggleRow
+                        label={t(
+                            'profile.aiAssistantLabel',
+                            'AI Assistant (Daily Brief & Insights)'
+                        )}
+                        description={t(
+                            'profile.aiAssistantDescription',
+                            'Enable AI-powered daily brief on the Today page and task/project insights. Requires OPENAI_API_KEY configured on the server.'
+                        )}
+                        value={Boolean(formData.features?.ai_assistant_enabled)}
+                        onToggle={() => onToggleAi('ai_assistant_enabled')}
                         last
                     />
                 </div>
