@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-    TrashIcon,
+    EllipsisVerticalIcon,
     MagnifyingGlassIcon,
-    PencilSquareIcon,
     LockClosedIcon,
     MapPinIcon,
-} from '@heroicons/react/24/solid';
+    FolderIcon,
+    DocumentTextIcon,
+    CheckCircleIcon,
+} from '@heroicons/react/24/outline';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import TagModal from './Tag/TagModal';
 import { Tag } from '../entities/Tag';
@@ -29,16 +31,46 @@ const Tags: React.FC = () => {
     const [tagToDelete, setTagToDelete] = useState<Tag | null>(null);
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [isSearchExpanded, setIsSearchExpanded] = useState(false);
-    const [hoveredTagUid, setHoveredTagUid] = useState<string | null>(null);
     const [isTagModalOpen, setIsTagModalOpen] = useState<boolean>(false);
     const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
+    const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
+    const justOpenedRef = useRef<boolean>(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
-    // Load tags when component mounts
     useEffect(() => {
         if (!hasLoaded && !isLoading && !isError) {
             loadTags();
         }
     }, [hasLoaded, isLoading, isError, loadTags]);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (justOpenedRef.current) {
+                justOpenedRef.current = false;
+                return;
+            }
+            const clickedElement = event.target as Node;
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(clickedElement)
+            ) {
+                setDropdownOpen(null);
+            }
+        };
+
+        if (dropdownOpen !== null) {
+            const timeoutId = setTimeout(() => {
+                document.addEventListener('mousedown', handleClickOutside);
+            }, 100);
+            return () => {
+                clearTimeout(timeoutId);
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [dropdownOpen]);
 
     const handleDeleteTag = async () => {
         if (!tagToDelete) return;
@@ -74,7 +106,6 @@ const Tags: React.FC = () => {
             setSelectedTag(null);
         } catch (error) {
             console.error('Error saving tag:', error);
-            // Re-throw the error so TagModal knows the operation failed
             throw error;
         }
     };
@@ -93,7 +124,6 @@ const Tags: React.FC = () => {
         tag.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    // Group tags alphabetically by first letter
     const groupedTags = filteredTags.reduce(
         (groups, tag) => {
             const firstLetter = tag.name.charAt(0).toUpperCase();
@@ -106,7 +136,6 @@ const Tags: React.FC = () => {
         {} as Record<string, typeof tags>
     );
 
-    // Sort the groups by letter and sort tags within each group
     const sortedGroupKeys = Object.keys(groupedTags).sort();
     sortedGroupKeys.forEach((letter) => {
         groupedTags[letter].sort((a, b) =>
@@ -118,20 +147,24 @@ const Tags: React.FC = () => {
         return (
             <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
                 <div className="text-xl font-semibold text-gray-700 dark:text-gray-200">
-                    Loading tags...
+                    {t('tags.loadingTags', 'Loading tags...')}
                 </div>
             </div>
         );
     }
 
     if (isError) {
-        return <div className="text-red-500 p-4">Error loading tags.</div>;
+        return (
+            <div className="text-red-500 p-4">
+                {t('tags.errorLoadingTags', 'Error loading tags.')}
+            </div>
+        );
     }
 
     return (
         <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">
             <div className="w-full">
-                {/* Tags Header */}
+                {/* Header */}
                 <div className="flex items-center justify-between mb-8">
                     <h2 className="text-2xl font-light">
                         {t('tags.title', 'Tags')}
@@ -147,53 +180,15 @@ const Tags: React.FC = () => {
                         aria-expanded={isSearchExpanded}
                         aria-label={
                             isSearchExpanded
-                                ? t(
-                                      'common.hideSearch',
-                                      'Collapse search panel'
-                                  )
+                                ? t('common.hideSearch', 'Collapse search panel')
                                 : t('common.showSearch', 'Show search input')
-                        }
-                        title={
-                            isSearchExpanded
-                                ? t('common.hideSearch', 'Hide search')
-                                : t('common.search', 'Search tags')
                         }
                     >
                         <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-200" />
-                        <span className="sr-only">
-                            {isSearchExpanded
-                                ? t('common.hideSearch', 'Hide search')
-                                : t('common.search', 'Search tags')}
-                        </span>
                     </button>
                 </div>
 
-                {/* Legend */}
-                <div className="flex flex-col sm:flex-row gap-4 mb-6 text-sm text-gray-500 dark:text-gray-400">
-                    <div className="flex items-start gap-2">
-                        <LockClosedIcon className="h-4 w-4 mt-0.5 flex-shrink-0 text-gray-300 dark:text-gray-600" />
-                        <div>
-                            <span className="font-medium text-gray-700 dark:text-gray-300">
-                                {t('tags.systemTag', 'System tags')}
-                            </span>
-                            {' - '}
-                            {t('tags.systemTagDescription', 'Created automatically by the app. They power built-in features and cannot be renamed or deleted.')}
-                        </div>
-                    </div>
-                    <div className="hidden sm:block border-l border-gray-200 dark:border-gray-700" />
-                    <div className="flex items-start gap-2">
-                        <PencilSquareIcon className="h-4 w-4 mt-0.5 flex-shrink-0 text-gray-400 dark:text-gray-500" />
-                        <div>
-                            <span className="font-medium text-gray-700 dark:text-gray-300">
-                                {t('tags.userTag', 'User tags')}
-                            </span>
-                            {' - '}
-                            {t('tags.userTagDescription', 'Your own tags for organising tasks, notes, and projects.')}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Search input section, collapsible */}
+                {/* Collapsible search */}
                 <div
                     className={`transition-all duration-300 ease-in-out ${
                         isSearchExpanded
@@ -216,7 +211,7 @@ const Tags: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Tags List */}
+                {/* Tags grid, grouped alphabetically */}
                 {filteredTags.length === 0 ? (
                     <p className="text-gray-700 dark:text-gray-300">
                         {t('tags.noTagsFound', 'No tags found.')}
@@ -225,135 +220,150 @@ const Tags: React.FC = () => {
                     <div className="space-y-8">
                         {sortedGroupKeys.map((letter) => (
                             <div key={letter}>
-                                {/* Alphabetical Group Header */}
-                                <div className="mb-4">
-                                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                                        {letter}
-                                    </h3>
-                                    <hr className="border-gray-300 dark:border-gray-600" />
-                                </div>
+                                <h3 className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-3">
+                                    {letter}
+                                </h3>
 
-                                {/* Tags in this group */}
-                                <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    {groupedTags[letter].map((tag) => (
-                                        <li
-                                            key={tag.uid || tag.id}
-                                            className={`shadow rounded-lg p-4 ${
-                                                tag.tag_type === 'system'
-                                                    ? 'bg-gray-50 dark:bg-gray-800 border border-dashed border-gray-200 dark:border-gray-700'
-                                                    : 'bg-white dark:bg-gray-900'
-                                            }`}
-                                            onMouseEnter={() =>
-                                                setHoveredTagUid(
-                                                    tag.uid || null
-                                                )
-                                            }
-                                            onMouseLeave={() =>
-                                                setHoveredTagUid(null)
-                                            }
-                                        >
-                                            <div className="flex items-center justify-between gap-2">
-                                                {/* Tag Name - truncated */}
-                                                <Link
-                                                    to={
-                                                        tag.uid
-                                                            ? `/tag/${tag.uid}-${tag.name
-                                                                  .toLowerCase()
-                                                                  .replace(
-                                                                      /[^a-z0-9]+/g,
-                                                                      '-'
-                                                                  )
-                                                                  .replace(
-                                                                      /^-|-$/g,
-                                                                      ''
-                                                                  )}`
-                                                            : `/tag/${encodeURIComponent(tag.name)}`
-                                                    }
-                                                    className="inline-flex items-center gap-2 text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline truncate min-w-0 flex-1"
-                                                    title={tag.name}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                                    {groupedTags[letter].map((tag) => {
+                                        const isSystem = tag.tag_type === 'system';
+                                        return (
+                                            <Link
+                                                key={tag.uid || tag.id}
+                                                to={
+                                                    tag.uid
+                                                        ? `/tag/${tag.uid}-${tag.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`
+                                                        : `/tag/${encodeURIComponent(tag.name)}`
+                                                }
+                                                className={`rounded-xl shadow-sm relative flex flex-col group hover:shadow-md transition-shadow cursor-pointer ${
+                                                    !tag.color
+                                                        ? isSystem
+                                                            ? 'bg-white dark:bg-gray-700 border-2 border-dashed border-gray-300 dark:border-gray-500'
+                                                            : 'bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600'
+                                                        : ''
+                                                } ${dropdownOpen === tag.uid ? 'z-50' : ''}`}
+                                                style={
+                                                    tag.color
+                                                        ? {
+                                                            backgroundColor: tag.color,
+                                                            ...(isSystem ? { outline: '2px dashed rgba(255,255,255,0.45)', outlineOffset: '-3px' } : {}),
+                                                          }
+                                                        : {}
+                                                }
+                                            >
+                                                {/* Top-left: lock badge for system tags */}
+                                                {isSystem && (
+                                                    <span className="absolute top-2 left-2 z-10 flex items-center justify-center pointer-events-none">
+                                                        <LockClosedIcon
+                                                            className={`h-3.5 w-3.5 ${tag.color ? 'text-white/70' : 'text-gray-400 dark:text-gray-500'}`}
+                                                            title={t('tags.systemTag', 'System tag')}
+                                                        />
+                                                    </span>
+                                                )}
+
+                                                {/* Top-right: three-dot menu */}
+                                                <div
+                                                    className="absolute top-2 right-2 z-10"
+                                                    ref={dropdownRef}
                                                 >
-                                                    {tag.color && (
-                                                        <span
-                                                            className="inline-block w-3 h-3 rounded-full flex-shrink-0"
-                                                            style={{ backgroundColor: tag.color }}
-                                                        />
-                                                    )}
-                                                    {tag.name}
-                                                </Link>
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
+                                                            const next = dropdownOpen === tag.uid ? null : tag.uid!;
+                                                            if (next !== null) justOpenedRef.current = true;
+                                                            setDropdownOpen(next);
+                                                        }}
+                                                        className={`flex items-center justify-center w-6 h-6 rounded focus:outline-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${
+                                                            tag.color
+                                                                ? 'text-white/60 hover:text-white hover:bg-white/20'
+                                                                : 'text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'
+                                                        }`}
+                                                        aria-label={t('tags.toggleDropdownMenu', 'Toggle dropdown menu')}
+                                                        data-testid={`tag-dropdown-${tag.uid || tag.id}`}
+                                                    >
+                                                        <EllipsisVerticalIcon className="h-4 w-4" />
+                                                    </button>
 
-                                                {/* Action buttons */}
-                                                <div className="flex space-x-2 flex-shrink-0 items-center">
-                                                    {tag.pinned && (
-                                                        <MapPinIcon
-                                                            className="h-3.5 w-3.5 text-blue-400 dark:text-blue-500"
-                                                            title={t('tags.pinned', 'Pinned for quick access')}
-                                                        />
-                                                    )}
-                                                    {tag.tag_type === 'system' ? (
-                                                        <>
-                                                            <LockClosedIcon
-                                                                className="h-3.5 w-3.5 text-gray-300 dark:text-gray-600"
-                                                                title={t('tags.systemTag', 'System tag')}
-                                                            />
+                                                    {dropdownOpen === tag.uid && (
+                                                        <div className="absolute right-0 top-full mt-1 w-28 bg-white dark:bg-gray-700 shadow-lg rounded-md z-[60]">
                                                             <button
-                                                                onClick={() =>
-                                                                    handleEditTag(tag)
-                                                                }
-                                                                className={`text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none transition-opacity duration-200 ${
-                                                                    hoveredTagUid ===
-                                                                    tag.uid
-                                                                        ? 'opacity-100'
-                                                                        : 'opacity-0 pointer-events-none'
+                                                                onClick={(e) => {
+                                                                    e.preventDefault();
+                                                                    e.stopPropagation();
+                                                                    handleEditTag(tag);
+                                                                    setDropdownOpen(null);
+                                                                }}
+                                                                className={`block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left ${
+                                                                    isSystem ? 'rounded-md' : 'rounded-t-md'
                                                                 }`}
-                                                                aria-label={`Edit ${tag.name}`}
-                                                                title={t('tags.editPinSetting', 'Edit pin setting')}
-                                                            >
-                                                                <PencilSquareIcon className="h-4 w-4" />
-                                                            </button>
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <button
-                                                                onClick={() =>
-                                                                    handleEditTag(tag)
-                                                                }
-                                                                className={`text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none transition-opacity duration-200 ${
-                                                                    hoveredTagUid ===
-                                                                    tag.uid
-                                                                        ? 'opacity-100'
-                                                                        : 'opacity-0 pointer-events-none'
-                                                                }`}
-                                                                aria-label={`Edit ${tag.name}`}
-                                                                title={`Edit ${tag.name}`}
                                                                 data-testid={`tag-edit-${tag.uid || tag.id}`}
                                                             >
-                                                                <PencilSquareIcon className="h-4 w-4" />
+                                                                {isSystem
+                                                                    ? t('tags.customize', 'Customize')
+                                                                    : t('tags.edit', 'Edit')}
                                                             </button>
-                                                            <button
-                                                                onClick={() =>
-                                                                    openConfirmDialog(
-                                                                        tag
-                                                                    )
-                                                                }
-                                                                className={`text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none transition-opacity duration-200 ${
-                                                                    hoveredTagUid ===
-                                                                    tag.uid
-                                                                        ? 'opacity-100'
-                                                                        : 'opacity-0 pointer-events-none'
-                                                                }`}
-                                                                aria-label={`Delete ${tag.name}`}
-                                                                title={`Delete ${tag.name}`}
-                                                                data-testid={`tag-delete-${tag.uid || tag.id}`}
-                                                            >
-                                                                <TrashIcon className="h-4 w-4" />
-                                                            </button>
-                                                        </>
+                                                            {!isSystem && (
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.preventDefault();
+                                                                        e.stopPropagation();
+                                                                        openConfirmDialog(tag);
+                                                                        setDropdownOpen(null);
+                                                                    }}
+                                                                    className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-b-md"
+                                                                    data-testid={`tag-delete-${tag.uid || tag.id}`}
+                                                                >
+                                                                    {t('tags.delete', 'Delete')}
+                                                                </button>
+                                                            )}
+                                                        </div>
                                                     )}
                                                 </div>
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
+
+                                                {/* Tag name */}
+                                                <div className="px-4 pt-3 pb-2 flex-1 flex items-center justify-center text-center">
+                                                    <div>
+                                                        {tag.pinned && !isSystem && (
+                                                            <div className="flex items-center justify-center mb-0.5">
+                                                                <MapPinIcon
+                                                                    className={`h-3 w-3 flex-shrink-0 ${tag.color ? 'text-white/60' : 'text-blue-400 dark:text-blue-500'}`}
+                                                                    title={t('tags.pinned', 'Pinned')}
+                                                                />
+                                                            </div>
+                                                        )}
+                                                        <h4 className={`text-sm font-semibold tracking-widest line-clamp-2 ${tag.color ? 'text-white' : 'text-gray-800 dark:text-gray-100'}`}>
+                                                            {tag.name}
+                                                        </h4>
+                                                    </div>
+                                                </div>
+
+                                                {/* Stats footer */}
+                                                <div className={`rounded-b-xl flex items-stretch divide-x ${
+                                                    tag.color
+                                                        ? 'bg-black/20 divide-white/10'
+                                                        : 'bg-gray-50 dark:bg-gray-800 border-t border-gray-100 dark:border-gray-600 divide-gray-200 dark:divide-gray-600'
+                                                }`}>
+                                                    {[
+                                                        { icon: <CheckCircleIcon className="h-3.5 w-3.5" />, count: tag.tasks_count ?? 0, label: t('tags.stats.tasks', 'tasks') },
+                                                        { icon: <DocumentTextIcon className="h-3.5 w-3.5" />, count: tag.notes_count ?? 0, label: t('tags.stats.notes', 'notes') },
+                                                        { icon: <FolderIcon className="h-3.5 w-3.5" />, count: tag.projects_count ?? 0, label: t('tags.stats.projects', 'projects') },
+                                                    ].map(({ icon, count, label }) => (
+                                                        <div key={label} className="flex-1 flex flex-col items-center py-2 gap-0.5">
+                                                            <span className={`text-sm font-semibold leading-none ${tag.color ? 'text-white' : 'text-gray-700 dark:text-gray-200'}`}>
+                                                                {count}
+                                                            </span>
+                                                            <span className={`flex items-center gap-1 text-[10px] leading-none ${tag.color ? 'text-white/55' : 'text-gray-400 dark:text-gray-500'}`}>
+                                                                {icon}
+                                                                {label}
+                                                            </span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </Link>
+                                        );
+                                    })}
+                                </div>
                             </div>
                         ))}
                     </div>
