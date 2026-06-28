@@ -543,10 +543,12 @@ class UsersService {
             }
             const featureUpdates = {};
             if (showProductivity !== undefined) {
-                featureUpdates.productivity_assistant_enabled = showProductivity;
+                featureUpdates.productivity_assistant_enabled =
+                    showProductivity;
             }
             if (showNextTaskSuggestion !== undefined) {
-                featureUpdates.next_task_suggestion_enabled = showNextTaskSuggestion;
+                featureUpdates.next_task_suggestion_enabled =
+                    showNextTaskSuggestion;
             }
             profileUpdates.features = {
                 ...sanitizeFeatures(currentFeatures),
