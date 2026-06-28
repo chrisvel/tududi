@@ -277,7 +277,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
         <div className="mb-6">
             <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 px-6 py-5">
                 <div className="flex items-center justify-between gap-4">
-                    <div className="flex-1 min-w-0 overflow-hidden">
+                    <div className="flex-1 min-w-0">
                         {isEditingTitle ? (
                             <input
                                 ref={titleInputRef}
