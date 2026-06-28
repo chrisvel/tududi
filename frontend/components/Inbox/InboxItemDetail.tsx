@@ -156,6 +156,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
 
                         if (projectName && !matches.includes(projectName)) {
                             matches.push(projectName);
+                            return matches;
                         }
                     }
                 }
