@@ -82,9 +82,44 @@ describe('CalDAV Protocol - Phase 3', () => {
                 .expect(207);
 
             expect(response.text).toContain('calendar-home-set');
+            // calendar-home-set now points to the principal so clients can
+            // discover the tasks/ calendar as a depth-1 child (fixes Tasks.org)
             expect(response.text).toContain(
-                `/caldav/${encodeURIComponent(testUser.email)}/tasks/`
+                `/caldav/${encodeURIComponent(testUser.email)}/`
             );
+        });
+
+        test('PROPFIND /caldav/:username/ depth 1 should expose tasks calendar as child', async () => {
+            const propfindBody = `<?xml version="1.0" encoding="utf-8"?>
+                <D:propfind xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">
+                    <D:allprop/>
+                </D:propfind>`;
+
+            const response = await request(app)
+                .propfind(`/caldav/${testUser.email}/`)
+                .set('Authorization', authHeader)
+                .set('Content-Type', 'application/xml')
+                .set('Depth', '1')
+                .send(propfindBody)
+                .expect(207);
+
+            const tasksHref = `/caldav/${encodeURIComponent(testUser.email)}/tasks/`;
+            expect(response.text).toContain(tasksHref);
+            expect(response.text).toContain('C:calendar');
+        });
+
+        test('MKCOL inside tasks calendar should return 409 Conflict', async () => {
+            await request(app)
+                .mkcol(`/caldav/${testUser.email}/tasks/new-collection/`)
+                .set('Authorization', authHeader)
+                .expect(409);
+        });
+
+        test('MKCOL on tasks calendar itself should return 405', async () => {
+            await request(app)
+                .mkcol(`/caldav/${testUser.email}/tasks/`)
+                .set('Authorization', authHeader)
+                .expect(405);
         });
     });
 

@@ -75,6 +75,36 @@ registerMethod('PROPFIND', '/caldav/:username/tasks/:uid', handlePropfind);
 
 registerMethod('REPORT', '/caldav/:username/tasks/', handleReport);
 
+// MKCOL on the existing tasks calendar: 405 Method Not Allowed (already exists).
+router.all(
+    '/caldav/:username/tasks/',
+    xmlParser,
+    caldavAuth,
+    (req, res, next) => {
+        if (req.method !== 'MKCOL') return next();
+        res.set('Allow', 'OPTIONS, GET, HEAD, PUT, DELETE, PROPFIND, REPORT');
+        return res.status(405).end();
+    }
+);
+
+// MKCOL inside the tasks calendar (e.g. Tasks.org creating a "list"):
+// CalDAV forbids sub-collections inside a calendar collection (RFC 4791).
+router.all(
+    '/caldav/:username/tasks/:uid',
+    xmlParser,
+    caldavAuth,
+    (req, res, next) => {
+        if (req.method !== 'MKCOL') return next();
+        return res
+            .status(409)
+            .set('Content-Type', 'application/xml; charset=utf-8')
+            .send(
+                '<?xml version="1.0"?>' +
+                    '<D:error xmlns:D="DAV:"><D:resource-must-be-null/></D:error>'
+            );
+    }
+);
+
 router.get('/caldav/:username/tasks/', xmlParser, caldavAuth, (req, res) => {
     res.status(207).send(
         '<?xml version="1.0"?><D:multistatus xmlns:D="DAV:"/>'
