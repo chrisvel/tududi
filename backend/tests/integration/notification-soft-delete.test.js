@@ -40,7 +40,7 @@ describe('Notification Soft Delete', () => {
 
             // Delete (dismiss) the notification
             const deleteResponse = await agent.delete(
-                `/api/notifications/${notification.id}`
+                `/api/notifications/${notification.uid}`
             );
 
             expect(deleteResponse.status).toBe(200);
@@ -72,7 +72,7 @@ describe('Notification Soft Delete', () => {
 
             // Try to dismiss again
             const deleteResponse = await agent.delete(
-                `/api/notifications/${notification.id}`
+                `/api/notifications/${notification.uid}`
             );
 
             expect(deleteResponse.status).toBe(404);
@@ -98,7 +98,7 @@ describe('Notification Soft Delete', () => {
             });
 
             // Dismiss the first notification
-            await agent.delete(`/api/notifications/${notification1.id}`);
+            await agent.delete(`/api/notifications/${notification1.uid}`);
 
             // Get notifications
             const getResponse = await agent.get('/api/notifications');
@@ -134,7 +134,7 @@ describe('Notification Soft Delete', () => {
             expect(countResponse.body.count).toBe(2);
 
             // Dismiss one notification
-            await agent.delete(`/api/notifications/${notification1.id}`);
+            await agent.delete(`/api/notifications/${notification1.uid}`);
 
             // Check unread count again (should be 1)
             countResponse = await agent.get('/api/notifications/unread-count');

@@ -10,7 +10,7 @@ interface ProjectTasksSectionProps {
     project: Project | null;
     displayTasks: Task[];
     showAutoSuggestForm: boolean;
-    onAddNextAction: (projectId: number, description: string) => void;
+    onAddNextAction: (projectUid: string, description: string) => void;
     onDismissNextAction: () => void;
     onTaskCreate: (taskName: string) => Promise<void>;
     onTaskUpdate: (task: Task) => Promise<void>;
@@ -45,8 +45,8 @@ const ProjectTasksSection: React.FC<ProjectTasksSectionProps> = ({
                 <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0">
                     <AutoSuggestNextActionBox
                         onAddAction={(actionDescription) => {
-                            if (project?.id) {
-                                onAddNextAction(project.id, actionDescription);
+                            if (project?.uid) {
+                                onAddNextAction(project.uid, actionDescription);
                             }
                         }}
                         onDismiss={onDismissNextAction}

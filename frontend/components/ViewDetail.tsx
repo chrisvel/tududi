@@ -263,23 +263,11 @@ const ViewDetail: React.FC = () => {
             }
 
             let matchedProject: Project | undefined;
-            if (
-                task.project_id !== undefined &&
-                task.project_id !== null &&
-                typeof task.project_id !== 'string'
-            ) {
+            if (task.project_uid) {
+                matchedProject = projectLookupMap.byUid.get(task.project_uid);
+            }
+            if (!matchedProject && task.project_id !== undefined && task.project_id !== null) {
                 matchedProject = projectLookupMap.byId.get(task.project_id);
-            }
-
-            if (!matchedProject && task.Project?.uid) {
-                matchedProject = projectLookupMap.byUid.get(task.Project.uid);
-            }
-
-            if (!matchedProject && typeof task.project_id === 'string') {
-                const numericId = Number(task.project_id);
-                if (!Number.isNaN(numericId)) {
-                    matchedProject = projectLookupMap.byId.get(numericId);
-                }
             }
 
             return matchedProject

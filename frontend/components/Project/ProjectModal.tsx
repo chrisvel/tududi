@@ -108,7 +108,13 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
     useEffect(() => {
         if (formData.area_id) {
-            fetchGoals(formData.area_id).then(setAvailableGoals).catch(() => setAvailableGoals([]));
+            const area = areas.find((a) => a.id === formData.area_id);
+            const areaUid = area?.uid || formData.area_uid;
+            if (areaUid) {
+                fetchGoals(areaUid)
+                    .then(setAvailableGoals)
+                    .catch(() => setAvailableGoals([]));
+            }
         } else {
             setAvailableGoals([]);
         }

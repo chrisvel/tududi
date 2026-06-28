@@ -1,10 +1,18 @@
 'use strict';
 
 const goalsRepository = require('./repository');
+const { Area } = require('../../models');
 const { NotFoundError, ValidationError } = require('../../shared/errors');
 
 class GoalsService {
-    async getAll(userId, areaId) {
+    async getAll(userId, areaId, areaUid) {
+        if (areaUid) {
+            const area = await Area.findOne({ where: { uid: areaUid } });
+            if (area) {
+                return goalsRepository.findAllByArea(userId, area.id);
+            }
+            return [];
+        }
         if (areaId) {
             return goalsRepository.findAllByArea(userId, areaId);
         }
