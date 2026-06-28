@@ -290,7 +290,7 @@ const ProjectDetails: React.FC = () => {
         const newTask = await createTask({
             name: taskName,
             status: 0,
-            project_id: project.id,
+            project_uid: project.uid,
             completed_at: null,
         });
         setTasks([...tasks, newTask]);
@@ -438,13 +438,13 @@ const ProjectDetails: React.FC = () => {
     };
 
     const handleCreateNextAction = async (
-        projectId: number,
+        projectUid: string,
         actionDescription: string
     ) => {
         const newTask = await createTask({
             name: actionDescription,
             status: 0,
-            project_id: projectId,
+            project_uid: projectUid,
             priority: 0,
             completed_at: null,
         });
@@ -1128,9 +1128,8 @@ const ProjectDetails: React.FC = () => {
                                     title: '',
                                     content: '',
                                     tags: [],
-                                    project_id: project.id,
                                     project: {
-                                        id: project.id,
+                                        id: project.id!,
                                         name: project.name,
                                         uid: project.uid,
                                     },

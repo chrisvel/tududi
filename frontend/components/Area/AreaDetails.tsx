@@ -106,42 +106,42 @@ const AreaDetails: React.FC = () => {
     }, [areaUid, areasStore.areas, areasStore.isLoading]);
 
     const loadAreaTasks = useCallback(async () => {
-        if (!area?.id) return;
+        if (!area?.uid) return;
         setLoadingTasks(true);
         try {
-            const result = await fetchTasks(`?area_id=${area.id}&type=all&status=all`);
+            const result = await fetchTasks(`?area_uid=${area.uid}&type=all&status=all`);
             setAreaTasks(result.tasks || []);
         } catch {
             setAreaTasks([]);
         } finally {
             setLoadingTasks(false);
         }
-    }, [area?.id]);
+    }, [area?.uid]);
 
     useEffect(() => {
-        if (area?.id) {
+        if (area?.uid) {
             loadAreaTasks();
         }
-    }, [area?.id, loadAreaTasks]);
+    }, [area?.uid, loadAreaTasks]);
 
     const loadGoals = useCallback(async () => {
-        if (!area?.id) return;
+        if (!area?.uid) return;
         setLoadingGoals(true);
         try {
-            const data = await fetchGoals(area.id);
+            const data = await fetchGoals(area.uid);
             setGoals(data);
         } catch {
             setGoals([]);
         } finally {
             setLoadingGoals(false);
         }
-    }, [area?.id]);
+    }, [area?.uid]);
 
     useEffect(() => {
-        if (area?.id) {
+        if (area?.uid) {
             loadGoals();
         }
-    }, [area?.id, loadGoals]);
+    }, [area?.uid, loadGoals]);
 
     const areaProjects = projectsStore.projects.filter((p: Project) => {
         const projectArea = p.area || (p as any).Area;

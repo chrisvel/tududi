@@ -15,6 +15,7 @@ import { fetchWithCsrf } from '../../utils/csrfService';
 
 interface Notification {
     id: number;
+    uid: string;
     title: string;
     message: string;
     level: 'info' | 'warning' | 'error' | 'success';
@@ -97,10 +98,10 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
         setIsOpen(!isOpen);
     };
 
-    const handleMarkAsRead = async (id: number) => {
+    const handleMarkAsRead = async (uid: string) => {
         try {
             const response = await fetchWithCsrf(
-                getApiPath(`notifications/${id}/read`),
+                getApiPath(`notifications/${uid}/read`),
                 {
                     method: 'POST',
                     credentials: 'include',
@@ -114,7 +115,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
                 if (updatedNotification) {
                     setNotifications((prev) =>
                         prev.map((n) =>
-                            n.id === id
+                            n.uid === uid
                                 ? {
                                       ...n,
                                       read_at: updatedNotification.read_at,
@@ -152,14 +153,14 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
         }
     };
 
-    const handleDelete = async (id: number) => {
+    const handleDelete = async (uid: string) => {
         try {
-            const response = await fetchWithCsrf(getApiPath(`notifications/${id}`), {
+            const response = await fetchWithCsrf(getApiPath(`notifications/${uid}`), {
                 method: 'DELETE',
                 credentials: 'include',
             });
             if (response.ok) {
-                setNotifications((prev) => prev.filter((n) => n.id !== id));
+                setNotifications((prev) => prev.filter((n) => n.uid !== uid));
                 fetchUnreadCount();
             }
         } catch (error) {
@@ -303,7 +304,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
                         ) : (
                             notifications.map((notification) => (
                                 <div
-                                    key={notification.id}
+                                    key={notification.uid}
                                     className={`p-4 border-b ${
                                         isDarkMode
                                             ? 'border-gray-700'
@@ -357,7 +358,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
                                                                 handleMarkAsRead(
-                                                                    notification.id
+                                                                    notification.uid
                                                                 );
                                                             }}
                                                             className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
@@ -373,7 +374,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             handleDelete(
-                                                                notification.id
+                                                                notification.uid
                                                             );
                                                         }}
                                                         className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"

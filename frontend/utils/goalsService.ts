@@ -3,8 +3,8 @@ import { handleAuthResponse, getPostHeadersWithCsrf } from './authUtils';
 import { getApiPath } from '../config/paths';
 import { getCsrfToken } from './csrfService';
 
-export const fetchGoals = async (areaId?: number): Promise<Goal[]> => {
-    const url = areaId ? `goals?area_id=${areaId}` : 'goals';
+export const fetchGoals = async (areaUid?: string): Promise<Goal[]> => {
+    const url = areaUid ? `goals?area_uid=${areaUid}` : 'goals';
     const response = await fetch(getApiPath(url), {
         credentials: 'include',
         headers: { Accept: 'application/json' },

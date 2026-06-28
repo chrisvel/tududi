@@ -16,8 +16,10 @@ export interface Task {
     note?: string;
     tags?: Tag[];
     project_id?: number;
+    project_uid?: string;
     Project?: Project;
     area_id?: number;
+    area_uid?: string;
     Area?: Area;
     created_at?: string;
     updated_at?: string;

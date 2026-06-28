@@ -14,8 +14,8 @@ const goalsController = {
     async list(req, res, next) {
         try {
             const userId = requireUserId(req);
-            const { area_id } = req.query;
-            const goals = await goalsService.getAll(userId, area_id);
+            const { area_id, area_uid } = req.query;
+            const goals = await goalsService.getAll(userId, area_id, area_uid);
             res.json({ goals });
         } catch (err) {
             next(err);

@@ -9,13 +9,13 @@ router.get(
     '/notifications/unread-count',
     notificationsController.getUnreadCount
 );
-router.post('/notifications/:id/read', notificationsController.markAsRead);
-router.post('/notifications/:id/unread', notificationsController.markAsUnread);
+router.post('/notifications/:uid/read', notificationsController.markAsRead);
+router.post('/notifications/:uid/unread', notificationsController.markAsUnread);
 router.post(
     '/notifications/mark-all-read',
     notificationsController.markAllAsRead
 );
-router.delete('/notifications/:id', notificationsController.dismiss);
+router.delete('/notifications/:uid', notificationsController.dismiss);
 router.post(
     '/test-notifications/trigger',
     notificationsController.triggerTestNotification

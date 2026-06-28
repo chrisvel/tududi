@@ -408,7 +408,12 @@ async function filterTasksByParams(
         };
     }
 
-    if (params.area_id) {
+    if (params.area_uid) {
+        const area = await Area.findOne({ where: { uid: params.area_uid } });
+        if (area) {
+            whereClause.area_id = area.id;
+        }
+    } else if (params.area_id) {
         whereClause.area_id = params.area_id;
     }
 
