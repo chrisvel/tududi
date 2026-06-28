@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     SparklesIcon,
@@ -18,16 +18,7 @@ const DailyAssistant: React.FC = () => {
     const [isLoadingCached, setIsLoadingCached] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        fetchCachedBrief()
-            .then((cached) => {
-                if (cached) setBrief(cached);
-            })
-            .catch(() => {})
-            .finally(() => setIsLoadingCached(false));
-    }, []);
-
-    const generate = async () => {
+    const generate = useCallback(async () => {
         setIsLoading(true);
         setError(null);
         try {
@@ -37,7 +28,22 @@ const DailyAssistant: React.FC = () => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [t]);
+
+    useEffect(() => {
+        fetchCachedBrief()
+            .then((cached) => {
+                if (cached) {
+                    setBrief(cached);
+                } else {
+                    generate();
+                }
+            })
+            .catch(() => {})
+            .finally(() => setIsLoadingCached(false));
+    }, [generate]);
+
+    if (!brief && !isLoading && !isLoadingCached && !error) return null;
 
     return (
         <div className="mb-4 bg-white dark:bg-gray-900 rounded-lg shadow overflow-hidden">
@@ -86,13 +92,6 @@ const DailyAssistant: React.FC = () => {
                         <ExclamationCircleIcon className="h-4 w-4 mt-0.5 flex-shrink-0" />
                         <span>{error}</span>
                     </div>
-                )}
-
-                {/* Empty state */}
-                {!brief && !isLoading && !isLoadingCached && !error && (
-                    <p className="text-sm text-gray-400 dark:text-gray-500 italic">
-                        {t('aiAssistant.emptyState')}
-                    </p>
                 )}
 
                 {/* Skeleton */}

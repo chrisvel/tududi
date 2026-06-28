@@ -201,6 +201,11 @@ module.exports = (sequelize) => {
                 type: DataTypes.DATE,
                 allowNull: true,
             },
+            ai_insights: {
+                type: DataTypes.JSON,
+                allowNull: true,
+                defaultValue: null,
+            },
         },
         {
             tableName: 'tasks',

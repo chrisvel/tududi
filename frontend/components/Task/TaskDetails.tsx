@@ -100,18 +100,11 @@ const TaskDetails: React.FC = () => {
         (state: any) => state.userSettingsStore.aiAssistantEnabled
     );
     const aiInsightsRef = useRef<TaskAIInsightsHandle>(null);
-    const [aiInsightsShown, setAiInsightsShown] = useState(
-        () => localStorage.getItem('taskAiInsightsOpen') === 'true'
-    );
     const [aiInsightsActive, setAiInsightsActive] = useState(false);
 
     const handleAiInsightsClick = useCallback(() => {
-        if (!aiInsightsShown) {
-            setAiInsightsShown(true);
-            localStorage.setItem('taskAiInsightsOpen', 'true');
-        }
         aiInsightsRef.current?.activate();
-    }, [aiInsightsShown]);
+    }, []);
     const lastKnownSubtaskCount = useRef<number>(0);
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
@@ -1256,7 +1249,7 @@ const TaskDetails: React.FC = () => {
                     autoEditTitle={isNewTask}
                 />
 
-                {aiAssistantEnabled && aiInsightsShown && (
+                {aiAssistantEnabled && (
                     <div className="mb-4 mt-6">
                         <TaskAIInsights
                             ref={aiInsightsRef}

@@ -374,6 +374,8 @@ async function generateTaskInsights(taskContext, userId) {
 
     const systemPrompt = `You are a productivity assistant in Tududi. A user is viewing a task and needs real, specific help — not a paraphrase of the task name. Use the task name, project, tags, and notes to infer what this work actually involves, then give guidance that would only apply to THIS specific task.
 
+LANGUAGE RULE: Detect the language of the task name and write every text field of your JSON response in that same language. If the task name is in Greek, respond in Greek. If in Spanish, respond in Spanish. If in English, respond in English. Never mix languages.
+
 CRITICAL RULE: Never echo the task name back as your insight. If the task is "Write deployment procedures", your insight must explain what deployment procedures typically cover, what makes them hard, what done looks like — not just "this involves writing deployment procedures."
 
 Return a JSON object with exactly this shape:

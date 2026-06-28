@@ -216,13 +216,13 @@ const TaskAIInsights = forwardRef<TaskAIInsightsHandle, TaskAIInsightsProps>(
         // Expose activate() to parent via ref for the header ✨ button
         useImperativeHandle(ref, () => ({
             activate: () => {
-                if (isInitializing) return;
-                if (noCache) {
-                    generate();
-                } else if (dismissed) {
+                if (isInitializing || isLoading) return;
+                if (dismissed) {
                     show();
-                } else {
+                } else if (insights || error) {
                     dismiss();
+                } else {
+                    generate();
                 }
             },
         }));
@@ -278,46 +278,8 @@ const TaskAIInsights = forwardRef<TaskAIInsightsHandle, TaskAIInsightsProps>(
             };
         }, [task.uid]);
 
-        // ── Initializing: slim spinner header ──────────────────────────────
-        if (isInitializing) {
-            return (
-                <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 overflow-hidden">
-                    <div className="flex items-center gap-2 px-4 py-2">
-                        <SparklesIcon className="h-3.5 w-3.5 text-indigo-500 flex-shrink-0" />
-                        <span className="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">
-                            {t('aiAssistant.taskInsightsTitle', 'AI Insights')}
-                        </span>
-                        <ArrowPathIcon className="h-3 w-3 text-gray-300 dark:text-gray-600 animate-spin ml-1" />
-                    </div>
-                </div>
-            );
-        }
-
-        // ── No cache: slim invite (first time, never generated) ────────────
-        if (noCache && !isLoading) {
-            return (
-                <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 overflow-hidden">
-                    <div className="flex items-center justify-between px-4 py-2">
-                        <div className="flex items-center gap-2">
-                            <SparklesIcon className="h-3.5 w-3.5 text-indigo-500 flex-shrink-0" />
-                            <span className="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">
-                                {t('aiAssistant.taskInsightsTitle', 'AI Insights')}
-                            </span>
-                        </div>
-                        <button
-                            onClick={generate}
-                            className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors"
-                        >
-                            <SparklesIcon className="h-3 w-3" />
-                            {t('aiAssistant.generate', 'Generate Brief')}
-                        </button>
-                    </div>
-                </div>
-            );
-        }
-
-        // ── Dismissed: invisible — header ✨ button is the way back ──────────
-        if (dismissed && !isLoading) {
+        // Hide entirely when initializing, dismissed, or nothing to show yet
+        if (isInitializing || (dismissed && !isLoading) || (!insights && !isLoading && !error)) {
             return null;
         }
 
