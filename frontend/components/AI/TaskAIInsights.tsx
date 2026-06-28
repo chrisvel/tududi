@@ -165,7 +165,6 @@ const TaskAIInsights = forwardRef<TaskAIInsightsHandle, TaskAIInsightsProps>(
         const [insights, setInsights] = useState<TaskInsights | null>(null);
         const [dismissed, setDismissed] = useState(false);
         const [isInitializing, setIsInitializing] = useState(true);
-        const [noCache, setNoCache] = useState(false);
         const [isLoading, setIsLoading] = useState(false);
         const [error, setError] = useState<string | null>(null);
         const [lowContext, setLowContext] = useState(false);
@@ -198,7 +197,6 @@ const TaskAIInsights = forwardRef<TaskAIInsightsHandle, TaskAIInsightsProps>(
 
         const generate = async () => {
             setDismissed(false);
-            setNoCache(false);
             setIsLoading(true);
             setError(null);
             setInsights(null);
@@ -243,7 +241,6 @@ const TaskAIInsights = forwardRef<TaskAIInsightsHandle, TaskAIInsightsProps>(
 
             setInsights(null);
             setDismissed(false);
-            setNoCache(false);
             setError(null);
             setLowContext(false);
             setIsLoading(false);
@@ -258,17 +255,13 @@ const TaskAIInsights = forwardRef<TaskAIInsightsHandle, TaskAIInsightsProps>(
                         if (cached) {
                             setInsights(cached);
                             setDismissed(cached.dismissed ?? false);
-                        } else {
-                            setNoCache(true);
                         }
                     } catch {
                         if (cancelled) return;
                         setIsInitializing(false);
-                        setNoCache(true);
                     }
                 } else {
                     setIsInitializing(false);
-                    setNoCache(true);
                 }
             };
 
