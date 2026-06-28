@@ -415,7 +415,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                     </div>
                 </div>
                 {!isUpcomingView && !task.habit_mode && !hideStatusControl && onToggleCompletion && (
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center">
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center z-[1]">
                         <TaskStatusControl
                             task={task}
                             onToggleCompletion={onToggleCompletion}

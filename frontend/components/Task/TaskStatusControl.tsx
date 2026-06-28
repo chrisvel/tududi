@@ -169,8 +169,13 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
         e.stopPropagation();
         setCompletionMenuOpen(null);
         if (onTaskUpdate && task.id) {
+            // Exclude subtasks from the payload: the today-page API returns tasks
+            // without subtasks loaded (subtasks: []), and sending that empty array
+            // to the backend causes updateSubtasks to delete all existing subtasks.
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { subtasks: _subtasks, ...taskWithoutSubtasks } = task;
             const updatedTask = {
-                ...task,
+                ...taskWithoutSubtasks,
                 status: statusValue,
                 // Preserve the original task name if it exists (for recurring tasks)
                 // The backend serializer transforms recurring task names to "Daily", "Weekly", etc.
