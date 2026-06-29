@@ -368,7 +368,7 @@ const Areas: React.FC = () => {
                 {/* ConfirmDialog */}
                 {isConfirmDialogOpen && areaToDelete && (
                     <ConfirmDialog
-                        title="Delete Area"
+                        title={t('modals.deleteArea.title')}
                         message={`Are you sure you want to delete the area "${areaToDelete.name}"?`}
                         onConfirm={handleDeleteArea}
                         onCancel={closeConfirmDialog}

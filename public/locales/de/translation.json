@@ -25,7 +25,12 @@
     "yesDiscard": "Ja, verwerfen",
     "uploading": "Hochladen...",
     "refresh": "Aktualisieren",
-    "unlinking": "Trennen..."
+    "unlinking": "Trennen...",
+    "preview": "Vorschau",
+    "download": "Herunterladen",
+    "exitFocusMode": "Fokusmodus beenden",
+    "searchTimezones": "Zeitzonen suchen...",
+    "dismiss": "Schließen"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -58,7 +63,10 @@
     "unpinView": "Ansicht lösen",
     "pinView": "Ansicht anheften",
     "eisenhower": "Eisenhower-Matrix",
-    "kanban": "Kanban-Board"
+    "kanban": "Kanban-Board",
+    "addHabitAriaLabel": "Gewohnheit hinzufügen",
+    "addHabitTitle": "Gewohnheit hinzufügen",
+    "toggleDarkMode": "Dunkelmodus umschalten"
   },
   "navigation": {
     "home": "Startseite",
@@ -68,7 +76,11 @@
     "settings": "Einstellungen",
     "about": "Über",
     "logout": "Abmelden",
-    "backupRestore": "Sichern & Wiederherstellen"
+    "backupRestore": "Sichern & Wiederherstellen",
+    "toggleSearch": "Suche umschalten",
+    "quickInboxCapture": "Schnelle Posteingangserfassung",
+    "userMenu": "Benutzermenü",
+    "search": "Suche"
   },
   "settings": {
     "todayPageSettings": "Heute-Seite Einstellungen",
@@ -181,7 +193,9 @@
       "waiting": "Warten",
       "done": "Erledigt",
       "dropHere": "Hier ablegen"
-    }
+    },
+    "chaseUp": "Nachverfolgen",
+    "habit": "Gewohnheit"
   },
   "timeline": {
     "activityTimeline": "Aktivitätsverlauf",
@@ -362,7 +376,11 @@
     "failedToSaveTag": "Speichern des Tags fehlgeschlagen.",
     "projectImageTooLarge": "Bild ist zu groß. Bitte wählen Sie eine Datei unter 10MB.",
     "projectImageUpload": "Hochladen des Bildes fehlgeschlagen. Bitte versuchen Sie eine kleinere Datei oder ein anderes Format.",
-    "bannerSaveFailed": "Speichern des Banners fehlgeschlagen"
+    "bannerSaveFailed": "Speichern des Banners fehlgeschlagen",
+    "loginFailed": "Anmeldung fehlgeschlagen. Bitte erneut versuchen.",
+    "generalError": "Ein Fehler ist aufgetreten. Bitte erneut versuchen.",
+    "viewNameRequired": "Der Ansichtsname ist erforderlich",
+    "viewSaveFailed": "Speichern der Ansicht fehlgeschlagen. Bitte versuchen Sie es erneut."
   },
   "success": {
     "noteUpdated": "Notiz erfolgreich aktualisiert!",
@@ -389,7 +407,14 @@
     "deleteNoteAriaLabel": "Notiz {{noteTitle}} löschen",
     "deleteNoteTitle": "Notiz {{noteTitle}} löschen",
     "editNoteAriaLabel": "Notiz {{noteTitle}} bearbeiten",
-    "editNoteTitle": "Notiz {{noteTitle}} bearbeiten"
+    "editNoteTitle": "Notiz {{noteTitle}} bearbeiten",
+    "titlePlaceholder": "Notiztitel...",
+    "contentPlaceholder": "Schreiben Sie hier den Inhalt Ihrer Notiz... (Markdown unterstützt)",
+    "focusMode": "Fokusmodus",
+    "noteOptions": "Notizoptionen",
+    "clickToEdit": "Klicken Sie zum Bearbeiten",
+    "contentPlaceholderFocus": "Schreiben Sie Ihre Notiz... (Markdown unterstützt)",
+    "contentPlaceholderMarkdown": "Schreiben Sie Ihren Inhalt mit Markdown-Formatierung...\n\nBeispiele:\n# Überschrift\n**Fetter Text**\n*Kursiver Text*\n- Listenpunkt\n```code```"
   },
   "recurrence": {
     "none": "Keine",
@@ -451,7 +476,9 @@
     "loadMoreError": "Fehler beim Laden weiterer Elemente",
     "loading": "Wird geladen...",
     "loadMore": "Weitere Posteingangsartikel laden",
-    "showingItems": "Zeige {{current}} von {{total}} Elementen"
+    "showingItems": "Zeige {{current}} von {{total}} Elementen",
+    "removeTag": "Tag entfernen",
+    "removeProject": "Projekt entfernen"
   },
   "project": {
     "projectImage": "Projektbild",
@@ -746,7 +773,9 @@
       "serverSettings": "Servereinstellungen",
       "syncSettings": "Synchronisationseinstellungen",
       "setupSuccess": "Kalender erfolgreich konfiguriert!",
-      "setupFailed": "Kalender konnte nicht erstellt werden"
+      "setupFailed": "Kalender konnte nicht erstellt werden",
+      "serverUrlPlaceholder": "https://caldav.beispiel.com",
+      "calendarPathPlaceholder": "/kalender/benutzer/aufgaben"
     },
     "conflictResolver": {
       "title": "Synchronisationskonflikte lösen",
@@ -781,7 +810,9 @@
       "intervalError": "Das Synchronisierungsintervall muss zwischen 1 und 1440 Minuten liegen",
       "updateSuccess": "Kalender erfolgreich aktualisiert",
       "updateError": "Fehler beim Aktualisieren des Kalenders"
-    }
+    },
+    "telegramTokenPlaceholder": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+    "telegramAllowedUsersPlaceholder": "@benutzername1, 123456789, @benutzername2"
   },
   "nextTask": {
     "suggestion": "Da nichts in Bearbeitung ist, wie wäre es, mit diesem zu beginnen",
@@ -1148,7 +1179,9 @@
     "nextUp": "Nächste beste Aktion",
     "focusTask": "Einflussreichste Aufgabe",
     "focusHint": "Verschiebt diese Aufgabe zu „In Bearbeitung\" und „Heute\"",
-    "noNextAction": "Alles klar - keine ausstehenden Aufgaben."
+    "noNextAction": "Alles klar - keine ausstehenden Aufgaben.",
+    "selectDueDatePlaceholder": "Fälligkeitsdatum auswählen",
+    "goalTitle": "Ziel"
   },
   "projectItem": {
     "edit": "Bearbeiten",
@@ -1180,7 +1213,14 @@
     "error": "Fehler beim Laden der Bereichsdetails.",
     "notFound": "Bereich nicht gefunden.",
     "details": "Bereichsdetails",
-    "viewProjects": "Projekte in {{name}} anzeigen"
+    "viewProjects": "Projekte in {{name}} anzeigen",
+    "goalTitlePlaceholder": "Zieltitel",
+    "goalWhyPlaceholder": "Warum das wichtig ist (optional)",
+    "editGoal": "Ziel bearbeiten",
+    "deleteGoal": "Ziel löschen",
+    "moveBackToUnlinked": "Zurück zu nicht verknüpft bewegen",
+    "horizonSeason": "Saison",
+    "horizonYear": "Jahr"
   },
   "tags": {
     "loading": "Tags laden...",
@@ -1204,7 +1244,11 @@
     "systemTag": "System-Tags",
     "systemTagDescription": "Wird automatisch von der App erstellt. Sie steuern integrierte Funktionen und können nicht umbenannt oder gelöscht werden.",
     "userTag": "Benutzertags",
-    "userTagDescription": "Ihre eigenen Tags zur Organisation von Aufgaben, Notizen und Projekten."
+    "userTagDescription": "Ihre eigenen Tags zur Organisation von Aufgaben, Notizen und Projekten.",
+    "systemTags": "System-Tags",
+    "systemTagsDescription": "Automatisch verwaltet · Können nicht gelöscht oder umbenannt werden",
+    "system": "System",
+    "customize": "Anpassen"
   },
   "pomodoro": {
     "play": "Abspielen",
@@ -1408,7 +1452,14 @@
     "priorityLabel": "Priorität:",
     "dueLabel": "Fällig:",
     "tags": "Tags",
-    "recurring": "Wiederkehrend"
+    "recurring": "Wiederkehrend",
+    "saveAsSmartView": "Als intelligente Ansicht speichern",
+    "viewNamePlaceholder": "Geben Sie den Ansichtsname ein",
+    "viewNameLabel": "Ansichtsname",
+    "viewWillSave": "Diese Ansicht wird gespeichert:",
+    "saveView": "Ansicht speichern",
+    "filtersLabel": "Filter:",
+    "searchLabel": "Suche:"
   },
   "search": {
     "placeholder": "Aufgaben, Projekte, Notizen suchen...",
@@ -1565,5 +1616,36 @@
     "done_desc": "Fertig und abgeschlossen",
     "cancelled": "Abgebrochen",
     "cancelled_desc": "Wird nicht abgeschlossen"
+  },
+  "habits": {
+    "completeHabit": "Gewohnheit abschließen"
+  },
+  "aiAssistant": {
+    "title": "KI-Assistent",
+    "generatedAt": "Generiert um {{time}}",
+    "emptyState": "Klicken Sie auf 'Brief generieren', um Ihre KI-gestützte tägliche Zusammenfassung zu erhalten.",
+    "focusForToday": "Fokus für heute",
+    "priorityActions": "Prioritätsaktionen",
+    "taskInsightsTitle": "KI-Einblicke",
+    "projectInsightsTitle": "KI-Einblicke",
+    "taskInsight": "Über diese Aufgabe",
+    "taskNextStep": "Nächster Schritt",
+    "taskBreakdown": "Wie man es angeht",
+    "projectInsight": "Über dieses Projekt",
+    "projectNextAction": "Nächste Aktion",
+    "projectHealth": "Projektgesundheit",
+    "watchOut": "Vorsicht",
+    "suggestedLinks": "Vorgeschlagene Links",
+    "generate": "Brief generieren",
+    "regenerate": "Regenerieren",
+    "generating": "Wird generiert...",
+    "errorDefault": "Fehler beim Generieren von Einblicken. Bitte versuchen Sie es erneut.",
+    "lowContextTitle": "Nicht genug Kontext für einen großartigen Vorschlag",
+    "lowContextHint": "Fügen Sie eine Beschreibung, Notizen, Tags hinzu oder weisen Sie ein Projekt zu, um bessere Einblicke zu erhalten. Sie können trotzdem unten generieren.",
+    "generateAnyway": "Trotzdem generieren",
+    "statTotal": "Gesamt",
+    "statDone": "Erledigt",
+    "statActive": "Aktiv",
+    "statOverdue": "Überfällig"
   }
 }

@@ -25,7 +25,12 @@
     "yesDiscard": "是的，放弃",
     "uploading": "上传中...",
     "refresh": "刷新",
-    "unlinking": "正在解除链接..."
+    "unlinking": "正在解除链接...",
+    "preview": "预览",
+    "download": "下载",
+    "exitFocusMode": "退出专注模式",
+    "searchTimezones": "搜索时区...",
+    "dismiss": "关闭"
   },
   "sidebar": {
     "dashboard": "仪表板",
@@ -58,7 +63,10 @@
     "unpinView": "取消固定视图",
     "pinView": "固定视图",
     "eisenhower": "艾森豪威尔矩阵",
-    "kanban": "看板"
+    "kanban": "看板",
+    "addHabitAriaLabel": "添加习惯",
+    "addHabitTitle": "添加习惯",
+    "toggleDarkMode": "切换暗黑模式"
   },
   "navigation": {
     "home": "首页",
@@ -68,7 +76,11 @@
     "settings": "设置",
     "about": "关于",
     "logout": "注销",
-    "backupRestore": "备份与恢复"
+    "backupRestore": "备份与恢复",
+    "toggleSearch": "切换搜索",
+    "quickInboxCapture": "快速收件箱捕获",
+    "userMenu": "用户菜单",
+    "search": "搜索"
   },
   "settings": {
     "todayPageSettings": "今日页面设置",
@@ -181,7 +193,9 @@
       "waiting": "等待",
       "done": "完成",
       "dropHere": "拖放到这里"
-    }
+    },
+    "chaseUp": "催促",
+    "habit": "习惯"
   },
   "timeline": {
     "activityTimeline": "活动时间线",
@@ -503,7 +517,9 @@
       "serverSettings": "服务器设置",
       "syncSettings": "同步设置",
       "setupSuccess": "日历配置成功！",
-      "setupFailed": "创建日历失败"
+      "setupFailed": "创建日历失败",
+      "serverUrlPlaceholder": "https://caldav.example.com",
+      "calendarPathPlaceholder": "/calendars/user/tasks"
     },
     "conflictResolver": {
       "title": "解决同步冲突",
@@ -538,7 +554,9 @@
       "intervalError": "同步间隔必须在1到1440分钟之间",
       "updateSuccess": "日历更新成功",
       "updateError": "更新日历失败"
-    }
+    },
+    "telegramTokenPlaceholder": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+    "telegramAllowedUsersPlaceholder": "@username1, 123456789, @username2"
   },
   "productivity": {
     "stalledProjects": "停滞项目",
@@ -777,7 +795,11 @@
     "projectSaveFailed": "保存项目失败。",
     "projectImageTooLarge": "图片太大。请选取一个小于10MB的文件。",
     "projectImageUpload": "上传图片失败。请尝试一个更小的文件或不同的格式。",
-    "bannerSaveFailed": "保存横幅失败"
+    "bannerSaveFailed": "保存横幅失败",
+    "loginFailed": "登录失败。请再试一次。",
+    "generalError": "发生错误。请再试一次。",
+    "viewNameRequired": "视图名称是必需的",
+    "viewSaveFailed": "保存视图失败。请再试一次。"
   },
   "inbox": {
     "title": "收件箱",
@@ -810,7 +832,9 @@
     "loadMoreError": "加载更多项目失败",
     "loading": "加载中...",
     "loadMore": "加载更多收件箱项目",
-    "showingItems": "显示 {{current}} / {{total}} 项"
+    "showingItems": "显示 {{current}} / {{total}} 项",
+    "removeTag": "移除标签",
+    "removeProject": "移除项目"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1056,7 +1080,9 @@
     "nextUp": "下一个最佳行动",
     "focusTask": "最具影响力的任务",
     "focusHint": "将此任务移至进行中和今天",
-    "noNextAction": "一切正常--没有未完成的任务。"
+    "noNextAction": "一切正常--没有未完成的任务。",
+    "selectDueDatePlaceholder": "选择截止日期",
+    "goalTitle": "目标"
   },
   "projectItem": {
     "edit": "编辑",
@@ -1088,7 +1114,14 @@
     "error": "加载区域详情时出错。",
     "notFound": "未找到区域。",
     "details": "区域详情",
-    "viewProjects": "查看 {{name}} 中的项目"
+    "viewProjects": "查看 {{name}} 中的项目",
+    "goalTitlePlaceholder": "目标标题",
+    "goalWhyPlaceholder": "为什么这很重要（可选）",
+    "editGoal": "编辑目标",
+    "deleteGoal": "删除目标",
+    "moveBackToUnlinked": "移回未链接",
+    "horizonSeason": "季节",
+    "horizonYear": "年份"
   },
   "notes": {
     "loading": "加载笔记...",
@@ -1099,7 +1132,14 @@
     "deleteNoteAriaLabel": "删除笔记 {{noteTitle}}",
     "deleteNoteTitle": "删除笔记 {{noteTitle}}",
     "editNoteAriaLabel": "编辑笔记 {{noteTitle}}",
-    "editNoteTitle": "编辑笔记 {{noteTitle}}"
+    "editNoteTitle": "编辑笔记 {{noteTitle}}",
+    "titlePlaceholder": "笔记标题...",
+    "contentPlaceholder": "在这里写下你的笔记内容...（支持Markdown）",
+    "focusMode": "专注模式",
+    "noteOptions": "笔记选项",
+    "clickToEdit": "点击编辑",
+    "contentPlaceholderFocus": "写下你的笔记...（支持Markdown）",
+    "contentPlaceholderMarkdown": "使用Markdown格式编写内容...\n\n示例：\n# 标题\n**粗体文本**\n*斜体文本*\n- 列表项\n```代码```"
   },
   "tags": {
     "loading": "加载标签...",
@@ -1123,7 +1163,11 @@
     "systemTag": "系统标签",
     "systemTagDescription": "由应用程序自动创建。它们支持内置功能，无法重命名或删除。",
     "userTag": "用户标签",
-    "userTagDescription": "您自己用于组织任务、笔记和项目的标签。"
+    "userTagDescription": "您自己用于组织任务、笔记和项目的标签。",
+    "systemTags": "系统标签",
+    "systemTagsDescription": "自动管理 · 不能被删除或重命名",
+    "system": "系统",
+    "customize": "自定义"
   },
   "recurrence": {
     "none": "无",
@@ -1399,7 +1443,14 @@
     "priorityLabel": "优先级：",
     "dueLabel": "到期：",
     "tags": "标签",
-    "recurring": "循环"
+    "recurring": "循环",
+    "saveAsSmartView": "保存为智能视图",
+    "viewNamePlaceholder": "输入视图名称",
+    "viewNameLabel": "视图名称",
+    "viewWillSave": "此视图将保存：",
+    "saveView": "保存视图",
+    "filtersLabel": "过滤器：",
+    "searchLabel": "搜索："
   },
   "search": {
     "placeholder": "搜索任务、项目、笔记...",
@@ -1556,5 +1607,36 @@
     "done_desc": "已完成并结束",
     "cancelled": "已取消",
     "cancelled_desc": "将不会完成"
+  },
+  "habits": {
+    "completeHabit": "完成习惯"
+  },
+  "aiAssistant": {
+    "title": "AI 助手",
+    "generatedAt": "生成于 {{time}}",
+    "emptyState": "点击 '生成摘要' 获取您的 AI 驱动的每日总结。",
+    "focusForToday": "今天的重点",
+    "priorityActions": "优先行动",
+    "taskInsightsTitle": "AI 洞察",
+    "projectInsightsTitle": "AI 洞察",
+    "taskInsight": "关于此任务",
+    "taskNextStep": "下一步",
+    "taskBreakdown": "如何处理",
+    "projectInsight": "关于这个项目",
+    "projectNextAction": "下一步行动",
+    "projectHealth": "项目健康",
+    "watchOut": "注意",
+    "suggestedLinks": "建议的链接",
+    "generate": "生成简报",
+    "regenerate": "重新生成",
+    "generating": "正在生成...",
+    "errorDefault": "生成洞察失败。请再试一次。",
+    "lowContextTitle": "上下文不足，无法提供良好的建议",
+    "lowContextHint": "添加描述、备注、标签或分配项目以获得更好的洞察。您仍然可以在下面生成。",
+    "generateAnyway": "仍然生成",
+    "statTotal": "总计",
+    "statDone": "完成",
+    "statActive": "活跃",
+    "statOverdue": "逾期"
   }
 }

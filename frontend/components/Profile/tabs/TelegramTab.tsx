@@ -81,7 +81,7 @@ const TelegramTab: React.FC<TelegramTabProps> = ({
                             name="telegram_bot_token"
                             value={formData.telegram_bot_token || ''}
                             onChange={onChange}
-                            placeholder="123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ"
+                            placeholder={t('profile.telegramTokenPlaceholder')}
                             className="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                         />
                         <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
@@ -101,7 +101,7 @@ const TelegramTab: React.FC<TelegramTabProps> = ({
                             name="telegram_allowed_users"
                             value={formData.telegram_allowed_users || ''}
                             onChange={onChange}
-                            placeholder="@username1, 123456789, @username2"
+                            placeholder={t('profile.telegramAllowedUsersPlaceholder')}
                             className="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                         />
                         <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 space-y-1">

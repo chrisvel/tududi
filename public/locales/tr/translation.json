@@ -25,7 +25,12 @@
     "yesDiscard": "Evet, iptal et",
     "uploading": "Yükleniyor...",
     "refresh": "Yenile",
-    "unlinking": "Bağlantı kesiliyor..."
+    "unlinking": "Bağlantı kesiliyor...",
+    "preview": "Önizleme",
+    "download": "İndir",
+    "exitFocusMode": "Odak modundan çık",
+    "searchTimezones": "Saat dilimlerini ara...",
+    "dismiss": "Kapat"
   },
   "sidebar": {
     "dashboard": "Gösterge Paneli",
@@ -58,7 +63,10 @@
     "unpinView": "Görünümü sabitlemeyi kaldır",
     "pinView": "Görünümü sabitle",
     "eisenhower": "Eisenhower Matrisi",
-    "kanban": "Kanban Panosu"
+    "kanban": "Kanban Panosu",
+    "addHabitAriaLabel": "Alışkanlık Ekle",
+    "addHabitTitle": "Alışkanlık Ekle",
+    "toggleDarkMode": "Karanlık Modu Aç/Kapat"
   },
   "navigation": {
     "home": "Ana Sayfa",
@@ -68,7 +76,11 @@
     "settings": "Ayarlar",
     "about": "Hakkında",
     "logout": "Çıkış Yap",
-    "backupRestore": "Yedekleme & Geri Yükleme"
+    "backupRestore": "Yedekleme & Geri Yükleme",
+    "toggleSearch": "Aramayı Aç/Kapat",
+    "quickInboxCapture": "Hızlı Gelen Kutusu Yakalama",
+    "userMenu": "Kullanıcı Menüsü",
+    "search": "Ara"
   },
   "settings": {
     "todayPageSettings": "Bugün Sayfası Ayarları",
@@ -181,7 +193,9 @@
       "waiting": "Bekliyor",
       "done": "Tamamlandı",
       "dropHere": "Buraya bırak"
-    }
+    },
+    "chaseUp": "Takip et",
+    "habit": "Alışkanlık"
   },
   "timeline": {
     "activityTimeline": "Etkinlik Zaman Çizelgesi",
@@ -503,7 +517,9 @@
       "serverSettings": "Sunucu Ayarları",
       "syncSettings": "Senkranizasyon Ayarları",
       "setupSuccess": "Takvim başarıyla yapılandırıldı!",
-      "setupFailed": "Takvim oluşturulamadı"
+      "setupFailed": "Takvim oluşturulamadı",
+      "serverUrlPlaceholder": "https://caldav.example.com",
+      "calendarPathPlaceholder": "/takvimler/kullanıcı/görevler"
     },
     "conflictResolver": {
       "title": "Senkronizasyon Çatışmalarını Çöz",
@@ -538,7 +554,9 @@
       "intervalError": "Senkronizasyon aralığı 1 ile 1440 dakika arasında olmalıdır",
       "updateSuccess": "Takvim başarıyla güncellendi",
       "updateError": "Takvimi güncelleme başarısız oldu"
-    }
+    },
+    "telegramTokenPlaceholder": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+    "telegramAllowedUsersPlaceholder": "@kullanıcıadı1, 123456789, @kullanıcıadı2"
   },
   "productivity": {
     "stalledProjects": "Duraklayan Projeler",
@@ -777,7 +795,11 @@
     "projectSaveFailed": "Projeyi kaydetmekte başarısız olundu.",
     "projectImageTooLarge": "Görüntü çok büyük. Lütfen 10MB'den küçük bir dosya seçin.",
     "projectImageUpload": "Görüntü yüklenemedi. Lütfen daha küçük bir dosya veya farklı bir format deneyin.",
-    "bannerSaveFailed": "Afiş kaydedilemedi"
+    "bannerSaveFailed": "Afiş kaydedilemedi",
+    "loginFailed": "Giriş başarısız oldu. Lütfen tekrar deneyin.",
+    "generalError": "Bir hata oluştu. Lütfen tekrar deneyin.",
+    "viewNameRequired": "Görünüm adı gereklidir",
+    "viewSaveFailed": "Görünümü kaydetme başarısız oldu. Lütfen tekrar deneyin."
   },
   "inbox": {
     "title": "Gelen Kutusu",
@@ -810,7 +832,9 @@
     "loadMoreError": "Daha fazla öğe yüklenemedi",
     "loading": "Yükleniyor...",
     "loadMore": "Daha fazla gelen kutusu öğesi yükle",
-    "showingItems": "{{current}} / {{total}} öğe gösteriliyor"
+    "showingItems": "{{current}} / {{total}} öğe gösteriliyor",
+    "removeTag": "Etiketi kaldır",
+    "removeProject": "Projeyi kaldır"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1056,7 +1080,9 @@
     "nextUp": "Sonraki en iyi eylem",
     "focusTask": "En etkili görev",
     "focusHint": "Bu görevi devam ediyor ve bugün'e taşır",
-    "noNextAction": "Her şey açık - bekleyen görev yok."
+    "noNextAction": "Her şey açık - bekleyen görev yok.",
+    "selectDueDatePlaceholder": "Son tarihi seç",
+    "goalTitle": "Hedef"
   },
   "projectItem": {
     "edit": "Düzenle",
@@ -1088,7 +1114,14 @@
     "error": "Alan detayları yüklenirken hata oluştu.",
     "notFound": "Alan bulunamadı.",
     "details": "Alan Detayları",
-    "viewProjects": "{{name}}'deki Projeleri Görüntüle"
+    "viewProjects": "{{name}}'deki Projeleri Görüntüle",
+    "goalTitlePlaceholder": "Hedef başlığı",
+    "goalWhyPlaceholder": "Neden önemli? (isteğe bağlı)",
+    "editGoal": "Hedefi düzenle",
+    "deleteGoal": "Hedefi sil",
+    "moveBackToUnlinked": "Bağlantısız olanlara geri taşı",
+    "horizonSeason": "Sezon",
+    "horizonYear": "Yıl"
   },
   "notes": {
     "loading": "Notlar yükleniyor...",
@@ -1099,7 +1132,14 @@
     "deleteNoteAriaLabel": "Notu sil {{noteTitle}}",
     "deleteNoteTitle": "Notu sil {{noteTitle}}",
     "editNoteAriaLabel": "Notu düzenle {{noteTitle}}",
-    "editNoteTitle": "Notu düzenle {{noteTitle}}"
+    "editNoteTitle": "Notu düzenle {{noteTitle}}",
+    "titlePlaceholder": "Not başlığı...",
+    "contentPlaceholder": "Not içeriğinizi buraya yazın... (Markdown destekleniyor)",
+    "focusMode": "Odak modu",
+    "noteOptions": "Not seçenekleri",
+    "clickToEdit": "Düzenlemek için tıklayın",
+    "contentPlaceholderFocus": "Notunuzu yazın... (Markdown destekleniyor)",
+    "contentPlaceholderMarkdown": "İçeriğinizi Markdown formatında yazın...\n\nÖrnekler:\n# Başlık\n**Kalın metin**\n*İtalik metin*\n- Liste maddesi\n```kod```"
   },
   "tags": {
     "loading": "Etiketler yükleniyor...",
@@ -1123,7 +1163,11 @@
     "systemTag": "Sistem etiketleri",
     "systemTagDescription": "Uygulama tarafından otomatik olarak oluşturulmuştur. Yerleşik özellikleri güçlendirir ve yeniden adlandırılamaz veya silinemez.",
     "userTag": "Kullanıcı etiketleri",
-    "userTagDescription": "Görevleri, notları ve projeleri düzenlemek için kendi etiketleriniz."
+    "userTagDescription": "Görevleri, notları ve projeleri düzenlemek için kendi etiketleriniz.",
+    "systemTags": "Sistem Etiketleri",
+    "systemTagsDescription": "Otomatik olarak yönetilir · Silinemez veya yeniden adlandırılamaz",
+    "system": "Sistem",
+    "customize": "Özelleştir"
   },
   "recurrence": {
     "none": "Yok",
@@ -1399,7 +1443,14 @@
     "priorityLabel": "Öncelik:",
     "dueLabel": "Son Tarih:",
     "tags": "Etiketler",
-    "recurring": "Tekrarlayan"
+    "recurring": "Tekrarlayan",
+    "saveAsSmartView": "Akıllı Görünüm Olarak Kaydet",
+    "viewNamePlaceholder": "Görünüm adını girin",
+    "viewNameLabel": "Görünüm Adı",
+    "viewWillSave": "Bu görünüm kaydedilecek:",
+    "saveView": "Görünümü Kaydet",
+    "filtersLabel": "Filtreler:",
+    "searchLabel": "Ara:"
   },
   "search": {
     "placeholder": "Görevleri, projeleri, notları ara...",
@@ -1556,5 +1607,36 @@
     "done_desc": "Bitirildi ve tamamlandı",
     "cancelled": "İptal Edildi",
     "cancelled_desc": "Tamamlanmayacak"
+  },
+  "habits": {
+    "completeHabit": "Alışkanlığı Tamamla"
+  },
+  "aiAssistant": {
+    "title": "Yapay Zeka Asistanı",
+    "generatedAt": "{{time}} tarihinde oluşturuldu",
+    "emptyState": "'Kısa Rapor Oluştur' butonuna tıklayarak yapay zeka destekli günlük özetinizi alın.",
+    "focusForToday": "Bugünkü Odak",
+    "priorityActions": "Öncelikli Eylemler",
+    "taskInsightsTitle": "Yapay Zeka İçgörüleri",
+    "projectInsightsTitle": "Yapay Zeka İçgörüleri",
+    "taskInsight": "Bu görev hakkında",
+    "taskNextStep": "Sonraki adım",
+    "taskBreakdown": "Nasıl yaklaşılır",
+    "projectInsight": "Bu proje hakkında",
+    "projectNextAction": "Sonraki eylem",
+    "projectHealth": "Proje durumu",
+    "watchOut": "Dikkat et",
+    "suggestedLinks": "Önerilen bağlantılar",
+    "generate": "Özet Oluştur",
+    "regenerate": "Yeniden Oluştur",
+    "generating": "Oluşturuluyor...",
+    "errorDefault": "İçgörüler oluşturulamadı. Lütfen tekrar deneyin.",
+    "lowContextTitle": "Harika bir öneri için yeterli bağlam yok",
+    "lowContextHint": "Daha iyi içgörüler elde etmek için bir açıklama, notlar, etiketler ekleyin veya bir proje atayın. Yine de aşağıda oluşturabilirsiniz.",
+    "generateAnyway": "Yine de oluştur",
+    "statTotal": "Toplam",
+    "statDone": "Tamamlandı",
+    "statActive": "Aktif",
+    "statOverdue": "Vadesi geçmiş"
   }
 }

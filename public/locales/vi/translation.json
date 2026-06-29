@@ -25,7 +25,12 @@
     "yesDiscard": "Có, bỏ qua",
     "uploading": "Đang tải lên...",
     "refresh": "Làm mới",
-    "unlinking": "Ngắt liên kết..."
+    "unlinking": "Ngắt liên kết...",
+    "preview": "Xem trước",
+    "download": "Tải xuống",
+    "exitFocusMode": "Thoát chế độ tập trung",
+    "searchTimezones": "Tìm kiếm múi giờ...",
+    "dismiss": "Bỏ qua"
   },
   "sidebar": {
     "dashboard": "Bảng điều khiển",
@@ -58,7 +63,10 @@
     "unpinView": "Bỏ ghim chế độ xem",
     "pinView": "Ghim chế độ xem",
     "eisenhower": "Ma trận Eisenhower",
-    "kanban": "Bảng Kanban"
+    "kanban": "Bảng Kanban",
+    "addHabitAriaLabel": "Thêm Thói quen",
+    "addHabitTitle": "Thêm Thói quen",
+    "toggleDarkMode": "Chuyển đổi Chế độ Tối"
   },
   "navigation": {
     "home": "Trang chủ",
@@ -68,7 +76,11 @@
     "settings": "Cài đặt",
     "about": "Giới thiệu",
     "logout": "Đăng xuất",
-    "backupRestore": "Sao lưu & Khôi phục"
+    "backupRestore": "Sao lưu & Khôi phục",
+    "toggleSearch": "Chuyển đổi Tìm kiếm",
+    "quickInboxCapture": "Chụp nhanh Hộp thư đến",
+    "userMenu": "Menu Người dùng",
+    "search": "Tìm kiếm"
   },
   "settings": {
     "todayPageSettings": "Cài đặt Trang Hôm nay",
@@ -181,7 +193,9 @@
       "waiting": "Đang chờ",
       "done": "Đã hoàn thành",
       "dropHere": "Thả ở đây"
-    }
+    },
+    "chaseUp": "Theo dõi",
+    "habit": "Thói quen"
   },
   "timeline": {
     "activityTimeline": "Dòng Thời Gian Hoạt Động",
@@ -503,7 +517,9 @@
       "serverSettings": "Cài đặt Máy chủ",
       "syncSettings": "Cài đặt Đồng bộ",
       "setupSuccess": "Lịch đã được cấu hình thành công!",
-      "setupFailed": "Tạo lịch không thành công"
+      "setupFailed": "Tạo lịch không thành công",
+      "serverUrlPlaceholder": "https://caldav.example.com",
+      "calendarPathPlaceholder": "/calendars/user/tasks"
     },
     "conflictResolver": {
       "title": "Giải quyết Xung đột Đồng bộ",
@@ -538,7 +554,9 @@
       "intervalError": "Khoảng thời gian đồng bộ phải nằm giữa 1 và 1440 phút",
       "updateSuccess": "Lịch đã được cập nhật thành công",
       "updateError": "Cập nhật lịch thất bại"
-    }
+    },
+    "telegramTokenPlaceholder": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+    "telegramAllowedUsersPlaceholder": "@username1, 123456789, @username2"
   },
   "productivity": {
     "stalledProjects": "Dự án Đang Tạm Dừng",
@@ -777,7 +795,11 @@
     "projectSaveFailed": "Không thể lưu dự án.",
     "projectImageTooLarge": "Hình ảnh quá lớn. Vui lòng chọn tệp dưới 10MB.",
     "projectImageUpload": "Tải lên hình ảnh thất bại. Vui lòng thử tệp nhỏ hơn hoặc định dạng khác.",
-    "bannerSaveFailed": "Lưu biểu ngữ thất bại"
+    "bannerSaveFailed": "Lưu biểu ngữ thất bại",
+    "loginFailed": "Đăng nhập thất bại. Vui lòng thử lại.",
+    "generalError": "Đã xảy ra lỗi. Vui lòng thử lại.",
+    "viewNameRequired": "Tên chế độ xem là bắt buộc",
+    "viewSaveFailed": "Lưu chế độ xem không thành công. Vui lòng thử lại."
   },
   "inbox": {
     "title": "Hộp thư đến",
@@ -810,7 +832,9 @@
     "loadMoreError": "Không thể tải thêm mục",
     "loading": "Đang tải...",
     "loadMore": "Tải thêm mục trong hộp thư đến",
-    "showingItems": "Đang hiển thị {{current}} trong tổng số {{total}} mục"
+    "showingItems": "Đang hiển thị {{current}} trong tổng số {{total}} mục",
+    "removeTag": "Xóa thẻ",
+    "removeProject": "Xóa dự án"
   },
   "dateFormats": {
     "long": "EEEE, d tháng MMMM, yyyy",
@@ -1056,7 +1080,9 @@
     "nextUp": "Hành động tốt nhất tiếp theo",
     "focusTask": "Nhiệm vụ có tác động lớn nhất",
     "focusHint": "Chuyển nhiệm vụ này sang đang thực hiện và hôm nay",
-    "noNextAction": "Tất cả rõ ràng-không có nhiệm vụ nào chưa hoàn thành."
+    "noNextAction": "Tất cả rõ ràng-không có nhiệm vụ nào chưa hoàn thành.",
+    "selectDueDatePlaceholder": "Chọn ngày hết hạn",
+    "goalTitle": "Mục tiêu"
   },
   "projectItem": {
     "edit": "Chỉnh sửa",
@@ -1088,7 +1114,14 @@
     "error": "Lỗi khi tải chi tiết khu vực.",
     "notFound": "Không tìm thấy khu vực.",
     "details": "Chi tiết khu vực",
-    "viewProjects": "Xem dự án trong {{name}}"
+    "viewProjects": "Xem dự án trong {{name}}",
+    "goalTitlePlaceholder": "Tiêu đề mục tiêu",
+    "goalWhyPlaceholder": "Tại sao điều này quan trọng (tùy chọn)",
+    "editGoal": "Chỉnh sửa mục tiêu",
+    "deleteGoal": "Xóa mục tiêu",
+    "moveBackToUnlinked": "Di chuyển trở lại không liên kết",
+    "horizonSeason": "Mùa",
+    "horizonYear": "Năm"
   },
   "notes": {
     "loading": "Đang tải ghi chú...",
@@ -1099,7 +1132,14 @@
     "deleteNoteAriaLabel": "Xóa ghi chú {{noteTitle}}",
     "deleteNoteTitle": "Xóa ghi chú {{noteTitle}}",
     "editNoteAriaLabel": "Chỉnh sửa ghi chú {{noteTitle}}",
-    "editNoteTitle": "Chỉnh sửa ghi chú {{noteTitle}}"
+    "editNoteTitle": "Chỉnh sửa ghi chú {{noteTitle}}",
+    "titlePlaceholder": "Tiêu đề ghi chú...",
+    "contentPlaceholder": "Viết nội dung ghi chú của bạn ở đây... (Hỗ trợ Markdown)",
+    "focusMode": "Chế độ tập trung",
+    "noteOptions": "Tùy chọn ghi chú",
+    "clickToEdit": "Nhấp để chỉnh sửa",
+    "contentPlaceholderFocus": "Viết ghi chú của bạn... (Hỗ trợ Markdown)",
+    "contentPlaceholderMarkdown": "Viết nội dung của bạn bằng định dạng Markdown...\n\nVí dụ:\n# Tiêu đề\n**Văn bản in đậm**\n*Văn bản nghiêng*\n- Mục danh sách\n```code```"
   },
   "tags": {
     "loading": "Đang tải thẻ...",
@@ -1123,7 +1163,11 @@
     "systemTag": "Thẻ hệ thống",
     "systemTagDescription": "Được tạo tự động bởi ứng dụng. Chúng cung cấp các tính năng tích hợp sẵn và không thể được đổi tên hoặc xóa.",
     "userTag": "Thẻ người dùng",
-    "userTagDescription": "Các thẻ của riêng bạn để tổ chức nhiệm vụ, ghi chú và dự án."
+    "userTagDescription": "Các thẻ của riêng bạn để tổ chức nhiệm vụ, ghi chú và dự án.",
+    "systemTags": "Thẻ Hệ Thống",
+    "systemTagsDescription": "Quản lý tự động · Không thể xóa hoặc đổi tên",
+    "system": "Hệ Thống",
+    "customize": "Tùy Chỉnh"
   },
   "recurrence": {
     "none": "Không có",
@@ -1399,7 +1443,14 @@
     "priorityLabel": "Độ ưu tiên:",
     "dueLabel": "Đến hạn:",
     "tags": "Thẻ",
-    "recurring": "Lặp lại"
+    "recurring": "Lặp lại",
+    "saveAsSmartView": "Lưu dưới dạng Smart View",
+    "viewNamePlaceholder": "Nhập tên xem",
+    "viewNameLabel": "Tên Xem",
+    "viewWillSave": "Xem này sẽ được lưu:",
+    "saveView": "Lưu Xem",
+    "filtersLabel": "Bộ lọc:",
+    "searchLabel": "Tìm kiếm:"
   },
   "search": {
     "placeholder": "Tìm kiếm nhiệm vụ, dự án, ghi chú...",
@@ -1556,5 +1607,36 @@
     "done_desc": "Đã hoàn tất và xong",
     "cancelled": "Đã hủy",
     "cancelled_desc": "Sẽ không được hoàn thành"
+  },
+  "habits": {
+    "completeHabit": "Hoàn thành thói quen"
+  },
+  "aiAssistant": {
+    "title": "Trợ Lý AI",
+    "generatedAt": "Tạo lúc {{time}}",
+    "emptyState": "Nhấn 'Tạo Tóm Tắt' để nhận tóm tắt hàng ngày được hỗ trợ bởi AI.",
+    "focusForToday": "Tập trung cho hôm nay",
+    "priorityActions": "Hành động ưu tiên",
+    "taskInsightsTitle": "Thông Tin AI",
+    "projectInsightsTitle": "Thông Tin AI",
+    "taskInsight": "Về nhiệm vụ này",
+    "taskNextStep": "Bước tiếp theo",
+    "taskBreakdown": "Cách tiếp cận",
+    "projectInsight": "Về dự án này",
+    "projectNextAction": "Hành động tiếp theo",
+    "projectHealth": "Tình trạng dự án",
+    "watchOut": "Cẩn thận",
+    "suggestedLinks": "Liên kết gợi ý",
+    "generate": "Tạo Tóm tắt",
+    "regenerate": "Tạo lại",
+    "generating": "Đang tạo...",
+    "errorDefault": "Không thể tạo thông tin. Vui lòng thử lại.",
+    "lowContextTitle": "Không đủ ngữ cảnh để có gợi ý tốt",
+    "lowContextHint": "Thêm mô tả, ghi chú, thẻ, hoặc gán một dự án để có thông tin tốt hơn. Bạn vẫn có thể tạo bên dưới.",
+    "generateAnyway": "Tạo bất chấp",
+    "statTotal": "Tổng cộng",
+    "statDone": "Đã hoàn thành",
+    "statActive": "Đang hoạt động",
+    "statOverdue": "Quá hạn"
   }
 }

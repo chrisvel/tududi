@@ -25,7 +25,12 @@
     "yesDiscard": "네, 버리기",
     "uploading": "업로드 중...",
     "refresh": "새로 고침",
-    "unlinking": "연결 해제 중..."
+    "unlinking": "연결 해제 중...",
+    "preview": "미리보기",
+    "download": "다운로드",
+    "exitFocusMode": "포커스 모드 종료",
+    "searchTimezones": "시간대 검색...",
+    "dismiss": "해제"
   },
   "sidebar": {
     "dashboard": "대시보드",
@@ -58,7 +63,10 @@
     "unpinView": "뷰 고정 해제",
     "pinView": "뷰 고정",
     "eisenhower": "아이젠하워 매트릭스",
-    "kanban": "칸반 보드"
+    "kanban": "칸반 보드",
+    "addHabitAriaLabel": "습관 추가",
+    "addHabitTitle": "습관 추가",
+    "toggleDarkMode": "다크 모드 전환"
   },
   "navigation": {
     "home": "홈",
@@ -68,7 +76,11 @@
     "settings": "설정",
     "about": "정보",
     "logout": "로그아웃",
-    "backupRestore": "백업 및 복원"
+    "backupRestore": "백업 및 복원",
+    "toggleSearch": "검색 전환",
+    "quickInboxCapture": "빠른 인박스 캡처",
+    "userMenu": "사용자 메뉴",
+    "search": "검색"
   },
   "settings": {
     "todayPageSettings": "오늘 페이지 설정",
@@ -181,7 +193,9 @@
       "waiting": "대기 중",
       "done": "완료",
       "dropHere": "여기에 드롭"
-    }
+    },
+    "chaseUp": "추적",
+    "habit": "습관"
   },
   "timeline": {
     "activityTimeline": "활동 타임라인",
@@ -503,7 +517,9 @@
       "serverSettings": "서버 설정",
       "syncSettings": "동기화 설정",
       "setupSuccess": "일정이 성공적으로 구성되었습니다!",
-      "setupFailed": "일정을 생성하지 못했습니다"
+      "setupFailed": "일정을 생성하지 못했습니다",
+      "serverUrlPlaceholder": "https://caldav.example.com",
+      "calendarPathPlaceholder": "/calendars/user/tasks"
     },
     "conflictResolver": {
       "title": "동기화 충돌 해결",
@@ -538,7 +554,9 @@
       "intervalError": "동기화 간격은 1분에서 1440분 사이여야 합니다",
       "updateSuccess": "캘린더가 성공적으로 업데이트되었습니다",
       "updateError": "캘린더 업데이트에 실패했습니다"
-    }
+    },
+    "telegramTokenPlaceholder": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+    "telegramAllowedUsersPlaceholder": "@username1, 123456789, @username2"
   },
   "productivity": {
     "stalledProjects": "정체된 프로젝트",
@@ -777,7 +795,11 @@
     "projectSaveFailed": "프로젝트를 저장하는 데 실패했습니다.",
     "projectImageTooLarge": "이미지가 너무 큽니다. 10MB 이하의 파일을 선택하세요.",
     "projectImageUpload": "이미지 업로드에 실패했습니다. 더 작은 파일이나 다른 형식을 시도하세요.",
-    "bannerSaveFailed": "배너 저장에 실패했습니다."
+    "bannerSaveFailed": "배너 저장에 실패했습니다.",
+    "loginFailed": "로그인에 실패했습니다. 다시 시도해 주세요.",
+    "generalError": "오류가 발생했습니다. 다시 시도해 주세요.",
+    "viewNameRequired": "뷰 이름은 필수입니다",
+    "viewSaveFailed": "뷰 저장에 실패했습니다. 다시 시도해 주세요."
   },
   "inbox": {
     "title": "받은 편지함",
@@ -810,7 +832,9 @@
     "loadMoreError": "더 많은 항목을 불러오지 못했습니다",
     "loading": "로딩 중...",
     "loadMore": "더 많은 받은 편지함 항목 불러오기",
-    "showingItems": "{{current}} / {{total}} 항목 표시 중"
+    "showingItems": "{{current}} / {{total}} 항목 표시 중",
+    "removeTag": "태그 제거",
+    "removeProject": "프로젝트 제거"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1056,7 +1080,9 @@
     "nextUp": "다음 최선의 조치",
     "focusTask": "가장 영향력 있는 작업",
     "focusHint": "이 작업을 진행 중 및 오늘로 이동",
-    "noNextAction": "모두 완료 - 미완료 작업 없음."
+    "noNextAction": "모두 완료 - 미완료 작업 없음.",
+    "selectDueDatePlaceholder": "마감일 선택",
+    "goalTitle": "목표"
   },
   "projectItem": {
     "edit": "편집",
@@ -1088,7 +1114,14 @@
     "error": "영역 세부정보 로딩 오류.",
     "notFound": "영역을 찾을 수 없습니다.",
     "details": "영역 세부정보",
-    "viewProjects": "{{name}}의 프로젝트 보기"
+    "viewProjects": "{{name}}의 프로젝트 보기",
+    "goalTitlePlaceholder": "목표 제목",
+    "goalWhyPlaceholder": "이유 (선택 사항)",
+    "editGoal": "목표 수정",
+    "deleteGoal": "목표 삭제",
+    "moveBackToUnlinked": "연결되지 않은 상태로 되돌리기",
+    "horizonSeason": "계절",
+    "horizonYear": "연도"
   },
   "notes": {
     "loading": "노트 로딩 중...",
@@ -1099,7 +1132,14 @@
     "deleteNoteAriaLabel": "노트 {{noteTitle}} 삭제",
     "deleteNoteTitle": "노트 {{noteTitle}} 삭제",
     "editNoteAriaLabel": "노트 {{noteTitle}} 편집",
-    "editNoteTitle": "노트 {{noteTitle}} 편집"
+    "editNoteTitle": "노트 {{noteTitle}} 편집",
+    "titlePlaceholder": "노트 제목...",
+    "contentPlaceholder": "여기에 노트 내용을 작성하세요... (Markdown 지원)",
+    "focusMode": "집중 모드",
+    "noteOptions": "노트 옵션",
+    "clickToEdit": "수정하려면 클릭",
+    "contentPlaceholderFocus": "노트를 작성하세요... (Markdown 지원)",
+    "contentPlaceholderMarkdown": "Markdown 형식을 사용하여 내용을 작성하세요...\n\n예시:\n# 제목\n**굵은 텍스트**\n*기울임 텍스트*\n- 목록 항목\n```코드```"
   },
   "tags": {
     "loading": "태그 로딩 중...",
@@ -1123,7 +1163,11 @@
     "systemTag": "시스템 태그",
     "systemTagDescription": "앱에 의해 자동으로 생성됩니다. 내장 기능을 지원하며 이름을 변경하거나 삭제할 수 없습니다.",
     "userTag": "사용자 태그",
-    "userTagDescription": "작업, 메모 및 프로젝트를 정리하기 위한 개인 태그입니다."
+    "userTagDescription": "작업, 메모 및 프로젝트를 정리하기 위한 개인 태그입니다.",
+    "systemTags": "시스템 태그",
+    "systemTagsDescription": "자동으로 관리됨 · 삭제하거나 이름을 변경할 수 없음",
+    "system": "시스템",
+    "customize": "사용자 정의"
   },
   "recurrence": {
     "none": "없음",
@@ -1399,7 +1443,14 @@
     "priorityLabel": "우선순위:",
     "dueLabel": "마감:",
     "tags": "태그",
-    "recurring": "반복"
+    "recurring": "반복",
+    "saveAsSmartView": "스마트 뷰로 저장",
+    "viewNamePlaceholder": "뷰 이름 입력",
+    "viewNameLabel": "뷰 이름",
+    "viewWillSave": "이 뷰가 저장됩니다:",
+    "saveView": "뷰 저장",
+    "filtersLabel": "필터:",
+    "searchLabel": "검색:"
   },
   "search": {
     "placeholder": "작업, 프로젝트, 노트 검색...",
@@ -1556,5 +1607,36 @@
     "done_desc": "끝났고 완료됨",
     "cancelled": "취소됨",
     "cancelled_desc": "완료되지 않을 것임"
+  },
+  "habits": {
+    "completeHabit": "습관 완료"
+  },
+  "aiAssistant": {
+    "title": "AI 어시스턴트",
+    "generatedAt": "생성된 시간: {{time}}",
+    "emptyState": "'요약 생성'을 클릭하여 AI 기반의 일일 요약을 받으세요.",
+    "focusForToday": "오늘의 집중 사항",
+    "priorityActions": "우선 작업",
+    "taskInsightsTitle": "AI 통찰",
+    "projectInsightsTitle": "AI 통찰",
+    "taskInsight": "이 작업에 대한 정보",
+    "taskNextStep": "다음 단계",
+    "taskBreakdown": "어떻게 접근할 것인가",
+    "projectInsight": "이 프로젝트에 대하여",
+    "projectNextAction": "다음 작업",
+    "projectHealth": "프로젝트 상태",
+    "watchOut": "주의하세요",
+    "suggestedLinks": "추천 링크",
+    "generate": "브리프 생성",
+    "regenerate": "다시 생성",
+    "generating": "생성 중...",
+    "errorDefault": "인사이트 생성을 실패했습니다. 다시 시도해 주세요.",
+    "lowContextTitle": "훌륭한 제안을 위한 컨텍스트가 부족합니다",
+    "lowContextHint": "더 나은 인사이트를 얻기 위해 설명, 노트, 태그를 추가하거나 프로젝트를 할당하세요. 아래에서 여전히 생성할 수 있습니다.",
+    "generateAnyway": "어쨌든 생성",
+    "statTotal": "총계",
+    "statDone": "완료",
+    "statActive": "활성",
+    "statOverdue": "기한 초과"
   }
 }

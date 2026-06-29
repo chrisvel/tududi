@@ -25,7 +25,12 @@
     "yesDiscard": "Oui, abandonner",
     "uploading": "Téléchargement...",
     "refresh": "Rafraîchir",
-    "unlinking": "Dissociation..."
+    "unlinking": "Dissociation...",
+    "preview": "Aperçu",
+    "download": "Télécharger",
+    "exitFocusMode": "Quitter le mode focus",
+    "searchTimezones": "Rechercher des fuseaux horaires...",
+    "dismiss": "Ignorer"
   },
   "sidebar": {
     "dashboard": "Tableau de bord",
@@ -58,7 +63,10 @@
     "unpinView": "Détacher la vue",
     "pinView": "Épingler la vue",
     "eisenhower": "Matrice d'Eisenhower",
-    "kanban": "Tableau Kanban"
+    "kanban": "Tableau Kanban",
+    "addHabitAriaLabel": "Ajouter une habitude",
+    "addHabitTitle": "Ajouter une habitude",
+    "toggleDarkMode": "Basculer en mode sombre"
   },
   "navigation": {
     "home": "Accueil",
@@ -68,7 +76,11 @@
     "settings": "Paramètres",
     "about": "À propos",
     "logout": "Déconnexion",
-    "backupRestore": "Sauvegarde & Restauration"
+    "backupRestore": "Sauvegarde & Restauration",
+    "toggleSearch": "Basculer la recherche",
+    "quickInboxCapture": "Capture rapide de la boîte de réception",
+    "userMenu": "Menu utilisateur",
+    "search": "Rechercher"
   },
   "settings": {
     "todayPageSettings": "Paramètres de la page Aujourd'hui",
@@ -181,7 +193,9 @@
       "waiting": "En attente",
       "done": "Terminé",
       "dropHere": "Déposez ici"
-    }
+    },
+    "chaseUp": "Relancer",
+    "habit": "Habitude"
   },
   "timeline": {
     "activityTimeline": "Chronologie d'Activité",
@@ -503,7 +517,9 @@
       "serverSettings": "Paramètres du serveur",
       "syncSettings": "Paramètres de synchronisation",
       "setupSuccess": "Calendrier configuré avec succès !",
-      "setupFailed": "Échec de la création du calendrier"
+      "setupFailed": "Échec de la création du calendrier",
+      "serverUrlPlaceholder": "https://caldav.example.com",
+      "calendarPathPlaceholder": "/calendars/utilisateur/tâches"
     },
     "conflictResolver": {
       "title": "Résoudre les conflits de synchronisation",
@@ -538,7 +554,9 @@
       "intervalError": "L'intervalle de synchronisation doit être compris entre 1 et 1440 minutes",
       "updateSuccess": "Calendrier mis à jour avec succès",
       "updateError": "Échec de la mise à jour du calendrier"
-    }
+    },
+    "telegramTokenPlaceholder": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+    "telegramAllowedUsersPlaceholder": "@nom_utilisateur1, 123456789, @nom_utilisateur2"
   },
   "productivity": {
     "stalledProjects": "Projets Bloqués",
@@ -777,7 +795,11 @@
     "projectSaveFailed": "Échec de l'enregistrement du projet.",
     "projectImageTooLarge": "L'image est trop grande. Veuillez choisir un fichier de moins de 10 Mo.",
     "projectImageUpload": "Échec du téléchargement de l'image. Veuillez essayer un fichier plus petit ou un format différent.",
-    "bannerSaveFailed": "Échec de l'enregistrement de la bannière"
+    "bannerSaveFailed": "Échec de l'enregistrement de la bannière",
+    "loginFailed": "Échec de la connexion. Veuillez réessayer.",
+    "generalError": "Une erreur est survenue. Veuillez réessayer.",
+    "viewNameRequired": "Le nom de la vue est requis",
+    "viewSaveFailed": "Échec de l'enregistrement de la vue. Veuillez réessayer."
   },
   "inbox": {
     "title": "Boîte de réception",
@@ -810,7 +832,9 @@
     "loadMoreError": "Échec du chargement de plus d'éléments",
     "loading": "Chargement...",
     "loadMore": "Charger plus d'éléments dans la boîte de réception",
-    "showingItems": "Affichage de {{current}} sur {{total}} éléments"
+    "showingItems": "Affichage de {{current}} sur {{total}} éléments",
+    "removeTag": "Supprimer l'étiquette",
+    "removeProject": "Supprimer le projet"
   },
   "dateFormats": {
     "long": "EEEE, d MMMM yyyy",
@@ -1056,7 +1080,9 @@
     "nextUp": "Meilleure action suivante",
     "focusTask": "Tâche la plus impactante",
     "focusHint": "Déplace cette tâche vers en cours et aujourd'hui",
-    "noNextAction": "Tout est clair - aucune tâche en attente."
+    "noNextAction": "Tout est clair - aucune tâche en attente.",
+    "selectDueDatePlaceholder": "Sélectionner la date d'échéance",
+    "goalTitle": "Objectif"
   },
   "projectItem": {
     "edit": "Modifier",
@@ -1088,7 +1114,14 @@
     "error": "Erreur lors du chargement des détails de la zone.",
     "notFound": "Zone non trouvée.",
     "details": "Détails de la zone",
-    "viewProjects": "Voir les projets dans {{name}}"
+    "viewProjects": "Voir les projets dans {{name}}",
+    "goalTitlePlaceholder": "Titre de l'objectif",
+    "goalWhyPlaceholder": "Pourquoi cela est important (facultatif)",
+    "editGoal": "Modifier l'objectif",
+    "deleteGoal": "Supprimer l'objectif",
+    "moveBackToUnlinked": "Revenir à non lié",
+    "horizonSeason": "Saison",
+    "horizonYear": "Année"
   },
   "notes": {
     "loading": "Chargement des notes...",
@@ -1099,7 +1132,14 @@
     "deleteNoteAriaLabel": "Supprimer la note {{noteTitle}}",
     "deleteNoteTitle": "Supprimer la note {{noteTitle}}",
     "editNoteAriaLabel": "Modifier la note {{noteTitle}}",
-    "editNoteTitle": "Modifier la note {{noteTitle}}"
+    "editNoteTitle": "Modifier la note {{noteTitle}}",
+    "titlePlaceholder": "Titre de la note...",
+    "contentPlaceholder": "Écrivez le contenu de votre note ici... (Markdown supporté)",
+    "focusMode": "Mode concentration",
+    "noteOptions": "Options de la note",
+    "clickToEdit": "Cliquez pour modifier",
+    "contentPlaceholderFocus": "Écrivez votre note... (Markdown supporté)",
+    "contentPlaceholderMarkdown": "Écrivez votre contenu en utilisant le formatage Markdown...\n\nExemples:\n# Titre\n**Texte en gras**\n*Texte en italique*\n- Élément de liste\n```code```"
   },
   "tags": {
     "loading": "Chargement des étiquettes...",
@@ -1123,7 +1163,11 @@
     "systemTag": "Étiquettes système",
     "systemTagDescription": "Créées automatiquement par l'application. Elles alimentent les fonctionnalités intégrées et ne peuvent pas être renommées ou supprimées.",
     "userTag": "Étiquettes utilisateur",
-    "userTagDescription": "Vos propres étiquettes pour organiser les tâches, les notes et les projets."
+    "userTagDescription": "Vos propres étiquettes pour organiser les tâches, les notes et les projets.",
+    "systemTags": "Étiquettes système",
+    "systemTagsDescription": "Géré automatiquement · Ne peut pas être supprimé ou renommé",
+    "system": "Système",
+    "customize": "Personnaliser"
   },
   "recurrence": {
     "none": "Aucun",
@@ -1399,7 +1443,14 @@
     "priorityLabel": "Priorité :",
     "dueLabel": "Échéance :",
     "tags": "Étiquettes",
-    "recurring": "Récurrent"
+    "recurring": "Récurrent",
+    "saveAsSmartView": "Enregistrer en tant que Vue Intelligente",
+    "viewNamePlaceholder": "Entrez le nom de la vue",
+    "viewNameLabel": "Nom de la Vue",
+    "viewWillSave": "Cette vue sera enregistrée :",
+    "saveView": "Enregistrer la Vue",
+    "filtersLabel": "Filtres :",
+    "searchLabel": "Recherche :"
   },
   "search": {
     "placeholder": "Rechercher des tâches, des projets, des notes...",
@@ -1556,5 +1607,36 @@
     "done_desc": "Fini et terminé",
     "cancelled": "Annulé",
     "cancelled_desc": "Ne sera pas terminé"
+  },
+  "habits": {
+    "completeHabit": "Compléter l'habitude"
+  },
+  "aiAssistant": {
+    "title": "Assistant IA",
+    "generatedAt": "Généré à {{time}}",
+    "emptyState": "Cliquez sur 'Générer un Résumé' pour obtenir votre résumé quotidien alimenté par l'IA.",
+    "focusForToday": "Concentration pour aujourd'hui",
+    "priorityActions": "Actions prioritaires",
+    "taskInsightsTitle": "Aperçus IA",
+    "projectInsightsTitle": "Aperçus IA",
+    "taskInsight": "À propos de cette tâche",
+    "taskNextStep": "Prochaine étape",
+    "taskBreakdown": "Comment l'aborder",
+    "projectInsight": "À propos de ce projet",
+    "projectNextAction": "Prochaine action",
+    "projectHealth": "Santé du projet",
+    "watchOut": "Attention",
+    "suggestedLinks": "Liens suggérés",
+    "generate": "Générer le brief",
+    "regenerate": "Régénérer",
+    "generating": "Génération en cours...",
+    "errorDefault": "Échec de la génération des insights. Veuillez réessayer.",
+    "lowContextTitle": "Pas assez de contexte pour une bonne suggestion",
+    "lowContextHint": "Ajoutez une description, des notes, des étiquettes ou assignez un projet pour obtenir de meilleurs insights. Vous pouvez toujours générer ci-dessous.",
+    "generateAnyway": "Générer quand même",
+    "statTotal": "Total",
+    "statDone": "Fait",
+    "statActive": "Actif",
+    "statOverdue": "En retard"
   }
 }

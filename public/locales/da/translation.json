@@ -25,7 +25,12 @@
     "yesDiscard": "Ja, forkast",
     "uploading": "Uploader...",
     "refresh": "Opdater",
-    "unlinking": "Frakobler..."
+    "unlinking": "Frakobler...",
+    "preview": "Forhåndsvisning",
+    "download": "Download",
+    "exitFocusMode": "Forlad fokus tilstand",
+    "searchTimezones": "Søg efter tidszoner...",
+    "dismiss": "Afvis"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -58,7 +63,10 @@
     "unpinView": "Fjern fastgørelse af visning",
     "pinView": "Fastgør visning",
     "eisenhower": "Eisenhower Matrix",
-    "kanban": "Kanban Tavle"
+    "kanban": "Kanban Tavle",
+    "addHabitAriaLabel": "Tilføj vane",
+    "addHabitTitle": "Tilføj vane",
+    "toggleDarkMode": "Skift til mørk tilstand"
   },
   "navigation": {
     "home": "Hjem",
@@ -68,7 +76,11 @@
     "settings": "Indstillinger",
     "about": "Om",
     "logout": "Log ud",
-    "backupRestore": "Backup & Gendan"
+    "backupRestore": "Backup & Gendan",
+    "toggleSearch": "Skift søgning",
+    "quickInboxCapture": "Hurtig indbakkeoptagelse",
+    "userMenu": "Bruger menu",
+    "search": "Søg"
   },
   "settings": {
     "todayPageSettings": "Indstillinger for i dag",
@@ -181,7 +193,9 @@
       "waiting": "Venter",
       "done": "Færdig",
       "dropHere": "Slip her"
-    }
+    },
+    "chaseUp": "Følge op",
+    "habit": "Vane"
   },
   "timeline": {
     "activityTimeline": "Aktivitets Tidslinje",
@@ -503,7 +517,9 @@
       "serverSettings": "Serverindstillinger",
       "syncSettings": "Synkroniseringsindstillinger",
       "setupSuccess": "Kalender konfigureret med succes!",
-      "setupFailed": "Fejl ved oprettelse af kalender"
+      "setupFailed": "Fejl ved oprettelse af kalender",
+      "serverUrlPlaceholder": "https://caldav.example.com",
+      "calendarPathPlaceholder": "/calendars/user/tasks"
     },
     "conflictResolver": {
       "title": "Løs synkroniseringskonflikter",
@@ -538,7 +554,9 @@
       "intervalError": "Synkroniseringsintervallet skal være mellem 1 og 1440 minutter",
       "updateSuccess": "Kalenderen er blevet opdateret med succes",
       "updateError": "Kunne ikke opdatere kalender"
-    }
+    },
+    "telegramTokenPlaceholder": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+    "telegramAllowedUsersPlaceholder": "@brugernavn1, 123456789, @brugernavn2"
   },
   "productivity": {
     "stalledProjects": "Stagnerede Projekter",
@@ -777,7 +795,11 @@
     "projectSaveFailed": "Kunne ikke gemme projekt.",
     "projectImageTooLarge": "Billedet er for stort. Vælg venligst en fil under 10MB.",
     "projectImageUpload": "Fejl ved upload af billede. Prøv venligst en mindre fil eller et andet format.",
-    "bannerSaveFailed": "Fejl ved gemme banner"
+    "bannerSaveFailed": "Fejl ved gemme banner",
+    "loginFailed": "Login mislykkedes. Prøv venligst igen.",
+    "generalError": "Der opstod en fejl. Prøv venligst igen.",
+    "viewNameRequired": "Visningsnavn er påkrævet",
+    "viewSaveFailed": "Fejl ved gemning af visning. Prøv venligst igen."
   },
   "inbox": {
     "title": "Indbakke",
@@ -810,7 +832,9 @@
     "loadMoreError": "Kunne ikke indlæse flere elementer",
     "loading": "Indlæser...",
     "loadMore": "Indlæs flere indbakkeelementer",
-    "showingItems": "Viser {{current}} af {{total}} elementer"
+    "showingItems": "Viser {{current}} af {{total}} elementer",
+    "removeTag": "Fjern tag",
+    "removeProject": "Fjern projekt"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1056,7 +1080,9 @@
     "nextUp": "Næste bedste handling",
     "focusTask": "Mest indflydelsesrige opgave",
     "focusHint": "Flytter denne opgave til i gang og i dag",
-    "noNextAction": "Alt klart - ingen udestående opgaver."
+    "noNextAction": "Alt klart - ingen udestående opgaver.",
+    "selectDueDatePlaceholder": "Vælg forfaldsdato",
+    "goalTitle": "Mål"
   },
   "projectItem": {
     "edit": "Rediger",
@@ -1088,7 +1114,14 @@
     "error": "Fejl ved indlæsning af områdedetaljer.",
     "notFound": "Område ikke fundet.",
     "details": "Områdeoplysninger",
-    "viewProjects": "Se projekter i {{name}}"
+    "viewProjects": "Se projekter i {{name}}",
+    "goalTitlePlaceholder": "Mål titel",
+    "goalWhyPlaceholder": "Hvorfor dette er vigtigt (valgfrit)",
+    "editGoal": "Rediger mål",
+    "deleteGoal": "Slet mål",
+    "moveBackToUnlinked": "Flyt tilbage til ikke-linket",
+    "horizonSeason": "Sæson",
+    "horizonYear": "År"
   },
   "notes": {
     "loading": "Indlæser noter...",
@@ -1099,7 +1132,14 @@
     "deleteNoteAriaLabel": "Slet note {{noteTitle}}",
     "deleteNoteTitle": "Slet note {{noteTitle}}",
     "editNoteAriaLabel": "Rediger note {{noteTitle}}",
-    "editNoteTitle": "Rediger note {{noteTitle}}"
+    "editNoteTitle": "Rediger note {{noteTitle}}",
+    "titlePlaceholder": "Notat titel...",
+    "contentPlaceholder": "Skriv dit notatindhold her... (Markdown understøttet)",
+    "focusMode": "Fokus tilstand",
+    "noteOptions": "Notatindstillinger",
+    "clickToEdit": "Klik for at redigere",
+    "contentPlaceholderFocus": "Skriv dit notat... (Markdown understøttet)",
+    "contentPlaceholderMarkdown": "Skriv dit indhold ved hjælp af Markdown formatering...\n\nEksempler:\n# Overskrift\n**Fed tekst**\n*Kursiv tekst*\n- Listeelement\n```kode```"
   },
   "tags": {
     "loading": "Indlæser tags...",
@@ -1123,7 +1163,11 @@
     "systemTag": "Systemtags",
     "systemTagDescription": "Oprettet automatisk af appen. De driver indbyggede funktioner og kan ikke omdøbes eller slettes.",
     "userTag": "Brugertags",
-    "userTagDescription": "Dine egne tags til organisering af opgaver, noter og projekter."
+    "userTagDescription": "Dine egne tags til organisering af opgaver, noter og projekter.",
+    "systemTags": "System Tags",
+    "systemTagsDescription": "Automatisk styret · Kan ikke slettes eller omdøbes",
+    "system": "System",
+    "customize": "Tilpas"
   },
   "recurrence": {
     "none": "Ingen",
@@ -1399,7 +1443,14 @@
     "priorityLabel": "Prioritet:",
     "dueLabel": "Forfalder:",
     "tags": "Tags",
-    "recurring": "Gentagende"
+    "recurring": "Gentagende",
+    "saveAsSmartView": "Gem som Smart View",
+    "viewNamePlaceholder": "Indtast visningsnavn",
+    "viewNameLabel": "Visningsnavn",
+    "viewWillSave": "Denne visning vil gemmes:",
+    "saveView": "Gem visning",
+    "filtersLabel": "Filtre:",
+    "searchLabel": "Søg:"
   },
   "search": {
     "placeholder": "Søg opgaver, projekter, noter...",
@@ -1556,5 +1607,36 @@
     "done_desc": "Afsluttet og færdig",
     "cancelled": "Annulleret",
     "cancelled_desc": "Vil ikke blive færdiggjort"
+  },
+  "habits": {
+    "completeHabit": "Fuldfør vane"
+  },
+  "aiAssistant": {
+    "title": "AI Assistent",
+    "generatedAt": "Genereret kl. {{time}}",
+    "emptyState": "Klik på 'Generer resumé' for at få dit AI-drevne daglige resumé.",
+    "focusForToday": "Fokus for i dag",
+    "priorityActions": "Prioriterede handlinger",
+    "taskInsightsTitle": "AI Indsigter",
+    "projectInsightsTitle": "AI Indsigter",
+    "taskInsight": "Om denne opgave",
+    "taskNextStep": "Næste skridt",
+    "taskBreakdown": "Hvordan man griber det an",
+    "projectInsight": "Om dette projekt",
+    "projectNextAction": "Næste handling",
+    "projectHealth": "Projektstatus",
+    "watchOut": "Pas på",
+    "suggestedLinks": "Forslåede links",
+    "generate": "Generer kort",
+    "regenerate": "Regenerer",
+    "generating": "Genererer...",
+    "errorDefault": "Kunne ikke generere indsigt. Prøv venligst igen.",
+    "lowContextTitle": "Ikke nok kontekst til et godt forslag",
+    "lowContextHint": "Tilføj en beskrivelse, noter, tags eller tildel et projekt for at få bedre indsigt. Du kan stadig generere nedenfor.",
+    "generateAnyway": "Generer alligevel",
+    "statTotal": "Total",
+    "statDone": "Færdig",
+    "statActive": "Aktiv",
+    "statOverdue": "Forfaldet"
   }
 }

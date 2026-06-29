@@ -25,7 +25,12 @@
     "yesDiscard": "Ja, kasta bort",
     "uploading": "Laddar upp...",
     "refresh": "Uppdatera",
-    "unlinking": "Avlänkar..."
+    "unlinking": "Avlänkar...",
+    "preview": "Förhandsgranska",
+    "download": "Ladda ner",
+    "exitFocusMode": "Avsluta fokusläge",
+    "searchTimezones": "Sök tidszoner...",
+    "dismiss": "Avfärda"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -58,7 +63,10 @@
     "unpinView": "Ta bort fästning av vy",
     "pinView": "Fäst vy",
     "eisenhower": "Eisenhower-matris",
-    "kanban": "Kanban-tavla"
+    "kanban": "Kanban-tavla",
+    "addHabitAriaLabel": "Lägg till vana",
+    "addHabitTitle": "Lägg till vana",
+    "toggleDarkMode": "Växla mörkt läge"
   },
   "navigation": {
     "home": "Hem",
@@ -68,7 +76,11 @@
     "settings": "Inställningar",
     "about": "Om",
     "logout": "Logga ut",
-    "backupRestore": "Säkerhetskopiera & Återställ"
+    "backupRestore": "Säkerhetskopiera & Återställ",
+    "toggleSearch": "Växla sök",
+    "quickInboxCapture": "Snabb inkapsling av inkorgen",
+    "userMenu": "Användarmenyn",
+    "search": "Sök"
   },
   "settings": {
     "todayPageSettings": "Inställningar för dagens sida",
@@ -181,7 +193,9 @@
       "waiting": "Väntar",
       "done": "Utförd",
       "dropHere": "Släpp här"
-    }
+    },
+    "chaseUp": "Följ upp",
+    "habit": "Vana"
   },
   "timeline": {
     "activityTimeline": "Aktivitetslinje",
@@ -503,7 +517,9 @@
       "serverSettings": "Serverinställningar",
       "syncSettings": "Synkroniseringsinställningar",
       "setupSuccess": "Kalendern konfigurerades framgångsrikt!",
-      "setupFailed": "Misslyckades med att skapa kalender"
+      "setupFailed": "Misslyckades med att skapa kalender",
+      "serverUrlPlaceholder": "https://caldav.example.com",
+      "calendarPathPlaceholder": "/kalendrar/användare/uppgifter"
     },
     "conflictResolver": {
       "title": "Lös synkroniseringskonflikter",
@@ -538,7 +554,9 @@
       "intervalError": "Synkroniseringsintervall måste vara mellan 1 och 1440 minuter",
       "updateSuccess": "Kalendern uppdaterades framgångsrikt",
       "updateError": "Misslyckades med att uppdatera kalendern"
-    }
+    },
+    "telegramTokenPlaceholder": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+    "telegramAllowedUsersPlaceholder": "@användarnamn1, 123456789, @användarnamn2"
   },
   "productivity": {
     "stalledProjects": "Stagnerade projekt",
@@ -777,7 +795,11 @@
     "projectSaveFailed": "Kunde inte spara projekt.",
     "projectImageTooLarge": "Bilden är för stor. Vänligen välj en fil under 10MB.",
     "projectImageUpload": "Misslyckades med att ladda upp bilden. Vänligen försök med en mindre fil eller ett annat format.",
-    "bannerSaveFailed": "Misslyckades med att spara banner"
+    "bannerSaveFailed": "Misslyckades med att spara banner",
+    "loginFailed": "Inloggning misslyckades. Försök igen.",
+    "generalError": "Ett fel inträffade. Försök igen.",
+    "viewNameRequired": "Visningsnamn krävs",
+    "viewSaveFailed": "Misslyckades med att spara visning. Försök igen."
   },
   "inbox": {
     "title": "Inkorg",
@@ -810,7 +832,9 @@
     "loadMoreError": "Misslyckades med att ladda fler objekt",
     "loading": "Laddar...",
     "loadMore": "Ladda fler inkorgsobjekt",
-    "showingItems": "Visar {{current}} av {{total}} objekt"
+    "showingItems": "Visar {{current}} av {{total}} objekt",
+    "removeTag": "Ta bort tagg",
+    "removeProject": "Ta bort projekt"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1056,7 +1080,9 @@
     "nextUp": "Nästa bästa åtgärd",
     "focusTask": "Mest påverkande uppgift",
     "focusHint": "Flyttar denna uppgift till pågående och idag",
-    "noNextAction": "Allt klart - inga utestående uppgifter."
+    "noNextAction": "Allt klart - inga utestående uppgifter.",
+    "selectDueDatePlaceholder": "Välj förfallodatum",
+    "goalTitle": "Mål"
   },
   "projectItem": {
     "edit": "Ändra",
@@ -1088,7 +1114,14 @@
     "error": "Fel vid inläsning av områdesdetaljer.",
     "notFound": "Område hittades inte.",
     "details": "Områdesdetaljer",
-    "viewProjects": "Visa projekt i {{name}}"
+    "viewProjects": "Visa projekt i {{name}}",
+    "goalTitlePlaceholder": "Målnamn",
+    "goalWhyPlaceholder": "Varför detta är viktigt (valfritt)",
+    "editGoal": "Redigera mål",
+    "deleteGoal": "Ta bort mål",
+    "moveBackToUnlinked": "Flytta tillbaka till olänkad",
+    "horizonSeason": "Säsong",
+    "horizonYear": "År"
   },
   "notes": {
     "loading": "Laddar anteckningar...",
@@ -1099,7 +1132,14 @@
     "deleteNoteAriaLabel": "Ta bort anteckning {{noteTitle}}",
     "deleteNoteTitle": "Ta bort anteckning {{noteTitle}}",
     "editNoteAriaLabel": "Ändra anteckning {{noteTitle}}",
-    "editNoteTitle": "Ändra anteckning {{noteTitle}}"
+    "editNoteTitle": "Ändra anteckning {{noteTitle}}",
+    "titlePlaceholder": "Anteckningens titel...",
+    "contentPlaceholder": "Skriv ditt anteckningsinnehåll här... (Markdown stöds)",
+    "focusMode": "Fokusläge",
+    "noteOptions": "Anteckningsalternativ",
+    "clickToEdit": "Klicka för att redigera",
+    "contentPlaceholderFocus": "Skriv din anteckning... (Markdown stöds)",
+    "contentPlaceholderMarkdown": "Skriv ditt innehåll med Markdown-formatering...\n\nExempel:\n# Rubrik\n**Fet text**\n*Kursiv text*\n- Lista objekt\n```kod```"
   },
   "tags": {
     "loading": "Laddar taggar...",
@@ -1123,7 +1163,11 @@
     "systemTag": "Systemtaggar",
     "systemTagDescription": "Skapad automatiskt av appen. De driver inbyggda funktioner och kan inte döpas om eller tas bort.",
     "userTag": "Användartaggar",
-    "userTagDescription": "Dina egna taggar för att organisera uppgifter, anteckningar och projekt."
+    "userTagDescription": "Dina egna taggar för att organisera uppgifter, anteckningar och projekt.",
+    "systemTags": "Systemtaggar",
+    "systemTagsDescription": "Automatiskt hanterade · Kan inte tas bort eller döpas om",
+    "system": "System",
+    "customize": "Anpassa"
   },
   "recurrence": {
     "none": "Ingen",
@@ -1399,7 +1443,14 @@
     "priorityLabel": "Prioritet:",
     "dueLabel": "Förfall:",
     "tags": "Taggar",
-    "recurring": "Återkommande"
+    "recurring": "Återkommande",
+    "saveAsSmartView": "Spara som Smart View",
+    "viewNamePlaceholder": "Ange vy namn",
+    "viewNameLabel": "Vy Namn",
+    "viewWillSave": "Denna vy kommer att spara:",
+    "saveView": "Spara Vy",
+    "filtersLabel": "Filter:",
+    "searchLabel": "Sök:"
   },
   "search": {
     "placeholder": "Sök uppgifter, projekt, anteckningar...",
@@ -1556,5 +1607,36 @@
     "done_desc": "Avslutad och klar",
     "cancelled": "Avbruten",
     "cancelled_desc": "Kommer inte att slutföras"
+  },
+  "habits": {
+    "completeHabit": "Avsluta vana"
+  },
+  "aiAssistant": {
+    "title": "AI-assistent",
+    "generatedAt": "Genererad vid {{time}}",
+    "emptyState": "Klicka på 'Generera sammanfattning' för att få din AI-drivna dagliga sammanfattning.",
+    "focusForToday": "Fokus för idag",
+    "priorityActions": "Prioriterade åtgärder",
+    "taskInsightsTitle": "AI-insikter",
+    "projectInsightsTitle": "AI-insikter",
+    "taskInsight": "Om denna uppgift",
+    "taskNextStep": "Nästa steg",
+    "taskBreakdown": "Hur man närmar sig det",
+    "projectInsight": "Om detta projekt",
+    "projectNextAction": "Nästa åtgärd",
+    "projectHealth": "Projektstatus",
+    "watchOut": "Se upp",
+    "suggestedLinks": "Föreslagna länkar",
+    "generate": "Generera sammanfattning",
+    "regenerate": "Regenerera",
+    "generating": "Genererar...",
+    "errorDefault": "Misslyckades med att generera insikter. Försök igen.",
+    "lowContextTitle": "Inte tillräckligt med kontext för ett bra förslag",
+    "lowContextHint": "Lägg till en beskrivning, anteckningar, taggar eller tilldela ett projekt för att få bättre insikter. Du kan fortfarande generera nedan.",
+    "generateAnyway": "Generera ändå",
+    "statTotal": "Totalt",
+    "statDone": "Utfört",
+    "statActive": "Aktiv",
+    "statOverdue": "Förfallen"
   }
 }

@@ -192,7 +192,9 @@
     "tasks": "tasks",
     "showingItems": "Showing {{current}} of {{total}} tasks",
     "noCompletedTasksToday": "No completed tasks today.",
-    "markAsDone": "Mark as done"
+    "markAsDone": "Mark as done",
+    "chaseUp": "Chase up",
+    "habit": "Habit"
   },
   "timeline": {
     "activityTimeline": "Activity Timeline",
@@ -315,6 +317,8 @@
     "pollingError": "Error managing Telegram polling",
     "startPollingFailed": "Failed to start polling",
     "stopPollingFailed": "Failed to stop polling",
+    "telegramTokenPlaceholder": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+    "telegramAllowedUsersPlaceholder": "@username1, 123456789, @username2",
     "openTelegram": "Open in Telegram",
     "openInTelegram": "open in telegram",
     "testTelegramMessage": "Test Telegram",
@@ -468,7 +472,9 @@
       "serverSettings": "Server Settings",
       "syncSettings": "Sync Settings",
       "setupSuccess": "Calendar configured successfully!",
-      "setupFailed": "Failed to create calendar"
+      "setupFailed": "Failed to create calendar",
+      "serverUrlPlaceholder": "https://caldav.example.com",
+      "calendarPathPlaceholder": "/calendars/user/tasks"
     },
     "conflictResolver": {
       "title": "Resolve Sync Conflicts",
@@ -1042,6 +1048,8 @@
     "focusTask": "Most impactful task",
     "focusHint": "Shifts this task to in progress and today",
     "noNextAction": "All clear-no outstanding tasks.",
+    "selectDueDatePlaceholder": "Select due date",
+    "goalTitle": "Goal",
     "filters": {
       "active": "Active",
       "inactive": "Inactive",
@@ -1098,7 +1106,14 @@
     "error": "Error loading area details.",
     "notFound": "Area not found.",
     "details": "Area Details",
-    "viewProjects": "View Projects in {{name}}"
+    "viewProjects": "View Projects in {{name}}",
+    "goalTitlePlaceholder": "Goal title",
+    "goalWhyPlaceholder": "Why this matters (optional)",
+    "editGoal": "Edit goal",
+    "deleteGoal": "Delete goal",
+    "moveBackToUnlinked": "Move back to unlinked",
+    "horizonSeason": "Season",
+    "horizonYear": "Year"
   },
   "notes": {
     "loading": "Loading notes...",
@@ -1115,7 +1130,8 @@
     "focusMode": "Focus mode",
     "noteOptions": "Note options",
     "clickToEdit": "Click to edit",
-    "contentPlaceholderFocus": "Write your note... (Markdown supported)"
+    "contentPlaceholderFocus": "Write your note... (Markdown supported)",
+    "contentPlaceholderMarkdown": "Write your content using Markdown formatting...\n\nExamples:\n# Heading\n**Bold text**\n*Italic text*\n- List item\n```code```"
   },
   "tags": {
     "loading": "Loading tags...",
@@ -1144,6 +1160,9 @@
     "viewTasksWithTag": "View tasks with this tag",
     "typeToAdd": "Type to add a tag",
     "noItemsWithTag": "No items found with this tag"
+  },
+  "habits": {
+    "completeHabit": "Complete habit"
   },
   "recurrence": {
     "none": "None",
@@ -1421,7 +1440,9 @@
     "viewNamePlaceholder": "Enter view name",
     "viewNameLabel": "View Name",
     "viewWillSave": "This view will save:",
-    "saveView": "Save View"
+    "saveView": "Save View",
+    "filtersLabel": "Filters:",
+    "searchLabel": "Search:"
   },
   "search": {
     "placeholder": "Search tasks, projects, notes...",

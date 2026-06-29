@@ -25,7 +25,12 @@
     "yesDiscard": "Sim, descartar",
     "uploading": "Carregando...",
     "refresh": "Atualizar",
-    "unlinking": "Desvinculando..."
+    "unlinking": "Desvinculando...",
+    "preview": "Prévia",
+    "download": "Baixar",
+    "exitFocusMode": "Sair do modo de foco",
+    "searchTimezones": "Pesquisar fusos horários...",
+    "dismiss": "Dispensar"
   },
   "sidebar": {
     "dashboard": "Painel",
@@ -58,7 +63,10 @@
     "unpinView": "Desafixar visão",
     "pinView": "Fixar visão",
     "eisenhower": "Matriz de Eisenhower",
-    "kanban": "Quadro Kanban"
+    "kanban": "Quadro Kanban",
+    "addHabitAriaLabel": "Adicionar Hábito",
+    "addHabitTitle": "Adicionar Hábito",
+    "toggleDarkMode": "Alternar Modo Escuro"
   },
   "navigation": {
     "home": "Início",
@@ -68,7 +76,11 @@
     "settings": "Configurações",
     "about": "Sobre",
     "logout": "Sair",
-    "backupRestore": "Backup e Restauração"
+    "backupRestore": "Backup e Restauração",
+    "toggleSearch": "Alternar Pesquisa",
+    "quickInboxCapture": "Captura Rápida da Caixa de Entrada",
+    "userMenu": "Menu do Usuário",
+    "search": "Pesquisar"
   },
   "settings": {
     "todayPageSettings": "Configurações da Página de Hoje",
@@ -181,7 +193,9 @@
       "waiting": "Aguardando",
       "done": "Concluído",
       "dropHere": "Solte aqui"
-    }
+    },
+    "chaseUp": "Cobrar",
+    "habit": "Hábito"
   },
   "timeline": {
     "activityTimeline": "Linha do Tempo de Atividades",
@@ -503,7 +517,9 @@
       "serverSettings": "Configurações do Servidor",
       "syncSettings": "Configurações de Sincronização",
       "setupSuccess": "Calendário configurado com sucesso!",
-      "setupFailed": "Falha ao criar o calendário"
+      "setupFailed": "Falha ao criar o calendário",
+      "serverUrlPlaceholder": "https://caldav.exemplo.com",
+      "calendarPathPlaceholder": "/calendários/usuário/tarefas"
     },
     "conflictResolver": {
       "title": "Resolver Conflitos de Sincronização",
@@ -538,7 +554,9 @@
       "intervalError": "O intervalo de sincronização deve estar entre 1 e 1440 minutos",
       "updateSuccess": "Calendário atualizado com sucesso",
       "updateError": "Falha ao atualizar calendário"
-    }
+    },
+    "telegramTokenPlaceholder": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+    "telegramAllowedUsersPlaceholder": "@username1, 123456789, @username2"
   },
   "productivity": {
     "stalledProjects": "Projetos Parados",
@@ -777,7 +795,11 @@
     "projectSaveFailed": "Falha ao salvar o projeto.",
     "projectImageTooLarge": "A imagem é muito grande. Por favor, escolha um arquivo com menos de 10MB.",
     "projectImageUpload": "Falha ao carregar a imagem. Por favor, tente um arquivo menor ou um formato diferente.",
-    "bannerSaveFailed": "Falha ao salvar o banner"
+    "bannerSaveFailed": "Falha ao salvar o banner",
+    "loginFailed": "Falha no login. Por favor, tente novamente.",
+    "generalError": "Ocorreu um erro. Por favor, tente novamente.",
+    "viewNameRequired": "O nome da visualização é obrigatório",
+    "viewSaveFailed": "Falha ao salvar a visualização. Por favor, tente novamente."
   },
   "inbox": {
     "title": "Caixa de Entrada",
@@ -810,7 +832,9 @@
     "loadMoreError": "Falha ao carregar mais itens",
     "loading": "Carregando...",
     "loadMore": "Carregar mais itens da caixa de entrada",
-    "showingItems": "Mostrando {{current}} de {{total}} itens"
+    "showingItems": "Mostrando {{current}} de {{total}} itens",
+    "removeTag": "Remover etiqueta",
+    "removeProject": "Remover projeto"
   },
   "dateFormats": {
     "long": "EEEE, d 'de' MMMM 'de' yyyy",
@@ -1056,7 +1080,9 @@
     "nextUp": "Próxima melhor ação",
     "focusTask": "Tarefa mais impactante",
     "focusHint": "Move esta tarefa para em andamento e hoje",
-    "noNextAction": "Tudo limpo - sem tarefas pendentes."
+    "noNextAction": "Tudo limpo - sem tarefas pendentes.",
+    "selectDueDatePlaceholder": "Selecione a data de vencimento",
+    "goalTitle": "Meta"
   },
   "projectItem": {
     "edit": "Editar",
@@ -1088,7 +1114,14 @@
     "error": "Erro ao carregar detalhes da área.",
     "notFound": "Área não encontrada.",
     "details": "Detalhes da Área",
-    "viewProjects": "Ver Projetos em {{name}}"
+    "viewProjects": "Ver Projetos em {{name}}",
+    "goalTitlePlaceholder": "Título da meta",
+    "goalWhyPlaceholder": "Por que isso é importante (opcional)",
+    "editGoal": "Editar meta",
+    "deleteGoal": "Excluir meta",
+    "moveBackToUnlinked": "Mover de volta para não vinculado",
+    "horizonSeason": "Estação",
+    "horizonYear": "Ano"
   },
   "notes": {
     "loading": "Carregando notas...",
@@ -1099,7 +1132,14 @@
     "deleteNoteAriaLabel": "Excluir nota {{noteTitle}}",
     "deleteNoteTitle": "Excluir nota {{noteTitle}}",
     "editNoteAriaLabel": "Editar nota {{noteTitle}}",
-    "editNoteTitle": "Editar nota {{noteTitle}}"
+    "editNoteTitle": "Editar nota {{noteTitle}}",
+    "titlePlaceholder": "Título da nota...",
+    "contentPlaceholder": "Escreva o conteúdo da sua nota aqui... (Markdown suportado)",
+    "focusMode": "Modo de foco",
+    "noteOptions": "Opções da nota",
+    "clickToEdit": "Clique para editar",
+    "contentPlaceholderFocus": "Escreva sua nota... (Markdown suportado)",
+    "contentPlaceholderMarkdown": "Escreva seu conteúdo usando a formatação Markdown...\n\nExemplos:\n# Cabeçalho\n**Texto em negrito**\n*Texto em itálico*\n- Item da lista\n```código```"
   },
   "tags": {
     "loading": "Carregando tags...",
@@ -1123,7 +1163,11 @@
     "systemTag": "Etiquetas do sistema",
     "systemTagDescription": "Criadas automaticamente pelo aplicativo. Elas alimentam recursos integrados e não podem ser renomeadas ou excluídas.",
     "userTag": "Etiquetas do usuário",
-    "userTagDescription": "Suas próprias etiquetas para organizar tarefas, notas e projetos."
+    "userTagDescription": "Suas próprias etiquetas para organizar tarefas, notas e projetos.",
+    "systemTags": "Tags do Sistema",
+    "systemTagsDescription": "Gerenciado automaticamente · Não pode ser deletado ou renomeado",
+    "system": "Sistema",
+    "customize": "Personalizar"
   },
   "recurrence": {
     "none": "Nenhum",
@@ -1399,7 +1443,14 @@
     "priorityLabel": "Prioridade:",
     "dueLabel": "Vencimento:",
     "tags": "Tags",
-    "recurring": "Recorrente"
+    "recurring": "Recorrente",
+    "saveAsSmartView": "Salvar como Visão Inteligente",
+    "viewNamePlaceholder": "Digite o nome da visão",
+    "viewNameLabel": "Nome da Visão",
+    "viewWillSave": "Esta visão será salva:",
+    "saveView": "Salvar Visão",
+    "filtersLabel": "Filtros:",
+    "searchLabel": "Pesquisar:"
   },
   "search": {
     "placeholder": "Pesquisar tarefas, projetos, notas...",
@@ -1556,5 +1607,36 @@
     "done_desc": "Finalizado e concluído",
     "cancelled": "Cancelado",
     "cancelled_desc": "Não será concluído"
+  },
+  "habits": {
+    "completeHabit": "Completar hábito"
+  },
+  "aiAssistant": {
+    "title": "Assistente de IA",
+    "generatedAt": "Gerado em {{time}}",
+    "emptyState": "Clique em 'Gerar Resumo' para obter seu resumo diário com suporte de IA.",
+    "focusForToday": "Foco para hoje",
+    "priorityActions": "Ações prioritárias",
+    "taskInsightsTitle": "Insights de IA",
+    "projectInsightsTitle": "Insights de IA",
+    "taskInsight": "Sobre esta tarefa",
+    "taskNextStep": "Próximo passo",
+    "taskBreakdown": "Como abordá-lo",
+    "projectInsight": "Sobre este projeto",
+    "projectNextAction": "Próxima ação",
+    "projectHealth": "Saúde do projeto",
+    "watchOut": "Cuidado",
+    "suggestedLinks": "Links sugeridos",
+    "generate": "Gerar Resumo",
+    "regenerate": "Regenerar",
+    "generating": "Gerando...",
+    "errorDefault": "Falha ao gerar insights. Por favor, tente novamente.",
+    "lowContextTitle": "Contexto insuficiente para uma ótima sugestão",
+    "lowContextHint": "Adicione uma descrição, notas, tags ou atribua um projeto para obter melhores insights. Você ainda pode gerar abaixo.",
+    "generateAnyway": "Gerar mesmo assim",
+    "statTotal": "Total",
+    "statDone": "Concluído",
+    "statActive": "Ativo",
+    "statOverdue": "Atrasado"
   }
 }

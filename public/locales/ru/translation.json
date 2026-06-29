@@ -25,7 +25,12 @@
     "yesDiscard": "Да, отменить",
     "uploading": "Загрузка...",
     "refresh": "Обновить",
-    "unlinking": "Отвязываем..."
+    "unlinking": "Отвязываем...",
+    "preview": "Предварительный просмотр",
+    "download": "Скачать",
+    "exitFocusMode": "Выйти из режима фокуса",
+    "searchTimezones": "Поиск часовых поясов...",
+    "dismiss": "Закрыть"
   },
   "sidebar": {
     "dashboard": "Панель управления",
@@ -58,7 +63,10 @@
     "unpinView": "Открепить представление",
     "pinView": "Закрепить представление",
     "eisenhower": "Матрица Эйзенхауэра",
-    "kanban": "Доска Канбан"
+    "kanban": "Доска Канбан",
+    "addHabitAriaLabel": "Добавить привычку",
+    "addHabitTitle": "Добавить привычку",
+    "toggleDarkMode": "Переключить темный режим"
   },
   "navigation": {
     "home": "Главная",
@@ -68,7 +76,11 @@
     "settings": "Настройки",
     "about": "О программе",
     "logout": "Выход",
-    "backupRestore": "Резервное копирование и восстановление"
+    "backupRestore": "Резервное копирование и восстановление",
+    "toggleSearch": "Переключить поиск",
+    "quickInboxCapture": "Быстрое захватывание входящих",
+    "userMenu": "Меню пользователя",
+    "search": "Поиск"
   },
   "settings": {
     "todayPageSettings": "Настройки страницы «Сегодня»",
@@ -181,7 +193,9 @@
       "waiting": "Ожидание",
       "done": "Выполнено",
       "dropHere": "Перетащите сюда"
-    }
+    },
+    "chaseUp": "Напомнить",
+    "habit": "Привычка"
   },
   "timeline": {
     "activityTimeline": "Хронология активности",
@@ -503,7 +517,9 @@
       "serverSettings": "Настройки сервера",
       "syncSettings": "Настройки синхронизации",
       "setupSuccess": "Календарь успешно настроен!",
-      "setupFailed": "Не удалось создать календарь"
+      "setupFailed": "Не удалось создать календарь",
+      "serverUrlPlaceholder": "https://caldav.example.com",
+      "calendarPathPlaceholder": "/calendars/user/tasks"
     },
     "conflictResolver": {
       "title": "Разрешение конфликтов синхронизации",
@@ -538,7 +554,9 @@
       "intervalError": "Интервал синхронизации должен быть от 1 до 1440 минут",
       "updateSuccess": "Календарь успешно обновлён",
       "updateError": "Не удалось обновить календарь"
-    }
+    },
+    "telegramTokenPlaceholder": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+    "telegramAllowedUsersPlaceholder": "@username1, 123456789, @username2"
   },
   "productivity": {
     "stalledProjects": "Приостановленные проекты",
@@ -777,7 +795,11 @@
     "projectSaveFailed": "Не удалось сохранить проект.",
     "projectImageTooLarge": "Изображение слишком большое. Пожалуйста, выберите файл размером менее 10 МБ.",
     "projectImageUpload": "Не удалось загрузить изображение. Пожалуйста, попробуйте использовать файл меньшего размера или другой формат.",
-    "bannerSaveFailed": "Не удалось сохранить баннер"
+    "bannerSaveFailed": "Не удалось сохранить баннер",
+    "viewNameRequired": "Название представления обязательно",
+    "viewSaveFailed": "Не удалось сохранить представление. Пожалуйста, попробуйте снова.",
+    "loginFailed": "Ошибка входа. Пожалуйста, попробуйте снова.",
+    "generalError": "Произошла ошибка. Пожалуйста, попробуйте снова."
   },
   "inbox": {
     "title": "Входящие",
@@ -810,7 +832,9 @@
     "loadMoreError": "Не удалось загрузить больше элементов",
     "loading": "Загрузка...",
     "loadMore": "Загрузить больше элементов в почтовом ящике",
-    "showingItems": "Показано {{current}} из {{total}} элементов"
+    "showingItems": "Показано {{current}} из {{total}} элементов",
+    "removeTag": "Удалить тег",
+    "removeProject": "Удалить проект"
   },
   "dateFormats": {
     "long": "EEEE, d MMMM, yyyy",
@@ -1056,7 +1080,9 @@
     "nextUp": "Следующее лучшее действие",
     "focusTask": "Наиболее важная задача",
     "focusHint": "Переносит задачу в „Выполняется\" и „Сегодня\"",
-    "noNextAction": "Все выполнено - нет невыполненных задач."
+    "noNextAction": "Все выполнено - нет невыполненных задач.",
+    "selectDueDatePlaceholder": "Выберите дату выполнения",
+    "goalTitle": "Цель"
   },
   "projectItem": {
     "edit": "Редактировать",
@@ -1088,7 +1114,14 @@
     "error": "Ошибка загрузки деталей области.",
     "notFound": "Область не найдена.",
     "details": "Детали области",
-    "viewProjects": "Просмотреть проекты в {{name}}"
+    "viewProjects": "Просмотреть проекты в {{name}}",
+    "goalTitlePlaceholder": "Название цели",
+    "goalWhyPlaceholder": "Почему это важно (необязательно)",
+    "editGoal": "Редактировать цель",
+    "deleteGoal": "Удалить цель",
+    "moveBackToUnlinked": "Переместить обратно в не связанные",
+    "horizonSeason": "Сезон",
+    "horizonYear": "Год"
   },
   "notes": {
     "loading": "Загрузка заметок...",
@@ -1099,7 +1132,14 @@
     "deleteNoteAriaLabel": "Удалить заметку {{noteTitle}}",
     "deleteNoteTitle": "Удалить заметку {{noteTitle}}",
     "editNoteAriaLabel": "Редактировать заметку {{noteTitle}}",
-    "editNoteTitle": "Редактировать заметку {{noteTitle}}"
+    "editNoteTitle": "Редактировать заметку {{noteTitle}}",
+    "titlePlaceholder": "Название заметки...",
+    "contentPlaceholder": "Напишите содержание вашей заметки здесь... (поддерживается Markdown)",
+    "focusMode": "Режим фокуса",
+    "noteOptions": "Опции заметки",
+    "clickToEdit": "Нажмите, чтобы редактировать",
+    "contentPlaceholderFocus": "Напишите вашу заметку... (поддерживается Markdown)",
+    "contentPlaceholderMarkdown": "Напишите ваше содержание, используя форматирование Markdown...\n\nПримеры:\n# Заголовок\n**Жирный текст**\n*Курсивный текст*\n- Элемент списка\n```код```"
   },
   "tags": {
     "loading": "Загрузка тегов...",
@@ -1123,7 +1163,11 @@
     "systemTag": "Системные теги",
     "systemTagDescription": "Созданы автоматически приложением. Они обеспечивают работу встроенных функций и не могут быть переименованы или удалены.",
     "userTag": "Пользовательские теги",
-    "userTagDescription": "Ваши собственные теги для организации задач, заметок и проектов."
+    "userTagDescription": "Ваши собственные теги для организации задач, заметок и проектов.",
+    "systemTags": "Системные теги",
+    "systemTagsDescription": "Автоматически управляемые · Не могут быть удалены или переименованы",
+    "system": "Система",
+    "customize": "Настроить"
   },
   "recurrence": {
     "none": "Нет",
@@ -1399,7 +1443,14 @@
     "priorityLabel": "Приоритет:",
     "dueLabel": "Срок:",
     "tags": "Теги",
-    "recurring": "Повторяющийся"
+    "recurring": "Повторяющийся",
+    "saveAsSmartView": "Сохранить как Умный вид",
+    "viewNamePlaceholder": "Введите название вида",
+    "viewNameLabel": "Название вида",
+    "viewWillSave": "Этот вид будет сохранён:",
+    "saveView": "Сохранить вид",
+    "filtersLabel": "Фильтры:",
+    "searchLabel": "Поиск:"
   },
   "search": {
     "placeholder": "Поиск задач, проектов, заметок...",
@@ -1556,5 +1607,36 @@
     "done_desc": "Закончено и выполнено",
     "cancelled": "Отменено",
     "cancelled_desc": "Не будет завершено"
+  },
+  "habits": {
+    "completeHabit": "Завершить привычку"
+  },
+  "aiAssistant": {
+    "title": "AI Ассистент",
+    "generatedAt": "Сгенерировано в {{time}}",
+    "emptyState": "Нажмите 'Сгенерировать краткое содержание', чтобы получить ваше ежедневное резюме с поддержкой ИИ.",
+    "focusForToday": "Фокус на сегодня",
+    "priorityActions": "Приоритетные действия",
+    "taskInsightsTitle": "Инсайты ИИ",
+    "projectInsightsTitle": "Инсайты ИИ",
+    "taskInsight": "Об этой задаче",
+    "taskNextStep": "Следующий шаг",
+    "taskBreakdown": "Как к этому подойти",
+    "projectInsight": "Об этом проекте",
+    "projectNextAction": "Следующее действие",
+    "projectHealth": "Состояние проекта",
+    "watchOut": "Будьте осторожны",
+    "suggestedLinks": "Предложенные ссылки",
+    "generate": "Сгенерировать бриф",
+    "regenerate": "Сгенерировать заново",
+    "generating": "Генерация...",
+    "errorDefault": "Не удалось сгенерировать идеи. Пожалуйста, попробуйте снова.",
+    "lowContextTitle": "Недостаточно контекста для отличного предложения",
+    "lowContextHint": "Добавьте описание, заметки, теги или назначьте проект, чтобы получить лучшие идеи. Вы все равно можете сгенерировать ниже.",
+    "generateAnyway": "Сгенерировать все равно",
+    "statTotal": "Всего",
+    "statDone": "Выполнено",
+    "statActive": "Активно",
+    "statOverdue": "Просрочено"
   }
 }

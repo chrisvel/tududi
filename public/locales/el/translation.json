@@ -25,7 +25,12 @@
     "yesDiscard": "Ναι, απόρριψη",
     "uploading": "Ανεβάζω...",
     "refresh": "Ανανέωση",
-    "unlinking": "Αποσύνδεση..."
+    "unlinking": "Αποσύνδεση...",
+    "preview": "Προεπισκόπηση",
+    "download": "Λήψη",
+    "exitFocusMode": "Έξοδος από τη λειτουργία εστίασης",
+    "searchTimezones": "Αναζήτηση ζωνών ώρας...",
+    "dismiss": "Απόρριψη"
   },
   "sidebar": {
     "dashboard": "Πίνακας Ελέγχου",
@@ -58,7 +63,10 @@
     "unpinView": "Αφαίρεση καρφώματος προβολής",
     "pinView": "Καρφίτσωμα προβολής",
     "eisenhower": "Μηχανισμός Eisenhower",
-    "kanban": "Πίνακας Kanban"
+    "kanban": "Πίνακας Kanban",
+    "addHabitAriaLabel": "Προσθήκη Συνήθειας",
+    "addHabitTitle": "Προσθήκη Συνήθειας",
+    "toggleDarkMode": "Εναλλαγή Σκοτεινής Λειτουργίας"
   },
   "navigation": {
     "home": "Αρχική",
@@ -68,7 +76,11 @@
     "settings": "Ρυθμίσεις",
     "about": "Σχετικά",
     "logout": "Αποσύνδεση",
-    "backupRestore": "Αντίγραφα ασφαλείας & Επαναφορά"
+    "backupRestore": "Αντίγραφα ασφαλείας & Επαναφορά",
+    "toggleSearch": "Εναλλαγή Αναζήτησης",
+    "quickInboxCapture": "Γρήγορη Καταγραφή Εισερχομένων",
+    "userMenu": "Μενού Χρήστη",
+    "search": "Αναζήτηση"
   },
   "settings": {
     "todayPageSettings": "Ρυθμίσεις Σελίδας Σήμερα",
@@ -402,7 +414,9 @@
       "serverSettings": "Ρυθμίσεις Διακομιστή",
       "syncSettings": "Ρυθμίσεις Συγχρονισμού",
       "setupSuccess": "Το ημερολόγιο ρυθμίστηκε επιτυχώς!",
-      "setupFailed": "Αποτυχία δημιουργίας ημερολογίου"
+      "setupFailed": "Αποτυχία δημιουργίας ημερολογίου",
+      "serverUrlPlaceholder": "https://caldav.example.com",
+      "calendarPathPlaceholder": "/calendars/user/tasks"
     },
     "conflictResolver": {
       "title": "Επίλυση Συγκρούσεων Συγχρονισμού",
@@ -437,7 +451,9 @@
       "intervalError": "Η διάρκεια συγχρονισμού πρέπει να είναι μεταξύ 1 και 1440 λεπτών",
       "updateSuccess": "Το ημερολόγιο ενημερώθηκε με επιτυχία",
       "updateError": "Αποτυχία ενημέρωσης ημερολογίου"
-    }
+    },
+    "telegramTokenPlaceholder": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+    "telegramAllowedUsersPlaceholder": "@username1, 123456789, @username2"
   },
   "errors": {
     "required": "Αυτό το πεδίο είναι υποχρεωτικό",
@@ -465,7 +481,11 @@
     "networkError": "Σφάλμα δικτύου, παρακαλώ ελέγξτε τη σύνδεσή σας",
     "projectImageTooLarge": "Η εικόνα είναι πολύ μεγάλη. Παρακαλώ επιλέξτε ένα αρχείο κάτω από 10MB.",
     "projectImageUpload": "Αποτυχία ανέβασμα εικόνας. Παρακαλώ δοκιμάστε ένα μικρότερο αρχείο ή διαφορετική μορφή.",
-    "bannerSaveFailed": "Αποτυχία αποθήκευσης πανό"
+    "bannerSaveFailed": "Αποτυχία αποθήκευσης πανό",
+    "loginFailed": "Η σύνδεση απέτυχε. Παρακαλώ δοκιμάστε ξανά.",
+    "generalError": "Παρουσιάστηκε σφάλμα. Παρακαλώ δοκιμάστε ξανά.",
+    "viewNameRequired": "Απαιτείται όνομα προβολής",
+    "viewSaveFailed": "Αποτυχία αποθήκευσης προβολής. Παρακαλώ δοκιμάστε ξανά."
   },
   "dropdown": {
     "createNew": "Δημιουργία Νέου",
@@ -555,7 +575,9 @@
       "waiting": "Αναμονή",
       "done": "Ολοκληρώθηκε",
       "dropHere": "Αφήστε εδώ"
-    }
+    },
+    "chaseUp": "Επικοινωνία",
+    "habit": "Συνήθεια"
   },
   "timeline": {
     "activityTimeline": "Χρονοδιάγραμμα Δραστηριότητας",
@@ -661,7 +683,9 @@
     "nextUp": "Επόμενη καλύτερη ενέργεια",
     "focusTask": "Πιο σημαντική εργασία",
     "focusHint": "Μετακινεί αυτήν την εργασία σε εξέλιξη και σήμερα",
-    "noNextAction": "Όλα καθαρά-καμία εκκρεμής εργασία."
+    "noNextAction": "Όλα καθαρά-καμία εκκρεμής εργασία.",
+    "selectDueDatePlaceholder": "Επιλέξτε προθεσμία",
+    "goalTitle": "Στόχος"
   },
   "notes": {
     "loading": "Φόρτωση σημειώσεων...",
@@ -672,7 +696,14 @@
     "deleteNoteAriaLabel": "Διαγραφή σημείωσης {{noteTitle}}",
     "deleteNoteTitle": "Διαγραφή σημείωσης {{noteTitle}}",
     "editNoteAriaLabel": "Επεξεργασία σημείωσης {{noteTitle}}",
-    "editNoteTitle": "Επεξεργασία σημείωσης {{noteTitle}}"
+    "editNoteTitle": "Επεξεργασία σημείωσης {{noteTitle}}",
+    "titlePlaceholder": "Τίτλος σημείωσης...",
+    "contentPlaceholder": "Γράψτε το περιεχόμενο της σημείωσής σας εδώ... (Υποστηρίζεται Markdown)",
+    "focusMode": "Λειτουργία εστίασης",
+    "noteOptions": "Επιλογές σημείωσης",
+    "clickToEdit": "Κάντε κλικ για επεξεργασία",
+    "contentPlaceholderFocus": "Γράψτε τη σημείωσή σας... (Υποστηρίζεται Markdown)",
+    "contentPlaceholderMarkdown": "Γράψτε το περιεχόμενό σας χρησιμοποιώντας μορφοποίηση Markdown...\n\nΠαραδείγματα:\n# Τίτλος\n**Έντονο κείμενο**\n*Πλάγιο κείμενο*\n- Στοιχείο λίστας\n```κώδικας```"
   },
   "projectItem": {
     "edit": "Επεξεργασία",
@@ -1046,7 +1077,9 @@
     "loadMoreError": "Αποτυχία φόρτωσης περισσότερων στοιχείων",
     "loading": "Φόρτωση...",
     "loadMore": "Φόρτωση περισσότερων στοιχείων εισερχομένων",
-    "showingItems": "Εμφάνιση {{current}} από {{total}} στοιχεία"
+    "showingItems": "Εμφάνιση {{current}} από {{total}} στοιχεία",
+    "removeTag": "Αφαίρεση ετικέτας",
+    "removeProject": "Αφαίρεση έργου"
   },
   "success": {
     "noteUpdated": "Η σημείωση ενημερώθηκε με επιτυχία!",
@@ -1076,7 +1109,14 @@
     "error": "Σφάλμα φόρτωσης λεπτομερειών περιοχής.",
     "notFound": "Η περιοχή δεν βρέθηκε.",
     "details": "Λεπτομέρειες Περιοχής",
-    "viewProjects": "Προβολή Έργων στην {{name}}"
+    "viewProjects": "Προβολή Έργων στην {{name}}",
+    "goalTitlePlaceholder": "Τίτλος στόχου",
+    "goalWhyPlaceholder": "Γιατί αυτό έχει σημασία (προαιρετικό)",
+    "editGoal": "Επεξεργασία στόχου",
+    "deleteGoal": "Διαγραφή στόχου",
+    "moveBackToUnlinked": "Μετακίνηση πίσω σε μη συνδεδεμένα",
+    "horizonSeason": "Σεζόν",
+    "horizonYear": "Έτος"
   },
   "tags": {
     "loading": "Φόρτωση ετικετών...",
@@ -1100,7 +1140,11 @@
     "systemTag": "Σύστημα ετικετών",
     "systemTagDescription": "Δημιουργούνται αυτόματα από την εφαρμογή. Υποστηρίζουν τις ενσωματωμένες δυνατότητες και δεν μπορούν να μετονομαστούν ή να διαγραφούν.",
     "userTag": "Ετικέτες χρήστη",
-    "userTagDescription": "Οι δικές σας ετικέτες για την οργάνωση εργασιών, σημειώσεων και έργων."
+    "userTagDescription": "Οι δικές σας ετικέτες για την οργάνωση εργασιών, σημειώσεων και έργων.",
+    "systemTags": "Συστήματα Ετικετών",
+    "systemTagsDescription": "Διαχειρίζεται αυτόματα · Δεν μπορεί να διαγραφεί ή να μετονομαστεί",
+    "system": "Σύστημα",
+    "customize": "Προσαρμογή"
   },
   "note": {
     "title": "Τίτλος",
@@ -1403,7 +1447,14 @@
     "priorityLabel": "Προτεραιότητα:",
     "dueLabel": "Λήξη:",
     "tags": "Ετικέτες",
-    "recurring": "Επαναλαμβανόμενο"
+    "recurring": "Επαναλαμβανόμενο",
+    "saveAsSmartView": "Αποθήκευση ως Έξυπνη Προβολή",
+    "viewNamePlaceholder": "Εισάγετε το όνομα της προβολής",
+    "viewNameLabel": "Όνομα Προβολής",
+    "viewWillSave": "Αυτή η προβολή θα αποθηκευτεί:",
+    "saveView": "Αποθήκευση Προβολής",
+    "filtersLabel": "Φίλτρα:",
+    "searchLabel": "Αναζήτηση:"
   },
   "search": {
     "placeholder": "Αναζήτηση εργασιών, έργων, σημειώσεων...",
@@ -1560,5 +1611,36 @@
     "done_desc": "Ολοκληρωμένο και τελειωμένο",
     "cancelled": "Ακυρώθηκε",
     "cancelled_desc": "Δεν θα ολοκληρωθεί"
+  },
+  "habits": {
+    "completeHabit": "Ολοκλήρωση συνήθειας"
+  },
+  "aiAssistant": {
+    "title": "Βοηθός AI",
+    "generatedAt": "Δημιουργήθηκε στις {{time}}",
+    "emptyState": "Κάντε κλικ στο 'Δημιουργία Περίληψης' για να λάβετε την καθημερινή σας περίληψη με τη βοήθεια AI.",
+    "focusForToday": "Επικέντρωση για σήμερα",
+    "priorityActions": "Προτεραιότητες δράσεις",
+    "taskInsightsTitle": "Ευρήματα AI",
+    "projectInsightsTitle": "Ευρήματα AI",
+    "taskInsight": "Σχετικά με αυτήν την εργασία",
+    "taskNextStep": "Επόμενο βήμα",
+    "taskBreakdown": "Πώς να το προσεγγίσετε",
+    "projectInsight": "Σχετικά με αυτό το έργο",
+    "projectNextAction": "Επόμενη ενέργεια",
+    "projectHealth": "Κατάσταση έργου",
+    "watchOut": "Προσοχή",
+    "suggestedLinks": "Προτεινόμενοι σύνδεσμοι",
+    "generate": "Δημιουργία Περίληψης",
+    "regenerate": "Αναδημιουργία",
+    "generating": "Δημιουργία...",
+    "errorDefault": "Αποτυχία δημιουργίας πληροφοριών. Παρακαλώ δοκιμάστε ξανά.",
+    "lowContextTitle": "Δεν υπάρχει αρκετό πλαίσιο για μια καλή πρόταση",
+    "lowContextHint": "Προσθέστε μια περιγραφή, σημειώσεις, ετικέτες ή αναθέστε ένα έργο για να λάβετε καλύτερες πληροφορίες. Μπορείτε να δημιουργήσετε παρακάτω.",
+    "generateAnyway": "Δημιουργία ούτως ή άλλως",
+    "statTotal": "Σύνολο",
+    "statDone": "Ολοκληρώθηκε",
+    "statActive": "Ενεργό",
+    "statOverdue": "Καθυστερημένο"
   }
 }
