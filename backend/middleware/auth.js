@@ -50,7 +50,7 @@ const requireAuth = async (req, res, next) => {
         }
 
         if (bearerToken.startsWith('tt_')) {
-            // Tududi API key — validate via bcrypt
+            // Tududi API key - validate via bcrypt
             const apiToken = await findValidTokenByValue(bearerToken);
             if (!apiToken) {
                 return unauthorized(res, 'Invalid or expired API token');
@@ -80,7 +80,7 @@ const requireAuth = async (req, res, next) => {
             return next();
         }
 
-        // OAuth2 JWT — validate via OIDC provider JWKS
+        // OAuth2 JWT - validate via OIDC provider JWKS
         if ((process.env.OIDC_ENABLED || '').toLowerCase() === 'true') {
             let payload;
             try {

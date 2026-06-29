@@ -82,6 +82,8 @@ async function serializeTask(
         name: displayName,
         original_name: taskJson.name,
         uid: task.uid,
+        project_uid: taskJson.Project?.uid || null,
+        area_uid: taskJson.Area?.uid || null,
         recurring_parent_uid: recurringParentUid,
         due_date: processDueDateForResponse(taskJson.due_date, safeTimezone),
         defer_until: processDeferUntilForResponse(
@@ -93,6 +95,12 @@ async function serializeTask(
             ? {
                   ...taskJson.Project,
                   uid: taskJson.Project.uid,
+              }
+            : null,
+        Area: taskJson.Area
+            ? {
+                  ...taskJson.Area,
+                  uid: taskJson.Area.uid,
               }
             : null,
         subtasks: Subtasks

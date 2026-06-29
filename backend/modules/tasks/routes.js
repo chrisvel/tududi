@@ -42,6 +42,7 @@ const {
     validateProjectAccess,
     validateParentTaskAccess,
     validateDeferUntilAndDueDate,
+    validateAreaAccess,
 } = require('./utils/validation');
 const {
     buildTaskAttributes,
@@ -404,8 +405,17 @@ router.get('/tasks/metrics', async (req, res) => {
 
 router.post('/task', async (req, res) => {
     try {
-        const { name, project_id, parent_task_id, tags, Tags, subtasks } =
-            req.body;
+        const {
+            name,
+            project_id,
+            project_uid,
+            area_id,
+            area_uid,
+            parent_task_id,
+            tags,
+            Tags,
+            subtasks,
+        } = req.body;
         const tagsData = tags || Tags;
 
         if (!name || name.trim() === '') {
@@ -437,7 +447,7 @@ router.post('/task', async (req, res) => {
 
         try {
             const validProjectId = await validateProjectAccess(
-                project_id,
+                project_uid || project_id,
                 req.currentUser.id
             );
             if (validProjectId) taskAttributes.project_id = validProjectId;
@@ -445,6 +455,16 @@ router.post('/task', async (req, res) => {
             return res
                 .status(error.message === 'Forbidden' ? 403 : 400)
                 .json({ error: error.message });
+        }
+
+        try {
+            const validAreaId = await validateAreaAccess(
+                area_uid || area_id,
+                req.currentUser.id
+            );
+            if (validAreaId) taskAttributes.area_id = validAreaId;
+        } catch (error) {
+            return res.status(400).json({ error: error.message });
         }
 
         try {
@@ -541,6 +561,9 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
         const {
             status,
             project_id,
+            project_uid,
+            area_id,
+            area_uid,
             parent_task_id,
             tags,
             Tags,
@@ -643,10 +666,12 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
 
         await handleCompletionStatus(taskAttributes, status, task);
 
-        if (project_id !== undefined) {
+        const projectIdentifier =
+            project_uid !== undefined ? project_uid : project_id;
+        if (projectIdentifier !== undefined) {
             try {
                 const validProjectId = await validateProjectAccess(
-                    project_id,
+                    projectIdentifier,
                     req.currentUser.id
                 );
                 taskAttributes.project_id = validProjectId;
@@ -654,6 +679,19 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
                 return res
                     .status(error.message === 'Forbidden' ? 403 : 400)
                     .json({ error: error.message });
+            }
+        }
+
+        const areaIdentifier = area_uid !== undefined ? area_uid : area_id;
+        if (areaIdentifier !== undefined) {
+            try {
+                const validAreaId = await validateAreaAccess(
+                    areaIdentifier,
+                    req.currentUser.id
+                );
+                taskAttributes.area_id = validAreaId;
+            } catch (error) {
+                return res.status(400).json({ error: error.message });
             }
         }
 

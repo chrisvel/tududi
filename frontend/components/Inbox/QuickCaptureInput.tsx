@@ -270,6 +270,7 @@ const QuickCaptureInput = React.forwardRef<
 
                             if (projectName && !matches.includes(projectName)) {
                                 matches.push(projectName);
+                                return matches;
                             }
                         }
                     }
@@ -528,6 +529,7 @@ const QuickCaptureInput = React.forwardRef<
             const textWidth = temp.getBoundingClientRect().width;
             document.body.removeChild(temp);
 
+            const inputRect = input.getBoundingClientRect();
             const beforeCursor = inputText.substring(0, cursorPos);
             const afterCursor = inputText.substring(cursorPos);
             const hashtagMatch = beforeCursor.match(/#[a-zA-Z0-9_]*$/);
@@ -577,8 +579,8 @@ const QuickCaptureInput = React.forwardRef<
                     document.body.removeChild(tempToHashtag);
 
                     return {
-                        left: hashtagOffset,
-                        top: input.offsetHeight,
+                        left: inputRect.left + hashtagOffset,
+                        top: inputRect.bottom + 4,
                     };
                 }
             }
@@ -627,13 +629,13 @@ const QuickCaptureInput = React.forwardRef<
                     document.body.removeChild(tempToProject);
 
                     return {
-                        left: projectOffset,
-                        top: input.offsetHeight,
+                        left: inputRect.left + projectOffset,
+                        top: inputRect.bottom + 4,
                     };
                 }
             }
 
-            return { left: textWidth, top: input.offsetHeight };
+            return { left: inputRect.left + textWidth, top: inputRect.bottom + 4 };
         };
 
         const handleChange = (
@@ -692,23 +694,32 @@ const QuickCaptureInput = React.forwardRef<
                 setFilteredTags([]);
                 setSelectedSuggestionIndex(-1);
 
-                const filtered = projects
-                    .filter((project) =>
-                        project.name
-                            .toLowerCase()
-                            .includes(projectQuery.toLowerCase())
-                    )
-                    .slice(0, 5);
-
-                const position = calculateDropdownPosition(
-                    e.target,
-                    newCursorPosition
+                const alreadyHasProject = parseProjectRefs(newText).some(
+                    (name) => name.toLowerCase() !== projectQuery.toLowerCase()
                 );
-                setDropdownPosition(position);
 
-                setFilteredProjects(filtered);
-                setShowProjectSuggestions(true);
-                setSelectedSuggestionIndex(-1);
+                if (alreadyHasProject) {
+                    setShowProjectSuggestions(false);
+                    setFilteredProjects([]);
+                } else {
+                    const filtered = projects
+                        .filter((project) =>
+                            project.name
+                                .toLowerCase()
+                                .includes(projectQuery.toLowerCase())
+                        )
+                        .slice(0, 5);
+
+                    const position = calculateDropdownPosition(
+                        e.target,
+                        newCursorPosition
+                    );
+                    setDropdownPosition(position);
+
+                    setFilteredProjects(filtered);
+                    setShowProjectSuggestions(true);
+                    setSelectedSuggestionIndex(-1);
+                }
             } else {
                 setShowTagSuggestions(false);
                 setFilteredTags([]);
@@ -753,7 +764,7 @@ const QuickCaptureInput = React.forwardRef<
 
         const getAllProjects = (text: string): string[] => {
             if (analysisResult && lastAnalyzedTextRef.current === text.trim()) {
-                return analysisResult.parsed_projects;
+                return analysisResult.parsed_projects.slice(0, 1);
             }
 
             return parseProjectRefs(text);
@@ -1074,7 +1085,7 @@ const QuickCaptureInput = React.forwardRef<
                             }
                         );
 
-                        let projectId = undefined;
+                        let projectUid: string | undefined = undefined;
                         if (analysisResult.parsed_projects.length > 0) {
                             const projectName =
                                 analysisResult.parsed_projects[0];
@@ -1084,7 +1095,7 @@ const QuickCaptureInput = React.forwardRef<
                                     projectName.toLowerCase()
                             );
                             if (matchingProject) {
-                                projectId = matchingProject.id;
+                                projectUid = matchingProject.uid;
                             }
                         }
 
@@ -1093,7 +1104,7 @@ const QuickCaptureInput = React.forwardRef<
                             status: 'not_started',
                             priority: 'low',
                             tags: taskTags,
-                            project_id: projectId,
+                            project_uid: projectUid,
                             completed_at: null,
                         };
 
@@ -1151,7 +1162,7 @@ const QuickCaptureInput = React.forwardRef<
 
                         const taskTags = [...hashtagTags, ...finalBookmarkTag];
 
-                        let projectId = undefined;
+                        let noteProjectUid: string | undefined = undefined;
                         if (analysisResult.parsed_projects.length > 0) {
                             const projectName =
                                 analysisResult.parsed_projects[0];
@@ -1161,7 +1172,7 @@ const QuickCaptureInput = React.forwardRef<
                                     projectName.toLowerCase()
                             );
                             if (matchingProject) {
-                                projectId = matchingProject.id;
+                                noteProjectUid = matchingProject.uid;
                             }
                         }
 
@@ -1169,7 +1180,7 @@ const QuickCaptureInput = React.forwardRef<
                             title: cleanedText || trimmedText,
                             content: trimmedText,
                             tags: taskTags,
-                            project_id: projectId,
+                            project_uid: noteProjectUid,
                         };
 
                         try {

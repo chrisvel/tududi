@@ -25,6 +25,12 @@ class NotificationsRepository extends BaseRepository {
             where: { id, user_id: userId, ...options },
         });
     }
+
+    async findByUidAndUser(uid, userId, options = {}) {
+        return this.model.findOne({
+            where: { uid, user_id: userId, ...options },
+        });
+    }
 }
 
 module.exports = new NotificationsRepository();

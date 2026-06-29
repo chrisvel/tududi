@@ -134,9 +134,12 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             auto_suggest_next_actions_enabled: true,
             productivity_assistant_enabled: true,
             next_task_suggestion_enabled: true,
+            ai_assistant_enabled: false,
             pomodoro_enabled: true,
             eisenhower_enabled: false,
             kanban_enabled: false,
+            habits_enabled: true,
+            calendar_enabled: false,
         },
         notification_preferences: null,
         keyboard_shortcuts: null,
@@ -148,9 +151,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
     const [updateKey, setUpdateKey] = useState(0);
     const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({
         backups: false,
-        calendar: false,
         caldav: false,
-        habits: false,
         mcp: false,
     });
     const [isChangingLanguage, setIsChangingLanguage] = useState(false);
@@ -543,6 +544,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                             data.features?.next_task_suggestion_enabled !== undefined
                                 ? data.features.next_task_suggestion_enabled
                                 : true,
+                        ai_assistant_enabled:
+                            data.features?.ai_assistant_enabled !== undefined
+                                ? data.features.ai_assistant_enabled
+                                : false,
                         pomodoro_enabled:
                             data.features?.pomodoro_enabled !== undefined
                                 ? data.features.pomodoro_enabled
@@ -554,6 +559,14 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                         kanban_enabled:
                             data.features?.kanban_enabled !== undefined
                                 ? data.features.kanban_enabled
+                                : false,
+                        habits_enabled:
+                            data.features?.habits_enabled !== undefined
+                                ? data.features.habits_enabled
+                                : true,
+                        calendar_enabled:
+                            data.features?.calendar_enabled !== undefined
+                                ? data.features.calendar_enabled
                                 : false,
                     },
                     notification_preferences:
@@ -1088,6 +1101,24 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 );
             }
 
+            if (updatedProfile.features?.habits_enabled !== undefined) {
+                useStore.getState().userSettingsStore.setHabitsEnabled(
+                    updatedProfile.features.habits_enabled
+                );
+            }
+
+            if (updatedProfile.features?.calendar_enabled !== undefined) {
+                useStore.getState().userSettingsStore.setCalendarEnabled(
+                    updatedProfile.features.calendar_enabled
+                );
+            }
+
+            if (updatedProfile.features?.ai_assistant_enabled !== undefined) {
+                useStore.getState().userSettingsStore.setAiAssistantEnabled(
+                    updatedProfile.features.ai_assistant_enabled
+                );
+            }
+
             if (isPasswordChange) {
                 setFormData((prev) => ({
                     ...prev,
@@ -1349,6 +1380,32 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                                 ...prev.features,
                                                 kanban_enabled:
                                                     !prev.features?.kanban_enabled,
+                                            },
+                                        }))
+                                    }
+                                    habitsEnabled={Boolean(
+                                        formData.features?.habits_enabled ?? true
+                                    )}
+                                    onToggleHabits={() =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            features: {
+                                                ...prev.features,
+                                                habits_enabled:
+                                                    !prev.features?.habits_enabled,
+                                            },
+                                        }))
+                                    }
+                                    calendarEnabled={Boolean(
+                                        formData.features?.calendar_enabled
+                                    )}
+                                    onToggleCalendar={() =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            features: {
+                                                ...prev.features,
+                                                calendar_enabled:
+                                                    !prev.features?.calendar_enabled,
                                             },
                                         }))
                                     }

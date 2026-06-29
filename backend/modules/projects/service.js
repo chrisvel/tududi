@@ -258,6 +258,8 @@ class ProjectsService {
             name,
             description,
             area_id,
+            goal_id,
+            is_maintenance,
             priority,
             due_date_at,
             image_url,
@@ -277,6 +279,8 @@ class ProjectsService {
             name: validatedName,
             description: description || '',
             area_id: area_id || null,
+            goal_id: goal_id || null,
+            is_maintenance: is_maintenance || false,
             pin_to_sidebar: false,
             priority: priority || null,
             due_date_at: due_date_at || null,
@@ -320,6 +324,8 @@ class ProjectsService {
             name,
             description,
             area_id,
+            goal_id,
+            is_maintenance,
             pin_to_sidebar,
             priority,
             due_date_at,
@@ -338,6 +344,11 @@ class ProjectsService {
         if (description !== undefined) updateData.description = description;
         if (area_id !== undefined)
             updateData.area_id = area_id === '' ? null : area_id;
+        if (goal_id !== undefined)
+            updateData.goal_id =
+                goal_id === '' || goal_id === null ? null : goal_id;
+        if (is_maintenance !== undefined)
+            updateData.is_maintenance = is_maintenance;
         if (pin_to_sidebar !== undefined)
             updateData.pin_to_sidebar = pin_to_sidebar;
         if (priority !== undefined)

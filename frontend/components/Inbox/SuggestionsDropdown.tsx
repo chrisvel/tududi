@@ -21,10 +21,10 @@ const SuggestionsDropdown = <T,>({
 
     return (
         <div
-            className="absolute bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md shadow-lg z-50"
+            className="fixed bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md shadow-lg z-50"
             style={{
                 left: `${position.left}px`,
-                top: `${position.top + 4}px`,
+                top: `${position.top}px`,
                 minWidth: '120px',
                 maxWidth: '200px',
             }}

@@ -21,6 +21,9 @@ class TagsService {
             pinned: tag.pinned,
             color: tag.color || null,
             usage_count: Number(tag.get('usage_count') ?? 0),
+            tasks_count: Number(tag.get('tasks_count') ?? 0),
+            notes_count: Number(tag.get('notes_count') ?? 0),
+            projects_count: Number(tag.get('projects_count') ?? 0),
         }));
     }
 
@@ -91,7 +94,7 @@ class TagsService {
 
         if (name !== undefined) {
             if (tag.tag_type === 'system') {
-                // Silently ignore name field for system tags — the form always sends it
+                // Silently ignore name field for system tags - the form always sends it
             } else {
                 const validatedName = validateTagName(name);
                 if (validatedName !== tag.name) {
@@ -124,6 +127,7 @@ class TagsService {
 
         return {
             id: tag.id,
+            uid: tag.uid,
             name: updates.name ?? tag.name,
             pinned: updates.pinned !== undefined ? updates.pinned : tag.pinned,
             color: updates.color !== undefined ? updates.color : tag.color,

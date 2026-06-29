@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-    TrashIcon,
     MagnifyingGlassIcon,
-    StarIcon,
+    EllipsisVerticalIcon,
+    TagIcon,
+    FunnelIcon,
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import { getApiPath } from '../config/paths';
 import { getCsrfToken } from '../utils/csrfService';
+import { useStore } from '../store/useStore';
 
 interface View {
     id: number;
@@ -27,24 +29,49 @@ interface View {
 
 const Views: React.FC = () => {
     const { t } = useTranslation();
-    const navigate = useNavigate();
     const [views, setViews] = useState<View[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [isSearchExpanded, setIsSearchExpanded] = useState(false);
-    const [hoveredViewId, setHoveredViewId] = useState<number | null>(null);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [viewToDelete, setViewToDelete] = useState<View | null>(null);
+    const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
+    const justOpenedRef = useRef<boolean>(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    const allTags = useStore((state) => state.tagsStore.tags);
+    const getTagColor = (name: string): string | undefined =>
+        allTags.find((t) => t.name === name)?.color;
 
     useEffect(() => {
         fetchViews();
     }, []);
 
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (justOpenedRef.current) {
+                justOpenedRef.current = false;
+                return;
+            }
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setDropdownOpen(null);
+            }
+        };
+        if (dropdownOpen !== null) {
+            const id = setTimeout(() => {
+                document.addEventListener('mousedown', handleClickOutside);
+            }, 100);
+            return () => {
+                clearTimeout(id);
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [dropdownOpen]);
+
     const fetchViews = async () => {
         try {
-            const response = await fetch(getApiPath('views'), {
-                credentials: 'include',
-            });
+            const response = await fetch(getApiPath('views'), { credentials: 'include' });
             if (response.ok) {
                 const data = await response.json();
                 const normalized: View[] = data.map((view: View) => ({
@@ -65,19 +92,13 @@ const Views: React.FC = () => {
     const handleDeleteView = async () => {
         if (!viewToDelete) return;
         try {
-            const response = await fetch(
-                getApiPath(`views/${viewToDelete.uid}`),
-                {
-                    method: 'DELETE',
-                    credentials: 'include',
-                    headers: {
-                        'x-csrf-token': await getCsrfToken(),
-                    },
-                }
-            );
+            const response = await fetch(getApiPath(`views/${viewToDelete.uid}`), {
+                method: 'DELETE',
+                credentials: 'include',
+                headers: { 'x-csrf-token': await getCsrfToken() },
+            });
             if (response.ok) {
                 setViews(views.filter((v) => v.uid !== viewToDelete.uid));
-                // Notify sidebar to refresh
                 window.dispatchEvent(new CustomEvent('viewUpdated'));
             }
         } catch (error) {
@@ -97,14 +118,10 @@ const Views: React.FC = () => {
                     'x-csrf-token': await getCsrfToken(),
                 },
                 credentials: 'include',
-                body: JSON.stringify({
-                    is_pinned: !view.is_pinned,
-                }),
+                body: JSON.stringify({ is_pinned: !view.is_pinned }),
             });
-
             if (response.ok) {
                 fetchViews();
-                // Notify sidebar to refresh
                 window.dispatchEvent(new CustomEvent('viewUpdated'));
             }
         } catch (error) {
@@ -117,14 +134,17 @@ const Views: React.FC = () => {
         setIsConfirmDialogOpen(true);
     };
 
-    const closeConfirmDialog = () => {
-        setIsConfirmDialogOpen(false);
-        setViewToDelete(null);
-    };
-
     const filteredViews = views.filter((view) =>
         view.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
+    const filterCount = (view: View) =>
+        view.filters.length +
+        (view.search_query ? 1 : 0) +
+        (view.priority ? 1 : 0) +
+        (view.due ? 1 : 0) +
+        (view.defer ? 1 : 0) +
+        (view.extras?.length ?? 0);
 
     if (isLoading) {
         return (
@@ -139,7 +159,7 @@ const Views: React.FC = () => {
     return (
         <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">
             <div className="w-full">
-                {/* Views Header */}
+                {/* Header */}
                 <div className="flex items-center justify-between mb-8">
                     <h2 className="text-2xl font-light">{t('views.title')}</h2>
                     <button
@@ -151,35 +171,16 @@ const Views: React.FC = () => {
                                 : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
                         }`}
                         aria-expanded={isSearchExpanded}
-                        aria-label={
-                            isSearchExpanded
-                                ? t(
-                                      'common.hideSearch',
-                                      'Collapse search panel'
-                                  )
-                                : t('common.showSearch', 'Show search input')
-                        }
-                        title={
-                            isSearchExpanded
-                                ? t('common.hideSearch', 'Hide search')
-                                : t('common.search', 'Search views')
-                        }
+                        title={isSearchExpanded ? t('common.hideSearch', 'Hide search') : t('common.search', 'Search views')}
                     >
                         <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-200" />
-                        <span className="sr-only">
-                            {isSearchExpanded
-                                ? t('common.hideSearch', 'Hide search')
-                                : t('common.search', 'Search views')}
-                        </span>
                     </button>
                 </div>
 
-                {/* Search input section, collapsible */}
+                {/* Collapsible search */}
                 <div
                     className={`transition-all duration-300 ease-in-out ${
-                        isSearchExpanded
-                            ? 'max-h-24 opacity-100 mb-4'
-                            : 'max-h-0 opacity-0 mb-0'
+                        isSearchExpanded ? 'max-h-24 opacity-100 mb-4' : 'max-h-0 opacity-0 mb-0'
                     } overflow-hidden`}
                 >
                     <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-4 py-3">
@@ -194,135 +195,150 @@ const Views: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Views List */}
+                {/* Views grid */}
                 {filteredViews.length === 0 ? (
-                    <p className="text-gray-700 dark:text-gray-300">
-                        {t('views.noViewsFound')}
-                    </p>
+                    <p className="text-gray-700 dark:text-gray-300">{t('views.noViewsFound')}</p>
                 ) : (
-                    <div className="space-y-4">
-                        <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {filteredViews.map((view) => (
-                                <li
-                                    key={view.uid}
-                                    className="bg-white dark:bg-gray-900 shadow rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow"
-                                    onMouseEnter={() =>
-                                        setHoveredViewId(view.id)
-                                    }
-                                    onMouseLeave={() => setHoveredViewId(null)}
-                                    onClick={() =>
-                                        navigate(`/views/${view.uid}`)
-                                    }
-                                >
-                                    <div className="flex items-start justify-between">
-                                        <div className="flex-grow">
-                                            <h3 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                                                {view.name}
-                                            </h3>
-                                            <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
-                                                {view.filters.length > 0 && (
-                                                    <p>
-                                                        •{' '}
-                                                        {view.filters.join(
-                                                            ', '
-                                                        )}
-                                                    </p>
-                                                )}
-                                                {view.search_query && (
-                                                    <p>
-                                                        • &quot;
-                                                        {view.search_query}
-                                                        &quot;
-                                                    </p>
-                                                )}
-                                                {view.priority && (
-                                                    <p>
-                                                        •{' '}
-                                                        {t(
-                                                            'views.priorityLabel'
-                                                        )}{' '}
-                                                        {view.priority}
-                                                    </p>
-                                                )}
-                                                {view.due && (
-                                                    <p>
-                                                        • {t('views.dueLabel')}{' '}
-                                                        {view.due}
-                                                    </p>
-                                                )}
-                                                {view.defer && (
-                                                    <p>
-                                                        •{' '}
-                                                        {t('search.deferUntil')}{' '}
-                                                        {view.defer}
-                                                    </p>
-                                                )}
-                                                {view.extras &&
-                                                    view.extras.length > 0 && (
-                                                        <p>
-                                                            •{' '}
-                                                            {t('search.extras')}
-                                                            :{' '}
-                                                            {view.extras.join(
-                                                                ', '
-                                                            )}
-                                                        </p>
-                                                    )}
-                                            </div>
-                                        </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        {filteredViews.map((view) => (
+                            <Link
+                                key={view.uid}
+                                to={`/views/${view.uid}`}
+                                className={`rounded-xl shadow-sm relative flex flex-col group hover:shadow-md transition-shadow cursor-pointer bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 ${
+                                    dropdownOpen === view.uid ? 'z-50' : ''
+                                }`}
+                            >
+                                {/* Three-dot dropdown */}
+                                <div className="absolute top-2 right-2 z-10" ref={dropdownRef}>
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            const next = dropdownOpen === view.uid ? null : view.uid;
+                                            if (next !== null) justOpenedRef.current = true;
+                                            setDropdownOpen(next);
+                                        }}
+                                        className="focus:outline-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1 rounded text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
+                                    >
+                                        <EllipsisVerticalIcon className="h-4 w-4" />
+                                    </button>
 
-                                        {/* Action buttons */}
-                                        <div className="flex space-x-2 ml-2">
+                                    {dropdownOpen === view.uid && (
+                                        <div className="absolute right-0 top-full mt-1 w-32 bg-white dark:bg-gray-700 shadow-lg rounded-md z-[60]">
                                             <button
                                                 onClick={(e) => {
+                                                    e.preventDefault();
                                                     e.stopPropagation();
                                                     togglePin(view);
+                                                    setDropdownOpen(null);
                                                 }}
-                                                className={`${view.is_pinned ? 'text-yellow-500' : 'text-gray-400'} hover:text-yellow-600 focus:outline-none transition-opacity ${hoveredViewId === view.id || view.is_pinned ? 'opacity-100' : 'opacity-0'}`}
-                                                aria-label={t(
-                                                    'common.togglePin',
-                                                    'Toggle pin'
-                                                )}
-                                                title={
-                                                    view.is_pinned
-                                                        ? t('views.unpinView')
-                                                        : t('views.pinView')
-                                                }
+                                                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-t-md"
                                             >
-                                                {view.is_pinned ? (
-                                                    <StarIconSolid className="h-5 w-5" />
-                                                ) : (
-                                                    <StarIcon className="h-5 w-5" />
-                                                )}
+                                                {view.is_pinned ? t('views.unpinView') : t('views.pinView')}
                                             </button>
                                             <button
                                                 onClick={(e) => {
+                                                    e.preventDefault();
                                                     e.stopPropagation();
                                                     openConfirmDialog(view);
+                                                    setDropdownOpen(null);
                                                 }}
-                                                className={`text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none transition-opacity ${hoveredViewId === view.id ? 'opacity-100' : 'opacity-0'}`}
-                                                aria-label={`Delete ${view.name}`}
-                                                title={`Delete ${view.name}`}
+                                                className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-b-md"
                                             >
-                                                <TrashIcon className="h-4 w-4" />
+                                                {t('areas.delete', 'Delete')}
                                             </button>
                                         </div>
+                                    )}
+                                </div>
+
+                                {/* Body: name + chips */}
+                                <div className="px-5 pt-6 pb-4 flex-1 flex items-center justify-center text-center">
+                                    <div className="w-full">
+                                        {view.is_pinned && (
+                                            <StarIconSolid className="h-3 w-3 text-yellow-400 mx-auto mb-1.5" />
+                                        )}
+                                        <h3 className="text-sm font-semibold tracking-widest uppercase line-clamp-2 text-gray-800 dark:text-gray-100 mb-3">
+                                            {view.name}
+                                        </h3>
+
+                                        {/* Tag chips */}
+                                        {view.tags.length > 0 && (
+                                            <div className="flex flex-wrap gap-1.5 justify-center mb-2">
+                                                {view.tags.map((tag) => {
+                                                    const color = getTagColor(tag);
+                                                    return (
+                                                        <span
+                                                            key={tag}
+                                                            className={
+                                                                color
+                                                                    ? 'px-2 py-0.5 rounded text-[10px] font-medium text-white'
+                                                                    : 'px-2 py-0.5 bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200 rounded text-[10px] font-medium'
+                                                            }
+                                                            style={color ? { backgroundColor: color } : undefined}
+                                                        >
+                                                            {tag}
+                                                        </span>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
+
+                                        {/* Filter summary */}
+                                        {(view.search_query || view.priority || view.due || view.defer || view.filters.length > 0) && (
+                                            <p className="text-[10px] text-gray-400 dark:text-gray-500 line-clamp-1">
+                                                {[
+                                                    view.search_query && `"${view.search_query}"`,
+                                                    view.priority,
+                                                    view.due?.replace(/_/g, ' '),
+                                                    view.defer?.replace(/_/g, ' '),
+                                                    ...view.filters,
+                                                ]
+                                                    .filter(Boolean)
+                                                    .join(' · ')}
+                                            </p>
+                                        )}
                                     </div>
-                                </li>
-                            ))}
-                        </ul>
+                                </div>
+
+                                {/* Stats footer */}
+                                <div className="rounded-b-xl flex items-stretch divide-x bg-gray-50 dark:bg-gray-800 border-t border-gray-100 dark:border-gray-600 divide-gray-200 dark:divide-gray-600">
+                                    {[
+                                        {
+                                            icon: <FunnelIcon className="h-3.5 w-3.5" />,
+                                            count: filterCount(view),
+                                            label: t('views.filters', 'filters'),
+                                        },
+                                        {
+                                            icon: <TagIcon className="h-3.5 w-3.5" />,
+                                            count: view.tags.length,
+                                            label: t('tags.title', 'tags'),
+                                        },
+                                    ].map(({ icon, count, label }) => (
+                                        <div key={label} className="flex-1 flex flex-col items-center py-3 gap-1">
+                                            <span className="text-base font-semibold leading-none text-gray-700 dark:text-gray-200">
+                                                {count}
+                                            </span>
+                                            <span className="flex items-center gap-1 text-[10px] leading-none text-gray-400 dark:text-gray-500">
+                                                {icon}
+                                                {label}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </Link>
+                        ))}
                     </div>
                 )}
 
-                {/* ConfirmDialog */}
                 {isConfirmDialogOpen && viewToDelete && (
                     <ConfirmDialog
                         title={t('views.deleteView')}
-                        message={t('views.confirmDelete', {
-                            viewName: viewToDelete.name,
-                        })}
+                        message={t('views.confirmDelete', { viewName: viewToDelete.name })}
                         onConfirm={handleDeleteView}
-                        onCancel={closeConfirmDialog}
+                        onCancel={() => {
+                            setIsConfirmDialogOpen(false);
+                            setViewToDelete(null);
+                        }}
                     />
                 )}
             </div>

@@ -5,9 +5,12 @@ const FEATURE_KEYS = [
     'auto_suggest_next_actions_enabled',
     'productivity_assistant_enabled',
     'next_task_suggestion_enabled',
+    'ai_assistant_enabled',
     'pomodoro_enabled',
     'eisenhower_enabled',
     'kanban_enabled',
+    'habits_enabled',
+    'calendar_enabled',
 ];
 
 function sanitizeFeatures(raw) {
@@ -468,6 +471,9 @@ class UsersService {
             projectShowMetrics,
             showProductivity,
             showNextTaskSuggestion,
+            showDailyBrief,
+            showAreaBalance,
+            showActiveProjects,
             showSuggestions,
             showDueToday,
             showCompleted,
@@ -483,6 +489,14 @@ class UsersService {
                 showMetrics !== undefined
                     ? showMetrics
                     : user.today_settings?.showMetrics || false,
+            showAreaBalance:
+                showAreaBalance !== undefined
+                    ? showAreaBalance
+                    : (user.today_settings?.showAreaBalance ?? true),
+            showActiveProjects:
+                showActiveProjects !== undefined
+                    ? showActiveProjects
+                    : (user.today_settings?.showActiveProjects ?? true),
             showProductivity:
                 showProductivity !== undefined
                     ? showProductivity
@@ -491,6 +505,10 @@ class UsersService {
                 showNextTaskSuggestion !== undefined
                     ? showNextTaskSuggestion
                     : user.today_settings?.showNextTaskSuggestion || false,
+            showDailyBrief:
+                showDailyBrief !== undefined
+                    ? showDailyBrief
+                    : user.today_settings?.showDailyBrief || false,
             showSuggestions:
                 showSuggestions !== undefined
                     ? showSuggestions
@@ -515,16 +533,27 @@ class UsersService {
             showProductivity !== undefined ||
             showNextTaskSuggestion !== undefined
         ) {
-            const currentFeatures = user.features || {};
-            profileUpdates.features = { ...currentFeatures };
+            let currentFeatures = user.features;
+            if (typeof currentFeatures === 'string') {
+                try {
+                    currentFeatures = JSON.parse(currentFeatures);
+                } catch {
+                    currentFeatures = {};
+                }
+            }
+            const featureUpdates = {};
             if (showProductivity !== undefined) {
-                profileUpdates.features.productivity_assistant_enabled =
+                featureUpdates.productivity_assistant_enabled =
                     showProductivity;
             }
             if (showNextTaskSuggestion !== undefined) {
-                profileUpdates.features.next_task_suggestion_enabled =
+                featureUpdates.next_task_suggestion_enabled =
                     showNextTaskSuggestion;
             }
+            profileUpdates.features = {
+                ...sanitizeFeatures(currentFeatures),
+                ...featureUpdates,
+            };
         }
 
         await usersRepository.update(user, profileUpdates);

@@ -631,7 +631,7 @@ const Notes: React.FC = () => {
                                                 })
                                             }
                                             onClick={(e) => e.stopPropagation()}
-                                            placeholder="Note title..."
+                                            placeholder={t('notes.titlePlaceholder')}
                                             className="w-full bg-transparent text-gray-900 dark:text-gray-100 border-none focus:outline-none focus:ring-0 pt-5 mb-4 block"
                                             style={{
                                                 color: editingNoteColor
@@ -768,8 +768,8 @@ const Notes: React.FC = () => {
                                                         : '#333333'
                                                     : undefined,
                                             }}
-                                            aria-label="Focus mode"
-                                            title="Focus mode"
+                                            aria-label={t('notes.focusMode')}
+                                            title={t('notes.focusMode')}
                                         >
                                             <ArrowsPointingOutIcon className="h-5 w-5" />
                                         </button>
@@ -793,7 +793,7 @@ const Notes: React.FC = () => {
                                                         : '#333333'
                                                     : undefined,
                                             }}
-                                            aria-label="Note options"
+                                            aria-label={t('notes.noteOptions')}
                                         >
                                             <EllipsisVerticalIcon className="h-5 w-5" />
                                         </button>
@@ -977,7 +977,7 @@ const Notes: React.FC = () => {
                                             })
                                         }
                                         onClick={(e) => e.stopPropagation()}
-                                        placeholder="Write your note content here... (Markdown supported)"
+                                        placeholder={t('notes.contentPlaceholder')}
                                         className="w-full h-full min-h-[300px] bg-transparent text-gray-900 dark:text-gray-100 border-none focus:outline-none focus:ring-0 resize-none py-4"
                                         style={{
                                             color: editingNoteColor
@@ -1020,7 +1020,7 @@ const Notes: React.FC = () => {
                                                 lineHeight: '2rem',
                                                 fontWeight: 500,
                                             }}
-                                            title="Click to edit"
+                                            title={t('notes.clickToEdit')}
                                         >
                                             {previewNote.title ||
                                                 t(
@@ -1160,8 +1160,8 @@ const Notes: React.FC = () => {
                                                         : '#333333'
                                                     : undefined,
                                             }}
-                                            aria-label="Focus mode"
-                                            title="Focus mode"
+                                            aria-label={t('notes.focusMode')}
+                                            title={t('notes.focusMode')}
                                         >
                                             <ArrowsPointingOutIcon className="h-5 w-5" />
                                         </button>
@@ -1185,7 +1185,7 @@ const Notes: React.FC = () => {
                                                         : '#333333'
                                                     : undefined,
                                             }}
-                                            aria-label="Note options"
+                                            aria-label={t('notes.noteOptions')}
                                         >
                                             <EllipsisVerticalIcon className="h-5 w-5" />
                                         </button>
@@ -1293,7 +1293,7 @@ const Notes: React.FC = () => {
                                                 : '#333333'
                                             : undefined,
                                     }}
-                                    title="Click to edit"
+                                    title={t('notes.clickToEdit')}
                                 >
                                     <MarkdownRenderer
                                         content={previewNote.content}

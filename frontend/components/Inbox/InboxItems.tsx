@@ -450,6 +450,16 @@ const InboxItems: React.FC = () => {
                                     "Inbox is where all uncategorized tasks are located. Tasks that have not been assigned to a project or don't have a due date will appear here. This is your 'brain dump' area where you can quickly note down tasks and organize them later."
                                 )}
                             </p>
+                            <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-xs text-gray-500 dark:text-gray-400">
+                                <span>
+                                    <code className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded font-mono">#tag</code>
+                                    {' '}{t('inbox.shortcutTag', 'to label with a tag')}
+                                </span>
+                                <span>
+                                    <code className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded font-mono">+Project</code>
+                                    {' '}{t('inbox.shortcutProject', 'to assign to a project')}
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>

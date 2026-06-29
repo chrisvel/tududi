@@ -84,6 +84,24 @@ module.exports = (sequelize) => {
                 allowNull: true,
                 defaultValue: 'created_at:desc',
             },
+            goal_id: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                references: {
+                    model: 'goals',
+                    key: 'id',
+                },
+            },
+            is_maintenance: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: false,
+            },
+            ai_insights: {
+                type: DataTypes.JSON,
+                allowNull: true,
+                defaultValue: null,
+            },
             status: {
                 type: DataTypes.ENUM(
                     'not_started',

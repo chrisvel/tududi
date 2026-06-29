@@ -81,7 +81,6 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                         style={{ backgroundColor: project.color }}
                     />
                 )}
-
                 {creatorName && (
                     <div className="absolute top-2 right-2 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">
                         Photo by {creatorName}
@@ -161,20 +160,19 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                                 onClick={() => {
                                     const projectArea =
                                         project.area || (project as any).Area;
-                                    const area = areas.find(
-                                        (a) => a.id === projectArea.id
-                                    );
-                                    const areaUid = area?.uid;
+                                    const areaUid =
+                                        projectArea.uid ||
+                                        areas.find(
+                                            (a) => a.id === projectArea.id
+                                        )?.uid;
                                     if (!areaUid) return;
                                     const areaSlug = projectArea.name
                                         .toLowerCase()
                                         .replace(/[^a-z0-9]+/g, '-')
                                         .replace(/^-|-$/g, '');
-                                    navigate(
-                                        `/projects?area=${areaUid}-${areaSlug}`
-                                    );
+                                    navigate(`/area/${areaUid}-${areaSlug}`);
                                 }}
-                                className="text-xs text-white/90 hover:text-blue-200 transition-colors cursor-pointer font-medium"
+                                className="text-xs text-white/90 hover:text-white transition-colors cursor-pointer font-medium underline underline-offset-2"
                             >
                                 {(project.area || (project as any).Area)?.name}
                             </button>

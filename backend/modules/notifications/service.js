@@ -19,9 +19,9 @@ class NotificationsService {
         return { count };
     }
 
-    async markAsRead(userId, notificationId) {
-        const notification = await notificationsRepository.findByIdAndUser(
-            notificationId,
+    async markAsRead(userId, notificationUid) {
+        const notification = await notificationsRepository.findByUidAndUser(
+            notificationUid,
             userId
         );
         if (!notification) {
@@ -31,9 +31,9 @@ class NotificationsService {
         return { notification, message: 'Notification marked as read' };
     }
 
-    async markAsUnread(userId, notificationId) {
-        const notification = await notificationsRepository.findByIdAndUser(
-            notificationId,
+    async markAsUnread(userId, notificationUid) {
+        const notification = await notificationsRepository.findByUidAndUser(
+            notificationUid,
             userId
         );
         if (!notification) {
@@ -48,9 +48,9 @@ class NotificationsService {
         return { count, message: `Marked ${count} notifications as read` };
     }
 
-    async dismiss(userId, notificationId) {
-        const notification = await notificationsRepository.findByIdAndUser(
-            notificationId,
+    async dismiss(userId, notificationUid) {
+        const notification = await notificationsRepository.findByUidAndUser(
+            notificationUid,
             userId,
             { dismissed_at: null }
         );

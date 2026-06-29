@@ -71,6 +71,15 @@ const App: React.FC = () => {
                 useStore.getState().userSettingsStore.setKanbanEnabled(
                     data.user.features?.kanban_enabled === true
                 );
+                useStore.getState().userSettingsStore.setHabitsEnabled(
+                    data.user.features?.habits_enabled !== false
+                );
+                useStore.getState().userSettingsStore.setCalendarEnabled(
+                    data.user.features?.calendar_enabled === true
+                );
+                useStore.getState().userSettingsStore.setAiAssistantEnabled(
+                    data.user.features?.ai_assistant_enabled === true
+                );
             } else {
                 setCurrentUser(null);
                 setUserInStorage(null);
@@ -248,7 +257,7 @@ const App: React.FC = () => {
                                 element={<ProjectDetails />}
                             />
                             <Route path="/areas" element={<Areas />} />
-                            <Route path="/area/:id" element={<AreaDetails />} />
+                            <Route path="/area/:uidSlug" element={<AreaDetails />} />
                             <Route path="/tags" element={<Tags />} />
                             <Route
                                 path="/tag/:uidSlug"

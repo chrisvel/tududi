@@ -77,6 +77,40 @@ const Projects: React.FC = () => {
     const statusFilter = searchParams.get('status') || 'not_completed';
     const somedayFilter = searchParams.get('someday') === '1';
 
+    // Restore persisted filters from localStorage on first mount (URL params take precedence)
+    useEffect(() => {
+        const params = new URLSearchParams(searchParams);
+        let changed = false;
+
+        if (!params.has('status')) {
+            const saved = localStorage.getItem('projectsStatusFilter');
+            if (saved && saved !== 'not_completed') {
+                params.set('status', saved);
+                changed = true;
+            }
+        }
+
+        if (!params.has('area')) {
+            const saved = localStorage.getItem('projectsAreaFilter');
+            if (saved) {
+                params.set('area', saved);
+                changed = true;
+            }
+        }
+
+        if (!params.has('someday')) {
+            const saved = localStorage.getItem('projectsSomedayFilter');
+            if (saved === '1') {
+                params.set('someday', '1');
+                changed = true;
+            }
+        }
+
+        if (changed) {
+            setSearchParams(params, { replace: true });
+        }
+    }, []);
+
     // Get area UID from URL parameters
     const getAreaUidFromParams = () => {
         const areaParam = searchParams.get('area');
@@ -269,6 +303,7 @@ const Projects: React.FC = () => {
         } else {
             params.set('status', value);
         }
+        localStorage.setItem('projectsStatusFilter', value);
         setSearchParams(params);
     };
 
@@ -276,8 +311,10 @@ const Projects: React.FC = () => {
         const params = new URLSearchParams(searchParams);
         if (somedayFilter) {
             params.delete('someday');
+            localStorage.setItem('projectsSomedayFilter', '0');
         } else {
             params.set('someday', '1');
+            localStorage.setItem('projectsSomedayFilter', '1');
         }
         setSearchParams(params);
     };
@@ -290,7 +327,7 @@ const Projects: React.FC = () => {
         if (value !== '') {
             params.set('area', value);
         }
-
+        localStorage.setItem('projectsAreaFilter', value);
         setSearchParams(params);
     };
 

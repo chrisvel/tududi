@@ -126,6 +126,14 @@ module.exports = (sequelize) => {
                     key: 'id',
                 },
             },
+            area_id: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                references: {
+                    model: 'areas',
+                    key: 'id',
+                },
+            },
             recurring_parent_id: {
                 type: DataTypes.INTEGER,
                 allowNull: true,
@@ -192,6 +200,11 @@ module.exports = (sequelize) => {
             habit_last_completion_at: {
                 type: DataTypes.DATE,
                 allowNull: true,
+            },
+            ai_insights: {
+                type: DataTypes.JSON,
+                allowNull: true,
+                defaultValue: null,
             },
         },
         {

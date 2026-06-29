@@ -5,7 +5,9 @@ import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
 import { useNavigate } from 'react-router-dom';
 import { getLocalesPath, getApiPath } from '../../config/paths';
+import { getCsrfToken } from '../../utils/csrfService';
 import { sortTasksByPriorityDueDateProject } from '../../utils/taskSortUtils';
+import { scoreAndSortSuggestedTasks } from '../../utils/suggestionScoringUtils';
 import { getTodayDateString } from '../../utils/dateUtils';
 import {
     ClipboardDocumentListIcon,
@@ -20,6 +22,7 @@ import {
     CalendarDaysIcon,
     QueueListIcon,
     ExclamationTriangleIcon,
+    SparklesIcon,
 } from '@heroicons/react/24/outline';
 import { fetchTasks, updateTask, deleteTask } from '../../utils/tasksService';
 import {
@@ -38,8 +41,12 @@ import TodayPlan from './TodayPlan';
 import { Metrics } from '../../entities/Metrics';
 import ProductivityAssistant from '../Productivity/ProductivityAssistant';
 import NextTaskSuggestion from './NextTaskSuggestion';
-import WeeklyCompletionChart from './WeeklyCompletionChart';
+import DailyAssistant from '../AI/DailyAssistant';
 import TodaySettingsDropdown from './TodaySettingsDropdown';
+import BurndownChart from './BurndownChart';
+import LifeBalance from './LifeBalance';
+import AreaDonut from './AreaDonut';
+import ActiveProjectsSection from './ActiveProjectsSection';
 
 const filterNonHabitTasks = (tasks: Task[] = []) =>
     tasks.filter((task) => !task.habit_mode);
@@ -88,10 +95,13 @@ const TasksToday: React.FC = () => {
         useState(true);
     const [isSettingsEnabled, setIsSettingsEnabled] = useState(false);
     const [todaySettings, setTodaySettings] = useState({
-        showMetrics: false,
+        showMetrics: true,
+        showAreaBalance: true,
+        showActiveProjects: true,
         showProductivity: false,
         showNextTaskSuggestion: false,
-        showSuggestions: false,
+        showDailyBrief: false,
+        showSuggestions: true,
         showDueToday: true,
         showCompleted: true,
         showProgressBar: true, // Always enabled
@@ -102,7 +112,9 @@ const TasksToday: React.FC = () => {
     const [profileSettings, setProfileSettings] = useState({
         productivity_assistant_enabled: false,
         next_task_suggestion_enabled: false,
+        ai_assistant_enabled: false,
     });
+    const [hasBriefMounted, setHasBriefMounted] = useState(false);
     const [showNextTaskSuggestion, setShowNextTaskSuggestion] = useState(true);
     const [isSuggestedCollapsed, setIsSuggestedCollapsed] = useState(() => {
         const stored = localStorage.getItem('suggestedTasksCollapsed');
@@ -164,7 +176,7 @@ const TasksToday: React.FC = () => {
     const [overdueDisplayLimit, setOverdueDisplayLimit] = useState(20);
 
     // Client-side pagination for Suggested tasks
-    const [suggestedDisplayLimit, setSuggestedDisplayLimit] = useState(20);
+    const [suggestedDisplayLimit, setSuggestedDisplayLimit] = useState(5);
 
     // Client-side pagination for Completed Today tasks (since backend returns all)
     const [completedTodayDisplayLimit, setCompletedTodayDisplayLimit] =
@@ -192,12 +204,28 @@ const TasksToday: React.FC = () => {
         return filterNonHabitTasks(tasks);
     }, [metrics.tasks_completed_today, getTasksFromStore]);
 
-    // Sort tasks using multi-criteria sorting (Priority → Due Date → Project) for consistency
-    // Task data comes from global store so priority changes are immediately reflected
+    // Smart scoring: one-per-project candidate pool, priority-dominant score, reason chips.
+    // Use all store tasks minus tasks already shown in other sections - gives buildCandidatePool
+    // the widest possible view of pending work across all active projects.
     const sortedSuggestedTasks = useMemo(() => {
-        const tasks = getTasksFromStore(metrics.suggested_tasks || []);
-        return sortTasksByPriorityDueDateProject(tasks);
-    }, [metrics.suggested_tasks, getTasksFromStore]);
+        const excludedIds = new Set<number>();
+        [
+            ...(metrics.tasks_in_progress || []),
+            ...(metrics.tasks_due_today || []),
+            ...(metrics.tasks_overdue || []),
+            ...(metrics.today_plan_tasks || []),
+            ...(metrics.tasks_completed_today || []),
+        ].forEach((t: Task) => { if (t.id != null) excludedIds.add(t.id); });
+
+        const candidateTasks = storeTasks.filter(
+            (t: Task) => t.id != null && !excludedIds.has(t.id)
+        );
+
+        if (localProjects.length > 0) {
+            return scoreAndSortSuggestedTasks(candidateTasks, localProjects);
+        }
+        return sortTasksByPriorityDueDateProject(candidateTasks);
+    }, [metrics, storeTasks, localProjects]);
 
     const sortedDueTodayTasks = useMemo(() => {
         const tasks = getTasksFromStore(metrics.tasks_due_today || []);
@@ -209,67 +237,29 @@ const TasksToday: React.FC = () => {
         return sortTasksByPriorityDueDateProject(tasks);
     }, [metrics.tasks_overdue, getTasksFromStore]);
 
-    // Helper function to get completion trend vs average
     const getCompletionTrend = () => {
         const todayCount = metrics.tasks_completed_today.length;
-
-        // Calculate average: sum of all completed tasks divided by 7 days
-        // The average represents the daily average across the week
         if (metrics.weekly_completions.length === 0) {
-            return {
-                direction: 'same',
-                difference: 0,
-                percentage: 0,
-                todayCount,
-                averageCount: 0,
-            };
+            return { direction: 'same', difference: 0, percentage: 0, todayCount, averageCount: 0 };
         }
-
-        // Sum all completed tasks from the weekly data
-        const totalCompletedTasks = metrics.weekly_completions.reduce(
-            (sum, completion) => sum + completion.count,
+        const totalCompleted = metrics.weekly_completions.reduce(
+            (sum: number, c: { count: number }) => sum + c.count,
             0
         );
-
-        // Average is total completed tasks divided by 7
-        const averageCount = totalCompletedTasks / 7;
-
-        // Calculate percentage change vs average
+        const averageCount = totalCompleted / 7;
         let percentage = 0;
         if (averageCount > 0) {
-            percentage = Math.round(
-                ((todayCount - averageCount) / averageCount) * 100
-            );
+            percentage = Math.round(((todayCount - averageCount) / averageCount) * 100);
         } else if (todayCount > 0) {
-            // If average was 0 but today has completions, it's a 100%+ increase
             percentage = 100;
         }
-
+        const diff = (n: number) => Math.round(n * 10) / 10;
         if (todayCount > averageCount) {
-            return {
-                direction: 'up',
-                difference: Math.round((todayCount - averageCount) * 10) / 10, // Round to 1 decimal
-                percentage: Math.abs(percentage),
-                todayCount,
-                averageCount: Math.round(averageCount * 10) / 10, // Round to 1 decimal
-            };
+            return { direction: 'up', difference: diff(todayCount - averageCount), percentage: Math.abs(percentage), todayCount, averageCount: diff(averageCount) };
         } else if (todayCount < averageCount) {
-            return {
-                direction: 'down',
-                difference: Math.round((averageCount - todayCount) * 10) / 10, // Round to 1 decimal
-                percentage: Math.abs(percentage),
-                todayCount,
-                averageCount: Math.round(averageCount * 10) / 10, // Round to 1 decimal
-            };
-        } else {
-            return {
-                direction: 'same',
-                difference: 0,
-                percentage: 0,
-                todayCount,
-                averageCount: Math.round(averageCount * 10) / 10, // Round to 1 decimal
-            };
+            return { direction: 'down', difference: diff(averageCount - todayCount), percentage: Math.abs(percentage), todayCount, averageCount: diff(averageCount) };
         }
+        return { direction: 'same', difference: 0, percentage: 0, todayCount, averageCount: diff(averageCount) };
     };
 
     // Track mounting state to prevent state updates after unmount
@@ -497,7 +487,7 @@ const TasksToday: React.FC = () => {
             setIsLoading(true);
             try {
                 const result = await fetchTasks(
-                    `?type=today&limit=20&offset=0`
+                    `?type=today&limit=20&offset=0&include_lists=true`
                 );
                 if (isMounted.current) {
                     setMetrics({
@@ -596,15 +586,21 @@ const TasksToday: React.FC = () => {
 
                         // Use parsed settings or fall back to defaults
                         settings = settings || {
-                            showMetrics: false,
+                            showMetrics: true,
+                            showAreaBalance: true,
+                            showActiveProjects: true,
                             showProductivity: false,
                             showNextTaskSuggestion: false,
-                            showSuggestions: false,
+                            showSuggestions: true,
                             showDueToday: true,
                             showCompleted: true,
                             showProgressBar: true, // Always enabled
                             showDailyQuote: true,
                         };
+                        // Back-fill keys missing from stored settings
+                        if (settings.showAreaBalance === undefined) settings.showAreaBalance = true;
+                        if (settings.showActiveProjects === undefined) settings.showActiveProjects = true;
+                        if (settings.showDailyBrief === undefined) settings.showDailyBrief = false;
 
                         // Store profile settings
                         const currentProfileSettings = {
@@ -612,6 +608,8 @@ const TasksToday: React.FC = () => {
                                 userFeatures.productivity_assistant_enabled === true,
                             next_task_suggestion_enabled:
                                 userFeatures.next_task_suggestion_enabled === true,
+                            ai_assistant_enabled:
+                                userFeatures.ai_assistant_enabled === true,
                         };
                         setProfileSettings(currentProfileSettings);
 
@@ -624,11 +622,11 @@ const TasksToday: React.FC = () => {
                             settings.showNextTaskSuggestion =
                                 userFeatures.next_task_suggestion_enabled;
                         }
-
                         // Ensure progress bar is always enabled
                         settings.showProgressBar = true;
 
                         setTodaySettings(settings);
+                        if (settings.showDailyBrief) setHasBriefMounted(true);
                         setIsSettingsLoaded(true);
                     }
                 } else {
@@ -1241,9 +1239,40 @@ const TasksToday: React.FC = () => {
     const totalCompletedItems =
         completedTasksList.length + completedHabits.length;
 
+    // Auto-show suggestions when the day is completely empty
+    const isEmptyDay =
+        totalPlannedItems === 0 &&
+        sortedDueTodayTasks.length === 0 &&
+        sortedOverdueTasks.length === 0;
+    const effectiveShowSuggestions =
+        todaySettings.showSuggestions ||
+        (isEmptyDay && sortedSuggestedTasks.length > 0);
+
     // Handle settings change
     const handleSettingsChange = (newSettings: typeof todaySettings) => {
         setTodaySettings(newSettings);
+    };
+
+    const handleToggleDailyBrief = async () => {
+        if (!hasBriefMounted) setHasBriefMounted(true);
+        const newSettings = {
+            ...todaySettings,
+            showDailyBrief: !todaySettings.showDailyBrief,
+        };
+        setTodaySettings(newSettings);
+        try {
+            await fetch(getApiPath('profile/today-settings'), {
+                method: 'PUT',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-csrf-token': await getCsrfToken(),
+                },
+                body: JSON.stringify(newSettings),
+            });
+        } catch (error) {
+            console.error('Error saving daily brief setting:', error);
+        }
     };
 
     // Show loading state until both data and settings are loaded (only for initial load)
@@ -1270,7 +1299,7 @@ const TasksToday: React.FC = () => {
 
     return (
         <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">
-            <div className="w-full max-w-5xl mx-auto">
+            <div className="w-full max-w-7xl mx-auto">
                 <div className="flex flex-col">
                     {/* Today Header with Icons on the Right */}
                     <div className="mb-4">
@@ -1288,6 +1317,21 @@ const TasksToday: React.FC = () => {
 
                             {/* Today Navigation Icons */}
                             <div className="flex items-center space-x-2">
+                                {profileSettings.ai_assistant_enabled && (
+                                    <button
+                                        onClick={handleToggleDailyBrief}
+                                        className={`flex items-center justify-center w-8 h-8 rounded-md transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
+                                            todaySettings.showDailyBrief
+                                                ? 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-300'
+                                                : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400'
+                                        }`}
+                                        aria-pressed={todaySettings.showDailyBrief}
+                                        aria-label={t('aiAssistant.dailyBriefTitle', 'AI Daily Brief')}
+                                        title={t('aiAssistant.dailyBriefTitle', 'AI Daily Brief')}
+                                    >
+                                        <SparklesIcon className="h-5 w-5" />
+                                    </button>
+                                )}
                                 <div className="relative">
                                     <button
                                         onClick={() =>
@@ -1347,196 +1391,131 @@ const TasksToday: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Metrics Section - Always reserve space to prevent layout shift */}
-                {!isSettingsLoaded ? (
-                    // Invisible placeholder that reserves the exact same space
-                    <div
-                        className="mb-2 opacity-0 pointer-events-none"
-                        aria-hidden="true"
-                    >
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                            <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 h-32"></div>
-                            <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 h-32"></div>
-                            <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 h-32"></div>
-                        </div>
+                {/* AI Daily Brief - top of page, kept mounted once opened to preserve content */}
+                {isSettingsLoaded && profileSettings.ai_assistant_enabled && hasBriefMounted && (
+                    <div className={todaySettings.showDailyBrief ? '' : 'hidden'}>
+                        <DailyAssistant />
                     </div>
-                ) : todaySettings.showMetrics ? (
-                    <div className="mb-2 grid grid-cols-1 lg:grid-cols-3 gap-4">
-                        {/* Combined Task & Project Metrics */}
-                        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
-                            <h3 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                )}
+
+                {/* Overview Stats + Weekly Chart */}
+                {isSettingsLoaded && todaySettings.showMetrics && (
+                    <div className="mb-4 grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch">
+                        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 flex flex-col">
+                            <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3">
                                 {t('dashboard.overview')}
                             </h3>
-                            <div className="space-y-2">
-                                {/* Total Tasks */}
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center">
-                                        <ClipboardDocumentListIcon className="h-4 w-4 text-blue-500 mr-2" />
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                                            {t('tasks.total')}
-                                        </p>
+                            <div className="grid grid-cols-3 gap-2 flex-1 auto-rows-fr">
+                                {/* Total */}
+                                <div className="flex flex-col items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-900/20 p-2.5 gap-1">
+                                    <div className="flex items-center gap-1.5 leading-none">
+                                        <ClipboardDocumentListIcon className="h-4 w-4 text-blue-400 dark:text-blue-500 flex-shrink-0" />
+                                        <span className="text-2xl font-bold text-blue-600 dark:text-blue-400 leading-none">{metrics.total_open_tasks}</span>
                                     </div>
-                                    <p className="text-sm font-semibold">
-                                        {metrics.total_open_tasks}
-                                    </p>
+                                    <span className="text-[10px] text-gray-500 dark:text-gray-400 text-center leading-tight">{t('tasks.total')}</span>
                                 </div>
-
                                 {/* In Progress */}
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center">
-                                        <ArrowPathIcon className="h-4 w-4 text-green-500 mr-2" />
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                                            {t('tasks.inProgress')}
-                                        </p>
+                                <div className="flex flex-col items-center justify-center rounded-lg bg-green-50 dark:bg-green-900/20 p-2.5 gap-1">
+                                    <div className="flex items-center gap-1.5 leading-none">
+                                        <ArrowPathIcon className="h-4 w-4 text-green-400 dark:text-green-500 flex-shrink-0" />
+                                        <span className="text-2xl font-bold text-green-600 dark:text-green-400 leading-none">{metrics.tasks_in_progress_count}</span>
                                     </div>
-                                    <p className="text-sm font-semibold">
-                                        {metrics.tasks_in_progress_count}
-                                    </p>
+                                    <span className="text-[10px] text-gray-500 dark:text-gray-400 text-center leading-tight">{t('tasks.inProgress')}</span>
                                 </div>
-
                                 {/* Active Projects */}
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center">
-                                        <FolderIcon className="h-4 w-4 text-purple-500 mr-2" />
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                                            {t('projects.active')}
-                                        </p>
+                                <div className="flex flex-col items-center justify-center rounded-lg bg-purple-50 dark:bg-purple-900/20 p-2.5 gap-1">
+                                    <div className="flex items-center gap-1.5 leading-none">
+                                        <FolderIcon className="h-4 w-4 text-purple-400 dark:text-purple-500 flex-shrink-0" />
+                                        <span className="text-2xl font-bold text-purple-600 dark:text-purple-400 leading-none">
+                                            {Array.isArray(localProjects)
+                                                ? localProjects.filter(
+                                                      (p) => p.status && ['planned', 'in_progress', 'waiting'].includes(p.status)
+                                                  ).length
+                                                : 0}
+                                        </span>
                                     </div>
-                                    <p className="text-sm font-semibold">
-                                        {Array.isArray(localProjects)
-                                            ? localProjects.filter(
-                                                  (project) =>
-                                                      project.status &&
-                                                      [
-                                                          'planned',
-                                                          'in_progress',
-                                                          'waiting',
-                                                      ].includes(project.status)
-                                              ).length
-                                            : 0}
-                                    </p>
+                                    <span className="text-[10px] text-gray-500 dark:text-gray-400 text-center leading-tight">{t('projects.active')}</span>
                                 </div>
-
                                 {/* Due Today */}
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center">
-                                        <CalendarDaysIcon className="h-4 w-4 text-red-500 mr-2" />
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                                            {t('tasks.dueToday')}
-                                        </p>
-                                    </div>
-                                    <p
-                                        className={`text-sm font-semibold ${metrics.tasks_due_today.length > 0 ? 'text-red-500' : ''}`}
-                                    >
-                                        {metrics.tasks_due_today.length}
-                                    </p>
-                                </div>
-
+                                {(() => {
+                                    const hasDue = metrics.tasks_due_today.length > 0;
+                                    return (
+                                        <div className={`flex flex-col items-center justify-center rounded-lg p-2.5 gap-1 ${hasDue ? 'bg-red-50 dark:bg-red-900/20' : 'bg-gray-50 dark:bg-gray-800/40'}`}>
+                                            <div className="flex items-center gap-1.5 leading-none">
+                                                <CalendarDaysIcon className={`h-4 w-4 flex-shrink-0 ${hasDue ? 'text-red-400 dark:text-red-500' : 'text-gray-400 dark:text-gray-500'}`} />
+                                                <span className={`text-2xl font-bold leading-none ${hasDue ? 'text-red-600 dark:text-red-400' : 'text-gray-600 dark:text-gray-400'}`}>{metrics.tasks_due_today.length}</span>
+                                            </div>
+                                            <span className="text-[10px] text-gray-500 dark:text-gray-400 text-center leading-tight">{t('tasks.dueToday')}</span>
+                                        </div>
+                                    );
+                                })()}
                                 {/* Overdue */}
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center">
-                                        <ExclamationTriangleIcon className="h-4 w-4 text-orange-500 mr-2" />
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                                            {t('tasks.overdue', 'Overdue')}
-                                        </p>
-                                    </div>
-                                    <p
-                                        className={`text-sm font-semibold ${metrics.tasks_overdue.length > 0 ? 'text-red-500' : ''}`}
-                                    >
-                                        {metrics.tasks_overdue.length}
-                                    </p>
-                                </div>
-
+                                {(() => {
+                                    const hasOverdue = metrics.tasks_overdue.length > 0;
+                                    return (
+                                        <div className={`flex flex-col items-center justify-center rounded-lg p-2.5 gap-1 ${hasOverdue ? 'bg-orange-50 dark:bg-orange-900/20' : 'bg-gray-50 dark:bg-gray-800/40'}`}>
+                                            <div className="flex items-center gap-1.5 leading-none">
+                                                <ExclamationTriangleIcon className={`h-4 w-4 flex-shrink-0 ${hasOverdue ? 'text-orange-400 dark:text-orange-500' : 'text-gray-400 dark:text-gray-500'}`} />
+                                                <span className={`text-2xl font-bold leading-none ${hasOverdue ? 'text-orange-600 dark:text-orange-400' : 'text-gray-600 dark:text-gray-400'}`}>{metrics.tasks_overdue.length}</span>
+                                            </div>
+                                            <span className="text-[10px] text-gray-500 dark:text-gray-400 text-center leading-tight">{t('tasks.overdue', 'Overdue')}</span>
+                                        </div>
+                                    );
+                                })()}
                                 {/* Completed Today */}
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center">
-                                        <CheckCircleIcon className="h-4 w-4 text-green-600 mr-2" />
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                                            {t(
-                                                'tasks.completedToday',
-                                                'Completed Today'
-                                            )}
-                                        </p>
-                                    </div>
-                                    <div className="flex items-center space-x-1">
-                                        {(() => {
-                                            const trend = getCompletionTrend();
-                                            const getTooltipText = () => {
-                                                if (
-                                                    trend.direction === 'same'
-                                                ) {
-                                                    return t(
-                                                        'dashboard.sameAsAverage',
-                                                        'Same as average'
-                                                    );
-                                                } else if (
-                                                    trend.direction === 'up'
-                                                ) {
-                                                    return t(
-                                                        'dashboard.betterThanAverage',
-                                                        '{{percentage}}% more than average',
-                                                        {
-                                                            percentage:
-                                                                trend.percentage,
-                                                        }
-                                                    );
-                                                } else {
-                                                    return t(
-                                                        'dashboard.worseThanAverage',
-                                                        '{{percentage}}% less than average',
-                                                        {
-                                                            percentage:
-                                                                trend.percentage,
-                                                        }
-                                                    );
-                                                }
-                                            };
-
-                                            return (
-                                                <>
-                                                    {(trend.direction ===
-                                                        'up' ||
-                                                        trend.direction ===
-                                                            'down') && (
-                                                        <div className="relative group">
-                                                            {trend.direction ===
-                                                                'up' && (
-                                                                <ArrowUpIcon className="h-3 w-3 text-green-500" />
-                                                            )}
-                                                            {trend.direction ===
-                                                                'down' && (
-                                                                <ArrowDownIcon className="h-3 w-3 text-red-500" />
-                                                            )}
-                                                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 dark:bg-gray-700 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
-                                                                {getTooltipText()}
-                                                            </div>
+                                {(() => {
+                                    const trend = getCompletionTrend();
+                                    const hasDone = metrics.tasks_completed_today.length > 0;
+                                    return (
+                                        <div className={`flex flex-col items-center justify-center rounded-lg p-2.5 gap-1 ${hasDone ? 'bg-emerald-50 dark:bg-emerald-900/20' : 'bg-gray-50 dark:bg-gray-800/40'}`}>
+                                            <div className="flex items-center gap-1.5 leading-none">
+                                                <CheckCircleIcon className={`h-4 w-4 flex-shrink-0 ${hasDone ? 'text-emerald-400 dark:text-emerald-500' : 'text-gray-400 dark:text-gray-500'}`} />
+                                                <span className={`text-2xl font-bold ${hasDone ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-600 dark:text-gray-400'}`}>{metrics.tasks_completed_today.length}</span>
+                                                {trend.direction === 'up' && (
+                                                    <div className="relative group/tip">
+                                                        <ArrowUpIcon className="h-3 w-3 text-emerald-500" />
+                                                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 dark:bg-gray-700 rounded opacity-0 group-hover/tip:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                                                            {t('dashboard.betterThanAverage', '{{percentage}}% more than average', { percentage: trend.percentage })}
                                                         </div>
-                                                    )}
-                                                    <p
-                                                        className={`text-sm font-semibold ${metrics.tasks_completed_today.length > 0 ? 'text-green-500' : ''}`}
-                                                    >
-                                                        {
-                                                            metrics
-                                                                .tasks_completed_today
-                                                                .length
-                                                        }
-                                                    </p>
-                                                </>
-                                            );
-                                        })()}
-                                    </div>
-                                </div>
+                                                    </div>
+                                                )}
+                                                {trend.direction === 'down' && (
+                                                    <div className="relative group/tip">
+                                                        <ArrowDownIcon className="h-3 w-3 text-red-400" />
+                                                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 dark:bg-gray-700 rounded opacity-0 group-hover/tip:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                                                            {t('dashboard.worseThanAverage', '{{percentage}}% less than average', { percentage: trend.percentage })}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <span className="text-[10px] text-gray-500 dark:text-gray-400 text-center leading-tight">{t('tasks.completedToday', 'Completed Today')}</span>
+                                        </div>
+                                    );
+                                })()}
                             </div>
                         </div>
-
-                        {/* Weekly Completion Chart */}
-                        <div className="lg:col-span-2">
-                            <WeeklyCompletionChart
-                                data={metrics.weekly_completions}
-                            />
+                        <div className="lg:col-span-2 h-full">
+                            <BurndownChart />
                         </div>
                     </div>
-                ) : null}
+                )}
+
+                {/* Area Balance */}
+                {isSettingsLoaded && todaySettings.showAreaBalance && (
+                    <div className="mb-4 grid grid-cols-4 gap-4 items-stretch">
+                        <div className="col-span-3">
+                            <LifeBalance projects={localProjects} />
+                        </div>
+                        <div className="col-span-1">
+                            <AreaDonut projects={localProjects} />
+                        </div>
+                    </div>
+                )}
+
+                {/* Active Projects */}
+                {isSettingsLoaded && todaySettings.showActiveProjects && (
+                    <ActiveProjectsSection projects={localProjects} />
+                )}
 
                 {/* Productivity Assistant - Conditionally Rendered */}
                 {!isSettingsLoaded ? (
@@ -1875,9 +1854,14 @@ const TasksToday: React.FC = () => {
                     >
                         <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 h-20"></div>
                     </div>
-                ) : todaySettings.showSuggestions &&
+                ) : effectiveShowSuggestions &&
                   sortedSuggestedTasks.length > 0 ? (
                     <div className="mt-2 mb-6">
+                        {isEmptyDay && (
+                            <p className="text-sm text-gray-400 dark:text-gray-500 mb-3 italic">
+                                {t('tasks.noPlanYet', 'No plan yet - here are some ideas:')}
+                            </p>
+                        )}
                         <div
                             className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
                             onClick={toggleSuggestedCollapsed}
@@ -1910,48 +1894,24 @@ const TasksToday: React.FC = () => {
                                     onTaskDelete={handleTaskDelete}
                                     projects={localProjects}
                                     onToggleToday={undefined}
+                                    showSuggestionChips={true}
                                 />
 
                                 {suggestedDisplayLimit <
                                     sortedSuggestedTasks.length && (
-                                    <div className="flex justify-center pt-4 pb-2 gap-3">
+                                    <div className="flex justify-center pt-3 pb-2">
                                         <button
                                             onClick={() =>
                                                 setSuggestedDisplayLimit(
-                                                    (prev) => prev + 20
+                                                    (prev) => prev + 5
                                                 )
                                             }
-                                            className="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                            className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                                         >
-                                            <QueueListIcon className="h-4 w-4 mr-2" />
-                                            {t('common.loadMore', 'Load More')}
-                                        </button>
-                                        <button
-                                            onClick={() =>
-                                                setSuggestedDisplayLimit(
-                                                    sortedSuggestedTasks.length
-                                                )
-                                            }
-                                            className="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                                        >
-                                            {t('common.showAll', 'Show All')}
+                                            {Math.min(5, sortedSuggestedTasks.length - suggestedDisplayLimit)} more
                                         </button>
                                     </div>
                                 )}
-
-                                <div className="text-center text-sm text-gray-500 dark:text-gray-400 pt-2 pb-4">
-                                    {t(
-                                        'tasks.showingItems',
-                                        'Showing {{current}} of {{total}} tasks',
-                                        {
-                                            current: Math.min(
-                                                suggestedDisplayLimit,
-                                                sortedSuggestedTasks.length
-                                            ),
-                                            total: sortedSuggestedTasks.length,
-                                        }
-                                    )}
-                                </div>
                             </>
                         )}
                     </div>

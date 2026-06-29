@@ -6,4 +6,7 @@ export interface Tag {
     pinned?: boolean;
     color?: string;
     usage_count?: number;
+    tasks_count?: number;
+    notes_count?: number;
+    projects_count?: number;
 }

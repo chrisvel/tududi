@@ -33,10 +33,12 @@ interface ProjectsStore {
     currentProject: Project | null;
     isLoading: boolean;
     isError: boolean;
+    hasLoaded: boolean;
     setProjects: (projects: Project[]) => void;
     setCurrentProject: (project: Project | null) => void;
     setLoading: (isLoading: boolean) => void;
     setError: (isError: boolean) => void;
+    loadProjects: () => Promise<void>;
 }
 
 interface TagsStore {
@@ -105,6 +107,12 @@ interface UserSettingsStore {
     setEisenhowerEnabled: (enabled: boolean) => void;
     kanbanEnabled: boolean;
     setKanbanEnabled: (enabled: boolean) => void;
+    habitsEnabled: boolean;
+    setHabitsEnabled: (enabled: boolean) => void;
+    calendarEnabled: boolean;
+    setCalendarEnabled: (enabled: boolean) => void;
+    aiAssistantEnabled: boolean;
+    setAiAssistantEnabled: (enabled: boolean) => void;
 }
 
 interface HabitsStore {
@@ -236,6 +244,7 @@ export const useStore = create<StoreState>((set: any) => ({
         currentProject: null,
         isLoading: false,
         isError: false,
+        hasLoaded: false,
         setProjects: (projects) =>
             set((state) => ({
                 projectsStore: { ...state.projectsStore, projects },
@@ -252,6 +261,42 @@ export const useStore = create<StoreState>((set: any) => ({
             set((state) => ({
                 projectsStore: { ...state.projectsStore, isError },
             })),
+        loadProjects: async () => {
+            const state = useStore.getState();
+            if (state.projectsStore.isLoading) return;
+
+            const { fetchProjects } = await import('../utils/projectsService');
+
+            set((state) => ({
+                projectsStore: {
+                    ...state.projectsStore,
+                    isLoading: true,
+                    isError: false,
+                },
+            }));
+
+            try {
+                const projects = await fetchProjects();
+                set((state) => ({
+                    projectsStore: {
+                        ...state.projectsStore,
+                        projects,
+                        isLoading: false,
+                        hasLoaded: true,
+                    },
+                }));
+            } catch (error) {
+                console.error('loadProjects: Failed to load projects:', error);
+                set((state) => ({
+                    projectsStore: {
+                        ...state.projectsStore,
+                        isError: true,
+                        isLoading: false,
+                        hasLoaded: true,
+                    },
+                }));
+            }
+        },
     },
     tagsStore: {
         tags: [],
@@ -803,6 +848,30 @@ export const useStore = create<StoreState>((set: any) => ({
                 userSettingsStore: {
                     ...state.userSettingsStore,
                     kanbanEnabled: enabled,
+                },
+            })),
+        habitsEnabled: true,
+        setHabitsEnabled: (enabled) =>
+            set((state) => ({
+                userSettingsStore: {
+                    ...state.userSettingsStore,
+                    habitsEnabled: enabled,
+                },
+            })),
+        calendarEnabled: false,
+        setCalendarEnabled: (enabled) =>
+            set((state) => ({
+                userSettingsStore: {
+                    ...state.userSettingsStore,
+                    calendarEnabled: enabled,
+                },
+            })),
+        aiAssistantEnabled: false,
+        setAiAssistantEnabled: (enabled) =>
+            set((state) => ({
+                userSettingsStore: {
+                    ...state.userSettingsStore,
+                    aiAssistantEnabled: enabled,
                 },
             })),
     },

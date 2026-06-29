@@ -89,7 +89,7 @@ async function fetchTasksInProgress(visibleTasksWhere) {
     });
 }
 
-async function fetchTodayPlanTasks(visibleTasksWhere) {
+async function fetchTodayPlanTasks(visibleTasksWhere, somedayExcludedIds = []) {
     const now = new Date();
     const todayPlanStatuses = [
         Task.STATUS.IN_PROGRESS,
@@ -111,17 +111,22 @@ async function fetchTodayPlanTasks(visibleTasksWhere) {
         'cancelled',
     ];
 
+    const statusFilter = {
+        status: {
+            [Op.in]: todayPlanStatuses,
+            [Op.notIn]: excludedStatuses,
+        },
+        parent_task_id: null,
+    };
+    if (somedayExcludedIds.length > 0) {
+        statusFilter.id = { [Op.notIn]: somedayExcludedIds };
+    }
+
     const tasks = await Task.findAll({
         where: {
             [Op.and]: [
                 visibleTasksWhere,
-                {
-                    status: {
-                        [Op.in]: todayPlanStatuses,
-                        [Op.notIn]: excludedStatuses,
-                    },
-                    parent_task_id: null,
-                },
+                statusFilter,
                 // Exclude tasks deferred to the future
                 {
                     [Op.or]: [
@@ -183,7 +188,12 @@ async function fetchTodayPlanTasks(visibleTasksWhere) {
     );
 }
 
-async function fetchTasksDueToday(visibleTasksWhere, userTimezone, userId) {
+async function fetchTasksDueToday(
+    visibleTasksWhere,
+    userTimezone,
+    userId,
+    somedayExcludedIds = []
+) {
     const safeTimezone = getSafeTimezone(userTimezone);
     const todayBounds = getTodayBoundsInUTC(safeTimezone);
 
@@ -215,42 +225,44 @@ async function fetchTasksDueToday(visibleTasksWhere, userTimezone, userId) {
         }
     }
 
-    return await Task.findAll({
-        where: {
-            [Op.and]: [
-                visibleTasksWhere,
-                {
-                    status: {
-                        [Op.notIn]: [
-                            Task.STATUS.DONE,
-                            Task.STATUS.ARCHIVED,
-                            Task.STATUS.CANCELLED,
-                            'done',
-                            'archived',
-                            'cancelled',
-                            ...TODAY_PLAN_STATUSES,
-                        ],
-                    },
-                    parent_task_id: null,
-                    recurring_parent_id: null,
-                    [Op.or]: [
-                        {
-                            due_date: {
-                                [Op.and]: [
-                                    { [Op.gte]: todayBounds.start },
-                                    { [Op.lte]: todayBounds.end },
-                                ],
-                            },
-                        },
-                        sequelize.literal(`EXISTS (
+    const dueTodayFilter = {
+        status: {
+            [Op.notIn]: [
+                Task.STATUS.DONE,
+                Task.STATUS.ARCHIVED,
+                Task.STATUS.CANCELLED,
+                'done',
+                'archived',
+                'cancelled',
+                ...TODAY_PLAN_STATUSES,
+            ],
+        },
+        parent_task_id: null,
+        recurring_parent_id: null,
+        [Op.or]: [
+            {
+                due_date: {
+                    [Op.and]: [
+                        { [Op.gte]: todayBounds.start },
+                        { [Op.lte]: todayBounds.end },
+                    ],
+                },
+            },
+            sequelize.literal(`EXISTS (
           SELECT 1 FROM projects
           WHERE projects.id = Task.project_id
           AND projects.due_date_at >= '${todayBounds.start.toISOString()}'
           AND projects.due_date_at <= '${todayBounds.end.toISOString()}'${projectAccessSQL}
         )`),
-                    ],
-                },
-            ],
+        ],
+    };
+    if (somedayExcludedIds.length > 0) {
+        dueTodayFilter.id = { [Op.notIn]: somedayExcludedIds };
+    }
+
+    return await Task.findAll({
+        where: {
+            [Op.and]: [visibleTasksWhere, dueTodayFilter],
         },
         include: getTaskIncludeConfigLight(),
         order: [
@@ -261,7 +273,12 @@ async function fetchTasksDueToday(visibleTasksWhere, userTimezone, userId) {
     });
 }
 
-async function fetchOverdueTasks(visibleTasksWhere, userTimezone, userId) {
+async function fetchOverdueTasks(
+    visibleTasksWhere,
+    userTimezone,
+    userId,
+    somedayExcludedIds = []
+) {
     const safeTimezone = getSafeTimezone(userTimezone);
     const todayBounds = getTodayBoundsInUTC(safeTimezone);
 
@@ -293,35 +310,36 @@ async function fetchOverdueTasks(visibleTasksWhere, userTimezone, userId) {
         }
     }
 
-    return await Task.findAll({
-        where: {
-            [Op.and]: [
-                visibleTasksWhere,
-                {
-                    status: {
-                        [Op.notIn]: [
-                            Task.STATUS.DONE,
-                            Task.STATUS.ARCHIVED,
-                            Task.STATUS.CANCELLED,
-                            'done',
-                            'archived',
-                            'cancelled',
-                            // Exclude tasks in today plan (they show in Planned section)
-                            ...TODAY_PLAN_STATUSES,
-                        ],
-                    },
-                    parent_task_id: null,
-                    recurring_parent_id: null,
-                    [Op.or]: [
-                        { due_date: { [Op.lt]: todayBounds.start } },
-                        sequelize.literal(`EXISTS (
+    const overdueFilter = {
+        status: {
+            [Op.notIn]: [
+                Task.STATUS.DONE,
+                Task.STATUS.ARCHIVED,
+                Task.STATUS.CANCELLED,
+                'done',
+                'archived',
+                'cancelled',
+                ...TODAY_PLAN_STATUSES,
+            ],
+        },
+        parent_task_id: null,
+        recurring_parent_id: null,
+        [Op.or]: [
+            { due_date: { [Op.lt]: todayBounds.start } },
+            sequelize.literal(`EXISTS (
           SELECT 1 FROM projects
           WHERE projects.id = Task.project_id
           AND projects.due_date_at < '${todayBounds.start.toISOString()}'${projectAccessSQL}
         )`),
-                    ],
-                },
-            ],
+        ],
+    };
+    if (somedayExcludedIds.length > 0) {
+        overdueFilter.id = { [Op.notIn]: somedayExcludedIds };
+    }
+
+    return await Task.findAll({
+        where: {
+            [Op.and]: [visibleTasksWhere, overdueFilter],
         },
         include: getTaskIncludeConfigLight(),
         order: [
@@ -344,6 +362,31 @@ async function fetchSomedayTaskIds(userId) {
             }
         )
         .then((results) => results.map((r) => r.task_id));
+}
+
+async function fetchSomedayExcludedTaskIds(userId) {
+    const directTaskIds = await fetchSomedayTaskIds(userId);
+
+    const somedayProjectIds = await sequelize
+        .query(
+            `SELECT DISTINCT project_id FROM projects_tags
+         JOIN tags ON projects_tags.tag_id = tags.id
+         WHERE tags.name = 'someday' AND tags.user_id = ?`,
+            { replacements: [userId], type: sequelize.QueryTypes.SELECT }
+        )
+        .then((results) => results.map((r) => r.project_id));
+
+    if (somedayProjectIds.length === 0) {
+        return directTaskIds;
+    }
+
+    const projectTaskIds = await Task.findAll({
+        where: { project_id: { [Op.in]: somedayProjectIds } },
+        attributes: ['id'],
+        raw: true,
+    }).then((tasks) => tasks.map((t) => t.id));
+
+    return [...new Set([...directTaskIds, ...projectTaskIds])];
 }
 
 async function fetchNonProjectTasks(
@@ -547,6 +590,7 @@ module.exports = {
     fetchTasksDueToday,
     fetchOverdueTasks,
     fetchSomedayTaskIds,
+    fetchSomedayExcludedTaskIds,
     fetchNonProjectTasks,
     fetchProjectTasks,
     fetchSomedayFallbackTasks,

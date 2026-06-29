@@ -4,6 +4,7 @@ import {
     ArrowDownTrayIcon,
     EyeIcon,
 } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
 import { Attachment } from '../../entities/Attachment';
 import {
     formatFileSize,
@@ -26,6 +27,7 @@ const AttachmentListItem: React.FC<AttachmentListItemProps> = ({
     onPreview,
     showPreview = true,
 }) => {
+    const { t } = useTranslation();
     const canPreview = canPreviewInline(attachment.mime_type);
 
     return (
@@ -49,7 +51,7 @@ const AttachmentListItem: React.FC<AttachmentListItemProps> = ({
                     <button
                         onClick={() => onPreview(attachment)}
                         className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors"
-                        title="Preview"
+                        title={t('common.preview')}
                     >
                         <EyeIcon className="h-4 w-4" />
                     </button>
@@ -57,14 +59,14 @@ const AttachmentListItem: React.FC<AttachmentListItemProps> = ({
                 <button
                     onClick={() => onDownload(attachment)}
                     className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 rounded transition-colors"
-                    title="Download"
+                    title={t('common.download')}
                 >
                     <ArrowDownTrayIcon className="h-4 w-4" />
                 </button>
                 <button
                     onClick={() => onDelete(attachment)}
                     className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
-                    title="Delete"
+                    title={t('common.delete')}
                 >
                     <TrashIcon className="h-4 w-4" />
                 </button>

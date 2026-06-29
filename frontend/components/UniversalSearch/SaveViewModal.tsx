@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
 import { getApiPath } from '../../config/paths';
 import { getCsrfToken } from '../../utils/csrfService';
 
@@ -20,6 +21,7 @@ const SaveViewModal: React.FC<SaveViewModalProps> = ({
     onClose,
     onSave,
 }) => {
+    const { t } = useTranslation();
     const [viewName, setViewName] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
@@ -28,7 +30,7 @@ const SaveViewModal: React.FC<SaveViewModalProps> = ({
         e.preventDefault();
 
         if (!viewName.trim()) {
-            setError('View name is required');
+            setError(t('errors.viewNameRequired'));
             return;
         }
 
@@ -58,7 +60,7 @@ const SaveViewModal: React.FC<SaveViewModalProps> = ({
 
             onSave();
         } catch (err) {
-            setError('Failed to save view. Please try again.');
+            setError(t('errors.viewSaveFailed'));
             console.error('Error saving view:', err);
         } finally {
             setIsLoading(false);
@@ -77,7 +79,7 @@ const SaveViewModal: React.FC<SaveViewModalProps> = ({
             <div className="fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-md bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 z-[70] p-6">
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                        Save as Smart View
+                        {t('views.saveAsSmartView')}
                     </h2>
                     <button
                         onClick={onClose}
@@ -104,7 +106,7 @@ const SaveViewModal: React.FC<SaveViewModalProps> = ({
                                 setError('');
                             }}
                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Enter view name"
+                            placeholder={t('views.viewNamePlaceholder')}
                             autoFocus
                         />
                         {error && (
@@ -116,7 +118,7 @@ const SaveViewModal: React.FC<SaveViewModalProps> = ({
 
                     <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-900 rounded-md">
                         <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                            This view will save:
+                            {t('views.viewWillSave')}
                         </p>
                         <ul className="text-xs text-gray-600 dark:text-gray-300 space-y-1">
                             {filters.length > 0 && (
@@ -136,14 +138,14 @@ const SaveViewModal: React.FC<SaveViewModalProps> = ({
                             onClick={onClose}
                             className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
                         >
-                            Cancel
+                            {t('common.cancel')}
                         </button>
                         <button
                             type="submit"
                             disabled={isLoading}
                             className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 rounded-md transition-colors"
                         >
-                            {isLoading ? 'Saving...' : 'Save View'}
+                            {isLoading ? t('common.saving') : t('views.saveView')}
                         </button>
                     </div>
                 </form>

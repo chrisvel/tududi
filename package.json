@@ -1,6 +1,6 @@
 {
   "name": "tududi",
-  "version": "v1.2.0-dev.2",
+  "version": "v1.2.0-dev.3",
   "description": "Self-hosted task management with hierarchical organization, multi-language support, and Telegram integration.",
   "directories": {
     "test": "test"
@@ -137,6 +137,7 @@
     "zustand": "^5.0.3"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.106.0",
     "@dr.pogodin/csurf": "^1.16.9",
     "@modelcontextprotocol/sdk": "^1.0.0",
     "@playwright/test": "^1.57.0",
@@ -165,6 +166,7 @@
     "nanoid": "^3.3.7",
     "node-cron": "~4.1.0",
     "nodemailer": "^9.0.1",
+    "openai": "^6.45.0",
     "openid-client": "^5.7.1",
     "raw-body": "^3.0.2",
     "sequelize": "~6.37.7",

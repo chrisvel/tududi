@@ -40,20 +40,15 @@ const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
     onEventDrop,
 }) => {
     const { t } = useTranslation();
-    const [firstDayOfWeek, setFirstDayOfWeek] = useState(1); // Default to Monday
+    const [firstDayOfWeek, setFirstDayOfWeek] = useState(1);
     const [draggedEventId, setDraggedEventId] = useState<string | null>(null);
 
-    // Load first day of week setting
     useEffect(() => {
         const loadFirstDayOfWeek = async () => {
             try {
-                const firstDay = await getFirstDayOfWeek();
-                setFirstDayOfWeek(firstDay);
+                setFirstDayOfWeek(await getFirstDayOfWeek());
             } catch {
-                const fallbackFirstDay = getLocaleFirstDayOfWeek(
-                    navigator.language
-                );
-                setFirstDayOfWeek(fallbackFirstDay);
+                setFirstDayOfWeek(getLocaleFirstDayOfWeek(navigator.language));
             }
         };
         loadFirstDayOfWeek();
@@ -67,13 +62,8 @@ const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
     const calendarEnd = endOfWeek(monthEnd, {
         weekStartsOn: firstDayOfWeek as 0 | 1 | 2 | 3 | 4 | 5 | 6,
     });
+    const days = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
 
-    const days = eachDayOfInterval({
-        start: calendarStart,
-        end: calendarEnd,
-    });
-
-    // Generate weekdays array based on first day of week setting
     const getAllWeekDays = () => [
         t('weekdays.sunday', 'Sun'),
         t('weekdays.monday', 'Mon'),
@@ -86,25 +76,7 @@ const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
 
     const getWeekDays = () => {
         const allDays = getAllWeekDays();
-        return [
-            ...allDays.slice(firstDayOfWeek),
-            ...allDays.slice(0, firstDayOfWeek),
-        ];
-    };
-
-    const weekDays = getWeekDays();
-
-    const handleDateClick = (date: Date) => {
-        if (onDateClick) {
-            onDateClick(date);
-        }
-    };
-
-    const handleEventClick = (event: CalendarEvent, e: React.MouseEvent) => {
-        e.stopPropagation();
-        if (onEventClick) {
-            onEventClick(event);
-        }
+        return [...allDays.slice(firstDayOfWeek), ...allDays.slice(0, firstDayOfWeek)];
     };
 
     const handleDragStart = (event: CalendarEvent, e: React.DragEvent) => {
@@ -114,9 +86,7 @@ const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
         e.dataTransfer.setData('text/plain', event.id);
     };
 
-    const handleDragEnd = () => {
-        setDraggedEventId(null);
-    };
+    const handleDragEnd = () => setDraggedEventId(null);
 
     const handleDragOver = (e: React.DragEvent) => {
         e.preventDefault();
@@ -126,22 +96,19 @@ const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
     const handleDrop = (day: Date, e: React.DragEvent) => {
         e.preventDefault();
         e.stopPropagation();
-
         const eventId = e.dataTransfer.getData('text/plain');
-        if (eventId && onEventDrop) {
-            onEventDrop(eventId, day);
-        }
+        if (eventId && onEventDrop) onEventDrop(eventId, day);
         setDraggedEventId(null);
     };
 
     return (
-        <div className="h-full bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 rounded-xl shadow-lg overflow-hidden flex flex-col border border-gray-200 dark:border-gray-700">
-            {/* Week days header */}
-            <div className="grid grid-cols-7 border-b-2 border-gray-200 dark:border-gray-700 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-750">
-                {weekDays.map((day) => (
+        <div className="h-full bg-white dark:bg-gray-700 rounded-xl shadow-sm overflow-hidden flex flex-col border border-gray-200 dark:border-gray-600">
+            {/* Weekday headers */}
+            <div className="grid grid-cols-7 border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800">
+                {getWeekDays().map((day) => (
                     <div
                         key={day}
-                        className="py-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400"
+                        className="py-3 text-center text-xs font-semibold tracking-widest uppercase text-gray-400 dark:text-gray-500"
                     >
                         {day}
                     </div>
@@ -149,40 +116,40 @@ const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
             </div>
 
             {/* Calendar grid */}
-            <div className="grid grid-cols-7 flex-1 min-h-0 auto-rows-fr divide-x divide-gray-200 dark:divide-gray-700">
+            <div className="grid grid-cols-7 flex-1 min-h-0 auto-rows-fr divide-x divide-gray-100 dark:divide-gray-600">
                 {days.map((day) => {
                     const dayEvents = events.filter(
                         (event) =>
-                            format(event.start, 'yyyy-MM-dd') ===
-                            format(day, 'yyyy-MM-dd')
+                            format(event.start, 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd')
                     );
-
                     const isCurrentMonth = isSameMonth(day, currentDate);
                     const isTodayDate = isToday(day);
 
                     return (
                         <div
                             key={day.toString()}
-                            onClick={() => handleDateClick(day)}
+                            onClick={() => onDateClick?.(day)}
                             onDragOver={handleDragOver}
                             onDrop={(e) => handleDrop(day, e)}
-                            className={`p-2.5 border-b border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-200 flex flex-col min-h-[100px] ${
+                            className={`p-2 border-b border-gray-100 dark:border-gray-600 cursor-pointer flex flex-col min-h-[90px] transition-colors ${
                                 !isCurrentMonth
-                                    ? 'bg-gray-100/50 dark:bg-gray-800/30'
-                                    : 'bg-white dark:bg-gray-900 hover:bg-blue-50/50 dark:hover:bg-blue-900/10'
-                            } ${isTodayDate ? 'bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-900/30 dark:to-blue-800/20 ring-2 ring-inset ring-blue-400 dark:ring-blue-500' : ''}`}
+                                    ? 'bg-gray-50 dark:bg-gray-800'
+                                    : isTodayDate
+                                      ? 'bg-blue-50 dark:bg-blue-900/15'
+                                      : 'bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600/40'
+                            }`}
                         >
-                            <div className="flex items-start justify-between mb-1.5">
+                            <div className="mb-1.5">
                                 {isTodayDate ? (
-                                    <span className="inline-flex items-center justify-center w-7 h-7 bg-gradient-to-br from-blue-600 to-blue-700 text-white text-sm font-bold rounded-full shadow-md">
+                                    <span className="inline-flex items-center justify-center w-6 h-6 bg-blue-500 text-white text-xs font-semibold rounded-full">
                                         {format(day, 'd')}
                                     </span>
                                 ) : (
                                     <span
                                         className={`text-sm font-medium ${
                                             !isCurrentMonth
-                                                ? 'text-gray-400 dark:text-gray-600'
-                                                : 'text-gray-700 dark:text-gray-300'
+                                                ? 'text-gray-300 dark:text-gray-600'
+                                                : 'text-gray-600 dark:text-gray-300'
                                         }`}
                                     >
                                         {format(day, 'd')}
@@ -190,40 +157,29 @@ const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
                                 )}
                             </div>
 
-                            {/* Events */}
-                            <div className="space-y-1 overflow-hidden flex-1">
+                            <div className="space-y-0.5 overflow-hidden flex-1">
                                 {dayEvents.slice(0, 3).map((event) => (
                                     <div
                                         key={event.id}
                                         draggable={event.type === 'task'}
-                                        onDragStart={(e) =>
-                                            handleDragStart(event, e)
-                                        }
+                                        onDragStart={(e) => handleDragStart(event, e)}
                                         onDragEnd={handleDragEnd}
-                                        onClick={(e) =>
-                                            handleEventClick(event, e)
-                                        }
-                                        className={`text-xs px-2 py-1.5 rounded-md text-white truncate transition-all duration-200 font-medium ${
-                                            event.type === 'task'
-                                                ? 'border-l-3 border-l-white/60 cursor-move hover:scale-[1.02] hover:shadow-md'
-                                                : 'cursor-pointer'
-                                        } ${draggedEventId === event.id ? 'opacity-50' : ''}`}
-                                        style={{
-                                            backgroundColor:
-                                                event.color || '#3b82f6',
-                                            boxShadow:
-                                                '0 1px 3px rgba(0,0,0,0.1)',
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            onEventClick?.(event);
                                         }}
+                                        className={`text-xs px-1.5 py-1 rounded text-white truncate font-medium cursor-pointer hover:opacity-90 transition-opacity ${
+                                            draggedEventId === event.id ? 'opacity-40' : ''
+                                        }`}
+                                        style={{ backgroundColor: event.color || '#3b82f6' }}
                                         title={event.title}
                                     >
-                                        <span className="truncate">
-                                            {event.title}
-                                        </span>
+                                        {event.title}
                                     </div>
                                 ))}
                                 {dayEvents.length > 3 && (
-                                    <div className="text-xs text-gray-600 dark:text-gray-400 px-1.5 py-0.5 font-medium bg-gray-100 dark:bg-gray-800 rounded-md inline-block">
-                                        +{dayEvents.length - 3} more
+                                    <div className="text-xs text-gray-400 dark:text-gray-500 px-1 font-medium">
+                                        +{dayEvents.length - 3}
                                     </div>
                                 )}
                             </div>

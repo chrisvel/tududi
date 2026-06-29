@@ -37,20 +37,15 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
     onTimeSlotClick,
     onEventDrop,
 }) => {
-    const [firstDayOfWeek, setFirstDayOfWeek] = useState(1); // Default to Monday
+    const [firstDayOfWeek, setFirstDayOfWeek] = useState(1);
     const [draggedEventId, setDraggedEventId] = useState<string | null>(null);
 
-    // Load first day of week setting
     useEffect(() => {
         const loadFirstDayOfWeek = async () => {
             try {
-                const firstDay = await getFirstDayOfWeek();
-                setFirstDayOfWeek(firstDay);
+                setFirstDayOfWeek(await getFirstDayOfWeek());
             } catch {
-                const fallbackFirstDay = getLocaleFirstDayOfWeek(
-                    navigator.language
-                );
-                setFirstDayOfWeek(fallbackFirstDay);
+                setFirstDayOfWeek(getLocaleFirstDayOfWeek(navigator.language));
             }
         };
         loadFirstDayOfWeek();
@@ -63,31 +58,14 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
         weekStartsOn: firstDayOfWeek as 0 | 1 | 2 | 3 | 4 | 5 | 6,
     });
     const weekDays = eachDayOfInterval({ start: weekStart, end: weekEnd });
-
     const hours = Array.from({ length: 24 }, (_, i) => i);
 
-    const getEventsForTimeSlot = (day: Date, hour: number) => {
-        return events.filter((event) => {
-            const eventDay = format(event.start, 'yyyy-MM-dd');
-            const slotDay = format(day, 'yyyy-MM-dd');
-            const eventHour = event.start.getHours();
-
-            return eventDay === slotDay && eventHour === hour;
-        });
-    };
-
-    const handleTimeSlotClick = (day: Date, hour: number) => {
-        if (onTimeSlotClick) {
-            onTimeSlotClick(day, hour);
-        }
-    };
-
-    const handleEventClick = (event: CalendarEvent, e: React.MouseEvent) => {
-        e.stopPropagation();
-        if (onEventClick) {
-            onEventClick(event);
-        }
-    };
+    const getEventsForTimeSlot = (day: Date, hour: number) =>
+        events.filter(
+            (event) =>
+                format(event.start, 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd') &&
+                event.start.getHours() === hour
+        );
 
     const handleDragStart = (event: CalendarEvent, e: React.DragEvent) => {
         e.stopPropagation();
@@ -96,64 +74,48 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
         e.dataTransfer.setData('text/plain', event.id);
     };
 
-    const handleDragEnd = () => {
-        setDraggedEventId(null);
-    };
-
-    const handleDragOver = (e: React.DragEvent) => {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-    };
+    const handleDragEnd = () => setDraggedEventId(null);
 
     const handleDrop = (day: Date, hour: number, e: React.DragEvent) => {
         e.preventDefault();
         e.stopPropagation();
-
         const eventId = e.dataTransfer.getData('text/plain');
-        if (eventId && onEventDrop) {
-            onEventDrop(eventId, day, hour);
-        }
+        if (eventId && onEventDrop) onEventDrop(eventId, day, hour);
         setDraggedEventId(null);
     };
 
     return (
-        <div className="h-full bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 rounded-xl shadow-lg overflow-hidden flex flex-col border border-gray-200 dark:border-gray-700">
-            {/* Header with days */}
-            <div className="grid grid-cols-8 border-b-2 border-gray-200 dark:border-gray-700 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-750 sticky top-0 z-10">
-                <div className="p-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400 border-r border-gray-200 dark:border-gray-700">
-                    Time
+        <div className="h-full bg-white dark:bg-gray-700 rounded-xl shadow-sm overflow-hidden flex flex-col border border-gray-200 dark:border-gray-600">
+            {/* Day headers */}
+            <div className="grid grid-cols-8 border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 sticky top-0 z-10">
+                <div className="p-3 text-center text-xs font-semibold tracking-widest uppercase text-gray-400 dark:text-gray-500 border-r border-gray-200 dark:border-gray-600">
+                    {/* time col */}
                 </div>
                 {weekDays.map((day) => (
                     <div
                         key={day.toString()}
-                        className={`p-3 text-center border-l border-gray-200 dark:border-gray-700 transition-colors ${
-                            isToday(day)
-                                ? 'bg-gradient-to-b from-blue-100 to-blue-50 dark:from-blue-900/40 dark:to-blue-800/20'
-                                : ''
+                        className={`p-3 text-center border-l border-gray-200 dark:border-gray-600 ${
+                            isToday(day) ? 'bg-blue-50 dark:bg-blue-900/20' : ''
                         }`}
                     >
                         <div
-                            className={`text-xs font-semibold uppercase tracking-wider mb-1 ${
+                            className={`text-xs font-semibold tracking-widest uppercase mb-1 ${
                                 isToday(day)
-                                    ? 'text-blue-700 dark:text-blue-400'
-                                    : 'text-gray-600 dark:text-gray-400'
+                                    ? 'text-blue-500 dark:text-blue-400'
+                                    : 'text-gray-400 dark:text-gray-500'
                             }`}
                         >
                             {format(day, 'EEE')}
                         </div>
-                        <div
-                            className={`text-lg ${
-                                isToday(day)
-                                    ? 'text-blue-600 dark:text-blue-400 font-bold'
-                                    : 'text-gray-700 dark:text-gray-300'
-                            }`}
-                        >
+                        <div>
                             {isToday(day) ? (
-                                <span className="inline-flex items-center justify-center w-9 h-9 bg-gradient-to-br from-blue-600 to-blue-700 text-white text-sm font-bold rounded-full shadow-md">
+                                <span className="inline-flex items-center justify-center w-7 h-7 bg-blue-500 text-white text-sm font-semibold rounded-full">
                                     {format(day, 'd')}
                                 </span>
                             ) : (
-                                format(day, 'd')
+                                <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                                    {format(day, 'd')}
+                                </span>
                             )}
                         </div>
                     </div>
@@ -165,93 +127,55 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
                 {hours.map((hour) => (
                     <div
                         key={hour}
-                        className="grid grid-cols-8 border-b border-gray-200 dark:border-gray-700"
+                        className="grid grid-cols-8 border-b border-gray-100 dark:border-gray-600"
                     >
-                        {/* Time column */}
-                        <div className="py-3 px-2 text-xs font-medium text-gray-500 dark:text-gray-400 text-center border-r-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
-                            {format(
-                                addHours(new Date().setHours(hour, 0, 0, 0), 0),
-                                'HH:mm'
-                            )}
+                        <div className="py-3 px-2 text-xs font-medium text-gray-400 dark:text-gray-500 text-center border-r border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800">
+                            {format(addHours(new Date().setHours(hour, 0, 0, 0), 0), 'HH:mm')}
                         </div>
-
-                        {/* Day columns */}
                         {weekDays.map((day) => {
-                            const timeSlotEvents = getEventsForTimeSlot(
-                                day,
-                                hour
-                            );
+                            const timeSlotEvents = getEventsForTimeSlot(day, hour);
                             const eventCount = timeSlotEvents.length;
 
                             return (
                                 <div
                                     key={`${day.toString()}-${hour}`}
-                                    onClick={() =>
-                                        handleTimeSlotClick(day, hour)
-                                    }
-                                    onDragOver={handleDragOver}
+                                    onClick={() => onTimeSlotClick?.(day, hour)}
+                                    onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }}
                                     onDrop={(e) => handleDrop(day, hour, e)}
-                                    className={`min-h-[80px] p-2 border-l border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-150 hover:bg-blue-50/40 dark:hover:bg-blue-900/10 relative ${
-                                        isToday(day)
-                                            ? 'bg-blue-50/20 dark:bg-blue-900/5'
-                                            : 'bg-white dark:bg-gray-900'
+                                    className={`min-h-[72px] p-1.5 border-l border-gray-100 dark:border-gray-600 cursor-pointer transition-colors hover:bg-blue-50/30 dark:hover:bg-blue-900/10 relative ${
+                                        isToday(day) ? 'bg-blue-50/10 dark:bg-blue-900/5' : ''
                                     }`}
                                 >
-                                    {timeSlotEvents.map((event, index) => {
-                                        const widthPercentage =
-                                            eventCount > 1
-                                                ? 100 / eventCount - 1
-                                                : 100;
-                                        const leftPercentage =
-                                            eventCount > 1
-                                                ? (100 / eventCount) * index
-                                                : 0;
-
-                                        return (
-                                            <div
-                                                key={event.id}
-                                                draggable={
-                                                    event.type === 'task'
-                                                }
-                                                onDragStart={(e) =>
-                                                    handleDragStart(event, e)
-                                                }
-                                                onDragEnd={handleDragEnd}
-                                                onClick={(e) =>
-                                                    handleEventClick(event, e)
-                                                }
-                                                className={`text-sm px-2 py-2 rounded-lg text-white transition-all duration-200 absolute font-medium overflow-hidden ${
-                                                    event.type === 'task'
-                                                        ? 'border-l-3 border-l-white/60 cursor-move hover:scale-[1.02] hover:shadow-lg'
-                                                        : 'cursor-pointer'
-                                                } ${draggedEventId === event.id ? 'opacity-50' : ''}`}
-                                                style={{
-                                                    backgroundColor:
-                                                        event.color ||
-                                                        '#3b82f6',
-                                                    boxShadow:
-                                                        '0 2px 4px rgba(0,0,0,0.15)',
-                                                    left: `${leftPercentage}%`,
-                                                    width: `${widthPercentage}%`,
-                                                    top: '0.5rem',
-                                                    bottom: '0.5rem',
-                                                }}
-                                                title={`${event.title} - ${format(event.start, 'HH:mm')} to ${format(event.end, 'HH:mm')}`}
-                                            >
-                                                <div className="flex flex-col gap-0.5 h-full">
-                                                    <div className="line-clamp-2 leading-tight font-semibold text-xs">
-                                                        {event.title}
-                                                    </div>
-                                                    <div className="text-xs opacity-80 mt-auto">
-                                                        {format(
-                                                            event.start,
-                                                            'HH:mm'
-                                                        )}
-                                                    </div>
-                                                </div>
+                                    {timeSlotEvents.map((event, index) => (
+                                        <div
+                                            key={event.id}
+                                            draggable={event.type === 'task'}
+                                            onDragStart={(e) => handleDragStart(event, e)}
+                                            onDragEnd={handleDragEnd}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onEventClick?.(event);
+                                            }}
+                                            className={`text-xs px-2 py-1.5 rounded-lg text-white absolute font-medium overflow-hidden cursor-pointer hover:opacity-90 transition-opacity ${
+                                                event.type === 'task' ? 'cursor-move' : ''
+                                            } ${draggedEventId === event.id ? 'opacity-40' : ''}`}
+                                            style={{
+                                                backgroundColor: event.color || '#3b82f6',
+                                                left: `${(100 / eventCount) * index}%`,
+                                                width: `${eventCount > 1 ? 100 / eventCount - 1 : 100}%`,
+                                                top: '0.25rem',
+                                                bottom: '0.25rem',
+                                            }}
+                                            title={event.title}
+                                        >
+                                            <div className="line-clamp-2 leading-tight">
+                                                {event.title}
                                             </div>
-                                        );
-                                    })}
+                                            <div className="text-[10px] opacity-75 mt-0.5">
+                                                {format(event.start, 'HH:mm')}
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
                             );
                         })}

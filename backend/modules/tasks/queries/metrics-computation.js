@@ -1,4 +1,4 @@
-const { Task } = require('../../../models');
+const { Task, RecurringCompletion } = require('../../../models');
 const { Op } = require('sequelize');
 const moment = require('moment-timezone');
 const permissionsService = require('../../../services/permissionsService');
@@ -10,13 +10,14 @@ const {
     fetchTasksDueToday,
     fetchOverdueTasks,
     fetchSomedayTaskIds,
+    fetchSomedayExcludedTaskIds,
     fetchNonProjectTasks,
     fetchProjectTasks,
     fetchSomedayFallbackTasks,
     fetchTasksCompletedToday,
 } = require('./metrics-queries');
 
-const MAX_SUGGESTED_TASKS = 10;
+const MAX_SUGGESTED_TASKS = 50;
 
 const getPriorityValue = (priority) => {
     const priorityOrder = {
@@ -124,11 +125,18 @@ async function computeSuggestedTasks(
     }
 
     const now = Date.now();
+    const DUE_DATE_HORIZON_MS = 3 * 24 * 60 * 60 * 1000;
     const filteredTasks = combinedTasks.filter((task) => {
-        if (!task.defer_until) return true;
-        const deferUntil = new Date(task.defer_until).getTime();
-        if (Number.isNaN(deferUntil)) return true;
-        return deferUntil <= now;
+        if (task.defer_until) {
+            const deferUntil = new Date(task.defer_until).getTime();
+            if (!Number.isNaN(deferUntil) && deferUntil > now) return false;
+        }
+        if (task.due_date) {
+            const due = new Date(task.due_date).getTime();
+            if (!Number.isNaN(due) && due > now + DUE_DATE_HORIZON_MS)
+                return false;
+        }
+        return true;
     });
 
     filteredTasks.sort(multiCriteriaTaskSort);
@@ -142,21 +150,49 @@ async function computeWeeklyCompletions(userId, userTimezone) {
     const weekStart = weekStartInUserTz.clone().startOf('day').utc().toDate();
     const weekEnd = todayInUserTz.clone().endOf('day').utc().toDate();
 
-    const weeklyCompletionsRaw = await Task.findAll({
-        where: {
-            user_id: userId,
-            status: Task.STATUS.DONE,
-            completed_at: {
-                [Op.between]: [weekStart, weekEnd],
+    const [weeklyCompletionsRaw, recurringCompletionsRaw] = await Promise.all([
+        Task.findAll({
+            where: {
+                user_id: userId,
+                status: Task.STATUS.DONE,
+                completed_at: {
+                    [Op.between]: [weekStart, weekEnd],
+                },
             },
-        },
-        attributes: ['completed_at'],
-        raw: true,
-    });
+            attributes: ['completed_at'],
+            raw: true,
+        }),
+        RecurringCompletion.findAll({
+            include: [
+                {
+                    model: Task,
+                    as: 'Task',
+                    attributes: [],
+                    where: { user_id: userId },
+                    required: true,
+                },
+            ],
+            where: {
+                completed_at: {
+                    [Op.between]: [weekStart, weekEnd],
+                },
+                skipped: false,
+            },
+            attributes: ['completed_at'],
+            raw: true,
+        }),
+    ]);
 
     const dateCountMap = {};
     weeklyCompletionsRaw.forEach((task) => {
         const completedDate = new Date(task.completed_at);
+        const dateInUserTz = moment(completedDate)
+            .tz(userTimezone)
+            .format('YYYY-MM-DD');
+        dateCountMap[dateInUserTz] = (dateCountMap[dateInUserTz] || 0) + 1;
+    });
+    recurringCompletionsRaw.forEach((rc) => {
+        const completedDate = new Date(rc.completed_at);
         const dateInUserTz = moment(completedDate)
             .tz(userTimezone)
             .format('YYYY-MM-DD');
@@ -201,6 +237,8 @@ async function computeTaskMetrics(
             permissionCache
         );
 
+    const somedayExcludedIds = await fetchSomedayExcludedTaskIds(userId);
+
     const [
         totalOpenTasks,
         tasksPendingOverMonth,
@@ -214,9 +252,19 @@ async function computeTaskMetrics(
         countTotalOpenTasks(visibleTasksWhere),
         countTasksPendingOverMonth(visibleTasksWhere),
         fetchTasksInProgress(visibleTasksWhere),
-        fetchTodayPlanTasks(visibleTasksWhere),
-        fetchTasksDueToday(visibleTasksWhere, userTimezone, userId),
-        fetchOverdueTasks(visibleTasksWhere, userTimezone, userId),
+        fetchTodayPlanTasks(visibleTasksWhere, somedayExcludedIds),
+        fetchTasksDueToday(
+            visibleTasksWhere,
+            userTimezone,
+            userId,
+            somedayExcludedIds
+        ),
+        fetchOverdueTasks(
+            visibleTasksWhere,
+            userTimezone,
+            userId,
+            somedayExcludedIds
+        ),
         fetchTasksCompletedToday(userId, userTimezone),
         computeWeeklyCompletions(userId, userTimezone),
     ]);

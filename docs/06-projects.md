@@ -87,7 +87,18 @@ Area: "Personal"
    - Can be changed or removed
    - Examples: "Work", "Personal", "Health"
 
-5. **Tags** (optional)
+5. **Goal** (optional)
+   - Links the project to a specific goal within its area
+   - Set via the Goal section (flag icon) in the project modal - area must be selected first
+   - Stored as `goal_id`; set to `null` when "No goal" is selected
+   - If the linked goal is deleted, `goal_id` is set to `null` automatically (SET NULL)
+
+6. **Maintenance flag** (`is_maintenance`, boolean, default: `false`)
+   - Marks the project as ongoing maintenance work rather than goal-directed progress
+   - Mutually exclusive with `goal_id`: a project is either linked to a goal, maintenance, or unlinked
+   - Displayed in a dedicated "Maintenance" bucket on the Area detail page
+
+7. **Tags** (optional)
    - Flexible categorization system
    - Multiple tags supported: `#q1`, `#urgent`, `#client-work`
    - Tags created automatically when used
@@ -95,7 +106,7 @@ Area: "Personal"
 
 ### Status and Lifecycle
 
-6. **Status** (required, default: `not_started`)
+8. **Status** (required, default: `not_started`)
    - **Planned**: Future project, not started yet
    - **Not Started**: Ready to begin but not yet started
    - **In Progress**: Currently being worked on
@@ -103,25 +114,25 @@ Area: "Personal"
    - **Done**: Project completed successfully
    - **Cancelled**: Project abandoned or no longer relevant
 
-7. **Priority** (optional)
+9. **Priority** (optional)
    - 0 = None (default)
    - 1 = Medium
    - 2 = High
    - Visual indicator in UI (colored dot)
 
-8. **Due Date** (optional)
-   - When the project should be completed
-   - Triggers notifications when approaching or overdue
-   - Displayed in project cards and detail view
+10. **Due Date** (optional)
+    - When the project should be completed
+    - Triggers notifications when approaching or overdue
+    - Displayed in project cards and detail view
 
 ### Display and Organization
 
-9. **Pin to Sidebar** (boolean, default: `false`)
-   - Pins project to left sidebar for quick access
-   - Pinned projects shown above unpinned ones
-   - Useful for currently active projects
+11. **Pin to Sidebar** (boolean, default: `false`)
+    - Pins project to left sidebar for quick access
+    - Pinned projects shown above unpinned ones
+    - Useful for currently active projects
 
-10. **Banner Image** (optional)
+12. **Banner Image** (optional)
     - Visual header image for the project
     - Uploaded via image picker
     - Displayed at top of project detail page
@@ -129,12 +140,12 @@ Area: "Personal"
 
 ### Task Display Preferences
 
-11. **Show Completed Tasks** (boolean, default: `false`)
+13. **Show Completed Tasks** (boolean, default: `false`)
     - Controls whether completed tasks are visible
     - Per-project setting
     - Helps reduce clutter on active projects
 
-12. **Task Sort Order** (string, default: `created_at:desc`)
+14. **Task Sort Order** (string, default: `created_at:desc`)
     - How tasks are sorted within the project
     - Options: `created_at:asc`, `created_at:desc`, `due_date:asc`, `priority:desc`, etc.
     - Per-project preference
@@ -881,6 +892,7 @@ Displayed on project cards and detail page:
 
 ## Related Documentation
 
+- [Goals System](12-goals-system.md) - Goals that projects link to; `goal_id` and `is_maintenance` fields
 - [Areas](07-areas.md) - Top-level organizational categories and project grouping
 - [Recurring Tasks Behavior](01-recurring-tasks-behavior.md) - How recurring tasks work within projects
 - [Today Page Sections](02-today-page-sections.md) - How project tasks appear on Today page

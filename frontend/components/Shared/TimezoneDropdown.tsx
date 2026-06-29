@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
 import type { TimezoneOption } from '../../utils/timezoneUtils';
 
 interface TimezoneDropdownProps {
@@ -15,6 +16,7 @@ const TimezoneDropdown: React.FC<TimezoneDropdownProps> = ({
     timezonesByRegion,
     getRegionDisplayName,
 }) => {
+    const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -127,7 +129,7 @@ const TimezoneDropdown: React.FC<TimezoneDropdownProps> = ({
                         <input
                             ref={searchInputRef}
                             type="text"
-                            placeholder="Search timezones..."
+                            placeholder={t('common.searchTimezones')}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"

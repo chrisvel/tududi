@@ -1,12 +1,19 @@
-const { Project, Task } = require('../../../models');
+const { Project, Task, Area } = require('../../../models');
 const permissionsService = require('../../../services/permissionsService');
 
-async function validateProjectAccess(projectId, userId) {
-    if (!projectId || !projectId.toString().trim()) {
+function isUid(value) {
+    const str = value.toString().trim();
+    return isNaN(Number(str)) || !Number.isInteger(Number(str));
+}
+
+async function validateProjectAccess(projectIdOrUid, userId) {
+    if (!projectIdOrUid || !projectIdOrUid.toString().trim()) {
         return null;
     }
 
-    const project = await Project.findOne({ where: { id: projectId } });
+    const value = projectIdOrUid.toString().trim();
+    const where = isUid(value) ? { uid: value } : { id: value };
+    const project = await Project.findOne({ where });
     if (!project) {
         throw new Error('Invalid project.');
     }
@@ -24,7 +31,7 @@ async function validateProjectAccess(projectId, userId) {
         throw new Error('Forbidden');
     }
 
-    return projectId;
+    return project.id;
 }
 
 async function validateParentTaskAccess(parentTaskId, userId) {
@@ -135,8 +142,26 @@ function validateDeferUntilAndDueDate(
     }
 }
 
+async function validateAreaAccess(areaIdOrUid, userId) {
+    if (!areaIdOrUid || !areaIdOrUid.toString().trim()) {
+        return null;
+    }
+
+    const value = areaIdOrUid.toString().trim();
+    const where = isUid(value)
+        ? { uid: value, user_id: userId }
+        : { id: value, user_id: userId };
+    const area = await Area.findOne({ where });
+    if (!area) {
+        throw new Error('Invalid area.');
+    }
+
+    return area.id;
+}
+
 module.exports = {
     validateProjectAccess,
     validateParentTaskAccess,
     validateDeferUntilAndDueDate,
+    validateAreaAccess,
 };

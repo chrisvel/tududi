@@ -38,7 +38,7 @@ const notificationsController = {
             const userId = requireUserId(req);
             const result = await notificationsService.markAsRead(
                 userId,
-                req.params.id
+                req.params.uid
             );
             res.json(result);
         } catch (error) {
@@ -51,7 +51,7 @@ const notificationsController = {
             const userId = requireUserId(req);
             const result = await notificationsService.markAsUnread(
                 userId,
-                req.params.id
+                req.params.uid
             );
             res.json(result);
         } catch (error) {
@@ -74,7 +74,7 @@ const notificationsController = {
             const userId = requireUserId(req);
             const result = await notificationsService.dismiss(
                 userId,
-                req.params.id
+                req.params.uid
             );
             res.json(result);
         } catch (error) {
