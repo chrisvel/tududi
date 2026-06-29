@@ -25,7 +25,12 @@
     "yesDiscard": "Так, відкинути",
     "uploading": "Завантаження...",
     "refresh": "Оновити",
-    "unlinking": "Відв'язування..."
+    "unlinking": "Відв'язування...",
+    "preview": "Попередній перегляд",
+    "download": "Завантажити",
+    "exitFocusMode": "Вийти з режиму фокусування",
+    "searchTimezones": "Шукати часові пояси...",
+    "dismiss": "Відхилити"
   },
   "sidebar": {
     "dashboard": "Дашборд",
@@ -58,7 +63,10 @@
     "unpinView": "Відкріпити перегляд",
     "pinView": "Закріпити перегляд",
     "eisenhower": "Матриця Айзенхауера",
-    "kanban": "Дошка Канбан"
+    "kanban": "Дошка Канбан",
+    "addHabitAriaLabel": "Додати звичку",
+    "addHabitTitle": "Додати звичку",
+    "toggleDarkMode": "Переключити темний режим"
   },
   "navigation": {
     "home": "Головна",
@@ -68,7 +76,11 @@
     "settings": "Налаштування",
     "about": "Про програму",
     "logout": "Вийти",
-    "backupRestore": "Резервне копіювання та відновлення"
+    "backupRestore": "Резервне копіювання та відновлення",
+    "toggleSearch": "Переключити пошук",
+    "quickInboxCapture": "Швидке захоплення вхідних повідомлень",
+    "userMenu": "Меню користувача",
+    "search": "Пошук"
   },
   "settings": {
     "todayPageSettings": "Налаштування сторінки Сьогодні",
@@ -181,7 +193,9 @@
       "waiting": "Очікування",
       "done": "Завершено",
       "dropHere": "Перетягніть сюди"
-    }
+    },
+    "chaseUp": "Нагадати",
+    "habit": "Звичка"
   },
   "timeline": {
     "activityTimeline": "Хронологія Активності",
@@ -287,7 +301,9 @@
     "nextUp": "Наступна найкраща дія",
     "focusTask": "Найвпливовіше завдання",
     "focusHint": "Переміщує це завдання до „Виконується\" та „Сьогодні\"",
-    "noNextAction": "Все готово - немає невиконаних завдань."
+    "noNextAction": "Все готово - немає невиконаних завдань.",
+    "selectDueDatePlaceholder": "Виберіть термін виконання",
+    "goalTitle": "Мета"
   },
   "projectItem": {
     "edit": "Редагувати",
@@ -452,7 +468,11 @@
     "failedToSaveTag": "Не вдалося зберегти тег.",
     "projectImageTooLarge": "Зображення занадто велике. Будь ласка, виберіть файл розміром до 10 МБ.",
     "projectImageUpload": "Не вдалося завантажити зображення. Будь ласка, спробуйте менший файл або інший формат.",
-    "bannerSaveFailed": "Не вдалося зберегти банер"
+    "bannerSaveFailed": "Не вдалося зберегти банер",
+    "loginFailed": "Не вдалося увійти. Будь ласка, спробуйте ще раз.",
+    "generalError": "Сталася помилка. Будь ласка, спробуйте ще раз.",
+    "viewNameRequired": "Назва перегляду є обов'язковою",
+    "viewSaveFailed": "Не вдалося зберегти перегляд. Будь ласка, спробуйте ще раз."
   },
   "success": {
     "noteUpdated": "Нотатку успішно оновлено!",
@@ -479,7 +499,14 @@
     "deleteNoteAriaLabel": "Видалити нотатку {{noteTitle}}",
     "deleteNoteTitle": "Видалити нотатку {{noteTitle}}",
     "editNoteAriaLabel": "Редагувати нотатку {{noteTitle}}",
-    "editNoteTitle": "Редагувати нотатку {{noteTitle}}"
+    "editNoteTitle": "Редагувати нотатку {{noteTitle}}",
+    "titlePlaceholder": "Назва нотатки...",
+    "contentPlaceholder": "Напишіть вміст вашої нотатки тут... (підтримується Markdown)",
+    "focusMode": "Режим фокусу",
+    "noteOptions": "Опції нотатки",
+    "clickToEdit": "Натисніть, щоб редагувати",
+    "contentPlaceholderFocus": "Напишіть вашу нотатку... (підтримується Markdown)",
+    "contentPlaceholderMarkdown": "Напишіть ваш вміст, використовуючи форматування Markdown...\n\nПриклади:\n# Заголовок\n**Жирний текст**\n*Курсивний текст*\n- Пункт списку\n```код```"
   },
   "recurrence": {
     "none": "Немає",
@@ -541,7 +568,9 @@
     "loadMoreError": "Не вдалося завантажити більше елементів",
     "loading": "Завантаження...",
     "loadMore": "Завантажити більше елементів вхідних повідомлень",
-    "showingItems": "Показано {{current}} з {{total}} елементів"
+    "showingItems": "Показано {{current}} з {{total}} елементів",
+    "removeTag": "Видалити тег",
+    "removeProject": "Видалити проект"
   },
   "project": {
     "projectImage": "Зображення проекту",
@@ -836,7 +865,9 @@
       "serverSettings": "Налаштування сервера",
       "syncSettings": "Налаштування синхронізації",
       "setupSuccess": "Календар успішно налаштовано!",
-      "setupFailed": "Не вдалося створити календар"
+      "setupFailed": "Не вдалося створити календар",
+      "serverUrlPlaceholder": "https://caldav.example.com",
+      "calendarPathPlaceholder": "/calendars/user/tasks"
     },
     "conflictResolver": {
       "title": "Вирішення конфліктів синхронізації",
@@ -871,7 +902,9 @@
       "intervalError": "Інтервал синхронізації має бути між 1 і 1440 хвилинами",
       "updateSuccess": "Календар успішно оновлено",
       "updateError": "Не вдалося оновити календар"
-    }
+    },
+    "telegramTokenPlaceholder": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+    "telegramAllowedUsersPlaceholder": "@username1, 123456789, @username2"
   },
   "task": {
     "suggestions": {
@@ -1171,7 +1204,14 @@
     "error": "Помилка при завантаженні деталей області.",
     "notFound": "Область не знайдено.",
     "details": "Деталі області",
-    "viewProjects": "Переглянути проекти в {{name}}"
+    "viewProjects": "Переглянути проекти в {{name}}",
+    "goalTitlePlaceholder": "Назва мети",
+    "goalWhyPlaceholder": "Чому це важливо (необов'язково)",
+    "editGoal": "Редагувати мету",
+    "deleteGoal": "Видалити мету",
+    "moveBackToUnlinked": "Повернутися до нев'язаної",
+    "horizonSeason": "Сезон",
+    "horizonYear": "Рік"
   },
   "tags": {
     "loading": "Завантаження тегів...",
@@ -1195,7 +1235,11 @@
     "systemTag": "Системні теги",
     "systemTagDescription": "Створені автоматично додатком. Вони забезпечують вбудовані функції і не можуть бути перейменовані або видалені.",
     "userTag": "Теги користувача",
-    "userTagDescription": "Ваші власні теги для організації завдань, нотаток та проектів."
+    "userTagDescription": "Ваші власні теги для організації завдань, нотаток та проектів.",
+    "systemTags": "Системні теги",
+    "systemTagsDescription": "Автоматично керовані · Не можуть бути видалені або перейменовані",
+    "system": "Система",
+    "customize": "Налаштувати"
   },
   "pomodoro": {
     "play": "Грати",
@@ -1399,7 +1443,14 @@
     "priorityLabel": "Пріоритет:",
     "dueLabel": "Термін:",
     "tags": "Теги",
-    "recurring": "Повторювані"
+    "recurring": "Повторювані",
+    "saveAsSmartView": "Зберегти як Розумний перегляд",
+    "viewNamePlaceholder": "Введіть назву перегляду",
+    "viewNameLabel": "Назва перегляду",
+    "viewWillSave": "Цей перегляд буде збережено:",
+    "saveView": "Зберегти перегляд",
+    "filtersLabel": "Фільтри:",
+    "searchLabel": "Пошук:"
   },
   "search": {
     "placeholder": "Шукати завдання, проекти, нотатки...",
@@ -1556,5 +1607,36 @@
     "done_desc": "Закінчено і виконано",
     "cancelled": "Скасовано",
     "cancelled_desc": "Не буде завершено"
+  },
+  "aiAssistant": {
+    "taskNextStep": "Наступний крок",
+    "taskBreakdown": "Як до цього підійти",
+    "projectInsight": "Про цей проєкт",
+    "projectNextAction": "Наступна дія",
+    "projectHealth": "Стан проєкту",
+    "watchOut": "Обережно",
+    "suggestedLinks": "Запропоновані посилання",
+    "generate": "Генерувати бриф",
+    "regenerate": "Перегенерувати",
+    "generating": "Генерація...",
+    "errorDefault": "Не вдалося згенерувати інсайти. Будь ласка, спробуйте ще раз.",
+    "lowContextTitle": "Недостатньо контексту для гарної пропозиції",
+    "lowContextHint": "Додайте опис, нотатки, теги або призначте проєкт, щоб отримати кращі інсайти. Ви все ще можете згенерувати нижче.",
+    "generateAnyway": "Генерувати все одно",
+    "statTotal": "Всього",
+    "statDone": "Зроблено",
+    "statActive": "Активно",
+    "statOverdue": "Прострочено",
+    "title": "AI Асистент",
+    "generatedAt": "Згенеровано о {{time}}",
+    "emptyState": "Натисніть 'Згенерувати короткий огляд', щоб отримати ваш щоденний підсумок на основі AI.",
+    "focusForToday": "Фокус на сьогодні",
+    "priorityActions": "Пріоритетні дії",
+    "taskInsightsTitle": "AI Інсайти",
+    "projectInsightsTitle": "AI Інсайти",
+    "taskInsight": "Про це завдання"
+  },
+  "habits": {
+    "completeHabit": "Завершити звичку"
   }
 }

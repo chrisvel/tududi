@@ -95,7 +95,7 @@ const SaveViewModal: React.FC<SaveViewModalProps> = ({
                             htmlFor="viewName"
                             className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
                         >
-                            View Name <span className="text-red-500">*</span>
+                            {t('views.viewNameLabel')} <span className="text-red-500">*</span>
                         </label>
                         <input
                             type="text"
@@ -122,13 +122,13 @@ const SaveViewModal: React.FC<SaveViewModalProps> = ({
                         </p>
                         <ul className="text-xs text-gray-600 dark:text-gray-300 space-y-1">
                             {filters.length > 0 && (
-                                <li>• Filters: {filters.join(', ')}</li>
+                                <li>• {t('views.filtersLabel')} {filters.join(', ')}</li>
                             )}
                             {searchQuery && (
-                                <li>• Search: &quot;{searchQuery}&quot;</li>
+                                <li>• {t('views.searchLabel')} &quot;{searchQuery}&quot;</li>
                             )}
-                            {priority && <li>• Priority: {priority}</li>}
-                            {due && <li>• Due: {due}</li>}
+                            {priority && <li>• {t('views.priorityLabel')} {priority}</li>}
+                            {due && <li>• {t('views.dueLabel')} {due}</li>}
                         </ul>
                     </div>
 

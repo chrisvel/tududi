@@ -25,7 +25,12 @@
     "yesDiscard": "Kyllä, hylkää",
     "uploading": "Lähetetään...",
     "refresh": "Päivitä",
-    "unlinking": "Irrottaminen..."
+    "unlinking": "Irrottaminen...",
+    "preview": "Esikatselu",
+    "download": "Lataa",
+    "exitFocusMode": "Poistu keskittymistilasta",
+    "searchTimezones": "Etsi aikavyöhykkeitä...",
+    "dismiss": "Hylkää"
   },
   "sidebar": {
     "dashboard": "Ohjauspaneeli",
@@ -58,7 +63,10 @@
     "unpinView": "Irrota näkymä",
     "pinView": "Kiinnitä näkymä",
     "eisenhower": "Eisenhower-matriisi",
-    "kanban": "Kanban-taulu"
+    "kanban": "Kanban-taulu",
+    "addHabitAriaLabel": "Lisää tapa",
+    "addHabitTitle": "Lisää tapa",
+    "toggleDarkMode": "Vaihda tummalle tilalle"
   },
   "navigation": {
     "home": "Koti",
@@ -68,7 +76,11 @@
     "settings": "Asetukset",
     "about": "Tietoja",
     "logout": "Kirjaudu ulos",
-    "backupRestore": "Varmuuskopioi & Palauta"
+    "backupRestore": "Varmuuskopioi & Palauta",
+    "toggleSearch": "Vaihda haku",
+    "quickInboxCapture": "Nopea saapuneet-tallennus",
+    "userMenu": "Käyttäjävalikko",
+    "search": "Haku"
   },
   "settings": {
     "todayPageSettings": "Tänään-sivun asetukset",
@@ -181,7 +193,9 @@
       "waiting": "Odottaa",
       "done": "Valmis",
       "dropHere": "Tiputa tähän"
-    }
+    },
+    "chaseUp": "Seuraa perään",
+    "habit": "Tapa"
   },
   "timeline": {
     "activityTimeline": "Toiminta-aikajana",
@@ -503,7 +517,9 @@
       "serverSettings": "Palvelimen asetukset",
       "syncSettings": "Synkronoinnin asetukset",
       "setupSuccess": "Kalenteri on konfiguroitu onnistuneesti!",
-      "setupFailed": "Kalenterin luominen epäonnistui"
+      "setupFailed": "Kalenterin luominen epäonnistui",
+      "serverUrlPlaceholder": "https://caldav.esimerkki.com",
+      "calendarPathPlaceholder": "/kalenterit/käyttäjä/tehtävät"
     },
     "conflictResolver": {
       "title": "Ratkaise synkronointikonfliktit",
@@ -538,7 +554,9 @@
       "intervalError": "Synkronointivälin on oltava 1–1440 minuutin välillä",
       "updateSuccess": "Kalenteri päivitetty onnistuneesti",
       "updateError": "Kalenterin päivittäminen epäonnistui"
-    }
+    },
+    "telegramTokenPlaceholder": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+    "telegramAllowedUsersPlaceholder": "@käyttäjänimi1, 123456789, @käyttäjänimi2"
   },
   "productivity": {
     "stalledProjects": "Jumiutuneet projektit",
@@ -777,7 +795,11 @@
     "projectSaveFailed": "Projektin tallentaminen epäonnistui.",
     "projectImageTooLarge": "Kuva on liian suuri. Valitse tiedosto, joka on alle 10MB.",
     "projectImageUpload": "Kuvan lataaminen epäonnistui. Kokeile pienempää tiedostoa tai toista formaattia.",
-    "bannerSaveFailed": "Bannerin tallentaminen epäonnistui"
+    "bannerSaveFailed": "Bannerin tallentaminen epäonnistui",
+    "loginFailed": "Kirjautuminen epäonnistui. Yritä uudelleen.",
+    "generalError": "Tapahtui virhe. Yritä uudelleen.",
+    "viewNameRequired": "Näkymän nimi on pakollinen",
+    "viewSaveFailed": "Näkymän tallentaminen epäonnistui. Yritä uudelleen."
   },
   "inbox": {
     "title": "Saapuneet",
@@ -810,7 +832,9 @@
     "loadMoreError": "Lisätietojen lataaminen epäonnistui",
     "loading": "Ladataan...",
     "loadMore": "Lataa lisää saapuneita kohteita",
-    "showingItems": "Näytetään {{current}} / {{total}} kohteista"
+    "showingItems": "Näytetään {{current}} / {{total}} kohteista",
+    "removeTag": "Poista tunniste",
+    "removeProject": "Poista projekti"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1056,7 +1080,9 @@
     "nextUp": "Seuraava paras toiminto",
     "focusTask": "Vaikuttavin tehtävä",
     "focusHint": "Siirtää tehtävän tilaan käynnissä ja tänään",
-    "noNextAction": "Kaikki kunnossa - ei avoimia tehtäviä."
+    "noNextAction": "Kaikki kunnossa - ei avoimia tehtäviä.",
+    "selectDueDatePlaceholder": "Valitse eräpäivä",
+    "goalTitle": "Tavoite"
   },
   "projectItem": {
     "edit": "Muokkaa",
@@ -1088,7 +1114,14 @@
     "error": "Virhe alueen tietojen lataamisessa.",
     "notFound": "Aluetta ei löytynyt.",
     "details": "Alueen tiedot",
-    "viewProjects": "Näytä projektit {{name}}"
+    "viewProjects": "Näytä projektit {{name}}",
+    "goalTitlePlaceholder": "Tavoitteen otsikko",
+    "goalWhyPlaceholder": "Miksi tämä on tärkeää (valinnainen)",
+    "editGoal": "Muokkaa tavoitetta",
+    "deleteGoal": "Poista tavoite",
+    "moveBackToUnlinked": "Siirrä takaisin linkittämättömiin",
+    "horizonSeason": "Kauden",
+    "horizonYear": "Vuosi"
   },
   "notes": {
     "loading": "Ladataan muistiinpanoja...",
@@ -1099,7 +1132,14 @@
     "deleteNoteAriaLabel": "Poista muistiinpano {{noteTitle}}",
     "deleteNoteTitle": "Poista muistiinpano {{noteTitle}}",
     "editNoteAriaLabel": "Muokkaa muistiinpanoa {{noteTitle}}",
-    "editNoteTitle": "Muokkaa muistiinpanoa {{noteTitle}}"
+    "editNoteTitle": "Muokkaa muistiinpanoa {{noteTitle}}",
+    "titlePlaceholder": "Muistion otsikko...",
+    "contentPlaceholder": "Kirjoita muistiosi sisältö tähän... (Markdown tuettu)",
+    "focusMode": "Keskittymistila",
+    "noteOptions": "Muistion asetukset",
+    "clickToEdit": "Napsauta muokataksesi",
+    "contentPlaceholderFocus": "Kirjoita muistiosi... (Markdown tuettu)",
+    "contentPlaceholderMarkdown": "Kirjoita sisältösi käyttäen Markdown-muotoilua...\n\nEsimerkit:\n# Otsikko\n**Lihavoitu teksti**\n*Kursivoitu teksti*\n- Luettelokohta\n```koodi```"
   },
   "tags": {
     "loading": "Ladataan tageja...",
@@ -1123,7 +1163,11 @@
     "systemTag": "Järjestelmän tunnisteet",
     "systemTagDescription": "Sovelluksen automaattisesti luomat. Ne tukevat sisäänrakennettuja ominaisuuksia, eikä niitä voi nimetä uudelleen tai poistaa.",
     "userTag": "Käyttäjän tunnisteet",
-    "userTagDescription": "Omat tunnisteesi tehtävien, muistiinpanojen ja projektien järjestämiseen."
+    "userTagDescription": "Omat tunnisteesi tehtävien, muistiinpanojen ja projektien järjestämiseen.",
+    "systemTags": "Järjestelmän tunnisteet",
+    "systemTagsDescription": "Automaattisesti hallittu · Ei voi poistaa tai nimetä uudelleen",
+    "system": "Järjestelmä",
+    "customize": "Mukauta"
   },
   "recurrence": {
     "none": "Ei mitään",
@@ -1399,7 +1443,14 @@
     "priorityLabel": "Prioriteetti:",
     "dueLabel": "Eräpäivä:",
     "tags": "Tunnisteet",
-    "recurring": "Toistuva"
+    "recurring": "Toistuva",
+    "saveAsSmartView": "Tallenna älynäkymänä",
+    "viewNamePlaceholder": "Syötä näkymän nimi",
+    "viewNameLabel": "Näkymän nimi",
+    "viewWillSave": "Tämä näkymä tallennetaan:",
+    "saveView": "Tallenna näkymä",
+    "filtersLabel": "Suodattimet:",
+    "searchLabel": "Haku:"
   },
   "search": {
     "placeholder": "Hae tehtäviä, projekteja, muistiinpanoja...",
@@ -1556,5 +1607,36 @@
     "done_desc": "Valmis ja tehty",
     "cancelled": "Peruutettu",
     "cancelled_desc": "Ei tule valmistumaan"
+  },
+  "habits": {
+    "completeHabit": "Valmis tapa"
+  },
+  "aiAssistant": {
+    "title": "AI-avustaja",
+    "generatedAt": "Luotu {{time}}",
+    "emptyState": "Napsauta 'Luo yhteenveto' saadaksesi päivittäisen yhteenvedon, joka on tehty AI:n avulla.",
+    "focusForToday": "Tänään keskitytään",
+    "priorityActions": "Tärkeitä toimia",
+    "taskInsightsTitle": "AI-näkemykset",
+    "projectInsightsTitle": "AI-näkemykset",
+    "taskInsight": "Tietoja tästä tehtävästä",
+    "taskNextStep": "Seuraava vaihe",
+    "taskBreakdown": "Miten lähestyä sitä",
+    "projectInsight": "Tietoa tästä projektista",
+    "projectNextAction": "Seuraava toimenpide",
+    "projectHealth": "Projektin tila",
+    "watchOut": "Varo",
+    "suggestedLinks": "Ehdotetut linkit",
+    "generate": "Luo tiivistelmä",
+    "regenerate": "Luo uudelleen",
+    "generating": "Luodaan...",
+    "errorDefault": "Oivallusten luominen epäonnistui. Yritä uudelleen.",
+    "lowContextTitle": "Ei tarpeeksi kontekstia hyvälle ehdotukselle",
+    "lowContextHint": "Lisää kuvaus, muistiinpanoja, tageja tai määritä projekti saadaksesi parempia oivalluksia. Voit silti luoda alla.",
+    "generateAnyway": "Luo silti",
+    "statTotal": "Yhteensä",
+    "statDone": "Valmis",
+    "statActive": "Aktiivinen",
+    "statOverdue": "Erääntynyt"
   }
 }

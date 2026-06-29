@@ -25,7 +25,12 @@
     "yesDiscard": "Sì, scarta",
     "uploading": "Caricamento...",
     "refresh": "Aggiorna",
-    "unlinking": "Disconnettendo..."
+    "unlinking": "Disconnettendo...",
+    "preview": "Anteprima",
+    "download": "Scarica",
+    "exitFocusMode": "Esci dalla modalità di concentrazione",
+    "searchTimezones": "Cerca fusi orari...",
+    "dismiss": "Ignora"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -58,7 +63,10 @@
     "unpinView": "Sblocca visualizzazione",
     "pinView": "Fissa visualizzazione",
     "eisenhower": "Matrice di Eisenhower",
-    "kanban": "Bacheca Kanban"
+    "kanban": "Bacheca Kanban",
+    "addHabitAriaLabel": "Aggiungi Abitudine",
+    "addHabitTitle": "Aggiungi Abitudine",
+    "toggleDarkMode": "Attiva Modalità Scura"
   },
   "navigation": {
     "home": "Home",
@@ -68,7 +76,11 @@
     "settings": "Impostazioni",
     "about": "Informazioni",
     "logout": "Disconnetti",
-    "backupRestore": "Backup e Ripristino"
+    "backupRestore": "Backup e Ripristino",
+    "toggleSearch": "Attiva Ricerca",
+    "quickInboxCapture": "Cattura Veloce della Posta in Arrivo",
+    "userMenu": "Menu Utente",
+    "search": "Cerca"
   },
   "settings": {
     "todayPageSettings": "Impostazioni Pagina Oggi",
@@ -181,7 +193,9 @@
       "waiting": "In attesa",
       "done": "Fatto",
       "dropHere": "Trascina qui"
-    }
+    },
+    "chaseUp": "Insegui",
+    "habit": "Abitudine"
   },
   "timeline": {
     "activityTimeline": "Timeline delle Attività",
@@ -503,7 +517,9 @@
       "serverSettings": "Impostazioni del Server",
       "syncSettings": "Impostazioni di Sincronizzazione",
       "setupSuccess": "Calendario configurato con successo!",
-      "setupFailed": "Impossibile creare il calendario"
+      "setupFailed": "Impossibile creare il calendario",
+      "serverUrlPlaceholder": "https://caldav.example.com",
+      "calendarPathPlaceholder": "/calendars/user/tasks"
     },
     "conflictResolver": {
       "title": "Risolvi i Conflitti di Sincronizzazione",
@@ -538,7 +554,9 @@
       "intervalError": "L'intervallo di sincronizzazione deve essere compreso tra 1 e 1440 minuti",
       "updateSuccess": "Calendario aggiornato con successo",
       "updateError": "Impossibile aggiornare il calendario"
-    }
+    },
+    "telegramTokenPlaceholder": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+    "telegramAllowedUsersPlaceholder": "@username1, 123456789, @username2"
   },
   "productivity": {
     "stalledProjects": "Progetti Bloccati",
@@ -777,7 +795,11 @@
     "projectSaveFailed": "Impossibile salvare il progetto.",
     "projectImageTooLarge": "L'immagine è troppo grande. Si prega di scegliere un file di dimensioni inferiori a 10MB.",
     "projectImageUpload": "Caricamento dell'immagine non riuscito. Si prega di provare un file più piccolo o un formato diverso.",
-    "bannerSaveFailed": "Salvataggio del banner non riuscito"
+    "bannerSaveFailed": "Salvataggio del banner non riuscito",
+    "viewNameRequired": "Il nome della vista è obbligatorio",
+    "viewSaveFailed": "Salvataggio della vista non riuscito. Riprova.",
+    "loginFailed": "Accesso non riuscito. Per favore riprova.",
+    "generalError": "Si è verificato un errore. Per favore riprova."
   },
   "inbox": {
     "title": "Inbox",
@@ -810,7 +832,9 @@
     "loadMoreError": "Impossibile caricare ulteriori elementi",
     "loading": "Caricamento...",
     "loadMore": "Carica ulteriori elementi della posta in arrivo",
-    "showingItems": "Mostrando {{current}} di {{total}} elementi"
+    "showingItems": "Mostrando {{current}} di {{total}} elementi",
+    "removeTag": "Rimuovi etichetta",
+    "removeProject": "Rimuovi progetto"
   },
   "dateFormats": {
     "long": "EEEE, d MMMM yyyy",
@@ -1056,7 +1080,9 @@
     "nextUp": "Prossima azione migliore",
     "focusTask": "Attività più impattante",
     "focusHint": "Sposta questa attività su in corso e oggi",
-    "noNextAction": "Tutto a posto-nessuna attività in sospeso."
+    "noNextAction": "Tutto a posto-nessuna attività in sospeso.",
+    "selectDueDatePlaceholder": "Seleziona la data di scadenza",
+    "goalTitle": "Obiettivo"
   },
   "projectItem": {
     "edit": "Modifica",
@@ -1088,7 +1114,14 @@
     "error": "Errore nel caricamento dei dettagli dell'area.",
     "notFound": "Area non trovata.",
     "details": "Dettagli Area",
-    "viewProjects": "Visualizza Progetti in {{name}}"
+    "viewProjects": "Visualizza Progetti in {{name}}",
+    "goalTitlePlaceholder": "Titolo dell'obiettivo",
+    "goalWhyPlaceholder": "Perché è importante (opzionale)",
+    "editGoal": "Modifica obiettivo",
+    "deleteGoal": "Elimina obiettivo",
+    "moveBackToUnlinked": "Sposta di nuovo a non collegato",
+    "horizonSeason": "Stagione",
+    "horizonYear": "Anno"
   },
   "notes": {
     "loading": "Caricamento note...",
@@ -1099,7 +1132,14 @@
     "deleteNoteAriaLabel": "Elimina nota {{noteTitle}}",
     "deleteNoteTitle": "Elimina nota {{noteTitle}}",
     "editNoteAriaLabel": "Modifica nota {{noteTitle}}",
-    "editNoteTitle": "Modifica nota {{noteTitle}}"
+    "editNoteTitle": "Modifica nota {{noteTitle}}",
+    "titlePlaceholder": "Titolo della nota...",
+    "contentPlaceholder": "Scrivi qui il contenuto della tua nota... (Markdown supportato)",
+    "focusMode": "Modalità di concentrazione",
+    "noteOptions": "Opzioni nota",
+    "clickToEdit": "Clicca per modificare",
+    "contentPlaceholderFocus": "Scrivi la tua nota... (Markdown supportato)",
+    "contentPlaceholderMarkdown": "Scrivi il tuo contenuto utilizzando la formattazione Markdown...\n\nEsempi:\n# Intestazione\n**Testo in grassetto**\n*Testo in corsivo*\n- Elemento della lista\n```codice```"
   },
   "tags": {
     "loading": "Caricamento tag...",
@@ -1123,7 +1163,11 @@
     "systemTag": "Tag di sistema",
     "systemTagDescription": "Creati automaticamente dall'app. Alimentano le funzionalità integrate e non possono essere rinominati o eliminati.",
     "userTag": "Tag utente",
-    "userTagDescription": "I tuoi tag per organizzare attività, note e progetti."
+    "userTagDescription": "I tuoi tag per organizzare attività, note e progetti.",
+    "systemTags": "Tag di sistema",
+    "systemTagsDescription": "Gestiti automaticamente · Non possono essere eliminati o rinominati",
+    "system": "Sistema",
+    "customize": "Personalizza"
   },
   "recurrence": {
     "none": "Nessuna",
@@ -1399,7 +1443,14 @@
     "priorityLabel": "Priorità:",
     "dueLabel": "Scadenza:",
     "tags": "Tag",
-    "recurring": "Ricorrente"
+    "recurring": "Ricorrente",
+    "saveAsSmartView": "Salva come Smart View",
+    "viewNamePlaceholder": "Inserisci il nome della vista",
+    "viewNameLabel": "Nome della Vista",
+    "viewWillSave": "Questa vista verrà salvata:",
+    "saveView": "Salva Vista",
+    "filtersLabel": "Filtri:",
+    "searchLabel": "Cerca:"
   },
   "search": {
     "placeholder": "Cerca attività, progetti, note...",
@@ -1556,5 +1607,36 @@
     "done_desc": "Finito e completato",
     "cancelled": "Annullato",
     "cancelled_desc": "Non sarà completato"
+  },
+  "habits": {
+    "completeHabit": "Completa l'abitudine"
+  },
+  "aiAssistant": {
+    "title": "Assistente AI",
+    "generatedAt": "Generato alle {{time}}",
+    "emptyState": "Clicca su 'Genera Riepilogo' per ottenere il tuo riepilogo giornaliero potenziato dall'AI.",
+    "focusForToday": "Focus per oggi",
+    "priorityActions": "Azioni prioritarie",
+    "taskInsightsTitle": "Approfondimenti AI",
+    "projectInsightsTitle": "Approfondimenti AI",
+    "taskInsight": "Informazioni su questo compito",
+    "taskNextStep": "Passo successivo",
+    "taskBreakdown": "Come affrontarlo",
+    "projectInsight": "Informazioni su questo progetto",
+    "projectNextAction": "Prossima azione",
+    "projectHealth": "Salute del progetto",
+    "watchOut": "Attenzione",
+    "suggestedLinks": "Link suggeriti",
+    "generate": "Genera Brief",
+    "regenerate": "Rigenera",
+    "generating": "Generando...",
+    "errorDefault": "Impossibile generare informazioni. Riprova.",
+    "lowContextTitle": "Non abbastanza contesto per un'ottima suggerimento",
+    "lowContextHint": "Aggiungi una descrizione, note, tag o assegna un progetto per ottenere informazioni migliori. Puoi comunque generare qui sotto.",
+    "generateAnyway": "Genera comunque",
+    "statTotal": "Totale",
+    "statDone": "Fatto",
+    "statActive": "Attivo",
+    "statOverdue": "Scaduto"
   }
 }

@@ -25,7 +25,12 @@
     "yesDiscard": "Ja, negeren",
     "uploading": "Uploaden...",
     "refresh": "Vernieuwen",
-    "unlinking": "Ontkoppelen..."
+    "unlinking": "Ontkoppelen...",
+    "preview": "Voorbeeld",
+    "download": "Downloaden",
+    "exitFocusMode": "Verlaat de focusmodus",
+    "searchTimezones": "Zoek tijdzones...",
+    "dismiss": "Afwijzen"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -58,7 +63,10 @@
     "unpinView": "Weergave losmaken",
     "pinView": "Weergave vastzetten",
     "eisenhower": "Eisenhower Matrix",
-    "kanban": "Kanban Bord"
+    "kanban": "Kanban Bord",
+    "addHabitAriaLabel": "Voeg Gewoonte Toe",
+    "addHabitTitle": "Voeg Gewoonte Toe",
+    "toggleDarkMode": "Schakel Donkere Modus In"
   },
   "navigation": {
     "home": "Home",
@@ -68,7 +76,11 @@
     "settings": "Instellingen",
     "about": "Over",
     "logout": "Uitloggen",
-    "backupRestore": "Back-up & Herstellen"
+    "backupRestore": "Back-up & Herstellen",
+    "toggleSearch": "Schakel Zoeken In",
+    "quickInboxCapture": "Snelle Inbox Vastlegging",
+    "userMenu": "Gebruikersmenu",
+    "search": "Zoeken"
   },
   "settings": {
     "todayPageSettings": "Instellingen Vandaag Pagina",
@@ -181,7 +193,9 @@
       "waiting": "Wachten",
       "done": "Voltooid",
       "dropHere": "Hier neerzetten"
-    }
+    },
+    "chaseUp": "Opvolgen",
+    "habit": "Gewoonte"
   },
   "timeline": {
     "activityTimeline": "Activiteit Tijdlijn",
@@ -503,7 +517,9 @@
       "serverSettings": "Serverinstellingen",
       "syncSettings": "Synchronisatie-instellingen",
       "setupSuccess": "Kalender succesvol geconfigureerd!",
-      "setupFailed": "Mislukt om kalender aan te maken"
+      "setupFailed": "Mislukt om kalender aan te maken",
+      "serverUrlPlaceholder": "https://caldav.voorbeeld.com",
+      "calendarPathPlaceholder": "/calendars/gebruiker/taken"
     },
     "conflictResolver": {
       "title": "Synchronisatieconflicten oplossen",
@@ -538,7 +554,9 @@
       "intervalError": "Synchronisatie-interval moet tussen 1 en 1440 minuten liggen",
       "updateSuccess": "Kalender succesvol bijgewerkt",
       "updateError": "Kon kalender niet bijwerken"
-    }
+    },
+    "telegramTokenPlaceholder": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+    "telegramAllowedUsersPlaceholder": "@gebruikersnaam1, 123456789, @gebruikersnaam2"
   },
   "productivity": {
     "stalledProjects": "Stagnerende Projecten",
@@ -777,7 +795,11 @@
     "projectSaveFailed": "Het opslaan van het project is mislukt.",
     "projectImageTooLarge": "Afbeelding is te groot. Kies een bestand onder de 10MB.",
     "projectImageUpload": "Uploaden van afbeelding mislukt. Probeer een kleiner bestand of een ander formaat.",
-    "bannerSaveFailed": "Opslaan van banner mislukt"
+    "bannerSaveFailed": "Opslaan van banner mislukt",
+    "loginFailed": "Inloggen mislukt. Probeer het opnieuw.",
+    "generalError": "Er is een fout opgetreden. Probeer het opnieuw.",
+    "viewNameRequired": "Bekijknaam is vereist",
+    "viewSaveFailed": "Opslaan van de weergave is mislukt. Probeer het opnieuw."
   },
   "inbox": {
     "title": "Inbox",
@@ -810,7 +832,9 @@
     "loadMoreError": "Kon meer items niet laden",
     "loading": "Laden...",
     "loadMore": "Laad meer inboxitems",
-    "showingItems": "Toont {{current}} van {{total}} items"
+    "showingItems": "Toont {{current}} van {{total}} items",
+    "removeTag": "Verwijder tag",
+    "removeProject": "Verwijder project"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1056,7 +1080,9 @@
     "nextUp": "Volgende beste actie",
     "focusTask": "Meest impactvolle taak",
     "focusHint": "Verplaatst deze taak naar lopend en vandaag",
-    "noNextAction": "Alles klaar - geen openstaande taken."
+    "noNextAction": "Alles klaar - geen openstaande taken.",
+    "selectDueDatePlaceholder": "Selecteer vervaldatum",
+    "goalTitle": "Doel"
   },
   "projectItem": {
     "edit": "Bewerken",
@@ -1088,7 +1114,14 @@
     "error": "Fout bij het laden van gebiedsdetails.",
     "notFound": "Gebied niet gevonden.",
     "details": "Gebiedsdetails",
-    "viewProjects": "Bekijk projecten in {{name}}"
+    "viewProjects": "Bekijk projecten in {{name}}",
+    "goalTitlePlaceholder": "Doeltitel",
+    "goalWhyPlaceholder": "Waarom dit belangrijk is (optioneel)",
+    "editGoal": "Bewerk doel",
+    "deleteGoal": "Verwijder doel",
+    "moveBackToUnlinked": "Terugzetten naar niet-gekoppeld",
+    "horizonSeason": "Seizoen",
+    "horizonYear": "Jaar"
   },
   "notes": {
     "loading": "Bezig met het laden van notities...",
@@ -1099,7 +1132,14 @@
     "deleteNoteAriaLabel": "Verwijder notitie {{noteTitle}}",
     "deleteNoteTitle": "Verwijder notitie {{noteTitle}}",
     "editNoteAriaLabel": "Bewerk notitie {{noteTitle}}",
-    "editNoteTitle": "Bewerk notitie {{noteTitle}}"
+    "editNoteTitle": "Bewerk notitie {{noteTitle}}",
+    "titlePlaceholder": "Notitietitel...",
+    "contentPlaceholder": "Schrijf hier de inhoud van je notitie... (Markdown ondersteund)",
+    "focusMode": "Focusmodus",
+    "noteOptions": "Notitie-opties",
+    "clickToEdit": "Klik om te bewerken",
+    "contentPlaceholderFocus": "Schrijf je notitie... (Markdown ondersteund)",
+    "contentPlaceholderMarkdown": "Schrijf je inhoud met Markdown-opmaak...\n\nVoorbeelden:\n# Kop\n**Vetgedrukte tekst**\n*Schuingedrukte tekst*\n- Lijstitem\n```code```"
   },
   "tags": {
     "loading": "Tags laden...",
@@ -1123,7 +1163,11 @@
     "systemTag": "Systeemtags",
     "systemTagDescription": "Automatisch aangemaakt door de app. Ze ondersteunen ingebouwde functies en kunnen niet worden hernoemd of verwijderd.",
     "userTag": "Gebruikerstags",
-    "userTagDescription": "Je eigen tags voor het organiseren van taken, notities en projecten."
+    "userTagDescription": "Je eigen tags voor het organiseren van taken, notities en projecten.",
+    "systemTags": "Systeem Tags",
+    "systemTagsDescription": "Automatisch beheerd · Kan niet worden verwijderd of hernoemd",
+    "system": "Systeem",
+    "customize": "Aanpassen"
   },
   "recurrence": {
     "none": "Geen",
@@ -1399,7 +1443,14 @@
     "priorityLabel": "Prioriteit:",
     "dueLabel": "Vervaldatum:",
     "tags": "Tags",
-    "recurring": "Herhalend"
+    "recurring": "Herhalend",
+    "saveAsSmartView": "Opslaan als Slimme Weergave",
+    "viewNamePlaceholder": "Voer de weergavenaam in",
+    "viewNameLabel": "Weergavenaam",
+    "viewWillSave": "Deze weergave zal opslaan:",
+    "saveView": "Weergave Opslaan",
+    "filtersLabel": "Filters:",
+    "searchLabel": "Zoeken:"
   },
   "search": {
     "placeholder": "Zoek taken, projecten, notities...",
@@ -1556,5 +1607,36 @@
     "done_desc": "Afgerond en voltooid",
     "cancelled": "Geannuleerd",
     "cancelled_desc": "Zal niet worden voltooid"
+  },
+  "habits": {
+    "completeHabit": "Gewoonte voltooien"
+  },
+  "aiAssistant": {
+    "title": "AI Assistent",
+    "generatedAt": "Gegenereerd op {{time}}",
+    "emptyState": "Klik op 'Genereer Samenvatting' om je AI-gestuurde dagelijkse samenvatting te krijgen.",
+    "focusForToday": "Focus voor vandaag",
+    "priorityActions": "Prioriteitsacties",
+    "taskInsightsTitle": "AI Inzichten",
+    "projectInsightsTitle": "AI Inzichten",
+    "taskInsight": "Over deze taak",
+    "taskNextStep": "Volgende stap",
+    "taskBreakdown": "Hoe het aan te pakken",
+    "projectInsight": "Over dit project",
+    "projectNextAction": "Volgende actie",
+    "projectHealth": "Projectgezondheid",
+    "watchOut": "Pas op",
+    "suggestedLinks": "Voorgestelde links",
+    "generate": "Genereer Brief",
+    "regenerate": "Regenereren",
+    "generating": "Genereren...",
+    "errorDefault": "Het genereren van inzichten is mislukt. Probeer het opnieuw.",
+    "lowContextTitle": "Niet genoeg context voor een geweldige suggestie",
+    "lowContextHint": "Voeg een beschrijving, notities, tags toe of wijs een project toe om betere inzichten te krijgen. Je kunt hieronder nog steeds genereren.",
+    "generateAnyway": "Toch genereren",
+    "statTotal": "Totaal",
+    "statDone": "Voltooid",
+    "statActive": "Actief",
+    "statOverdue": "Te laat"
   }
 }

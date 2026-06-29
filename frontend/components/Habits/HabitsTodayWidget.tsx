@@ -47,7 +47,7 @@ const HabitsTodayWidget: React.FC = () => {
                             <button
                                 onClick={() => logCompletion(habit.uid!)}
                                 className="text-green-600 hover:text-green-700 transition"
-                                title="Complete habit"
+                                title={t('habits.completeHabit')}
                             >
                                 <CheckCircleIcon className="w-6 h-6" />
                             </button>

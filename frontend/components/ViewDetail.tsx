@@ -949,7 +949,7 @@ const ViewDetail: React.FC = () => {
                         <button
                             onClick={openConfirmDialog}
                             className="p-2 rounded-lg transition-colors text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800"
-                            title="Delete view"
+                            title={t('views.deleteView')}
                         >
                             <TrashIcon className="h-5 w-5" />
                         </button>

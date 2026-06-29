@@ -307,7 +307,7 @@ const NoteDetails: React.FC = () => {
                 {/* ConfirmDialog */}
                 {isConfirmDialogOpen && noteToDelete && (
                     <ConfirmDialog
-                        title="Delete Note"
+                        title={t('modals.deleteNote.title')}
                         message={`Are you sure you want to delete the note "${noteToDelete.title}"?`}
                         onConfirm={handleDeleteNote}
                         onCancel={() => {

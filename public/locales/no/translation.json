@@ -25,7 +25,12 @@
     "yesDiscard": "Ja, forkast",
     "uploading": "Laster opp...",
     "refresh": "Oppdater",
-    "unlinking": "Fjerner kobling..."
+    "unlinking": "Fjerner kobling...",
+    "preview": "Forhåndsvisning",
+    "download": "Last ned",
+    "exitFocusMode": "Avslutt fokusmodus",
+    "searchTimezones": "Søk etter tidssoner...",
+    "dismiss": "Avvis"
   },
   "sidebar": {
     "dashboard": "Dashbord",
@@ -58,7 +63,10 @@
     "unpinView": "Fjern feste fra visning",
     "pinView": "Fest visning",
     "eisenhower": "Eisenhower-matrise",
-    "kanban": "Kanban-tavle"
+    "kanban": "Kanban-tavle",
+    "addHabitAriaLabel": "Legg til vane",
+    "addHabitTitle": "Legg til vane",
+    "toggleDarkMode": "Bytt til mørk modus"
   },
   "navigation": {
     "home": "Hjem",
@@ -68,7 +76,11 @@
     "settings": "Innstillinger",
     "about": "Om",
     "logout": "Logg ut",
-    "backupRestore": "Sikkerhetskopiering og gjenoppretting"
+    "backupRestore": "Sikkerhetskopiering og gjenoppretting",
+    "toggleSearch": "Bytt søk",
+    "quickInboxCapture": "Rask innboksfangst",
+    "userMenu": "Brukermeny",
+    "search": "Søk"
   },
   "settings": {
     "todayPageSettings": "Innstillinger for Dagens Side",
@@ -182,7 +194,9 @@
       "waiting": "Venter",
       "done": "Ferdig",
       "dropHere": "Slipp her"
-    }
+    },
+    "chaseUp": "Følge opp",
+    "habit": "Vane"
   },
   "timeline": {
     "activityTimeline": "Aktivitetslinje",
@@ -504,7 +518,9 @@
       "syncIntervalHelp": "Hvor ofte skal det synkroniseres automatisk (5-1440 minutter)",
       "conflictPolicy": "Konfliktløsning",
       "manual": "Spør meg (manuell løsning)",
-      "lastWriteWins": "Sist endret vinner (automatisk)"
+      "lastWriteWins": "Sist endret vinner (automatisk)",
+      "serverUrlPlaceholder": "https://caldav.example.com",
+      "calendarPathPlaceholder": "/kalendere/bruker/oppgaver"
     },
     "conflictResolver": {
       "title": "Løs synkroniseringskonflikter",
@@ -539,7 +555,9 @@
       "intervalError": "Synkroniseringsintervall må være mellom 1 og 1440 minutter",
       "updateSuccess": "Kalender oppdatert",
       "updateError": "Kunne ikke oppdatere kalender"
-    }
+    },
+    "telegramTokenPlaceholder": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+    "telegramAllowedUsersPlaceholder": "@brukernavn1, 123456789, @brukernavn2"
   },
   "productivity": {
     "stalledProjects": "Stagnerte prosjekter",
@@ -778,7 +796,11 @@
     "projectSaveFailed": "Kunne ikke lagre prosjekt.",
     "projectImageTooLarge": "Bildet er for stort. Vennligst velg en fil under 10MB.",
     "projectImageUpload": "Kunne ikke laste opp bildet. Vennligst prøv en mindre fil eller et annet format.",
-    "bannerSaveFailed": "Kunne ikke lagre banner"
+    "bannerSaveFailed": "Kunne ikke lagre banner",
+    "loginFailed": "Innlogging feilet. Vennligst prøv igjen.",
+    "generalError": "En feil oppstod. Vennligst prøv igjen.",
+    "viewNameRequired": "Visningsnavn er påkrevd",
+    "viewSaveFailed": "Kunne ikke lagre visning. Vennligst prøv igjen."
   },
   "inbox": {
     "title": "Innboks",
@@ -811,7 +833,9 @@
     "loadMoreError": "Kunne ikke laste flere elementer",
     "loading": "Laster...",
     "loadMore": "Last flere innboks-elementer",
-    "showingItems": "Viser {{current}} av {{total}} elementer"
+    "showingItems": "Viser {{current}} av {{total}} elementer",
+    "removeTag": "Fjern tag",
+    "removeProject": "Fjern prosjekt"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1057,7 +1081,9 @@
     "nextUp": "Neste beste handling",
     "focusTask": "Mest innflytelsesrike oppgave",
     "focusHint": "Flytter denne oppgaven til pågående og i dag",
-    "noNextAction": "Alt klart - ingen utestående oppgaver."
+    "noNextAction": "Alt klart - ingen utestående oppgaver.",
+    "selectDueDatePlaceholder": "Velg forfallsdato",
+    "goalTitle": "Mål"
   },
   "projectItem": {
     "edit": "Rediger",
@@ -1089,7 +1115,14 @@
     "error": "Feil ved lasting av område detaljer.",
     "notFound": "Område ikke funnet.",
     "details": "Område Detaljer",
-    "viewProjects": "Se prosjekter i {{name}}"
+    "viewProjects": "Se prosjekter i {{name}}",
+    "goalTitlePlaceholder": "Mål tittel",
+    "goalWhyPlaceholder": "Hvorfor dette er viktig (valgfritt)",
+    "editGoal": "Rediger mål",
+    "deleteGoal": "Slett mål",
+    "moveBackToUnlinked": "Flytt tilbake til ulinket",
+    "horizonSeason": "Sesong",
+    "horizonYear": "År"
   },
   "notes": {
     "loading": "Laster notater...",
@@ -1100,7 +1133,14 @@
     "deleteNoteAriaLabel": "Slett notat {{noteTitle}}",
     "deleteNoteTitle": "Slett notat {{noteTitle}}",
     "editNoteAriaLabel": "Rediger notat {{noteTitle}}",
-    "editNoteTitle": "Rediger notat {{noteTitle}}"
+    "editNoteTitle": "Rediger notat {{noteTitle}}",
+    "titlePlaceholder": "Notattittel...",
+    "contentPlaceholder": "Skriv inn innholdet i notatet ditt her... (Markdown støttet)",
+    "focusMode": "Fokusmodus",
+    "noteOptions": "Notatalternativer",
+    "clickToEdit": "Klikk for å redigere",
+    "contentPlaceholderFocus": "Skriv notatet ditt... (Markdown støttet)",
+    "contentPlaceholderMarkdown": "Skriv innholdet ditt med Markdown-formatering...\n\nEksempler:\n# Overskrift\n**Fet tekst**\n*Kursiv tekst*\n- Listeelement\n```kode```"
   },
   "tags": {
     "loading": "Laster etiketter...",
@@ -1124,7 +1164,11 @@
     "systemTag": "Systemtagger",
     "systemTagDescription": "Opprettet automatisk av appen. De driver innebygde funksjoner og kan ikke omdøpes eller slettes.",
     "userTag": "Brukertagger",
-    "userTagDescription": "Dine egne tagger for å organisere oppgaver, notater og prosjekter."
+    "userTagDescription": "Dine egne tagger for å organisere oppgaver, notater og prosjekter.",
+    "systemTags": "Systemetiketter",
+    "systemTagsDescription": "Automatisk administrert · Kan ikke slettes eller omdøpes",
+    "system": "System",
+    "customize": "Tilpass"
   },
   "recurrence": {
     "none": "Ingen",
@@ -1400,7 +1444,14 @@
     "priorityLabel": "Prioritet:",
     "dueLabel": "Forfall:",
     "tags": "Tags",
-    "recurring": "Gjentakende"
+    "recurring": "Gjentakende",
+    "saveAsSmartView": "Lagre som Smart Visning",
+    "viewNamePlaceholder": "Skriv inn visningsnavn",
+    "viewNameLabel": "Visningsnavn",
+    "viewWillSave": "Denne visningen vil lagres:",
+    "saveView": "Lagre Visning",
+    "filtersLabel": "Filtre:",
+    "searchLabel": "Søk:"
   },
   "search": {
     "placeholder": "Søk etter oppgaver, prosjekter, notater...",
@@ -1580,6 +1631,17 @@
     "lowContextTitle": "Ikke nok kontekst for et godt forslag",
     "lowContextHint": "Legg til en beskrivelse, notater, tagger eller tildel et prosjekt for å få bedre innsikt. Du kan fortsatt generere nedenfor.",
     "generateAnyway": "Generer uansett",
-    "show": "Vis"
+    "show": "Vis",
+    "projectInsightsTitle": "AI Innsikter",
+    "projectInsight": "Om dette prosjektet",
+    "projectNextAction": "Neste handling",
+    "projectHealth": "Prosjektstatus",
+    "statTotal": "Totalt",
+    "statDone": "Ferdig",
+    "statActive": "Aktiv",
+    "statOverdue": "Forsinket"
+  },
+  "habits": {
+    "completeHabit": "Fullfør vane"
   }
 }

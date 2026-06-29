@@ -214,7 +214,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                         {task.habit_mode && (
                                             <FireIcon
                                                 className="h-4 w-4 text-orange-500 flex-shrink-0"
-                                                title="Habit"
+                                                title={t('tasks.habit')}
                                             />
                                         )}
                                         <span className="text-sm font-medium text-gray-900 dark:text-gray-300 tracking-tight truncate">
@@ -285,7 +285,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                 {task.habit_mode && (
                                     <FireIcon
                                         className="h-4 w-4 text-orange-500 flex-shrink-0"
-                                        title="Habit"
+                                        title={t('tasks.habit')}
                                     />
                                 )}
                                 <span className="text-md font-medium text-gray-900 dark:text-gray-300 truncate">
@@ -449,7 +449,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                 {task.habit_mode && (
                                     <FireIcon
                                         className="h-4 w-4 text-orange-500 flex-shrink-0"
-                                        title="Habit"
+                                        title={t('tasks.habit')}
                                     />
                                 )}
                                 <span className="truncate flex-1">

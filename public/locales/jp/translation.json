@@ -25,7 +25,12 @@
     "yesDiscard": "はい、破棄する",
     "uploading": "アップロード中...",
     "refresh": "更新",
-    "unlinking": "リンク解除中..."
+    "unlinking": "リンク解除中...",
+    "preview": "プレビュー",
+    "download": "ダウンロード",
+    "exitFocusMode": "フォーカスモードを終了",
+    "searchTimezones": "タイムゾーンを検索...",
+    "dismiss": "閉じる"
   },
   "sidebar": {
     "dashboard": "ダッシュボード",
@@ -58,7 +63,10 @@
     "unpinView": "ピン留めを外す",
     "pinView": "ピン留めする",
     "eisenhower": "アイゼンハワーマトリックス",
-    "kanban": "カンバンボード"
+    "kanban": "カンバンボード",
+    "addHabitAriaLabel": "習慣を追加",
+    "addHabitTitle": "習慣を追加",
+    "toggleDarkMode": "ダークモードを切り替え"
   },
   "navigation": {
     "home": "ホーム",
@@ -68,7 +76,11 @@
     "settings": "設定",
     "about": "について",
     "logout": "ログアウト",
-    "backupRestore": "バックアップと復元"
+    "backupRestore": "バックアップと復元",
+    "toggleSearch": "検索を切り替え",
+    "quickInboxCapture": "クイックインボックスキャプチャ",
+    "userMenu": "ユーザーメニュー",
+    "search": "検索"
   },
   "settings": {
     "todayPageSettings": "今日のページ設定",
@@ -181,7 +193,9 @@
       "waiting": "待機中",
       "done": "完了",
       "dropHere": "ここにドロップ"
-    }
+    },
+    "chaseUp": "フォローアップ",
+    "habit": "習慣"
   },
   "timeline": {
     "activityTimeline": "アクティビティタイムライン",
@@ -503,7 +517,9 @@
       "serverSettings": "サーバー設定",
       "syncSettings": "同期設定",
       "setupSuccess": "カレンダーが正常に設定されました！",
-      "setupFailed": "カレンダーの作成に失敗しました"
+      "setupFailed": "カレンダーの作成に失敗しました",
+      "serverUrlPlaceholder": "https://caldav.example.com",
+      "calendarPathPlaceholder": "/calendars/user/tasks"
     },
     "conflictResolver": {
       "title": "同期の競合を解決する",
@@ -538,7 +554,9 @@
       "intervalError": "同期間隔は1分から1440分の間でなければなりません",
       "updateSuccess": "カレンダーが正常に更新されました",
       "updateError": "カレンダーの更新に失敗しました"
-    }
+    },
+    "telegramTokenPlaceholder": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+    "telegramAllowedUsersPlaceholder": "@username1, 123456789, @username2"
   },
   "nextTask": {
     "suggestion": "進行中のものがないので、こちらから始めてみませんか",
@@ -725,7 +743,11 @@
     "failedToSaveTag": "タグの保存に失敗しました。",
     "projectImageTooLarge": "画像が大きすぎます。10MB未満のファイルを選択してください。",
     "projectImageUpload": "画像のアップロードに失敗しました。より小さいファイルまたは異なる形式を試してください。",
-    "bannerSaveFailed": "バナーの保存に失敗しました"
+    "bannerSaveFailed": "バナーの保存に失敗しました",
+    "loginFailed": "ログインに失敗しました。再試行してください。",
+    "generalError": "エラーが発生しました。再試行してください。",
+    "viewNameRequired": "ビュー名は必須です",
+    "viewSaveFailed": "ビューの保存に失敗しました。もう一度お試しください。"
   },
   "success": {
     "noteUpdated": "ノートが正常に更新されました！",
@@ -826,7 +848,9 @@
     "nextUp": "次の最善の行動",
     "focusTask": "最も影響力のあるタスク",
     "focusHint": "このタスクを進行中と今日に移動",
-    "noNextAction": "すべて完了-未処理のタスクはありません。"
+    "noNextAction": "すべて完了-未処理のタスクはありません。",
+    "selectDueDatePlaceholder": "期限日を選択",
+    "goalTitle": "目標"
   },
   "projectItem": {
     "edit": "編集",
@@ -858,7 +882,14 @@
     "error": "エリア詳細の読み込みエラー。",
     "notFound": "エリアが見つかりません。",
     "details": "エリア詳細",
-    "viewProjects": "{{name}}のプロジェクトを表示"
+    "viewProjects": "{{name}}のプロジェクトを表示",
+    "goalTitlePlaceholder": "目標タイトル",
+    "goalWhyPlaceholder": "なぜこれが重要なのか（任意）",
+    "editGoal": "目標を編集",
+    "deleteGoal": "目標を削除",
+    "moveBackToUnlinked": "リンクされていない状態に戻す",
+    "horizonSeason": "シーズン",
+    "horizonYear": "年"
   },
   "notes": {
     "loading": "ノートを読み込み中...",
@@ -869,7 +900,14 @@
     "editNoteAriaLabel": "ノート {{noteTitle}} を編集",
     "editNoteTitle": "ノート {{noteTitle}} の編集",
     "error": "ノートの読み込みエラー",
-    "searchPlaceholder": "ノートを検索..."
+    "searchPlaceholder": "ノートを検索...",
+    "titlePlaceholder": "ノートタイトル...",
+    "contentPlaceholder": "ノートの内容をここに書いてください...（Markdown対応）",
+    "focusMode": "フォーカスモード",
+    "noteOptions": "ノートオプション",
+    "clickToEdit": "クリックして編集",
+    "contentPlaceholderFocus": "ノートを書いてください...（Markdown対応）",
+    "contentPlaceholderMarkdown": "Markdown形式で内容を書いてください...\n\n例:\n# 見出し\n**太字テキスト**\n*斜体テキスト*\n- リスト項目\n```コード```"
   },
   "tags": {
     "loading": "タグを読み込み中...",
@@ -893,7 +931,11 @@
     "systemTag": "システムタグ",
     "systemTagDescription": "アプリによって自動的に作成されます。組み込み機能を支え、名前を変更したり削除したりすることはできません。",
     "userTag": "ユーザータグ",
-    "userTagDescription": "タスク、ノート、プロジェクトを整理するためのあなた自身のタグ。"
+    "userTagDescription": "タスク、ノート、プロジェクトを整理するためのあなた自身のタグ。",
+    "systemTags": "システムタグ",
+    "systemTagsDescription": "自動管理 · 削除または名前変更できません",
+    "system": "システム",
+    "customize": "カスタマイズ"
   },
   "recurrence": {
     "none": "なし",
@@ -955,7 +997,9 @@
     "loadMoreError": "アイテムの読み込みに失敗しました",
     "loading": "読み込み中...",
     "loadMore": "さらにインボックスアイテムを読み込む",
-    "showingItems": "{{total}}アイテム中{{current}}を表示しています"
+    "showingItems": "{{total}}アイテム中{{current}}を表示しています",
+    "removeTag": "タグを削除",
+    "removeProject": "プロジェクトを削除"
   },
   "project": {
     "projectImage": "プロジェクト画像",
@@ -1399,7 +1443,14 @@
     "priorityLabel": "優先度:",
     "dueLabel": "期限:",
     "tags": "タグ",
-    "recurring": "定期的"
+    "recurring": "定期的",
+    "saveAsSmartView": "スマートビューとして保存",
+    "viewNamePlaceholder": "ビュー名を入力",
+    "viewNameLabel": "ビュー名",
+    "viewWillSave": "このビューは保存されます:",
+    "saveView": "ビューを保存",
+    "filtersLabel": "フィルター:",
+    "searchLabel": "検索:"
   },
   "search": {
     "placeholder": "タスク、プロジェクト、ノートを検索...",
@@ -1556,5 +1607,36 @@
     "done_desc": "終了しました",
     "cancelled": "キャンセル",
     "cancelled_desc": "完了しません"
+  },
+  "habits": {
+    "completeHabit": "習慣を完了する"
+  },
+  "aiAssistant": {
+    "title": "AIアシスタント",
+    "generatedAt": "生成日時: {{time}}",
+    "emptyState": "'要約を生成'をクリックして、AIによる日次要約を取得します。",
+    "focusForToday": "今日の焦点",
+    "priorityActions": "優先アクション",
+    "taskInsightsTitle": "AIインサイト",
+    "projectInsightsTitle": "AIインサイト",
+    "taskInsight": "このタスクについて",
+    "taskNextStep": "次のステップ",
+    "taskBreakdown": "どのようにアプローチするか",
+    "projectInsight": "このプロジェクトについて",
+    "projectNextAction": "次のアクション",
+    "projectHealth": "プロジェクトの健康状態",
+    "watchOut": "注意してください",
+    "suggestedLinks": "推奨リンク",
+    "generate": "ブリーフを生成",
+    "regenerate": "再生成",
+    "generating": "生成中...",
+    "errorDefault": "インサイトの生成に失敗しました。もう一度お試しください。",
+    "lowContextTitle": "優れた提案に対するコンテキストが不足しています",
+    "lowContextHint": "より良いインサイトを得るために、説明、ノート、タグを追加するか、プロジェクトを割り当ててください。それでも下に生成できます。",
+    "generateAnyway": "とにかく生成する",
+    "statTotal": "合計",
+    "statDone": "完了",
+    "statActive": "アクティブ",
+    "statOverdue": "期限切れ"
   }
 }

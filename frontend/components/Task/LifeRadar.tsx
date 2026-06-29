@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { getApiPath } from '../../config/paths';
 import { Project } from '../../entities/Project';
@@ -239,6 +240,7 @@ function WaitingForAge({
     tasks: Task[];
     projects: Project[];
 }) {
+    const { t: translate } = useTranslation();
     const navigate = useNavigate();
 
     const rows = useMemo(() => {
@@ -289,7 +291,7 @@ function WaitingForAge({
                             <button
                                 onClick={() => navigate(`/task/${t.uid}`)}
                                 className="text-[10px] text-blue-500 hover:text-blue-600 dark:text-blue-400 flex-shrink-0 leading-none"
-                                title="Chase up"
+                                title={translate('tasks.chaseUp')}
                             >
                                 ↗
                             </button>
