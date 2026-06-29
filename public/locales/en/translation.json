@@ -1597,6 +1597,7 @@
     "regenerate": "Regenerate",
     "generating": "Generating...",
     "errorDefault": "Failed to generate insights. Please try again.",
+    "pastBriefWarning": "This brief is from {{date}} and may no longer reflect today's tasks. Click Regenerate for a fresh brief.",
     "lowContextTitle": "Not enough context for a great suggestion",
     "lowContextHint": "Add a description, notes, tags, or assign a project to get better insights. You can still generate below.",
     "generateAnyway": "Generate anyway",

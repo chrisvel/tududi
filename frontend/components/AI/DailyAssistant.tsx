@@ -8,18 +8,31 @@ import {
     FlagIcon,
     ExclamationTriangleIcon,
     FolderIcon,
+    ClockIcon,
 } from '@heroicons/react/24/outline';
 import { fetchDailyBrief, fetchCachedBrief, DailyBrief } from '../../utils/aiAssistantService';
+
+function isBriefFromToday(generatedAt: string): boolean {
+    const briefDate = new Date(generatedAt);
+    const now = new Date();
+    return (
+        briefDate.getFullYear() === now.getFullYear() &&
+        briefDate.getMonth() === now.getMonth() &&
+        briefDate.getDate() === now.getDate()
+    );
+}
 
 const DailyAssistant: React.FC = () => {
     const { t } = useTranslation();
     const [brief, setBrief] = useState<DailyBrief | null>(null);
+    const [isStale, setIsStale] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingCached, setIsLoadingCached] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     const generate = useCallback(async () => {
         setIsLoading(true);
+        setIsStale(false);
         setError(null);
         try {
             setBrief(await fetchDailyBrief());
@@ -35,6 +48,7 @@ const DailyAssistant: React.FC = () => {
             .then((cached) => {
                 if (cached) {
                     setBrief(cached);
+                    setIsStale(!isBriefFromToday(cached.generated_at));
                 } else {
                     generate();
                 }
@@ -83,6 +97,22 @@ const DailyAssistant: React.FC = () => {
                     )}
                 </button>
             </div>
+
+            {/* Stale warning */}
+            {isStale && brief && !isLoading && (
+                <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 dark:bg-amber-900/10 border-b border-amber-100 dark:border-amber-800/30">
+                    <ClockIcon className="h-3.5 w-3.5 flex-shrink-0 text-amber-500" />
+                    <span className="text-xs text-amber-700 dark:text-amber-400">
+                        {t('aiAssistant.pastBriefWarning', {
+                            date: new Date(brief.generated_at).toLocaleDateString([], {
+                                weekday: 'long',
+                                month: 'short',
+                                day: 'numeric',
+                            }),
+                        })}
+                    </span>
+                </div>
+            )}
 
             {/* Body */}
             <div className="p-4 space-y-3">
