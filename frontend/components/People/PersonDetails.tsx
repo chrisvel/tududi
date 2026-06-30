@@ -13,6 +13,10 @@ import { fetchPersonByUid, updatePerson, deletePerson } from '../../utils/people
 import { useToast } from '../Shared/ToastContext';
 import PersonModal from './PersonModal';
 import ConfirmDialog from '../Shared/ConfirmDialog';
+import TaskList from '../Task/TaskList';
+import { useStore } from '../../store/useStore';
+import { getApiPath } from '../../config/paths';
+import { getCsrfToken } from '../../utils/csrfService';
 
 const RELATIONSHIP_LABELS: Record<string, string> = {
     family: 'Family',
@@ -25,6 +29,7 @@ const PersonDetails: React.FC = () => {
     const { uid } = useParams<{ uid: string }>();
     const navigate = useNavigate();
     const { showSuccessToast, showErrorToast } = useToast();
+    const projects = useStore((state: any) => state.projectsStore.projects);
 
     const [person, setPerson] = useState<Person | null>(null);
     const [assignedTasks, setAssignedTasks] = useState<Task[]>([]);
@@ -87,6 +92,46 @@ const PersonDetails: React.FC = () => {
         } finally {
             setIsConfirmDialogOpen(false);
         }
+    };
+
+    const handleTaskUpdate = async (updatedTask: Task) => {
+        try {
+            const response = await fetch(getApiPath(`task/${updatedTask.uid}`), {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-csrf-token': await getCsrfToken(),
+                },
+                body: JSON.stringify(updatedTask),
+            });
+            if (response.ok) {
+                setAssignedTasks((prev) =>
+                    prev.map((t) => (t.id === updatedTask.id ? updatedTask : t))
+                );
+            }
+        } catch (error) {
+            console.error('Error updating task:', error);
+        }
+    };
+
+    const handleTaskDelete = async (taskUid: string) => {
+        try {
+            const response = await fetch(getApiPath(`task/${encodeURIComponent(taskUid)}`), {
+                method: 'DELETE',
+                headers: { 'x-csrf-token': await getCsrfToken() },
+            });
+            if (response.ok) {
+                setAssignedTasks((prev) => prev.filter((t) => t.uid !== taskUid));
+            }
+        } catch (error) {
+            console.error('Error deleting task:', error);
+        }
+    };
+
+    const handleTaskCompletionToggle = (updatedTask: Task) => {
+        setAssignedTasks((prev) =>
+            prev.map((t) => (t.id === updatedTask.id ? updatedTask : t))
+        );
     };
 
     if (loading) {
@@ -227,22 +272,13 @@ const PersonDetails: React.FC = () => {
                         No tasks assigned to {person.name}.
                     </p>
                 ) : (
-                    <ul className="divide-y divide-gray-100 dark:divide-gray-700">
-                        {assignedTasks.map((task) => (
-                            <li
-                                key={task.uid}
-                                className="py-2 text-sm text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
-                                onClick={() => navigate(`/task/${task.uid}`)}
-                            >
-                                <span>{task.name}</span>
-                                {task.Project && (
-                                    <span className="ml-2 text-xs text-gray-400 dark:text-gray-500">
-                                        {task.Project.name}
-                                    </span>
-                                )}
-                            </li>
-                        ))}
-                    </ul>
+                    <TaskList
+                        tasks={assignedTasks}
+                        onTaskUpdate={handleTaskUpdate}
+                        onTaskCompletionToggle={handleTaskCompletionToggle}
+                        onTaskDelete={handleTaskDelete}
+                        projects={projects}
+                    />
                 )}
             </div>
 

@@ -22,7 +22,6 @@ const PeopleList: React.FC = () => {
     const { showSuccessToast, showErrorToast } = useToast();
     const [people, setPeople] = useState<Person[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [showArchived, setShowArchived] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const [editingPerson, setEditingPerson] = useState<Person | null>(null);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
@@ -34,7 +33,7 @@ const PeopleList: React.FC = () => {
     const load = async () => {
         setIsLoading(true);
         try {
-            const all = await fetchPeople({ archived: showArchived ? undefined : false } as any);
+            const all = await fetchPeople({ archived: false } as any);
             setPeople(all);
         } catch {
             showErrorToast('Failed to load people');
@@ -45,7 +44,7 @@ const PeopleList: React.FC = () => {
 
     useEffect(() => {
         load();
-    }, [showArchived]);
+    }, []);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -124,7 +123,7 @@ const PeopleList: React.FC = () => {
         setIsConfirmDialogOpen(true);
     };
 
-    const displayPeople = showArchived ? people : people.filter((p) => !p.archived);
+    const displayPeople = people.filter((p) => !p.archived);
 
     const groupedPeople = displayPeople.reduce(
         (groups, person) => {
@@ -149,16 +148,6 @@ const PeopleList: React.FC = () => {
                     <h2 className="text-2xl font-light">People</h2>
                     <div className="flex items-center gap-2">
                         <button
-                            onClick={() => setShowArchived((v) => !v)}
-                            className={`text-sm px-3 py-1.5 rounded-md border transition-colors ${
-                                showArchived
-                                    ? 'bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300'
-                                    : 'border-gray-200 dark:border-gray-700 text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800'
-                            }`}
-                        >
-                            {showArchived ? 'Hide Archived' : 'Show Archived'}
-                        </button>
-                        <button
                             onClick={openCreate}
                             className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition-colors"
                         >
@@ -173,16 +162,14 @@ const PeopleList: React.FC = () => {
                 ) : displayPeople.length === 0 ? (
                     <div className="text-center py-16">
                         <p className="text-gray-500 dark:text-gray-400 text-sm">
-                            {showArchived ? 'No people found.' : 'No people yet. Add family, colleagues, or friends.'}
+                            No people yet. Add family, colleagues, or friends.
                         </p>
-                        {!showArchived && (
-                            <button
-                                onClick={openCreate}
-                                className="mt-4 text-blue-600 dark:text-blue-400 text-sm hover:underline"
-                            >
-                                Add your first person
-                            </button>
-                        )}
+                        <button
+                            onClick={openCreate}
+                            className="mt-4 text-blue-600 dark:text-blue-400 text-sm hover:underline"
+                        >
+                            Add your first person
+                        </button>
                     </div>
                 ) : (
                     <div className="space-y-8">
