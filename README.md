@@ -86,7 +86,7 @@ Get up and running quickly with our comprehensive documentation:
 ### Quick Start
 
 ```bash
-docker pull chrisvel/tududi:latest
+docker pull ghcr.io/chrisvel/tududi:main
 
 docker run \
   -e TUDUDI_USER_EMAIL=admin@example.com \
@@ -95,7 +95,7 @@ docker run \
   -v ~/tududi_db:/app/backend/db \
   -v ~/tududi_uploads:/app/backend/uploads \
   -p 3002:3002 \
-  -d chrisvel/tududi:latest
+  -d ghcr.io/chrisvel/tududi:main
 ```
 
 Navigate to [http://localhost:3002](http://localhost:3002) and login with your credentials.
