@@ -8,6 +8,7 @@ const {
 const { buildTaskAttributes } = require('../../tasks/core/builders');
 const { Op } = require('sequelize');
 const { Task, Project, Tag } = require('../../../models');
+const { validateProjectAccess } = require('../../tasks/utils/validation');
 
 /**
  * Helper to find task by ID or UID
@@ -303,6 +304,11 @@ function registerTaskTools(server, context, tools) {
                     enum: ['pending', 'in_progress', 'completed', 'archived'],
                 },
                 due_date: { type: 'string', description: 'New due date' },
+                project_id: {
+                    type: 'number',
+                    description:
+                        'Project ID to assign task to (use null to remove project)',
+                },
                 today: {
                     type: 'boolean',
                     description: 'Add to Today list',
@@ -340,6 +346,13 @@ function registerTaskTools(server, context, tools) {
             }
             if (params.due_date !== undefined)
                 updates.due_date = params.due_date;
+            if (params.project_id !== undefined) {
+                const validProjectId = await validateProjectAccess(
+                    params.project_id,
+                    context.userId
+                );
+                updates.project_id = validProjectId;
+            }
             if (params.today !== undefined) updates.today = params.today;
 
             await task.update(updates);
