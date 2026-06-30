@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { XMarkIcon } from '@heroicons/react/24/outline';
+import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
+import { XMarkIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import { Person, RelationshipType } from '../../entities/Person';
 import ColorPicker from '../Shared/ColorPicker';
 
@@ -25,6 +26,10 @@ const PersonModal: React.FC<PersonModalProps> = ({ person, onSave, onClose }) =>
     const [color, setColor] = useState('');
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [relationshipOpen, setRelationshipOpen] = useState(false);
+    const [relationshipPos, setRelationshipPos] = useState({ top: 0, left: 0, width: 0 });
+    const relationshipRef = useRef<HTMLDivElement>(null);
+    const relationshipMenuRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (person) {
@@ -44,6 +49,28 @@ const PersonModal: React.FC<PersonModalProps> = ({ person, onSave, onClose }) =>
         }
         setError(null);
     }, [person]);
+
+    const handleRelationshipToggle = () => {
+        if (!relationshipOpen && relationshipRef.current) {
+            const rect = relationshipRef.current.getBoundingClientRect();
+            setRelationshipPos({ top: rect.bottom + 4, left: rect.left, width: rect.width });
+        }
+        setRelationshipOpen((o) => !o);
+    };
+
+    useEffect(() => {
+        if (!relationshipOpen) return;
+        const handler = (e: MouseEvent) => {
+            if (
+                !relationshipRef.current?.contains(e.target as Node) &&
+                !relationshipMenuRef.current?.contains(e.target as Node)
+            ) {
+                setRelationshipOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, [relationshipOpen]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -112,17 +139,49 @@ const PersonModal: React.FC<PersonModalProps> = ({ person, onSave, onClose }) =>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Relationship
                         </label>
-                        <select
-                            value={relationshipType}
-                            onChange={(e) => setRelationshipType(e.target.value as RelationshipType)}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            {RELATIONSHIP_TYPES.map((rt) => (
-                                <option key={rt.value} value={rt.value}>
-                                    {rt.label}
-                                </option>
-                            ))}
-                        </select>
+                        <div ref={relationshipRef} className="relative w-full">
+                            <button
+                                type="button"
+                                onClick={handleRelationshipToggle}
+                                className="inline-flex justify-between w-full px-3 py-2 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none"
+                            >
+                                <span>
+                                    {RELATIONSHIP_TYPES.find((r) => r.value === relationshipType)?.label ?? 'Other'}
+                                </span>
+                                <ChevronDownIcon className="w-4 h-4 text-gray-500 dark:text-gray-300 ml-2 mt-0.5" />
+                            </button>
+                            {relationshipOpen &&
+                                createPortal(
+                                    <div
+                                        ref={relationshipMenuRef}
+                                        className="fixed z-50 bg-white dark:bg-gray-700 shadow-lg rounded-md border border-gray-200 dark:border-gray-600"
+                                        style={{
+                                            top: `${relationshipPos.top}px`,
+                                            left: `${relationshipPos.left}px`,
+                                            width: `${relationshipPos.width}px`,
+                                        }}
+                                    >
+                                        {RELATIONSHIP_TYPES.map((rt) => (
+                                            <button
+                                                key={rt.value}
+                                                type="button"
+                                                onClick={() => {
+                                                    setRelationshipType(rt.value);
+                                                    setRelationshipOpen(false);
+                                                }}
+                                                className={`flex items-center px-4 py-2 text-sm w-full first:rounded-t-md last:rounded-b-md ${
+                                                    rt.value === relationshipType
+                                                        ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                                                        : 'text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-600'
+                                                }`}
+                                            >
+                                                {rt.label}
+                                            </button>
+                                        ))}
+                                    </div>,
+                                    document.body
+                                )}
+                        </div>
                     </div>
 
                     <div>
