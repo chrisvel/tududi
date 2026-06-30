@@ -124,6 +124,28 @@ registerMethod(
     handleProjectReport
 );
 
+// MKCOL on the projects home or a project calendar: 405 Method Not Allowed.
+router.all(
+    '/caldav/:username/projects/',
+    xmlParser,
+    caldavAuth,
+    (req, res, next) => {
+        if (req.method !== 'MKCOL') return next();
+        res.set('Allow', 'OPTIONS, GET, HEAD, PROPFIND');
+        return res.status(405).end();
+    }
+);
+router.all(
+    '/caldav/:username/projects/:projectUid/',
+    xmlParser,
+    caldavAuth,
+    (req, res, next) => {
+        if (req.method !== 'MKCOL') return next();
+        res.set('Allow', 'OPTIONS, GET, HEAD, PROPFIND, REPORT');
+        return res.status(405).end();
+    }
+);
+
 // MKCOL on the existing tasks calendar: 405 Method Not Allowed (already exists).
 router.all(
     '/caldav/:username/tasks/',
