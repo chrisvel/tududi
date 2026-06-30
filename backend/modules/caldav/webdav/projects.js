@@ -111,8 +111,9 @@ async function buildItemResponse(task, username, projectUid) {
 // PROPFIND /caldav/:username/projects/ — the calendar-home; lists one calendar
 // per project plus the "(No Project)" collection.
 async function handleCalendarHomePropfind(req, res) {
-    if (!perProjectEnabled())
+    if (!perProjectEnabled()) {
         return res.status(404).json({ error: 'Not found' });
+    }
     try {
         const { username } = req.params;
         if (!req.currentUser || req.currentUser.email !== username) {
@@ -192,8 +193,9 @@ async function handleCalendarHomePropfind(req, res) {
 
 // PROPFIND /caldav/:username/projects/:projectUid/[:uid]
 async function handleProjectPropfind(req, res) {
-    if (!perProjectEnabled())
+    if (!perProjectEnabled()) {
         return res.status(404).json({ error: 'Not found' });
+    }
     try {
         const { username, projectUid } = req.params;
         if (!req.currentUser || req.currentUser.email !== username) {
@@ -251,8 +253,9 @@ async function handleProjectPropfind(req, res) {
 
 // REPORT /caldav/:username/projects/:projectUid/ (calendar-query + multiget)
 async function handleProjectReport(req, res) {
-    if (!perProjectEnabled())
+    if (!perProjectEnabled()) {
         return res.status(404).json({ error: 'Not found' });
+    }
     try {
         const { username, projectUid } = req.params;
         if (!req.currentUser || req.currentUser.email !== username) {
