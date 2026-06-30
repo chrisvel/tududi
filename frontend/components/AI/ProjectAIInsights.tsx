@@ -52,6 +52,7 @@ const ProjectAIInsights = forwardRef<
     const [noCache, setNoCache] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [isVisible, setIsVisible] = useState(false);
 
     const buildPayload = (): ProjectInsightsRequest => ({
         projectUid: project.uid,
@@ -79,6 +80,7 @@ const ProjectAIInsights = forwardRef<
     });
 
     const dismiss = () => {
+        setIsVisible(false);
         setDismissed(true);
         if (project.uid) updateProjectInsightsDismissed(project.uid, true).catch(() => {});
     };
@@ -107,12 +109,15 @@ const ProjectAIInsights = forwardRef<
     useImperativeHandle(ref, () => ({
         activate: () => {
             if (isInitializing) return;
-            if (noCache) {
-                generate();
-            } else if (dismissed) {
-                show();
-            } else {
+            if (isVisible) {
                 dismiss();
+            } else {
+                setIsVisible(true);
+                if (noCache) {
+                    generate();
+                } else if (dismissed) {
+                    show();
+                }
             }
         },
     }));
@@ -120,12 +125,12 @@ const ProjectAIInsights = forwardRef<
     const prevActiveRef = useRef<boolean | null>(null);
     useEffect(() => {
         if (isInitializing) return;
-        const isActive = !dismissed && (!!insights || isLoading || !!error);
+        const isActive = isVisible && !dismissed && (!!insights || isLoading || !!error);
         if (prevActiveRef.current !== isActive) {
             prevActiveRef.current = isActive;
             onActiveChange?.(isActive);
         }
-    }, [dismissed, insights, isLoading, error, isInitializing]);
+    }, [isVisible, dismissed, insights, isLoading, error, isInitializing]);
 
     useEffect(() => {
         let cancelled = false;
@@ -136,6 +141,7 @@ const ProjectAIInsights = forwardRef<
         setError(null);
         setIsLoading(false);
         setIsInitializing(true);
+        setIsVisible(false);
 
         const init = async () => {
             if (project.uid) {
@@ -165,6 +171,8 @@ const ProjectAIInsights = forwardRef<
             cancelled = true;
         };
     }, [project.uid]);
+
+    if (!isVisible) return null;
 
     if (isInitializing) {
         return (

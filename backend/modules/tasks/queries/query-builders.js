@@ -417,6 +417,10 @@ async function filterTasksByParams(
         whereClause.area_id = params.area_id;
     }
 
+    if (params.assigned_to) {
+        whereClause.assigned_to = params.assigned_to;
+    }
+
     const finalWhereClause = {
         [Op.and]: [ownedOrShared, whereClause],
     };

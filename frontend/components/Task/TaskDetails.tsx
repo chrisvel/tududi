@@ -32,6 +32,7 @@ import {
     TaskDueDateCard,
     TaskDeferUntilCard,
     TaskAttachmentsCard,
+    TaskAssignedToCard,
 } from './TaskDetails/';
 import TaskAIInsights, { TaskAIInsightsHandle } from '../AI/TaskAIInsights';
 import {
@@ -545,7 +546,7 @@ const TaskDetails: React.FC = () => {
 
     useEffect(() => {
         const loadSubtasks = async () => {
-            if (activePill !== 'subtasks' || !task?.uid) {
+            if (!task?.uid) {
                 return;
             }
 
@@ -581,7 +582,7 @@ const TaskDetails: React.FC = () => {
         };
 
         loadSubtasks();
-    }, [activePill, task?.uid, task?.subtasks, hasLoadedSubtasks, tasksStore]);
+    }, [task?.uid, task?.subtasks, hasLoadedSubtasks, tasksStore]);
 
     useEffect(() => {
         setPendingSubtasks(subtasks);
@@ -1104,6 +1105,21 @@ const TaskDetails: React.FC = () => {
         }
     };
 
+    const handleAssignPerson = async (personUid: string | null) => {
+        if (!task?.uid) return;
+        try {
+            taskModifiedRef.current = true;
+            await updateTask(task.uid, { assigned_to: personUid });
+            if (uid) {
+                const updatedTask = await fetchTaskByUid(uid);
+                tasksStore.updateTaskInStore(updatedTask);
+            }
+        } catch (error) {
+            console.error('Error assigning person:', error);
+            showErrorToast('Failed to update assignment');
+        }
+    };
+
     const getAreaLink = (area: Area) => {
         if (area.uid) {
             const slug = area.name
@@ -1245,7 +1261,6 @@ const TaskDetails: React.FC = () => {
                     onAiInsightsClick={aiAssistantEnabled ? handleAiInsightsClick : undefined}
                     aiInsightsActive={aiInsightsActive}
                     attachmentCount={attachmentCount}
-                    subtasksCount={subtasks.length}
                     autoEditTitle={isNewTask}
                 />
 
@@ -1270,6 +1285,26 @@ const TaskDetails: React.FC = () => {
                                     content={task.note || ''}
                                     onUpdate={handleContentUpdate}
                                 />
+                                <TaskSubtasksCard
+                                    task={task}
+                                    subtasks={pendingSubtasks}
+                                    onSubtasksChange={setPendingSubtasks}
+                                    onSave={handleSaveSubtasks}
+                                />
+                                <TaskRecurrenceCard
+                                    task={task}
+                                    parentTask={parentTask}
+                                    loadingParent={loadingParent}
+                                    isEditing={isEditingRecurrence}
+                                    recurrenceForm={recurrenceForm}
+                                    onStartEdit={handleStartRecurrenceEdit}
+                                    onChange={handleRecurrenceChange}
+                                    onSave={handleSaveRecurrence}
+                                    onCancel={handleCancelRecurrenceEdit}
+                                    loadingIterations={loadingIterations}
+                                    nextIterations={nextIterations}
+                                    canEdit={!task.recurring_parent_id}
+                                />
                             </div>
 
                             <div className="space-y-6">
@@ -1290,6 +1325,11 @@ const TaskDetails: React.FC = () => {
                                     onAreaSelect={handleAreaSelection}
                                     onAreaClear={handleClearArea}
                                     getAreaLink={getAreaLink}
+                                />
+
+                                <TaskAssignedToCard
+                                    task={task}
+                                    onAssign={handleAssignPerson}
                                 />
 
                                 <TaskTagsCard
@@ -1322,36 +1362,6 @@ const TaskDetails: React.FC = () => {
                                     onCancel={handleCancelDeferUntilEdit}
                                 />
                             </div>
-                        </div>
-                    )}
-
-                    {activePill === 'recurrence' && (
-                        <div className="grid grid-cols-1">
-                            <TaskRecurrenceCard
-                                task={task}
-                                parentTask={parentTask}
-                                loadingParent={loadingParent}
-                                isEditing={isEditingRecurrence}
-                                recurrenceForm={recurrenceForm}
-                                onStartEdit={handleStartRecurrenceEdit}
-                                onChange={handleRecurrenceChange}
-                                onSave={handleSaveRecurrence}
-                                onCancel={handleCancelRecurrenceEdit}
-                                loadingIterations={loadingIterations}
-                                nextIterations={nextIterations}
-                                canEdit={!task.recurring_parent_id}
-                            />
-                        </div>
-                    )}
-
-                    {activePill === 'subtasks' && (
-                        <div className="grid grid-cols-1">
-                            <TaskSubtasksCard
-                                task={task}
-                                subtasks={pendingSubtasks}
-                                onSubtasksChange={setPendingSubtasks}
-                                onSave={handleSaveSubtasks}
-                            />
                         </div>
                     )}
 
