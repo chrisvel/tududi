@@ -38,7 +38,6 @@ interface TaskDetailsHeaderProps {
     onAiInsightsClick?: () => void;
     aiInsightsActive?: boolean;
     attachmentCount?: number;
-    subtasksCount?: number;
     autoEditTitle?: boolean;
 }
 
@@ -61,7 +60,6 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
     onAiInsightsClick,
     aiInsightsActive = false,
     attachmentCount = 0,
-    subtasksCount = 0,
     autoEditTitle = false,
 }) => {
     const { t } = useTranslation();
@@ -604,33 +602,6 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                             }`}
                         >
                             {t('task.overview', 'Overview')}
-                        </button>
-                        <button
-                            onClick={() => onPillChange('subtasks')}
-                            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors relative ${
-                                activePill === 'subtasks'
-                                    ? 'bg-blue-500 dark:bg-blue-600 text-white'
-                                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                            }`}
-                        >
-                            {t('task.subtasks', 'Subtasks')}
-                            {subtasksCount > 0 && (
-                                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full border border-white dark:border-gray-900"></span>
-                            )}
-                        </button>
-                        <button
-                            onClick={() => onPillChange('recurrence')}
-                            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors relative ${
-                                activePill === 'recurrence'
-                                    ? 'bg-blue-500 dark:bg-blue-600 text-white'
-                                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                            }`}
-                        >
-                            {t('task.recurrence', 'Recurrence')}
-                            {task.recurrence_type &&
-                                task.recurrence_type !== 'none' && (
-                                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full border border-white dark:border-gray-900"></span>
-                                )}
                         </button>
                         <button
                             onClick={() => onPillChange('attachments')}

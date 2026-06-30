@@ -170,6 +170,14 @@ function buildTaskAttributes(body, userId, timezone, isUpdate = false) {
         attrs.user_id = userId;
     }
 
+    if (body.assigned_to !== undefined) {
+        attrs.assigned_to = body.assigned_to || null;
+    }
+
+    if (body.involves !== undefined) {
+        attrs.involves = Array.isArray(body.involves) ? body.involves : [];
+    }
+
     return attrs;
 }
 
@@ -254,6 +262,14 @@ function buildUpdateAttributes(body, task, timezone) {
             body.defer_until,
             timezone
         );
+    }
+
+    if (body.assigned_to !== undefined) {
+        attrs.assigned_to = body.assigned_to || null;
+    }
+
+    if (body.involves !== undefined) {
+        attrs.involves = Array.isArray(body.involves) ? body.involves : [];
     }
 
     return attrs;

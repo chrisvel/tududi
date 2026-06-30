@@ -79,6 +79,7 @@ const CalDAVOccurrenceOverride = require('./caldav_occurrence_override')(
 const CalDAVRemoteCalendar = require('./caldav_remote_calendar')(sequelize);
 const CalendarToken = require('./calendar_token')(sequelize);
 const Goal = require('./goal')(sequelize);
+const Person = require('./person')(sequelize);
 
 User.hasMany(Area, { foreignKey: 'user_id' });
 Area.belongsTo(User, { foreignKey: 'user_id' });
@@ -271,6 +272,21 @@ User.hasMany(CalendarToken, {
 });
 CalendarToken.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 
+// Person associations
+User.hasMany(Person, { foreignKey: 'user_id', as: 'People' });
+Person.belongsTo(User, { foreignKey: 'user_id' });
+Task.belongsTo(Person, {
+    foreignKey: 'assigned_to',
+    targetKey: 'uid',
+    as: 'AssignedTo',
+    allowNull: true,
+});
+Person.hasMany(Task, {
+    foreignKey: 'assigned_to',
+    sourceKey: 'uid',
+    as: 'AssignedTasks',
+});
+
 // Seed system tags for every new user
 User.addHook('afterCreate', async (user) => {
     try {
@@ -312,4 +328,5 @@ module.exports = {
     CalDAVOccurrenceOverride,
     CalDAVRemoteCalendar,
     CalendarToken,
+    Person,
 };

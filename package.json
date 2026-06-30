@@ -41,7 +41,7 @@
     "backend:format:fix": "cd backend && prettier --write .",
     "db:init": "cd backend && node scripts/db-init.js",
     "db:sync": "cd backend && node scripts/db-sync.js",
-    "db:migrate": "cd backend && node scripts/db-migrate.js",
+    "db:migrate": "cd backend && NODE_ENV=development node scripts/db-migrate.js",
     "db:reset": "cd backend && node scripts/db-reset.js",
     "db:status": "cd backend && node scripts/db-status.js",
     "db:seed": "cd backend && node scripts/seed-dev-data.js",

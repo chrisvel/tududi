@@ -11,6 +11,7 @@ import SidebarHabits from './Sidebar/SidebarHabits';
 import SidebarProjects from './Sidebar/SidebarProjects';
 import SidebarTags from './Sidebar/SidebarTags';
 import SidebarViews from './Sidebar/SidebarViews';
+import SidebarPeople from './Sidebar/SidebarPeople';
 import { KeyboardShortcutsConfig } from '../utils/keyboardShortcutsService';
 import { useStore } from '../store/useStore';
 
@@ -118,6 +119,10 @@ const Sidebar: React.FC<SidebarProps> = ({
                             isDarkMode={isDarkMode}
                             openTagModal={openTagModal}
                             tags={tags}
+                        />
+                        <SidebarPeople
+                            handleNavClick={handleNavClick}
+                            location={location}
                         />
                         <SidebarViews
                             handleNavClick={handleNavClick}
