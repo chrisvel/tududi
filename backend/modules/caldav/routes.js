@@ -14,6 +14,12 @@ const {
     handlePutTask,
     handleDeleteTask,
 } = require('./webdav/task-handlers');
+// Per-project calendars (opt-in via CALDAV_PROJECTS_AS_CALENDARS)
+const {
+    handleCalendarHomePropfind,
+    handleProjectPropfind,
+    handleProjectReport,
+} = require('./webdav/projects');
 const apiRoutes = require('./api/routes');
 const { requireAuth } = require('../../middleware/auth');
 
@@ -58,6 +64,25 @@ router.options(
     caldavAuth,
     handleOptions
 );
+// Per-project OPTIONS
+router.options(
+    '/caldav/:username/projects/',
+    xmlParser,
+    caldavAuth,
+    handleOptions
+);
+router.options(
+    '/caldav/:username/projects/:projectUid/',
+    xmlParser,
+    caldavAuth,
+    handleOptions
+);
+router.options(
+    '/caldav/:username/projects/:projectUid/:uid',
+    xmlParser,
+    caldavAuth,
+    handleOptions
+);
 
 function registerMethod(method, path, handler) {
     router.all(path, xmlParser, caldavAuth, (req, res, next) => {
@@ -74,6 +99,52 @@ registerMethod('PROPFIND', '/caldav/:username/tasks/', handlePropfind);
 registerMethod('PROPFIND', '/caldav/:username/tasks/:uid', handlePropfind);
 
 registerMethod('REPORT', '/caldav/:username/tasks/', handleReport);
+
+// Per-project calendar tree (opt-in). calendar-home is /caldav/<user>/projects/,
+// which lists one calendar per project plus a "(No Project)" calendar. These
+// handlers 404 unless CALDAV_PROJECTS_AS_CALENDARS=true.
+registerMethod(
+    'PROPFIND',
+    '/caldav/:username/projects/',
+    handleCalendarHomePropfind
+);
+registerMethod(
+    'PROPFIND',
+    '/caldav/:username/projects/:projectUid/',
+    handleProjectPropfind
+);
+registerMethod(
+    'PROPFIND',
+    '/caldav/:username/projects/:projectUid/:uid',
+    handleProjectPropfind
+);
+registerMethod(
+    'REPORT',
+    '/caldav/:username/projects/:projectUid/',
+    handleProjectReport
+);
+
+// MKCOL on the projects home or a project calendar: 405 Method Not Allowed.
+router.all(
+    '/caldav/:username/projects/',
+    xmlParser,
+    caldavAuth,
+    (req, res, next) => {
+        if (req.method !== 'MKCOL') return next();
+        res.set('Allow', 'OPTIONS, GET, HEAD, PROPFIND');
+        return res.status(405).end();
+    }
+);
+router.all(
+    '/caldav/:username/projects/:projectUid/',
+    xmlParser,
+    caldavAuth,
+    (req, res, next) => {
+        if (req.method !== 'MKCOL') return next();
+        res.set('Allow', 'OPTIONS, GET, HEAD, PROPFIND, REPORT');
+        return res.status(405).end();
+    }
+);
 
 // MKCOL on the existing tasks calendar: 405 Method Not Allowed (already exists).
 router.all(
@@ -125,6 +196,39 @@ router.put(
 );
 router.delete(
     '/caldav/:username/tasks/:uid',
+    xmlParser,
+    caldavAuth,
+    handleDeleteTask
+);
+
+// Per-project collection GET (empty 207) + item GET/PUT/DELETE. Item handlers are
+// keyed by the globally-unique task uid, so the existing task-handlers work
+// unchanged; handlePutTask reads :projectUid to file new tasks into the right
+// project.
+router.get(
+    '/caldav/:username/projects/:projectUid/',
+    xmlParser,
+    caldavAuth,
+    (req, res) => {
+        res.status(207).send(
+            '<?xml version="1.0"?><D:multistatus xmlns:D="DAV:"/>'
+        );
+    }
+);
+router.get(
+    '/caldav/:username/projects/:projectUid/:uid',
+    xmlParser,
+    caldavAuth,
+    handleGetTask
+);
+router.put(
+    '/caldav/:username/projects/:projectUid/:uid',
+    xmlParser,
+    caldavAuth,
+    handlePutTask
+);
+router.delete(
+    '/caldav/:username/projects/:projectUid/:uid',
     xmlParser,
     caldavAuth,
     handleDeleteTask

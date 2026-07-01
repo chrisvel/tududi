@@ -271,6 +271,7 @@ npm start              # For standalone
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
 | `CALDAV_ENABLED` | Yes | `false` | Enable/disable CalDAV feature |
+| `CALDAV_PROJECTS_AS_CALENDARS` | No | `false` | Serve one CalDAV calendar **per project** (plus a "(No Project)" calendar) instead of a single combined `tasks/` calendar. With it on, clients such as Apple Reminders show one list per project. |
 | `ENCRYPTION_KEY` | Recommended | `SECRET_KEY` | AES-256-GCM encryption key for passwords |
 | `CALDAV_DEFAULT_SYNC_INTERVAL` | No | `15` | Default sync interval in minutes |
 | `CALDAV_MAX_RECURRING_INSTANCES` | No | `365` | Max future recurring instances to expand |

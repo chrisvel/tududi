@@ -4,6 +4,7 @@ const taskRepository = require('../../tasks/repository');
 const vtodoSerializer = require('../icalendar/vtodo-serializer');
 const vtodoParser = require('../icalendar/vtodo-parser');
 const syncStateRepository = require('../repositories/sync-state-repository');
+const { resolveProjectIdForPut } = require('./projects');
 const { nanoid } = require('nanoid');
 
 async function handleGetTask(req, res) {
@@ -88,6 +89,18 @@ async function handlePutTask(req, res) {
 
         taskData.uid = taskUid;
         taskData.user_id = userId;
+
+        // Per-project route: file the task into the URL's project (or null for
+        // the "(No Project)" calendar). This also fixes the case where the
+        // VTODO's x-tududi-project-uid is parsed into taskData.project_uid but
+        // never mapped to project_id (Sequelize silently drops the unknown key).
+        if (req.params.projectUid !== undefined) {
+            taskData.project_id = await resolveProjectIdForPut(
+                req.params.projectUid,
+                userId
+            );
+        }
+        delete taskData.project_uid;
 
         let task;
         if (existingTask) {

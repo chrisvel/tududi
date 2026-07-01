@@ -4,6 +4,7 @@ const {
     buildPropstat,
     parsePropfind,
 } = require('../webdav/utils');
+const { perProjectEnabled } = require('../webdav/projects');
 
 function handleWellKnown(req, res) {
     const protocol = req.protocol;
@@ -76,16 +77,22 @@ async function handlePrincipalPropfind(req, res) {
 
         const depth = parseInt(req.headers.depth || '0', 10);
         const principalHref = `/caldav/${encodeURIComponent(username)}/`;
+        const perProject = perProjectEnabled();
 
         const props = {
             'D:resourcetype': {
                 'D:collection': '',
                 'D:principal': '',
             },
-            // Point home-set to the principal itself so clients doing a
-            // depth-1 PROPFIND on it discover the tasks/ calendar as a child.
+            // Point home-set to the principal itself so clients doing a depth-1
+            // PROPFIND on it discover the tasks/ calendar as a child. When
+            // per-project calendars are enabled (CALDAV_PROJECTS_AS_CALENDARS),
+            // point it at projects/ instead, which enumerates one calendar per
+            // project (see webdav/projects.js).
             'C:calendar-home-set': {
-                'D:href': principalHref,
+                'D:href': perProject
+                    ? `${principalHref}projects/`
+                    : principalHref,
             },
             'D:current-user-principal': {
                 'D:href': principalHref,
@@ -99,7 +106,9 @@ async function handlePrincipalPropfind(req, res) {
 
         // Depth-1: expose the tasks calendar as a child of the home set so
         // clients like Tasks.org can discover it without creating a new list.
-        if (depth >= 1) {
+        // When per-project calendars are enabled the home-set is projects/
+        // (handled in webdav/projects.js), so skip the single tasks/ child here.
+        if (depth >= 1 && !perProject) {
             const tasksHref = `/caldav/${encodeURIComponent(username)}/tasks/`;
             const tasksProps = {
                 'D:resourcetype': {
