@@ -303,6 +303,8 @@ async function filterTasksByParams(
                         'cancelled',
                     ],
                 };
+            } else if (params.status === 'all') {
+                // No status filter - return tasks of all statuses
             } else if (!params.client_side_filtering) {
                 whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
             }
@@ -406,6 +408,17 @@ async function filterTasksByParams(
             ...(whereClause.id || {}),
             [Op.in]: tagFilteredTaskIds,
         };
+    }
+
+    if (params.project_uid) {
+        const project = await Project.findOne({
+            where: { uid: params.project_uid },
+        });
+        if (project) {
+            whereClause.project_id = project.id;
+        }
+    } else if (params.project_id) {
+        whereClause.project_id = params.project_id;
     }
 
     if (params.area_uid) {
