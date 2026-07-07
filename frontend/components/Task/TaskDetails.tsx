@@ -197,7 +197,7 @@ const TaskDetails: React.FC = () => {
     }, [tagsStore]);
 
     useEffect(() => {
-        if (!areasStore.isLoading && areasStore.areas.length === 0) {
+        if (!areasStore.hasLoaded && !areasStore.isLoading) {
             areasStore.loadAreas();
         }
     }, [areasStore]);
