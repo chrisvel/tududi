@@ -38,7 +38,6 @@ const Projects: React.FC = () => {
     const {
         projects,
         setProjects,
-        setLoading: setProjectsLoading,
         setError: setProjectsError,
     } = useStore((state) => state.projectsStore);
     const { isLoading, isError } = useStore((state) => state.projectsStore);
@@ -230,7 +229,6 @@ const Projects: React.FC = () => {
     };
 
     const handleSaveProject = async (project: Project) => {
-        setProjectsLoading(true);
         try {
             if (project.uid) {
                 await updateProject(project.uid, project);
@@ -244,7 +242,6 @@ const Projects: React.FC = () => {
             console.error('Error saving project:', error);
             setProjectsError(true);
         } finally {
-            setProjectsLoading(false);
             setModalState({ isOpen: false, projectToEdit: null });
         }
     };
@@ -265,7 +262,6 @@ const Projects: React.FC = () => {
 
         try {
             if (projectToDelete.uid !== undefined) {
-                setProjectsLoading(true);
                 await deleteProject(projectToDelete.uid);
 
                 // Fetch all projects without filters to keep global store complete
@@ -284,7 +280,6 @@ const Projects: React.FC = () => {
                     : t('projects.deleteError', 'Failed to delete project');
             showErrorToast(msg);
         } finally {
-            setProjectsLoading(false);
             setIsConfirmDialogOpen(false);
             setProjectToDelete(null);
         }
