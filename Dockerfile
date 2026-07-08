@@ -107,16 +107,16 @@ COPY --from=builder --chown=app:app /app/public/manifest.json ./backend/dist/
 COPY --from=builder --chown=app:app /app/public/locales ./backend/dist/locales
 
 # Create necessary directories
-RUN mkdir -p /app/backend/db /app/backend/certs /app/backend/uploads && \
-    chown -R app:app /app/backend/db /app/backend/certs /app/backend/uploads
+RUN mkdir -p /app/db /app/backend/certs /app/uploads && \
+    chown -R app:app /app/db /app/backend/certs /app/uploads
 
-VOLUME ["/app/backend/db"]
-VOLUME ["/app/backend/uploads"]
+VOLUME ["/app/db"]
+VOLUME ["/app/uploads"]
 
 EXPOSE 3002
 
 ENV NODE_ENV=production \
-    DB_FILE="db/production.sqlite3" \
+    DB_FILE="/app/db/production.sqlite3" \
     PORT=3002 \
     TUDUDI_ALLOWED_ORIGINS="http://localhost:8080,http://localhost:3002,http://127.0.0.1:8080,http://127.0.0.1:3002" \
     TUDUDI_SESSION_SECRET="" \
@@ -125,7 +125,7 @@ ENV NODE_ENV=production \
     TUDUDI_TRUST_PROXY=false \
     DISABLE_TELEGRAM=false \
     DISABLE_SCHEDULER=false \
-    TUDUDI_UPLOAD_PATH="/app/backend/uploads" \
+    TUDUDI_UPLOAD_PATH="/app/uploads" \
     SWAGGER_ENABLED=false \
     FF_ENABLE_BACKUPS=false \
     FF_ENABLE_CALDAV=false \

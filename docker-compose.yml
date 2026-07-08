@@ -8,13 +8,13 @@ services:
       - TUDUDI_SESSION_SECRET=changeme-please-use-openssl
       - TUDUDI_ALLOWED_ORIGINS=http://localhost:3002
       - TUDUDI_TRUST_PROXY=false
-      - TUDUDI_UPLOAD_PATH=/app/backend/uploads
+      - TUDUDI_UPLOAD_PATH=/app/uploads
       # Runtime UID/GID configuration - set these to match your host user/group
       - PUID=1001
       - PGID=1001
     volumes:
-      - ./tududi_db:/app/backend/db
-      - ./uploads:/app/backend/uploads
+      - ./tududi_db:/app/db
+      - ./uploads:/app/uploads
     ports:
       - "3002:3002"
     restart: unless-stopped

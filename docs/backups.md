@@ -25,7 +25,7 @@ SQLite database file backups are **automatically created** in these scenarios:
 ### Backup File Location
 
 - **Development:** `/backend/db/db-backup-YYYYMMDDHHMMSS.sqlite3`
-- **Docker/Production:** `/app/backend/db/db-backup-YYYYMMDDHHMMSS.sqlite3` (mounted volume)
+- **Docker/Production:** `/app/db/db-backup-YYYYMMDDHHMMSS.sqlite3` (mounted volume)
 
 ### Backup Retention Policy
 
