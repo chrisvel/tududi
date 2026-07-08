@@ -241,7 +241,7 @@ const KanbanBoard: React.FC = () => {
 
     const moveTaskToCol = async (task: Task, targetCol: ColKey) => {
         const newStatus = COLUMN_STATUS[targetCol];
-        const updatedTask: Task = { ...task, status: newStatus };
+        const updatedTask: Task = { ...task, name: task.original_name || task.name, status: newStatus };
         setTasks((prev) => prev.map((t) => (t.id === task.id ? updatedTask : t)));
         await handleTaskUpdate(updatedTask);
     };

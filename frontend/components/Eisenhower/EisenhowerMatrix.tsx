@@ -142,7 +142,7 @@ const EisenhowerMatrix: React.FC = () => {
             ? [...otherTags, { name: URGENT_TAG }]
             : otherTags;
 
-        const updatedTask: Task = { ...task, priority: newPriority, tags: newTags };
+        const updatedTask: Task = { ...task, name: task.original_name || task.name, priority: newPriority, tags: newTags };
 
         // Optimistic update so the task moves instantly
         setTasks((prev) => prev.map((t) => (t.id === task.id ? updatedTask : t)));
