@@ -339,15 +339,17 @@ const TaskItem: React.FC<TaskItemProps> = ({
                         <>Task <span className="font-semibold">&apos;{task.name}&apos;</span> completed.</>,
                         async () => {
                             try {
+                                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                                const { subtasks: _taskSubtasks, ...taskWithoutSubtasks } = task;
                                 const reverted = await updateTask(task.uid!, {
-                                    ...task,
+                                    ...taskWithoutSubtasks,
                                     status: previousStatus,
                                     completed_at: null,
                                 });
                                 if (onTaskCompletionToggle) {
                                     onTaskCompletionToggle(reverted);
                                 } else {
-                                    await onTaskUpdate({ ...task, ...reverted });
+                                    await onTaskUpdate({ ...taskWithoutSubtasks, ...reverted });
                                 }
                             } catch {
                                 showErrorToast('Failed to undo task completion.');
