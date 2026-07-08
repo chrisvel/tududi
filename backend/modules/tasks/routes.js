@@ -325,7 +325,9 @@ router.get('/tasks', async (req, res) => {
         );
 
         const serializationOptions =
-            type === 'today' ? { preserveOriginalName: true } : {};
+            type === 'today' || type === 'calendar'
+                ? { preserveOriginalName: true }
+                : {};
 
         const response = {
             tasks: await serializeTasks(
