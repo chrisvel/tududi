@@ -524,8 +524,8 @@ docker run \
   -e TUDUDI_USER_EMAIL=admin@example.com \
   -e TUDUDI_USER_PASSWORD=secure-password \
   -e TUDUDI_SESSION_SECRET=$(openssl rand -hex 64) \
-  -v ~/tududi_db:/app/backend/db \
-  -v ~/tududi_uploads:/app/backend/uploads \
+  -v ~/tududi_db:/app/db \
+  -v ~/tududi_uploads:/app/uploads \
   -p 3002:3002 \
   -d tududi:latest
 ```

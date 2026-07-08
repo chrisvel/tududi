@@ -582,7 +582,7 @@ await sequelize.query('PRAGMA temp_store=MEMORY'); // Memory-based temp storage
 ### Database File Location
 
 - **Development:** `/backend/database.sqlite`
-- **Docker:** Mounted volume at `/app/backend/db/`
+- **Docker:** Mounted volume at `/app/db/`
 - **Test:** Separate test database (auto-created)
 
 ---
