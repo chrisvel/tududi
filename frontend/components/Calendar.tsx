@@ -71,7 +71,7 @@ const Calendar: React.FC = () => {
     const loadTasks = async () => {
         setIsLoadingTasks(true);
         try {
-            const response = await fetch(getApiPath('tasks'), {
+            const response = await fetch(getApiPath('tasks?type=calendar'), {
                 credentials: 'include',
             });
             if (response.ok) {
