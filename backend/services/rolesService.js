@@ -1,13 +1,31 @@
 const { Role, User } = require('../models');
 
-async function isAdmin(userUid) {
-    if (!userUid) return false;
+async function isAdmin(userIdOrUid) {
+    if (
+        userIdOrUid === null ||
+        userIdOrUid === undefined ||
+        userIdOrUid === ''
+    ) {
+        return false;
+    }
 
-    // Find user by uid to get numeric id for role lookup
-    const user = await User.findOne({
-        where: { uid: userUid },
-        attributes: ['id'],
-    });
+    let user = null;
+    if (typeof userIdOrUid === 'number') {
+        // Numeric primary key (the value returned by getAuthenticatedUserId).
+        user = await User.findByPk(userIdOrUid, { attributes: ['id'] });
+    } else {
+        // String: try uid first (the historical contract), then fall back to a
+        // numeric-id lookup for callers that pass a numeric id as a string.
+        user = await User.findOne({
+            where: { uid: userIdOrUid },
+            attributes: ['id'],
+        });
+        if (!user && /^\d+$/.test(userIdOrUid)) {
+            user = await User.findByPk(Number(userIdOrUid), {
+                attributes: ['id'],
+            });
+        }
+    }
 
     if (!user) return false;
 

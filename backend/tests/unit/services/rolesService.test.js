@@ -80,5 +80,34 @@ describe('rolesService', () => {
             );
             expect(await isAdmin(user.uid)).toBe(true);
         });
+
+        it('should return true for admin user by numeric id', async () => {
+            const hash = await bcrypt.hash('pass', 10);
+            const user = await User.create({
+                email: 'numeric-admin@example.com',
+                password_digest: hash,
+            });
+            // First user is automatically admin
+            expect(await isAdmin(user.id)).toBe(true);
+        });
+
+        it('should return false for non-admin user by numeric id', async () => {
+            const hash = await bcrypt.hash('pass', 10);
+            // First user becomes admin
+            await User.create({
+                email: 'first@example.com',
+                password_digest: hash,
+            });
+            // Second user is not admin
+            const second = await User.create({
+                email: 'second@example.com',
+                password_digest: hash,
+            });
+            expect(await isAdmin(second.id)).toBe(false);
+        });
+
+        it('should return false for unknown numeric id', async () => {
+            expect(await isAdmin(999999)).toBe(false);
+        });
     });
 });
