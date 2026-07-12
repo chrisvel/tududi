@@ -10,8 +10,9 @@ row when done.
 | Plan | Title | Priority | Effort | Depends on | Status |
 |------|-------|----------|--------|------------|--------|
 | 005  | Make `add-goal-columns-to-projects` migration idempotent (Docker crash-loop) | P1 (most urgent) | S | — | DONE |
-| 001  | `isAdmin()` recognizes numeric IDs and UIDs | P1 | S | — | TODO |
-| 002  | Frontend tests + typecheck + audit run in CI | P1 | S | — | TODO |
+| 006  | Make `add-people-to-tasks` migration idempotent (Docker crash-loop part 2) | P1 | S | 005 | TODO |
+| 001  | `isAdmin()` recognizes numeric IDs and UIDs | P1 | S | — | DONE |
+| 002  | Frontend tests + typecheck + audit run in CI | P1 | S | — | DONE |
 | 003  | Correct stale testing/pre-push docs | P2 | S | — | TODO |
 | 004  | Characterization tests for recurrence display UI | P2 | M | 002 (soft) | TODO |
 
@@ -23,6 +24,7 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
   (`duplicate column name: goal_id` halts migrations, then user creation fails
   with `no such column: ai_daily_brief`). Land it first. Independent of all
   others.
+- **006 depends on 005** — it fixes the second part of the crash-loop migration error. Run immediately after 005.
 - 004 depends softly on 002: the new frontend tests run locally without 002, but
   002 is what makes them a CI regression gate. Landing 002 first is recommended
   so 004's tests actually protect `main`.
