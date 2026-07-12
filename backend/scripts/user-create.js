@@ -7,7 +7,9 @@
  * Usage: node user-create.js <email> <password> [is_admin]
  */
 
-require('dotenv').config();
+try {
+    require('dotenv').config();
+} catch (_) {}
 const {
     createOrUpdateUser,
     validateEmail,

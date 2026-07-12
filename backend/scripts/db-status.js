@@ -5,7 +5,9 @@
  * Shows database connection status and basic information
  */
 
-require('dotenv').config();
+try {
+    require('dotenv').config();
+} catch (_) {}
 const {
     sequelize,
     User,

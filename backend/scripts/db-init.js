@@ -5,7 +5,9 @@
  * Initializes the database by creating all tables and dropping existing data
  */
 
-require('dotenv').config();
+try {
+    require('dotenv').config();
+} catch (_) {}
 const { sequelize } = require('../models');
 
 async function initDatabase() {
