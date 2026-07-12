@@ -29,6 +29,9 @@ jobs:
     - name: Run linting
       run: npm run lint
 
+    - name: Typecheck
+      run: npm run typecheck
+
     - name: Run backend tests
       run: npm run backend:test
       env:
@@ -36,5 +39,11 @@ jobs:
         FF_ENABLE_CALDAV: 'true'
         FF_ENABLE_CALENDAR: 'true'
 
+    - name: Run frontend tests
+      run: npm run frontend:test
+
     - name: Build frontend
       run: npm run build
+
+    - name: Dependency audit (informational)
+      run: npm audit --audit-level=high || true
