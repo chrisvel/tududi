@@ -1,8 +1,10 @@
 'use strict';
 
+const { safeCreateTable, safeAddIndex } = require('../utils/migration-utils');
+
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('people', {
+        await safeCreateTable(queryInterface, 'people', {
             id: {
                 type: Sequelize.INTEGER,
                 primaryKey: true,
@@ -61,10 +63,10 @@ module.exports = {
             },
         });
 
-        await queryInterface.addIndex('people', ['user_id', 'archived'], {
+        await safeAddIndex(queryInterface, 'people', ['user_id', 'archived'], {
             name: 'people_user_archived_idx',
         });
-        await queryInterface.addIndex('people', ['user_id', 'name'], {
+        await safeAddIndex(queryInterface, 'people', ['user_id', 'name'], {
             name: 'people_user_name_idx',
             unique: true,
         });
