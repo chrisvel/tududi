@@ -21,26 +21,38 @@ const sequelize = new Sequelize(dbConfig);
 
 // SQLite performance optimizations for slow I/O systems (e.g., Synology NAS with HDDs)
 if (dbConfig.dialect === 'sqlite') {
-    const pragmas = [
-        // WAL mode: sequential writes instead of random I/O, better for Btrfs COW
-        'PRAGMA journal_mode=WAL;',
-        // Relaxed sync: faster writes with minimal durability risk for single-user app
-        'PRAGMA synchronous=NORMAL;',
-        // 5 second busy timeout: prevents "database is locked" errors under load
-        'PRAGMA busy_timeout=5000;',
-        // 64MB cache: keeps more data in memory, reduces disk reads
-        'PRAGMA cache_size=-64000;',
-        // Store temp tables in memory instead of disk
-        'PRAGMA temp_store=MEMORY;',
-        // Enable memory-mapped I/O (256MB): faster reads on large databases
-        'PRAGMA mmap_size=268435456;',
-    ];
+    // Per-connection PRAGMAs via afterConnect, which runs inside _connect() before
+    // the connection is returned to the pool. This guarantees busy_timeout is set
+    // on every connection before first use, preventing SQLITE_BUSY errors when
+    // startup scripts race against an async IIFE that might not yet have run.
+    sequelize.afterConnect(async (connection) => {
+        await new Promise((resolve, reject) => {
+            connection.exec(
+                [
+                    // Relaxed sync: faster writes with minimal durability risk for single-user app
+                    'PRAGMA synchronous=NORMAL;',
+                    // 5 second busy timeout: prevents "database is locked" errors under load
+                    'PRAGMA busy_timeout=5000;',
+                    // 64MB cache: keeps more data in memory, reduces disk reads
+                    'PRAGMA cache_size=-64000;',
+                    // Store temp tables in memory instead of disk
+                    'PRAGMA temp_store=MEMORY;',
+                    // Enable memory-mapped I/O (256MB): faster reads on large databases
+                    'PRAGMA mmap_size=268435456;',
+                ].join('\n'),
+                (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                }
+            );
+        });
+    });
 
+    // WAL mode persists in the DB file — set it once on startup.
+    // afterConnect ensures busy_timeout is already applied on the connection used here.
     (async () => {
         try {
-            for (const pragma of pragmas) {
-                await sequelize.query(pragma);
-            }
+            await sequelize.query('PRAGMA journal_mode=WAL;');
             if (config.environment === 'development') {
                 console.log('SQLite performance optimizations enabled');
             }
