@@ -120,10 +120,12 @@ const config = {
             return false;
         }
         if (val === 'true') {
-            console.log(
-                '[Config] TUDUDI_TRUST_PROXY=true parsed as boolean true'
+            console.warn(
+                '[Config] TUDUDI_TRUST_PROXY=true is permissive — converting to 1 (single hop). ' +
+                    'Set TUDUDI_TRUST_PROXY=1 explicitly to silence this warning, ' +
+                    'or use a higher number if you have multiple proxy hops.'
             );
-            return true;
+            return 1;
         }
         if (val === 'false') {
             console.log(

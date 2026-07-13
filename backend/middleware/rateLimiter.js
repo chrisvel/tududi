@@ -8,11 +8,6 @@ const rateLimitConfig = config.rateLimiting;
 // Skip rate limiting if disabled in config
 const skipInTest = (req) => !rateLimitConfig.enabled;
 
-// When trust proxy is set to boolean true, express-rate-limit raises ERR_ERL_PERMISSIVE_TRUST_PROXY
-// because anyone could spoof X-Forwarded-For. We suppress the check here since the operator
-// has explicitly opted in via TUDUDI_TRUST_PROXY.
-const validateOptions = config.trustProxy === true ? { trustProxy: false } : {};
-
 /**
  * Strict rate limiting for authentication endpoints
  * Prevents brute force attacks on login/register
@@ -25,7 +20,6 @@ const authLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
-    validate: validateOptions,
     skip: skipInTest,
     handler: (req, res) => {
         res.status(429).json({
@@ -48,7 +42,6 @@ const apiLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
-    validate: validateOptions,
     skip: (req) => {
         // Skip if rate limiting is disabled
         if (!rateLimitConfig.enabled) return true;
@@ -74,7 +67,6 @@ const authenticatedApiLimiter = rateLimit({
     max: rateLimitConfig.authenticatedApi.max,
     standardHeaders: true,
     legacyHeaders: false,
-    validate: validateOptions,
     keyGenerator: (req) => {
         // Prefer user ID from session or API token authentication
         const userId =
@@ -109,7 +101,6 @@ const createResourceLimiter = rateLimit({
     max: rateLimitConfig.createResource.max,
     standardHeaders: true,
     legacyHeaders: false,
-    validate: validateOptions,
     skip: skipInTest,
     keyGenerator: (req) => {
         const userId =
@@ -137,7 +128,6 @@ const apiKeyManagementLimiter = rateLimit({
     max: rateLimitConfig.apiKeyManagement.max,
     standardHeaders: true,
     legacyHeaders: false,
-    validate: validateOptions,
     skip: skipInTest,
     keyGenerator: (req) => {
         const userId =
