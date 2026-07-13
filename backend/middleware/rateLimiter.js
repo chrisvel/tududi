@@ -2,23 +2,16 @@ const rateLimit = require('express-rate-limit');
 const { ipKeyGenerator } = require('express-rate-limit');
 const { getConfig } = require('../config/config');
 
-/**
- * Rate limiting middleware for different endpoint types
- *
- * Rate limits are configured based on authentication state and endpoint sensitivity:
- * - Strict limits for authentication endpoints (login, register)
- * - Moderate limits for general API endpoints
- * - Higher limits for authenticated users with API tokens
- *
- * Configuration is centralized in backend/config/config.js and can be customized via environment variables.
- * Rate limiting is automatically disabled in test environment.
- */
-
 const config = getConfig();
 const rateLimitConfig = config.rateLimiting;
 
 // Skip rate limiting if disabled in config
 const skipInTest = (req) => !rateLimitConfig.enabled;
+
+// When trust proxy is set to boolean true, express-rate-limit raises ERR_ERL_PERMISSIVE_TRUST_PROXY
+// because anyone could spoof X-Forwarded-For. We suppress the check here since the operator
+// has explicitly opted in via TUDUDI_TRUST_PROXY.
+const validateOptions = config.trustProxy === true ? { trustProxy: false } : {};
 
 /**
  * Strict rate limiting for authentication endpoints
@@ -30,8 +23,9 @@ const authLimiter = rateLimit({
     message: {
         error: 'Too many authentication attempts from this IP, please try again after 15 minutes',
     },
-    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+    standardHeaders: true,
+    legacyHeaders: false,
+    validate: validateOptions,
     skip: skipInTest,
     handler: (req, res) => {
         res.status(429).json({
@@ -54,7 +48,7 @@ const apiLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
-    // Skip rate limiting for authenticated users or if disabled
+    validate: validateOptions,
     skip: (req) => {
         // Skip if rate limiting is disabled
         if (!rateLimitConfig.enabled) return true;
@@ -80,7 +74,7 @@ const authenticatedApiLimiter = rateLimit({
     max: rateLimitConfig.authenticatedApi.max,
     standardHeaders: true,
     legacyHeaders: false,
-    // Use user ID as the key instead of IP for authenticated requests
+    validate: validateOptions,
     keyGenerator: (req) => {
         // Prefer user ID from session or API token authentication
         const userId =
@@ -115,6 +109,7 @@ const createResourceLimiter = rateLimit({
     max: rateLimitConfig.createResource.max,
     standardHeaders: true,
     legacyHeaders: false,
+    validate: validateOptions,
     skip: skipInTest,
     keyGenerator: (req) => {
         const userId =
@@ -142,6 +137,7 @@ const apiKeyManagementLimiter = rateLimit({
     max: rateLimitConfig.apiKeyManagement.max,
     standardHeaders: true,
     legacyHeaders: false,
+    validate: validateOptions,
     skip: skipInTest,
     keyGenerator: (req) => {
         const userId =
