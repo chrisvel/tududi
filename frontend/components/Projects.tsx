@@ -21,7 +21,7 @@ import { fetchAreas } from '../utils/areasService';
 import { useTranslation } from 'react-i18next';
 import { SortOption } from './Shared/SortFilterButton';
 
-import { Project } from '../entities/Project';
+import { Project, ProjectStatus } from '../entities/Project';
 import { useSearchParams } from 'react-router-dom';
 import ProjectItem from './Project/ProjectItem';
 import ProjectShareModal from './Project/ProjectShareModal';
@@ -282,6 +282,19 @@ const Projects: React.FC = () => {
         } finally {
             setIsConfirmDialogOpen(false);
             setProjectToDelete(null);
+        }
+    };
+
+    const handleStatusChange = async (project: Project, newStatus: ProjectStatus) => {
+        if (!project.uid) return;
+        const prevProjects = projects;
+        setProjects(projects.map((p) => (p.uid === project.uid ? { ...p, status: newStatus } : p)));
+        try {
+            await updateProject(project.uid, { status: newStatus });
+        } catch (error) {
+            console.error('Error updating project status:', error);
+            setProjects(prevProjects);
+            showErrorToast(t('errors.projectStatusUpdateFailed', 'Failed to update project status'));
         }
     };
 
@@ -608,6 +621,7 @@ const Projects: React.FC = () => {
                                 onOpenShare={(p) =>
                                     setShareModal({ isOpen: true, project: p })
                                 }
+                                onStatusChange={handleStatusChange}
                             />
                         ))
                     )}

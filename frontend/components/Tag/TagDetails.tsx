@@ -12,7 +12,8 @@ import {
 import { FolderIcon as FolderOutlineIcon } from '@heroicons/react/24/outline';
 import { Task } from '../../entities/Task';
 import { Note } from '../../entities/Note';
-import { Project } from '../../entities/Project';
+import { Project, ProjectStatus } from '../../entities/Project';
+import { updateProject } from '../../utils/projectsService';
 import TaskList from '../Task/TaskList';
 import GroupedTaskList from '../Task/GroupedTaskList';
 import ProjectItem from '../Project/ProjectItem';
@@ -37,6 +38,7 @@ const TagDetails: React.FC = () => {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [notes, setNotes] = useState<Note[]>([]);
     const allProjects = useStore((state: any) => state.projectsStore.projects);
+    const setProjects = useStore((state: any) => state.projectsStore.setProjects);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -358,6 +360,17 @@ const TagDetails: React.FC = () => {
             navigate(`/project/${project.uid}-${slug}/edit`);
         } else {
             navigate(`/project/${project.id}/edit`);
+        }
+    };
+
+    const handleProjectStatusChange = async (project: Project, newStatus: ProjectStatus) => {
+        if (!project.uid) return;
+        const prevProjects = allProjects;
+        setProjects(allProjects.map((p: Project) => (p.uid === project.uid ? { ...p, status: newStatus } : p)));
+        try {
+            await updateProject(project.uid, { status: newStatus });
+        } catch {
+            setProjects(prevProjects);
         }
     };
 
@@ -922,6 +935,7 @@ const TagDetails: React.FC = () => {
                                                 project: p,
                                             })
                                         }
+                                        onStatusChange={handleProjectStatusChange}
                                     />
                                 );
                             })}
