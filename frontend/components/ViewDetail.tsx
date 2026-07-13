@@ -19,7 +19,8 @@ import {
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { Task } from '../entities/Task';
 import { Note } from '../entities/Note';
-import { Project } from '../entities/Project';
+import { Project, ProjectStatus } from '../entities/Project';
+import { updateProject } from '../utils/projectsService';
 import TaskList from './Task/TaskList';
 import GroupedTaskList from './Task/GroupedTaskList';
 import ProjectItem from './Project/ProjectItem';
@@ -565,6 +566,17 @@ const ViewDetail: React.FC = () => {
             navigate(`/project/${project.uid}-${slug}/edit`);
         } else {
             navigate(`/project/${project.id}/edit`);
+        }
+    };
+
+    const handleProjectStatusChange = async (project: Project, newStatus: ProjectStatus) => {
+        if (!project.uid) return;
+        const prevProjects = projects;
+        setProjects(projects.map((p) => (p.uid === project.uid ? { ...p, status: newStatus } : p)));
+        try {
+            await updateProject(project.uid, { status: newStatus });
+        } catch {
+            setProjects(prevProjects);
         }
     };
 
@@ -1196,6 +1208,7 @@ const ViewDetail: React.FC = () => {
                                         onOpenShare={() => {
                                             /* noop in view detail */
                                         }}
+                                        onStatusChange={handleProjectStatusChange}
                                     />
                                 );
                             })}
