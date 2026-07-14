@@ -7,9 +7,17 @@ const { parseRRULE } = require('./rrule-parser');
 
 async function parseVTODOToTask(vtodoString) {
     try {
+        if (!vtodoString || typeof vtodoString !== 'string') {
+            throw new Error('Invalid VTODO data: expected a non-empty string');
+        }
+
         const jcalData = ICAL.parse(vtodoString);
         const comp = new ICAL.Component(jcalData);
-        const vtodo = comp.getFirstSubcomponent('vtodo');
+
+        // The root component may itself be a VTODO (bare, without VCALENDAR wrapper)
+        // or the VTODO may be nested inside a VCALENDAR component.
+        let vtodo =
+            comp.name === 'vtodo' ? comp : comp.getFirstSubcomponent('vtodo');
 
         if (!vtodo) {
             throw new Error('No VTODO component found');
@@ -43,12 +51,16 @@ async function parseVTODOToTask(vtodoString) {
 
         const uid = vtodo.getFirstPropertyValue('uid');
         if (uid) {
-            task.uid = uid;
+            // Trim whitespace and control characters that would break URL routing
+            const trimmedUid = uid.trim();
+            if (trimmedUid) {
+                task.uid = trimmedUid;
+            }
         }
 
         const summary = vtodo.getFirstPropertyValue('summary');
         if (summary) {
-            task.name = summary;
+            task.name = summary.trim() || null;
         }
 
         const description = vtodo.getFirstPropertyValue('description');
