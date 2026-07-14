@@ -164,6 +164,7 @@ class PullPhase {
         });
 
         const changedTasks = [];
+        const baseUrl = remoteCalendar.server_url.replace(/\/$/, '');
 
         const responses =
             parsed?.multistatus?.response ||
@@ -181,14 +182,44 @@ class PullPhase {
                     continue;
                 }
 
-                const etag = response.propstat?.prop?.getetag?.replace(
-                    /^"|"$/g,
-                    ''
+                // propstat may be a single object or an array when multiple
+                // status codes are returned for different props
+                const propstatArray = Array.isArray(response.propstat)
+                    ? response.propstat
+                    : response.propstat
+                      ? [response.propstat]
+                      : [];
+
+                const okPropstat = propstatArray.find(
+                    (ps) => !ps.status || ps.status.includes('200')
                 );
-                const calendarData =
+
+                const etag = (
+                    okPropstat?.prop?.getetag ||
+                    response.propstat?.prop?.getetag
+                )?.replace(/^"|"$/g, '');
+
+                // calendar-data may be a string or an object when the element
+                // has attributes (e.g. content-type). Extract the text content.
+                let rawCalendarData =
+                    okPropstat?.prop?.['calendar-data'] ||
+                    okPropstat?.prop?.calendardata ||
                     response.propstat?.prop?.['calendar-data'] ||
                     response.propstat?.prop?.calendardata;
-                const status = response.status || response.propstat?.status;
+
+                if (rawCalendarData && typeof rawCalendarData === 'object') {
+                    rawCalendarData = rawCalendarData._ || null;
+                }
+                const calendarData = rawCalendarData || null;
+
+                const allStatuses = propstatArray
+                    .map((ps) => ps.status || '')
+                    .join(' ');
+                const status =
+                    response.status ||
+                    allStatuses ||
+                    response.propstat?.status ||
+                    '';
 
                 if (status && status.includes('404')) {
                     changedTasks.push({
@@ -200,7 +231,10 @@ class PullPhase {
                 }
 
                 if (!calendarData) {
-                    const taskUrl = `${remoteCalendar.server_url}${href}`;
+                    // Construct individual task URL using the normalised base URL
+                    // to prevent double-slash when server_url has a trailing slash
+                    const hrefPath = href.startsWith('/') ? href : `/${href}`;
+                    const taskUrl = `${baseUrl}${hrefPath}`;
                     const taskData = await this._fetchTaskData(
                         taskUrl,
                         remoteCalendar
