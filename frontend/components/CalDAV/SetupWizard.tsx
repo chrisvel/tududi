@@ -29,7 +29,7 @@ interface WizardData {
     username: string;
     password: string;
     authType: 'basic' | 'bearer';
-    syncDirection: 'bidirectional' | 'pull' | 'push';
+    syncDirection: 'bidirectional' | 'pull_only' | 'push_only';
     syncInterval: number;
     conflictResolution: 'last_write_wins' | 'local_wins' | 'remote_wins' | 'manual';
     enabled: boolean;
@@ -586,8 +586,8 @@ const SetupWizard: React.FC<SetupWizardProps> = ({
                                         ...wizardData,
                                         syncDirection: e.target.value as
                                             | 'bidirectional'
-                                            | 'pull'
-                                            | 'push',
+                                            | 'pull_only'
+                                            | 'push_only',
                                     })
                                 }
                                 className="block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
@@ -598,13 +598,13 @@ const SetupWizard: React.FC<SetupWizardProps> = ({
                                         'Bidirectional (sync both ways)'
                                     )}
                                 </option>
-                                <option value="pull">
+                                <option value="pull_only">
                                     {t(
                                         'profile.caldavWizard.pullOnly',
                                         'Pull only (from server to Tududi)'
                                     )}
                                 </option>
-                                <option value="push">
+                                <option value="push_only">
                                     {t(
                                         'profile.caldavWizard.pushOnly',
                                         'Push only (from Tududi to server)'

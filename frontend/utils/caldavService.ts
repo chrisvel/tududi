@@ -11,7 +11,7 @@ export interface CalDAVCalendar {
     ctag: string | null;
     sync_token: string | null;
     enabled: boolean;
-    sync_direction: 'bidirectional' | 'pull' | 'push';
+    sync_direction: 'bidirectional' | 'pull_only' | 'push_only';
     sync_interval_minutes: number;
     last_sync_at: string | null;
     last_sync_status: string | null;
@@ -36,7 +36,7 @@ export interface RemoteCalendar {
     username: string;
     auth_type: 'basic' | 'bearer';
     enabled: boolean;
-    sync_direction: 'bidirectional' | 'pull' | 'push';
+    sync_direction: 'bidirectional' | 'pull_only' | 'push_only';
     server_ctag: string | null;
     server_sync_token: string | null;
     last_sync_at: string | null;
