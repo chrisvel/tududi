@@ -226,8 +226,8 @@ const EditCalendarModal: React.FC<EditCalendarModalProps> = ({
                                     ...formData,
                                     sync_direction: e.target.value as
                                         | 'bidirectional'
-                                        | 'pull'
-                                        | 'push',
+                                        | 'pull_only'
+                                        | 'push_only',
                                 })
                             }
                             disabled={isSubmitting}
@@ -239,13 +239,13 @@ const EditCalendarModal: React.FC<EditCalendarModalProps> = ({
                                     'Bidirectional (sync both ways)'
                                 )}
                             </option>
-                            <option value="pull">
+                            <option value="pull_only">
                                 {t(
                                     'profile.caldavWizard.pullOnly',
                                     'Pull only (from server to Tududi)'
                                 )}
                             </option>
-                            <option value="push">
+                            <option value="push_only">
                                 {t(
                                     'profile.caldavWizard.pushOnly',
                                     'Push only (from Tududi to server)'
