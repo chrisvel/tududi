@@ -14,7 +14,6 @@ This guide explains how to configure and use the Model Context Protocol (MCP) in
 - [Configuration](#configuration)
     - [Prerequisites](#prerequisites)
     - [Quick Setup](#quick-setup)
-    - [Environment Variables](#environment-variables)
 - [Two Transport Modes](#two-transport-modes)
     - [Stdio Mode (Local)](#stdio-mode-local)
     - [HTTP Mode (Remote)](#http-mode-remote)
@@ -479,11 +478,75 @@ Universal search across tasks, projects, and notes.
         "mcpServers": {
             "tududi": {
                 "command": "node",
-                "args": ["/path/to/tududi/backend/modules/mcp/server.js"]
+                "args": ["/path/to/tududi/backend/modules/mcp/server.js"],
+                "env": {
+                    "TUDUDI_API_TOKEN": "your-token-here"
+                }
             }
         }
     }
     ```
+
+4. Restart Claude Desktop. Tududi tools will appear in the tool list.
+
+#### For HTTP (Remote Tududi):
+
+Use `mcp-remote` to proxy HTTP requests — see the [HTTP Mode config above](#http-mode-remote).
+
+---
+
+## Cursor Setup
+
+1. **Generate an API token** — see [Step 1 above](#step-1-generate-an-api-token).
+
+2. Create or edit `~/.cursor/mcp.json`:
+
+    ```json
+    {
+        "mcpServers": {
+            "tududi": {
+                "command": "node",
+                "args": ["/path/to/tududi/backend/modules/mcp/server.js"],
+                "env": {
+                    "TUDUDI_API_TOKEN": "your-token-here"
+                }
+            }
+        }
+    }
+    ```
+
+3. Restart Cursor and open a new chat. Tududi tools will appear in the tool list.
+
+For remote Tududi, use the HTTP transport config from [HTTP Mode](#http-mode-remote) instead.
+
+---
+
+## VS Code + Continue Setup
+
+The [Continue](https://www.continue.dev/) extension adds MCP support to VS Code.
+
+1. Install the Continue extension from the VS Code marketplace.
+
+2. Open `~/.continue/config.json` and add:
+
+    ```json
+    {
+        "mcpServers": [
+            {
+                "name": "tududi",
+                "command": "node",
+                "args": ["/path/to/tududi/backend/modules/mcp/server.js"],
+                "env": {
+                    "TUDUDI_API_TOKEN": "your-token-here"
+                }
+            }
+        ]
+    }
+    ```
+
+3. Reload the Continue extension. Tududi tools will be available in the Continue chat panel.
+
+---
 
 ## Other MCP Clients
 
@@ -567,7 +630,8 @@ const result = await client.callTool({
 
 MCP is behind a feature flag (`FF_ENABLE_MCP`). This means:
 
-- **Opt-in only:** Administrators must explicitly enable MCP, Users also would need to generate the API tokens for use.
+- **Opt-in only:** Administrators must explicitly enable MCP by setting `FF_ENABLE_MCP=true`.
+- **Token required:** Each user must generate their own API token to use the MCP tools.
 
 ### Data Isolation
 
@@ -698,4 +762,3 @@ FF_ENABLE_MCP=true
 - **Document Version:** 1.0.0
 - **Last Updated:** 2026-04-26
 - **Minimum Tududi Version:** v1.0.0 (released 2026-03-27)
-- **Latest MCP Fix:** v1.1.0-dev.15+ (PR #1040 — subtasks in get_task, 2026-04-18)
