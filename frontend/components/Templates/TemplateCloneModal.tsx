@@ -2,28 +2,33 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { Template, CloneTemplateOptions } from '../../entities/Template';
+import { Area } from '../../entities/Area';
 
 interface TemplateCloneModalProps {
     template: Template;
+    areas: Area[];
     onConfirm: (options: CloneTemplateOptions) => void;
     onClose: () => void;
 }
 
 const TemplateCloneModal: React.FC<TemplateCloneModalProps> = ({
     template,
+    areas,
     onConfirm,
     onClose,
 }) => {
     const { t } = useTranslation();
-    const [name, setName] = useState(template.name + ' (Copy)');
+    const [name, setName] = useState(`${template.name} (Copy)`);
     const [startDate, setStartDate] = useState('');
     const [resetStatus, setResetStatus] = useState(true);
+    const [areaUid, setAreaUid] = useState('');
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         onConfirm({
-            name: name.trim() || template.name + ' (Copy)',
+            name: name.trim() || `${template.name} (Copy)`,
             startDate: startDate || null,
+            area_uid: areaUid || null,
             resetStatus,
         });
     };
@@ -65,6 +70,24 @@ const TemplateCloneModal: React.FC<TemplateCloneModalProps> = ({
                             className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                             required
                         />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            {t('templates.area', 'Area (optional)')}
+                        </label>
+                        <select
+                            value={areaUid}
+                            onChange={(e) => setAreaUid(e.target.value)}
+                            className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        >
+                            <option value="">{t('templates.noArea', 'No area')}</option>
+                            {areas.map((area) => (
+                                <option key={area.uid} value={area.uid}>
+                                    {area.name}
+                                </option>
+                            ))}
+                        </select>
                     </div>
 
                     <div>

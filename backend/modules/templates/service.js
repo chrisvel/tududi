@@ -185,6 +185,14 @@ class TemplatesService {
     }
 
     async saveProjectAsTemplate(projectUid, userId, options = {}) {
+        const config = getConfig();
+        const count = await templatesRepository.countByUser(userId);
+        if (count >= config.maxTemplatesPerUser) {
+            throw new ValidationError(
+                `Template limit reached. Maximum ${config.maxTemplatesPerUser} templates allowed per user.`
+            );
+        }
+
         const uid = validateUid(projectUid);
         const source = await projectsRepository.findByUidWithIncludes(uid);
 
