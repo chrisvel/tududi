@@ -103,6 +103,10 @@ class TemplatesRepository extends BaseRepository {
             where: { id: templateId },
         });
     }
+
+    async countByUser(userId) {
+        return this.model.count({ where: { user_id: userId, is_template: true } });
+    }
 }
 
 module.exports = new TemplatesRepository();

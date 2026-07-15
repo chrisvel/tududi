@@ -151,6 +151,14 @@ class TemplatesService {
     }
 
     async create(userId, data) {
+        const config = getConfig();
+        const count = await templatesRepository.countByUser(userId);
+        if (count >= config.maxTemplatesPerUser) {
+            throw new ValidationError(
+                `Template limit reached. Maximum ${config.maxTemplatesPerUser} templates allowed per user.`
+            );
+        }
+
         const { name, description, template_category, tags, Tags } = data;
         const validatedName = validateName(name);
         const tagsData = tags || Tags;
@@ -485,6 +493,13 @@ class TemplatesService {
 
     async installMarketplaceTemplate(marketplaceUid, userId) {
         const config = getConfig();
+        const count = await templatesRepository.countByUser(userId);
+        if (count >= config.maxTemplatesPerUser) {
+            throw new ValidationError(
+                `Template limit reached. Maximum ${config.maxTemplatesPerUser} templates allowed per user.`
+            );
+        }
+
         const marketplaceUrl = config.marketplaceUrl;
         if (!marketplaceUrl)
             throw new ValidationError('Marketplace not configured');

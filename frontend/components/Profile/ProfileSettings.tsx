@@ -140,6 +140,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             kanban_enabled: false,
             habits_enabled: true,
             calendar_enabled: false,
+            templates_enabled: true,
         },
         notification_preferences: null,
         keyboard_shortcuts: null,
@@ -568,6 +569,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                             data.features?.calendar_enabled !== undefined
                                 ? data.features.calendar_enabled
                                 : false,
+                        templates_enabled:
+                            data.features?.templates_enabled !== undefined
+                                ? data.features.templates_enabled
+                                : true,
                     },
                     notification_preferences:
                         data.notification_preferences || null,
@@ -1113,6 +1118,12 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 );
             }
 
+            if (updatedProfile.features?.templates_enabled !== undefined) {
+                useStore.getState().userSettingsStore.setTemplatesEnabled(
+                    updatedProfile.features.templates_enabled
+                );
+            }
+
             if (updatedProfile.features?.ai_assistant_enabled !== undefined) {
                 useStore.getState().userSettingsStore.setAiAssistantEnabled(
                     updatedProfile.features.ai_assistant_enabled
@@ -1406,6 +1417,19 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                                 ...prev.features,
                                                 calendar_enabled:
                                                     !prev.features?.calendar_enabled,
+                                            },
+                                        }))
+                                    }
+                                    templatesEnabled={Boolean(
+                                        formData.features?.templates_enabled ?? true
+                                    )}
+                                    onToggleTemplates={() =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            features: {
+                                                ...prev.features,
+                                                templates_enabled:
+                                                    !(prev.features?.templates_enabled ?? true),
                                             },
                                         }))
                                     }

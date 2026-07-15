@@ -17,6 +17,7 @@ export interface Features {
     kanban_enabled: boolean;
     habits_enabled: boolean;
     calendar_enabled: boolean;
+    templates_enabled: boolean;
 }
 
 export interface NotificationPreferences {

@@ -45,9 +45,11 @@ import { getApiPath } from '../../config/paths';
 import ProjectInsightsPanel from './ProjectInsightsPanel';
 import ProjectBanner from './ProjectBanner';
 import BannerEditModal from './BannerEditModal';
+import ProjectShareModal from './ProjectShareModal';
 import ProjectTasksSection from './ProjectTasksSection';
 import ProjectNotesSection from './ProjectNotesSection';
 import { useProjectMetrics } from './useProjectMetrics';
+import { saveProjectAsTemplate } from '../../utils/templatesService';
 
 const ProjectDetails: React.FC = () => {
     const UI_OPTIONS_KEY = 'ui_app_options';
@@ -55,7 +57,7 @@ const ProjectDetails: React.FC = () => {
     const { uidSlug } = useParams<{ uidSlug: string }>();
     const navigate = useNavigate();
     const { t } = useTranslation();
-    const { showSuccessToast } = useToast();
+    const { showSuccessToast, showErrorToast } = useToast();
     const { areasStore, projectsStore } = useStore();
     const areas = areasStore.areas;
     const [allProjects, setAllProjects] = useState<Project[]>([]);
@@ -66,6 +68,7 @@ const ProjectDetails: React.FC = () => {
     const [error, setError] = useState(false);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
+    const [isTemplateConfirmOpen, setIsTemplateConfirmOpen] = useState(false);
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
     const [isBannerEditModalOpen, setIsBannerEditModalOpen] = useState(false);
@@ -90,7 +93,7 @@ const ProjectDetails: React.FC = () => {
         openModal,
         closeModal,
     } = usePersistedModal(project?.id);
-    const editButtonRef = useRef<HTMLButtonElement>(null);
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
     const sortOptions = useMemo(
         () => [
             {
@@ -260,18 +263,6 @@ const ProjectDetails: React.FC = () => {
     }, [uidSlug]);
 
     useEffect(() => {
-        const button = editButtonRef.current;
-        if (!button) return;
-        const handleClick = (e: Event) => {
-            e.preventDefault();
-            e.stopPropagation();
-            openModal();
-        };
-        button.addEventListener('click', handleClick);
-        return () => button.removeEventListener('click', handleClick);
-    }, [openModal]);
-
-    useEffect(() => {
         if (
             project &&
             tasks.length === 0 &&
@@ -409,6 +400,22 @@ const ProjectDetails: React.FC = () => {
 
     const handleEditBannerClick = () => {
         setIsBannerEditModalOpen(true);
+    };
+
+    const handleSaveAsTemplate = () => {
+        setIsTemplateConfirmOpen(true);
+    };
+
+    const handleConfirmSaveAsTemplate = async () => {
+        if (!project?.uid) return;
+        try {
+            await saveProjectAsTemplate(project.uid, { name: project.name });
+            showSuccessToast(t('projects.savedAsTemplate', '"{{name}}" saved as template.', { name: project.name }));
+        } catch {
+            showErrorToast(t('projects.saveAsTemplateError', 'Failed to save project as template.'));
+        } finally {
+            setIsTemplateConfirmOpen(false);
+        }
     };
 
     const handleSaveBanner = async (imageUrl: string) => {
@@ -849,11 +856,13 @@ const ProjectDetails: React.FC = () => {
                 areas={areas}
                 t={t}
                 getStatusIcon={getStatusIcon}
+                onEditClick={openModal}
                 onDeleteClick={() => {
                     setNoteToDelete(null);
                     setIsConfirmDialogOpen(true);
                 }}
-                editButtonRef={editButtonRef}
+                onShareClick={() => setIsShareModalOpen(true)}
+                onSaveAsTemplate={handleSaveAsTemplate}
                 onEditBannerClick={handleEditBannerClick}
             />
 
@@ -1160,6 +1169,14 @@ const ProjectDetails: React.FC = () => {
                         currentImageUrl={project.image_url}
                     />
 
+                    {isShareModalOpen && (
+                        <ProjectShareModal
+                            isOpen={isShareModalOpen}
+                            onClose={() => setIsShareModalOpen(false)}
+                            project={project}
+                        />
+                    )}
+
                     <NoteModal
                         isOpen={isNoteModalOpen}
                         onClose={() => {
@@ -1201,6 +1218,15 @@ const ProjectDetails: React.FC = () => {
                             )}
                             onConfirm={handleDeleteProject}
                             onCancel={() => setIsConfirmDialogOpen(false)}
+                        />
+                    )}
+                    {isTemplateConfirmOpen && (
+                        <ConfirmDialog
+                            title={t('modals.saveAsTemplate.title', 'Save as Template')}
+                            message={t('modals.saveAsTemplate.message', 'Save "{{name}}" as a template? This will create a reusable template based on this project.', { name: project?.name })}
+                            onConfirm={handleConfirmSaveAsTemplate}
+                            onCancel={() => setIsTemplateConfirmOpen(false)}
+                            confirmButtonText={t('common.save', 'Save')}
                         />
                     )}
                 </div>

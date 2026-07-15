@@ -1,9 +1,8 @@
-import React, { RefObject } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     TagIcon,
     Squares2X2Icon,
-    PencilSquareIcon,
-    TrashIcon,
+    EllipsisVerticalIcon,
     ShareIcon,
     CameraIcon,
 } from '@heroicons/react/24/outline';
@@ -23,8 +22,10 @@ interface ProjectBannerProps {
     areas: Area[];
     t: TFunction;
     getStatusIcon: (status: string) => React.ReactNode;
+    onEditClick: () => void;
     onDeleteClick: () => void;
-    editButtonRef: RefObject<HTMLButtonElement>;
+    onShareClick: () => void;
+    onSaveAsTemplate: () => void;
     onEditBannerClick?: () => void;
 }
 
@@ -33,11 +34,37 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
     areas,
     t,
     getStatusIcon,
+    onEditClick,
     onDeleteClick,
-    editButtonRef,
+    onShareClick,
+    onSaveAsTemplate,
     onEditBannerClick,
 }) => {
     const navigate = useNavigate();
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+    const justOpenedRef = useRef(false);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (justOpenedRef.current) {
+                justOpenedRef.current = false;
+                return;
+            }
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setDropdownOpen(false);
+            }
+        };
+        if (dropdownOpen) {
+            const id = setTimeout(() => document.addEventListener('mousedown', handleClickOutside), 100);
+            return () => {
+                clearTimeout(id);
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [dropdownOpen]);
+
     const creatorName =
         project.image_url && isPresetBanner(project.image_url)
             ? getCreatorFromBannerUrl(project.image_url)
@@ -189,7 +216,7 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                     )}
                 </div>
 
-                <div className="absolute bottom-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="absolute bottom-2 right-2 flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     {onEditBannerClick && (
                         <button
                             type="button"
@@ -204,26 +231,69 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                             <CameraIcon className="h-5 w-5" />
                         </button>
                     )}
-                    <button
-                        ref={editButtonRef}
-                        type="button"
-                        className="p-2 bg-black bg-opacity-50 text-blue-400 hover:text-blue-300 hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
-                        title={t('project.editProject', 'Edit project')}
-                    >
-                        <PencilSquareIcon className="h-5 w-5" />
-                    </button>
-                    <button
-                        type="button"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            onDeleteClick();
-                        }}
-                        className="p-2 bg-black bg-opacity-50 text-red-400 hover:text-red-300 hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
-                        title={t('project.deleteProject', 'Delete project')}
-                    >
-                        <TrashIcon className="h-5 w-5" />
-                    </button>
+                    <div className="relative" ref={dropdownRef}>
+                        <button
+                            type="button"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                justOpenedRef.current = true;
+                                setDropdownOpen((v) => !v);
+                            }}
+                            className="p-2 bg-black bg-opacity-50 text-white hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
+                            title={t('project.moreOptions', 'More options')}
+                        >
+                            <EllipsisVerticalIcon className="h-5 w-5" />
+                        </button>
+                        {dropdownOpen && (
+                            <div className="absolute right-0 bottom-full mb-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-md z-30">
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        onEditClick();
+                                        setDropdownOpen(false);
+                                    }}
+                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-t-md"
+                                >
+                                    {t('projectItem.edit', 'Edit')}
+                                </button>
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        onShareClick();
+                                        setDropdownOpen(false);
+                                    }}
+                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                                >
+                                    {t('projectItem.share', 'Share')}
+                                </button>
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        onSaveAsTemplate();
+                                        setDropdownOpen(false);
+                                    }}
+                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                                >
+                                    {t('projectItem.saveAsTemplate', 'Save as Template')}
+                                </button>
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        onDeleteClick();
+                                        setDropdownOpen(false);
+                                    }}
+                                    className="block px-4 py-2 text-sm text-red-500 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-b-md"
+                                >
+                                    {t('common.delete', 'Delete')}
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

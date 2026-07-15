@@ -7,6 +7,7 @@ const { requireAuth } = require('../../middleware/auth');
 const { getAuthenticatedUserId } = require('../../utils/request-utils');
 const { UnauthorizedError } = require('../../shared/errors');
 const { logError } = require('../../services/logService');
+const { getConfig } = require('../../config/config');
 
 function getUserId(req) {
     const userId = getAuthenticatedUserId(req);
@@ -14,12 +15,20 @@ function getUserId(req) {
     return userId;
 }
 
+function requireTemplatesEnabled(req, res, next) {
+    const config = getConfig();
+    if (!config.templatesEnabled) {
+        return res.status(404).json({ error: 'Templates feature is not enabled' });
+    }
+    next();
+}
+
 function handleError(res, next, err) {
     next(err);
 }
 
 // GET /templates - list user's templates
-router.get('/templates', requireAuth, async (req, res, next) => {
+router.get('/templates', requireAuth, requireTemplatesEnabled, async (req, res, next) => {
     try {
         const userId = getUserId(req);
         const result = await templatesService.getAll(userId);
@@ -30,7 +39,7 @@ router.get('/templates', requireAuth, async (req, res, next) => {
 });
 
 // GET /template/:uid - get template with full structure
-router.get('/template/:uid', requireAuth, async (req, res, next) => {
+router.get('/template/:uid', requireAuth, requireTemplatesEnabled, async (req, res, next) => {
     try {
         const userId = getUserId(req);
         const template = await templatesService.getByUid(
@@ -44,7 +53,7 @@ router.get('/template/:uid', requireAuth, async (req, res, next) => {
 });
 
 // POST /template - create template from scratch
-router.post('/template', requireAuth, async (req, res, next) => {
+router.post('/template', requireAuth, requireTemplatesEnabled, async (req, res, next) => {
     try {
         const userId = getUserId(req);
         const template = await templatesService.create(userId, req.body);
@@ -58,6 +67,7 @@ router.post('/template', requireAuth, async (req, res, next) => {
 router.post(
     '/project/:uid/save-as-template',
     requireAuth,
+    requireTemplatesEnabled,
     async (req, res, next) => {
         try {
             const userId = getUserId(req);
@@ -74,7 +84,7 @@ router.post(
 );
 
 // POST /template/:uid/clone - clone template into a new project
-router.post('/template/:uid/clone', requireAuth, async (req, res, next) => {
+router.post('/template/:uid/clone', requireAuth, requireTemplatesEnabled, async (req, res, next) => {
     try {
         const userId = getUserId(req);
         const project = await templatesService.cloneTemplate(
@@ -89,7 +99,7 @@ router.post('/template/:uid/clone', requireAuth, async (req, res, next) => {
 });
 
 // PATCH /template/:uid - update template metadata
-router.patch('/template/:uid', requireAuth, async (req, res, next) => {
+router.patch('/template/:uid', requireAuth, requireTemplatesEnabled, async (req, res, next) => {
     try {
         const userId = getUserId(req);
         const template = await templatesService.update(
@@ -104,7 +114,7 @@ router.patch('/template/:uid', requireAuth, async (req, res, next) => {
 });
 
 // DELETE /template/:uid - delete template
-router.delete('/template/:uid', requireAuth, async (req, res, next) => {
+router.delete('/template/:uid', requireAuth, requireTemplatesEnabled, async (req, res, next) => {
     try {
         const userId = getUserId(req);
         const result = await templatesService.delete(req.params.uid, userId);
@@ -115,7 +125,7 @@ router.delete('/template/:uid', requireAuth, async (req, res, next) => {
 });
 
 // GET /marketplace/templates - browse marketplace templates
-router.get('/marketplace/templates', requireAuth, async (req, res, next) => {
+router.get('/marketplace/templates', requireAuth, requireTemplatesEnabled, async (req, res, next) => {
     try {
         const result = await templatesService.fetchMarketplaceTemplates(
             req.query
@@ -130,6 +140,7 @@ router.get('/marketplace/templates', requireAuth, async (req, res, next) => {
 router.get(
     '/marketplace/templates/:uid',
     requireAuth,
+    requireTemplatesEnabled,
     async (req, res, next) => {
         try {
             const template = await templatesService.fetchMarketplaceTemplate(
@@ -146,6 +157,7 @@ router.get(
 router.post(
     '/marketplace/templates/:uid/install',
     requireAuth,
+    requireTemplatesEnabled,
     async (req, res, next) => {
         try {
             const userId = getUserId(req);

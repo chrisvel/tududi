@@ -111,6 +111,8 @@ interface UserSettingsStore {
     setHabitsEnabled: (enabled: boolean) => void;
     calendarEnabled: boolean;
     setCalendarEnabled: (enabled: boolean) => void;
+    templatesEnabled: boolean;
+    setTemplatesEnabled: (enabled: boolean) => void;
     aiAssistantEnabled: boolean;
     setAiAssistantEnabled: (enabled: boolean) => void;
 }
@@ -864,6 +866,14 @@ export const useStore = create<StoreState>((set: any) => ({
                 userSettingsStore: {
                     ...state.userSettingsStore,
                     calendarEnabled: enabled,
+                },
+            })),
+        templatesEnabled: true,
+        setTemplatesEnabled: (enabled) =>
+            set((state) => ({
+                userSettingsStore: {
+                    ...state.userSettingsStore,
+                    templatesEnabled: enabled,
                 },
             })),
         aiAssistantEnabled: false,
