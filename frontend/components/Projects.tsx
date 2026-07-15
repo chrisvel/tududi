@@ -22,14 +22,16 @@ import { useTranslation } from 'react-i18next';
 import { SortOption } from './Shared/SortFilterButton';
 
 import { Project, ProjectStatus } from '../entities/Project';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
+import { RectangleStackIcon } from '@heroicons/react/24/outline';
 import ProjectItem from './Project/ProjectItem';
 import ProjectShareModal from './Project/ProjectShareModal';
 import { useToast } from './Shared/ToastContext';
+import { saveProjectAsTemplate } from '../utils/templatesService';
 
 const Projects: React.FC = () => {
     const { t } = useTranslation();
-    const { showErrorToast } = useToast();
+    const { showErrorToast, showSuccessToast } = useToast();
     const {
         areas,
         setAreas,
@@ -55,6 +57,10 @@ const Projects: React.FC = () => {
         null
     );
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
+        useState<boolean>(false);
+    const [projectToSaveAsTemplate, setProjectToSaveAsTemplate] =
+        useState<Project | null>(null);
+    const [isTemplateConfirmOpen, setIsTemplateConfirmOpen] =
         useState<boolean>(false);
     const [shareModal, setShareModal] = useState<{
         isOpen: boolean;
@@ -255,6 +261,24 @@ const Projects: React.FC = () => {
             isOpen: true,
             projectToEdit: project,
         });
+    };
+
+    const handleSaveAsTemplate = (project: Project) => {
+        setProjectToSaveAsTemplate(project);
+        setIsTemplateConfirmOpen(true);
+    };
+
+    const handleConfirmSaveAsTemplate = async () => {
+        if (!projectToSaveAsTemplate?.uid) return;
+        try {
+            await saveProjectAsTemplate(projectToSaveAsTemplate.uid, { name: projectToSaveAsTemplate.name });
+            showSuccessToast(t('projects.savedAsTemplate', '"{{name}}" saved as template.', { name: projectToSaveAsTemplate.name }));
+        } catch {
+            showErrorToast(t('projects.saveAsTemplateError', 'Failed to save project as template.'));
+        } finally {
+            setIsTemplateConfirmOpen(false);
+            setProjectToSaveAsTemplate(null);
+        }
     };
 
     const handleDeleteProject = async () => {
@@ -462,10 +486,17 @@ const Projects: React.FC = () => {
     return (
         <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">
             <div className="w-full">
-                <div className="flex items-center mb-8">
+                <div className="flex items-center justify-between mb-8">
                     <h2 className="text-2xl font-light">
                         {t('projects.title')}
                     </h2>
+                    <Link
+                        to="/templates"
+                        className="flex items-center gap-1.5 text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors"
+                    >
+                        <RectangleStackIcon className="h-4 w-4" />
+                        {t('projects.fromTemplate', 'From Template')}
+                    </Link>
                 </div>
 
                 {/* View Mode and Filters */}
@@ -622,6 +653,7 @@ const Projects: React.FC = () => {
                                     setShareModal({ isOpen: true, project: p })
                                 }
                                 onStatusChange={handleStatusChange}
+                                onSaveAsTemplate={handleSaveAsTemplate}
                             />
                         ))
                     )}
@@ -666,6 +698,19 @@ const Projects: React.FC = () => {
                     })}
                     onConfirm={handleDeleteProject}
                     onCancel={() => setIsConfirmDialogOpen(false)}
+                />
+            )}
+
+            {isTemplateConfirmOpen && (
+                <ConfirmDialog
+                    title={t('modals.saveAsTemplate.title', 'Save as Template')}
+                    message={t('modals.saveAsTemplate.message', 'Save "{{name}}" as a template? This will create a reusable template based on this project.', { name: projectToSaveAsTemplate?.name })}
+                    onConfirm={handleConfirmSaveAsTemplate}
+                    onCancel={() => {
+                        setIsTemplateConfirmOpen(false);
+                        setProjectToSaveAsTemplate(null);
+                    }}
+                    confirmButtonText={t('common.save', 'Save')}
                 />
             )}
 

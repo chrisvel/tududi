@@ -14,6 +14,7 @@ import NotificationsDropdown from './Notifications/NotificationsDropdown';
 import { getApiPath, getAssetPath } from '../config/paths';
 import { getFeatureFlags, FeatureFlags } from '../utils/featureFlags';
 import { setUserTimezone } from '../utils/dateUtils';
+import { useStore } from '../store/useStore';
 
 interface NavbarProps {
     isDarkMode: boolean;
@@ -46,6 +47,7 @@ const Navbar: React.FC<NavbarProps> = ({
     });
     const dropdownRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
+    const templatesEnabled = useStore((state) => state.userSettingsStore.templatesEnabled);
 
     // Dispatch event when mobile search state changes
     useEffect(() => {
@@ -256,6 +258,15 @@ const Navbar: React.FC<NavbarProps> = ({
                                         <EnvelopeIcon className="h-4 w-4 mr-2" />
                                         {currentUser.email}
                                     </div>
+                                )}
+                                {templatesEnabled && (
+                                    <Link
+                                        to="/templates"
+                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                        onClick={() => setIsDropdownOpen(false)}
+                                    >
+                                        {t('navigation.templates', 'Templates')}
+                                    </Link>
                                 )}
                                 <Link
                                     to="/profile"

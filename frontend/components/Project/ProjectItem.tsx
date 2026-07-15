@@ -12,6 +12,7 @@ import {
     XCircleIcon,
     ShareIcon,
     ExclamationTriangleIcon,
+    RectangleStackIcon,
 } from '@heroicons/react/24/outline';
 import { Project, ProjectStatus } from '../../entities/Project';
 import { useTranslation } from 'react-i18next';
@@ -33,6 +34,7 @@ interface ProjectItemProps {
     setIsConfirmDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
     onOpenShare: (project: Project) => void;
     onStatusChange: (project: Project, newStatus: ProjectStatus) => Promise<void>;
+    onSaveAsTemplate?: (project: Project) => void;
 }
 
 const getProjectInitials = (name: string, maxLetters?: number) => {
@@ -114,6 +116,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
     setIsConfirmDialogOpen,
     onOpenShare,
     onStatusChange,
+    onSaveAsTemplate,
 }) => {
     const { t } = useTranslation();
     const { showErrorToast } = useToast();
@@ -327,7 +330,10 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                     style={{ backgroundColor: project.color }}
                                 />
                             )}
-                            <div className="absolute top-2 right-2 z-20 flex items-center space-x-2">
+                        </div>
+                    </Link>
+                    {/* Overlay buttons positioned from outer relative div so dropdowns are not clipped by overflow-hidden */}
+                    <div className="absolute top-2 right-2 z-20 flex items-center space-x-2">
                                 {project.is_shared && (
                                     <ShareIcon
                                         className="h-4 w-4 text-green-400 drop-shadow-sm"
@@ -402,7 +408,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                     </button>
                                     {project.id !== undefined &&
                                         activeDropdown === project.id && (
-                                            <div className="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-800 shadow-lg rounded-md z-30">
+                                            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-md z-30">
                                                 <button
                                                     onClick={(e) => {
                                                         e.preventDefault();
@@ -449,6 +455,19 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                                         )}
                                                     </button>
                                                 )}
+                                                {isOwner && onSaveAsTemplate && (
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
+                                                            onSaveAsTemplate(project);
+                                                            setActiveDropdown(null);
+                                                        }}
+                                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                                                    >
+                                                        {t('projectItem.saveAsTemplate', 'Save as Template')}
+                                                    </button>
+                                                )}
                                                 <button
                                                     onClick={(e) => {
                                                         e.preventDefault();
@@ -481,9 +500,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                         )}
                                 </div>
                             </div>
-                        </div>
-                    </Link>
-                </div>
+                    </div>
             )}
 
             {viewMode === 'cards' && (
@@ -744,6 +761,19 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                     data-testid={`project-share-list-${project.id}`}
                                 >
                                     <ShareIcon className="h-5 w-5" />
+                                </button>
+                            )}
+                            {isOwner && onSaveAsTemplate && (
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        onSaveAsTemplate(project);
+                                    }}
+                                    className="text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200"
+                                    title={t('projectItem.saveAsTemplate', 'Save as Template')}
+                                >
+                                    <RectangleStackIcon className="h-5 w-5" />
                                 </button>
                             )}
                             <button
