@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { Project, Task, Note, Permission } = require('../models');
+const { Project, Task, Note, Area, Permission } = require('../models');
 const { isAdmin } = require('./rolesService');
 
 const ACCESS = { NONE: 'none', RO: 'ro', RW: 'rw', ADMIN: 'admin' };
@@ -14,6 +14,20 @@ async function getSharedUidsForUser(resourceType, userId) {
     return Array.from(set);
 }
 
+// Numeric ids of areas shared with the user. Projects inside shared areas
+// (and their tasks/notes) are derived from these at query time, so area
+// membership changes take effect immediately without permission recompute.
+async function getSharedAreaIds(userId) {
+    const sharedAreaUids = await getSharedUidsForUser('area', userId);
+    if (sharedAreaUids.length === 0) return [];
+    const areas = await Area.findAll({
+        where: { uid: { [Op.in]: sharedAreaUids } },
+        attributes: ['id'],
+        raw: true,
+    });
+    return areas.map((a) => a.id);
+}
+
 async function getAccess(userId, resourceType, resourceUid) {
     if (await isAdmin(userId)) return ACCESS.ADMIN;
 
@@ -21,11 +35,34 @@ async function getAccess(userId, resourceType, resourceUid) {
     if (resourceType === 'project') {
         const proj = await Project.findOne({
             where: { uid: resourceUid },
-            attributes: ['user_id'],
+            attributes: ['user_id', 'area_id'],
             raw: true,
         });
         if (!proj) return ACCESS.NONE;
         if (proj.user_id === userId) return ACCESS.RW;
+
+        // Check if user has access through the parent area
+        if (proj.area_id) {
+            const area = await Area.findOne({
+                where: { id: proj.area_id },
+                attributes: ['uid'],
+                raw: true,
+            });
+            if (area) {
+                const areaAccess = await getAccess(userId, 'area', area.uid);
+                if (areaAccess !== ACCESS.NONE) {
+                    return areaAccess; // Inherit access from area
+                }
+            }
+        }
+    } else if (resourceType === 'area') {
+        const area = await Area.findOne({
+            where: { uid: resourceUid },
+            attributes: ['user_id'],
+            raw: true,
+        });
+        if (!area) return ACCESS.NONE;
+        if (area.user_id === userId) return ACCESS.RW;
     } else if (resourceType === 'task') {
         const t = await Task.findOne({
             where: { uid: resourceUid },
@@ -124,15 +161,28 @@ async function ownershipOrPermissionWhere(resourceType, userId, cache = null) {
 
     const sharedUids = await getSharedUidsForUser(resourceType, userId);
 
-    // For tasks and notes, also include items from shared projects
+    // For tasks and notes, also include items from shared projects and from
+    // projects that live in shared areas
     if (resourceType === 'task' || resourceType === 'note') {
         const sharedProjectUids = await getSharedUidsForUser('project', userId);
+        const sharedAreaIds = await getSharedAreaIds(userId);
 
-        // Get the project IDs for shared projects
+        // Get the project IDs for shared projects / projects in shared areas
         let sharedProjectIds = [];
-        if (sharedProjectUids.length > 0) {
+        if (sharedProjectUids.length > 0 || sharedAreaIds.length > 0) {
+            const projectConditions = [];
+            if (sharedProjectUids.length > 0) {
+                projectConditions.push({
+                    uid: { [Op.in]: sharedProjectUids },
+                });
+            }
+            if (sharedAreaIds.length > 0) {
+                projectConditions.push({
+                    area_id: { [Op.in]: sharedAreaIds },
+                });
+            }
             const projects = await Project.findAll({
-                where: { uid: { [Op.in]: sharedProjectUids } },
+                where: { [Op.or]: projectConditions },
                 attributes: ['id'],
                 raw: true,
             });
@@ -156,7 +206,22 @@ async function ownershipOrPermissionWhere(resourceType, userId, cache = null) {
         return result;
     }
 
-    // For other resource types (projects, etc.), use the original logic
+    // For projects, also include projects that live in shared areas
+    if (resourceType === 'project') {
+        const sharedAreaIds = await getSharedAreaIds(userId);
+        const conditions = [{ user_id: userId }];
+        if (sharedUids.length > 0) {
+            conditions.push({ uid: { [Op.in]: sharedUids } });
+        }
+        if (sharedAreaIds.length > 0) {
+            conditions.push({ area_id: { [Op.in]: sharedAreaIds } });
+        }
+        const result = { [Op.or]: conditions };
+        if (cache) cache.set(cacheKey, result);
+        return result;
+    }
+
+    // For other resource types, use the original logic
     const result = {
         [Op.or]: [
             { user_id: userId },

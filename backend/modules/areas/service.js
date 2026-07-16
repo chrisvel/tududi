@@ -5,6 +5,7 @@ const areasRepository = require('./repository');
 const { PUBLIC_ATTRIBUTES } = require('./repository');
 const { validateName, validateUid } = require('./validation');
 const { NotFoundError } = require('../../shared/errors');
+const permissionsService = require('../../services/permissionsService');
 
 class AreasService {
     /**
@@ -15,14 +16,21 @@ class AreasService {
     }
 
     /**
-     * Get a single area by UID.
+     * Get a single area by UID (owned or shared with the user).
      */
     async getByUid(userId, uid) {
         validateUid(uid);
 
-        const area = await areasRepository.findByUidPublic(userId, uid);
+        const area = await areasRepository.findByUidAnyOwner(uid);
 
         if (!area) {
+            throw new NotFoundError(
+                "Area not found or doesn't belong to the current user."
+            );
+        }
+
+        const access = await permissionsService.getAccess(userId, 'area', uid);
+        if (access === permissionsService.ACCESS.NONE) {
             throw new NotFoundError(
                 "Area not found or doesn't belong to the current user."
             );
