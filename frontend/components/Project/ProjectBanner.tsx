@@ -25,7 +25,7 @@ interface ProjectBannerProps {
     onEditClick: () => void;
     onDeleteClick: () => void;
     onShareClick: () => void;
-    onSaveAsTemplate: () => void;
+    onSaveAsTemplate?: () => void;
     onEditBannerClick?: () => void;
 }
 
@@ -269,6 +269,7 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                                 >
                                     {t('projectItem.share', 'Share')}
                                 </button>
+                                {onSaveAsTemplate && (
                                 <button
                                     onClick={(e) => {
                                         e.preventDefault();
@@ -280,6 +281,7 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                                 >
                                     {t('projectItem.saveAsTemplate', 'Save as Template')}
                                 </button>
+                                )}
                                 <button
                                     onClick={(e) => {
                                         e.preventDefault();

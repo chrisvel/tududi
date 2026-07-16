@@ -58,8 +58,9 @@ const ProjectDetails: React.FC = () => {
     const navigate = useNavigate();
     const { t } = useTranslation();
     const { showSuccessToast, showErrorToast } = useToast();
-    const { areasStore, projectsStore } = useStore();
+    const { areasStore, projectsStore, userSettingsStore } = useStore();
     const areas = areasStore.areas;
+    const templatesEnabled = userSettingsStore.templatesEnabled;
     const [allProjects, setAllProjects] = useState<Project[]>([]);
     const [project, setProject] = useState<Project | null>(null);
     const [tasks, setTasks] = useState<Task[]>([]);
@@ -862,7 +863,7 @@ const ProjectDetails: React.FC = () => {
                     setIsConfirmDialogOpen(true);
                 }}
                 onShareClick={() => setIsShareModalOpen(true)}
-                onSaveAsTemplate={handleSaveAsTemplate}
+                onSaveAsTemplate={templatesEnabled ? handleSaveAsTemplate : undefined}
                 onEditBannerClick={handleEditBannerClick}
             />
 

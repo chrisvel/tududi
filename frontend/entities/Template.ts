@@ -10,8 +10,9 @@ export interface MarketplaceTemplate {
     preview_image_url?: string;
     clone_count?: number;
     tags?: string[];
+    tasks_preview?: string[];
     structure?: {
-        tasks: Task[];
+        tasks: Array<{ name: string; subtasks?: Array<{ name: string }> }>;
     };
 }
 

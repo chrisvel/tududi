@@ -347,6 +347,30 @@ class TemplatesService {
                         transaction,
                     });
                 }
+
+                const nestedSubtasks = task.Subtasks || task.subtasks || [];
+                if (nestedSubtasks.length > 0) {
+                    for (const sub of nestedSubtasks) {
+                        await Task.create(
+                            {
+                                uid: generateUid(),
+                                name: sub.name,
+                                note: sub.note || null,
+                                priority: sub.priority ?? null,
+                                status: options.resetStatus ? 0 : sub.status,
+                                due_date: applyDateOffset(
+                                    sub.due_date,
+                                    offsetMs
+                                ),
+                                project_id: targetProject.id,
+                                parent_task_id: newTask.id,
+                                user_id: userId,
+                                recurrence_type: 'none',
+                            },
+                            { transaction }
+                        );
+                    }
+                }
             }
 
             const subtasks = (sourceJson.Tasks || []).filter(

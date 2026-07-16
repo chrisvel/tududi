@@ -43,6 +43,7 @@ const Projects: React.FC = () => {
         setError: setProjectsError,
     } = useStore((state) => state.projectsStore);
     const { isLoading, isError } = useStore((state) => state.projectsStore);
+    const templatesEnabled = useStore((state) => state.userSettingsStore.templatesEnabled);
 
     // Try using a ref to avoid React state conflicts
     const modalStateRef = useRef({
@@ -490,13 +491,15 @@ const Projects: React.FC = () => {
                     <h2 className="text-2xl font-light">
                         {t('projects.title')}
                     </h2>
-                    <Link
-                        to="/templates"
-                        className="flex items-center gap-1.5 text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors"
-                    >
-                        <RectangleStackIcon className="h-4 w-4" />
-                        {t('projects.fromTemplate', 'From Template')}
-                    </Link>
+                    {templatesEnabled && (
+                        <Link
+                            to="/templates"
+                            className="flex items-center gap-1.5 text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors"
+                        >
+                            <RectangleStackIcon className="h-4 w-4" />
+                            {t('projects.fromTemplate', 'From Template')}
+                        </Link>
+                    )}
                 </div>
 
                 {/* View Mode and Filters */}
@@ -653,7 +656,7 @@ const Projects: React.FC = () => {
                                     setShareModal({ isOpen: true, project: p })
                                 }
                                 onStatusChange={handleStatusChange}
-                                onSaveAsTemplate={handleSaveAsTemplate}
+                                onSaveAsTemplate={templatesEnabled ? handleSaveAsTemplate : undefined}
                             />
                         ))
                     )}
