@@ -1,10 +1,8 @@
 'use strict';
 
 const notesService = require('../../notes/service');
+const permissionsService = require('../../../services/permissionsService');
 
-/**
- * Register all note-related MCP tools
- */
 function registerNoteTools(server, context, tools) {
     // 1. list_notes - List notes
     tools.push({
@@ -68,7 +66,12 @@ function registerNoteTools(server, context, tools) {
         handler: async (params) => {
             const note = await notesService.getByUid(params.uid);
 
-            if (note.user_id !== context.userId) {
+            const access = await permissionsService.getAccess(
+                context.userId,
+                'note',
+                params.uid
+            );
+            if (access === permissionsService.ACCESS.NONE) {
                 throw new Error('Note not found.');
             }
 
@@ -167,7 +170,17 @@ function registerNoteTools(server, context, tools) {
         },
         handler: async (params) => {
             const existing = await notesService.getByUid(params.uid);
-            if (existing.user_id !== context.userId) {
+
+            const access = await permissionsService.getAccess(
+                context.userId,
+                'note',
+                params.uid
+            );
+            const canWrite =
+                existing.user_id === context.userId ||
+                access === permissionsService.ACCESS.RW ||
+                access === permissionsService.ACCESS.ADMIN;
+            if (!canWrite) {
                 throw new Error('Note not found.');
             }
 
@@ -194,7 +207,7 @@ function registerNoteTools(server, context, tools) {
         },
     });
 
-    // 5. delete_note - Delete a note
+    // 5. delete_note - Delete a note (owner only)
     tools.push({
         name: 'delete_note',
         description: 'Delete a note',
