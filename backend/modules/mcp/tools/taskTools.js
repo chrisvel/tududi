@@ -9,11 +9,9 @@ const { buildTaskAttributes } = require('../../tasks/core/builders');
 const { Op } = require('sequelize');
 const { Task, Project, Tag } = require('../../../models');
 const { validateProjectAccess } = require('../../tasks/utils/validation');
+const permissionsService = require('../../../services/permissionsService');
 
-/**
- * Helper to find task by ID or UID
- */
-async function findTaskByIdentifier(identifier, userId) {
+async function findTaskByIdentifier(identifier) {
     const isNumeric = !isNaN(identifier);
 
     const includeOptions = [
@@ -39,11 +37,9 @@ async function findTaskByIdentifier(identifier, userId) {
     ];
 
     if (isNumeric) {
-        return await taskRepository.findByIdAndUser(
-            parseInt(identifier),
-            userId,
-            { include: includeOptions }
-        );
+        return await taskRepository.findById(parseInt(identifier), {
+            include: includeOptions,
+        });
     } else {
         return await taskRepository.findByUid(identifier, {
             include: includeOptions,
@@ -51,9 +47,6 @@ async function findTaskByIdentifier(identifier, userId) {
     }
 }
 
-/**
- * Register all task-related MCP tools
- */
 function registerTaskTools(server, context, tools) {
     // 1. list_tasks - List tasks with filtering
     tools.push({
@@ -84,10 +77,13 @@ function registerTaskTools(server, context, tools) {
             },
         },
         handler: async (params) => {
-            const where = { user_id: context.userId };
+            const whereClause =
+                await permissionsService.ownershipOrPermissionWhere(
+                    'task',
+                    context.userId
+                );
             const limit = params.limit || 50;
 
-            // Apply status filter
             if (params.status) {
                 const statusMap = {
                     pending: 0,
@@ -95,24 +91,22 @@ function registerTaskTools(server, context, tools) {
                     completed: 2,
                     archived: 6,
                 };
-                where.status = statusMap[params.status];
+                whereClause.status = statusMap[params.status];
             }
 
-            // Apply project filter
             if (params.project_id) {
-                where.project_id = params.project_id;
+                whereClause.project_id = params.project_id;
             }
 
-            // Apply type filter
             if (params.type === 'completed') {
-                where.status = 2;
+                whereClause.status = 2;
             } else if (params.type === 'archived') {
-                where.status = 6;
+                whereClause.status = 6;
             } else if (params.type === 'today' || params.type === 'upcoming') {
-                where.status = { [Op.ne]: 6 }; // Not archived
+                whereClause.status = { [Op.ne]: 6 };
             }
 
-            const tasks = await taskRepository.findAll(where, {
+            const tasks = await taskRepository.findAll(whereClause, {
                 include: [
                     { model: Project, as: 'Project' },
                     { model: Tag, as: 'Tags' },
@@ -159,15 +153,19 @@ function registerTaskTools(server, context, tools) {
             required: ['id'],
         },
         handler: async (params) => {
-            const task = await findTaskByIdentifier(params.id, context.userId);
+            const task = await findTaskByIdentifier(params.id);
 
             if (!task) {
                 throw new Error(`Task not found: ${params.id}`);
             }
 
-            // Check ownership
-            if (task.user_id !== context.userId) {
-                throw new Error('Access denied');
+            const access = await permissionsService.getAccess(
+                context.userId,
+                'task',
+                task.uid
+            );
+            if (access === permissionsService.ACCESS.NONE) {
+                throw new Error(`Task not found: ${params.id}`);
             }
 
             const serialized = await serializeTask(task, context.user.timezone);
@@ -222,6 +220,11 @@ function registerTaskTools(server, context, tools) {
         handler: async (params) => {
             const priorityMap = { low: 0, medium: 1, high: 2 };
 
+            // Validate project access before creating task
+            const resolvedProjectId = params.project_id
+                ? await validateProjectAccess(params.project_id, context.userId)
+                : null;
+
             const taskData = {
                 user_id: context.userId,
                 name: params.name,
@@ -229,12 +232,11 @@ function registerTaskTools(server, context, tools) {
                 priority: params.priority ? priorityMap[params.priority] : 1,
                 status: 0, // pending
                 due_date: params.due_date || null,
-                project_id: params.project_id || null,
+                project_id: resolvedProjectId,
             };
 
             const task = await taskRepository.create(taskData);
 
-            // Handle tags if provided
             if (params.tags && params.tags.length > 0) {
                 const tagInstances = await Promise.all(
                     params.tags.map(async (tagName) => {
@@ -247,7 +249,6 @@ function registerTaskTools(server, context, tools) {
                 await task.setTags(tagInstances);
             }
 
-            // Reload with associations
             const reloadedTask = await taskRepository.findByIdAndUser(
                 task.id,
                 context.userId,
@@ -317,13 +318,22 @@ function registerTaskTools(server, context, tools) {
             required: ['id'],
         },
         handler: async (params) => {
-            const task = await findTaskByIdentifier(params.id, context.userId);
+            const task = await findTaskByIdentifier(params.id);
 
             if (!task) {
                 throw new Error(`Task not found: ${params.id}`);
             }
 
-            if (task.user_id !== context.userId) {
+            const access = await permissionsService.getAccess(
+                context.userId,
+                'task',
+                task.uid
+            );
+            const canWrite =
+                task.user_id === context.userId ||
+                access === permissionsService.ACCESS.RW ||
+                access === permissionsService.ACCESS.ADMIN;
+            if (!canWrite) {
                 throw new Error('Access denied');
             }
 
@@ -357,17 +367,12 @@ function registerTaskTools(server, context, tools) {
 
             await task.update(updates);
 
-            // Reload with associations
-            const reloadedTask = await taskRepository.findByIdAndUser(
-                task.id,
-                context.userId,
-                {
-                    include: [
-                        { model: Project, as: 'Project' },
-                        { model: Tag, as: 'Tags' },
-                    ],
-                }
-            );
+            const reloadedTask = await taskRepository.findById(task.id, {
+                include: [
+                    { model: Project, as: 'Project' },
+                    { model: Tag, as: 'Tags' },
+                ],
+            });
 
             const serialized = await serializeTask(
                 reloadedTask,
@@ -407,18 +412,26 @@ function registerTaskTools(server, context, tools) {
             required: ['id'],
         },
         handler: async (params) => {
-            const task = await findTaskByIdentifier(params.id, context.userId);
+            const task = await findTaskByIdentifier(params.id);
 
             if (!task) {
                 throw new Error(`Task not found: ${params.id}`);
             }
 
-            if (task.user_id !== context.userId) {
+            const access = await permissionsService.getAccess(
+                context.userId,
+                'task',
+                task.uid
+            );
+            const canWrite =
+                task.user_id === context.userId ||
+                access === permissionsService.ACCESS.RW ||
+                access === permissionsService.ACCESS.ADMIN;
+            if (!canWrite) {
                 throw new Error('Access denied');
             }
 
-            // Toggle completion
-            const newStatus = task.status === 2 ? 0 : 2; // 2 = completed, 0 = pending
+            const newStatus = task.status === 2 ? 0 : 2;
             const updates = {
                 status: newStatus,
                 completed_at: newStatus === 2 ? new Date() : null,
@@ -426,16 +439,12 @@ function registerTaskTools(server, context, tools) {
 
             await task.update(updates);
 
-            const reloadedTask = await taskRepository.findByIdAndUser(
-                task.id,
-                context.userId,
-                {
-                    include: [
-                        { model: Project, as: 'Project' },
-                        { model: Tag, as: 'Tags' },
-                    ],
-                }
-            );
+            const reloadedTask = await taskRepository.findById(task.id, {
+                include: [
+                    { model: Project, as: 'Project' },
+                    { model: Tag, as: 'Tags' },
+                ],
+            });
 
             const serialized = await serializeTask(
                 reloadedTask,
@@ -463,7 +472,7 @@ function registerTaskTools(server, context, tools) {
         },
     });
 
-    // 6. delete_task - Delete task
+    // 6. delete_task - Delete task (owner only)
     tools.push({
         name: 'delete_task',
         description: 'Permanently delete a task',
@@ -478,7 +487,7 @@ function registerTaskTools(server, context, tools) {
             required: ['id'],
         },
         handler: async (params) => {
-            const task = await findTaskByIdentifier(params.id, context.userId);
+            const task = await findTaskByIdentifier(params.id);
 
             if (!task) {
                 throw new Error(`Task not found: ${params.id}`);
@@ -535,16 +544,22 @@ function registerTaskTools(server, context, tools) {
             required: ['parent_id', 'name'],
         },
         handler: async (params) => {
-            const parentTask = await findTaskByIdentifier(
-                params.parent_id,
-                context.userId
-            );
+            const parentTask = await findTaskByIdentifier(params.parent_id);
 
             if (!parentTask) {
                 throw new Error(`Parent task not found: ${params.parent_id}`);
             }
 
-            if (parentTask.user_id !== context.userId) {
+            const access = await permissionsService.getAccess(
+                context.userId,
+                'task',
+                parentTask.uid
+            );
+            const canWrite =
+                parentTask.user_id === context.userId ||
+                access === permissionsService.ACCESS.RW ||
+                access === permissionsService.ACCESS.ADMIN;
+            if (!canWrite) {
                 throw new Error('Access denied');
             }
 
@@ -557,7 +572,7 @@ function registerTaskTools(server, context, tools) {
                 priority: params.priority ? priorityMap[params.priority] : 1,
                 status: 0,
                 due_date: params.due_date || null,
-                project_id: parentTask.project_id, // Inherit parent's project
+                project_id: parentTask.project_id,
             };
 
             const subtask = await taskRepository.create(subtaskData);
@@ -605,18 +620,16 @@ function registerTaskTools(server, context, tools) {
             properties: {},
         },
         handler: async (params) => {
-            // Get counts by status
             const openCount = await taskRepository.count({
                 user_id: context.userId,
-                status: { [Op.in]: [0, 1] }, // pending or in_progress
+                status: { [Op.in]: [0, 1] },
             });
 
             const completedCount = await taskRepository.count({
                 user_id: context.userId,
-                status: 2, // completed
+                status: 2,
             });
 
-            // Get overdue tasks
             const now = new Date();
             const overdueCount = await taskRepository.count({
                 user_id: context.userId,
@@ -624,13 +637,11 @@ function registerTaskTools(server, context, tools) {
                 due_date: { [Op.lt]: now },
             });
 
-            // Get in_progress tasks
             const inProgressCount = await taskRepository.count({
                 user_id: context.userId,
                 status: 1,
             });
 
-            // Get today's completions
             const startOfDay = new Date();
             startOfDay.setHours(0, 0, 0, 0);
             const todayCompletions = await taskRepository.count({
@@ -639,7 +650,6 @@ function registerTaskTools(server, context, tools) {
                 completed_at: { [Op.gte]: startOfDay },
             });
 
-            // Get this week's completions
             const startOfWeek = new Date();
             startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
             startOfWeek.setHours(0, 0, 0, 0);
