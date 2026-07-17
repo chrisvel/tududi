@@ -6,7 +6,16 @@ import {
     BoltIcon,
     InboxIcon,
 } from '@heroicons/react/24/solid';
-import { EnvelopeIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import {
+    EnvelopeIcon,
+    MagnifyingGlassIcon,
+    RectangleStackIcon,
+    UsersIcon,
+    Cog6ToothIcon,
+    CircleStackIcon,
+    InformationCircleIcon,
+    ArrowRightStartOnRectangleIcon,
+} from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 import PomodoroTimer from './Shared/PomodoroTimer';
 import UniversalSearch from './UniversalSearch/UniversalSearch';
@@ -14,6 +23,7 @@ import NotificationsDropdown from './Notifications/NotificationsDropdown';
 import { getApiPath, getAssetPath } from '../config/paths';
 import { getFeatureFlags, FeatureFlags } from '../utils/featureFlags';
 import { setUserTimezone } from '../utils/dateUtils';
+import { useStore } from '../store/useStore';
 
 interface NavbarProps {
     isDarkMode: boolean;
@@ -46,6 +56,7 @@ const Navbar: React.FC<NavbarProps> = ({
     });
     const dropdownRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
+    const templatesEnabled = useStore((state) => state.userSettingsStore.templatesEnabled);
 
     // Dispatch event when mobile search state changes
     useEffect(() => {
@@ -257,11 +268,33 @@ const Navbar: React.FC<NavbarProps> = ({
                                         {currentUser.email}
                                     </div>
                                 )}
+                                {templatesEnabled && (
+                                    <Link
+                                        to="/templates"
+                                        className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                        onClick={() => setIsDropdownOpen(false)}
+                                    >
+                                        <RectangleStackIcon className="h-4 w-4 mr-2 shrink-0" />
+                                        {t('navigation.templates', 'Templates')}
+                                    </Link>
+                                )}
+                                {currentUser?.is_admin === true && (
+                                    <Link
+                                        to="/admin/users"
+                                        className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                        onClick={() => setIsDropdownOpen(false)}
+                                    >
+                                        <UsersIcon className="h-4 w-4 mr-2 shrink-0" />
+                                        {t('admin.manageUsers', 'Manage users')}
+                                    </Link>
+                                )}
+                                <hr className="my-1 border-gray-200 dark:border-gray-600" />
                                 <Link
                                     to="/profile"
-                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                                     onClick={() => setIsDropdownOpen(false)}
                                 >
+                                    <Cog6ToothIcon className="h-4 w-4 mr-2 shrink-0" />
                                     {t(
                                         'navigation.profileSettings',
                                         'Profile Settings'
@@ -270,29 +303,22 @@ const Navbar: React.FC<NavbarProps> = ({
                                 {featureFlags.backups && (
                                     <Link
                                         to="/backup"
-                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                        className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                                         onClick={() => setIsDropdownOpen(false)}
                                     >
+                                        <CircleStackIcon className="h-4 w-4 mr-2 shrink-0" />
                                         {t(
                                             'navigation.backupRestore',
                                             'Backup & Restore'
                                         )}
                                     </Link>
                                 )}
-                                {currentUser?.is_admin === true && (
-                                    <Link
-                                        to="/admin/users"
-                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                        onClick={() => setIsDropdownOpen(false)}
-                                    >
-                                        {t('admin.manageUsers', 'Manage users')}
-                                    </Link>
-                                )}
                                 <Link
                                     to="/about"
-                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                                     onClick={() => setIsDropdownOpen(false)}
                                 >
+                                    <InformationCircleIcon className="h-4 w-4 mr-2 shrink-0" />
                                     {t('navigation.about', 'About')}
                                 </Link>
                                 <hr className="my-1 border-gray-200 dark:border-gray-600" />
@@ -301,8 +327,9 @@ const Navbar: React.FC<NavbarProps> = ({
                                         setIsDropdownOpen(false);
                                         handleLogout();
                                     }}
-                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    className="w-full flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                                 >
+                                    <ArrowRightStartOnRectangleIcon className="h-4 w-4 mr-2 shrink-0" />
                                     {t('navigation.logout', 'Logout')}
                                 </button>
                             </div>

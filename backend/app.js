@@ -257,6 +257,7 @@ const mcpModule = require('./modules/mcp');
 const oidcModule = require('./modules/oidc');
 const aiAssistantModule = require('./modules/ai-assistant');
 const peopleModule = require('./modules/people');
+const templatesModule = require('./modules/templates');
 
 // Swagger documentation - enabled by default, protected by authentication
 // Mounted on /api-docs to avoid conflicts with API routes
@@ -343,6 +344,7 @@ const registerApiRoutes = (basePath) => {
     app.use(basePath, mcpModule.routes);
     app.use(basePath, aiAssistantModule.routes);
     app.use(basePath, peopleModule.routes);
+    app.use(basePath, templatesModule.routes);
 };
 
 // Register routes at both /api and /api/v1 (if versioned) to maintain backwards compatibility

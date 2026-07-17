@@ -31,6 +31,7 @@ import EisenhowerMatrix from './components/Eisenhower/EisenhowerMatrix';
 import KanbanBoard from './components/Kanban/KanbanBoard';
 import PeopleList from './components/People/PeopleList';
 import PersonDetails from './components/People/PersonDetails';
+import Templates from './components/Templates/Templates';
 import { setCurrentUser as setUserInStorage } from './utils/userUtils';
 import { getApiPath, getLocalesPath } from './config/paths';
 import { useStore } from './store/useStore';
@@ -253,6 +254,7 @@ const App: React.FC = () => {
                                 path="/habit/:uid"
                                 element={<HabitDetails />}
                             />
+                            <Route path="/templates" element={<Templates />} />
                             <Route path="/projects" element={<Projects />} />
                             <Route
                                 path="/project/:uidSlug"

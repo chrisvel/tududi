@@ -12,6 +12,8 @@ interface FeaturesTabProps {
     onToggleHabits: () => void;
     calendarEnabled: boolean;
     onToggleCalendar: () => void;
+    templatesEnabled: boolean;
+    onToggleTemplates: () => void;
     formData: ProfileFormData;
     onToggleAi: (field: keyof Features) => void;
 }
@@ -69,6 +71,8 @@ const FeaturesTab: React.FC<FeaturesTabProps> = ({
     onToggleHabits,
     calendarEnabled,
     onToggleCalendar,
+    templatesEnabled,
+    onToggleTemplates,
     formData,
     onToggleAi,
 }) => {
@@ -118,6 +122,15 @@ const FeaturesTab: React.FC<FeaturesTabProps> = ({
                     )}
                     value={calendarEnabled}
                     onToggle={onToggleCalendar}
+                />
+                <ToggleRow
+                    label={t('navigation.templates', 'Templates')}
+                    description={t(
+                        'profile.templatesDescription',
+                        'Enable Project Templates to save and reuse project structures.'
+                    )}
+                    value={templatesEnabled}
+                    onToggle={onToggleTemplates}
                 />
             </div>
 

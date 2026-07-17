@@ -102,6 +102,28 @@ module.exports = (sequelize) => {
                 allowNull: true,
                 defaultValue: null,
             },
+            is_template: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: false,
+            },
+            template_category: {
+                type: DataTypes.STRING(100),
+                allowNull: true,
+            },
+            clone_count: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                defaultValue: 0,
+            },
+            source_template_id: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                references: {
+                    model: 'projects',
+                    key: 'id',
+                },
+            },
             status: {
                 type: DataTypes.ENUM(
                     'not_started',
@@ -123,6 +145,9 @@ module.exports = (sequelize) => {
                 },
                 {
                     fields: ['area_id'],
+                },
+                {
+                    fields: ['is_template'],
                 },
             ],
         }
