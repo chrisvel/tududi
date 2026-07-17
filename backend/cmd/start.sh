@@ -78,14 +78,28 @@ backup_db() {
 }
 
 # Before v1.2.0, the database was mounted at /app/backend/db. If the new path
-# does not exist but the old path does, copy it over so data is preserved.
+# does not exist but the old path does, redirect DB_FILE to the old path so
+# writes stay on the persistent (user-mounted) volume rather than being copied
+# to an anonymous Docker volume that is discarded on container recreation.
 OLD_DB_PATH="/app/backend/db/${NODE_ENV}.sqlite3"
 if [ ! -f "$DB_FILE" ] && [ -f "$OLD_DB_PATH" ]; then
-  echo "⚠️  Database found at old location ($OLD_DB_PATH)."
-  echo "    Copying to new location ($DB_FILE) to preserve data..."
-  mkdir -p "$(dirname "$DB_FILE")"
-  cp "$OLD_DB_PATH" "$DB_FILE"
-  echo "✅ Database copied. Update your volume mount from :/app/backend/db to :/app/db."
+  echo ""
+  echo "⚠️  =============================================================="
+  echo "⚠️  ACTION REQUIRED: Volume mount path changed in v1.2.0"
+  echo "⚠️"
+  echo "⚠️  Your database is at the old location: $OLD_DB_PATH"
+  echo "⚠️  The new canonical location is:        $DB_FILE"
+  echo "⚠️"
+  echo "⚠️  To prevent data loss, using old path until you update:"
+  echo "⚠️    docker-compose.yml volumes:"
+  echo "⚠️      - ./tududi_db:/app/backend/db  (OLD - change this)"
+  echo "⚠️      + ./tududi_db:/app/db           (NEW)"
+  echo "⚠️"
+  echo "⚠️  WARNING: New data will be LOST on container recreation until"
+  echo "⚠️  you update the volume mount. See upgrade docs for details."
+  echo "⚠️  =============================================================="
+  echo ""
+  export DB_FILE="$OLD_DB_PATH"
 fi
 
 # Check if database exists and create/authenticate

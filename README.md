@@ -200,6 +200,36 @@ Connect Tududi to external CalDAV servers like Nextcloud, Baikal, or other CalDA
 
 **Documentation:** See [docs/11-caldav-sync.md](docs/11-caldav-sync.md) for client setup guides, server configuration, and troubleshooting.
 
+### Upgrading
+
+#### v1.1.x to v1.2.x: Volume path change
+
+The Docker volume mount path changed in v1.2.0 from `/app/backend/db` to `/app/db`. If you are upgrading from v1.1.x and your `docker-compose.yml` still uses the old path, **new data will be lost on container recreation** because writes go to an anonymous Docker volume that is discarded when the container is recreated.
+
+**How to check:** Look at your `docker-compose.yml` volumes section:
+
+```yaml
+# OLD (v1.1.x) - update this
+volumes:
+  - ./tududi_db:/app/backend/db
+  - ./uploads:/app/backend/uploads
+
+# NEW (v1.2.x+) - use these paths
+volumes:
+  - ./tududi_db:/app/db
+  - ./uploads:/app/uploads
+```
+
+**Migration steps:**
+
+1. Stop the container: `docker-compose down`
+2. Update `docker-compose.yml` to use the new volume paths (see above)
+3. Start the container: `docker-compose up -d`
+
+Your existing data directory (`./tududi_db`) stays the same - only the mount point inside the container changes. No data copying is needed when using bind mounts.
+
+> **Note:** While you still use the old path, Tududi will print a warning at startup and continue using the old location to prevent data loss. Once you update the volume mount, the warning disappears and writes go to the correct persistent location.
+
 ### 📚 Documentation
 
 For detailed setup instructions, configuration options, and getting started guides, visit:
