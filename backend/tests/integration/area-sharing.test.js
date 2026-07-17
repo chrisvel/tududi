@@ -188,6 +188,77 @@ describe('Area Sharing', () => {
         expect(deleteResponse.status).toBe(404);
     });
 
+    test('owner sees projects a rw recipient creates in the shared area', async () => {
+        await shareArea('rw');
+
+        const areaRecord = await Area.findOne({ where: { uid: area.uid } });
+        const recipientProject = await sharedUserAgent
+            .post('/api/project')
+            .send({
+                name: 'Recipient Project',
+                area_id: areaRecord.id,
+            });
+        expect(recipientProject.status).toBe(201);
+
+        // The recipient's task inside that project is visible to the owner too
+        const recipientTask = await sharedUserAgent.post('/api/task').send({
+            name: 'Recipient Task',
+            project_id: recipientProject.body.id,
+        });
+        expect(recipientTask.status).toBe(201);
+
+        const projectsResponse = await ownerAgent.get('/api/projects');
+        const projects =
+            projectsResponse.body.projects || projectsResponse.body;
+        expect(projects.map((p) => p.uid)).toContain(recipientProject.body.uid);
+
+        const tasksResponse = await ownerAgent.get('/api/tasks');
+        const tasks = tasksResponse.body.tasks || tasksResponse.body;
+        expect(tasks.map((t) => t.name)).toContain('Recipient Task');
+
+        // And the owner can edit the recipient's task (rw via own area)
+        const patchResponse = await ownerAgent
+            .patch(`/api/task/${recipientTask.body.uid}`)
+            .send({ name: 'Recipient Task edited by owner' });
+        expect(patchResponse.status).toBe(200);
+    });
+
+    test('ro recipient cannot create a project in the shared area', async () => {
+        await shareArea('ro');
+
+        const areaRecord = await Area.findOne({ where: { uid: area.uid } });
+        const response = await sharedUserAgent.post('/api/project').send({
+            name: 'Should Not Exist',
+            area_id: areaRecord.id,
+        });
+        expect(response.status).toBe(403);
+    });
+
+    test('unrelated user cannot attach a project to a foreign area', async () => {
+        // No share at all
+        const areaRecord = await Area.findOne({ where: { uid: area.uid } });
+        const response = await sharedUserAgent.post('/api/project').send({
+            name: 'Sneaky Project',
+            area_id: areaRecord.id,
+        });
+        expect(response.status).toBe(403);
+    });
+
+    test('ro recipient cannot move an own project into the shared area', async () => {
+        await shareArea('ro');
+
+        const ownProject = await sharedUserAgent.post('/api/project').send({
+            name: 'Recipient Own Project',
+        });
+        expect(ownProject.status).toBe(201);
+
+        const areaRecord = await Area.findOne({ where: { uid: area.uid } });
+        const response = await sharedUserAgent
+            .patch(`/api/project/${ownProject.body.uid}`)
+            .send({ area_id: areaRecord.id });
+        expect(response.status).toBe(403);
+    });
+
     test('revoking the share removes visibility', async () => {
         await shareArea('ro');
 

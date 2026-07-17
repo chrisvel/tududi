@@ -14,14 +14,25 @@ async function getSharedUidsForUser(resourceType, userId) {
     return Array.from(set);
 }
 
-// Numeric ids of areas shared with the user. Projects inside shared areas
-// (and their tasks/notes) are derived from these at query time, so area
-// membership changes take effect immediately without permission recompute.
-async function getSharedAreaIds(userId) {
+// Numeric ids of areas the user can see into: areas they own plus areas
+// shared with them. Projects inside these areas (and their tasks/notes) are
+// derived from the ids at query time, so area membership changes take effect
+// immediately without permission recompute. Owned areas matter because a
+// share recipient with rw access may create projects inside the owner's
+// area — the owner (and other recipients) must see those too, even though
+// they belong to the recipient.
+async function getVisibleAreaIds(userId) {
     const sharedAreaUids = await getSharedUidsForUser('area', userId);
-    if (sharedAreaUids.length === 0) return [];
+    const where = sharedAreaUids.length
+        ? {
+              [Op.or]: [
+                  { user_id: userId },
+                  { uid: { [Op.in]: sharedAreaUids } },
+              ],
+          }
+        : { user_id: userId };
     const areas = await Area.findAll({
-        where: { uid: { [Op.in]: sharedAreaUids } },
+        where,
         attributes: ['id'],
         raw: true,
     });
@@ -165,20 +176,20 @@ async function ownershipOrPermissionWhere(resourceType, userId, cache = null) {
     // projects that live in shared areas
     if (resourceType === 'task' || resourceType === 'note') {
         const sharedProjectUids = await getSharedUidsForUser('project', userId);
-        const sharedAreaIds = await getSharedAreaIds(userId);
+        const visibleAreaIds = await getVisibleAreaIds(userId);
 
         // Get the project IDs for shared projects / projects in shared areas
         let sharedProjectIds = [];
-        if (sharedProjectUids.length > 0 || sharedAreaIds.length > 0) {
+        if (sharedProjectUids.length > 0 || visibleAreaIds.length > 0) {
             const projectConditions = [];
             if (sharedProjectUids.length > 0) {
                 projectConditions.push({
                     uid: { [Op.in]: sharedProjectUids },
                 });
             }
-            if (sharedAreaIds.length > 0) {
+            if (visibleAreaIds.length > 0) {
                 projectConditions.push({
-                    area_id: { [Op.in]: sharedAreaIds },
+                    area_id: { [Op.in]: visibleAreaIds },
                 });
             }
             const projects = await Project.findAll({
@@ -208,13 +219,13 @@ async function ownershipOrPermissionWhere(resourceType, userId, cache = null) {
 
     // For projects, also include projects that live in shared areas
     if (resourceType === 'project') {
-        const sharedAreaIds = await getSharedAreaIds(userId);
+        const visibleAreaIds = await getVisibleAreaIds(userId);
         const conditions = [{ user_id: userId }];
         if (sharedUids.length > 0) {
             conditions.push({ uid: { [Op.in]: sharedUids } });
         }
-        if (sharedAreaIds.length > 0) {
-            conditions.push({ area_id: { [Op.in]: sharedAreaIds } });
+        if (visibleAreaIds.length > 0) {
+            conditions.push({ area_id: { [Op.in]: visibleAreaIds } });
         }
         const result = { [Op.or]: conditions };
         if (cache) cache.set(cacheKey, result);
