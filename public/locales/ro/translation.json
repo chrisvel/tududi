@@ -1637,6 +1637,7 @@
     "statTotal": "Total",
     "statDone": "Finalizat",
     "statActive": "Activ",
-    "statOverdue": "Întârziat"
+    "statOverdue": "Întârziat",
+    "pastBriefWarning": "Această sinteză este din {{date}} și s-ar putea să nu mai reflecte sarcinile de astăzi. Faceți clic pe Regenerare pentru o sinteză nouă."
   }
 }

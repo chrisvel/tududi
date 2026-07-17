@@ -1637,6 +1637,7 @@
     "statTotal": "总计",
     "statDone": "完成",
     "statActive": "活跃",
-    "statOverdue": "逾期"
+    "statOverdue": "逾期",
+    "pastBriefWarning": "此简报来自{{date}}，可能不再反映今天的任务。点击重新生成以获取最新简报。"
   }
 }

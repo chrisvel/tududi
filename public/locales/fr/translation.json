@@ -1637,6 +1637,7 @@
     "statTotal": "Total",
     "statDone": "Fait",
     "statActive": "Actif",
-    "statOverdue": "En retard"
+    "statOverdue": "En retard",
+    "pastBriefWarning": "Ce brief date du {{date}} et peut ne plus refléter les tâches d'aujourd'hui. Cliquez sur Régénérer pour un nouveau brief."
   }
 }

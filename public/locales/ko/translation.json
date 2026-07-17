@@ -1637,6 +1637,7 @@
     "statTotal": "총계",
     "statDone": "완료",
     "statActive": "활성",
-    "statOverdue": "기한 초과"
+    "statOverdue": "기한 초과",
+    "pastBriefWarning": "이 브리핑은 {{date}}의 것이며 오늘의 작업을 더 이상 반영하지 않을 수 있습니다. 새 브리핑을 원하시면 다시 생성하기를 클릭하세요."
   }
 }

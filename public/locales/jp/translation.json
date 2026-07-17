@@ -1637,6 +1637,7 @@
     "statTotal": "合計",
     "statDone": "完了",
     "statActive": "アクティブ",
-    "statOverdue": "期限切れ"
+    "statOverdue": "期限切れ",
+    "pastBriefWarning": "このブリーフは{{date}}のものであり、今日のタスクを反映していない可能性があります。新しいブリーフを取得するには、再生成をクリックしてください。"
   }
 }

@@ -1637,6 +1637,7 @@
     "statTotal": "Totalt",
     "statDone": "Utfört",
     "statActive": "Aktiv",
-    "statOverdue": "Förfallen"
+    "statOverdue": "Förfallen",
+    "pastBriefWarning": "Denna sammanfattning är från {{date}} och kanske inte längre återspeglar dagens uppgifter. Klicka på Återgenerera för en ny sammanfattning."
   }
 }

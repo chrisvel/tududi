@@ -52,6 +52,7 @@ class TemplatesRepository extends BaseRepository {
                             model: Task,
                             as: 'Subtasks',
                             required: false,
+                            separate: true,
                             include: [
                                 {
                                     model: Tag,

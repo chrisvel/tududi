@@ -1634,7 +1634,8 @@
     "priorityActions": "Пріоритетні дії",
     "taskInsightsTitle": "AI Інсайти",
     "projectInsightsTitle": "AI Інсайти",
-    "taskInsight": "Про це завдання"
+    "taskInsight": "Про це завдання",
+    "pastBriefWarning": "Цей бриф з {{date}} і може більше не відображати сьогоднішні завдання. Натисніть «Відновити», щоб отримати новий бриф."
   },
   "habits": {
     "completeHabit": "Завершити звичку"

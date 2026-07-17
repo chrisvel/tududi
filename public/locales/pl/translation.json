@@ -1637,6 +1637,7 @@
     "statTotal": "Razem",
     "statDone": "Zrobione",
     "statActive": "Aktywne",
-    "statOverdue": "Przeterminowane"
+    "statOverdue": "Przeterminowane",
+    "pastBriefWarning": "Ten brief jest z {{date}} i może już nie odzwierciedlać dzisiejszych zadań. Kliknij Regeneruj, aby uzyskać nowy brief."
   }
 }

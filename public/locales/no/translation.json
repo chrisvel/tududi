@@ -1639,7 +1639,8 @@
     "statTotal": "Totalt",
     "statDone": "Ferdig",
     "statActive": "Aktiv",
-    "statOverdue": "Forsinket"
+    "statOverdue": "Forsinket",
+    "pastBriefWarning": "Denne oppsummeringen er fra {{date}} og gjenspeiler kanskje ikke dagens oppgaver. Klikk på Generer på nytt for en ny oppsummering."
   },
   "habits": {
     "completeHabit": "Fullfør vane"

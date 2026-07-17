@@ -1637,6 +1637,7 @@
     "statTotal": "Toplam",
     "statDone": "Tamamlandı",
     "statActive": "Aktif",
-    "statOverdue": "Vadesi geçmiş"
+    "statOverdue": "Vadesi geçmiş",
+    "pastBriefWarning": "Bu brif {{date}} tarihindendir ve bugünün görevlerini yansıtmayabilir. Yeni bir brif için Yenile'ye tıklayın."
   }
 }

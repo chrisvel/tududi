@@ -1637,6 +1637,7 @@
     "statTotal": "Total",
     "statDone": "Færdig",
     "statActive": "Aktiv",
-    "statOverdue": "Forfaldet"
+    "statOverdue": "Forfaldet",
+    "pastBriefWarning": "Denne briefing er fra {{date}} og afspejler muligvis ikke dagens opgaver længere. Klik på Generer igen for en ny briefing."
   }
 }

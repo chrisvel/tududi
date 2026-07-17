@@ -1637,6 +1637,7 @@
     "statTotal": "Tổng cộng",
     "statDone": "Đã hoàn thành",
     "statActive": "Đang hoạt động",
-    "statOverdue": "Quá hạn"
+    "statOverdue": "Quá hạn",
+    "pastBriefWarning": "Bản tóm tắt này từ {{date}} và có thể không còn phản ánh các nhiệm vụ hôm nay. Nhấn Regenerate để có một bản tóm tắt mới."
   }
 }

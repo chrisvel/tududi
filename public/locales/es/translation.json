@@ -1624,6 +1624,7 @@
     "statTotal": "Total",
     "statDone": "Hecho",
     "statActive": "Activo",
-    "statOverdue": "Atrasado"
+    "statOverdue": "Atrasado",
+    "pastBriefWarning": "Este resumen es del {{date}} y puede que ya no refleje las tareas de hoy. Haz clic en Regenerar para obtener un resumen nuevo."
   }
 }

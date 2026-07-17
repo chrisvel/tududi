@@ -1637,6 +1637,7 @@
     "statTotal": "Yhteensä",
     "statDone": "Valmis",
     "statActive": "Aktiivinen",
-    "statOverdue": "Erääntynyt"
+    "statOverdue": "Erääntynyt",
+    "pastBriefWarning": "Tämä tiivistelmä on päivältä {{date}} eikä välttämättä vastaa tämän päivän tehtäviä. Napsauta Uudelleenluo saadaksesi uuden tiivistelmän."
   }
 }

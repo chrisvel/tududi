@@ -1637,6 +1637,7 @@
     "statTotal": "Skupaj",
     "statDone": "Končano",
     "statActive": "Aktivno",
-    "statOverdue": "Zapadlo"
+    "statOverdue": "Zapadlo",
+    "pastBriefWarning": "Ta povzetek je z {{date}} in morda ne odraža več današnjih nalog. Kliknite na Ponovno generiraj za nov povzetek."
   }
 }

@@ -1646,6 +1646,7 @@
     "statTotal": "Gesamt",
     "statDone": "Erledigt",
     "statActive": "Aktiv",
-    "statOverdue": "Überfällig"
+    "statOverdue": "Überfällig",
+    "pastBriefWarning": "Dieses Briefing stammt vom {{date}} und spiegelt möglicherweise nicht mehr die heutigen Aufgaben wider. Klicken Sie auf Regenerieren für ein frisches Briefing."
   }
 }

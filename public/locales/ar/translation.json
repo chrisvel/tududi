@@ -1637,6 +1637,7 @@
     "statTotal": "الإجمالي",
     "statDone": "تم",
     "statActive": "نشط",
-    "statOverdue": "متأخر"
+    "statOverdue": "متأخر",
+    "pastBriefWarning": "هذه الموجز من {{date}} وقد لا تعكس مهام اليوم. انقر على تجديد للحصول على موجز جديد."
   }
 }

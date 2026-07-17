@@ -1,10 +1,6 @@
 'use strict';
 
-const https = require('https');
-const http = require('http');
-const { URL } = require('url');
-const { Op } = require('sequelize');
-const { Task, sequelize } = require('../../models');
+const { Task, Tag, sequelize } = require('../../models');
 const templatesRepository = require('./repository');
 const projectsRepository = require('../projects/repository');
 const { validateUid, validateName } = require('./utils/validation');
@@ -74,42 +70,6 @@ function findEarliestDueDate(tasks) {
         }
     }
     return earliest;
-}
-
-function httpGet(urlStr, headers = {}) {
-    return new Promise((resolve, reject) => {
-        const parsed = new URL(urlStr);
-        const lib = parsed.protocol === 'https:' ? https : http;
-        const req = lib.get(
-            {
-                hostname: parsed.hostname,
-                port: parsed.port,
-                path: parsed.pathname + parsed.search,
-                headers,
-            },
-            (res) => {
-                let data = '';
-                res.on('data', (chunk) => {
-                    data += chunk;
-                });
-                res.on('end', () => {
-                    try {
-                        resolve({
-                            status: res.statusCode,
-                            body: JSON.parse(data),
-                        });
-                    } catch {
-                        resolve({ status: res.statusCode, body: data });
-                    }
-                });
-            }
-        );
-        req.on('error', reject);
-        req.setTimeout(10000, () => {
-            req.destroy();
-            reject(new Error('Marketplace request timed out'));
-        });
-    });
 }
 
 class TemplatesService {
@@ -215,7 +175,21 @@ class TemplatesService {
             user_id: userId,
         });
 
-        await this._copyTasksToProject(source, template, userId, {
+        const allSourceTasks = await Task.findAll({
+            where: { project_id: source.id, recurring_parent_id: null },
+            include: [
+                {
+                    model: Tag,
+                    attributes: ['id', 'name', 'uid', 'color'],
+                    through: { attributes: [] },
+                    required: false,
+                },
+            ],
+            order: [['id', 'ASC']],
+        });
+        const flatSource = { Tasks: allSourceTasks.map((t) => t.toJSON()) };
+
+        await this._copyTasksToProject(flatSource, template, userId, {
             resetStatus: true,
         });
 
@@ -264,7 +238,23 @@ class TemplatesService {
             user_id: userId,
         });
 
-        await this._copyTasksToProject(template, newProject, userId, {
+        const allTemplateTasks = await Task.findAll({
+            where: { project_id: template.id },
+            include: [
+                {
+                    model: Tag,
+                    attributes: ['id', 'name', 'uid', 'color'],
+                    through: { attributes: [] },
+                    required: false,
+                },
+            ],
+            order: [['id', 'ASC']],
+        });
+        const flatTemplateSource = {
+            Tasks: allTemplateTasks.map((t) => t.toJSON()),
+        };
+
+        await this._copyTasksToProject(flatTemplateSource, newProject, userId, {
             resetStatus: options.resetStatus !== false,
             startDate: options.startDate,
         });
@@ -477,112 +467,16 @@ class TemplatesService {
         return { message: 'Template deleted' };
     }
 
-    async fetchMarketplaceTemplates(query) {
-        const config = getConfig();
-        const marketplaceUrl = config.marketplaceUrl;
-        if (!marketplaceUrl) return { templates: [] };
-
-        const qs = new URLSearchParams(query).toString();
-        const url = `${marketplaceUrl}/api/marketplace/templates${qs ? '?' + qs : ''}`;
-
-        try {
-            const headers = {};
-            if (config.marketplaceApiKey) {
-                headers['Authorization'] = `Bearer ${config.marketplaceApiKey}`;
-            }
-            const response = await httpGet(url, headers);
-            if (response.status !== 200) return { templates: [] };
-            return response.body;
-        } catch (err) {
-            logError('Marketplace fetch failed:', err.message);
-            return { templates: [] };
-        }
+    async fetchMarketplaceTemplates() {
+        return { templates: [] };
     }
 
-    async fetchMarketplaceTemplate(uid) {
-        const config = getConfig();
-        const marketplaceUrl = config.marketplaceUrl;
-        if (!marketplaceUrl)
-            throw new NotFoundError('Marketplace not configured');
-
-        const url = `${marketplaceUrl}/api/marketplace/templates/${uid}`;
-        try {
-            const headers = {};
-            if (config.marketplaceApiKey) {
-                headers['Authorization'] = `Bearer ${config.marketplaceApiKey}`;
-            }
-            const response = await httpGet(url, headers);
-            if (response.status === 404)
-                throw new NotFoundError('Template not found in marketplace');
-            if (response.status !== 200) throw new Error('Marketplace error');
-            return response.body;
-        } catch (err) {
-            if (err instanceof NotFoundError) throw err;
-            logError('Marketplace template fetch failed:', err.message);
-            throw new Error('Failed to fetch marketplace template');
-        }
+    async fetchMarketplaceTemplate() {
+        throw new NotFoundError('Marketplace not available');
     }
 
-    async installMarketplaceTemplate(marketplaceUid, userId) {
-        const config = getConfig();
-        const count = await templatesRepository.countByUser(userId);
-        if (count >= config.maxTemplatesPerUser) {
-            throw new ValidationError(
-                `Template limit reached. Maximum ${config.maxTemplatesPerUser} templates allowed per user.`
-            );
-        }
-
-        const marketplaceUrl = config.marketplaceUrl;
-        if (!marketplaceUrl)
-            throw new ValidationError('Marketplace not configured');
-
-        const url = `${marketplaceUrl}/api/marketplace/templates/${marketplaceUid}/install-data`;
-        const headers = {};
-        if (config.marketplaceApiKey) {
-            headers['Authorization'] = `Bearer ${config.marketplaceApiKey}`;
-        }
-
-        let response;
-        try {
-            response = await httpGet(url, headers);
-        } catch (err) {
-            logError('Marketplace install-data fetch failed:', err.message);
-            throw new Error('Failed to fetch template from marketplace');
-        }
-
-        if (response.status === 403)
-            throw new ValidationError(
-                'Access denied. An active subscription is required for paid templates.'
-            );
-        if (response.status === 404)
-            throw new NotFoundError('Template not found in marketplace');
-        if (response.status !== 200) throw new Error('Marketplace error');
-
-        const templateData = response.body;
-
-        const templateUid = generateUid();
-        const template = await templatesRepository.create({
-            uid: templateUid,
-            name: templateData.name || 'Marketplace Template',
-            description: templateData.description || '',
-            status: 'not_started',
-            is_template: true,
-            template_category: templateData.category || null,
-            clone_count: 0,
-            user_id: userId,
-        });
-
-        if (templateData.structure && templateData.structure.tasks) {
-            const fakeSource = {
-                Tasks: templateData.structure.tasks,
-                Subtasks: [],
-            };
-            await this._copyTasksToProject(fakeSource, template, userId, {
-                resetStatus: true,
-            });
-        }
-
-        return { ...template.toJSON(), uid: templateUid, tags: [] };
+    async installMarketplaceTemplate() {
+        throw new ValidationError('Marketplace not available');
     }
 }
 

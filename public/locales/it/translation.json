@@ -1637,6 +1637,7 @@
     "statTotal": "Totale",
     "statDone": "Fatto",
     "statActive": "Attivo",
-    "statOverdue": "Scaduto"
+    "statOverdue": "Scaduto",
+    "pastBriefWarning": "Questo briefing è del {{date}} e potrebbe non riflettere più le attività di oggi. Clicca su Rigenera per un nuovo briefing."
   }
 }

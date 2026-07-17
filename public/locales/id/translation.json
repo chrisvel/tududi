@@ -1637,6 +1637,7 @@
     "statTotal": "Total",
     "statDone": "Selesai",
     "statActive": "Aktif",
-    "statOverdue": "Terlambat"
+    "statOverdue": "Terlambat",
+    "pastBriefWarning": "Brief ini berasal dari {{date}} dan mungkin tidak lagi mencerminkan tugas hari ini. Klik Regenerate untuk mendapatkan brief yang baru."
   }
 }

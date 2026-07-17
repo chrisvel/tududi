@@ -1637,6 +1637,7 @@
     "statTotal": "Totaal",
     "statDone": "Voltooid",
     "statActive": "Actief",
-    "statOverdue": "Te laat"
+    "statOverdue": "Te laat",
+    "pastBriefWarning": "Deze samenvatting is van {{date}} en weerspiegelt mogelijk niet langer de taken van vandaag. Klik op Regenereren voor een nieuwe samenvatting."
   }
 }
