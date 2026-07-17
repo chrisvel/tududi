@@ -616,4 +616,41 @@ describe('Project Sharing Integration Tests', () => {
             expect(deleteResponse.status).toBe(403);
         });
     });
+
+    describe('Issue 1140: Task due_date in shared project detail view', () => {
+        test('GET /api/task/:uid returns due_date for shared project task', async () => {
+            const dueDate = '2025-08-15';
+
+            const taskResponse = await ownerAgent.post('/api/task').send({
+                name: 'Task with due date in shared project',
+                project_id: project.id,
+                due_date: dueDate,
+                priority: 1,
+                status: 0,
+            });
+            expect(taskResponse.status).toBe(201);
+            const task = taskResponse.body;
+            expect(task.uid).toBeDefined();
+
+            const response = await sharedUserAgent.get(`/api/task/${task.uid}`);
+
+            expect(response.status).toBe(200);
+            expect(response.body.due_date).toBe(dueDate);
+        });
+
+        test('GET /api/task/:uid returns 200 (not 403) for shared project task', async () => {
+            const taskResponse = await ownerAgent.post('/api/task').send({
+                name: 'Task in shared project',
+                project_id: project.id,
+                priority: 1,
+                status: 0,
+            });
+            expect(taskResponse.status).toBe(201);
+            const task = taskResponse.body;
+
+            const response = await sharedUserAgent.get(`/api/task/${task.uid}`);
+
+            expect(response.status).toBe(200);
+        });
+    });
 });

@@ -49,6 +49,7 @@ const TaskDetails: React.FC = () => {
     const isNewTask = location.state?.isNew === true;
     const isNewTaskRef = useRef(isNewTask);
     const taskModifiedRef = useRef(false);
+    const hasFetchedRef = useRef<string | null>(null);
     const { showSuccessToast, showErrorToast } = useToast();
 
     // Clear navigation state so refresh/back doesn't re-trigger edit mode
@@ -507,22 +508,39 @@ const TaskDetails: React.FC = () => {
                 return;
             }
 
-            if (!task) {
-                try {
-                    setLoading(true);
-                    const fetchedTask = await fetchTaskByUid(uid);
+            if (hasFetchedRef.current === uid) {
+                return;
+            }
+
+            hasFetchedRef.current = uid;
+
+            const alreadyInStore = tasksStore.tasks.some(
+                (t: Task) => t.uid === uid
+            );
+
+            try {
+                if (!alreadyInStore) setLoading(true);
+                const fetchedTask = await fetchTaskByUid(uid);
+                const existingIndex = tasksStore.tasks.findIndex(
+                    (t: Task) => t.uid === uid
+                );
+                if (existingIndex >= 0) {
+                    const updatedTasks = [...tasksStore.tasks];
+                    updatedTasks[existingIndex] = fetchedTask;
+                    tasksStore.setTasks(updatedTasks);
+                } else {
                     tasksStore.setTasks([...tasksStore.tasks, fetchedTask]);
-                } catch (fetchError) {
-                    setError('Task not found');
-                    console.error('Error fetching task:', fetchError);
-                } finally {
-                    setLoading(false);
                 }
+            } catch (fetchError) {
+                if (!alreadyInStore) setError('Task not found');
+                console.error('Error fetching task:', fetchError);
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchTaskData();
-    }, [uid, task, tasksStore]);
+    }, [uid, tasksStore]);
 
     useEffect(() => {
         const loadAttachmentCount = async () => {
