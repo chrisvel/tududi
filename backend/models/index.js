@@ -314,10 +314,13 @@ Person.hasMany(Task, {
 });
 
 // Seed system tags for every new user
-User.addHook('afterCreate', async (user) => {
+User.addHook('afterCreate', async (user, options) => {
     try {
         const { seedSystemTagsForUser } = require('../modules/tags/systemTags');
-        await seedSystemTagsForUser(user.id);
+        // Pass the parent transaction so Tag.findOrCreate doesn't open a nested
+        // transaction while User.findOrCreate's transaction is still active,
+        // which causes SQLITE_BUSY on first-time database initialization.
+        await seedSystemTagsForUser(user.id, options.transaction);
     } catch (err) {
         // Non-fatal: system tags can be seeded via migration if this fails
         const { logError } = require('../services/logService');
