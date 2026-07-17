@@ -1,8 +1,40 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import hljs from 'highlight.js';
+
+const CodeBlock: React.FC<React.HTMLAttributes<HTMLPreElement>> = ({ children, ...props }) => {
+    const preRef = useRef<HTMLPreElement>(null);
+    const [copied, setCopied] = useState(false);
+
+    const handleCopy = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        const text = preRef.current?.textContent || '';
+        try {
+            await navigator.clipboard.writeText(text);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch (err) {
+            console.error('Failed to copy code:', err);
+        }
+    };
+
+    return (
+        <div className="relative group mb-4">
+            <pre ref={preRef} className="rounded-lg overflow-x-auto" {...props}>
+                {children}
+            </pre>
+            <button
+                onClick={handleCopy}
+                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-700 dark:bg-gray-600 text-white text-xs px-2 py-1 rounded"
+                aria-label="Copy code"
+            >
+                {copied ? 'Copied!' : 'Copy'}
+            </button>
+        </div>
+    );
+};
 
 interface MarkdownRendererProps {
     content: string;
@@ -306,12 +338,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                             );
                         }
                     },
-                    pre: ({ ...props }) => (
-                        <pre
-                            className="mb-4 rounded-lg overflow-x-auto"
-                            {...props}
-                        />
-                    ),
+                    pre: ({ ...props }) => <CodeBlock {...props} />,
 
                     // Customize blockquote styles
                     blockquote: ({ ...props }) => (
