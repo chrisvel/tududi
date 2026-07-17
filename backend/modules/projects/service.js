@@ -91,6 +91,20 @@ class ProjectsService {
         } = query;
         const statusFilter = status || state;
 
+        // Resolve area filter target ID (used after applying per-user overrides)
+        let areaFilterId = null;
+        if (area && area !== '') {
+            const uid = extractUidFromSlug(area);
+            if (uid) {
+                const areaRecord = await projectsRepository.findAreaByUid(uid);
+                if (areaRecord) {
+                    areaFilterId = areaRecord.id;
+                }
+            }
+        } else if (area_id && area_id !== '') {
+            areaFilterId = parseInt(area_id, 10) || area_id;
+        }
+
         let whereClause = await permissionsService.ownershipOrPermissionWhere(
             'project',
             userId
@@ -118,19 +132,10 @@ class ProjectsService {
             whereClause.pin_to_sidebar = false;
         }
 
-        if (area && area !== '') {
-            const uid = extractUidFromSlug(area);
-            if (uid) {
-                const areaRecord = await projectsRepository.findAreaByUid(uid);
-                if (areaRecord) {
-                    whereClause = {
-                        [Op.and]: [whereClause, { area_id: areaRecord.id }],
-                    };
-                }
-            }
-        } else if (area_id && area_id !== '') {
-            whereClause = { [Op.and]: [whereClause, { area_id }] };
-        }
+        // When filtering by area, owned projects can be filtered at the DB level.
+        // Shared projects use per-user overrides, so we apply the area filter in-memory
+        // after resolving overrides. We omit the DB-level area filter here and handle
+        // it below to ensure shared projects' personal area placements are respected.
 
         const projects =
             await projectsRepository.findAllWithFilters(whereClause);
@@ -139,33 +144,53 @@ class ProjectsService {
         const shareCountMap =
             await projectsRepository.getShareCounts(projectUids);
 
-        const enhancedProjects = projects.map((project) => {
-            const taskStatus = calculateTaskStatus(project.Tasks);
-            const projectJson = project.toJSON();
-            const shareCount = shareCountMap[project.uid] || 0;
+        // Load per-user area overrides (covers shared projects assigned to user's areas)
+        const areaOverrides =
+            await projectsRepository.getUserProjectAreaOverrides(userId);
 
-            const isActiveStatus =
-                project.status === 'planned' ||
-                project.status === 'in_progress';
-            const activeTaskCount =
-                taskStatus.in_progress + taskStatus.not_started;
-            const isStalled = isActiveStatus && activeTaskCount === 0;
+        const enhancedProjects = projects
+            .map((project) => {
+                const taskStatus = calculateTaskStatus(project.Tasks);
+                const projectJson = project.toJSON();
+                const shareCount = shareCountMap[project.uid] || 0;
 
-            return {
-                ...projectJson,
-                tags: sortTags(projectJson.Tags),
-                due_date_at: formatDate(project.due_date_at),
-                task_status: taskStatus,
-                completion_percentage:
-                    taskStatus.total > 0
-                        ? Math.round((taskStatus.done / taskStatus.total) * 100)
-                        : 0,
-                user_uid: projectJson.User?.uid,
-                share_count: shareCount,
-                is_shared: shareCount > 0,
-                is_stalled: isStalled,
-            };
-        });
+                const isOwner = project.user_id === userId;
+
+                // Apply per-user area override for shared (non-owned) projects
+                if (!isOwner && areaOverrides[project.id] !== undefined) {
+                    const override = areaOverrides[project.id];
+                    projectJson.area_id = override.area_id;
+                    projectJson.Area = override.Area;
+                }
+
+                const isActiveStatus =
+                    project.status === 'planned' ||
+                    project.status === 'in_progress';
+                const activeTaskCount =
+                    taskStatus.in_progress + taskStatus.not_started;
+                const isStalled = isActiveStatus && activeTaskCount === 0;
+
+                return {
+                    ...projectJson,
+                    tags: sortTags(projectJson.Tags),
+                    due_date_at: formatDate(project.due_date_at),
+                    task_status: taskStatus,
+                    completion_percentage:
+                        taskStatus.total > 0
+                            ? Math.round(
+                                  (taskStatus.done / taskStatus.total) * 100
+                              )
+                            : 0,
+                    user_uid: projectJson.User?.uid,
+                    share_count: shareCount,
+                    is_shared: shareCount > 0,
+                    is_stalled: isStalled,
+                };
+            })
+            .filter((project) => {
+                if (areaFilterId === null) return true;
+                return project.area_id == areaFilterId;
+            });
 
         if (grouped === 'true') {
             const groupedProjects = {};
@@ -320,6 +345,8 @@ class ProjectsService {
             throw new NotFoundError('Project not found.');
         }
 
+        const isOwner = project.user_id === userId;
+
         const {
             name,
             description,
@@ -342,8 +369,6 @@ class ProjectsService {
 
         if (name !== undefined) updateData.name = name;
         if (description !== undefined) updateData.description = description;
-        if (area_id !== undefined)
-            updateData.area_id = area_id === '' ? null : area_id;
         if (goal_id !== undefined)
             updateData.goal_id =
                 goal_id === '' || goal_id === null ? null : goal_id;
@@ -360,6 +385,21 @@ class ProjectsService {
         if (color !== undefined) updateData.color = color === '' ? null : color;
         if (status !== undefined) updateData.status = status;
         else if (state !== undefined) updateData.status = state;
+
+        if (area_id !== undefined) {
+            const resolvedAreaId = area_id === '' ? null : area_id;
+            if (isOwner) {
+                // Owner controls the canonical area for all users
+                updateData.area_id = resolvedAreaId;
+            } else {
+                // Non-owners store their personal area placement without touching the project
+                await projectsRepository.upsertUserProjectArea(
+                    userId,
+                    project.id,
+                    resolvedAreaId
+                );
+            }
+        }
 
         await projectsRepository.update(project, updateData);
         await updateProjectTags(project, tagsData, userId);
