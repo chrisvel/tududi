@@ -257,13 +257,15 @@ async function computeTaskMetrics(
             visibleTasksWhere,
             userTimezone,
             userId,
-            somedayExcludedIds
+            somedayExcludedIds,
+            permissionCache
         ),
         fetchOverdueTasks(
             visibleTasksWhere,
             userTimezone,
             userId,
-            somedayExcludedIds
+            somedayExcludedIds,
+            permissionCache
         ),
         fetchTasksCompletedToday(userId, userTimezone),
         computeWeeklyCompletions(userId, userTimezone),
@@ -294,36 +296,114 @@ async function computeTaskMetrics(
 }
 
 async function getTaskMetrics(userId, timezone) {
-    const metrics = await computeTaskMetrics(userId, timezone);
+    const permissionCache = new Map();
+    const metrics = await computeTaskMetrics(userId, timezone, permissionCache);
+
     const {
         buildMetricsResponse,
         serializeTasks,
     } = require('../core/serializers');
+    const { getTaskTodayMoveCounts } = require('../taskEventService');
+    const { Task } = require('../../../models');
+    const { Op } = require('sequelize');
 
     const response = await buildMetricsResponse(metrics);
 
-    const serializedLists = {
-        tasks_in_progress: await serializeTasks(
+    // Collect all tasks across every list for single-pass pre-fetching
+    const allLists = [
+        metrics.tasks_in_progress,
+        metrics.today_plan_tasks,
+        metrics.tasks_due_today,
+        metrics.tasks_overdue,
+        metrics.suggested_tasks,
+        metrics.tasks_completed_today,
+    ];
+    const allTasks = allLists.flat();
+    const allTaskIds = [...new Set(allTasks.map((t) => t.id))];
+
+    // Single move-count query covering all lists
+    const moveCountMap = await getTaskTodayMoveCounts(allTaskIds);
+
+    // Single batch query for all recurring parent UIDs
+    const parentIds = [
+        ...new Set(
+            allTasks
+                .filter((t) => t.recurring_parent_id)
+                .map((t) => t.recurring_parent_id)
+        ),
+    ];
+    const parentUidMap = {};
+    if (parentIds.length > 0) {
+        const parents = await Task.findAll({
+            where: { id: { [Op.in]: parentIds } },
+            attributes: ['id', 'uid'],
+            raw: true,
+        });
+        parents.forEach((p) => {
+            parentUidMap[p.id] = p.uid;
+        });
+    }
+
+    // Parallelize all 6 serialization calls with shared pre-fetched maps
+    const [
+        tasks_in_progress,
+        tasks_today_plan,
+        tasks_due_today,
+        tasks_overdue,
+        suggested_tasks,
+        tasks_completed_today,
+    ] = await Promise.all([
+        serializeTasks(
             metrics.tasks_in_progress,
-            timezone
+            timezone,
+            {},
+            moveCountMap,
+            parentUidMap
         ),
-        tasks_today_plan: await serializeTasks(
+        serializeTasks(
             metrics.today_plan_tasks,
-            timezone
+            timezone,
+            {},
+            moveCountMap,
+            parentUidMap
         ),
-        tasks_due_today: await serializeTasks(
+        serializeTasks(
             metrics.tasks_due_today,
-            timezone
+            timezone,
+            {},
+            moveCountMap,
+            parentUidMap
         ),
-        tasks_overdue: await serializeTasks(metrics.tasks_overdue, timezone),
-        suggested_tasks: await serializeTasks(
+        serializeTasks(
+            metrics.tasks_overdue,
+            timezone,
+            {},
+            moveCountMap,
+            parentUidMap
+        ),
+        serializeTasks(
             metrics.suggested_tasks,
-            timezone
+            timezone,
+            {},
+            moveCountMap,
+            parentUidMap
         ),
-        tasks_completed_today: await serializeTasks(
+        serializeTasks(
             metrics.tasks_completed_today,
-            timezone
+            timezone,
+            {},
+            moveCountMap,
+            parentUidMap
         ),
+    ]);
+
+    const serializedLists = {
+        tasks_in_progress,
+        tasks_today_plan,
+        tasks_due_today,
+        tasks_overdue,
+        suggested_tasks,
+        tasks_completed_today,
     };
 
     Object.assign(response, serializedLists);
