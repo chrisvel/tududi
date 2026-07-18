@@ -8,6 +8,8 @@ const {
     getTaskTodayMoveCounts,
 } = require('../taskEventService');
 const taskRepository = require('../repository');
+const { Task } = require('../../../models');
+const { Op } = require('sequelize');
 
 // Sort tags alphabetically by name (case-insensitive)
 function sortTags(tags) {
@@ -21,7 +23,8 @@ async function serializeTask(
     task,
     userTimezone = 'UTC',
     options = {},
-    moveCountMap = null
+    moveCountMap = null,
+    parentUidMap = null
 ) {
     if (!task) {
         throw new Error('Task is null or undefined');
@@ -68,13 +71,16 @@ async function serializeTask(
 
     let recurringParentUid = null;
     if (taskJson.recurring_parent_id) {
-        const parentTask = await taskRepository.findById(
-            taskJson.recurring_parent_id,
-            {
-                attributes: ['uid'],
-            }
-        );
-        recurringParentUid = parentTask?.uid || null;
+        if (parentUidMap && taskJson.recurring_parent_id in parentUidMap) {
+            recurringParentUid =
+                parentUidMap[taskJson.recurring_parent_id] || null;
+        } else {
+            const parentTask = await taskRepository.findById(
+                taskJson.recurring_parent_id,
+                { attributes: ['uid'] }
+            );
+            recurringParentUid = parentTask?.uid || null;
+        }
     }
 
     return {
@@ -132,17 +138,54 @@ async function serializeTask(
     };
 }
 
-async function serializeTasks(tasks, userTimezone = 'UTC', options = {}) {
+async function serializeTasks(
+    tasks,
+    userTimezone = 'UTC',
+    options = {},
+    prebuiltMoveCountMap = null,
+    prebuiltParentUidMap = null
+) {
     if (!tasks || tasks.length === 0) {
         return [];
     }
 
-    const taskIds = tasks.map((task) => task.id);
-    const moveCountMap = await getTaskTodayMoveCounts(taskIds);
+    const moveCountMap =
+        prebuiltMoveCountMap !== null
+            ? prebuiltMoveCountMap
+            : await getTaskTodayMoveCounts(tasks.map((t) => t.id));
+
+    // Batch-fetch recurring parent UIDs to avoid per-task DB queries
+    let parentUidMap = prebuiltParentUidMap;
+    if (parentUidMap === null) {
+        const parentIds = [
+            ...new Set(
+                tasks
+                    .filter((t) => t.recurring_parent_id)
+                    .map((t) => t.recurring_parent_id)
+            ),
+        ];
+        parentUidMap = {};
+        if (parentIds.length > 0) {
+            const parents = await Task.findAll({
+                where: { id: { [Op.in]: parentIds } },
+                attributes: ['id', 'uid'],
+                raw: true,
+            });
+            parents.forEach((p) => {
+                parentUidMap[p.id] = p.uid;
+            });
+        }
+    }
 
     return await Promise.all(
         tasks.map((task) =>
-            serializeTask(task, userTimezone, options, moveCountMap)
+            serializeTask(
+                task,
+                userTimezone,
+                options,
+                moveCountMap,
+                parentUidMap
+            )
         )
     );
 }

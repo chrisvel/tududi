@@ -9,6 +9,13 @@ dbConfig = {
     dialect: 'sqlite',
     storage: config.dbFile,
     logging: config.environment === 'development' ? console.log : false,
+    // Allow concurrent reads under WAL mode; SQLite serializes writes internally
+    pool: {
+        max: 5,
+        min: 1,
+        idle: 10000,
+        acquire: 60000,
+    },
     define: {
         timestamps: true,
         underscored: true,
@@ -39,6 +46,9 @@ if (dbConfig.dialect === 'sqlite') {
                     'PRAGMA temp_store=MEMORY;',
                     // Enable memory-mapped I/O (256MB): faster reads on large databases
                     'PRAGMA mmap_size=268435456;',
+                    // Checkpoint WAL every 200 frames instead of the 1000-frame default.
+                    // Keeps the WAL file smaller so reads traverse fewer frames on slow disks.
+                    'PRAGMA wal_autocheckpoint=200;',
                 ].join('\n'),
                 (err) => {
                     if (err) reject(err);
