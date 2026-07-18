@@ -6,15 +6,6 @@ const {
     shouldSendTelegramNotification,
 } = require('../../utils/notificationPreferences');
 
-/**
- * Service to check for due and overdue tasks
- * and create notifications for users
- */
-
-/**
- * Check for tasks that are due soon or overdue
- * and create notifications for the task owners
- */
 async function checkDueTasks() {
     try {
         const now = new Date();
@@ -52,6 +43,23 @@ async function checkDueTasks() {
             };
         }
 
+        // Batch-fetch all relevant notifications in one query to avoid N+1
+        const userIds = [...new Set(dueTasks.map((t) => t.user_id))];
+        const allRecentNotifications = await Notification.findAll({
+            where: {
+                user_id: { [Op.in]: userIds },
+                type: { [Op.in]: ['task_due_soon', 'task_overdue'] },
+                created_at: { [Op.gte]: twoDaysAgo },
+            },
+        });
+        const notificationsByUser = {};
+        for (const notif of allRecentNotifications) {
+            if (!notificationsByUser[notif.user_id]) {
+                notificationsByUser[notif.user_id] = [];
+            }
+            notificationsByUser[notif.user_id].push(notif);
+        }
+
         let notificationsCreated = 0;
 
         for (const task of dueTasks) {
@@ -68,18 +76,8 @@ async function checkDueTasks() {
                     continue;
                 }
 
-                // Check for existing notifications
-                const recentNotifications = await Notification.findAll({
-                    where: {
-                        user_id: task.user_id,
-                        type: {
-                            [Op.in]: ['task_due_soon', 'task_overdue'],
-                        },
-                        created_at: {
-                            [Op.gte]: twoDaysAgo,
-                        },
-                    },
-                });
+                const recentNotifications =
+                    notificationsByUser[task.user_id] || [];
 
                 const existingNotification = recentNotifications.find(
                     (notif) =>
@@ -161,9 +159,6 @@ async function checkDueTasks() {
     }
 }
 
-/**
- * Generate notification title and message based on task due date
- */
 function generateNotificationContent(taskName, dueDate, now, isOverdue) {
     if (isOverdue) {
         const daysOverdue = Math.floor((now - dueDate) / (1000 * 60 * 60 * 24));

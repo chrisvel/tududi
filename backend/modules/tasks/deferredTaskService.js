@@ -45,21 +45,31 @@ async function checkDeferredTasks() {
         let notificationsCreated = 0;
         const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
+        // Batch-fetch all relevant notifications in one query to avoid N+1
+        const userIds = [...new Set(deferredTasks.map((t) => t.user_id))];
+        const allRecentNotifications = await Notification.findAll({
+            where: {
+                user_id: { [Op.in]: userIds },
+                type: 'task_due_soon',
+                created_at: { [Op.gte]: oneDayAgo },
+            },
+        });
+        const notificationsByUser = {};
+        for (const notif of allRecentNotifications) {
+            if (!notificationsByUser[notif.user_id]) {
+                notificationsByUser[notif.user_id] = [];
+            }
+            notificationsByUser[notif.user_id].push(notif);
+        }
+
         for (const task of deferredTasks) {
             try {
                 if (!shouldSendInAppNotification(task.User, 'deferUntil')) {
                     continue;
                 }
 
-                const recentNotifications = await Notification.findAll({
-                    where: {
-                        user_id: task.user_id,
-                        type: 'task_due_soon',
-                        created_at: {
-                            [Op.gte]: oneDayAgo,
-                        },
-                    },
-                });
+                const recentNotifications =
+                    notificationsByUser[task.user_id] || [];
 
                 const existingNotification = recentNotifications.find(
                     (notif) =>

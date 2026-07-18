@@ -6,15 +6,6 @@ const {
     shouldSendTelegramNotification,
 } = require('../../utils/notificationPreferences');
 
-/**
- * Service to check for due and overdue projects
- * and create notifications for users
- */
-
-/**
- * Check for projects that are due soon or overdue
- * and create notifications for the project owners
- */
 async function checkDueProjects() {
     try {
         const now = new Date();
@@ -52,6 +43,23 @@ async function checkDueProjects() {
             };
         }
 
+        // Batch-fetch all relevant notifications in one query to avoid N+1
+        const userIds = [...new Set(dueProjects.map((p) => p.user_id))];
+        const allRecentNotifications = await Notification.findAll({
+            where: {
+                user_id: { [Op.in]: userIds },
+                type: { [Op.in]: ['project_due_soon', 'project_overdue'] },
+                created_at: { [Op.gte]: twoDaysAgo },
+            },
+        });
+        const notificationsByUser = {};
+        for (const notif of allRecentNotifications) {
+            if (!notificationsByUser[notif.user_id]) {
+                notificationsByUser[notif.user_id] = [];
+            }
+            notificationsByUser[notif.user_id].push(notif);
+        }
+
         let notificationsCreated = 0;
 
         for (const project of dueProjects) {
@@ -70,18 +78,8 @@ async function checkDueProjects() {
                     continue;
                 }
 
-                // Check for existing notifications
-                const recentNotifications = await Notification.findAll({
-                    where: {
-                        user_id: project.user_id,
-                        type: {
-                            [Op.in]: ['project_due_soon', 'project_overdue'],
-                        },
-                        created_at: {
-                            [Op.gte]: twoDaysAgo,
-                        },
-                    },
-                });
+                const recentNotifications =
+                    notificationsByUser[project.user_id] || [];
 
                 const existingNotification = recentNotifications.find(
                     (notif) =>
@@ -166,9 +164,6 @@ async function checkDueProjects() {
     }
 }
 
-/**
- * Generate notification title and message based on project due date
- */
 function generateNotificationContent(projectName, dueDate, now, isOverdue) {
     if (isOverdue) {
         const daysOverdue = Math.floor((now - dueDate) / (1000 * 60 * 60 * 24));
