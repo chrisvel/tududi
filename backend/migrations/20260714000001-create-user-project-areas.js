@@ -39,7 +39,8 @@ module.exports = {
             },
         });
 
-        const existingIndexes = await queryInterface.showIndex('user_project_areas');
+        const existingIndexes =
+            await queryInterface.showIndex('user_project_areas');
         const existingNames = existingIndexes.map((i) => i.name);
 
         if (!existingNames.includes('user_project_areas_user_id')) {
