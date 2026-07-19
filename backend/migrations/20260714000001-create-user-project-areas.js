@@ -1,8 +1,10 @@
 'use strict';
 
+const { safeCreateTable, safeAddIndex } = require('../utils/migration-utils');
+
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('user_project_areas', {
+        await safeCreateTable(queryInterface, 'user_project_areas', {
             id: {
                 type: Sequelize.INTEGER,
                 primaryKey: true,
@@ -39,23 +41,16 @@ module.exports = {
             },
         });
 
-        const existingIndexes =
-            await queryInterface.showIndex('user_project_areas');
-        const existingNames = existingIndexes.map((i) => i.name);
-
-        if (!existingNames.includes('user_project_areas_user_id')) {
-            await queryInterface.addIndex('user_project_areas', ['user_id']);
-        }
-        if (!existingNames.includes('user_project_areas_project_id')) {
-            await queryInterface.addIndex('user_project_areas', ['project_id']);
-        }
-        if (!existingNames.includes('user_project_areas_user_project_unique')) {
-            await queryInterface.addIndex(
-                'user_project_areas',
-                ['user_id', 'project_id'],
-                { unique: true, name: 'user_project_areas_user_project_unique' }
-            );
-        }
+        await safeAddIndex(queryInterface, 'user_project_areas', ['user_id']);
+        await safeAddIndex(queryInterface, 'user_project_areas', [
+            'project_id',
+        ]);
+        await safeAddIndex(
+            queryInterface,
+            'user_project_areas',
+            ['user_id', 'project_id'],
+            { unique: true, name: 'user_project_areas_user_project_unique' }
+        );
     },
 
     async down(queryInterface) {
