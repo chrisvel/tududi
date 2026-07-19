@@ -1,128 +1,83 @@
 'use strict';
 
-async function addIndexIfMissing(queryInterface, tableName, fields, options) {
-    try {
-        const indexes = await queryInterface.showIndex(tableName);
-        const exists = indexes.some((idx) => idx.name === options.name);
-        if (!exists) {
-            await queryInterface.addIndex(tableName, fields, options);
-        }
-    } catch (err) {
-        console.log(`Skipping index ${options.name}: ${err.message}`);
-    }
-}
+const { safeAddIndex } = require('../utils/migration-utils');
 
 module.exports = {
     up: async (queryInterface) => {
-        await addIndexIfMissing(
-            queryInterface,
-            'caldav_calendars',
-            ['user_id'],
-            {
-                name: 'idx_caldav_calendars_user_id',
-            }
-        );
-        await addIndexIfMissing(
-            queryInterface,
-            'caldav_calendars',
-            ['enabled'],
-            {
-                name: 'idx_caldav_calendars_enabled',
-            }
-        );
-        await addIndexIfMissing(
+        await safeAddIndex(queryInterface, 'caldav_calendars', ['user_id'], {
+            name: 'idx_caldav_calendars_user_id',
+        });
+        await safeAddIndex(queryInterface, 'caldav_calendars', ['enabled'], {
+            name: 'idx_caldav_calendars_enabled',
+        });
+        await safeAddIndex(
             queryInterface,
             'caldav_calendars',
             ['user_id', 'enabled'],
-            {
-                name: 'idx_caldav_calendars_user_enabled',
-            }
+            { name: 'idx_caldav_calendars_user_enabled' }
         );
-        await addIndexIfMissing(
-            queryInterface,
-            'caldav_sync_state',
-            ['task_id'],
-            {
-                name: 'idx_caldav_sync_state_task_id',
-            }
-        );
-        await addIndexIfMissing(
+        await safeAddIndex(queryInterface, 'caldav_sync_state', ['task_id'], {
+            name: 'idx_caldav_sync_state_task_id',
+        });
+        await safeAddIndex(
             queryInterface,
             'caldav_sync_state',
             ['calendar_id'],
-            {
-                name: 'idx_caldav_sync_state_calendar_id',
-            }
+            { name: 'idx_caldav_sync_state_calendar_id' }
         );
-        await addIndexIfMissing(
+        await safeAddIndex(
             queryInterface,
             'caldav_sync_state',
             ['sync_status'],
-            {
-                name: 'idx_caldav_sync_state_status',
-            }
+            { name: 'idx_caldav_sync_state_status' }
         );
-        await addIndexIfMissing(
+        await safeAddIndex(
             queryInterface,
             'caldav_sync_state',
             ['last_modified'],
-            {
-                name: 'idx_caldav_sync_state_modified',
-            }
+            { name: 'idx_caldav_sync_state_modified' }
         );
-        await addIndexIfMissing(
+        await safeAddIndex(
             queryInterface,
             'caldav_occurrence_overrides',
             ['parent_task_id'],
-            {
-                name: 'idx_caldav_overrides_parent',
-            }
+            { name: 'idx_caldav_overrides_parent' }
         );
-        await addIndexIfMissing(
+        await safeAddIndex(
             queryInterface,
             'caldav_occurrence_overrides',
             ['calendar_id'],
-            {
-                name: 'idx_caldav_overrides_calendar',
-            }
+            { name: 'idx_caldav_overrides_calendar' }
         );
-        await addIndexIfMissing(
+        await safeAddIndex(
             queryInterface,
             'caldav_occurrence_overrides',
             ['recurrence_id'],
-            {
-                name: 'idx_caldav_overrides_recurrence',
-            }
+            { name: 'idx_caldav_overrides_recurrence' }
         );
-        await addIndexIfMissing(
+        await safeAddIndex(
             queryInterface,
             'caldav_remote_calendars',
             ['user_id'],
-            {
-                name: 'idx_caldav_remote_user_id',
-            }
+            { name: 'idx_caldav_remote_user_id' }
         );
-        await addIndexIfMissing(
+        await safeAddIndex(
             queryInterface,
             'caldav_remote_calendars',
             ['enabled'],
-            {
-                name: 'idx_caldav_remote_enabled',
-            }
+            { name: 'idx_caldav_remote_enabled' }
         );
-        await addIndexIfMissing(
+        await safeAddIndex(
             queryInterface,
             'caldav_remote_calendars',
             ['local_calendar_id'],
-            {
-                name: 'idx_caldav_remote_local_cal',
-            }
+            { name: 'idx_caldav_remote_local_cal' }
         );
-        await addIndexIfMissing(queryInterface, 'tasks', ['uid'], {
+        await safeAddIndex(queryInterface, 'tasks', ['uid'], {
             name: 'idx_tasks_uid',
             unique: false,
         });
-        await addIndexIfMissing(queryInterface, 'tasks', ['updated_at'], {
+        await safeAddIndex(queryInterface, 'tasks', ['updated_at'], {
             name: 'idx_tasks_updated_at',
         });
     },
