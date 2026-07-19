@@ -1,47 +1,50 @@
 'use strict';
 
+const { safeAddColumns, safeAddIndex } = require('../utils/migration-utils');
+
 module.exports = {
     async up(queryInterface, Sequelize) {
-        const tableInfo = await queryInterface.describeTable('projects');
-
-        if (!tableInfo.is_template) {
-            await queryInterface.addColumn('projects', 'is_template', {
-                type: Sequelize.BOOLEAN,
-                allowNull: false,
-                defaultValue: false,
-            });
-        }
-
-        if (!tableInfo.template_category) {
-            await queryInterface.addColumn('projects', 'template_category', {
-                type: Sequelize.STRING(100),
-                allowNull: true,
-                defaultValue: null,
-            });
-        }
-
-        if (!tableInfo.clone_count) {
-            await queryInterface.addColumn('projects', 'clone_count', {
-                type: Sequelize.INTEGER,
-                allowNull: false,
-                defaultValue: 0,
-            });
-        }
-
-        if (!tableInfo.source_template_id) {
-            await queryInterface.addColumn('projects', 'source_template_id', {
-                type: Sequelize.INTEGER,
-                allowNull: true,
-                defaultValue: null,
-                references: {
-                    model: 'projects',
-                    key: 'id',
+        await safeAddColumns(queryInterface, 'projects', [
+            {
+                name: 'is_template',
+                definition: {
+                    type: Sequelize.BOOLEAN,
+                    allowNull: false,
+                    defaultValue: false,
                 },
-                onDelete: 'SET NULL',
-            });
-        }
+            },
+            {
+                name: 'template_category',
+                definition: {
+                    type: Sequelize.STRING(100),
+                    allowNull: true,
+                    defaultValue: null,
+                },
+            },
+            {
+                name: 'clone_count',
+                definition: {
+                    type: Sequelize.INTEGER,
+                    allowNull: false,
+                    defaultValue: 0,
+                },
+            },
+            {
+                name: 'source_template_id',
+                definition: {
+                    type: Sequelize.INTEGER,
+                    allowNull: true,
+                    defaultValue: null,
+                    references: {
+                        model: 'projects',
+                        key: 'id',
+                    },
+                    onDelete: 'SET NULL',
+                },
+            },
+        ]);
 
-        await queryInterface.addIndex('projects', ['is_template'], {
+        await safeAddIndex(queryInterface, 'projects', ['is_template'], {
             name: 'projects_is_template',
         });
     },

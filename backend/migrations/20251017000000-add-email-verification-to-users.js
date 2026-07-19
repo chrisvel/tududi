@@ -1,6 +1,6 @@
 'use strict';
 
-const { safeAddColumns } = require('../utils/migration-utils');
+const { safeAddColumns, safeAddIndex } = require('../utils/migration-utils');
 
 module.exports = {
     async up(queryInterface, Sequelize) {
@@ -10,7 +10,7 @@ module.exports = {
                 definition: {
                     type: Sequelize.BOOLEAN,
                     allowNull: false,
-                    defaultValue: true, // Existing users are considered verified
+                    defaultValue: true,
                 },
             },
             {
@@ -29,11 +29,12 @@ module.exports = {
             },
         ]);
 
-        // Add index on verification token for faster lookups
-        await queryInterface.addIndex('users', ['email_verification_token'], {
-            name: 'users_email_verification_token_idx',
-            unique: false,
-        });
+        await safeAddIndex(
+            queryInterface,
+            'users',
+            ['email_verification_token'],
+            { name: 'users_email_verification_token_idx', unique: false }
+        );
     },
 
     async down(queryInterface) {

@@ -54,6 +54,14 @@ This document contains preferences, patterns, and memory items specific to worki
 
 ## Codebase Patterns to Remember
 
+### Database Migrations
+- **ALWAYS use safe migration helpers** from `backend/utils/migration-utils.js`:
+  - `safeCreateTable(queryInterface, tableName, definition)` instead of `queryInterface.createTable`
+  - `safeAddColumns(queryInterface, tableName, [{name, definition}])` instead of `queryInterface.addColumn` with manual `describeTable` checks
+  - `safeAddIndex(queryInterface, tableName, fields, options)` instead of `queryInterface.addIndex`
+  - `safeRemoveColumn` and `safeChangeColumn` for other column operations
+- These helpers handle "already exists" scenarios gracefully and are required for idempotency across fresh installs and upgrades
+
 ### Backend Patterns
 - Follow the module architecture pattern described in [backend-patterns.md](backend-patterns.md)
 - Use repository pattern for data access

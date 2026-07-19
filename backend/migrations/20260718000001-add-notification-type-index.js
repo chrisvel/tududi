@@ -1,17 +1,15 @@
 'use strict';
 
+const { safeAddIndex } = require('../utils/migration-utils');
+
 module.exports = {
     async up(queryInterface) {
-        const indexes = await queryInterface.showIndex('notifications');
-        const indexName = 'notifications_user_type_created_at_idx';
-
-        if (!indexes.some((idx) => idx.name === indexName)) {
-            await queryInterface.addIndex(
-                'notifications',
-                ['user_id', 'type', 'created_at'],
-                { name: indexName }
-            );
-        }
+        await safeAddIndex(
+            queryInterface,
+            'notifications',
+            ['user_id', 'type', 'created_at'],
+            { name: 'notifications_user_type_created_at_idx' }
+        );
     },
 
     async down(queryInterface) {
