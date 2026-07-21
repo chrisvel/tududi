@@ -6,6 +6,7 @@ import {
     ArchiveBoxIcon,
     EnvelopeIcon,
     PhoneIcon,
+    UserIcon,
 } from '@heroicons/react/24/outline';
 import { Person } from '../../entities/Person';
 import { Task } from '../../entities/Task';
@@ -131,6 +132,12 @@ const PersonDetails: React.FC = () => {
                                 hasColor ? 'text-white/70' : 'text-gray-500 dark:text-gray-400'
                             }`}>
                                 <span>{RELATIONSHIP_LABELS[person.relationship_type ?? 'other']}</span>
+                                {person.linked_user_id != null && (
+                                    <span className="flex items-center gap-1">
+                                        <UserIcon className="h-3.5 w-3.5" />
+                                        Linked account
+                                    </span>
+                                )}
                                 {assignedTasks.length > 0 && (
                                     <span>{assignedTasks.length} assigned {assignedTasks.length === 1 ? 'task' : 'tasks'}</span>
                                 )}

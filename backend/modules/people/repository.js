@@ -6,7 +6,7 @@ const { Op } = require('sequelize');
 class PeopleRepository {
     async findAllByUser(
         userId,
-        { archived = false, sort = 'name', relationship_type } = {}
+        { archived = false, sort = 'name', relationship_type, unlinked } = {}
     ) {
         const where = { user_id: userId };
         if (archived !== null) {
@@ -14,6 +14,9 @@ class PeopleRepository {
         }
         if (relationship_type) {
             where.relationship_type = relationship_type;
+        }
+        if (unlinked === true || unlinked === 'true') {
+            where.linked_user_id = null;
         }
 
         const order =
@@ -51,6 +54,12 @@ class PeopleRepository {
 
     async countAssignedTasks(personUid) {
         return Task.count({ where: { assigned_to: personUid } });
+    }
+
+    async findByLinkedUserId(ownerUserId, linkedUserId) {
+        return Person.findOne({
+            where: { user_id: ownerUserId, linked_user_id: linkedUserId },
+        });
     }
 }
 

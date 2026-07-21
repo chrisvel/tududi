@@ -4,6 +4,7 @@ import {
     EllipsisVerticalIcon,
     PlusIcon,
     EnvelopeIcon,
+    UserIcon,
 } from '@heroicons/react/24/outline';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import PersonModal from './PersonModal';
@@ -252,6 +253,16 @@ const PeopleList: React.FC = () => {
                                                         person.color ? 'text-white' : 'text-gray-800 dark:text-gray-100'
                                                     }`}>
                                                         {person.name}
+                                                        {person.linked_user_id != null && (
+                                                            <span
+                                                                className={`inline-flex items-center ml-1.5 align-middle ${
+                                                                    person.color ? 'text-white/70' : 'text-blue-500 dark:text-blue-400'
+                                                                }`}
+                                                                title="Linked to a user account"
+                                                            >
+                                                                <UserIcon className="h-3 w-3" />
+                                                            </span>
+                                                        )}
                                                     </h4>
                                                     {person.archived && (
                                                         <span className={`mt-1 inline-block text-[10px] uppercase tracking-wide ${

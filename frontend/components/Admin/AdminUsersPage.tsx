@@ -11,6 +11,8 @@ import ConfirmDialog from '../Shared/ConfirmDialog';
 import { getApiPath } from '../../config/paths';
 import { useToast } from '../Shared/ToastContext';
 import { fetchWithCsrf } from '../../utils/csrfService';
+import { fetchPeople } from '../../utils/peopleService';
+import { Person } from '../../entities/Person';
 
 interface AdminUserItem {
     id: number;
@@ -42,7 +44,8 @@ const createAdminUser = async (
     t: any,
     name?: string,
     surname?: string,
-    role?: 'admin' | 'user'
+    role?: 'admin' | 'user',
+    linked_person_uid?: string
 ): Promise<AdminUserItem> => {
     const res = await fetchWithCsrf(getApiPath('admin/users'), {
         method: 'POST',
@@ -51,7 +54,7 @@ const createAdminUser = async (
             'Content-Type': 'application/json',
             Accept: 'application/json',
         },
-        body: JSON.stringify({ email, password, name, surname, role }),
+        body: JSON.stringify({ email, password, name, surname, role, linked_person_uid }),
     });
     if (res.status === 401)
         throw new Error(
@@ -156,9 +159,10 @@ const AddUserModal: React.FC<{
     const [error, setError] = useState<string | null>(null);
     const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
     const roleDropdownRef = useRef<HTMLDivElement>(null);
+    const [unlinkedPeople, setUnlinkedPeople] = useState<Person[]>([]);
+    const [selectedPersonUid, setSelectedPersonUid] = useState<string>('');
 
     const isValidEmail = (value: string) => {
-        // Simple email format validation
         return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value);
     };
 
@@ -170,17 +174,32 @@ const AddUserModal: React.FC<{
                 setName(editingUser.name || '');
                 setSurname(editingUser.surname || '');
                 setRole(editingUser.role);
+                setUnlinkedPeople([]);
+                setSelectedPersonUid('');
             } else {
                 setEmail('');
                 setPassword('');
                 setName('');
                 setSurname('');
                 setRole('user');
+                setSelectedPersonUid('');
+                fetchPeople({ unlinked: true }).then(setUnlinkedPeople).catch(() => setUnlinkedPeople([]));
             }
             setError(null);
             setIsRoleDropdownOpen(false);
         }
     }, [isOpen, editingUser]);
+
+    const handlePersonSelect = (uid: string) => {
+        setSelectedPersonUid(uid);
+        if (!uid) return;
+        const person = unlinkedPeople.find((p) => p.uid === uid);
+        if (!person) return;
+        const parts = person.name.trim().split(' ');
+        setName(parts[0] || '');
+        setSurname(parts.slice(1).join(' ') || '');
+        if (person.email) setEmail(person.email);
+    };
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -239,7 +258,8 @@ const AddUserModal: React.FC<{
                     t,
                     name,
                     surname,
-                    role
+                    role,
+                    selectedPersonUid || undefined
                 );
                 onCreated(user);
             }
@@ -274,6 +294,25 @@ const AddUserModal: React.FC<{
                         : t('admin.addUser', 'Add user')}
                 </h3>
                 <form onSubmit={handleSubmit} className="space-y-4">
+                    {!editingUser && unlinkedPeople.length > 0 && (
+                        <div>
+                            <label className="block text-sm text-gray-700 dark:text-gray-300 mb-1">
+                                Link to existing person (optional)
+                            </label>
+                            <select
+                                className="w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm"
+                                value={selectedPersonUid}
+                                onChange={(e) => handlePersonSelect(e.target.value)}
+                            >
+                                <option value="">— none —</option>
+                                {unlinkedPeople.map((p) => (
+                                    <option key={p.uid} value={p.uid}>
+                                        {p.name}{p.email ? ` (${p.email})` : ''}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
                     <div>
                         <label className="block text-sm text-gray-700 dark:text-gray-300 mb-1">
                             {t('admin.email', 'Email')}

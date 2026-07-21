@@ -24,6 +24,15 @@ module.exports = (sequelize) => {
                     key: 'id',
                 },
             },
+            linked_user_id: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                defaultValue: null,
+                references: {
+                    model: 'users',
+                    key: 'id',
+                },
+            },
             name: {
                 type: DataTypes.STRING,
                 allowNull: false,
@@ -60,6 +69,7 @@ module.exports = (sequelize) => {
             indexes: [
                 { fields: ['user_id', 'archived'] },
                 { fields: ['user_id', 'name'], unique: true },
+                { fields: ['linked_user_id'] },
             ],
         }
     );

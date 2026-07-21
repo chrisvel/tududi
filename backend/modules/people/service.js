@@ -14,6 +14,13 @@ class PeopleService {
         return peopleRepository.findAllByUser(userId, filters);
     }
 
+    async getUnlinked(userId) {
+        return peopleRepository.findAllByUser(userId, {
+            archived: false,
+            unlinked: true,
+        });
+    }
+
     async getByUid(userId, uid) {
         const person = await peopleRepository.findByUid(userId, uid);
         if (!person) throw new NotFoundError('Person not found');
@@ -21,7 +28,15 @@ class PeopleService {
     }
 
     async create(userId, data) {
-        const { name, relationship_type, email, phone, notes, color } = data;
+        const {
+            name,
+            relationship_type,
+            email,
+            phone,
+            notes,
+            color,
+            linked_user_id,
+        } = data;
 
         if (!name || !name.trim()) {
             throw new ValidationError('Name is required');
@@ -43,6 +58,25 @@ class PeopleService {
             );
         }
 
+        let validatedLinkedUserId = null;
+        if (linked_user_id != null) {
+            if (!Number.isInteger(linked_user_id)) {
+                throw new ValidationError(
+                    'linked_user_id must be a valid user ID'
+                );
+            }
+            const existingLink = await peopleRepository.findByLinkedUserId(
+                userId,
+                linked_user_id
+            );
+            if (existingLink) {
+                throw new ConflictError(
+                    'A person already linked to that user account exists'
+                );
+            }
+            validatedLinkedUserId = linked_user_id;
+        }
+
         return peopleRepository.create({
             user_id: userId,
             name: name.trim(),
@@ -52,6 +86,7 @@ class PeopleService {
             notes: notes || null,
             color: color || null,
             archived: false,
+            linked_user_id: validatedLinkedUserId,
         });
     }
 
@@ -67,6 +102,7 @@ class PeopleService {
             notes,
             color,
             archived,
+            linked_user_id,
         } = data;
         const updates = {};
 
@@ -101,6 +137,28 @@ class PeopleService {
         if (notes !== undefined) updates.notes = notes || null;
         if (color !== undefined) updates.color = color || null;
         if (archived !== undefined) updates.archived = !!archived;
+
+        if (linked_user_id !== undefined) {
+            if (linked_user_id === null) {
+                updates.linked_user_id = null;
+            } else {
+                if (!Number.isInteger(linked_user_id)) {
+                    throw new ValidationError(
+                        'linked_user_id must be a valid user ID'
+                    );
+                }
+                const existingLink = await peopleRepository.findByLinkedUserId(
+                    userId,
+                    linked_user_id
+                );
+                if (existingLink && existingLink.uid !== uid) {
+                    throw new ConflictError(
+                        'A person already linked to that user account exists'
+                    );
+                }
+                updates.linked_user_id = linked_user_id;
+            }
+        }
 
         return peopleRepository.update(person, updates);
     }

@@ -14,11 +14,12 @@ const peopleController = {
     async list(req, res, next) {
         try {
             const userId = requireUserId(req);
-            const { archived, sort, relationship_type } = req.query;
+            const { archived, sort, relationship_type, unlinked } = req.query;
             const people = await peopleService.getAll(userId, {
                 archived,
                 sort,
                 relationship_type,
+                unlinked,
             });
             res.json({ people });
         } catch (err) {

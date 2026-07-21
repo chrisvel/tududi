@@ -7,11 +7,13 @@ export const fetchPeople = async (params: {
     archived?: boolean;
     sort?: string;
     relationship_type?: string;
+    unlinked?: boolean;
 } = {}): Promise<Person[]> => {
     const query = new URLSearchParams();
     if (params.archived !== undefined) query.set('archived', String(params.archived));
     if (params.sort) query.set('sort', params.sort);
     if (params.relationship_type) query.set('relationship_type', params.relationship_type);
+    if (params.unlinked) query.set('unlinked', 'true');
 
     const url = query.toString() ? `people?${query.toString()}` : 'people';
     const response = await fetch(getApiPath(url), {

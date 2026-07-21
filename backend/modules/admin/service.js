@@ -119,6 +119,7 @@ class AdminService {
 
         const { email, password, name, surname, role } =
             validateCreateUser(body);
+        const { linked_person_uid } = body || {};
 
         const userData = {
             email,
@@ -145,6 +146,16 @@ class AdminService {
             if (!roleCreated && !userRole.is_admin) {
                 userRole.is_admin = true;
                 await userRole.save();
+            }
+        }
+
+        if (linked_person_uid) {
+            const { Person } = require('../../models');
+            const person = await Person.findOne({
+                where: { uid: linked_person_uid, user_id: requesterId },
+            });
+            if (person && person.linked_user_id == null) {
+                await person.update({ linked_user_id: user.id });
             }
         }
 

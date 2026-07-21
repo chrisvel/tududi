@@ -322,6 +322,107 @@ Person.hasMany(Task, {
     sourceKey: 'uid',
     as: 'AssignedTasks',
 });
+User.hasOne(Person, { foreignKey: 'linked_user_id', as: 'SelfPerson' });
+Person.belongsTo(User, { foreignKey: 'linked_user_id', as: 'LinkedUser' });
+
+// Auto-create a self-person for every new user
+User.addHook('afterCreate', async (user, options) => {
+    try {
+        const existing = await Person.findOne({
+            where: { user_id: user.id, linked_user_id: user.id },
+            transaction: options.transaction,
+        });
+        if (existing) return;
+
+        const nameParts = [user.name, user.surname].filter(Boolean);
+        let personName =
+            nameParts.length > 0
+                ? nameParts.join(' ').trim()
+                : user.email.split('@')[0];
+
+        const nameConflict = await Person.findOne({
+            where: { user_id: user.id, name: personName },
+            transaction: options.transaction,
+        });
+        if (nameConflict) personName = personName + ' (me)';
+
+        await Person.create(
+            {
+                user_id: user.id,
+                linked_user_id: user.id,
+                name: personName,
+                email: user.email || null,
+                relationship_type: 'other',
+                archived: false,
+            },
+            { transaction: options.transaction }
+        );
+    } catch (err) {
+        const { logError } = require('../services/logService');
+        logError(err, `Failed to create self-person for user ${user.id}`);
+    }
+});
+
+// Sync name/email changes to the self-person
+User.addHook('afterUpdate', async (user, options) => {
+    if (
+        !user.changed('name') &&
+        !user.changed('surname') &&
+        !user.changed('email')
+    )
+        return;
+    try {
+        const selfPerson = await Person.findOne({
+            where: { user_id: user.id, linked_user_id: user.id },
+            transaction: options.transaction,
+        });
+        if (!selfPerson) return;
+
+        const updates = {};
+        if (user.changed('name') || user.changed('surname')) {
+            const nameParts = [user.name, user.surname].filter(Boolean);
+            updates.name =
+                nameParts.length > 0
+                    ? nameParts.join(' ').trim()
+                    : user.email.split('@')[0];
+        }
+        if (user.changed('email')) updates.email = user.email || null;
+
+        await selfPerson.update(updates, { transaction: options.transaction });
+    } catch (err) {
+        const { logError } = require('../services/logService');
+        logError(err, `Failed to sync self-person for user ${user.id}`);
+    }
+});
+
+// Sync self-person name changes back to the linked User
+// Only fires for self-persons (linked_user_id === user_id) and only syncs name, not email
+// (email is auth-sensitive; Person → User email sync is intentionally excluded)
+Person.addHook('afterUpdate', async (person, options) => {
+    if (!person.changed('name')) return;
+    if (
+        person.linked_user_id == null ||
+        person.linked_user_id !== person.user_id
+    )
+        return;
+    try {
+        const linkedUser = await User.findByPk(person.linked_user_id, {
+            transaction: options.transaction,
+        });
+        if (!linkedUser) return;
+
+        const [firstName, ...rest] = person.name.trim().split(' ');
+        const surname = rest.length > 0 ? rest.join(' ') : null;
+
+        await linkedUser.update(
+            { name: firstName || null, surname },
+            { transaction: options.transaction }
+        );
+    } catch (err) {
+        const { logError } = require('../services/logService');
+        logError(err, `Failed to sync user from self-person ${person.id}`);
+    }
+});
 
 // Seed system tags for every new user
 User.addHook('afterCreate', async (user, options) => {
