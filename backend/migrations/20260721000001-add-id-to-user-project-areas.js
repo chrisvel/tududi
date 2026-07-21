@@ -5,7 +5,8 @@ module.exports = {
         const tables = await queryInterface.showAllTables();
         if (!tables.includes('user_project_areas')) return;
 
-        const tableInfo = await queryInterface.describeTable('user_project_areas');
+        const tableInfo =
+            await queryInterface.describeTable('user_project_areas');
         if ('id' in tableInfo) return;
 
         await queryInterface.sequelize.query('PRAGMA foreign_keys = OFF;');
@@ -29,7 +30,9 @@ module.exports = {
                 SELECT user_id, project_id, area_id, created_at, updated_at
                 FROM user_project_areas;
             `);
-            await queryInterface.sequelize.query('DROP TABLE user_project_areas;');
+            await queryInterface.sequelize.query(
+                'DROP TABLE user_project_areas;'
+            );
             await queryInterface.sequelize.query(
                 'ALTER TABLE user_project_areas_new RENAME TO user_project_areas;'
             );
@@ -50,7 +53,8 @@ module.exports = {
         const tables = await queryInterface.showAllTables();
         if (!tables.includes('user_project_areas')) return;
 
-        const tableInfo = await queryInterface.describeTable('user_project_areas');
+        const tableInfo =
+            await queryInterface.describeTable('user_project_areas');
         if (!('id' in tableInfo)) return;
 
         await queryInterface.sequelize.query('PRAGMA foreign_keys = OFF;');
