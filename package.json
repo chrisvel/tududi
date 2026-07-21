@@ -67,7 +67,7 @@
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.29.6",
-    "@babel/preset-env": "^7.25.7",
+    "@babel/preset-env": "^8.0.2",
     "@babel/preset-react": "^7.25.7",
     "@babel/preset-typescript": "^7.25.7",
     "@dnd-kit/core": "^6.3.1",
@@ -133,7 +133,7 @@
     "typescript-eslint": "^8.36.0",
     "webpack": "^5.95.0",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.2.5",
+    "webpack-dev-server": "^5.2.6",
     "zustand": "^5.0.3"
   },
   "dependencies": {
@@ -156,7 +156,7 @@
     "helmet": "~8.1.0",
     "ical.js": "^2.1.0",
     "jose": "^6.0.0",
-    "js-yaml": "^4.3.0",
+    "js-yaml": "^5.2.1",
     "linguaisync": "^0.1.2",
     "lodash": "~4.18.1",
     "lusca": "^1.7.0",
@@ -180,12 +180,12 @@
     "xml2js": "^0.6.0"
   },
   "overrides": {
-    "tar": "^7.5.16",
+    "tar": "^7.5.20",
     "hono": "^4.12.25",
     "http-proxy-middleware": "^3.0.6",
     "form-data": "^4.0.6",
     "launch-editor": "^2.14.1",
-    "shell-quote": "^1.8.4",
+    "shell-quote": "^1.10.0",
     "ws": "^8.21.0",
     "qs": "^6.15.2",
     "js-cookie": "^3.0.8",
