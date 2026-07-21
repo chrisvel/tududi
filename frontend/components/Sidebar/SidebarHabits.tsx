@@ -26,7 +26,7 @@ const SidebarHabits: React.FC<SidebarHabitsProps> = ({
         <>
             <ul className="flex flex-col space-y-1">
                 <li
-                    className={`flex justify-between items-center rounded-md px-4 py-2 uppercase text-xs tracking-wider cursor-pointer hover:text-black dark:hover:text-white ${isActiveHabit(
+                    className={`group flex justify-between items-center rounded-md px-4 py-2 uppercase text-xs tracking-wider cursor-pointer hover:text-black dark:hover:text-white ${isActiveHabit(
                         '/habits'
                     )}`}
                     onClick={() =>
@@ -46,7 +46,7 @@ const SidebarHabits: React.FC<SidebarHabitsProps> = ({
                             e.stopPropagation();
                             openNewHabit();
                         }}
-                        className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none"
                         aria-label={t('sidebar.addHabitAriaLabel')}
                         title={t('sidebar.addHabitTitle')}
                     >

@@ -128,7 +128,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                                 handleNavClick(link.path, link.title, link.icon)
                             }
                             data-testid={`sidebar-nav-${link.path.replace(/^\//, '').replace(/\?.*$/, '')}`}
-                            className={`w-full text-left px-4 py-1 flex items-center justify-between rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 ${isActive(
+                            className={`group w-full text-left px-4 py-1 flex items-center justify-between rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 ${isActive(
                                 link.path,
                                 link.query
                             )}`}
@@ -164,7 +164,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                                                 openTaskModal();
                                             }
                                         }}
-                                        className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none cursor-pointer"
+                                        className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none cursor-pointer"
                                         aria-label={t(
                                             'sidebar.addTaskAriaLabel',
                                             'Add Task'
