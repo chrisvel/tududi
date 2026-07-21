@@ -106,6 +106,7 @@ const TasksToday: React.FC = () => {
         showCompleted: true,
         showProgressBar: true, // Always enabled
         showDailyQuote: true,
+        showTaggedToday: true,
     });
     const [nextTaskSuggestionEnabled, setNextTaskSuggestionEnabled] =
         useState(true);
@@ -134,6 +135,10 @@ const TasksToday: React.FC = () => {
     });
     const [isDueTodayCollapsed, setIsDueTodayCollapsed] = useState(() => {
         const stored = localStorage.getItem('dueTodayTasksCollapsed');
+        return stored === 'true';
+    });
+    const [isTaggedTodayCollapsed, setIsTaggedTodayCollapsed] = useState(() => {
+        const stored = localStorage.getItem('taggedTodayTasksCollapsed');
         return stored === 'true';
     });
     const [isSettingsLoaded, setIsSettingsLoaded] = useState(false);
@@ -237,6 +242,19 @@ const TasksToday: React.FC = () => {
         return sortTasksByPriorityDueDateProject(tasks);
     }, [metrics.tasks_overdue, getTasksFromStore]);
 
+    const taggedTodayTasks = useMemo(() => {
+        return sortTasksByPriorityDueDateProject(
+            storeTasks.filter(
+                (t: Task) =>
+                    !t.habit_mode &&
+                    !isTaskDone(t.status) &&
+                    t.status !== 'archived' &&
+                    t.status !== 'cancelled' &&
+                    t.tags?.some((tag) => tag.name.toLowerCase() === 'today')
+            )
+        );
+    }, [storeTasks]);
+
     const getCompletionTrend = () => {
         const todayCount = metrics.tasks_completed_today.length;
         if (metrics.weekly_completions.length === 0) {
@@ -299,6 +317,12 @@ const TasksToday: React.FC = () => {
         const newState = !isDueTodayCollapsed;
         setIsDueTodayCollapsed(newState);
         localStorage.setItem('dueTodayTasksCollapsed', newState.toString());
+    };
+
+    const toggleTaggedTodayCollapsed = () => {
+        const newState = !isTaggedTodayCollapsed;
+        setIsTaggedTodayCollapsed(newState);
+        localStorage.setItem('taggedTodayTasksCollapsed', newState.toString());
     };
 
     const isHabitCompletedToday = useCallback((habit: Task) => {
@@ -601,6 +625,7 @@ const TasksToday: React.FC = () => {
                         if (settings.showAreaBalance === undefined) settings.showAreaBalance = true;
                         if (settings.showActiveProjects === undefined) settings.showActiveProjects = true;
                         if (settings.showDailyBrief === undefined) settings.showDailyBrief = false;
+                        if (settings.showTaggedToday === undefined) settings.showTaggedToday = true;
 
                         // Store profile settings
                         const currentProfileSettings = {
@@ -1562,6 +1587,41 @@ const TasksToday: React.FC = () => {
                         />
                     </div>
                 ) : null}
+
+                {/* Tagged #today Tasks */}
+                {isSettingsLoaded && todaySettings.showTaggedToday && taggedTodayTasks.length > 0 && (
+                    <div className="mb-6" data-testid="tagged-today-section">
+                        <div
+                            className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
+                            onClick={toggleTaggedTodayCollapsed}
+                            data-testid="tagged-today-section-header"
+                        >
+                            <h3 className="text-sm font-medium uppercase text-indigo-600 dark:text-indigo-400">
+                                {t('tasks.taggedToday', 'today')}
+                            </h3>
+                            <div className="flex items-center">
+                                <span className="text-sm text-gray-500 mr-2">
+                                    {taggedTodayTasks.length}
+                                </span>
+                                {isTaggedTodayCollapsed ? (
+                                    <ChevronRightIcon className="h-5 w-5 text-gray-500" />
+                                ) : (
+                                    <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+                                )}
+                            </div>
+                        </div>
+                        {!isTaggedTodayCollapsed && (
+                            <TaskList
+                                tasks={taggedTodayTasks}
+                                onTaskUpdate={handleTaskUpdate}
+                                onTaskDelete={handleTaskDelete}
+                                projects={localProjects}
+                                onToggleToday={undefined}
+                                onTaskCompletionToggle={handleTaskCompletionToggle}
+                            />
+                        )}
+                    </div>
+                )}
 
                 {/* Overdue Tasks - Displayed first */}
                 {isSettingsLoaded &&

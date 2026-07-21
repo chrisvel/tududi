@@ -11,6 +11,7 @@ import {
     ListBulletIcon,
     ScaleIcon,
     RocketLaunchIcon,
+    TagIcon,
 } from '@heroicons/react/24/outline';
 import { getApiPath } from '../../config/paths';
 
@@ -29,6 +30,7 @@ interface TodaySettingsDropdownProps {
         showCompleted: boolean;
         showProgressBar: boolean;
         showDailyQuote: boolean;
+        showTaggedToday: boolean;
     };
     profileSettings?: {
         productivity_assistant_enabled?: boolean;
@@ -164,6 +166,11 @@ const TodaySettingsDropdown: React.FC<TodaySettingsDropdownProps> = ({
                   },
               ]
             : []),
+        {
+            key: 'showTaggedToday',
+            label: t('settings.showTaggedToday', 'Show Tagged Today'),
+            icon: TagIcon,
+        },
         {
             key: 'showSuggestions',
             label: t('settings.showSuggestions', 'Show Suggested'),
