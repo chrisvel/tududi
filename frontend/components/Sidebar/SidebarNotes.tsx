@@ -28,7 +28,7 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
         <>
             <ul className="flex flex-col space-y-1">
                 <li
-                    className={`flex justify-between items-center rounded-md px-4 py-2 uppercase text-xs tracking-wider cursor-pointer hover:text-black dark:hover:text-white ${isActiveNote(
+                    className={`group flex justify-between items-center rounded-md px-4 py-2 uppercase text-xs tracking-wider cursor-pointer hover:text-black dark:hover:text-white ${isActiveNote(
                         '/notes'
                     )}`}
                     onClick={() =>
@@ -48,7 +48,7 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
                             e.stopPropagation();
                             openNoteModal(null);
                         }}
-                        className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none"
                         aria-label={t('sidebar.addNoteAriaLabel')}
                         title={t('sidebar.addNoteTitle')}
                         data-testid="add-note-button"
