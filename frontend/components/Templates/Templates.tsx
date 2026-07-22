@@ -207,15 +207,10 @@ const Templates: React.FC = () => {
         <>
         <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">
             <div className="w-full">
-                <div className="flex items-start justify-between gap-4 mb-8">
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
-                            {t('templates.title', 'Templates')}
-                        </h1>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                            {t('templates.subtitle', 'Reusable project structures to kickstart your work')}
-                        </p>
-                    </div>
+                <div className="flex items-center justify-between mb-8">
+                    <h2 className="text-2xl font-light">
+                        {t('templates.title', 'Templates')}
+                    </h2>
                     <button
                         onClick={() => setEditingTemplate({})}
                         className={`flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors flex-shrink-0 ${activeTab !== 'my' ? 'invisible' : ''}`}

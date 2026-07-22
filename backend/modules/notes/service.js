@@ -216,7 +216,7 @@ class NotesService {
     async update(
         userId,
         uid,
-        { title, content, project_uid, project_id, tags, color }
+        { title, content, project_uid, project_id, tags, color, pin_to_sidebar }
     ) {
         const validatedUid = validateUid(uid);
         const note = await notesRepository.findOne({ uid: validatedUid });
@@ -229,6 +229,8 @@ class NotesService {
         if (title !== undefined) updateData.title = title;
         if (content !== undefined) updateData.content = content;
         if (color !== undefined) updateData.color = color;
+        if (pin_to_sidebar !== undefined)
+            updateData.pin_to_sidebar = pin_to_sidebar;
 
         // Handle project assignment
         const projectIdentifier =

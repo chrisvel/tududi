@@ -17,6 +17,7 @@ import {
     EllipsisVerticalIcon,
     XMarkIcon,
     ArrowsPointingOutIcon,
+    BookmarkIcon,
 } from '@heroicons/react/24/outline';
 import { useToast } from './Shared/ToastContext';
 import { Link, useParams, useNavigate } from 'react-router-dom';
@@ -230,7 +231,6 @@ const Notes: React.FC = () => {
         });
         setIsEditing(true);
         setSaveStatus('saved');
-        handleSelectNote(null);
     };
 
     const handleNewNote = () => {
@@ -373,6 +373,25 @@ const Notes: React.FC = () => {
         }
     };
 
+    const handleTogglePin = async (note: Note) => {
+        if (!note.uid) return;
+        const newValue = !note.pin_to_sidebar;
+        const updated = { ...note, pin_to_sidebar: newValue };
+
+        if (previewNote?.uid === note.uid) setPreviewNote(updated);
+        if (editingNote?.uid === note.uid) setEditingNote(updated);
+        setNotes(notes.map((n) => (n.uid === note.uid ? { ...n, pin_to_sidebar: newValue } : n)));
+
+        try {
+            await updateNote(note.uid, { pin_to_sidebar: newValue } as any);
+        } catch (err) {
+            console.error('Error toggling pin:', err);
+            if (previewNote?.uid === note.uid) setPreviewNote(note);
+            if (editingNote?.uid === note.uid) setEditingNote(note);
+            setNotes(notes.map((n) => (n.uid === note.uid ? { ...n, pin_to_sidebar: !newValue } : n)));
+        }
+    };
+
     const filteredNotes = useMemo(() => {
         return notes.filter(
             (note) =>
@@ -418,6 +437,10 @@ const Notes: React.FC = () => {
             return 0;
         });
     }, [filteredNotes, orderBy]);
+
+    useEffect(() => {
+        hasAutoSelected.current = false;
+    }, [uid]);
 
     useEffect(() => {
         if (uid && sortedNotes.length > 0 && !hasAutoSelected.current) {
@@ -863,11 +886,22 @@ const Notes: React.FC = () => {
                                                         className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
                                                     >
                                                         <PencilIcon className="h-4 w-4" />
-                                                        {t(
-                                                            'notes.save',
-                                                            'Save'
-                                                        )}
+                                                        {t('notes.save', 'Save')}
                                                     </button>
+                                                    {editingNote.uid && (
+                                                        <button
+                                                            onClick={() => {
+                                                                handleTogglePin(editingNote);
+                                                                setShowNoteOptionsDropdown(false);
+                                                            }}
+                                                            className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                                                        >
+                                                            <BookmarkIcon className="h-4 w-4" />
+                                                            {editingNote.pin_to_sidebar
+                                                                ? t('notes.unpinFromSidebar', 'Unpin from sidebar')
+                                                                : t('notes.pinToSidebar', 'Pin to sidebar')}
+                                                        </button>
+                                                    )}
                                                     {editingNote.uid && (
                                                         <button
                                                             onClick={() => {
@@ -1249,10 +1283,19 @@ const Notes: React.FC = () => {
                                                         className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
                                                     >
                                                         <PencilIcon className="h-4 w-4" />
-                                                        {t(
-                                                            'notes.edit',
-                                                            'Edit'
-                                                        )}
+                                                        {t('notes.edit', 'Edit')}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => {
+                                                            handleTogglePin(previewNote);
+                                                            setShowNoteOptionsDropdown(false);
+                                                        }}
+                                                        className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                                                    >
+                                                        <BookmarkIcon className="h-4 w-4" />
+                                                        {previewNote.pin_to_sidebar
+                                                            ? t('notes.unpinFromSidebar', 'Unpin from sidebar')
+                                                            : t('notes.pinToSidebar', 'Pin to sidebar')}
                                                     </button>
                                                     <button
                                                         onClick={() => {

@@ -13,6 +13,7 @@ interface NoteCardProps {
     note: Note;
     onEdit?: (note: Note) => void;
     onDelete?: (note: Note) => void;
+    onTogglePin?: (note: Note) => void;
     showActions?: boolean;
     showProject?: boolean;
 }
@@ -21,6 +22,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
     note,
     onEdit,
     onDelete,
+    onTogglePin,
     showActions = true,
     showProject = true,
 }) => {
@@ -190,7 +192,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
             </Link>
 
             {/* Three Dots Dropdown - Outside Link */}
-            {showActions && (onEdit || onDelete) && (
+            {showActions && (onEdit || onDelete || onTogglePin) && (
                 <div className="absolute bottom-2 right-2" ref={dropdownRef}>
                     <button
                         onClick={(e) => {
@@ -207,7 +209,20 @@ const NoteCard: React.FC<NoteCardProps> = ({
                     </button>
 
                     {dropdownOpen && (
-                        <div className="absolute right-0 top-full mt-1 w-28 bg-white dark:bg-gray-700 shadow-lg rounded-md z-[9999]">
+                        <div className="absolute right-0 top-full mt-1 w-40 bg-white dark:bg-gray-700 shadow-lg rounded-md z-[9999]">
+                            {onTogglePin && (
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        onTogglePin(note);
+                                        setDropdownOpen(false);
+                                    }}
+                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-t-md"
+                                >
+                                    {note.pin_to_sidebar ? t('notes.unpinFromSidebar', 'Unpin from sidebar') : t('notes.pinToSidebar', 'Pin to sidebar')}
+                                </button>
+                            )}
                             {onEdit && (
                                 <button
                                     onClick={(e) => {
@@ -216,7 +231,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
                                         onEdit(note);
                                         setDropdownOpen(false);
                                     }}
-                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-t-md"
+                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
                                     data-testid={`note-edit-${noteIdentifier}`}
                                 >
                                     {t('notes.edit', 'Edit')}

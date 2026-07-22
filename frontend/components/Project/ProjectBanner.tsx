@@ -27,6 +27,7 @@ interface ProjectBannerProps {
     onShareClick: () => void;
     onSaveAsTemplate?: () => void;
     onEditBannerClick?: () => void;
+    onTogglePin?: () => void;
 }
 
 const ProjectBanner: React.FC<ProjectBannerProps> = ({
@@ -39,6 +40,7 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
     onShareClick,
     onSaveAsTemplate,
     onEditBannerClick,
+    onTogglePin,
 }) => {
     const navigate = useNavigate();
     const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -280,6 +282,21 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                                     className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
                                 >
                                     {t('projectItem.saveAsTemplate', 'Save as Template')}
+                                </button>
+                                )}
+                                {onTogglePin && (
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        onTogglePin();
+                                        setDropdownOpen(false);
+                                    }}
+                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                                >
+                                    {project.pin_to_sidebar
+                                        ? t('projectItem.unpinFromSidebar', 'Unpin from sidebar')
+                                        : t('projectItem.pinToSidebar', 'Pin to sidebar')}
                                 </button>
                                 )}
                                 <button

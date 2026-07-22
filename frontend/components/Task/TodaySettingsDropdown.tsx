@@ -3,7 +3,6 @@ import { getCsrfToken } from '../../utils/csrfService';
 import { useTranslation } from 'react-i18next';
 import {
     ChartBarIcon,
-    LightBulbIcon,
     SparklesIcon,
     ClockIcon,
     TrophyIcon,
@@ -22,9 +21,7 @@ interface TodaySettingsDropdownProps {
         showMetrics: boolean;
         showAreaBalance: boolean;
         showActiveProjects: boolean;
-        showProductivity: boolean;
         showNextTaskSuggestion: boolean;
-        showDailyBrief: boolean;
         showSuggestions: boolean;
         showDueToday: boolean;
         showCompleted: boolean;
@@ -33,9 +30,7 @@ interface TodaySettingsDropdownProps {
         showTaggedToday: boolean;
     };
     profileSettings?: {
-        productivity_assistant_enabled?: boolean;
         next_task_suggestion_enabled?: boolean;
-        ai_assistant_enabled?: boolean;
     };
     onSettingsChange: (settings: any) => void;
 }
@@ -140,19 +135,6 @@ const TodaySettingsDropdown: React.FC<TodaySettingsDropdownProps> = ({
             label: t('settings.showActiveProjects', 'Show Active Projects'),
             icon: RocketLaunchIcon,
         },
-        // Only show productivity option if enabled in profile
-        ...(profileSettings?.productivity_assistant_enabled === true
-            ? [
-                  {
-                      key: 'showProductivity' as keyof typeof localSettings,
-                      label: t(
-                          'settings.showProductivity',
-                          'Show Productivity Insights'
-                      ),
-                      icon: LightBulbIcon,
-                  },
-              ]
-            : []),
         // Only show next task suggestion option if enabled in profile
         ...(profileSettings?.next_task_suggestion_enabled === true
             ? [

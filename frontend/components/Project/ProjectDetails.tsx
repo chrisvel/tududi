@@ -419,6 +419,17 @@ const ProjectDetails: React.FC = () => {
         }
     };
 
+    const handleTogglePin = async () => {
+        if (!project?.uid) return;
+        const newValue = !project.pin_to_sidebar;
+        const updatedProject = await updateProject(project.uid, { ...project, pin_to_sidebar: newValue });
+        setProject((prev) => ({ ...prev, ...updatedProject }));
+        const currentProjects = projectsStore.projects;
+        projectsStore.setProjects(
+            currentProjects.map((p) => (p.uid === project.uid ? { ...p, pin_to_sidebar: newValue } : p))
+        );
+    };
+
     const handleSaveBanner = async (imageUrl: string) => {
         if (!project || !project.uid) return;
 
@@ -865,6 +876,7 @@ const ProjectDetails: React.FC = () => {
                 onShareClick={() => setIsShareModalOpen(true)}
                 onSaveAsTemplate={templatesEnabled ? handleSaveAsTemplate : undefined}
                 onEditBannerClick={handleEditBannerClick}
+                onTogglePin={handleTogglePin}
             />
 
             <div className="w-full px-4 sm:px-6 lg:px-10">

@@ -1,5 +1,11 @@
 import React, { useEffect, useState, Suspense, lazy } from 'react';
-import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { Routes, Route, Navigate, Outlet, useParams } from 'react-router-dom';
+
+const NoteRedirect: React.FC = () => {
+    const { uidSlug } = useParams<{ uidSlug: string }>();
+    const uid = uidSlug?.split('-')[0] || '';
+    return <Navigate to={`/notes/${uid}`} replace />;
+};
 import { useTranslation } from 'react-i18next';
 import Login from './components/Login';
 import Register from './components/Register';
@@ -14,7 +20,6 @@ import Tags from './components/Tags';
 import Views from './components/Views';
 import ViewDetail from './components/ViewDetail';
 import Notes from './components/Notes';
-import NoteDetails from './components/Note/NoteDetails';
 import Calendar from './components/Calendar';
 import ProfileSettings from './components/Profile/ProfileSettings';
 import About from './components/About';
@@ -29,6 +34,8 @@ import Habits from './components/Habits/Habits';
 import HabitDetails from './components/Habits/HabitDetails';
 import EisenhowerMatrix from './components/Eisenhower/EisenhowerMatrix';
 import KanbanBoard from './components/Kanban/KanbanBoard';
+import ProductivityPage from './components/Insights/ProductivityPage';
+import ReportsPage from './components/Insights/ReportsPage';
 import PeopleList from './components/People/PeopleList';
 import PersonDetails from './components/People/PersonDetails';
 import Templates from './components/Templates/Templates';
@@ -246,8 +253,12 @@ const App: React.FC = () => {
                                     </Suspense>
                                 }
                             />
-                            <Route path="/eisenhower" element={<EisenhowerMatrix />} />
-                            <Route path="/kanban" element={<KanbanBoard />} />
+                            <Route path="/eisenhower" element={<Navigate to="/boards/eisenhower" replace />} />
+                            <Route path="/kanban" element={<Navigate to="/boards/kanban" replace />} />
+                            <Route path="/boards/eisenhower" element={<EisenhowerMatrix />} />
+                            <Route path="/boards/kanban" element={<KanbanBoard />} />
+                            <Route path="/insights/productivity" element={<ProductivityPage />} />
+                            <Route path="/insights/reports" element={<ReportsPage />} />
                             <Route path="/inbox" element={<InboxItems />} />
                             <Route path="/habits" element={<Habits />} />
                             <Route
@@ -276,7 +287,7 @@ const App: React.FC = () => {
                             <Route path="/notes/:uid" element={<Notes />} />
                             <Route
                                 path="/note/:uidSlug"
-                                element={<NoteDetails />}
+                                element={<NoteRedirect />}
                             />
                             <Route path="/calendar" element={<Calendar />} />
                             <Route

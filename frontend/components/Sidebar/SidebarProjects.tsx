@@ -5,12 +5,9 @@ import {
     PlusCircleIcon,
     ChevronDownIcon,
     ChevronRightIcon,
-    BookmarkIcon,
 } from '@heroicons/react/24/outline';
-import { BookmarkIcon as BookmarkIconSolid } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../../store/useStore';
-import { updateProject } from '../../utils/projectsService';
 import { Project } from '../../entities/Project';
 
 interface SidebarProjectsProps {
@@ -46,7 +43,6 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
     const projects = useStore((state) => state.projectsStore.projects);
     const hasLoaded = useStore((state) => state.projectsStore.hasLoaded);
     const loadProjects = useStore((state) => state.projectsStore.loadProjects);
-    const setProjects = useStore((state) => state.projectsStore.setProjects);
 
     useEffect(() => {
         if (!hasLoaded) {
@@ -54,12 +50,8 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
         }
     }, [hasLoaded, loadProjects]);
 
-    const pinnedProjects = projects.filter((p) => p.pin_to_sidebar);
-    const unpinnedActiveProjects = projects.filter(
-        (p) =>
-            !p.pin_to_sidebar &&
-            p.status !== 'done' &&
-            p.status !== 'cancelled'
+    const activeProjects = projects.filter(
+        (p) => p.status !== 'done' && p.status !== 'cancelled'
     );
 
     const isActive = (path: string) => location.pathname === path;
@@ -71,28 +63,6 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
                 : 'text-gray-700 dark:text-gray-300'
         }`;
 
-    const togglePin = async (project: Project, e: React.MouseEvent) => {
-        e.stopPropagation();
-        if (!project.uid) return;
-        const newValue = !project.pin_to_sidebar;
-        setProjects(
-            projects.map((p) =>
-                p.uid === project.uid ? { ...p, pin_to_sidebar: newValue } : p
-            )
-        );
-        try {
-            await updateProject(project.uid, { pin_to_sidebar: newValue });
-        } catch {
-            setProjects(
-                projects.map((p) =>
-                    p.uid === project.uid
-                        ? { ...p, pin_to_sidebar: !newValue }
-                        : p
-                )
-            );
-        }
-    };
-
     const navigate = (project: Project) =>
         handleNavClick(
             getProjectPath(project),
@@ -101,7 +71,7 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
         );
 
     return (
-        <ul className="flex flex-col space-y-1 mt-4">
+        <ul className={`flex flex-col space-y-1${isExpanded ? ' pb-3' : ''}`}>
             <li
                 className={`group flex justify-between items-center px-4 py-2 uppercase rounded-md text-xs tracking-wider cursor-pointer hover:text-black dark:hover:text-white ${
                     isActive('/projects')
@@ -132,7 +102,7 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
                     >
                         <PlusCircleIcon className="h-5 w-5" />
                     </button>
-                    {unpinnedActiveProjects.length > 0 && (
+                    {activeProjects.length > 0 && (
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
@@ -155,50 +125,26 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
                 </div>
             </li>
 
-            {pinnedProjects.map((project) => (
-                <li
-                    key={project.uid}
-                    className={itemClass(getProjectPath(project))}
-                    onClick={() => navigate(project)}
-                >
-                    <span className="flex items-center truncate">
-                        <span className="w-5 mr-2 flex items-center justify-center flex-shrink-0">
-                            <ProjectIcon project={project} />
-                        </span>
-                        <span className="truncate">{project.name}</span>
-                    </span>
-                    <button
-                        onClick={(e) => togglePin(project, e)}
-                        className="text-blue-500 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none flex-shrink-0"
-                        title="Unpin from sidebar"
-                    >
-                        <BookmarkIconSolid className="h-4 w-4" />
-                    </button>
+            {isExpanded && (
+                <li className="p-0 list-none">
+                    <div className="max-h-80 overflow-y-auto overscroll-y-contain flex flex-col space-y-1">
+                        {activeProjects.map((project) => (
+                            <div
+                                key={project.uid}
+                                className={itemClass(getProjectPath(project))}
+                                onClick={() => navigate(project)}
+                            >
+                                <span className="flex items-center truncate">
+                                    <span className="w-5 mr-2 flex items-center justify-center flex-shrink-0">
+                                        <ProjectIcon project={project} />
+                                    </span>
+                                    <span className="truncate">{project.name}</span>
+                                </span>
+                            </div>
+                        ))}
+                    </div>
                 </li>
-            ))}
-
-            {isExpanded &&
-                unpinnedActiveProjects.map((project) => (
-                    <li
-                        key={project.uid}
-                        className={itemClass(getProjectPath(project))}
-                        onClick={() => navigate(project)}
-                    >
-                        <span className="flex items-center truncate">
-                            <span className="w-5 mr-2 flex items-center justify-center flex-shrink-0">
-                                <ProjectIcon project={project} />
-                            </span>
-                            <span className="truncate">{project.name}</span>
-                        </span>
-                        <button
-                            onClick={(e) => togglePin(project, e)}
-                            className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 focus:outline-none flex-shrink-0 transition-opacity"
-                            title="Pin to sidebar"
-                        >
-                            <BookmarkIcon className="h-4 w-4" />
-                        </button>
-                    </li>
-                ))}
+            )}
         </ul>
     );
 };
