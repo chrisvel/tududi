@@ -11,10 +11,27 @@ class HabitService {
             throw new Error('Task is not a habit');
         }
 
+        const dayStart = new Date(completedAt);
+        dayStart.setHours(0, 0, 0, 0);
+        const dayEnd = new Date(completedAt);
+        dayEnd.setHours(23, 59, 59, 999);
+
+        const existingToday = await RecurringCompletion.findOne({
+            where: {
+                task_id: task.id,
+                skipped: false,
+                completed_at: { [Op.between]: [dayStart, dayEnd] },
+            },
+        });
+
+        if (existingToday) {
+            return { completion: existingToday, task };
+        }
+
         const completion = await RecurringCompletion.create({
             task_id: task.id,
             completed_at: completedAt,
-            original_due_date: completedAt, // For habits, due date = completion date
+            original_due_date: completedAt,
             skipped: false,
         });
 
@@ -61,8 +78,16 @@ class HabitService {
             order: [['completed_at', 'DESC']],
         });
 
+        const distinctDays = new Set(
+            completions.map((c) => {
+                const d = new Date(c.completed_at);
+                d.setHours(0, 0, 0, 0);
+                return d.getTime();
+            })
+        ).size;
+
         const updates = {
-            habit_total_completions: completions.length,
+            habit_total_completions: distinctDays,
             habit_last_completion_at:
                 completions.length > 0 ? completions[0].completed_at : null,
         };
