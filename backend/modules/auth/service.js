@@ -11,6 +11,7 @@ const {
     sendVerificationEmail,
     verifyUserEmail,
 } = require('./registrationService');
+const peopleService = require('../people/service');
 const packageJson = require('../../../package.json');
 const {
     ValidationError,
@@ -72,6 +73,12 @@ class AuthService {
             }
 
             await transaction.commit();
+
+            try {
+                await peopleService.createSelfPerson(user);
+            } catch (err) {
+                logError(err, 'Failed to create self-person for new user');
+            }
 
             return {
                 message:
