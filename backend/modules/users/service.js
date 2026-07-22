@@ -192,19 +192,27 @@ class UsersService {
         if (keyboard_shortcuts !== undefined)
             allowedUpdates.keyboard_shortcuts = keyboard_shortcuts;
 
-        // Handle password change if provided
-        if (currentPassword && newPassword) {
+        // Handle password change/set if provided
+        if (newPassword) {
             validatePassword(newPassword, 'newPassword');
 
-            const isValidPassword = await User.checkPassword(
-                currentPassword,
-                user.password_digest
-            );
-            if (!isValidPassword) {
-                throw new ValidationError(
-                    'Current password is incorrect',
-                    'currentPassword'
+            if (user.password_digest) {
+                if (!currentPassword) {
+                    throw new ValidationError(
+                        'Current password is required',
+                        'currentPassword'
+                    );
+                }
+                const isValidPassword = await User.checkPassword(
+                    currentPassword,
+                    user.password_digest
                 );
+                if (!isValidPassword) {
+                    throw new ValidationError(
+                        'Current password is incorrect',
+                        'currentPassword'
+                    );
+                }
             }
 
             const hashedNewPassword = await User.hashPassword(newPassword);
@@ -286,10 +294,8 @@ class UsersService {
      * Change password.
      */
     async changePassword(userId, currentPassword, newPassword) {
-        if (!currentPassword || !newPassword) {
-            throw new ValidationError(
-                'Current password and new password are required'
-            );
+        if (!newPassword) {
+            throw new ValidationError('New password is required');
         }
 
         validatePassword(newPassword, 'newPassword');
@@ -299,15 +305,23 @@ class UsersService {
             throw new NotFoundError('User not found');
         }
 
-        const isValidPassword = await User.checkPassword(
-            currentPassword,
-            user.password_digest
-        );
-        if (!isValidPassword) {
-            throw new ValidationError(
-                'Current password is incorrect',
-                'currentPassword'
+        if (user.password_digest) {
+            if (!currentPassword) {
+                throw new ValidationError(
+                    'Current password is required',
+                    'currentPassword'
+                );
+            }
+            const isValidPassword = await User.checkPassword(
+                currentPassword,
+                user.password_digest
             );
+            if (!isValidPassword) {
+                throw new ValidationError(
+                    'Current password is incorrect',
+                    'currentPassword'
+                );
+            }
         }
 
         const hashedNewPassword = await User.hashPassword(newPassword);
