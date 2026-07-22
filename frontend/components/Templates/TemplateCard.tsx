@@ -69,9 +69,9 @@ const TemplateCard: React.FC<TemplateCardProps> = ({
     return (
         <div
             onClick={() => onPreview(template)}
-            className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden flex flex-col group hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200 cursor-pointer"
+            className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl flex flex-col group hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200 cursor-pointer"
         >
-            <div className={`h-1.5 w-full flex-shrink-0 ${accent.bar}`} />
+            <div className={`h-1.5 w-full flex-shrink-0 rounded-t-xl ${accent.bar}`} />
 
             <div className="p-4 flex flex-col gap-2.5 flex-1 relative">
                 <div className="absolute top-2 right-2 z-10" ref={dropdownRef}>
