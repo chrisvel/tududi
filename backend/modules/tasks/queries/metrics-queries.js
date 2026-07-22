@@ -520,13 +520,14 @@ async function fetchTasksCompletedToday(userId, userTimezone) {
     const safeTimezone = getSafeTimezone(userTimezone);
     const todayBounds = getTodayBoundsInUTC(safeTimezone);
 
-    // Fetch regular completed tasks
+    // Fetch regular completed tasks (exclude habit tasks — those are captured via RecurringCompletion)
     const regularCompletedTasks = await Task.findAll({
         where: {
             user_id: userId,
             status: Task.STATUS.DONE,
             parent_task_id: null,
             recurring_parent_id: null,
+            habit_mode: false,
             completed_at: {
                 [Op.gte]: todayBounds.start,
                 [Op.lte]: todayBounds.end,
