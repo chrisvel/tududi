@@ -29,10 +29,7 @@ async function getGtdReport(userId, userTimezone = 'UTC') {
             stalled_projects: stalledProjects,
             waiting_for: waitingFor,
         },
-        project_health: {
-            action_debt: actionDebt,
-            total_active: actionDebt.length,
-        },
+        project_health: actionDebt,
         completion_trends: completionTrends,
         area_balance: areaBalance,
     };
@@ -115,8 +112,9 @@ async function computeActionDebt(userId) {
         order: [['name', 'ASC']],
     });
 
+    const total_projects = projects.length;
     const projectIds = projects.map((p) => p.id);
-    if (projectIds.length === 0) return [];
+    if (projectIds.length === 0) return { action_debt: [], total_projects: 0 };
 
     const openTasks = await Task.findAll({
         where: {
@@ -131,7 +129,7 @@ async function computeActionDebt(userId) {
 
     const projectsWithTasks = new Set(openTasks.map((t) => t.project_id));
 
-    return projects
+    const action_debt = projects
         .filter((p) => !projectsWithTasks.has(p.id))
         .map((p) => ({
             id: p.id,
@@ -139,6 +137,8 @@ async function computeActionDebt(userId) {
             status: p.status,
             area: p.Area ? p.Area.name : null,
         }));
+
+    return { action_debt, total_projects };
 }
 
 async function computeCompletionTrends(userId, userTimezone) {

@@ -12,7 +12,7 @@ router.get('/reports/gtd', requireAuth, async (req, res) => {
         const userId = getAuthenticatedUserId(req);
         if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
-        const timezone = req.session?.user?.timezone || 'UTC';
+        const timezone = req.currentUser?.timezone || 'UTC';
         const report = await getGtdReport(userId, timezone);
         res.json(report);
     } catch (err) {

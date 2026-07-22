@@ -7,6 +7,7 @@ import {
     ExclamationTriangleIcon,
     ClockIcon,
     NoSymbolIcon,
+    CheckCircleIcon,
 } from '@heroicons/react/24/outline';
 
 interface StalledProject {
@@ -53,7 +54,7 @@ interface GtdReport {
     };
     project_health: {
         action_debt: ActionDebtProject[];
-        total_active: number;
+        total_projects: number;
     };
     completion_trends: {
         weeks: WeekData[];
@@ -61,12 +62,24 @@ interface GtdReport {
     area_balance: AreaBalance[];
 }
 
-const CHART_MARGINS = { top: 8, right: 8, bottom: 32, left: 32 };
+const CHART_MARGINS = { top: 16, right: 8, bottom: 32, left: 32 };
+
+function staleBadgeColor(days: number) {
+    if (days >= 30) return 'text-red-500 bg-red-50 dark:bg-red-900/20';
+    if (days >= 21) return 'text-orange-500 bg-orange-50 dark:bg-orange-900/20';
+    return 'text-amber-500 bg-amber-50 dark:bg-amber-900/20';
+}
+
+function waitBadgeColor(days: number) {
+    if (days >= 14) return 'text-red-500 bg-red-50 dark:bg-red-900/20';
+    if (days >= 7) return 'text-orange-500 bg-orange-50 dark:bg-orange-900/20';
+    return 'text-blue-500 bg-blue-50 dark:bg-blue-900/20';
+}
 
 function BarChart({ weeks }: { weeks: WeekData[] }) {
     const containerRef = useRef<HTMLDivElement>(null);
     const [width, setWidth] = useState(400);
-    const HEIGHT = 140;
+    const HEIGHT = 160;
 
     useLayoutEffect(() => {
         const el = containerRef.current;
@@ -85,10 +98,16 @@ function BarChart({ weeks }: { weeks: WeekData[] }) {
     const barWidth = plotW / weeks.length;
     const BAR_GAP = 4;
 
+    const yTicks = useMemo(() => {
+        const top = maxCount;
+        const mid = Math.round(maxCount / 2);
+        return [0, mid, top].filter((v, i, arr) => arr.indexOf(v) === i);
+    }, [maxCount]);
+
     return (
         <div ref={containerRef} className="w-full" style={{ height: HEIGHT }}>
             <svg width={width} height={HEIGHT} style={{ display: 'block', overflow: 'visible' }}>
-                {[0, Math.round(maxCount / 2), maxCount].map((tick) => {
+                {yTicks.map((tick) => {
                     const y = CHART_MARGINS.top + plotH - (tick / maxCount) * plotH;
                     return (
                         <g key={tick}>
@@ -125,24 +144,30 @@ function BarChart({ weeks }: { weeks: WeekData[] }) {
                         <g key={w.week}>
                             <rect
                                 x={x}
-                                y={y}
+                                y={barH === 0 ? y - 1 : y}
                                 width={bw}
-                                height={barH}
+                                height={barH === 0 ? 2 : barH}
                                 rx={2}
                                 className={
                                     isRecent
                                         ? 'fill-indigo-500 dark:fill-indigo-400'
                                         : 'fill-gray-200 dark:fill-gray-700'
                                 }
+                                opacity={barH === 0 ? 0.3 : 1}
                             />
                             {w.count > 0 && (
                                 <text
                                     x={x + bw / 2}
-                                    y={y - 3}
+                                    y={y - 4}
                                     textAnchor="middle"
                                     fontSize={9}
+                                    fontWeight={isRecent ? '600' : '400'}
                                     fill="currentColor"
-                                    className="text-gray-500 dark:text-gray-400"
+                                    className={
+                                        isRecent
+                                            ? 'text-indigo-600 dark:text-indigo-300'
+                                            : 'text-gray-400 dark:text-gray-500'
+                                    }
                                 >
                                     {w.count}
                                 </text>
@@ -155,9 +180,7 @@ function BarChart({ weeks }: { weeks: WeekData[] }) {
                                 fill="currentColor"
                                 className="text-gray-400 dark:text-gray-500"
                             >
-                                {w.label === 'This week' || w.label === 'Last week'
-                                    ? w.label
-                                    : w.label}
+                                {w.label}
                             </text>
                         </g>
                     );
@@ -173,37 +196,69 @@ function AreaBalanceChart({ areas }: { areas: AreaBalance[] }) {
         [areas]
     );
 
+    const sorted = useMemo(
+        () => [...areas].sort((a, b) => {
+            const rateA = a.completed / Math.max(a.completed + a.open, 1);
+            const rateB = b.completed / Math.max(b.completed + b.open, 1);
+            return rateB - rateA;
+        }),
+        [areas]
+    );
+
     return (
-        <div className="space-y-3">
-            {areas.map((area) => {
+        <div className="space-y-4">
+            {sorted.map((area, idx) => {
                 const total = area.completed + area.open;
                 const completedPct = (area.completed / maxTotal) * 100;
                 const openPct = (area.open / maxTotal) * 100;
+                const rate = total > 0 ? Math.round((area.completed / total) * 100) : 0;
+                const isTop = idx === 0 && area.completed > 0;
+                const isBottom = idx === sorted.length - 1 && sorted.length > 1;
                 return (
                     <div key={area.id}>
                         <div className="flex justify-between items-center mb-1">
-                            <span className="text-sm text-gray-700 dark:text-gray-300 truncate max-w-[60%]">
-                                {area.name}
-                            </span>
-                            <span className="text-xs text-gray-400 dark:text-gray-500">
-                                {area.completed} done &middot; {area.open} open
-                            </span>
+                            <div className="flex items-center gap-1.5 min-w-0">
+                                <span className="text-sm text-gray-700 dark:text-gray-300 truncate">
+                                    {area.name}
+                                </span>
+                                {isTop && (
+                                    <span className="text-[10px] text-emerald-500 dark:text-emerald-400 font-medium whitespace-nowrap">
+                                        most active
+                                    </span>
+                                )}
+                                {isBottom && rate < 20 && (
+                                    <span className="text-[10px] text-orange-400 font-medium whitespace-nowrap">
+                                        needs attention
+                                    </span>
+                                )}
+                            </div>
+                            <div className="flex items-center gap-3 ml-2 flex-shrink-0">
+                                <span className="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">
+                                    {area.completed} done &middot; {area.open} open
+                                </span>
+                                <span
+                                    className={`text-xs font-medium whitespace-nowrap ${
+                                        rate >= 50
+                                            ? 'text-emerald-500'
+                                            : rate >= 25
+                                              ? 'text-amber-500'
+                                              : 'text-red-400'
+                                    }`}
+                                >
+                                    {rate}%
+                                </span>
+                            </div>
                         </div>
                         <div className="flex h-2 rounded overflow-hidden bg-gray-100 dark:bg-gray-800">
                             <div
-                                className="bg-emerald-400 dark:bg-emerald-500"
+                                className="bg-emerald-400 dark:bg-emerald-500 transition-all"
                                 style={{ width: `${completedPct}%` }}
                             />
                             <div
-                                className="bg-indigo-200 dark:bg-indigo-800"
+                                className="bg-indigo-200 dark:bg-indigo-800 transition-all"
                                 style={{ width: `${openPct}%` }}
                             />
                         </div>
-                        <p className="text-[10px] text-gray-400 dark:text-gray-600 mt-0.5">
-                            {total > 0
-                                ? `${Math.round((area.completed / total) * 100)}% completion rate`
-                                : 'No tasks'}
-                        </p>
                     </div>
                 );
             })}
@@ -211,10 +266,13 @@ function AreaBalanceChart({ areas }: { areas: AreaBalance[] }) {
     );
 }
 
+type Tab = 'weekly' | 'trends';
+
 const ReportsPage: React.FC = () => {
     const { t } = useTranslation();
     const [report, setReport] = useState<GtdReport | null>(null);
     const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState<Tab>('weekly');
 
     useEffect(() => {
         fetch(getApiPath('reports/gtd'), {
@@ -244,207 +302,307 @@ const ReportsPage: React.FC = () => {
     }
 
     const { weekly_review, project_health, completion_trends, area_balance } = report;
+    const { action_debt, total_projects } = project_health;
+
+    const totalCompleted = completion_trends.weeks.reduce((s, w) => s + w.count, 0);
+    const avgPerWeek = Math.round(totalCompleted / completion_trends.weeks.length);
+    const bestWeek = completion_trends.weeks.reduce(
+        (best, w) => (w.count > best.count ? w : best),
+        completion_trends.weeks[0]
+    );
+
+    const tabs: { id: Tab; label: string }[] = [
+        { id: 'weekly', label: t('reports.weeklyReview', 'Weekly Review') },
+        { id: 'trends', label: t('reports.trends', 'Trends') },
+    ];
+
+    const oldestWait =
+        weekly_review.waiting_for.length > 0 ? weekly_review.waiting_for[0] : null;
 
     return (
-        <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8 space-y-6">
-            <h2 className="text-2xl font-light">{t('sidebar.reports', 'Reports')}</h2>
+        <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">
+            <div className="flex items-center gap-3 mb-6">
+                <h2 className="text-2xl font-light">{t('sidebar.reports', 'Reports')}</h2>
+                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-500 dark:text-indigo-400">
+                    beta
+                </span>
+            </div>
 
-            {/* Weekly Review */}
-            <section>
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3">
-                    {t('reports.weeklyReview', 'Weekly Review')}
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-                    <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 flex items-center gap-3">
-                        <ArchiveBoxIcon className="h-8 w-8 text-amber-400 flex-shrink-0" />
-                        <div>
-                            <p className="text-2xl font-semibold text-gray-900 dark:text-white">
-                                {weekly_review.inbox_count}
-                            </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                                {t('reports.inboxItems', 'Inbox items')}
-                            </p>
-                        </div>
-                    </div>
-                    <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 flex items-center gap-3">
-                        <ExclamationTriangleIcon className="h-8 w-8 text-red-400 flex-shrink-0" />
-                        <div>
-                            <p className="text-2xl font-semibold text-gray-900 dark:text-white">
-                                {weekly_review.stalled_projects.length}
-                            </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                                {t('reports.stalledProjects', 'Stalled projects')}
-                            </p>
-                        </div>
-                    </div>
-                    <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 flex items-center gap-3">
-                        <ClockIcon className="h-8 w-8 text-blue-400 flex-shrink-0" />
-                        <div>
-                            <p className="text-2xl font-semibold text-gray-900 dark:text-white">
-                                {weekly_review.waiting_for.length}
-                            </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                                {t('reports.waitingFor', 'Waiting for')}
-                            </p>
-                        </div>
-                    </div>
-                </div>
+            <div className="flex border-b border-gray-200 dark:border-gray-700 mb-6">
+                {tabs.map((tab) => (
+                    <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
+                            activeTab === tab.id
+                                ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400'
+                                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                        }`}
+                    >
+                        {tab.label}
+                    </button>
+                ))}
+            </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    {weekly_review.stalled_projects.length > 0 && (
-                        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
-                            <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3">
-                                {t('reports.stalledProjects', 'Stalled Projects')}
-                            </h4>
-                            <ul className="space-y-2">
-                                {weekly_review.stalled_projects.map((p) => (
-                                    <li key={p.id} className="flex justify-between items-start">
-                                        <div>
-                                            <p className="text-sm text-gray-800 dark:text-gray-200">
-                                                {p.name}
-                                            </p>
-                                            {p.area && (
-                                                <p className="text-xs text-gray-400 dark:text-gray-500">
-                                                    {p.area}
-                                                </p>
-                                            )}
-                                        </div>
-                                        <span className="text-xs text-red-400 ml-2 whitespace-nowrap">
-                                            {p.days_stale}d stale
-                                        </span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
-
-                    {weekly_review.waiting_for.length > 0 && (
-                        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
-                            <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3">
-                                {t('reports.waitingFor', 'Waiting For')}
-                            </h4>
-                            <ul className="space-y-2">
-                                {weekly_review.waiting_for.map((p) => (
-                                    <li key={p.id} className="flex justify-between items-start">
-                                        <div>
-                                            <p className="text-sm text-gray-800 dark:text-gray-200">
-                                                {p.name}
-                                            </p>
-                                            {p.area && (
-                                                <p className="text-xs text-gray-400 dark:text-gray-500">
-                                                    {p.area}
-                                                </p>
-                                            )}
-                                        </div>
-                                        <span className="text-xs text-blue-400 ml-2 whitespace-nowrap">
-                                            {p.days_waiting}d
-                                        </span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
-
-                    {weekly_review.stalled_projects.length === 0 &&
-                        weekly_review.waiting_for.length === 0 && (
-                            <div className="lg:col-span-2 bg-white dark:bg-gray-900 rounded-lg shadow p-4">
-                                <p className="text-sm text-emerald-500 dark:text-emerald-400">
-                                    {t('reports.allClear', 'All clear — no stalled projects or waiting-for items.')}
+            {activeTab === 'weekly' && (
+                <div className="space-y-6">
+                    {/* Stat cards */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 flex items-start gap-3">
+                            <ArchiveBoxIcon className={`h-8 w-8 flex-shrink-0 mt-0.5 ${weekly_review.inbox_count === 0 ? 'text-emerald-400' : 'text-amber-400'}`} />
+                            <div>
+                                <p className="text-2xl font-semibold text-gray-900 dark:text-white">
+                                    {weekly_review.inbox_count}
                                 </p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                    {t('reports.inboxItems', 'Inbox items')}
+                                </p>
+                                <p className="text-xs mt-1 text-gray-400 dark:text-gray-500">
+                                    {weekly_review.inbox_count === 0
+                                        ? 'Inbox zero'
+                                        : weekly_review.inbox_count === 1
+                                          ? '1 item to process'
+                                          : `${weekly_review.inbox_count} items to process`}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 flex items-start gap-3">
+                            <ExclamationTriangleIcon className={`h-8 w-8 flex-shrink-0 mt-0.5 ${weekly_review.stalled_projects.length === 0 ? 'text-emerald-400' : 'text-red-400'}`} />
+                            <div>
+                                <p className="text-2xl font-semibold text-gray-900 dark:text-white">
+                                    {weekly_review.stalled_projects.length}
+                                </p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                    {t('reports.stalledProjects', 'Stalled projects')}
+                                </p>
+                                <p className="text-xs mt-1 text-gray-400 dark:text-gray-500">
+                                    {weekly_review.stalled_projects.length === 0
+                                        ? 'All projects moving'
+                                        : `No activity in 14+ days`}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 flex items-start gap-3">
+                            <ClockIcon className={`h-8 w-8 flex-shrink-0 mt-0.5 ${weekly_review.waiting_for.length === 0 ? 'text-emerald-400' : 'text-blue-400'}`} />
+                            <div>
+                                <p className="text-2xl font-semibold text-gray-900 dark:text-white">
+                                    {weekly_review.waiting_for.length}
+                                </p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                    {t('reports.waitingFor', 'Waiting for')}
+                                </p>
+                                <p className="text-xs mt-1 text-gray-400 dark:text-gray-500">
+                                    {oldestWait
+                                        ? `Oldest: ${oldestWait.name} (${oldestWait.days_waiting}d)`
+                                        : 'Nothing pending'}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Stalled + Waiting detail cards */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        {weekly_review.stalled_projects.length > 0 && (
+                            <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
+                                <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3">
+                                    {t('reports.stalledProjects', 'Stalled Projects')}
+                                </h4>
+                                <ul className="space-y-2.5">
+                                    {weekly_review.stalled_projects.map((p) => (
+                                        <li key={p.id} className="flex justify-between items-start gap-2">
+                                            <div className="min-w-0">
+                                                <p className="text-sm text-gray-800 dark:text-gray-200 truncate">
+                                                    {p.name}
+                                                </p>
+                                                {p.area && (
+                                                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                                                        {p.area}
+                                                    </p>
+                                                )}
+                                            </div>
+                                            <span className={`text-xs font-medium px-1.5 py-0.5 rounded whitespace-nowrap flex-shrink-0 ${staleBadgeColor(p.days_stale)}`}>
+                                                {p.days_stale}d stale
+                                            </span>
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
                         )}
-                </div>
-            </section>
 
-            {/* Project Health */}
-            <section>
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3">
-                    {t('reports.projectHealth', 'Project Health')}
-                </h3>
-                <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
-                    {project_health.action_debt.length === 0 ? (
-                        <p className="text-sm text-emerald-500 dark:text-emerald-400">
-                            {t('reports.allProjectsHaveActions', 'All active projects have at least one next action.')}
-                        </p>
-                    ) : (
-                        <>
-                            <div className="flex items-center gap-2 mb-3">
-                                <NoSymbolIcon className="h-4 w-4 text-orange-400" />
-                                <p className="text-sm text-gray-600 dark:text-gray-400">
-                                    {project_health.action_debt.length}{' '}
-                                    {t('reports.projectsWithNoNextAction', 'project(s) have no next action')}
-                                </p>
-                            </div>
-                            <ul className="space-y-1.5">
-                                {project_health.action_debt.map((p) => (
-                                    <li
-                                        key={p.id}
-                                        className="flex items-center justify-between text-sm"
-                                    >
-                                        <span className="text-gray-800 dark:text-gray-200">
-                                            {p.name}
-                                        </span>
-                                        <div className="flex items-center gap-2">
-                                            {p.area && (
-                                                <span className="text-xs text-gray-400 dark:text-gray-500">
-                                                    {p.area}
-                                                </span>
-                                            )}
-                                            <span className="text-xs px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
-                                                {p.status.replace('_', ' ')}
+                        {weekly_review.waiting_for.length > 0 && (
+                            <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
+                                <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3">
+                                    {t('reports.waitingFor', 'Waiting For')}
+                                </h4>
+                                <ul className="space-y-2.5">
+                                    {weekly_review.waiting_for.map((p) => (
+                                        <li key={p.id} className="flex justify-between items-start gap-2">
+                                            <div className="min-w-0">
+                                                <p className="text-sm text-gray-800 dark:text-gray-200 truncate">
+                                                    {p.name}
+                                                </p>
+                                                {p.area && (
+                                                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                                                        {p.area}
+                                                    </p>
+                                                )}
+                                            </div>
+                                            <span className={`text-xs font-medium px-1.5 py-0.5 rounded whitespace-nowrap flex-shrink-0 ${waitBadgeColor(p.days_waiting)}`}>
+                                                {p.days_waiting}d waiting
                                             </span>
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
-                        </>
-                    )}
-                </div>
-            </section>
-
-            {/* Completion Trends */}
-            <section>
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3">
-                    {t('reports.completionTrends', 'Completion Trends')} &mdash; 8 weeks
-                </h3>
-                <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
-                    {completion_trends.weeks.every((w) => w.count === 0) ? (
-                        <p className="text-sm text-gray-500 dark:text-gray-400 italic">
-                            {t('reports.noCompletions', 'No completed tasks in the past 8 weeks.')}
-                        </p>
-                    ) : (
-                        <BarChart weeks={completion_trends.weeks} />
-                    )}
-                </div>
-            </section>
-
-            {/* Area Balance */}
-            <section>
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3">
-                    {t('reports.areaBalance', 'Area Balance')} &mdash; last 30 days
-                </h3>
-                <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
-                    {area_balance.length === 0 ? (
-                        <p className="text-sm text-gray-500 dark:text-gray-400 italic">
-                            {t('reports.noAreaData', 'No area data available. Assign tasks to areas to see balance.')}
-                        </p>
-                    ) : (
-                        <>
-                            <div className="flex items-center gap-4 mb-4 text-xs text-gray-400 dark:text-gray-500">
-                                <span className="flex items-center gap-1">
-                                    <span className="inline-block w-3 h-2 rounded bg-emerald-400 dark:bg-emerald-500" />
-                                    {t('reports.completed', 'Completed (30d)')}
-                                </span>
-                                <span className="flex items-center gap-1">
-                                    <span className="inline-block w-3 h-2 rounded bg-indigo-200 dark:bg-indigo-800" />
-                                    {t('reports.open', 'Open')}
-                                </span>
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
-                            <AreaBalanceChart areas={area_balance} />
-                        </>
-                    )}
+                        )}
+
+                        {weekly_review.stalled_projects.length === 0 &&
+                            weekly_review.waiting_for.length === 0 && (
+                                <div className="lg:col-span-2 bg-white dark:bg-gray-900 rounded-lg shadow p-4 flex items-center gap-2">
+                                    <CheckCircleIcon className="h-5 w-5 text-emerald-400 flex-shrink-0" />
+                                    <p className="text-sm text-emerald-500 dark:text-emerald-400">
+                                        {t('reports.allClear', 'All clear — no stalled projects or waiting-for items.')}
+                                    </p>
+                                </div>
+                            )}
+                    </div>
+
+                    {/* Project Health */}
+                    <div>
+                        <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3">
+                            {t('reports.projectHealth', 'Project Health')}
+                        </h3>
+                        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
+                            {action_debt.length === 0 ? (
+                                <div className="flex items-center gap-2">
+                                    <CheckCircleIcon className="h-5 w-5 text-emerald-400 flex-shrink-0" />
+                                    <p className="text-sm text-emerald-500 dark:text-emerald-400">
+                                        {total_projects > 0
+                                            ? `All ${total_projects} active projects have a next action.`
+                                            : t('reports.allProjectsHaveActions', 'All active projects have at least one next action.')}
+                                    </p>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="flex items-center justify-between mb-3">
+                                        <div className="flex items-center gap-2">
+                                            <NoSymbolIcon className="h-4 w-4 text-orange-400 flex-shrink-0" />
+                                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                {action_debt.length} of {total_projects} projects have no next action
+                                            </p>
+                                        </div>
+                                    </div>
+                                    {/* Progress bar */}
+                                    <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-800 rounded overflow-hidden mb-4">
+                                        <div
+                                            className="h-full bg-emerald-400 dark:bg-emerald-500 rounded"
+                                            style={{ width: `${((total_projects - action_debt.length) / total_projects) * 100}%` }}
+                                        />
+                                    </div>
+                                    <ul className="space-y-2">
+                                        {action_debt.map((p) => (
+                                            <li key={p.id} className="flex items-center justify-between text-sm gap-2">
+                                                <span className="text-gray-800 dark:text-gray-200 truncate">
+                                                    {p.name}
+                                                </span>
+                                                <div className="flex items-center gap-2 flex-shrink-0">
+                                                    {p.area && (
+                                                        <span className="text-xs text-gray-400 dark:text-gray-500">
+                                                            {p.area}
+                                                        </span>
+                                                    )}
+                                                    <span className="text-xs px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                                                        {p.status.replace(/_/g, ' ')}
+                                                    </span>
+                                                </div>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </>
+                            )}
+                        </div>
+                    </div>
                 </div>
-            </section>
+            )}
+
+            {activeTab === 'trends' && (
+                <div className="space-y-6">
+                    {/* Completion Trends */}
+                    <div>
+                        <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3">
+                            {t('reports.completionTrends', 'Completion Trends')} &mdash; 8 weeks
+                        </h3>
+                        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
+                            {totalCompleted === 0 ? (
+                                <p className="text-sm text-gray-500 dark:text-gray-400 italic">
+                                    {t('reports.noCompletions', 'No completed tasks in the past 8 weeks.')}
+                                </p>
+                            ) : (
+                                <>
+                                    <div className="flex items-center gap-6 mb-4">
+                                        <div>
+                                            <p className="text-xl font-semibold text-gray-900 dark:text-white">
+                                                {totalCompleted}
+                                            </p>
+                                            <p className="text-xs text-gray-400 dark:text-gray-500">total completed</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-xl font-semibold text-gray-900 dark:text-white">
+                                                {avgPerWeek}
+                                            </p>
+                                            <p className="text-xs text-gray-400 dark:text-gray-500">avg / week</p>
+                                        </div>
+                                        {bestWeek.count > 0 && (
+                                            <div>
+                                                <p className="text-xl font-semibold text-indigo-500 dark:text-indigo-400">
+                                                    {bestWeek.count}
+                                                </p>
+                                                <p className="text-xs text-gray-400 dark:text-gray-500">
+                                                    best ({bestWeek.label})
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <BarChart weeks={completion_trends.weeks} />
+                                </>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Area Balance */}
+                    <div>
+                        <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3">
+                            {t('reports.areaBalance', 'Area Balance')} &mdash; last 30 days
+                        </h3>
+                        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
+                            {area_balance.length === 0 ? (
+                                <p className="text-sm text-gray-500 dark:text-gray-400 italic">
+                                    {t('reports.noAreaData', 'No area data available. Assign tasks to areas to see balance.')}
+                                </p>
+                            ) : (
+                                <>
+                                    <div className="flex items-center gap-4 mb-4 text-xs text-gray-400 dark:text-gray-500">
+                                        <span className="flex items-center gap-1">
+                                            <span className="inline-block w-3 h-2 rounded bg-emerald-400 dark:bg-emerald-500" />
+                                            {t('reports.completed', 'Completed (30d)')}
+                                        </span>
+                                        <span className="flex items-center gap-1">
+                                            <span className="inline-block w-3 h-2 rounded bg-indigo-200 dark:bg-indigo-800" />
+                                            {t('reports.open', 'Open')}
+                                        </span>
+                                        <span className="flex items-center gap-1 ml-auto">
+                                            % = completion rate
+                                        </span>
+                                    </div>
+                                    <AreaBalanceChart areas={area_balance} />
+                                </>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
