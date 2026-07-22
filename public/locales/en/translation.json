@@ -65,7 +65,12 @@
     "pinView": "Pin view",
     "addHabitAriaLabel": "Add Habit",
     "addHabitTitle": "Add Habit",
-    "toggleDarkMode": "Toggle Dark Mode"
+    "toggleDarkMode": "Toggle Dark Mode",
+    "insights": "Insights",
+    "boards": "Boards",
+    "bookmarks": "Bookmarks",
+    "reports": "Reports",
+    "productivityAssistant": "Productivity Assistant"
   },
   "navigation": {
     "home": "Home",
@@ -1092,7 +1097,10 @@
     "day": "day",
     "days": "days",
     "sharedUser": "Shared user",
-    "moreSharedUsers": "+{{count}} more users"
+    "moreSharedUsers": "+{{count}} more users",
+    "saveAsTemplate": "Save as Template",
+    "pinToSidebar": "Pin to sidebar",
+    "unpinFromSidebar": "Unpin from sidebar"
   },
   "areas": {
     "title": "Areas",
@@ -1131,7 +1139,10 @@
     "noteOptions": "Note options",
     "clickToEdit": "Click to edit",
     "contentPlaceholderFocus": "Write your note... (Markdown supported)",
-    "contentPlaceholderMarkdown": "Write your content using Markdown formatting...\n\nExamples:\n# Heading\n**Bold text**\n*Italic text*\n- List item\n```code```"
+    "contentPlaceholderMarkdown": "Write your content using Markdown formatting...\n\nExamples:\n# Heading\n**Bold text**\n*Italic text*\n- List item\n```code```",
+    "pinToSidebar": "Pin to sidebar",
+    "unpinFromSidebar": "Unpin from sidebar",
+    "save": "Save"
   },
   "tags": {
     "loading": "Loading tags...",
@@ -1605,5 +1616,23 @@
     "statDone": "Done",
     "statActive": "Active",
     "statOverdue": "Overdue"
+  },
+  "reports": {
+    "weeklyReview": "Weekly Review",
+    "inboxItems": "Inbox items",
+    "stalledProjects": "Stalled projects",
+    "waitingFor": "Waiting for",
+    "allClear": "All clear — no stalled projects or waiting-for items.",
+    "projectHealth": "Project Health",
+    "allProjectsHaveActions": "All active projects have at least one next action.",
+    "projectsWithNoNextAction": "project(s) have no next action",
+    "completionTrends": "Completion Trends",
+    "noCompletions": "No completed tasks in the past 8 weeks.",
+    "areaBalance": "Area Balance",
+    "noAreaData": "No area data available. Assign tasks to areas to see balance.",
+    "completed": "Completed (30d)",
+    "open": "Open",
+    "streaks": "Streaks",
+    "areaBreakdown": "Area Breakdown"
   }
 }
