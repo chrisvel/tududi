@@ -38,15 +38,45 @@ interface TelegramBotInfo {
     chat_url: string;
 }
 
+let profileCache: Profile | null = null;
+let profileCacheExpiry = 0;
+let profileInflightRequest: Promise<Profile> | null = null;
+const PROFILE_CACHE_TTL_MS = 60_000;
+
+export const invalidateProfileCache = (): void => {
+    profileCache = null;
+    profileCacheExpiry = 0;
+    profileInflightRequest = null;
+};
+
 export const fetchProfile = async (): Promise<Profile> => {
-    const response = await fetch(getApiPath('profile'), {
-        credentials: 'include',
-        headers: {
-            Accept: 'application/json',
-        },
-    });
-    await handleAuthResponse(response, 'Failed to fetch profile data.');
-    return await response.json();
+    if (profileCache && Date.now() < profileCacheExpiry) {
+        return profileCache;
+    }
+
+    if (profileInflightRequest) {
+        return profileInflightRequest;
+    }
+
+    profileInflightRequest = (async () => {
+        try {
+            const response = await fetch(getApiPath('profile'), {
+                credentials: 'include',
+                headers: {
+                    Accept: 'application/json',
+                },
+            });
+            await handleAuthResponse(response, 'Failed to fetch profile data.');
+            const profile = await response.json();
+            profileCache = profile;
+            profileCacheExpiry = Date.now() + PROFILE_CACHE_TTL_MS;
+            return profile;
+        } finally {
+            profileInflightRequest = null;
+        }
+    })();
+
+    return profileInflightRequest;
 };
 
 export const updateProfile = async (
@@ -60,6 +90,9 @@ export const updateProfile = async (
     });
     await handleAuthResponse(response, 'Failed to update profile.');
     const updatedProfile = await response.json();
+
+    profileCache = updatedProfile;
+    profileCacheExpiry = Date.now() + PROFILE_CACHE_TTL_MS;
 
     if (profileData.features && 'task_intelligence_enabled' in profileData.features) {
         localStorage.removeItem('taskIntelligenceEnabled');

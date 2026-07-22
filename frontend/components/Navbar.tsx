@@ -21,6 +21,7 @@ import NotificationsDropdown from './Notifications/NotificationsDropdown';
 import { getApiPath, getAssetPath } from '../config/paths';
 import { getFeatureFlags, FeatureFlags } from '../utils/featureFlags';
 import { setUserTimezone } from '../utils/dateUtils';
+import { fetchProfile as fetchProfileFromService, invalidateProfileCache } from '../utils/profileService';
 
 interface NavbarProps {
     isDarkMode: boolean;
@@ -95,26 +96,19 @@ const Navbar: React.FC<NavbarProps> = ({
 
     // Fetch user's pomodoro setting and feature flags
     useEffect(() => {
-        const fetchProfile = async () => {
+        const loadProfile = async () => {
             try {
-                const response = await fetch(getApiPath('profile'), {
-                    credentials: 'include',
-                });
-                if (response.ok) {
-                    const profile = await response.json();
-                    setPomodoroEnabled(
-                        profile.features?.pomodoro_enabled !== undefined
-                            ? profile.features.pomodoro_enabled
-                            : true
-                    );
-                    // Set user timezone for date formatting
-                    if (profile.timezone) {
-                        setUserTimezone(profile.timezone);
-                    }
+                const profile = await fetchProfileFromService();
+                setPomodoroEnabled(
+                    profile.features?.pomodoro_enabled !== undefined
+                        ? profile.features.pomodoro_enabled
+                        : true
+                );
+                if (profile.timezone) {
+                    setUserTimezone(profile.timezone);
                 }
             } catch (error) {
                 console.error('Error fetching profile:', error);
-                // Keep default value (true) if fetch fails
             }
         };
 
@@ -123,7 +117,7 @@ const Navbar: React.FC<NavbarProps> = ({
             setFeatureFlags(flags);
         };
 
-        fetchProfile();
+        loadProfile();
         fetchFlags();
 
         // Listen for Pomodoro setting changes from ProfileSettings
@@ -149,6 +143,7 @@ const Navbar: React.FC<NavbarProps> = ({
     };
 
     const handleLogout = async () => {
+        invalidateProfileCache();
         try {
             const response = await fetch(getApiPath('logout'), {
                 method: 'GET',

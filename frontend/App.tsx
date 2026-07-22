@@ -42,6 +42,7 @@ import Templates from './components/Templates/Templates';
 import { setCurrentUser as setUserInStorage } from './utils/userUtils';
 import { getApiPath, getLocalesPath } from './config/paths';
 import { useStore } from './store/useStore';
+import { invalidateProfileCache } from './utils/profileService';
 // Lazy load Tasks component to prevent issues with tags loading
 const Tasks = lazy(() => import('./components/Tasks'));
 
@@ -65,6 +66,7 @@ const App: React.FC = () => {
 
             if (!response.ok) {
                 if (response.status === 401) {
+                    invalidateProfileCache();
                     setCurrentUser(null);
                     return;
                 }
@@ -109,6 +111,7 @@ const App: React.FC = () => {
     // Listen for login events to update user state
     useEffect(() => {
         const handleUserLoggedIn = (event: CustomEvent) => {
+            invalidateProfileCache();
             const user = event.detail;
             setCurrentUser(user);
             setUserInStorage(user);
