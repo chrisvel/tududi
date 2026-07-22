@@ -21,7 +21,7 @@ import NotificationsDropdown from './Notifications/NotificationsDropdown';
 import { getApiPath, getAssetPath } from '../config/paths';
 import { getFeatureFlags, FeatureFlags } from '../utils/featureFlags';
 import { setUserTimezone } from '../utils/dateUtils';
-import { fetchProfile as fetchProfileFromService } from '../utils/profileService';
+import { fetchProfile as fetchProfileFromService, invalidateProfileCache } from '../utils/profileService';
 
 interface NavbarProps {
     isDarkMode: boolean;
@@ -143,6 +143,7 @@ const Navbar: React.FC<NavbarProps> = ({
     };
 
     const handleLogout = async () => {
+        invalidateProfileCache();
         try {
             const response = await fetch(getApiPath('logout'), {
                 method: 'GET',
