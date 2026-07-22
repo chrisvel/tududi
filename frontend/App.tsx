@@ -34,6 +34,7 @@ import Habits from './components/Habits/Habits';
 import HabitDetails from './components/Habits/HabitDetails';
 import EisenhowerMatrix from './components/Eisenhower/EisenhowerMatrix';
 import KanbanBoard from './components/Kanban/KanbanBoard';
+import ProductivityPage from './components/Insights/ProductivityPage';
 import ReportsPage from './components/Insights/ReportsPage';
 import PeopleList from './components/People/PeopleList';
 import PersonDetails from './components/People/PersonDetails';
@@ -256,7 +257,7 @@ const App: React.FC = () => {
                             <Route path="/kanban" element={<Navigate to="/boards/kanban" replace />} />
                             <Route path="/boards/eisenhower" element={<EisenhowerMatrix />} />
                             <Route path="/boards/kanban" element={<KanbanBoard />} />
-                            <Route path="/insights/productivity" element={<Navigate to="/insights/reports" replace />} />
+                            <Route path="/insights/productivity" element={<ProductivityPage />} />
                             <Route path="/insights/reports" element={<ReportsPage />} />
                             <Route path="/inbox" element={<InboxItems />} />
                             <Route path="/habits" element={<Habits />} />

@@ -235,7 +235,7 @@ const ReportsPage: React.FC = () => {
         );
     }
 
-    if (!report) {
+    if (!report || !report.weekly_review) {
         return (
             <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">
                 <p className="text-sm text-gray-500">{t('common.error', 'Failed to load reports.')}</p>
