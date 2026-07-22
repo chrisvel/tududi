@@ -1,25 +1,6 @@
 import { getApiPath } from '../config/paths';
 import { getPostHeadersWithCsrf, handleAuthResponse } from './authUtils';
 
-export interface PriorityAction {
-    action: string;
-    project: string | null;
-    reason?: string;
-    suggestion?: string;
-}
-
-export interface DailyBrief {
-    focus: string;
-    priority_actions: PriorityAction[];
-    watch_out: string[];
-    generated_at: string;
-    model: string;
-    usage?: {
-        prompt_tokens?: number;
-        completion_tokens?: number;
-    };
-}
-
 export interface TaskInsightsRequest {
     taskUid?: string;
     taskName: string;
@@ -153,22 +134,3 @@ export const updateProjectInsightsDismissed = async (
     );
 };
 
-export const fetchCachedBrief = async (): Promise<DailyBrief | null> => {
-    const response = await fetch(getApiPath('ai-assistant/daily-brief'), {
-        method: 'GET',
-        credentials: 'include',
-    });
-    if (!response.ok) return null;
-    const data = await response.json();
-    return data || null;
-};
-
-export const fetchDailyBrief = async (): Promise<DailyBrief> => {
-    const response = await fetch(getApiPath('ai-assistant/daily-brief'), {
-        method: 'POST',
-        credentials: 'include',
-        headers: await getPostHeadersWithCsrf(),
-    });
-    await handleAuthResponse(response, 'Failed to generate daily brief.');
-    return response.json();
-};

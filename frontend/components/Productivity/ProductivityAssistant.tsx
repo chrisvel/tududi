@@ -6,8 +6,7 @@ import {
     ExclamationTriangleIcon,
     ClockIcon,
     FolderIcon,
-    ChevronDownIcon,
-    ChevronRightIcon,
+    CheckCircleIcon,
 } from '@heroicons/react/24/outline';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
@@ -41,7 +40,6 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
     const navigate = useNavigate();
     const location = useLocation();
 
-    const [isExpanded, setIsExpanded] = useState(false);
     const [insights, setInsights] = useState<ProductivityInsight[]>([]);
     const [expandedInsights, setExpandedInsights] = useState<Set<number>>(
         new Set()
@@ -299,108 +297,67 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
     };
 
     if (totalIssues === 0) {
-        return null;
+        return (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+                <CheckCircleIcon className="h-12 w-12 text-green-400 mb-3" />
+                <p className="text-gray-500 dark:text-gray-400">
+                    {t('productivity.noIssues', 'Everything looks good! No issues found.')}
+                </p>
+            </div>
+        );
     }
 
     return (
-        <div className="mb-2 p-4 bg-white dark:bg-gray-900 border-l-4 border-yellow-500 rounded-lg shadow">
-            <button
-                onClick={() => setIsExpanded(!isExpanded)}
-                className="flex items-center w-full"
-            >
-                <ExclamationTriangleIcon className="h-6 w-6 text-yellow-500 dark:text-yellow-400 mr-3" />
-                <div className="flex-1 text-left">
-                    <p className="text-gray-700 dark:text-gray-300 font-medium">
-                        {t('productivity.issuesFound', { count: totalIssues })}
-                    </p>
-                    <p className="text-yellow-600 dark:text-yellow-400 text-sm">
-                        {t(
-                            'productivity.reviewItems',
-                            'Click to review and improve your workflow'
-                        )}
-                    </p>
-                </div>
-                {isExpanded ? (
-                    <ChevronDownIcon className="h-5 w-5 text-yellow-500" />
-                ) : (
-                    <ChevronRightIcon className="h-5 w-5 text-yellow-500" />
-                )}
-            </button>
-
-            {isExpanded && (
-                <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                    <div className="space-y-4">
-                        {insights.map((insight, index) => (
-                            <div
-                                key={index}
-                                className="border-l-4 border-gray-200 dark:border-gray-600 pl-4"
-                            >
-                                <div className="flex items-start space-x-3">
-                                    <insight.icon
-                                        className={`h-5 w-5 mt-0.5 ${insight.color}`}
-                                    />
-                                    <div className="flex-1">
-                                        <h4 className="font-medium text-gray-900 dark:text-gray-100">
-                                            {insight.title} (
-                                            {insight.items.length})
-                                        </h4>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                                            {insight.description}
-                                        </p>
-                                        <div className="space-y-1">
-                                            {(expandedInsights.has(index)
-                                                ? insight.items
-                                                : insight.items.slice(0, 3)
-                                            ).map((item, itemIndex) => {
-                                                return (
-                                                    <div
-                                                        key={itemIndex}
-                                                        className="text-sm"
-                                                    >
-                                                        <button
-                                                            onClick={() =>
-                                                                handleItemClick(
-                                                                    item
-                                                                )
-                                                            }
-                                                            className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline text-left"
-                                                        >
-                                                            • {item.name}
-                                                        </button>
-                                                    </div>
-                                                );
-                                            })}
-                                            {insight.items.length > 3 && (
-                                                <button
-                                                    onClick={() =>
-                                                        toggleInsightExpansion(
-                                                            index
-                                                        )
-                                                    }
-                                                    className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 underline cursor-pointer"
-                                                >
-                                                    {expandedInsights.has(index)
-                                                        ? '... show less'
-                                                        : `... and ${insight.items.length - 3} more items`}
-                                                </button>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
+        <div className="space-y-4">
+            {insights.map((insight, index) => (
+                <div
+                    key={index}
+                    className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4"
+                >
+                    <div className="flex items-start space-x-3 mb-3">
+                        <insight.icon className={`h-5 w-5 mt-0.5 flex-shrink-0 ${insight.color}`} />
+                        <div>
+                            <h4 className="font-medium text-gray-900 dark:text-gray-100">
+                                {insight.title}{' '}
+                                <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
+                                    ({insight.items.length})
+                                </span>
+                            </h4>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                                {insight.description}
+                            </p>
+                        </div>
+                    </div>
+                    <div className="space-y-1 pl-8">
+                        {(expandedInsights.has(index)
+                            ? insight.items
+                            : insight.items.slice(0, 3)
+                        ).map((item, itemIndex) => (
+                            <div key={itemIndex} className="text-sm">
+                                <button
+                                    onClick={() => handleItemClick(item)}
+                                    className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline text-left"
+                                >
+                                    • {item.name}
+                                </button>
                             </div>
                         ))}
-                    </div>
-
-                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                            {t(
-                                'productivity.suggestion',
-                                'Click on any item above to open it and make improvements.'
-                            )}
-                        </p>
+                        {insight.items.length > 3 && (
+                            <button
+                                onClick={() => toggleInsightExpansion(index)}
+                                className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 underline cursor-pointer"
+                            >
+                                {expandedInsights.has(index)
+                                    ? t('common.showLess', 'Show less')
+                                    : t('productivity.andMore', '... and {{count}} more', { count: insight.items.length - 3 })}
+                            </button>
+                        )}
                     </div>
                 </div>
-            )}
+            ))}
+            <p className="text-xs text-gray-400 dark:text-gray-500 pt-2">
+                {t('productivity.suggestion', 'Click on any item above to open it and make improvements.')}
+            </p>
         </div>
     );
 };

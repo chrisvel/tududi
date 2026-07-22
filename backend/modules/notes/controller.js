@@ -84,8 +84,15 @@ const notesController = {
         try {
             const userId = requireUserId(req);
             const { uid } = req.params;
-            const { title, content, project_uid, project_id, tags, color } =
-                req.body;
+            const {
+                title,
+                content,
+                project_uid,
+                project_id,
+                tags,
+                color,
+                pin_to_sidebar,
+            } = req.body;
 
             const note = await notesService.update(userId, uid, {
                 title,
@@ -94,6 +101,7 @@ const notesController = {
                 project_id,
                 tags,
                 color,
+                pin_to_sidebar,
             });
 
             res.json(note);

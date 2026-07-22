@@ -7,8 +7,6 @@ import {
     ListBulletIcon,
     ClockIcon,
     CalendarIcon,
-    Squares2X2Icon,
-    ViewColumnsIcon,
 } from '@heroicons/react/24/solid';
 import { PlusCircleIcon } from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
@@ -28,8 +26,6 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
 }) => {
     const { t } = useTranslation();
     const store = useStore();
-    const eisenhowerEnabled = useStore((state) => state.userSettingsStore.eisenhowerEnabled);
-    const kanbanEnabled = useStore((state) => state.userSettingsStore.kanbanEnabled);
     const calendarEnabled = useStore((state) => state.userSettingsStore.calendarEnabled);
 
     const inboxItemsCount = store.inboxStore.pagination.total;
@@ -67,27 +63,9 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
             icon: <ListBulletIcon className="h-5 w-5" />,
             query: 'status=active',
         },
-        {
-            path: '/eisenhower',
-            title: t('sidebar.eisenhower', 'Eisenhower Matrix'),
-            icon: <Squares2X2Icon className="h-5 w-5" />,
-            userFlag: 'eisenhower',
-        },
-        {
-            path: '/kanban',
-            title: t('sidebar.kanban', 'Kanban Board'),
-            icon: <ViewColumnsIcon className="h-5 w-5" />,
-            userFlag: 'kanban',
-        },
     ];
 
     const navLinks = allNavLinks.filter((link) => {
-        if (link.userFlag === 'eisenhower') {
-            return eisenhowerEnabled;
-        }
-        if (link.userFlag === 'kanban') {
-            return kanbanEnabled;
-        }
         if (link.userFlag === 'calendar') {
             return calendarEnabled;
         }
@@ -95,7 +73,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
     });
 
     const isActive = (path: string, query?: string) => {
-        if (path === '/inbox' || path === '/today' || path === '/calendar' || path === '/eisenhower' || path === '/kanban') {
+        if (path === '/inbox' || path === '/today' || path === '/calendar') {
             const isPathMatch = location.pathname === path;
             return isPathMatch
                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'

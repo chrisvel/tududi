@@ -12,7 +12,8 @@ export default [
   pluginReact.configs.flat.recommended,
   {
     rules: {
-      "@typescript-eslint/no-explicit-any": "off"
+      "@typescript-eslint/no-explicit-any": "off",
+      "react/prop-types": "off"
     },
     settings: {
       react: {

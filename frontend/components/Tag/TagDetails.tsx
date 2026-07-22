@@ -8,8 +8,12 @@ import {
     TrashIcon,
     TagIcon,
     MagnifyingGlassIcon,
+    BookmarkIcon as BookmarkSolidIcon,
 } from '@heroicons/react/24/solid';
-import { FolderIcon as FolderOutlineIcon } from '@heroicons/react/24/outline';
+import {
+    FolderIcon as FolderOutlineIcon,
+    BookmarkIcon as BookmarkOutlineIcon,
+} from '@heroicons/react/24/outline';
 import { Task } from '../../entities/Task';
 import { Note } from '../../entities/Note';
 import { Project, ProjectStatus } from '../../entities/Project';
@@ -39,6 +43,8 @@ const TagDetails: React.FC = () => {
     const [notes, setNotes] = useState<Note[]>([]);
     const allProjects = useStore((state: any) => state.projectsStore.projects);
     const setProjects = useStore((state: any) => state.projectsStore.setProjects);
+    const storeTags = useStore((state) => state.tagsStore.tags);
+    const setStoreTags = useStore((state) => state.tagsStore.setTags);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -388,6 +394,20 @@ const TagDetails: React.FC = () => {
         }
     };
 
+    const handleTogglePin = async () => {
+        if (!tag?.uid) return;
+        const newValue = !tag.pinned;
+        const updated = { ...tag, pinned: newValue };
+        setTag(updated);
+        setStoreTags(storeTags.map((t) => (t.uid === tag.uid ? { ...t, pinned: newValue } : t)));
+        try {
+            await updateTag(tag.uid, updated);
+        } catch {
+            setTag(tag);
+            setStoreTags(storeTags.map((t) => (t.uid === tag.uid ? { ...t, pinned: !newValue } : t)));
+        }
+    };
+
     const handleDeleteTag = async () => {
         try {
             if (tag && tag.uid) {
@@ -512,6 +532,24 @@ const TagDetails: React.FC = () => {
                                 title={t('common.search', 'Search tasks')}
                             >
                                 <MagnifyingGlassIcon className="h-5 w-5" />
+                            </button>
+                            <button
+                                onClick={handleTogglePin}
+                                className={`p-2 rounded-lg transition-colors ${
+                                    tag.pinned
+                                        ? tag.color
+                                            ? 'text-white hover:bg-white/10'
+                                            : 'text-blue-500 hover:text-blue-600 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                        : tag.color
+                                            ? 'text-white/80 hover:text-white hover:bg-white/10'
+                                            : 'text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                }`}
+                                title={tag.pinned ? t('tags.unpinFromSidebar', 'Unpin from sidebar') : t('tags.pinToSidebar', 'Pin to sidebar')}
+                            >
+                                {tag.pinned
+                                    ? <BookmarkSolidIcon className="h-5 w-5" />
+                                    : <BookmarkOutlineIcon className="h-5 w-5" />
+                                }
                             </button>
                             {tag.tag_type !== 'system' && (
                                 <>

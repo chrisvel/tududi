@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
 import { useNavigate } from 'react-router-dom';
 import { getLocalesPath, getApiPath } from '../../config/paths';
-import { getCsrfToken } from '../../utils/csrfService';
 import { sortTasksByPriorityDueDateProject } from '../../utils/taskSortUtils';
 import { scoreAndSortSuggestedTasks } from '../../utils/suggestionScoringUtils';
 import { getTodayDateString } from '../../utils/dateUtils';
@@ -22,7 +21,6 @@ import {
     CalendarDaysIcon,
     QueueListIcon,
     ExclamationTriangleIcon,
-    SparklesIcon,
 } from '@heroicons/react/24/outline';
 import { fetchTasks, updateTask, deleteTask } from '../../utils/tasksService';
 import {
@@ -39,9 +37,7 @@ import { useStore } from '../../store/useStore';
 import TaskList from './TaskList';
 import TodayPlan from './TodayPlan';
 import { Metrics } from '../../entities/Metrics';
-import ProductivityAssistant from '../Productivity/ProductivityAssistant';
 import NextTaskSuggestion from './NextTaskSuggestion';
-import DailyAssistant from '../AI/DailyAssistant';
 import TodaySettingsDropdown from './TodaySettingsDropdown';
 import BurndownChart from './BurndownChart';
 import LifeBalance from './LifeBalance';
@@ -91,16 +87,12 @@ const TasksToday: React.FC = () => {
     const [localProjects, setLocalProjects] = useState<any[]>([]);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
     const [dailyQuote, setDailyQuote] = useState<string>('');
-    const [productivityAssistantEnabled, setProductivityAssistantEnabled] =
-        useState(true);
     const [isSettingsEnabled, setIsSettingsEnabled] = useState(false);
     const [todaySettings, setTodaySettings] = useState({
         showMetrics: true,
         showAreaBalance: true,
         showActiveProjects: true,
-        showProductivity: false,
         showNextTaskSuggestion: false,
-        showDailyBrief: false,
         showSuggestions: true,
         showDueToday: true,
         showCompleted: true,
@@ -111,11 +103,8 @@ const TasksToday: React.FC = () => {
     const [nextTaskSuggestionEnabled, setNextTaskSuggestionEnabled] =
         useState(true);
     const [profileSettings, setProfileSettings] = useState({
-        productivity_assistant_enabled: false,
         next_task_suggestion_enabled: false,
-        ai_assistant_enabled: false,
     });
-    const [hasBriefMounted, setHasBriefMounted] = useState(false);
     const [showNextTaskSuggestion, setShowNextTaskSuggestion] = useState(true);
     const [isSuggestedCollapsed, setIsSuggestedCollapsed] = useState(() => {
         const stored = localStorage.getItem('suggestedTasksCollapsed');
@@ -574,13 +563,6 @@ const TasksToday: React.FC = () => {
                     if (isMounted.current) {
                         const userFeatures = userData.features || {};
 
-                        // Set productivity assistant setting
-                        setProductivityAssistantEnabled(
-                            userFeatures.productivity_assistant_enabled !== undefined
-                                ? userFeatures.productivity_assistant_enabled
-                                : true
-                        );
-
                         // Set next task suggestion setting
                         setNextTaskSuggestionEnabled(
                             userFeatures.next_task_suggestion_enabled !== undefined
@@ -613,7 +595,6 @@ const TasksToday: React.FC = () => {
                             showMetrics: true,
                             showAreaBalance: true,
                             showActiveProjects: true,
-                            showProductivity: false,
                             showNextTaskSuggestion: false,
                             showSuggestions: true,
                             showDueToday: true,
@@ -624,25 +605,15 @@ const TasksToday: React.FC = () => {
                         // Back-fill keys missing from stored settings
                         if (settings.showAreaBalance === undefined) settings.showAreaBalance = true;
                         if (settings.showActiveProjects === undefined) settings.showActiveProjects = true;
-                        if (settings.showDailyBrief === undefined) settings.showDailyBrief = false;
                         if (settings.showTaggedToday === undefined) settings.showTaggedToday = true;
 
                         // Store profile settings
-                        const currentProfileSettings = {
-                            productivity_assistant_enabled:
-                                userFeatures.productivity_assistant_enabled === true,
+                        setProfileSettings({
                             next_task_suggestion_enabled:
                                 userFeatures.next_task_suggestion_enabled === true,
-                            ai_assistant_enabled:
-                                userFeatures.ai_assistant_enabled === true,
-                        };
-                        setProfileSettings(currentProfileSettings);
+                        });
 
                         // Sync with profile features
-                        if (userFeatures.productivity_assistant_enabled !== undefined) {
-                            settings.showProductivity =
-                                userFeatures.productivity_assistant_enabled;
-                        }
                         if (userFeatures.next_task_suggestion_enabled !== undefined) {
                             settings.showNextTaskSuggestion =
                                 userFeatures.next_task_suggestion_enabled;
@@ -651,7 +622,6 @@ const TasksToday: React.FC = () => {
                         settings.showProgressBar = true;
 
                         setTodaySettings(settings);
-                        if (settings.showDailyBrief) setHasBriefMounted(true);
                         setIsSettingsLoaded(true);
                     }
                 } else {
@@ -661,7 +631,6 @@ const TasksToday: React.FC = () => {
                 console.error('Failed to load profile settings:', error);
                 // Set defaults on error
                 if (isMounted.current) {
-                    setProductivityAssistantEnabled(true);
                     setNextTaskSuggestionEnabled(true);
                     setIsSettingsLoaded(true);
                 }
@@ -1278,28 +1247,6 @@ const TasksToday: React.FC = () => {
         setTodaySettings(newSettings);
     };
 
-    const handleToggleDailyBrief = async () => {
-        if (!hasBriefMounted) setHasBriefMounted(true);
-        const newSettings = {
-            ...todaySettings,
-            showDailyBrief: !todaySettings.showDailyBrief,
-        };
-        setTodaySettings(newSettings);
-        try {
-            await fetch(getApiPath('profile/today-settings'), {
-                method: 'PUT',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-csrf-token': await getCsrfToken(),
-                },
-                body: JSON.stringify(newSettings),
-            });
-        } catch (error) {
-            console.error('Error saving daily brief setting:', error);
-        }
-    };
-
     // Show loading state until both data and settings are loaded (only for initial load)
     if (isInitialLoading || !isSettingsLoaded) {
         return (
@@ -1342,21 +1289,6 @@ const TasksToday: React.FC = () => {
 
                             {/* Today Navigation Icons */}
                             <div className="flex items-center space-x-2">
-                                {profileSettings.ai_assistant_enabled && (
-                                    <button
-                                        onClick={handleToggleDailyBrief}
-                                        className={`flex items-center justify-center w-8 h-8 rounded-md transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
-                                            todaySettings.showDailyBrief
-                                                ? 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-300'
-                                                : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400'
-                                        }`}
-                                        aria-pressed={todaySettings.showDailyBrief}
-                                        aria-label={t('aiAssistant.dailyBriefTitle', 'AI Daily Brief')}
-                                        title={t('aiAssistant.dailyBriefTitle', 'AI Daily Brief')}
-                                    >
-                                        <SparklesIcon className="h-5 w-5" />
-                                    </button>
-                                )}
                                 <div className="relative">
                                     <button
                                         onClick={() =>
@@ -1415,13 +1347,6 @@ const TasksToday: React.FC = () => {
                         </div>
                     </div>
                 </div>
-
-                {/* AI Daily Brief - top of page, kept mounted once opened to preserve content */}
-                {isSettingsLoaded && profileSettings.ai_assistant_enabled && hasBriefMounted && (
-                    <div className={todaySettings.showDailyBrief ? '' : 'hidden'}>
-                        <DailyAssistant />
-                    </div>
-                )}
 
                 {/* Overview Stats + Weekly Chart */}
                 {isSettingsLoaded && todaySettings.showMetrics && (
@@ -1541,24 +1466,6 @@ const TasksToday: React.FC = () => {
                 {isSettingsLoaded && todaySettings.showActiveProjects && (
                     <ActiveProjectsSection projects={localProjects} />
                 )}
-
-                {/* Productivity Assistant - Conditionally Rendered */}
-                {!isSettingsLoaded ? (
-                    // Invisible placeholder for productivity assistant
-                    <div
-                        className="mb-4 opacity-0 pointer-events-none"
-                        aria-hidden="true"
-                    >
-                        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 h-24"></div>
-                    </div>
-                ) : todaySettings.showProductivity &&
-                  productivityAssistantEnabled &&
-                  profileSettings.productivity_assistant_enabled === true ? (
-                    <ProductivityAssistant
-                        tasks={storeTasks}
-                        projects={localProjects}
-                    />
-                ) : null}
 
                 {/* Next Task Suggestion - At top of tasks section */}
                 {!isSettingsLoaded ? (

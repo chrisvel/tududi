@@ -1,8 +1,15 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Location } from 'react-router-dom';
-import { BookOpenIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
+import {
+    BookOpenIcon,
+    PlusCircleIcon,
+    ChevronDownIcon,
+    ChevronRightIcon,
+} from '@heroicons/react/24/outline';
 import { Note } from '../../entities/Note';
 import { useTranslation } from 'react-i18next';
+import { useStore } from '../../store/useStore';
+import { createNoteUrl } from '../../utils/slugUtils';
 
 interface SidebarNotesProps {
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
@@ -18,31 +25,55 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
     openNoteModal,
 }) => {
     const { t } = useTranslation();
-    const isActiveNote = (path: string) => {
-        return location.pathname.startsWith(path)
-            ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
-            : 'text-gray-700 dark:text-gray-300';
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    const notes = useStore((state) => state.notesStore.notes);
+    const hasLoaded = useStore((state) => state.notesStore.hasLoaded);
+    const loadNotes = useStore((state) => state.notesStore.loadNotes);
+
+    useEffect(() => {
+        if (!hasLoaded) {
+            loadNotes();
+        }
+    }, [hasLoaded, loadNotes]);
+
+    const isActive = (path: string) => location.pathname.startsWith(path);
+
+    const itemClass = (path: string) =>
+        `flex items-center rounded-md px-4 py-1.5 text-sm cursor-pointer hover:text-black dark:hover:text-white ${
+            isActive(path)
+                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
+                : 'text-gray-700 dark:text-gray-300'
+        }`;
+
+    const getNotePath = (note: Note) => {
+        try {
+            return createNoteUrl(note);
+        } catch {
+            return '/notes';
+        }
     };
 
+    const navigate = (note: Note) =>
+        handleNavClick(getNotePath(note), note.title, <BookOpenIcon className="h-4 w-4 mr-2" />);
+
     return (
-        <>
-            <ul className="flex flex-col space-y-1">
-                <li
-                    className={`group flex justify-between items-center rounded-md px-4 py-2 uppercase text-xs tracking-wider cursor-pointer hover:text-black dark:hover:text-white ${isActiveNote(
-                        '/notes'
-                    )}`}
-                    onClick={() =>
-                        handleNavClick(
-                            '/notes',
-                            'Notes',
-                            <BookOpenIcon className="h-5 w-5 mr-2" />
-                        )
-                    }
-                >
-                    <span className="flex items-center">
-                        <BookOpenIcon className="h-5 w-5 mr-2" />
-                        {t('sidebar.notes')}
-                    </span>
+        <div className={`flex flex-col space-y-1${isExpanded ? ' pb-3' : ''}`}>
+            <div
+                className={`group flex justify-between items-center rounded-md px-4 py-2 uppercase text-xs tracking-wider cursor-pointer hover:text-black dark:hover:text-white ${
+                    isActive('/notes')
+                        ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
+                        : 'text-gray-700 dark:text-gray-300'
+                }`}
+                onClick={() =>
+                    handleNavClick('/notes', 'Notes', <BookOpenIcon className="h-5 w-5 mr-2" />)
+                }
+            >
+                <span className="flex items-center">
+                    <BookOpenIcon className="h-5 w-5 mr-2" />
+                    {t('sidebar.notes')}
+                </span>
+                <div className="flex items-center gap-1">
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
@@ -55,9 +86,49 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
                     >
                         <PlusCircleIcon className="h-5 w-5" />
                     </button>
-                </li>
-            </ul>
-        </>
+                    {notes.length > 0 && (
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setIsExpanded((v) => !v);
+                            }}
+                            className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none"
+                            aria-label={isExpanded ? 'Collapse notes list' : 'Expand notes list'}
+                        >
+                            {isExpanded ? (
+                                <ChevronDownIcon className="h-4 w-4" />
+                            ) : (
+                                <ChevronRightIcon className="h-4 w-4" />
+                            )}
+                        </button>
+                    )}
+                </div>
+            </div>
+
+            {isExpanded && (
+                <div className="max-h-80 overflow-y-auto overscroll-y-contain flex flex-col space-y-1">
+                    {notes.map((note) => (
+                        <div
+                            key={note.uid || note.id}
+                            className={itemClass(getNotePath(note))}
+                            onClick={() => navigate(note)}
+                        >
+                            <span className="w-5 mr-2 flex items-center justify-center flex-shrink-0">
+                                {note.color ? (
+                                    <span
+                                        className="w-3 h-3 rounded-full ring-1 ring-black/20 dark:ring-white/20"
+                                        style={{ backgroundColor: note.color }}
+                                    />
+                                ) : (
+                                    <BookOpenIcon className="h-4 w-4" />
+                                )}
+                            </span>
+                            <span className="truncate">{note.title}</span>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
     );
 };
 

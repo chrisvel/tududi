@@ -12,13 +12,17 @@ import SidebarProjects from './Sidebar/SidebarProjects';
 import SidebarTags from './Sidebar/SidebarTags';
 import SidebarViews from './Sidebar/SidebarViews';
 import SidebarPeople from './Sidebar/SidebarPeople';
+import SidebarBoards from './Sidebar/SidebarBoards';
+import SidebarInsights from './Sidebar/SidebarInsights';
+import SidebarAdmin from './Sidebar/SidebarAdmin';
+import SidebarBookmarks from './Sidebar/SidebarBookmarks';
 import { KeyboardShortcutsConfig } from '../utils/keyboardShortcutsService';
 import { useStore } from '../store/useStore';
 
 interface SidebarProps {
     isSidebarOpen: boolean;
     setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    currentUser: { email: string };
+    currentUser: { email: string; is_admin?: boolean };
     isDarkMode: boolean;
     toggleDarkMode: () => void;
     openTaskModal: () => void;
@@ -76,14 +80,20 @@ const Sidebar: React.FC<SidebarProps> = ({
             }}
         >
             {isSidebarOpen && (
-                <div className="flex flex-col h-full overflow-y-auto">
-                    <div className="px-3 pb-3 pt-8">
+                <div className="flex flex-col h-full">
+                    <div className="flex-1 min-h-0 overflow-y-auto px-3 pb-3 pt-8">
                         {/* Sidebar Contents */}
-                        <SidebarNav
+                        <div className="mb-4">
+                            <SidebarNav
+                                handleNavClick={handleNavClick}
+                                location={location}
+                                isDarkMode={isDarkMode}
+                                openTaskModal={openTaskModal}
+                            />
+                        </div>
+                        <SidebarBookmarks
                             handleNavClick={handleNavClick}
                             location={location}
-                            isDarkMode={isDarkMode}
-                            openTaskModal={openTaskModal}
                         />
                         <SidebarProjects
                             handleNavClick={handleNavClick}
@@ -91,27 +101,19 @@ const Sidebar: React.FC<SidebarProps> = ({
                             isDarkMode={isDarkMode}
                             openProjectModal={openProjectModal}
                         />
-                        <SidebarNotes
-                            handleNavClick={handleNavClick}
-                            openNoteModal={openNoteModal}
-                            notes={notes}
-                            location={location}
-                            isDarkMode={isDarkMode}
-                        />
-                        {habitsEnabled && (
-                            <SidebarHabits
-                                handleNavClick={handleNavClick}
-                                location={location}
-                                isDarkMode={isDarkMode}
-                                openNewHabit={openNewHabit}
-                            />
-                        )}
                         <SidebarAreas
                             handleNavClick={handleNavClick}
                             areas={areas}
                             location={location}
                             isDarkMode={isDarkMode}
                             openAreaModal={openAreaModal}
+                        />
+                        <SidebarNotes
+                            handleNavClick={handleNavClick}
+                            openNoteModal={openNoteModal}
+                            notes={notes}
+                            location={location}
+                            isDarkMode={isDarkMode}
                         />
                         <SidebarTags
                             handleNavClick={handleNavClick}
@@ -124,10 +126,31 @@ const Sidebar: React.FC<SidebarProps> = ({
                             handleNavClick={handleNavClick}
                             location={location}
                         />
+                        {habitsEnabled && (
+                            <SidebarHabits
+                                handleNavClick={handleNavClick}
+                                location={location}
+                                isDarkMode={isDarkMode}
+                                openNewHabit={openNewHabit}
+                            />
+                        )}
                         <SidebarViews
                             handleNavClick={handleNavClick}
                             location={location}
                             isDarkMode={isDarkMode}
+                        />
+                        <SidebarBoards
+                            handleNavClick={handleNavClick}
+                            location={location}
+                        />
+                        <SidebarInsights
+                            handleNavClick={handleNavClick}
+                            location={location}
+                        />
+                        <SidebarAdmin
+                            handleNavClick={handleNavClick}
+                            location={location}
+                            currentUser={currentUser}
                         />
                     </div>
 
