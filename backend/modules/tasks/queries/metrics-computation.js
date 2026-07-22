@@ -155,6 +155,7 @@ async function computeWeeklyCompletions(userId, userTimezone) {
             where: {
                 user_id: userId,
                 status: Task.STATUS.DONE,
+                habit_mode: false,
                 completed_at: {
                     [Op.between]: [weekStart, weekEnd],
                 },
