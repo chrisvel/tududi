@@ -179,6 +179,121 @@ describe('MCP Tools Integration', () => {
                 const { content } = getToolContent(response);
                 expect(content.tasks.every((t) => t.status === 2)).toBe(true);
             });
+
+            it('should filter archived tasks by status using status 3', async () => {
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Archived Task',
+                    status: 3,
+                });
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Planned Task',
+                    status: 6,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'list_tasks',
+                    { status: 'archived' }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.tasks.every((t) => t.status === 3)).toBe(true);
+                expect(
+                    content.tasks.some((t) => t.name === 'Archived Task')
+                ).toBe(true);
+                expect(
+                    content.tasks.some((t) => t.name === 'Planned Task')
+                ).toBe(false);
+            });
+
+            it('should filter archived tasks by type using status 3', async () => {
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Archived Task',
+                    status: 3,
+                });
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Planned Task',
+                    status: 6,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'list_tasks',
+                    { type: 'archived' }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.tasks.every((t) => t.status === 3)).toBe(true);
+                expect(
+                    content.tasks.some((t) => t.name === 'Archived Task')
+                ).toBe(true);
+                expect(
+                    content.tasks.some((t) => t.name === 'Planned Task')
+                ).toBe(false);
+            });
+
+            it('should exclude archived tasks (status 3) from today type', async () => {
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Active Task',
+                    status: 0,
+                });
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Archived Task',
+                    status: 3,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'list_tasks',
+                    { type: 'today' }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(
+                    content.tasks.some((t) => t.name === 'Archived Task')
+                ).toBe(false);
+                expect(
+                    content.tasks.some((t) => t.name === 'Active Task')
+                ).toBe(true);
+            });
+
+            it('should filter planned tasks by status using status 6', async () => {
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Planned Task',
+                    status: 6,
+                });
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Archived Task',
+                    status: 3,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'list_tasks',
+                    { status: 'planned' }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.tasks.every((t) => t.status === 6)).toBe(true);
+                expect(
+                    content.tasks.some((t) => t.name === 'Planned Task')
+                ).toBe(true);
+                expect(
+                    content.tasks.some((t) => t.name === 'Archived Task')
+                ).toBe(false);
+            });
         });
 
         describe('create_task', () => {
@@ -349,6 +464,48 @@ describe('MCP Tools Integration', () => {
                 expect(response.status).toBe(200);
                 const { content } = getToolContent(response);
                 expect(content.task.status).toBe(1); // in_progress = 1
+            });
+
+            it('should set status to archived (3) not planned (6)', async () => {
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Archive Me',
+                    status: 0,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'update_task',
+                    { id: task.id, status: 'archived' }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.task.status).toBe(3); // archived = 3
+
+                await task.reload();
+                expect(task.status).toBe(3);
+            });
+
+            it('should set status to planned (6) distinct from archived (3)', async () => {
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Plan Me',
+                    status: 0,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'update_task',
+                    { id: task.id, status: 'planned' }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.task.status).toBe(6); // planned = 6
+
+                await task.reload();
+                expect(task.status).toBe(6);
             });
         });
 

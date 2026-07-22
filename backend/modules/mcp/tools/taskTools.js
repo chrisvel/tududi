@@ -62,7 +62,17 @@ function registerTaskTools(server, context, tools) {
                 },
                 status: {
                     type: 'string',
-                    enum: ['pending', 'in_progress', 'completed', 'archived'],
+                    enum: [
+                        'not_started',
+                        'pending',
+                        'in_progress',
+                        'done',
+                        'completed',
+                        'archived',
+                        'waiting',
+                        'cancelled',
+                        'planned',
+                    ],
                     description: 'Filter by status',
                 },
                 project_id: {
@@ -86,10 +96,15 @@ function registerTaskTools(server, context, tools) {
 
             if (params.status) {
                 const statusMap = {
+                    not_started: 0,
                     pending: 0,
                     in_progress: 1,
+                    done: 2,
                     completed: 2,
-                    archived: 6,
+                    archived: 3,
+                    waiting: 4,
+                    cancelled: 5,
+                    planned: 6,
                 };
                 whereClause.status = statusMap[params.status];
             }
@@ -101,9 +116,9 @@ function registerTaskTools(server, context, tools) {
             if (params.type === 'completed') {
                 whereClause.status = 2;
             } else if (params.type === 'archived') {
-                whereClause.status = 6;
+                whereClause.status = 3;
             } else if (params.type === 'today' || params.type === 'upcoming') {
-                whereClause.status = { [Op.ne]: 6 };
+                whereClause.status = { [Op.ne]: 3 };
             }
 
             const tasks = await taskRepository.findAll(whereClause, {
@@ -302,7 +317,17 @@ function registerTaskTools(server, context, tools) {
                 },
                 status: {
                     type: 'string',
-                    enum: ['pending', 'in_progress', 'completed', 'archived'],
+                    enum: [
+                        'not_started',
+                        'pending',
+                        'in_progress',
+                        'done',
+                        'completed',
+                        'archived',
+                        'waiting',
+                        'cancelled',
+                        'planned',
+                    ],
                 },
                 due_date: { type: 'string', description: 'New due date' },
                 project_id: {
@@ -347,10 +372,15 @@ function registerTaskTools(server, context, tools) {
             }
             if (params.status) {
                 const statusMap = {
+                    not_started: 0,
                     pending: 0,
                     in_progress: 1,
+                    done: 2,
                     completed: 2,
-                    archived: 6,
+                    archived: 3,
+                    waiting: 4,
+                    cancelled: 5,
+                    planned: 6,
                 };
                 updates.status = statusMap[params.status];
             }
