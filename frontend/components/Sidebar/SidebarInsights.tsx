@@ -3,7 +3,6 @@ import { Location } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     ChartBarIcon,
-    LightBulbIcon,
     ChevronDownIcon,
     ChevronRightIcon,
 } from '@heroicons/react/24/outline';
@@ -31,11 +30,6 @@ const SidebarInsights: React.FC<SidebarInsightsProps> = ({ handleNavClick, locat
             : 'text-gray-700 dark:text-gray-300';
 
     const links = [
-        {
-            path: '/insights/productivity',
-            title: t('sidebar.productivityAssistant', 'Productivity Assistant'),
-            icon: <LightBulbIcon className="h-4 w-4 flex-shrink-0" />,
-        },
         {
             path: '/insights/reports',
             title: t('sidebar.reports', 'Reports'),

@@ -40,7 +40,7 @@ async function getGtdReport(userId, userTimezone = 'UTC') {
 
 async function computeInboxCount(userId) {
     return InboxItem.count({
-        where: { user_id: userId, archived: false },
+        where: { user_id: userId, status: 'added' },
     });
 }
 
@@ -63,14 +63,18 @@ async function computeStalledProjects(userId) {
     const recentTaskUpdates = await Task.findAll({
         where: {
             project_id: { [Op.in]: projectIds },
-            status: { [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.IN_PROGRESS] },
+            status: {
+                [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.IN_PROGRESS],
+            },
             updated_at: { [Op.gte]: staleThreshold },
         },
         attributes: ['project_id'],
         raw: true,
     });
 
-    const recentlyActiveProjectIds = new Set(recentTaskUpdates.map((t) => t.project_id));
+    const recentlyActiveProjectIds = new Set(
+        recentTaskUpdates.map((t) => t.project_id)
+    );
 
     return projects
         .filter((p) => !recentlyActiveProjectIds.has(p.id))
@@ -117,7 +121,9 @@ async function computeActionDebt(userId) {
     const openTasks = await Task.findAll({
         where: {
             project_id: { [Op.in]: projectIds },
-            status: { [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.IN_PROGRESS] },
+            status: {
+                [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.IN_PROGRESS],
+            },
         },
         attributes: ['project_id'],
         raw: true,
@@ -138,7 +144,12 @@ async function computeActionDebt(userId) {
 async function computeCompletionTrends(userId, userTimezone) {
     const WEEKS = 8;
     const now = moment.tz(userTimezone);
-    const rangeStart = now.clone().subtract(WEEKS, 'weeks').startOf('isoWeek').utc().toDate();
+    const rangeStart = now
+        .clone()
+        .subtract(WEEKS, 'weeks')
+        .startOf('isoWeek')
+        .utc()
+        .toDate();
     const rangeEnd = now.clone().endOf('day').utc().toDate();
 
     const completedTasks = await Task.findAll({
@@ -153,7 +164,10 @@ async function computeCompletionTrends(userId, userTimezone) {
 
     const weekMap = {};
     completedTasks.forEach((t) => {
-        const weekKey = moment(t.completed_at).tz(userTimezone).startOf('isoWeek').format('YYYY-MM-DD');
+        const weekKey = moment(t.completed_at)
+            .tz(userTimezone)
+            .startOf('isoWeek')
+            .format('YYYY-MM-DD');
         weekMap[weekKey] = (weekMap[weekKey] || 0) + 1;
     });
 
@@ -180,7 +194,12 @@ async function computeCompletionTrends(userId, userTimezone) {
 async function computeAreaBalance(userId, userTimezone) {
     const DAYS = 30;
     const now = moment.tz(userTimezone);
-    const rangeStart = now.clone().subtract(DAYS, 'days').startOf('day').utc().toDate();
+    const rangeStart = now
+        .clone()
+        .subtract(DAYS, 'days')
+        .startOf('day')
+        .utc()
+        .toDate();
 
     const areas = await Area.findAll({
         where: { user_id: userId },
@@ -206,7 +225,9 @@ async function computeAreaBalance(userId, userTimezone) {
             where: {
                 user_id: userId,
                 area_id: { [Op.in]: areaIds },
-                status: { [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.IN_PROGRESS] },
+                status: {
+                    [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.IN_PROGRESS],
+                },
             },
             attributes: ['area_id'],
             raw: true,
@@ -224,7 +245,9 @@ async function computeAreaBalance(userId, userTimezone) {
     });
 
     return areas
-        .filter((a) => (completedByArea[a.id] || 0) + (openByArea[a.id] || 0) > 0)
+        .filter(
+            (a) => (completedByArea[a.id] || 0) + (openByArea[a.id] || 0) > 0
+        )
         .map((a) => ({
             id: a.id,
             name: a.name,
