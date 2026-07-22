@@ -184,6 +184,32 @@ class PeopleService {
     async unarchive(userId, uid) {
         return this.update(userId, uid, { archived: false });
     }
+
+    async createSelfPerson(user) {
+        const existing = await peopleRepository.findByLinkedUserId(
+            user.id,
+            user.id
+        );
+        if (existing) return existing;
+
+        const nameParts = [user.name, user.surname].filter(Boolean);
+        let name =
+            nameParts.length > 0
+                ? nameParts.join(' ').trim()
+                : user.email.split('@')[0];
+
+        const nameConflict = await peopleRepository.nameExists(user.id, name);
+        if (nameConflict) name = `${name} (me)`;
+
+        return peopleRepository.create({
+            user_id: user.id,
+            linked_user_id: user.id,
+            name,
+            email: user.email || null,
+            relationship_type: 'other',
+            archived: false,
+        });
+    }
 }
 
 module.exports = new PeopleService();
