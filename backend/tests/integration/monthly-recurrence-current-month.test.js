@@ -127,6 +127,88 @@ describe('Monthly Recurrence - Current Month Bug Fix', () => {
         expect(secondIteration.getUTCDate()).toBe(25);
     });
 
+    it('should show correct dates for UTC+ timezone (Australia/Sydney, UTC+10)', async () => {
+        // Regression test for issue #1309: monthly recurrence shows wrong day for UTC+ users.
+        // When today is July 22 in Sydney (AEST, UTC+10), start-of-day UTC is July 21 14:00 UTC.
+        // The old code used startDate.getUTCDate() = 21 instead of the local day = 22,
+        // and preserved those UTC hours in computed dates, causing an off-by-one day in display.
+        const task = {
+            recurrence_type: 'monthly',
+            recurrence_interval: 1,
+            recurrence_month_day: 15,
+        };
+
+        // July 22 at 10:00 UTC = July 22 20:00 AEST — today is July 22 in Sydney
+        const mockDate = new Date('2026-07-22T10:00:00Z');
+
+        const iterations = await calculateNextIterations(
+            task,
+            mockDate,
+            'Australia/Sydney'
+        );
+
+        expect(iterations.length).toBeGreaterThan(0);
+
+        // All displayed dates must be the 15th of each month
+        iterations.forEach((iter) => {
+            expect(iter.date).toMatch(/-15$/);
+        });
+
+        // First occurrence must be Aug 15 (15th has passed in July)
+        expect(iterations[0].date).toBe('2026-08-15');
+        expect(iterations[1].date).toBe('2026-09-15');
+        expect(iterations[2].date).toBe('2026-10-15');
+        expect(iterations[3].date).toBe('2026-11-15');
+    });
+
+    it('should show correct dates when target day is upcoming in current month (UTC+10)', async () => {
+        const task = {
+            recurrence_type: 'monthly',
+            recurrence_interval: 1,
+            recurrence_month_day: 25,
+        };
+
+        // July 10 at 10:00 UTC = July 10 20:00 AEST — today is July 10 in Sydney
+        const mockDate = new Date('2026-07-10T10:00:00Z');
+
+        const iterations = await calculateNextIterations(
+            task,
+            mockDate,
+            'Australia/Sydney'
+        );
+
+        expect(iterations.length).toBeGreaterThan(0);
+
+        // First occurrence should be July 25 (still in current month)
+        expect(iterations[0].date).toBe('2026-07-25');
+        expect(iterations[1].date).toBe('2026-08-25');
+        expect(iterations[2].date).toBe('2026-09-25');
+    });
+
+    it('should show correct dates for New Zealand timezone (UTC+12)', async () => {
+        const task = {
+            recurrence_type: 'monthly',
+            recurrence_interval: 1,
+            recurrence_month_day: 15,
+        };
+
+        // July 22 at 06:00 UTC = July 22 18:00 NZST (UTC+12)
+        const mockDate = new Date('2026-07-22T06:00:00Z');
+
+        const iterations = await calculateNextIterations(
+            task,
+            mockDate,
+            'Pacific/Auckland'
+        );
+
+        expect(iterations.length).toBeGreaterThan(0);
+
+        iterations.forEach((iter) => {
+            expect(iter.date).toMatch(/-15$/);
+        });
+        expect(iterations[0].date).toBe('2026-08-15');
+    });
+
     it('should work with full API integration', async () => {
         const taskData = {
             name: 'Monthly Task on 20th',
