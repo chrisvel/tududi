@@ -256,13 +256,14 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         errors: { [key: string]: string };
     } => {
         const errors: { [key: string]: string } = {};
+        const hasPassword = profile?.has_password ?? false;
 
         if (
             formData.currentPassword ||
             formData.newPassword ||
             formData.confirmPassword
         ) {
-            if (!formData.currentPassword) {
+            if (hasPassword && !formData.currentPassword) {
                 errors.currentPassword = t(
                     'profile.currentPasswordRequired',
                     'Current password is required'
@@ -986,10 +987,12 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
-        const isPasswordChange =
-            formData.currentPassword ||
-            formData.newPassword ||
-            formData.confirmPassword;
+        const hasPassword = profile?.has_password ?? false;
+        const isPasswordChange = hasPassword
+            ? formData.currentPassword ||
+              formData.newPassword ||
+              formData.confirmPassword
+            : formData.newPassword || formData.confirmPassword;
 
         if (isPasswordChange) {
             const passwordValidation = validatePasswordForm();
@@ -1301,6 +1304,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
                                 <SecurityTab
                                     isActive={activeTab === 'security'}
+                                    hasPassword={profile?.has_password ?? false}
                                     formData={formData}
                                     showCurrentPassword={showCurrentPassword}
                                     showNewPassword={showNewPassword}
