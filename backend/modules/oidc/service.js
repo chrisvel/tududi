@@ -90,7 +90,22 @@ async function handleCallback(providerSlug, callbackParams) {
 
     await stateManager.consumeState(callbackParams.state);
 
-    const claims = tokenSet.claims();
+    const idTokenClaims = tokenSet.claims();
+
+    let claims = { ...idTokenClaims };
+    if (tokenSet.access_token) {
+        try {
+            const userInfoClaims = await client.userinfo(tokenSet.access_token);
+            // UserInfo supplements missing claims; ID token claims take precedence
+            // for security-critical fields like sub
+            claims = { ...userInfoClaims, ...idTokenClaims };
+        } catch (userInfoError) {
+            console.warn(
+                'Failed to fetch UserInfo claims, using ID token claims only:',
+                userInfoError.message
+            );
+        }
+    }
 
     return {
         claims,
