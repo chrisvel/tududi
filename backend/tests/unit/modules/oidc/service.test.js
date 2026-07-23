@@ -6,6 +6,147 @@ const stateManager = require('../../../../modules/oidc/stateManager');
 jest.mock('../../../../modules/oidc/providerConfig');
 jest.mock('../../../../modules/oidc/stateManager');
 
+describe('OIDC Service - handleCallback UserInfo integration', () => {
+    let originalEnv;
+    let mockIssuer;
+    let mockClient;
+
+    const mockProvider = {
+        slug: 'test-provider',
+        name: 'Test Provider',
+        issuer: 'https://auth.example.com',
+        clientId: 'test-client-id',
+        clientSecret: 'test-client-secret',
+        scope: 'openid profile email',
+    };
+
+    beforeEach(() => {
+        originalEnv = { ...process.env };
+        process.env.BASE_URL = 'https://todo.example.com';
+
+        mockClient = {
+            authorizationUrl: jest.fn(),
+            callback: jest.fn(),
+            userinfo: jest.fn(),
+        };
+
+        mockIssuer = {
+            Client: jest.fn(() => mockClient),
+            metadata: {
+                issuer: 'https://auth.example.com',
+                authorization_endpoint: 'https://auth.example.com/authorize',
+                token_endpoint: 'https://auth.example.com/token',
+            },
+        };
+
+        jest.spyOn(Issuer, 'discover').mockResolvedValue(mockIssuer);
+        providerConfig.getProvider.mockReturnValue(mockProvider);
+        stateManager.validateState.mockResolvedValue({
+            providerSlug: 'test-provider',
+            nonce: 'test-nonce',
+            redirectUri: null,
+        });
+        stateManager.consumeState.mockResolvedValue();
+
+        oidcService.clearIssuerCache();
+    });
+
+    afterEach(() => {
+        process.env = originalEnv;
+        jest.restoreAllMocks();
+        oidcService.clearIssuerCache();
+    });
+
+    it('should merge UserInfo claims with ID token claims, ID token taking precedence', async () => {
+        mockClient.callback.mockResolvedValue({
+            access_token: 'access-token-123',
+            id_token: 'id-token-123',
+            claims: () => ({
+                sub: 'user-sub-123',
+                iss: 'https://auth.example.com',
+            }),
+        });
+
+        mockClient.userinfo.mockResolvedValue({
+            sub: 'user-sub-DIFFERENT',
+            email: 'user@example.com',
+            name: 'Test User',
+        });
+
+        const result = await oidcService.handleCallback('test-provider', {
+            code: 'auth-code',
+            state: 'test-state',
+        });
+
+        expect(mockClient.userinfo).toHaveBeenCalledWith('access-token-123');
+        expect(result.claims.sub).toBe('user-sub-123');
+        expect(result.claims.email).toBe('user@example.com');
+        expect(result.claims.name).toBe('Test User');
+    });
+
+    it('should use only ID token claims when UserInfo fetch fails', async () => {
+        mockClient.callback.mockResolvedValue({
+            access_token: 'access-token-123',
+            id_token: 'id-token-123',
+            claims: () => ({
+                sub: 'user-sub-123',
+                email: 'fallback@example.com',
+            }),
+        });
+
+        mockClient.userinfo.mockRejectedValue(
+            new Error('UserInfo endpoint unavailable')
+        );
+
+        const result = await oidcService.handleCallback('test-provider', {
+            code: 'auth-code',
+            state: 'test-state',
+        });
+
+        expect(result.claims.sub).toBe('user-sub-123');
+        expect(result.claims.email).toBe('fallback@example.com');
+    });
+
+    it('should skip UserInfo fetch when no access token is present', async () => {
+        mockClient.callback.mockResolvedValue({
+            id_token: 'id-token-123',
+            claims: () => ({ sub: 'user-sub-123', email: 'user@example.com' }),
+        });
+
+        const result = await oidcService.handleCallback('test-provider', {
+            code: 'auth-code',
+            state: 'test-state',
+        });
+
+        expect(mockClient.userinfo).not.toHaveBeenCalled();
+        expect(result.claims.sub).toBe('user-sub-123');
+        expect(result.claims.email).toBe('user@example.com');
+    });
+
+    it('should supplement missing email from UserInfo when not in ID token', async () => {
+        mockClient.callback.mockResolvedValue({
+            access_token: 'access-token-123',
+            id_token: 'id-token-123',
+            claims: () => ({ sub: 'user-sub-123' }),
+        });
+
+        mockClient.userinfo.mockResolvedValue({
+            sub: 'user-sub-123',
+            email: 'user@authelia.example.com',
+            name: 'Authelia User',
+        });
+
+        const result = await oidcService.handleCallback('test-provider', {
+            code: 'auth-code',
+            state: 'test-state',
+        });
+
+        expect(result.claims.email).toBe('user@authelia.example.com');
+        expect(result.claims.name).toBe('Authelia User');
+        expect(result.claims.sub).toBe('user-sub-123');
+    });
+});
+
 describe('OIDC Service - Authorization URL Construction', () => {
     let originalEnv;
     let mockIssuer;
