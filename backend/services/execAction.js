@@ -18,26 +18,39 @@ async function assertActorCanShare(actorUserId, resourceType, resourceOwnerId) {
     }
 }
 
+const OWNER_MODELS = {
+    project: 'Project',
+    task: 'Task',
+    note: 'Note',
+    area: 'Area',
+};
+
+async function resolveOwnerUserId(tx, resourceType, resourceUid) {
+    const modelName = OWNER_MODELS[resourceType];
+    if (!modelName) return null;
+    const models = require('../models');
+    const resource = await models[modelName].findOne({
+        where: { uid: resourceUid },
+        attributes: ['user_id'],
+        transaction: tx,
+        lock: tx.LOCK.UPDATE,
+    });
+    if (!resource) {
+        const err = new Error('Resource not found');
+        err.status = 404;
+        throw err;
+    }
+    return resource.user_id;
+}
+
 async function execAction(action) {
     // action: { verb, actorUserId, targetUserId, resourceType, resourceUid, accessLevel? }
     return await sequelize.transaction(async (tx) => {
-        // Resolve owner id for authorization (basic impl for projects; extend later)
-        let ownerUserId = null;
-        if (action.resourceType === 'project') {
-            const { Project } = require('../models');
-            const proj = await Project.findOne({
-                where: { uid: action.resourceUid },
-                attributes: ['user_id'],
-                transaction: tx,
-                lock: tx.LOCK.UPDATE,
-            });
-            if (!proj) {
-                const err = new Error('Resource not found');
-                err.status = 404;
-                throw err;
-            }
-            ownerUserId = proj.user_id;
-        }
+        const ownerUserId = await resolveOwnerUserId(
+            tx,
+            action.resourceType,
+            action.resourceUid
+        );
 
         await assertActorCanShare(
             action.actorUserId,

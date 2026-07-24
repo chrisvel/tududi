@@ -1121,7 +1121,8 @@
     "deleteGoal": "Delete goal",
     "moveBackToUnlinked": "Move back to unlinked",
     "horizonSeason": "Season",
-    "horizonYear": "Year"
+    "horizonYear": "Year",
+    "share": "Share"
   },
   "notes": {
     "loading": "Loading notes...",
@@ -1426,7 +1427,8 @@
     "noShares": "Not shared yet",
     "noAvailableUsers": "No users available to share with",
     "shared": "Shared",
-    "sharedWithTeam": "Shared with the team"
+    "sharedWithTeam": "Shared with the team",
+    "shareArea": "Share area"
   },
   "views": {
     "title": "Smart Views",

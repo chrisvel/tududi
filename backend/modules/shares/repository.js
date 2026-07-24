@@ -1,6 +1,6 @@
 'use strict';
 
-const { User, Permission, Project, Task, Note } = require('../../models');
+const { User, Permission, Project, Task, Note, Area } = require('../../models');
 
 class SharesRepository {
     async findResourceOwner(resourceType, resourceUid) {
@@ -20,6 +20,12 @@ class SharesRepository {
             });
         } else if (resourceType === 'note') {
             resource = await Note.findOne({
+                where: { uid: resourceUid },
+                attributes: ['user_id'],
+                raw: true,
+            });
+        } else if (resourceType === 'area') {
+            resource = await Area.findOne({
                 where: { uid: resourceUid },
                 attributes: ['user_id'],
                 raw: true,
