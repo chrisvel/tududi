@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Location } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { QueueListIcon } from '@heroicons/react/24/outline';
+import {
+    QueueListIcon,
+    ChevronDownIcon,
+    ChevronRightIcon,
+} from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import {
     DndContext,
@@ -86,7 +90,9 @@ const SortableViewItem: React.FC<SortableViewItemProps> = ({
             {...attributes}
         >
             <span className="flex items-center truncate">
-                <QueueListIcon className="h-4 w-4 mr-2 flex-shrink-0" />
+                <span className="w-5 mr-2 flex items-center justify-center flex-shrink-0">
+                    <QueueListIcon className="h-4 w-4" />
+                </span>
                 <span className="truncate">{view.name}</span>
             </span>
             <button
@@ -106,6 +112,7 @@ const SidebarViews: React.FC<SidebarViewsProps> = ({
     location,
 }) => {
     const { t } = useTranslation();
+    const [isExpanded, setIsExpanded] = useState(false);
     const [pinnedViews, setPinnedViews] = useState<View[]>([]);
     const [sidebarSettings, setSidebarSettings] = useState<{
         pinnedViewsOrder: string[];
@@ -261,59 +268,84 @@ const SidebarViews: React.FC<SidebarViewsProps> = ({
     };
 
     return (
-        <>
-            <ul className="flex flex-col space-y-1">
-                {/* "VIEWS" Title */}
-                <li
-                    className={`flex justify-between items-center rounded-md px-4 py-2 uppercase text-xs tracking-wider cursor-pointer hover:text-black dark:hover:text-white mb-4 ${
-                        isActiveView('/views')
-                            ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
-                            : 'text-gray-700 dark:text-gray-300'
-                    }`}
-                    onClick={() =>
-                        handleNavClick(
-                            '/views',
-                            t('sidebar.views'),
-                            <QueueListIcon className="h-5 w-5 mr-2" />
-                        )
-                    }
-                >
-                    <span className="flex items-center">
+        <ul className={`flex flex-col space-y-1${isExpanded ? ' pb-3' : ''}`}>
+            <li
+                className={`group flex justify-between items-center px-4 py-2 uppercase rounded-md text-xs tracking-wider cursor-pointer hover:text-black dark:hover:text-white ${
+                    isActiveView('/views')
+                        ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
+                        : 'text-gray-700 dark:text-gray-300'
+                }`}
+                onClick={() =>
+                    handleNavClick(
+                        '/views',
+                        t('sidebar.views'),
                         <QueueListIcon className="h-5 w-5 mr-2" />
-                        {t('sidebar.views')}
-                    </span>
-                </li>
-
-                {/* Pinned Views with Drag and Drop */}
-                {orderedViews.length > 0 && <div className="mt-6"></div>}
-                <DndContext
-                    sensors={sensors}
-                    collisionDetection={closestCenter}
-                    onDragEnd={handleDragEnd}
-                >
-                    <SortableContext
-                        items={orderedViews.map((v) => v.uid)}
-                        strategy={verticalListSortingStrategy}
+                    )
+                }
+            >
+                <span className="flex items-center">
+                    <QueueListIcon className="h-5 w-5 mr-2" />
+                    {t('sidebar.views')}
+                </span>
+                {orderedViews.length > 0 && (
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setIsExpanded((v) => !v);
+                        }}
+                        className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none"
+                        aria-label={
+                            isExpanded
+                                ? 'Collapse views list'
+                                : 'Expand views list'
+                        }
                     >
-                        {orderedViews.map((view) => (
-                            <SortableViewItem
-                                key={view.uid}
-                                view={view}
-                                isActive={isActiveView(`/views/${view.uid}`)}
-                                onNavigate={() =>
-                                    handleNavClick(
-                                        `/views/${view.uid}`,
-                                        view.name,
-                                        <QueueListIcon className="h-5 w-5 mr-2" />
-                                    )
-                                }
-                                onTogglePin={(e) => togglePin(view, e)}
-                            />
-                        ))}
-                    </SortableContext>
-                </DndContext>
-            </ul>
-        </>
+                        {isExpanded ? (
+                            <ChevronDownIcon className="h-4 w-4" />
+                        ) : (
+                            <ChevronRightIcon className="h-4 w-4" />
+                        )}
+                    </button>
+                )}
+            </li>
+
+            {isExpanded && (
+                <li className="p-0 list-none">
+                    <div className="max-h-80 overflow-y-auto overscroll-y-contain flex flex-col space-y-1">
+                        <DndContext
+                            sensors={sensors}
+                            collisionDetection={closestCenter}
+                            onDragEnd={handleDragEnd}
+                        >
+                            <SortableContext
+                                items={orderedViews.map((v) => v.uid)}
+                                strategy={verticalListSortingStrategy}
+                            >
+                                {orderedViews.map((view) => (
+                                    <SortableViewItem
+                                        key={view.uid}
+                                        view={view}
+                                        isActive={isActiveView(
+                                            `/views/${view.uid}`
+                                        )}
+                                        onNavigate={() =>
+                                            handleNavClick(
+                                                `/views/${view.uid}`,
+                                                view.name,
+                                                <QueueListIcon className="h-5 w-5 mr-2" />
+                                            )
+                                        }
+                                        onTogglePin={(e) =>
+                                            togglePin(view, e)
+                                        }
+                                    />
+                                ))}
+                            </SortableContext>
+                        </DndContext>
+                    </div>
+                </li>
+            )}
+        </ul>
     );
 };
 
