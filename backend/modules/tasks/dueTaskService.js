@@ -5,6 +5,7 @@ const {
     shouldSendInAppNotification,
     shouldSendTelegramNotification,
 } = require('../../utils/notificationPreferences');
+const telegramPoller = require('../telegram/telegramPoller');
 
 async function checkDueTasks() {
     try {
@@ -30,6 +31,8 @@ async function checkDueTasks() {
                         'email',
                         'name',
                         'notification_preferences',
+                        'telegram_bot_token',
+                        'telegram_chat_id',
                     ],
                 },
             ],
@@ -60,90 +63,123 @@ async function checkDueTasks() {
             notificationsByUser[notif.user_id].push(notif);
         }
 
+        // Group tasks by user
+        const tasksByUser = {};
+        for (const task of dueTasks) {
+            if (!tasksByUser[task.user_id]) {
+                tasksByUser[task.user_id] = { user: task.User, tasks: [] };
+            }
+            tasksByUser[task.user_id].tasks.push(task);
+        }
+
         let notificationsCreated = 0;
 
-        for (const task of dueTasks) {
-            try {
-                const dueDate = new Date(task.due_date);
-                const isOverdue = dueDate < now;
-                const notificationType = isOverdue
-                    ? 'task_overdue'
-                    : 'task_due_soon';
-                const level = isOverdue ? 'error' : 'warning';
+        for (const [userId, { user, tasks }] of Object.entries(tasksByUser)) {
+            const wantsTelegram =
+                user.telegram_bot_token &&
+                user.telegram_chat_id &&
+                (shouldSendTelegramNotification(user, 'task_due_soon') ||
+                    shouldSendTelegramNotification(user, 'task_overdue'));
 
-                // Check if user wants this notification
-                if (!shouldSendInAppNotification(task.User, notificationType)) {
-                    continue;
-                }
+            const dueSoonForTelegram = [];
+            const overdueForTelegram = [];
 
-                const recentNotifications =
-                    notificationsByUser[task.user_id] || [];
+            for (const task of tasks) {
+                try {
+                    const dueDate = new Date(task.due_date);
+                    const isOverdue = dueDate < now;
+                    const notificationType = isOverdue
+                        ? 'task_overdue'
+                        : 'task_due_soon';
+                    const level = isOverdue ? 'error' : 'warning';
 
-                const existingNotification = recentNotifications.find(
-                    (notif) =>
-                        notif.data?.taskUid === task.uid &&
-                        notif.type === notificationType
-                );
-
-                // Preserve channel_sent_at for rate limiting when recreating notifications
-                let preservedChannelSentAt = null;
-
-                if (existingNotification) {
-                    // If notification was dismissed, don't create it again
-                    if (existingNotification.dismissed_at) {
+                    if (!shouldSendInAppNotification(user, notificationType)) {
                         continue;
                     }
 
-                    // If notification is unread, delete it before creating the new one
-                    // This prevents duplicate notifications from piling up
-                    if (!existingNotification.read_at) {
-                        // Preserve channel_sent_at to maintain rate limiting across recreations
-                        preservedChannelSentAt =
-                            existingNotification.channel_sent_at;
-                        await existingNotification.destroy();
-                    } else {
-                        // If it was already read, skip creating a new one
-                        continue;
+                    const recentNotifications =
+                        notificationsByUser[task.user_id] || [];
+
+                    const existingNotification = recentNotifications.find(
+                        (notif) =>
+                            notif.data?.taskUid === task.uid &&
+                            notif.type === notificationType
+                    );
+
+                    let preservedChannelSentAt = null;
+                    let alreadySentViaTelegram = false;
+
+                    if (existingNotification) {
+                        if (existingNotification.dismissed_at) {
+                            continue;
+                        }
+
+                        if (!existingNotification.read_at) {
+                            preservedChannelSentAt =
+                                existingNotification.channel_sent_at;
+                            alreadySentViaTelegram =
+                                existingNotification.wasChannelRecentlySent(
+                                    'telegram',
+                                    24 * 60 * 60 * 1000
+                                );
+                            await existingNotification.destroy();
+                        } else {
+                            continue;
+                        }
                     }
+
+                    const { title, message } = generateNotificationContent(
+                        task.name,
+                        dueDate,
+                        now,
+                        isOverdue
+                    );
+
+                    const notification = await Notification.createNotification({
+                        userId: task.user_id,
+                        type: notificationType,
+                        title,
+                        message,
+                        level,
+                        sources: [],
+                        data: {
+                            taskUid: task.uid,
+                            taskName: task.name,
+                            dueDate: task.due_date,
+                            isOverdue,
+                        },
+                        sentAt: new Date(),
+                        channel_sent_at: preservedChannelSentAt,
+                    });
+
+                    notificationsCreated++;
+
+                    if (wantsTelegram && !alreadySentViaTelegram) {
+                        if (isOverdue) {
+                            overdueForTelegram.push({
+                                task,
+                                dueDate,
+                                notification,
+                            });
+                        } else {
+                            dueSoonForTelegram.push({ task, notification });
+                        }
+                    }
+                } catch (error) {
+                    logError(
+                        `Error creating notification for task ${task.id}:`,
+                        error
+                    );
                 }
+            }
 
-                const { title, message } = generateNotificationContent(
-                    task.name,
-                    dueDate,
-                    now,
-                    isOverdue
-                );
-
-                // Build sources array based on user preferences
-                const sources = [];
-                if (
-                    shouldSendTelegramNotification(task.User, notificationType)
-                ) {
-                    sources.push('telegram');
-                }
-
-                await Notification.createNotification({
-                    userId: task.user_id,
-                    type: notificationType,
-                    title,
-                    message,
-                    level,
-                    sources,
-                    data: {
-                        taskUid: task.uid,
-                        taskName: task.name,
-                        dueDate: task.due_date,
-                        isOverdue,
-                    },
-                    sentAt: new Date(),
-                    channel_sent_at: preservedChannelSentAt,
-                });
-
-                notificationsCreated++;
-            } catch (error) {
-                logError(
-                    `Error creating notification for task ${task.id}:`,
-                    error
+            // Send one batched Telegram message per type per user
+            if (wantsTelegram) {
+                await sendBatchedTaskTelegramMessage(
+                    user,
+                    dueSoonForTelegram,
+                    overdueForTelegram,
+                    now
                 );
             }
         }
@@ -156,6 +192,60 @@ async function checkDueTasks() {
     } catch (error) {
         logError('Error checking due tasks:', error);
         throw error;
+    }
+}
+
+async function sendBatchedTaskTelegramMessage(
+    user,
+    dueSoonItems,
+    overdueItems,
+    now
+) {
+    try {
+        const parts = [];
+
+        if (overdueItems.length > 0) {
+            parts.push('🔴 Overdue Tasks:');
+            for (const { task, dueDate } of overdueItems) {
+                const daysOverdue = Math.floor(
+                    (now - dueDate) / (1000 * 60 * 60 * 24)
+                );
+                const age =
+                    daysOverdue === 0
+                        ? 'due today'
+                        : daysOverdue === 1
+                          ? 'due yesterday'
+                          : `due ${daysOverdue} days ago`;
+                parts.push(`• ${task.name} (${age})`);
+            }
+        }
+
+        if (dueSoonItems.length > 0) {
+            if (parts.length > 0) parts.push('');
+            parts.push('⚠️ Tasks Due Soon:');
+            for (const { task } of dueSoonItems) {
+                parts.push(`• ${task.name}`);
+            }
+        }
+
+        if (parts.length === 0) return;
+
+        const message = parts.join('\n');
+        await telegramPoller.sendTelegramMessage(
+            user.telegram_bot_token,
+            user.telegram_chat_id,
+            message
+        );
+
+        const allNotifications = [
+            ...overdueItems.map((i) => i.notification),
+            ...dueSoonItems.map((i) => i.notification),
+        ];
+        for (const notification of allNotifications) {
+            await notification.markChannelAsSent('telegram');
+        }
+    } catch (error) {
+        logError('Error sending batched Telegram task message:', error);
     }
 }
 

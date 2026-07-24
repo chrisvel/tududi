@@ -303,18 +303,13 @@ describe('dueTaskService', () => {
         });
 
         describe('Telegram rate limiting', () => {
-            const telegramNotificationService = require('../../../../modules/telegram/telegramNotificationService');
+            const telegramPoller = require('../../../../modules/telegram/telegramPoller');
 
             beforeEach(() => {
-                // Mock Telegram service
                 jest.spyOn(
-                    telegramNotificationService,
-                    'isTelegramConfigured'
-                ).mockReturnValue(true);
-                jest.spyOn(
-                    telegramNotificationService,
-                    'sendTelegramNotification'
-                ).mockResolvedValue({ success: true });
+                    telegramPoller,
+                    'sendTelegramMessage'
+                ).mockResolvedValue({ ok: true });
             });
 
             afterEach(() => {
@@ -343,11 +338,11 @@ describe('dueTaskService', () => {
                 });
 
                 const sendTelegramSpy = jest.spyOn(
-                    telegramNotificationService,
-                    'sendTelegramNotification'
+                    telegramPoller,
+                    'sendTelegramMessage'
                 );
 
-                // First check - should send Telegram
+                // First check - should send one batched Telegram message
                 await checkDueTasks();
 
                 const firstCallCount = sendTelegramSpy.mock.calls.length;
