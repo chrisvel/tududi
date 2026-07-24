@@ -339,6 +339,12 @@ function registerTaskTools(server, context, tools) {
                     type: 'boolean',
                     description: 'Add to Today list',
                 },
+                tags: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description:
+                        'Array of tag names to assign (replaces existing tags)',
+                },
             },
             required: ['id'],
         },
@@ -396,6 +402,18 @@ function registerTaskTools(server, context, tools) {
             if (params.today !== undefined) updates.today = params.today;
 
             await task.update(updates);
+
+            if (params.tags !== undefined) {
+                const tagInstances = await Promise.all(
+                    params.tags.map(async (tagName) => {
+                        const [tag] = await Tag.findOrCreate({
+                            where: { name: tagName, user_id: context.userId },
+                        });
+                        return tag;
+                    })
+                );
+                await task.setTags(tagInstances);
+            }
 
             const reloadedTask = await taskRepository.findById(task.id, {
                 include: [
