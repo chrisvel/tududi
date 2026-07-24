@@ -5,6 +5,7 @@ const {
     shouldSendInAppNotification,
     shouldSendTelegramNotification,
 } = require('../../utils/notificationPreferences');
+const telegramPoller = require('../telegram/telegramPoller');
 
 async function checkDueProjects() {
     try {
@@ -30,6 +31,8 @@ async function checkDueProjects() {
                         'email',
                         'name',
                         'notification_preferences',
+                        'telegram_bot_token',
+                        'telegram_chat_id',
                     ],
                 },
             ],
@@ -60,95 +63,127 @@ async function checkDueProjects() {
             notificationsByUser[notif.user_id].push(notif);
         }
 
+        // Group projects by user
+        const projectsByUser = {};
+        for (const project of dueProjects) {
+            if (!projectsByUser[project.user_id]) {
+                projectsByUser[project.user_id] = {
+                    user: project.User,
+                    projects: [],
+                };
+            }
+            projectsByUser[project.user_id].projects.push(project);
+        }
+
         let notificationsCreated = 0;
 
-        for (const project of dueProjects) {
-            try {
-                const dueDate = new Date(project.due_date_at);
-                const isOverdue = dueDate < now;
-                const notificationType = isOverdue
-                    ? 'project_overdue'
-                    : 'project_due_soon';
-                const level = isOverdue ? 'error' : 'warning';
+        for (const [userId, { user, projects }] of Object.entries(
+            projectsByUser
+        )) {
+            const wantsTelegram =
+                user.telegram_bot_token &&
+                user.telegram_chat_id &&
+                (shouldSendTelegramNotification(user, 'project_due_soon') ||
+                    shouldSendTelegramNotification(user, 'project_overdue'));
 
-                // Check if user wants this notification
-                if (
-                    !shouldSendInAppNotification(project.User, notificationType)
-                ) {
-                    continue;
-                }
+            const dueSoonForTelegram = [];
+            const overdueForTelegram = [];
 
-                const recentNotifications =
-                    notificationsByUser[project.user_id] || [];
+            for (const project of projects) {
+                try {
+                    const dueDate = new Date(project.due_date_at);
+                    const isOverdue = dueDate < now;
+                    const notificationType = isOverdue
+                        ? 'project_overdue'
+                        : 'project_due_soon';
+                    const level = isOverdue ? 'error' : 'warning';
 
-                const existingNotification = recentNotifications.find(
-                    (notif) =>
-                        notif.data?.projectUid === project.uid &&
-                        notif.type === notificationType
-                );
-
-                // Preserve channel_sent_at for rate limiting when recreating notifications
-                let preservedChannelSentAt = null;
-
-                if (existingNotification) {
-                    // If notification was dismissed, don't create it again
-                    if (existingNotification.dismissed_at) {
+                    if (!shouldSendInAppNotification(user, notificationType)) {
                         continue;
                     }
 
-                    // If notification is unread, delete it before creating the new one
-                    // This prevents duplicate notifications from piling up
-                    if (!existingNotification.read_at) {
-                        // Preserve channel_sent_at to maintain rate limiting across recreations
-                        preservedChannelSentAt =
-                            existingNotification.channel_sent_at;
-                        await existingNotification.destroy();
-                    } else {
-                        // If it was already read, skip creating a new one
-                        continue;
+                    const recentNotifications =
+                        notificationsByUser[project.user_id] || [];
+
+                    const existingNotification = recentNotifications.find(
+                        (notif) =>
+                            notif.data?.projectUid === project.uid &&
+                            notif.type === notificationType
+                    );
+
+                    let preservedChannelSentAt = null;
+                    let alreadySentViaTelegram = false;
+
+                    if (existingNotification) {
+                        if (existingNotification.dismissed_at) {
+                            continue;
+                        }
+
+                        if (!existingNotification.read_at) {
+                            preservedChannelSentAt =
+                                existingNotification.channel_sent_at;
+                            alreadySentViaTelegram =
+                                existingNotification.wasChannelRecentlySent(
+                                    'telegram',
+                                    24 * 60 * 60 * 1000
+                                );
+                            await existingNotification.destroy();
+                        } else {
+                            continue;
+                        }
                     }
+
+                    const { title, message } = generateNotificationContent(
+                        project.name,
+                        dueDate,
+                        now,
+                        isOverdue
+                    );
+
+                    const notification = await Notification.createNotification({
+                        userId: project.user_id,
+                        type: notificationType,
+                        title,
+                        message,
+                        level,
+                        sources: [],
+                        data: {
+                            projectUid: project.uid,
+                            projectName: project.name,
+                            dueDate: project.due_date_at,
+                            isOverdue,
+                        },
+                        sentAt: new Date(),
+                        channel_sent_at: preservedChannelSentAt,
+                    });
+
+                    notificationsCreated++;
+
+                    if (wantsTelegram && !alreadySentViaTelegram) {
+                        if (isOverdue) {
+                            overdueForTelegram.push({
+                                project,
+                                dueDate,
+                                notification,
+                            });
+                        } else {
+                            dueSoonForTelegram.push({ project, notification });
+                        }
+                    }
+                } catch (error) {
+                    logError(
+                        `Error creating notification for project ${project.id}:`,
+                        error
+                    );
                 }
+            }
 
-                const { title, message } = generateNotificationContent(
-                    project.name,
-                    dueDate,
-                    now,
-                    isOverdue
-                );
-
-                // Build sources array based on user preferences
-                const sources = [];
-                if (
-                    shouldSendTelegramNotification(
-                        project.User,
-                        notificationType
-                    )
-                ) {
-                    sources.push('telegram');
-                }
-
-                await Notification.createNotification({
-                    userId: project.user_id,
-                    type: notificationType,
-                    title,
-                    message,
-                    level,
-                    sources,
-                    data: {
-                        projectUid: project.uid,
-                        projectName: project.name,
-                        dueDate: project.due_date_at,
-                        isOverdue,
-                    },
-                    sentAt: new Date(),
-                    channel_sent_at: preservedChannelSentAt,
-                });
-
-                notificationsCreated++;
-            } catch (error) {
-                logError(
-                    `Error creating notification for project ${project.id}:`,
-                    error
+            if (wantsTelegram) {
+                await sendBatchedProjectTelegramMessage(
+                    user,
+                    dueSoonForTelegram,
+                    overdueForTelegram,
+                    now
                 );
             }
         }
@@ -161,6 +196,60 @@ async function checkDueProjects() {
     } catch (error) {
         logError('Error checking due projects:', error);
         throw error;
+    }
+}
+
+async function sendBatchedProjectTelegramMessage(
+    user,
+    dueSoonItems,
+    overdueItems,
+    now
+) {
+    try {
+        const parts = [];
+
+        if (overdueItems.length > 0) {
+            parts.push('🔴 Overdue Projects:');
+            for (const { project, dueDate } of overdueItems) {
+                const daysOverdue = Math.floor(
+                    (now - dueDate) / (1000 * 60 * 60 * 24)
+                );
+                const age =
+                    daysOverdue === 0
+                        ? 'due today'
+                        : daysOverdue === 1
+                          ? 'due yesterday'
+                          : `due ${daysOverdue} days ago`;
+                parts.push(`• ${project.name} (${age})`);
+            }
+        }
+
+        if (dueSoonItems.length > 0) {
+            if (parts.length > 0) parts.push('');
+            parts.push('⚠️ Projects Due Soon:');
+            for (const { project } of dueSoonItems) {
+                parts.push(`• ${project.name}`);
+            }
+        }
+
+        if (parts.length === 0) return;
+
+        const message = parts.join('\n');
+        await telegramPoller.sendTelegramMessage(
+            user.telegram_bot_token,
+            user.telegram_chat_id,
+            message
+        );
+
+        const allNotifications = [
+            ...overdueItems.map((i) => i.notification),
+            ...dueSoonItems.map((i) => i.notification),
+        ];
+        for (const notification of allNotifications) {
+            await notification.markChannelAsSent('telegram');
+        }
+    } catch (error) {
+        logError('Error sending batched Telegram project message:', error);
     }
 }
 

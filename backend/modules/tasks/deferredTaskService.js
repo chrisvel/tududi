@@ -5,6 +5,7 @@ const {
     shouldSendInAppNotification,
     shouldSendTelegramNotification,
 } = require('../../utils/notificationPreferences');
+const telegramPoller = require('../telegram/telegramPoller');
 
 async function checkDeferredTasks() {
     try {
@@ -29,6 +30,8 @@ async function checkDeferredTasks() {
                         'email',
                         'name',
                         'notification_preferences',
+                        'telegram_bot_token',
+                        'telegram_chat_id',
                     ],
                 },
             ],
@@ -62,69 +65,93 @@ async function checkDeferredTasks() {
             notificationsByUser[notif.user_id].push(notif);
         }
 
+        // Group tasks by user
+        const tasksByUser = {};
         for (const task of deferredTasks) {
-            try {
-                if (!shouldSendInAppNotification(task.User, 'deferUntil')) {
-                    continue;
-                }
+            if (!tasksByUser[task.user_id]) {
+                tasksByUser[task.user_id] = { user: task.User, tasks: [] };
+            }
+            tasksByUser[task.user_id].tasks.push(task);
+        }
 
-                const recentNotifications =
-                    notificationsByUser[task.user_id] || [];
+        for (const [userId, { user, tasks }] of Object.entries(tasksByUser)) {
+            const wantsTelegram =
+                user.telegram_bot_token &&
+                user.telegram_chat_id &&
+                shouldSendTelegramNotification(user, 'deferUntil');
 
-                const existingNotification = recentNotifications.find(
-                    (notif) =>
-                        notif.data?.taskUid === task.uid &&
-                        notif.data?.reason === 'defer_until_reached'
-                );
+            const activatedForTelegram = [];
 
-                // Preserve channel_sent_at for rate limiting when recreating notifications
-                let preservedChannelSentAt = null;
-
-                if (existingNotification) {
-                    // If notification was dismissed, don't create it again
-                    if (existingNotification.dismissed_at) {
+            for (const task of tasks) {
+                try {
+                    if (!shouldSendInAppNotification(user, 'deferUntil')) {
                         continue;
                     }
 
-                    // If notification is unread, delete it before creating the new one
-                    // This prevents duplicate notifications from piling up
-                    if (!existingNotification.read_at) {
-                        // Preserve channel_sent_at to maintain rate limiting across recreations
-                        preservedChannelSentAt =
-                            existingNotification.channel_sent_at;
-                        await existingNotification.destroy();
-                    } else {
-                        // If it was already read, skip creating a new one
-                        continue;
+                    const recentNotifications =
+                        notificationsByUser[task.user_id] || [];
+
+                    const existingNotification = recentNotifications.find(
+                        (notif) =>
+                            notif.data?.taskUid === task.uid &&
+                            notif.data?.reason === 'defer_until_reached'
+                    );
+
+                    let preservedChannelSentAt = null;
+                    let alreadySentViaTelegram = false;
+
+                    if (existingNotification) {
+                        if (existingNotification.dismissed_at) {
+                            continue;
+                        }
+
+                        if (!existingNotification.read_at) {
+                            preservedChannelSentAt =
+                                existingNotification.channel_sent_at;
+                            alreadySentViaTelegram =
+                                existingNotification.wasChannelRecentlySent(
+                                    'telegram',
+                                    24 * 60 * 60 * 1000
+                                );
+                            await existingNotification.destroy();
+                        } else {
+                            continue;
+                        }
                     }
+
+                    const notification = await Notification.createNotification({
+                        userId: task.user_id,
+                        type: 'task_due_soon',
+                        title: 'Task is now active',
+                        message: `Your task "${task.name}" is now available to work on`,
+                        sources: [],
+                        data: {
+                            taskUid: task.uid,
+                            taskName: task.name,
+                            deferUntil: task.defer_until,
+                            reason: 'defer_until_reached',
+                        },
+                        sentAt: new Date(),
+                        channel_sent_at: preservedChannelSentAt,
+                    });
+
+                    notificationsCreated++;
+
+                    if (wantsTelegram && !alreadySentViaTelegram) {
+                        activatedForTelegram.push({ task, notification });
+                    }
+                } catch (error) {
+                    logError(
+                        `Error creating notification for task ${task.id}:`,
+                        error
+                    );
                 }
+            }
 
-                const sources = [];
-                if (shouldSendTelegramNotification(task.User, 'deferUntil')) {
-                    sources.push('telegram');
-                }
-
-                await Notification.createNotification({
-                    userId: task.user_id,
-                    type: 'task_due_soon',
-                    title: 'Task is now active',
-                    message: `Your task "${task.name}" is now available to work on`,
-                    sources,
-                    data: {
-                        taskUid: task.uid,
-                        taskName: task.name,
-                        deferUntil: task.defer_until,
-                        reason: 'defer_until_reached',
-                    },
-                    sentAt: new Date(),
-                    channel_sent_at: preservedChannelSentAt,
-                });
-
-                notificationsCreated++;
-            } catch (error) {
-                logError(
-                    `Error creating notification for task ${task.id}:`,
-                    error
+            if (wantsTelegram && activatedForTelegram.length > 0) {
+                await sendBatchedDeferredTelegramMessage(
+                    user,
+                    activatedForTelegram
                 );
             }
         }
@@ -137,6 +164,31 @@ async function checkDeferredTasks() {
     } catch (error) {
         logError('Error checking deferred tasks:', error);
         throw error;
+    }
+}
+
+async function sendBatchedDeferredTelegramMessage(user, items) {
+    try {
+        const lines = ['✅ Tasks Now Active:'];
+        for (const { task } of items) {
+            lines.push(`• ${task.name}`);
+        }
+
+        const message = lines.join('\n');
+        await telegramPoller.sendTelegramMessage(
+            user.telegram_bot_token,
+            user.telegram_chat_id,
+            message
+        );
+
+        for (const { notification } of items) {
+            await notification.markChannelAsSent('telegram');
+        }
+    } catch (error) {
+        logError(
+            'Error sending batched Telegram deferred task message:',
+            error
+        );
     }
 }
 
