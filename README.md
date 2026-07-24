@@ -100,6 +100,65 @@ docker run \
 
 Navigate to [http://localhost:3002](http://localhost:3002) and login with your credentials.
 
+### NixOS / Nix Flake
+
+Tududi provides a native NixOS module and flake for Nix-based deployments.
+
+**Add the flake as an input:**
+
+```nix
+{
+  inputs.tududi.url = "github:chrisvel/tududi";
+
+  outputs = { self, nixpkgs, tududi, ... }: {
+    nixosConfigurations.myhost = nixpkgs.lib.nixosSystem {
+      modules = [ tududi.nixosModules.default ];
+    };
+  };
+}
+```
+
+**Enable the service:**
+
+```nix
+{ ... }: {
+  # Using sops-nix
+  sops.secrets.tududi-session-secret = {
+     owner = "tududi";
+     group = "tududi";
+  };
+  sops.secrets.tududi-user-password = {
+     owner = "tududi";
+     group = "tududi";
+  };
+  services.tududi = {
+    enable = true;
+    adminEmail = "admin@example.com";
+    sessionSecretFile = config.sops.secrets.tududi-session-secret.path;
+    adminPasswordFile = config.sops.secrets.tududi-user-password.path;
+  };
+}
+```
+**Available options:**
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `services.tududi.port` | `3002` | HTTP listen port |
+| `services.tududi.host` | `"0.0.0.0"` | Listen address |
+| `services.tududi.stateDir` | `"/var/lib/tududi"` | Data directory (DB + uploads) |
+| `services.tududi.sessionSecretFile` | `null` | Path to file with session secret (`openssl rand -hex 64`) |
+| `services.tududi.adminPasswordFile` | `null` | Path to file with admin password |
+| `services.tududi.trustProxy` | `true` | Trust reverse proxy headers |
+| `services.tududi.nginx.enable` | `false` | Enable nginx reverse proxy |
+| `services.tududi.featureFlags.caldav` | `false` | Enable CalDAV sync |
+| `services.tududi.featureFlags.habits` | `false` | Enable habit tracking |
+| `services.tududi.email.enabled` | `false` | Enable email notifications |
+| `services.tududi.oidc.enabled` | `false` | Enable OIDC/SSO |
+
+For the full list of configuration options, see [`nix/module.nix`](nix/module.nix).
+
+The service runs as an isolated `tududi` system user with strict systemd hardening (`ProtectSystem=strict`, `PrivateTmp`, `NoNewPrivileges`, etc.).
+
 ### Reverse Proxy Setup
 
 When running behind a reverse proxy (Caddy, Nginx, Traefik, etc.), set `TUDUDI_TRUST_PROXY` so that Express correctly reads client IPs from `X-Forwarded-For` headers. Without this, `express-rate-limit` will log a validation error.
