@@ -133,7 +133,7 @@
     "typescript-eslint": "^8.36.0",
     "webpack": "^5.95.0",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.2.5",
+    "webpack-dev-server": "^5.2.6",
     "zustand": "^5.0.3"
   },
   "dependencies": {
@@ -180,17 +180,17 @@
     "xml2js": "^0.6.0"
   },
   "overrides": {
-    "tar": "^7.5.16",
-    "hono": "^4.12.25",
+    "tar": "^7.5.19",
+    "hono": "^4.12.27",
     "http-proxy-middleware": "^3.0.6",
     "form-data": "^4.0.6",
     "launch-editor": "^2.14.1",
-    "shell-quote": "^1.8.4",
+    "shell-quote": "^1.10.0",
     "ws": "^8.21.0",
     "qs": "^6.15.2",
     "js-cookie": "^3.0.8",
     "ip-address": "^10.2.0",
-    "fast-uri": "^3.1.2"
+    "fast-uri": "^3.1.4"
   },
   "lint-staged": {
     "frontend/**/*.{js,jsx,ts,tsx}": [
