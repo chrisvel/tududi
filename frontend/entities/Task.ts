@@ -48,11 +48,26 @@ export interface Task {
     habit_total_completions?: number;
     habit_last_completion_at?: string;
     assigned_to?: string | null;
+    assigned_person?: {
+        uid: string;
+        name: string;
+        linked_user_id: number | null;
+        email: string | null;
+        avatar_image: string | null;
+    } | null;
     involves?: string[];
     // Transient UI field set by suggestion scoring - never persisted or sent to server
     _suggestionMeta?: {
         score: number;
-        reason: 'area_balance' | 'due' | 'goal' | 'fits_now' | 'revive' | 'high' | 'aging_review' | 'next_step';
+        reason:
+            | 'area_balance'
+            | 'due'
+            | 'goal'
+            | 'fits_now'
+            | 'revive'
+            | 'high'
+            | 'aging_review'
+            | 'next_step';
         reasonLabel: string;
         reasonColor: string;
     };

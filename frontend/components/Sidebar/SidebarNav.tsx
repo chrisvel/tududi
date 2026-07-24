@@ -7,6 +7,7 @@ import {
     ListBulletIcon,
     ClockIcon,
     CalendarIcon,
+    UserIcon,
 } from '@heroicons/react/24/solid';
 import { PlusCircleIcon } from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
@@ -26,7 +27,9 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
 }) => {
     const { t } = useTranslation();
     const store = useStore();
-    const calendarEnabled = useStore((state) => state.userSettingsStore.calendarEnabled);
+    const calendarEnabled = useStore(
+        (state) => state.userSettingsStore.calendarEnabled
+    );
 
     const inboxItemsCount = store.inboxStore.pagination.total;
 
@@ -62,6 +65,12 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
             title: t('sidebar.allTasks', 'All Tasks'),
             icon: <ListBulletIcon className="h-5 w-5" />,
             query: 'status=active',
+        },
+        {
+            path: '/tasks?assigned_to_me=true',
+            title: t('sidebar.assignedToMe', 'Assigned to me'),
+            icon: <UserIcon className="h-5 w-5" />,
+            query: 'assigned_to_me=true',
         },
     ];
 

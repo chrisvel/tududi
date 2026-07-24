@@ -71,6 +71,19 @@ router.get(
     projectsController.getOne
 );
 
+// Users who can see a project (owner + share recipients) — available to
+// anyone with read access, unlike GET /shares which is owner-only.
+router.get(
+    '/project/:uidSlug/participants',
+    hasAccess(
+        'ro',
+        'project',
+        (req) => projectsController.getProjectUidForAuth(req),
+        { notFoundMessage: 'Project not found' }
+    ),
+    projectsController.participants
+);
+
 // Create a new project
 router.post('/project', projectsController.create);
 

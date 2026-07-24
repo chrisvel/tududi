@@ -1,6 +1,7 @@
 const { Task, Tag, Project, Area, sequelize } = require('../../../models');
 const { Op, QueryTypes } = require('sequelize');
 const permissionsService = require('../../../services/permissionsService');
+const assignmentService = require('../../../services/assignmentService');
 const {
     getSafeTimezone,
     getUpcomingRangeInUTC,
@@ -432,6 +433,16 @@ async function filterTasksByParams(
 
     if (params.assigned_to) {
         whereClause.assigned_to = params.assigned_to;
+    } else if (
+        params.assigned_to_me === 'true' ||
+        params.assigned_to_me === true
+    ) {
+        // Tasks assigned to any person record linked to the requesting user
+        const linkedPersonUids =
+            await assignmentService.getLinkedPersonUids(userId);
+        // An empty IN () never matches, which is the correct result for a
+        // user no person record links to.
+        whereClause.assigned_to = { [Op.in]: linkedPersonUids };
     }
 
     const finalWhereClause = {

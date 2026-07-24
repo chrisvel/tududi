@@ -8,8 +8,41 @@ const {
     getTaskTodayMoveCounts,
 } = require('../taskEventService');
 const taskRepository = require('../repository');
-const { Task } = require('../../../models');
+const { Task, Person, User } = require('../../../models');
 const { Op } = require('sequelize');
+
+/**
+ * Resolve assigned person uids to display info, including the linked user
+ * account when one exists (so viewers who don't own the person record still
+ * see who a shared task is assigned to).
+ */
+async function getAssignedPersonsMap(assignedToUids) {
+    const uids = [...new Set(assignedToUids.filter(Boolean))];
+    const map = {};
+    if (uids.length === 0) return map;
+    const people = await Person.findAll({
+        where: { uid: { [Op.in]: uids } },
+        attributes: ['uid', 'name', 'linked_user_id'],
+        include: [
+            {
+                model: User,
+                as: 'LinkedUser',
+                attributes: ['email', 'avatar_image'],
+                required: false,
+            },
+        ],
+    });
+    people.forEach((p) => {
+        map[p.uid] = {
+            uid: p.uid,
+            name: p.name,
+            linked_user_id: p.linked_user_id,
+            email: p.LinkedUser?.email || null,
+            avatar_image: p.LinkedUser?.avatar_image || null,
+        };
+    });
+    return map;
+}
 
 // Sort tags alphabetically by name (case-insensitive)
 function sortTags(tags) {
@@ -24,7 +57,8 @@ async function serializeTask(
     userTimezone = 'UTC',
     options = {},
     moveCountMap = null,
-    parentUidMap = null
+    parentUidMap = null,
+    assignedPersonMap = null
 ) {
     if (!task) {
         throw new Error('Task is null or undefined');
@@ -69,6 +103,18 @@ async function serializeTask(
         }
     }
 
+    let assignedPerson = null;
+    if (taskJson.assigned_to) {
+        if (assignedPersonMap) {
+            assignedPerson = assignedPersonMap[taskJson.assigned_to] || null;
+        } else {
+            const singleMap = await getAssignedPersonsMap([
+                taskJson.assigned_to,
+            ]);
+            assignedPerson = singleMap[taskJson.assigned_to] || null;
+        }
+    }
+
     let recurringParentUid = null;
     if (taskJson.recurring_parent_id) {
         if (parentUidMap && taskJson.recurring_parent_id in parentUidMap) {
@@ -91,6 +137,7 @@ async function serializeTask(
         project_uid: taskJson.Project?.uid || null,
         area_uid: taskJson.Area?.uid || null,
         recurring_parent_uid: recurringParentUid,
+        assigned_person: assignedPerson,
         due_date: processDueDateForResponse(taskJson.due_date, safeTimezone),
         defer_until: processDeferUntilForResponse(
             taskJson.defer_until,
@@ -177,6 +224,10 @@ async function serializeTasks(
         }
     }
 
+    const assignedPersonMap = await getAssignedPersonsMap(
+        tasks.map((t) => t.assigned_to)
+    );
+
     return await Promise.all(
         tasks.map((task) =>
             serializeTask(
@@ -184,7 +235,8 @@ async function serializeTasks(
                 userTimezone,
                 options,
                 moveCountMap,
-                parentUidMap
+                parentUidMap,
+                assignedPersonMap
             )
         )
     );

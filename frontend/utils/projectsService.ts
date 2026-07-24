@@ -3,6 +3,36 @@ import { handleAuthResponse } from './authUtils';
 import { getApiPath } from '../config/paths';
 import { getCsrfToken } from './csrfService';
 
+export interface ProjectParticipant {
+    user_id: number;
+    email: string;
+    name: string;
+    avatar_image: string | null;
+    person_uid: string | null;
+    is_owner: boolean;
+}
+
+/**
+ * Users who can see a project (owner + share recipients), each with the uid
+ * of their self-person record so tasks can be assigned to them.
+ */
+export const fetchProjectParticipants = async (
+    projectUid: string
+): Promise<ProjectParticipant[]> => {
+    const response = await fetch(
+        getApiPath(`project/${projectUid}/participants`),
+        {
+            credentials: 'include',
+            headers: { Accept: 'application/json' },
+        }
+    );
+
+    await handleAuthResponse(response, 'Failed to fetch participants.');
+
+    const data = await response.json();
+    return data.participants || [];
+};
+
 export const fetchProjects = async (
     stateFilter = 'all',
     areaFilter = ''

@@ -8,6 +8,7 @@ import {
     MoonIcon,
     CheckCircleIcon,
     Bars4Icon,
+    UserIcon,
 } from '@heroicons/react/24/outline';
 
 export const getTitleAndIcon = (
@@ -45,6 +46,12 @@ export const getTitleAndIcon = (
                 return { title: t('sidebar.upcoming'), icon: ClockIcon };
             }
 
+            if (query.get('assigned_to_me') === 'true') {
+                return {
+                    title: t('tasks.assignedToMe', 'Assigned to me'),
+                    icon: UserIcon,
+                };
+            }
             if (query.get('type') === 'today') {
                 return { title: t('tasks.today'), icon: CalendarIcon };
             }

@@ -49,6 +49,7 @@ const {
     buildUpdateAttributes,
 } = require('./core/builders');
 const { createSubtasks, updateSubtasks } = require('./operations/subtasks');
+const assignmentService = require('../../services/assignmentService');
 const { handleCompletionStatus } = require('./operations/completion');
 const { captureOldValues, logTaskChanges } = require('./utils/logging');
 const {
@@ -479,9 +480,29 @@ router.post('/task', async (req, res) => {
             return res.status(400).json({ error: error.message });
         }
 
+        if (taskAttributes.assigned_to) {
+            try {
+                await assignmentService.validateAssignedTo(
+                    req.currentUser.id,
+                    req.currentUser.id,
+                    taskAttributes.project_id || null,
+                    taskAttributes.assigned_to
+                );
+            } catch (error) {
+                return res
+                    .status(error.status || 400)
+                    .json({ error: error.message });
+            }
+        }
+
         const task = await taskRepository.create(taskAttributes);
         await updateTaskTags(task, tagsData, req.currentUser.id);
         await createSubtasks(task.id, subtasks, req.currentUser.id);
+        await assignmentService.notifyAssignmentChange({
+            actorUser: req.currentUser,
+            task,
+            previousAssignedTo: null,
+        });
 
         const taskWithAssociations = await taskRepository.findById(task.id, {
             include: TASK_INCLUDES_WITH_SUBTASKS,
@@ -713,6 +734,26 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
             }
         }
 
+        if (taskAttributes.assigned_to) {
+            try {
+                const finalProjectId =
+                    taskAttributes.project_id !== undefined
+                        ? taskAttributes.project_id
+                        : task.project_id;
+                await assignmentService.validateAssignedTo(
+                    req.currentUser.id,
+                    task.user_id,
+                    finalProjectId || null,
+                    taskAttributes.assigned_to
+                );
+            } catch (error) {
+                return res
+                    .status(error.status || 400)
+                    .json({ error: error.message });
+            }
+        }
+        const previousAssignedTo = task.assigned_to;
+
         const recurrenceFields = [
             'recurrence_type',
             'recurrence_interval',
@@ -814,6 +855,11 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
         });
 
         await task.update(taskAttributes);
+        await assignmentService.notifyAssignmentChange({
+            actorUser: req.currentUser,
+            task,
+            previousAssignedTo,
+        });
 
         console.log('[routes.js] After task.update - task values:', {
             id: task.id,

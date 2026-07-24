@@ -70,7 +70,8 @@
     "boards": "Boards",
     "bookmarks": "Bookmarks",
     "reports": "Reports",
-    "productivityAssistant": "Productivity Assistant"
+    "productivityAssistant": "Productivity Assistant",
+    "assignedToMe": "Assigned to me"
   },
   "navigation": {
     "home": "Home",
@@ -199,7 +200,8 @@
     "noCompletedTasksToday": "No completed tasks today.",
     "markAsDone": "Mark as done",
     "chaseUp": "Chase up",
-    "habit": "Habit"
+    "habit": "Habit",
+    "assignedToMe": "Assigned to me"
   },
   "timeline": {
     "activityTimeline": "Activity Timeline",

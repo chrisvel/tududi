@@ -1,6 +1,7 @@
 'use strict';
 
 const projectsService = require('./service');
+const assignmentService = require('../../services/assignmentService');
 const { UnauthorizedError } = require('../../shared/errors');
 const { getAuthenticatedUserId } = require('../../utils/request-utils');
 const { extractUidFromSlug } = require('../../utils/slug-utils');
@@ -46,6 +47,26 @@ const projectsController = {
             const project = await projectsService.getByUid(uid, timezone);
             res.json(project);
         } catch (error) {
+            next(error);
+        }
+    },
+
+    /**
+     * GET /api/project/:uidSlug/participants
+     * Owner + share recipients of a project, with their self-person uids.
+     */
+    async participants(req, res, next) {
+        try {
+            const uid = extractUidFromSlug(req.params.uidSlug);
+            const participants = await assignmentService.getProjectParticipants(
+                req.currentUser.id,
+                uid
+            );
+            res.json({ participants });
+        } catch (error) {
+            if (error.status) {
+                return res.status(error.status).json({ error: error.message });
+            }
             next(error);
         }
     },
