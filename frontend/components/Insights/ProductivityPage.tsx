@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useStore } from '../../store/useStore';
 import { fetchProjects } from '../../utils/projectsService';
 import ProductivityAssistant from '../Productivity/ProductivityAssistant';
+import DailyAssistant from '../AI/DailyAssistant';
 
 const ProductivityPage: React.FC = () => {
     const { t } = useTranslation();
@@ -29,6 +30,7 @@ const ProductivityPage: React.FC = () => {
                         beta
                     </span>
                 </div>
+                <DailyAssistant />
                 {tasksLoading ? (
                     <div className="flex items-center justify-center py-16">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500" />

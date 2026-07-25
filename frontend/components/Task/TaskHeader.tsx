@@ -166,7 +166,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 
     // Check if task has metadata (project, tags, due_date, completed_at, recurrence_type, recurring_parent_id, or defer_until)
     const hasMetadata =
-        (project && !hideProjectName) ||
+        (project && project.name && !hideProjectName) ||
         (task.tags && task.tags.length > 0) ||
         task.due_date ||
         (isTaskCompleted(task.status) && task.completed_at) ||
@@ -224,7 +224,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                     <SubtasksToggleButton />
                                 </div>
                                 {/* Show project and tags info in upcoming view */}
-                                {project && !hideProjectName && (
+                                {project && project.name && !hideProjectName && (
                                     <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
                                         <FolderIcon className="h-3 w-3 mr-1" />
                                         <Link
@@ -299,7 +299,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         {/* Project, tags, due date, and recurrence in same row, with spacing when they exist */}
                         {!isUpcomingView && (
                             <div className={`flex text-xs text-gray-500 dark:text-gray-400 ${isKanbanView ? 'flex-col space-y-0.5 mt-1.5' : 'items-center gap-3 whitespace-nowrap overflow-x-auto'}`}>
-                                {project && !hideProjectName && (
+                                {project && project.name && !hideProjectName && (
                                     <div className="flex items-center">
                                         <FolderIcon className="h-3 w-3 mr-1" />
                                         <Link
@@ -463,7 +463,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         <div
                             className={`flex flex-col text-xs text-gray-500 dark:text-gray-400 space-y-1 ${hasMetadata ? 'mt-1' : 'hidden'}`}
                         >
-                            {project && !hideProjectName && (
+                            {project && project.name && !hideProjectName && (
                                 <div className="flex items-center">
                                     <FolderIcon className="h-3 w-3 mr-1" />
                                     <Link
