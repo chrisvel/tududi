@@ -66,7 +66,12 @@
     "kanban": "Bảng Kanban",
     "addHabitAriaLabel": "Thêm Thói quen",
     "addHabitTitle": "Thêm Thói quen",
-    "toggleDarkMode": "Chuyển đổi Chế độ Tối"
+    "toggleDarkMode": "Chuyển đổi Chế độ Tối",
+    "insights": "Thông tin chi tiết",
+    "boards": "Bảng",
+    "bookmarks": "Đánh dấu",
+    "reports": "Báo cáo",
+    "productivityAssistant": "Trợ lý Năng suất"
   },
   "navigation": {
     "home": "Trang chủ",
@@ -1100,7 +1105,10 @@
     "day": "ngày",
     "days": "ngày",
     "sharedUser": "Người dùng chia sẻ",
-    "moreSharedUsers": "+{{count}} người dùng khác"
+    "moreSharedUsers": "+{{count}} người dùng khác",
+    "saveAsTemplate": "Lưu dưới dạng Mẫu",
+    "pinToSidebar": "Ghim vào thanh bên",
+    "unpinFromSidebar": "Bỏ ghim khỏi thanh bên"
   },
   "areas": {
     "title": "Khu vực",
@@ -1139,7 +1147,10 @@
     "noteOptions": "Tùy chọn ghi chú",
     "clickToEdit": "Nhấp để chỉnh sửa",
     "contentPlaceholderFocus": "Viết ghi chú của bạn... (Hỗ trợ Markdown)",
-    "contentPlaceholderMarkdown": "Viết nội dung của bạn bằng định dạng Markdown...\n\nVí dụ:\n# Tiêu đề\n**Văn bản in đậm**\n*Văn bản nghiêng*\n- Mục danh sách\n```code```"
+    "contentPlaceholderMarkdown": "Viết nội dung của bạn bằng định dạng Markdown...\n\nVí dụ:\n# Tiêu đề\n**Văn bản in đậm**\n*Văn bản nghiêng*\n- Mục danh sách\n```code```",
+    "pinToSidebar": "Ghim vào thanh bên",
+    "unpinFromSidebar": "Bỏ ghim khỏi thanh bên",
+    "save": "Lưu"
   },
   "tags": {
     "loading": "Đang tải thẻ...",
@@ -1637,6 +1648,25 @@
     "statTotal": "Tổng cộng",
     "statDone": "Đã hoàn thành",
     "statActive": "Đang hoạt động",
-    "statOverdue": "Quá hạn"
+    "statOverdue": "Quá hạn",
+    "pastBriefWarning": "Bản tóm tắt này từ {{date}} và có thể không còn phản ánh các nhiệm vụ hôm nay. Nhấn Regenerate để có một bản tóm tắt mới."
+  },
+  "reports": {
+    "weeklyReview": "Đánh giá Hàng tuần",
+    "inboxItems": "Mục trong hộp thư đến",
+    "stalledProjects": "Dự án bị đình trệ",
+    "waitingFor": "Đang chờ",
+    "allClear": "Tất cả đã rõ — không có dự án bị đình trệ hoặc mục đang chờ.",
+    "projectHealth": "Tình trạng Dự án",
+    "allProjectsHaveActions": "Tất cả các dự án đang hoạt động đều có ít nhất một hành động tiếp theo.",
+    "projectsWithNoNextAction": "dự án không có hành động tiếp theo",
+    "completionTrends": "Xu hướng hoàn thành",
+    "noCompletions": "Không có nhiệm vụ nào đã hoàn thành trong 8 tuần qua.",
+    "areaBalance": "Cân bằng khu vực",
+    "noAreaData": "Không có dữ liệu khu vực nào. Gán nhiệm vụ cho các khu vực để xem cân bằng.",
+    "completed": "Đã hoàn thành (30 ngày)",
+    "open": "Mở",
+    "streaks": "Chuỗi",
+    "areaBreakdown": "Phân tích khu vực"
   }
 }

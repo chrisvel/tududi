@@ -66,7 +66,12 @@
     "kanban": "Kanban-tavla",
     "addHabitAriaLabel": "Lägg till vana",
     "addHabitTitle": "Lägg till vana",
-    "toggleDarkMode": "Växla mörkt läge"
+    "toggleDarkMode": "Växla mörkt läge",
+    "insights": "Insikter",
+    "boards": "Tavlor",
+    "bookmarks": "Bokmärken",
+    "reports": "Rapporter",
+    "productivityAssistant": "Produktivitetsassistent"
   },
   "navigation": {
     "home": "Hem",
@@ -1100,7 +1105,10 @@
     "day": "dag",
     "days": "dagar",
     "sharedUser": "Delad användare",
-    "moreSharedUsers": "+{{count}} fler användare"
+    "moreSharedUsers": "+{{count}} fler användare",
+    "saveAsTemplate": "Spara som mall",
+    "pinToSidebar": "Fäst i sidofältet",
+    "unpinFromSidebar": "Ta bort från sidofältet"
   },
   "areas": {
     "title": "Områden",
@@ -1139,7 +1147,10 @@
     "noteOptions": "Anteckningsalternativ",
     "clickToEdit": "Klicka för att redigera",
     "contentPlaceholderFocus": "Skriv din anteckning... (Markdown stöds)",
-    "contentPlaceholderMarkdown": "Skriv ditt innehåll med Markdown-formatering...\n\nExempel:\n# Rubrik\n**Fet text**\n*Kursiv text*\n- Lista objekt\n```kod```"
+    "contentPlaceholderMarkdown": "Skriv ditt innehåll med Markdown-formatering...\n\nExempel:\n# Rubrik\n**Fet text**\n*Kursiv text*\n- Lista objekt\n```kod```",
+    "pinToSidebar": "Fäst i sidofältet",
+    "unpinFromSidebar": "Ta bort från sidofältet",
+    "save": "Spara"
   },
   "tags": {
     "loading": "Laddar taggar...",
@@ -1637,6 +1648,25 @@
     "statTotal": "Totalt",
     "statDone": "Utfört",
     "statActive": "Aktiv",
-    "statOverdue": "Förfallen"
+    "statOverdue": "Förfallen",
+    "pastBriefWarning": "Denna sammanfattning är från {{date}} och kanske inte längre återspeglar dagens uppgifter. Klicka på Återgenerera för en ny sammanfattning."
+  },
+  "reports": {
+    "weeklyReview": "Veckogenomgång",
+    "inboxItems": "Inkorgsobjekt",
+    "stalledProjects": "Stagnerade projekt",
+    "waitingFor": "Väntar på",
+    "allClear": "Allt klart — inga stagnerade projekt eller väntande objekt.",
+    "projectHealth": "Projektstatus",
+    "allProjectsHaveActions": "Alla aktiva projekt har minst en nästa åtgärd.",
+    "projectsWithNoNextAction": "projekt har ingen nästa åtgärd",
+    "completionTrends": "Slutförande Trender",
+    "noCompletions": "Inga slutförda uppgifter de senaste 8 veckorna.",
+    "areaBalance": "Områdesbalans",
+    "noAreaData": "Ingen områdesdata tillgänglig. Tilldela uppgifter till områden för att se balans.",
+    "completed": "Slutförda (30d)",
+    "open": "Öppen",
+    "streaks": "Serier",
+    "areaBreakdown": "Områdesuppdelning"
   }
 }

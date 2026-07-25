@@ -66,7 +66,12 @@
     "kanban": "Kanban-taulu",
     "addHabitAriaLabel": "Lisää tapa",
     "addHabitTitle": "Lisää tapa",
-    "toggleDarkMode": "Vaihda tummalle tilalle"
+    "toggleDarkMode": "Vaihda tummalle tilalle",
+    "insights": "Näkymät",
+    "boards": "Taulut",
+    "bookmarks": "Kirjanmerkit",
+    "reports": "Raportit",
+    "productivityAssistant": "Tuottavuusavustaja"
   },
   "navigation": {
     "home": "Koti",
@@ -1100,7 +1105,10 @@
     "day": "päivä",
     "days": "päivää",
     "sharedUser": "Jaettu käyttäjä",
-    "moreSharedUsers": "+{{count}} lisää käyttäjää"
+    "moreSharedUsers": "+{{count}} lisää käyttäjää",
+    "saveAsTemplate": "Tallenna mallina",
+    "pinToSidebar": "Kiinnitä sivupalkkiin",
+    "unpinFromSidebar": "Poista kiinnitys sivupalkista"
   },
   "areas": {
     "title": "Alueet",
@@ -1139,7 +1147,10 @@
     "noteOptions": "Muistion asetukset",
     "clickToEdit": "Napsauta muokataksesi",
     "contentPlaceholderFocus": "Kirjoita muistiosi... (Markdown tuettu)",
-    "contentPlaceholderMarkdown": "Kirjoita sisältösi käyttäen Markdown-muotoilua...\n\nEsimerkit:\n# Otsikko\n**Lihavoitu teksti**\n*Kursivoitu teksti*\n- Luettelokohta\n```koodi```"
+    "contentPlaceholderMarkdown": "Kirjoita sisältösi käyttäen Markdown-muotoilua...\n\nEsimerkit:\n# Otsikko\n**Lihavoitu teksti**\n*Kursivoitu teksti*\n- Luettelokohta\n```koodi```",
+    "pinToSidebar": "Kiinnitä sivupalkkiin",
+    "unpinFromSidebar": "Poista kiinnitys sivupalkista",
+    "save": "Tallenna"
   },
   "tags": {
     "loading": "Ladataan tageja...",
@@ -1637,6 +1648,25 @@
     "statTotal": "Yhteensä",
     "statDone": "Valmis",
     "statActive": "Aktiivinen",
-    "statOverdue": "Erääntynyt"
+    "statOverdue": "Erääntynyt",
+    "pastBriefWarning": "Tämä tiivistelmä on päivältä {{date}} eikä välttämättä enää vastaa tämän päivän tehtäviä. Klikkaa Uudelleenluo saadaksesi tuoreen tiivistelmän."
+  },
+  "reports": {
+    "weeklyReview": "Viikoittainen katsaus",
+    "inboxItems": "Saapuneet kohteet",
+    "stalledProjects": "Jumiutuneet projektit",
+    "waitingFor": "Odottaa",
+    "allClear": "Kaikki kunnossa — ei jumiutuneita projekteja tai odottavia kohteita.",
+    "projectHealth": "Projektin tila",
+    "allProjectsHaveActions": "Kaikilla aktiivisilla projekteilla on vähintään yksi seuraava toimenpide.",
+    "projectsWithNoNextAction": "projektilla ei ole seuraavaa toimenpidettä",
+    "completionTrends": "Valmiuskehitys",
+    "noCompletions": "Ei valmiita tehtäviä viimeisen 8 viikon aikana.",
+    "areaBalance": "Alueen tasapaino",
+    "noAreaData": "Ei alueen tietoja saatavilla. Määritä tehtäviä alueille nähdäksesi tasapainon.",
+    "completed": "Valmiit (30 pv)",
+    "open": "Avoin",
+    "streaks": "Peräkkäisyydet",
+    "areaBreakdown": "Alueen erittely"
   }
 }

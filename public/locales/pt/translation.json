@@ -66,7 +66,12 @@
     "kanban": "Quadro Kanban",
     "addHabitAriaLabel": "Adicionar Hábito",
     "addHabitTitle": "Adicionar Hábito",
-    "toggleDarkMode": "Alternar Modo Escuro"
+    "toggleDarkMode": "Alternar Modo Escuro",
+    "insights": "Insights",
+    "boards": "Quadros",
+    "bookmarks": "Favoritos",
+    "reports": "Relatórios",
+    "productivityAssistant": "Assistente de Produtividade"
   },
   "navigation": {
     "home": "Início",
@@ -1100,7 +1105,10 @@
     "day": "dia",
     "days": "dias",
     "sharedUser": "Usuário compartilhado",
-    "moreSharedUsers": "+{{count}} usuários a mais"
+    "moreSharedUsers": "+{{count}} usuários a mais",
+    "saveAsTemplate": "Salvar como Modelo",
+    "pinToSidebar": "Fixar na barra lateral",
+    "unpinFromSidebar": "Desafixar da barra lateral"
   },
   "areas": {
     "title": "Áreas",
@@ -1139,7 +1147,10 @@
     "noteOptions": "Opções da nota",
     "clickToEdit": "Clique para editar",
     "contentPlaceholderFocus": "Escreva sua nota... (Markdown suportado)",
-    "contentPlaceholderMarkdown": "Escreva seu conteúdo usando a formatação Markdown...\n\nExemplos:\n# Cabeçalho\n**Texto em negrito**\n*Texto em itálico*\n- Item da lista\n```código```"
+    "contentPlaceholderMarkdown": "Escreva seu conteúdo usando a formatação Markdown...\n\nExemplos:\n# Cabeçalho\n**Texto em negrito**\n*Texto em itálico*\n- Item da lista\n```código```",
+    "pinToSidebar": "Fixar na barra lateral",
+    "unpinFromSidebar": "Desafixar da barra lateral",
+    "save": "Salvar"
   },
   "tags": {
     "loading": "Carregando tags...",
@@ -1637,6 +1648,25 @@
     "statTotal": "Total",
     "statDone": "Concluído",
     "statActive": "Ativo",
-    "statOverdue": "Atrasado"
+    "statOverdue": "Atrasado",
+    "pastBriefWarning": "Este resumo é de {{date}} e pode não refletir mais as tarefas de hoje. Clique em Regenerar para um novo resumo."
+  },
+  "reports": {
+    "weeklyReview": "Revisão Semanal",
+    "inboxItems": "Itens da Caixa de Entrada",
+    "stalledProjects": "Projetos Paralisados",
+    "waitingFor": "Aguardando",
+    "allClear": "Tudo claro — sem projetos paralisados ou itens aguardando.",
+    "projectHealth": "Saúde do Projeto",
+    "allProjectsHaveActions": "Todos os projetos ativos têm pelo menos uma próxima ação.",
+    "projectsWithNoNextAction": "projeto(s) não têm próxima ação",
+    "completionTrends": "Tendências de Conclusão",
+    "noCompletions": "Nenhuma tarefa concluída nas últimas 8 semanas.",
+    "areaBalance": "Saldo da Área",
+    "noAreaData": "Nenhum dado de área disponível. Atribua tarefas a áreas para ver o saldo.",
+    "completed": "Concluído (30d)",
+    "open": "Aberto",
+    "streaks": "Sequências",
+    "areaBreakdown": "Divisão da Área"
   }
 }
