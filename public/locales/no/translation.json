@@ -66,7 +66,12 @@
     "kanban": "Kanban-tavle",
     "addHabitAriaLabel": "Legg til vane",
     "addHabitTitle": "Legg til vane",
-    "toggleDarkMode": "Bytt til mørk modus"
+    "toggleDarkMode": "Bytt til mørk modus",
+    "insights": "Innsikter",
+    "boards": "Tavler",
+    "bookmarks": "Bokmerker",
+    "reports": "Rapporter",
+    "productivityAssistant": "Produktivitetsassistent"
   },
   "navigation": {
     "home": "Hjem",
@@ -1101,7 +1106,10 @@
     "day": "dag",
     "days": "dager",
     "sharedUser": "Delt bruker",
-    "moreSharedUsers": "+{{count}} flere brukere"
+    "moreSharedUsers": "+{{count}} flere brukere",
+    "saveAsTemplate": "Lagre som mal",
+    "pinToSidebar": "Fest til sidepanelet",
+    "unpinFromSidebar": "Fjern festing fra sidepanelet"
   },
   "areas": {
     "title": "Områder",
@@ -1140,7 +1148,10 @@
     "noteOptions": "Notatalternativer",
     "clickToEdit": "Klikk for å redigere",
     "contentPlaceholderFocus": "Skriv notatet ditt... (Markdown støttet)",
-    "contentPlaceholderMarkdown": "Skriv innholdet ditt med Markdown-formatering...\n\nEksempler:\n# Overskrift\n**Fet tekst**\n*Kursiv tekst*\n- Listeelement\n```kode```"
+    "contentPlaceholderMarkdown": "Skriv innholdet ditt med Markdown-formatering...\n\nEksempler:\n# Overskrift\n**Fet tekst**\n*Kursiv tekst*\n- Listeelement\n```kode```",
+    "pinToSidebar": "Fest til sidepanelet",
+    "unpinFromSidebar": "Fjern festing fra sidepanelet",
+    "save": "Lagre"
   },
   "tags": {
     "loading": "Laster etiketter...",
@@ -1639,9 +1650,28 @@
     "statTotal": "Totalt",
     "statDone": "Ferdig",
     "statActive": "Aktiv",
-    "statOverdue": "Forsinket"
+    "statOverdue": "Forsinket",
+    "pastBriefWarning": "Denne oppsummeringen er fra {{date}} og gjenspeiler kanskje ikke dagens oppgaver. Klikk på Regenerer for en ny oppsummering."
   },
   "habits": {
     "completeHabit": "Fullfør vane"
+  },
+  "reports": {
+    "weeklyReview": "Ukentlig gjennomgang",
+    "inboxItems": "Innboksartikler",
+    "stalledProjects": "Stagnerte prosjekter",
+    "waitingFor": "Venter på",
+    "allClear": "Alt klart — ingen stagnerte prosjekter eller ventende elementer.",
+    "projectHealth": "Prosjekthelse",
+    "allProjectsHaveActions": "Alle aktive prosjekter har minst én neste handling.",
+    "projectsWithNoNextAction": "prosjekt(er) har ingen neste handling",
+    "completionTrends": "Fullføringsmønstre",
+    "noCompletions": "Ingen fullførte oppgaver de siste 8 ukene.",
+    "areaBalance": "Områdebalanse",
+    "noAreaData": "Ingen områdedata tilgjengelig. Tildel oppgaver til områder for å se balanse.",
+    "completed": "Fullført (30d)",
+    "open": "Åpen",
+    "streaks": "Serier",
+    "areaBreakdown": "Områdefordeling"
   }
 }

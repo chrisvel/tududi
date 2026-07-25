@@ -66,7 +66,12 @@
     "kanban": "Kanban Panosu",
     "addHabitAriaLabel": "Alışkanlık Ekle",
     "addHabitTitle": "Alışkanlık Ekle",
-    "toggleDarkMode": "Karanlık Modu Aç/Kapat"
+    "toggleDarkMode": "Karanlık Modu Aç/Kapat",
+    "insights": "İçgörüler",
+    "boards": "Panolar",
+    "bookmarks": "Yer İşaretleri",
+    "reports": "Raporlar",
+    "productivityAssistant": "Verimlilik Asistanı"
   },
   "navigation": {
     "home": "Ana Sayfa",
@@ -1100,7 +1105,10 @@
     "day": "gün",
     "days": "gün",
     "sharedUser": "Paylaşılan kullanıcı",
-    "moreSharedUsers": "+{{count}} kullanıcı daha"
+    "moreSharedUsers": "+{{count}} kullanıcı daha",
+    "saveAsTemplate": "Şablon Olarak Kaydet",
+    "pinToSidebar": "Yan Menüyü Sabitle",
+    "unpinFromSidebar": "Yan Menüden Sıkıştırmayı Kaldır"
   },
   "areas": {
     "title": "Alanlar",
@@ -1139,7 +1147,10 @@
     "noteOptions": "Not seçenekleri",
     "clickToEdit": "Düzenlemek için tıklayın",
     "contentPlaceholderFocus": "Notunuzu yazın... (Markdown destekleniyor)",
-    "contentPlaceholderMarkdown": "İçeriğinizi Markdown formatında yazın...\n\nÖrnekler:\n# Başlık\n**Kalın metin**\n*İtalik metin*\n- Liste maddesi\n```kod```"
+    "contentPlaceholderMarkdown": "İçeriğinizi Markdown formatında yazın...\n\nÖrnekler:\n# Başlık\n**Kalın metin**\n*İtalik metin*\n- Liste maddesi\n```kod```",
+    "pinToSidebar": "Yan Menüyü Sabitle",
+    "unpinFromSidebar": "Yan Menüden Sıkıştırmayı Kaldır",
+    "save": "Kaydet"
   },
   "tags": {
     "loading": "Etiketler yükleniyor...",
@@ -1637,6 +1648,25 @@
     "statTotal": "Toplam",
     "statDone": "Tamamlandı",
     "statActive": "Aktif",
-    "statOverdue": "Vadesi geçmiş"
+    "statOverdue": "Vadesi geçmiş",
+    "pastBriefWarning": "Bu brif {{date}} tarihindendir ve bugünün görevlerini yansıtmayabilir. Yeni bir brif için Yenile'ye tıklayın."
+  },
+  "reports": {
+    "weeklyReview": "Haftalık İnceleme",
+    "inboxItems": "Gelen Kutusu Öğeleri",
+    "stalledProjects": "Duraklayan Projeler",
+    "waitingFor": "Bekleniyor",
+    "allClear": "Her şey yolunda — duraklayan projeler veya bekleyen öğeler yok.",
+    "projectHealth": "Proje Sağlığı",
+    "allProjectsHaveActions": "Tüm aktif projelerin en az bir sonraki eylemi vardır.",
+    "projectsWithNoNextAction": "proje(ler)in bir sonraki eylemi yok",
+    "completionTrends": "Tamamlanma Eğilimleri",
+    "noCompletions": "Son 8 haftada tamamlanmış görev yok.",
+    "areaBalance": "Alan Dengesi",
+    "noAreaData": "Alan verisi mevcut değil. Dengeyi görmek için görevleri alanlara atayın.",
+    "completed": "Tamamlandı (30g)",
+    "open": "Açık",
+    "streaks": "Seriler",
+    "areaBreakdown": "Alan Dağılımı"
   }
 }

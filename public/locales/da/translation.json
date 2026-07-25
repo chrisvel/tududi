@@ -66,7 +66,12 @@
     "kanban": "Kanban Tavle",
     "addHabitAriaLabel": "Tilføj vane",
     "addHabitTitle": "Tilføj vane",
-    "toggleDarkMode": "Skift til mørk tilstand"
+    "toggleDarkMode": "Skift til mørk tilstand",
+    "insights": "Indsigter",
+    "boards": "Tavler",
+    "bookmarks": "Bogmærker",
+    "reports": "Rapporter",
+    "productivityAssistant": "Produktivitetsassistent"
   },
   "navigation": {
     "home": "Hjem",
@@ -1100,7 +1105,10 @@
     "day": "dag",
     "days": "dage",
     "sharedUser": "Delt bruger",
-    "moreSharedUsers": "+{{count}} flere brugere"
+    "moreSharedUsers": "+{{count}} flere brugere",
+    "saveAsTemplate": "Gem som skabelon",
+    "pinToSidebar": "Fastgør til sidepanelet",
+    "unpinFromSidebar": "Fjern fastgørelse fra sidepanelet"
   },
   "areas": {
     "title": "Områder",
@@ -1139,7 +1147,10 @@
     "noteOptions": "Notatindstillinger",
     "clickToEdit": "Klik for at redigere",
     "contentPlaceholderFocus": "Skriv dit notat... (Markdown understøttet)",
-    "contentPlaceholderMarkdown": "Skriv dit indhold ved hjælp af Markdown formatering...\n\nEksempler:\n# Overskrift\n**Fed tekst**\n*Kursiv tekst*\n- Listeelement\n```kode```"
+    "contentPlaceholderMarkdown": "Skriv dit indhold ved hjælp af Markdown formatering...\n\nEksempler:\n# Overskrift\n**Fed tekst**\n*Kursiv tekst*\n- Listeelement\n```kode```",
+    "pinToSidebar": "Fastgør til sidepanelet",
+    "unpinFromSidebar": "Fjern fastgørelse fra sidepanelet",
+    "save": "Gem"
   },
   "tags": {
     "loading": "Indlæser tags...",
@@ -1637,6 +1648,25 @@
     "statTotal": "Total",
     "statDone": "Færdig",
     "statActive": "Aktiv",
-    "statOverdue": "Forfaldet"
+    "statOverdue": "Forfaldet",
+    "pastBriefWarning": "Denne briefing er fra {{date}} og afspejler muligvis ikke dagens opgaver. Klik på Generer igen for en ny briefing."
+  },
+  "reports": {
+    "weeklyReview": "Ugentlig gennemgang",
+    "inboxItems": "Indbakkeelementer",
+    "stalledProjects": "Stagnerede projekter",
+    "waitingFor": "Venter på",
+    "allClear": "Alt klart - ingen stagnerede projekter eller ventende elementer.",
+    "projectHealth": "Projektstatus",
+    "allProjectsHaveActions": "Alle aktive projekter har mindst én næste handling.",
+    "projectsWithNoNextAction": "projekt(er) har ingen næste handling",
+    "completionTrends": "Fuldførelsestrends",
+    "noCompletions": "Ingen fuldførte opgaver i de sidste 8 uger.",
+    "areaBalance": "Områdebalance",
+    "noAreaData": "Ingen områdedata tilgængelige. Tildel opgaver til områder for at se balance.",
+    "completed": "Fuldført (30d)",
+    "open": "Åben",
+    "streaks": "Serier",
+    "areaBreakdown": "Områdeopdeling"
   }
 }

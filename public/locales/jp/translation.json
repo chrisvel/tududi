@@ -66,7 +66,12 @@
     "kanban": "カンバンボード",
     "addHabitAriaLabel": "習慣を追加",
     "addHabitTitle": "習慣を追加",
-    "toggleDarkMode": "ダークモードを切り替え"
+    "toggleDarkMode": "ダークモードを切り替え",
+    "insights": "インサイト",
+    "boards": "ボード",
+    "bookmarks": "ブックマーク",
+    "reports": "レポート",
+    "productivityAssistant": "生産性アシスタント"
   },
   "navigation": {
     "home": "ホーム",
@@ -868,7 +873,10 @@
     "day": "日",
     "days": "日",
     "sharedUser": "共有ユーザー",
-    "moreSharedUsers": "+{{count}}人のユーザー"
+    "moreSharedUsers": "+{{count}}人のユーザー",
+    "saveAsTemplate": "テンプレートとして保存",
+    "pinToSidebar": "サイドバーにピン留め",
+    "unpinFromSidebar": "サイドバーからピン留め解除"
   },
   "areas": {
     "title": "エリア",
@@ -907,7 +915,10 @@
     "noteOptions": "ノートオプション",
     "clickToEdit": "クリックして編集",
     "contentPlaceholderFocus": "ノートを書いてください...（Markdown対応）",
-    "contentPlaceholderMarkdown": "Markdown形式で内容を書いてください...\n\n例:\n# 見出し\n**太字テキスト**\n*斜体テキスト*\n- リスト項目\n```コード```"
+    "contentPlaceholderMarkdown": "Markdown形式で内容を書いてください...\n\n例:\n# 見出し\n**太字テキスト**\n*斜体テキスト*\n- リスト項目\n```コード```",
+    "pinToSidebar": "サイドバーにピン留め",
+    "unpinFromSidebar": "サイドバーからピン留め解除",
+    "save": "保存"
   },
   "tags": {
     "loading": "タグを読み込み中...",
@@ -1637,6 +1648,25 @@
     "statTotal": "合計",
     "statDone": "完了",
     "statActive": "アクティブ",
-    "statOverdue": "期限切れ"
+    "statOverdue": "期限切れ",
+    "pastBriefWarning": "このブリーフは{{date}}のものであり、今日のタスクを反映していない可能性があります。新しいブリーフを得るには「再生成」をクリックしてください。"
+  },
+  "reports": {
+    "weeklyReview": "週間レビュー",
+    "inboxItems": "受信トレイのアイテム",
+    "stalledProjects": "停滞中のプロジェクト",
+    "waitingFor": "待機中",
+    "allClear": "すべてクリア — 停滞中のプロジェクトや待機中のアイテムはありません。",
+    "projectHealth": "プロジェクトの健康状態",
+    "allProjectsHaveActions": "すべてのアクティブなプロジェクトには少なくとも1つの次のアクションがあります。",
+    "projectsWithNoNextAction": "プロジェクトには次のアクションがありません",
+    "completionTrends": "完了トレンド",
+    "noCompletions": "過去8週間に完了したタスクはありません。",
+    "areaBalance": "エリアバランス",
+    "noAreaData": "エリアデータは利用できません。バランスを確認するには、タスクをエリアに割り当ててください。",
+    "completed": "完了 (30日)",
+    "open": "オープン",
+    "streaks": "ストリーク",
+    "areaBreakdown": "エリア内訳"
   }
 }

@@ -66,7 +66,12 @@
     "kanban": "看板",
     "addHabitAriaLabel": "添加习惯",
     "addHabitTitle": "添加习惯",
-    "toggleDarkMode": "切换暗黑模式"
+    "toggleDarkMode": "切换暗黑模式",
+    "insights": "洞察",
+    "boards": "看板",
+    "bookmarks": "书签",
+    "reports": "报告",
+    "productivityAssistant": "生产力助手"
   },
   "navigation": {
     "home": "首页",
@@ -1100,7 +1105,10 @@
     "day": "天",
     "days": "天",
     "sharedUser": "共享用户",
-    "moreSharedUsers": "+{{count}}个用户"
+    "moreSharedUsers": "+{{count}}个用户",
+    "saveAsTemplate": "另存为模板",
+    "pinToSidebar": "固定到侧边栏",
+    "unpinFromSidebar": "从侧边栏取消固定"
   },
   "areas": {
     "title": "区域",
@@ -1139,7 +1147,10 @@
     "noteOptions": "笔记选项",
     "clickToEdit": "点击编辑",
     "contentPlaceholderFocus": "写下你的笔记...（支持Markdown）",
-    "contentPlaceholderMarkdown": "使用Markdown格式编写内容...\n\n示例：\n# 标题\n**粗体文本**\n*斜体文本*\n- 列表项\n```代码```"
+    "contentPlaceholderMarkdown": "使用Markdown格式编写内容...\n\n示例：\n# 标题\n**粗体文本**\n*斜体文本*\n- 列表项\n```代码```",
+    "pinToSidebar": "固定到侧边栏",
+    "unpinFromSidebar": "从侧边栏取消固定",
+    "save": "保存"
   },
   "tags": {
     "loading": "加载标签...",
@@ -1637,6 +1648,25 @@
     "statTotal": "总计",
     "statDone": "完成",
     "statActive": "活跃",
-    "statOverdue": "逾期"
+    "statOverdue": "逾期",
+    "pastBriefWarning": "此简报来自{{date}}，可能不再反映今天的任务。点击重新生成以获取最新简报。"
+  },
+  "reports": {
+    "weeklyReview": "每周回顾",
+    "inboxItems": "收件箱项目",
+    "stalledProjects": "停滞项目",
+    "waitingFor": "等待中",
+    "allClear": "一切正常 — 没有停滞项目或等待中的项目。",
+    "projectHealth": "项目健康",
+    "allProjectsHaveActions": "所有活跃项目至少有一个下一步行动。",
+    "projectsWithNoNextAction": "项目没有下一步行动",
+    "completionTrends": "完成趋势",
+    "noCompletions": "过去8周没有完成的任务。",
+    "areaBalance": "区域平衡",
+    "noAreaData": "没有可用的区域数据。请将任务分配到区域以查看平衡。",
+    "completed": "已完成（30天）",
+    "open": "打开",
+    "streaks": "连续记录",
+    "areaBreakdown": "区域细分"
   }
 }

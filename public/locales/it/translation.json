@@ -66,7 +66,12 @@
     "kanban": "Bacheca Kanban",
     "addHabitAriaLabel": "Aggiungi Abitudine",
     "addHabitTitle": "Aggiungi Abitudine",
-    "toggleDarkMode": "Attiva Modalità Scura"
+    "toggleDarkMode": "Attiva Modalità Scura",
+    "insights": "Approfondimenti",
+    "boards": "Bacheche",
+    "bookmarks": "Segnalibri",
+    "reports": "Report",
+    "productivityAssistant": "Assistente alla Produttività"
   },
   "navigation": {
     "home": "Home",
@@ -1100,7 +1105,10 @@
     "day": "giorno",
     "days": "giorni",
     "sharedUser": "Utente condiviso",
-    "moreSharedUsers": "+{{count}} altri utenti"
+    "moreSharedUsers": "+{{count}} altri utenti",
+    "saveAsTemplate": "Salva come Modello",
+    "pinToSidebar": "Pinna nella barra laterale",
+    "unpinFromSidebar": "Rimuovi dalla barra laterale"
   },
   "areas": {
     "title": "Aree",
@@ -1139,7 +1147,10 @@
     "noteOptions": "Opzioni nota",
     "clickToEdit": "Clicca per modificare",
     "contentPlaceholderFocus": "Scrivi la tua nota... (Markdown supportato)",
-    "contentPlaceholderMarkdown": "Scrivi il tuo contenuto utilizzando la formattazione Markdown...\n\nEsempi:\n# Intestazione\n**Testo in grassetto**\n*Testo in corsivo*\n- Elemento della lista\n```codice```"
+    "contentPlaceholderMarkdown": "Scrivi il tuo contenuto utilizzando la formattazione Markdown...\n\nEsempi:\n# Intestazione\n**Testo in grassetto**\n*Testo in corsivo*\n- Elemento della lista\n```codice```",
+    "pinToSidebar": "Pinna nella barra laterale",
+    "unpinFromSidebar": "Rimuovi dalla barra laterale",
+    "save": "Salva"
   },
   "tags": {
     "loading": "Caricamento tag...",
@@ -1637,6 +1648,25 @@
     "statTotal": "Totale",
     "statDone": "Fatto",
     "statActive": "Attivo",
-    "statOverdue": "Scaduto"
+    "statOverdue": "Scaduto",
+    "pastBriefWarning": "Questo briefing è del {{date}} e potrebbe non riflettere più le attività odierne. Clicca su Rigenera per un nuovo briefing."
+  },
+  "reports": {
+    "weeklyReview": "Revisione Settimanale",
+    "inboxItems": "Elementi della Posta in Arrivo",
+    "stalledProjects": "Progetti Bloccati",
+    "waitingFor": "In attesa di",
+    "allClear": "Tutto chiaro — nessun progetto bloccato o elementi in attesa.",
+    "projectHealth": "Salute del Progetto",
+    "allProjectsHaveActions": "Tutti i progetti attivi hanno almeno un'azione successiva.",
+    "projectsWithNoNextAction": "il progetto(i) non ha(nno) azione successiva",
+    "completionTrends": "Tendenze di Completamento",
+    "noCompletions": "Nessun compito completato nelle ultime 8 settimane.",
+    "areaBalance": "Bilancio dell'Area",
+    "noAreaData": "Nessun dato dell'area disponibile. Assegna compiti alle aree per vedere il bilancio.",
+    "completed": "Completato (30d)",
+    "open": "Aperto",
+    "streaks": "Serie",
+    "areaBreakdown": "Ripartizione dell'Area"
   }
 }

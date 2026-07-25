@@ -66,7 +66,12 @@
     "kanban": "Kanban tabla",
     "addHabitAriaLabel": "Dodaj navado",
     "addHabitTitle": "Dodaj navado",
-    "toggleDarkMode": "Preklopi temni način"
+    "toggleDarkMode": "Preklopi temni način",
+    "insights": "Vpogledi",
+    "boards": "Deske",
+    "bookmarks": "Zaznamki",
+    "reports": "Poročila",
+    "productivityAssistant": "Asistent za produktivnost"
   },
   "navigation": {
     "home": "Domov",
@@ -1100,7 +1105,10 @@
     "day": "dan",
     "days": "dni",
     "sharedUser": "Deljeni uporabnik",
-    "moreSharedUsers": "+{{count}} več uporabnikov"
+    "moreSharedUsers": "+{{count}} več uporabnikov",
+    "saveAsTemplate": "Shrani kot predlogo",
+    "pinToSidebar": "Pripni na stransko vrstico",
+    "unpinFromSidebar": "Odpripni s stranske vrstice"
   },
   "areas": {
     "title": "Območja",
@@ -1139,7 +1147,10 @@
     "noteOptions": "Možnosti opombe",
     "clickToEdit": "Kliknite za urejanje",
     "contentPlaceholderFocus": "Tukaj napišite svojo opombo... (podprto Markdown)",
-    "contentPlaceholderMarkdown": "Napišite svojo vsebino z uporabo Markdown oblikovanja...\n\nPrimeri:\n# Naslov\n**Krepko besedilo**\n*Poševno besedilo*\n- Element seznama\n```koda```"
+    "contentPlaceholderMarkdown": "Napišite svojo vsebino z uporabo Markdown oblikovanja...\n\nPrimeri:\n# Naslov\n**Krepko besedilo**\n*Poševno besedilo*\n- Element seznama\n```koda```",
+    "pinToSidebar": "Pripni na stransko vrstico",
+    "unpinFromSidebar": "Odpripni s stranske vrstice",
+    "save": "Shrani"
   },
   "tags": {
     "loading": "Nalagam oznake...",
@@ -1637,6 +1648,25 @@
     "statTotal": "Skupaj",
     "statDone": "Končano",
     "statActive": "Aktivno",
-    "statOverdue": "Zapadlo"
+    "statOverdue": "Zapadlo",
+    "pastBriefWarning": "Ta povzetek je iz {{date}} in morda ne odraža več današnjih nalog. Kliknite na Ponovno generiraj za nov povzetek."
+  },
+  "reports": {
+    "weeklyReview": "Tedenski pregled",
+    "inboxItems": "Elementi v nabiralniku",
+    "stalledProjects": "Zastali projekti",
+    "waitingFor": "Čaka na",
+    "allClear": "Vse jasno — ni zastalih projektov ali elementov, ki čakajo.",
+    "projectHealth": "Zdravje projekta",
+    "allProjectsHaveActions": "Vsi aktivni projekti imajo vsaj eno naslednjo nalogo.",
+    "projectsWithNoNextAction": "projekt(i) nimajo naslednje naloge",
+    "completionTrends": "Trendi dokončanja",
+    "noCompletions": "Ni dokončanih nalog v preteklih 8 tednih.",
+    "areaBalance": "Ravnotežje območja",
+    "noAreaData": "Ni podatkov o območju. Dodelite naloge območjem, da vidite ravnotežje.",
+    "completed": "Dokončano (30d)",
+    "open": "Odprto",
+    "streaks": "Niz",
+    "areaBreakdown": "Razčlenitev območja"
   }
 }

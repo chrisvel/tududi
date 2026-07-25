@@ -1589,7 +1589,7 @@
     }
   },
   "aiAssistant": {
-    "title": "AI Assistant",
+    "title": "AI Daily Brief",
     "generatedAt": "Generated at {{time}}",
     "emptyState": "Click 'Generate Brief' to get your AI-powered daily summary.",
     "focusForToday": "Focus for today",

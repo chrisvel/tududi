@@ -66,7 +66,12 @@
     "kanban": "Tablero Kanban",
     "addHabitAriaLabel": "Agregar hábito",
     "addHabitTitle": "Agregar hábito",
-    "toggleDarkMode": "Alternar modo oscuro"
+    "toggleDarkMode": "Alternar modo oscuro",
+    "insights": "Perspectivas",
+    "boards": "Tableros",
+    "bookmarks": "Marcadores",
+    "reports": "Informes",
+    "productivityAssistant": "Asistente de Productividad"
   },
   "navigation": {
     "home": "Inicio",
@@ -689,7 +694,10 @@
     "day": "día",
     "days": "días",
     "sharedUser": "Usuario compartido",
-    "moreSharedUsers": "+{{count}} usuarios más"
+    "moreSharedUsers": "+{{count}} usuarios más",
+    "saveAsTemplate": "Guardar como Plantilla",
+    "pinToSidebar": "Fijar en la barra lateral",
+    "unpinFromSidebar": "Desfijar de la barra lateral"
   },
   "sort": {
     "due_date": "Fecha de Vencimiento",
@@ -1083,7 +1091,10 @@
     "noteOptions": "Opciones de nota",
     "clickToEdit": "Haz clic para editar",
     "contentPlaceholderFocus": "Escribe tu nota... (Markdown soportado)",
-    "contentPlaceholderMarkdown": "Escribe tu contenido utilizando formato Markdown...\n\nEjemplos:\n# Encabezado\n**Texto en negrita**\n*Texto en cursiva*\n- Elemento de lista\n```código```"
+    "contentPlaceholderMarkdown": "Escribe tu contenido utilizando formato Markdown...\n\nEjemplos:\n# Encabezado\n**Texto en negrita**\n*Texto en cursiva*\n- Elemento de lista\n```código```",
+    "pinToSidebar": "Fijar en la barra lateral",
+    "unpinFromSidebar": "Desfijar de la barra lateral",
+    "save": "Guardar"
   },
   "tags": {
     "loading": "Cargando etiquetas...",
@@ -1624,6 +1635,25 @@
     "statTotal": "Total",
     "statDone": "Hecho",
     "statActive": "Activo",
-    "statOverdue": "Atrasado"
+    "statOverdue": "Atrasado",
+    "pastBriefWarning": "Este resumen es del {{date}} y puede que ya no refleje las tareas de hoy. Haz clic en Regenerar para un nuevo resumen."
+  },
+  "reports": {
+    "weeklyReview": "Revisión Semanal",
+    "inboxItems": "Elementos de la bandeja de entrada",
+    "stalledProjects": "Proyectos detenidos",
+    "waitingFor": "Esperando por",
+    "allClear": "Todo claro — no hay proyectos detenidos ni elementos en espera.",
+    "projectHealth": "Salud del Proyecto",
+    "allProjectsHaveActions": "Todos los proyectos activos tienen al menos una acción siguiente.",
+    "projectsWithNoNextAction": "el(los) proyecto(s) no tienen acción siguiente",
+    "completionTrends": "Tendencias de Finalización",
+    "noCompletions": "No hay tareas completadas en las últimas 8 semanas.",
+    "areaBalance": "Balance de Área",
+    "noAreaData": "No hay datos de área disponibles. Asigne tareas a áreas para ver el balance.",
+    "completed": "Completadas (30d)",
+    "open": "Abierto",
+    "streaks": "Rachas",
+    "areaBreakdown": "Desglose de Área"
   }
 }

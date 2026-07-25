@@ -66,7 +66,12 @@
     "kanban": "Papan Kanban",
     "addHabitAriaLabel": "Tambahkan Kebiasaan",
     "addHabitTitle": "Tambahkan Kebiasaan",
-    "toggleDarkMode": "Beralih ke Mode Gelap"
+    "toggleDarkMode": "Beralih ke Mode Gelap",
+    "insights": "Wawasan",
+    "boards": "Papan",
+    "bookmarks": "Tanda Buku",
+    "reports": "Laporan",
+    "productivityAssistant": "Asisten Produktivitas"
   },
   "navigation": {
     "home": "Beranda",
@@ -1100,7 +1105,10 @@
     "day": "hari",
     "days": "hari",
     "sharedUser": "Pengguna bersama",
-    "moreSharedUsers": "+{{count}} pengguna lagi"
+    "moreSharedUsers": "+{{count}} pengguna lagi",
+    "saveAsTemplate": "Simpan sebagai Template",
+    "pinToSidebar": "Sematkan ke sidebar",
+    "unpinFromSidebar": "Lepaskan dari sidebar"
   },
   "areas": {
     "title": "Area",
@@ -1139,7 +1147,10 @@
     "noteOptions": "Opsi catatan",
     "clickToEdit": "Klik untuk mengedit",
     "contentPlaceholderFocus": "Tulis catatan Anda... (Markdown didukung)",
-    "contentPlaceholderMarkdown": "Tulis konten Anda menggunakan format Markdown...\n\nContoh:\n# Judul\n**Teks tebal**\n*Teks miring*\n- Item daftar\n```kode```"
+    "contentPlaceholderMarkdown": "Tulis konten Anda menggunakan format Markdown...\n\nContoh:\n# Judul\n**Teks tebal**\n*Teks miring*\n- Item daftar\n```kode```",
+    "pinToSidebar": "Sematkan ke sidebar",
+    "unpinFromSidebar": "Lepaskan dari sidebar",
+    "save": "Simpan"
   },
   "tags": {
     "loading": "Memuat tag...",
@@ -1637,6 +1648,25 @@
     "statTotal": "Total",
     "statDone": "Selesai",
     "statActive": "Aktif",
-    "statOverdue": "Terlambat"
+    "statOverdue": "Terlambat",
+    "pastBriefWarning": "Brief ini berasal dari {{date}} dan mungkin tidak lagi mencerminkan tugas hari ini. Klik Regenerasi untuk brief yang baru."
+  },
+  "reports": {
+    "weeklyReview": "Tinjauan Mingguan",
+    "inboxItems": "Item Kotak Masuk",
+    "stalledProjects": "Proyek Terhenti",
+    "waitingFor": "Menunggu",
+    "allClear": "Semua jelas — tidak ada proyek terhenti atau item yang menunggu.",
+    "projectHealth": "Kesehatan Proyek",
+    "allProjectsHaveActions": "Semua proyek aktif memiliki setidaknya satu tindakan berikutnya.",
+    "projectsWithNoNextAction": "proyek tidak memiliki tindakan berikutnya",
+    "completionTrends": "Tren Penyelesaian",
+    "noCompletions": "Tidak ada tugas yang diselesaikan dalam 8 minggu terakhir.",
+    "areaBalance": "Saldo Area",
+    "noAreaData": "Tidak ada data area yang tersedia. Tetapkan tugas ke area untuk melihat saldo.",
+    "completed": "Diselesaikan (30h)",
+    "open": "Terbuka",
+    "streaks": "Rangkaian",
+    "areaBreakdown": "Rincian Area"
   }
 }

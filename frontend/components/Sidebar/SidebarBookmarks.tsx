@@ -53,7 +53,9 @@ const SidebarBookmarks: React.FC<SidebarBookmarksProps> = ({
     location,
 }) => {
     const { t } = useTranslation();
-    const [isExpanded, setIsExpanded] = useState(true);
+    const [isExpanded, setIsExpanded] = useState(() => {
+        return localStorage.getItem('bookmarksSidebarCollapsed') !== 'true';
+    });
 
     const projects = useStore((state) => state.projectsStore.projects);
     const setProjects = useStore((state) => state.projectsStore.setProjects);
@@ -135,7 +137,11 @@ const SidebarBookmarks: React.FC<SidebarBookmarksProps> = ({
         <div className={`flex flex-col space-y-1${isExpanded ? ' pb-3' : ''}`}>
             <div
                 className="group flex justify-between items-center px-4 py-2 uppercase rounded-md text-xs tracking-wider cursor-pointer hover:text-black dark:hover:text-white text-gray-700 dark:text-gray-300"
-                onClick={() => setIsExpanded((v) => !v)}
+                onClick={() => {
+                    const next = !isExpanded;
+                    setIsExpanded(next);
+                    localStorage.setItem('bookmarksSidebarCollapsed', String(!next));
+                }}
             >
                 <span className="flex items-center">
                     <BookmarkIcon className="h-5 w-5 mr-2" />

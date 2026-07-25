@@ -66,7 +66,12 @@
     "kanban": "Tablica Kanban",
     "addHabitAriaLabel": "Dodaj Nawyk",
     "addHabitTitle": "Dodaj Nawyk",
-    "toggleDarkMode": "Przełącz tryb ciemny"
+    "toggleDarkMode": "Przełącz tryb ciemny",
+    "insights": "Wnioski",
+    "boards": "Tablice",
+    "bookmarks": "Zakładki",
+    "reports": "Raporty",
+    "productivityAssistant": "Asystent produktywności"
   },
   "navigation": {
     "home": "Strona główna",
@@ -1100,7 +1105,10 @@
     "day": "dzień",
     "days": "dni",
     "sharedUser": "Udostępniony użytkownik",
-    "moreSharedUsers": "+{{count}} więcej użytkowników"
+    "moreSharedUsers": "+{{count}} więcej użytkowników",
+    "saveAsTemplate": "Zapisz jako szablon",
+    "pinToSidebar": "Przypnij do paska bocznego",
+    "unpinFromSidebar": "Odepnij od paska bocznego"
   },
   "areas": {
     "title": "Obszary",
@@ -1139,7 +1147,10 @@
     "noteOptions": "Opcje notatki",
     "clickToEdit": "Kliknij, aby edytować",
     "contentPlaceholderFocus": "Napisz swoją notatkę... (obsługuje Markdown)",
-    "contentPlaceholderMarkdown": "Napisz swoją treść używając formatowania Markdown...\n\nPrzykłady:\n# Nagłówek\n**Pogrubiony tekst**\n*Kursywa*\n- Element listy\n```kod```"
+    "contentPlaceholderMarkdown": "Napisz swoją treść używając formatowania Markdown...\n\nPrzykłady:\n# Nagłówek\n**Pogrubiony tekst**\n*Kursywa*\n- Element listy\n```kod```",
+    "pinToSidebar": "Przypnij do paska bocznego",
+    "unpinFromSidebar": "Odepnij od paska bocznego",
+    "save": "Zapisz"
   },
   "tags": {
     "loading": "Ładowanie tagów...",
@@ -1637,6 +1648,25 @@
     "statTotal": "Razem",
     "statDone": "Zrobione",
     "statActive": "Aktywne",
-    "statOverdue": "Przeterminowane"
+    "statOverdue": "Przeterminowane",
+    "pastBriefWarning": "Ten skrót pochodzi z {{date}} i może już nie odzwierciedlać dzisiejszych zadań. Kliknij Regeneruj, aby uzyskać nowy skrót."
+  },
+  "reports": {
+    "weeklyReview": "Cotygodniowy przegląd",
+    "inboxItems": "Elementy skrzynki odbiorczej",
+    "stalledProjects": "Zatrzymane projekty",
+    "waitingFor": "Czekam na",
+    "allClear": "Wszystko w porządku — brak zatrzymanych projektów lub oczekujących elementów.",
+    "projectHealth": "Stan projektu",
+    "allProjectsHaveActions": "Wszystkie aktywne projekty mają przynajmniej jedno następne działanie.",
+    "projectsWithNoNextAction": "projekt(y) nie mają następnego działania",
+    "completionTrends": "Trendy ukończenia",
+    "noCompletions": "Brak ukończonych zadań w ciągu ostatnich 8 tygodni.",
+    "areaBalance": "Bilans obszaru",
+    "noAreaData": "Brak danych obszarowych. Przypisz zadania do obszarów, aby zobaczyć bilans.",
+    "completed": "Ukończone (30d)",
+    "open": "Otwarte",
+    "streaks": "Seria",
+    "areaBreakdown": "Podział obszaru"
   }
 }

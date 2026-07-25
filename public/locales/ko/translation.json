@@ -66,7 +66,12 @@
     "kanban": "칸반 보드",
     "addHabitAriaLabel": "습관 추가",
     "addHabitTitle": "습관 추가",
-    "toggleDarkMode": "다크 모드 전환"
+    "toggleDarkMode": "다크 모드 전환",
+    "insights": "인사이트",
+    "boards": "보드",
+    "bookmarks": "북마크",
+    "reports": "보고서",
+    "productivityAssistant": "생산성 도우미"
   },
   "navigation": {
     "home": "홈",
@@ -1100,7 +1105,10 @@
     "day": "일",
     "days": "일",
     "sharedUser": "공유 사용자",
-    "moreSharedUsers": "+{{count}}명 더 보기"
+    "moreSharedUsers": "+{{count}}명 더 보기",
+    "saveAsTemplate": "템플릿으로 저장",
+    "pinToSidebar": "사이드바에 고정",
+    "unpinFromSidebar": "사이드바에서 고정 해제"
   },
   "areas": {
     "title": "영역",
@@ -1139,7 +1147,10 @@
     "noteOptions": "노트 옵션",
     "clickToEdit": "수정하려면 클릭",
     "contentPlaceholderFocus": "노트를 작성하세요... (Markdown 지원)",
-    "contentPlaceholderMarkdown": "Markdown 형식을 사용하여 내용을 작성하세요...\n\n예시:\n# 제목\n**굵은 텍스트**\n*기울임 텍스트*\n- 목록 항목\n```코드```"
+    "contentPlaceholderMarkdown": "Markdown 형식을 사용하여 내용을 작성하세요...\n\n예시:\n# 제목\n**굵은 텍스트**\n*기울임 텍스트*\n- 목록 항목\n```코드```",
+    "pinToSidebar": "사이드바에 고정",
+    "unpinFromSidebar": "사이드바에서 고정 해제",
+    "save": "저장"
   },
   "tags": {
     "loading": "태그 로딩 중...",
@@ -1637,6 +1648,25 @@
     "statTotal": "총계",
     "statDone": "완료",
     "statActive": "활성",
-    "statOverdue": "기한 초과"
+    "statOverdue": "기한 초과",
+    "pastBriefWarning": "이 브리프는 {{date}}의 것이며 오늘의 작업을 반영하지 않을 수 있습니다. 새 브리프를 위해 다시 생성 클릭하세요."
+  },
+  "reports": {
+    "weeklyReview": "주간 검토",
+    "inboxItems": "받은 편지함 항목",
+    "stalledProjects": "중단된 프로젝트",
+    "waitingFor": "대기 중",
+    "allClear": "모두 정리됨 — 중단된 프로젝트나 대기 중인 항목이 없습니다.",
+    "projectHealth": "프로젝트 상태",
+    "allProjectsHaveActions": "모든 활성 프로젝트에는 최소한 하나의 다음 작업이 있습니다.",
+    "projectsWithNoNextAction": "프로젝트(들)에 다음 작업이 없습니다.",
+    "completionTrends": "완료 추세",
+    "noCompletions": "지난 8주 동안 완료된 작업이 없습니다.",
+    "areaBalance": "영역 균형",
+    "noAreaData": "사용 가능한 영역 데이터가 없습니다. 균형을 보려면 작업을 영역에 할당하세요.",
+    "completed": "완료됨 (30일)",
+    "open": "열림",
+    "streaks": "연속",
+    "areaBreakdown": "영역 분석"
   }
 }

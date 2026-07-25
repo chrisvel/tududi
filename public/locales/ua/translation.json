@@ -66,7 +66,12 @@
     "kanban": "Дошка Канбан",
     "addHabitAriaLabel": "Додати звичку",
     "addHabitTitle": "Додати звичку",
-    "toggleDarkMode": "Переключити темний режим"
+    "toggleDarkMode": "Переключити темний режим",
+    "insights": "Інсайти",
+    "boards": "Дошки",
+    "bookmarks": "Закладки",
+    "reports": "Звіти",
+    "productivityAssistant": "Асистент продуктивності"
   },
   "navigation": {
     "home": "Головна",
@@ -321,7 +326,10 @@
     "day": "день",
     "days": "днів",
     "sharedUser": "Спільний користувач",
-    "moreSharedUsers": "+{{count}} користувачів"
+    "moreSharedUsers": "+{{count}} користувачів",
+    "saveAsTemplate": "Зберегти як шаблон",
+    "pinToSidebar": "Закріпити в бічній панелі",
+    "unpinFromSidebar": "Відкріпити з бічної панелі"
   },
   "forms": {
     "noteTitle": "Заголовок нотатки",
@@ -506,7 +514,10 @@
     "noteOptions": "Опції нотатки",
     "clickToEdit": "Натисніть, щоб редагувати",
     "contentPlaceholderFocus": "Напишіть вашу нотатку... (підтримується Markdown)",
-    "contentPlaceholderMarkdown": "Напишіть ваш вміст, використовуючи форматування Markdown...\n\nПриклади:\n# Заголовок\n**Жирний текст**\n*Курсивний текст*\n- Пункт списку\n```код```"
+    "contentPlaceholderMarkdown": "Напишіть ваш вміст, використовуючи форматування Markdown...\n\nПриклади:\n# Заголовок\n**Жирний текст**\n*Курсивний текст*\n- Пункт списку\n```код```",
+    "pinToSidebar": "Закріпити в бічній панелі",
+    "unpinFromSidebar": "Відкріпити з бічної панелі",
+    "save": "Зберегти"
   },
   "recurrence": {
     "none": "Немає",
@@ -1634,9 +1645,28 @@
     "priorityActions": "Пріоритетні дії",
     "taskInsightsTitle": "AI Інсайти",
     "projectInsightsTitle": "AI Інсайти",
-    "taskInsight": "Про це завдання"
+    "taskInsight": "Про це завдання",
+    "pastBriefWarning": "Цей бриф з {{date}} і може більше не відображати сьогоднішні завдання. Натисніть «Відновити», щоб отримати новий бриф."
   },
   "habits": {
     "completeHabit": "Завершити звичку"
+  },
+  "reports": {
+    "weeklyReview": "Щотижневий огляд",
+    "inboxItems": "Елементи вхідних повідомлень",
+    "stalledProjects": "Затримані проекти",
+    "waitingFor": "Очікування",
+    "allClear": "Все в порядку — немає затриманих проектів або елементів в очікуванні.",
+    "projectHealth": "Стан проекту",
+    "allProjectsHaveActions": "Усі активні проекти мають принаймні одну наступну дію.",
+    "projectsWithNoNextAction": "проект(и) не мають наступної дії",
+    "completionTrends": "Тенденції завершення",
+    "noCompletions": "Немає завершених завдань за останні 8 тижнів.",
+    "areaBalance": "Баланс області",
+    "noAreaData": "Дані про області недоступні. Призначте завдання для областей, щоб побачити баланс.",
+    "completed": "Завершено (30 дн.)",
+    "open": "Відкрито",
+    "streaks": "Серії",
+    "areaBreakdown": "Розподіл по областях"
   }
 }

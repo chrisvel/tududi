@@ -66,7 +66,12 @@
     "kanban": "لوحة كانبان",
     "addHabitAriaLabel": "إضافة عادة",
     "addHabitTitle": "إضافة عادة",
-    "toggleDarkMode": "تبديل الوضع المظلم"
+    "toggleDarkMode": "تبديل الوضع المظلم",
+    "insights": "رؤى",
+    "boards": "لوحات",
+    "bookmarks": "علامات مرجعية",
+    "reports": "تقارير",
+    "productivityAssistant": "مساعد الإنتاجية"
   },
   "navigation": {
     "home": "الرئيسية",
@@ -1100,7 +1105,10 @@
     "day": "يوم",
     "days": "أيام",
     "sharedUser": "مستخدم مشارك",
-    "moreSharedUsers": "+{{count}} مستخدمين آخرين"
+    "moreSharedUsers": "+{{count}} مستخدمين آخرين",
+    "saveAsTemplate": "حفظ كقالب",
+    "pinToSidebar": "تثبيت في الشريط الجانبي",
+    "unpinFromSidebar": "إلغاء تثبيت من الشريط الجانبي"
   },
   "areas": {
     "title": "المناطق",
@@ -1139,7 +1147,10 @@
     "noteOptions": "خيارات الملاحظة",
     "clickToEdit": "انقر للتعديل",
     "contentPlaceholderFocus": "اكتب ملاحظتك... (يدعم Markdown)",
-    "contentPlaceholderMarkdown": "اكتب محتواك باستخدام تنسيق Markdown...\n\nأمثلة:\n# عنوان\n**نص عريض**\n*نص مائل*\n- عنصر قائمة\n```كود```"
+    "contentPlaceholderMarkdown": "اكتب محتواك باستخدام تنسيق Markdown...\n\nأمثلة:\n# عنوان\n**نص عريض**\n*نص مائل*\n- عنصر قائمة\n```كود```",
+    "pinToSidebar": "تثبيت في الشريط الجانبي",
+    "unpinFromSidebar": "إلغاء تثبيت من الشريط الجانبي",
+    "save": "حفظ"
   },
   "tags": {
     "loading": "جاري تحميل العلامات...",
@@ -1637,6 +1648,25 @@
     "statTotal": "الإجمالي",
     "statDone": "تم",
     "statActive": "نشط",
-    "statOverdue": "متأخر"
+    "statOverdue": "متأخر",
+    "pastBriefWarning": "هذه الموجزة من {{date}} وقد لا تعكس مهام اليوم. انقر على إعادة توليد للحصول على موجز جديد."
+  },
+  "reports": {
+    "weeklyReview": "مراجعة أسبوعية",
+    "inboxItems": "عناصر البريد الوارد",
+    "stalledProjects": "مشاريع متوقفة",
+    "waitingFor": "في انتظار",
+    "allClear": "كل شيء واضح — لا توجد مشاريع متوقفة أو عناصر في الانتظار.",
+    "projectHealth": "صحة المشروع",
+    "allProjectsHaveActions": "جميع المشاريع النشطة لديها على الأقل إجراء واحد قادم.",
+    "projectsWithNoNextAction": "المشروع(ات) ليس لديها إجراء قادم",
+    "completionTrends": "اتجاهات الإنجاز",
+    "noCompletions": "لا توجد مهام مكتملة في الأسابيع الثمانية الماضية.",
+    "areaBalance": "توازن المنطقة",
+    "noAreaData": "لا توجد بيانات منطقة متاحة. قم بتعيين مهام للمناطق لرؤية التوازن.",
+    "completed": "مكتمل (30 يوم)",
+    "open": "مفتوح",
+    "streaks": "سلاسل",
+    "areaBreakdown": "تحليل المنطقة"
   }
 }
