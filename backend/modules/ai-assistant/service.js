@@ -17,16 +17,34 @@ const STATUS_LABELS = {
 };
 
 function getOpenAIClient() {
-    const apiKey = process.env.OPENAI_API_KEY;
+    const apiKey = process.env.LLM_API_KEY || process.env.OPENAI_API_KEY;
     if (!apiKey) {
-        throw new Error('OPENAI_API_KEY environment variable is not set');
+        throw new Error(
+            'LLM_API_KEY (or OPENAI_API_KEY) environment variable is not set'
+        );
     }
-    return new OpenAI({ apiKey });
+    const options = { apiKey };
+    const baseURL = process.env.LLM_BASE_URL || process.env.OPENAI_BASE_URL;
+    if (baseURL) {
+        options.baseURL = baseURL;
+    }
+    return new OpenAI(options);
+}
+
+function getAIModel() {
+    return (
+        process.env.LLM_MODEL || process.env.TUDUDI_AI_MODEL || 'gpt-4o-mini'
+    );
+}
+
+function extractJSON(raw) {
+    const fenced = raw.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+    return fenced ? fenced[1] : raw;
 }
 
 async function fetchUserContext(userId) {
     const user = await User.findByPk(userId, {
-        attributes: ['id', 'timezone', 'email'],
+        attributes: ['id', 'timezone', 'email', 'ai_profile'],
     });
     if (!user) throw new Error('User not found');
 
@@ -69,6 +87,11 @@ function buildContextSummary({ user, timezone, goals, projects, metrics }) {
 
     lines.push(`# User Context`);
     lines.push(`Date: ${dateStr} | Time: ${timeStr} | Timezone: ${timezone}`);
+    if (user.ai_profile) {
+        lines.push('');
+        lines.push(`## About This User`);
+        lines.push(user.ai_profile);
+    }
     lines.push('');
 
     // Goals
@@ -237,19 +260,20 @@ Rules:
 - Return only the JSON object, no other text`;
 
     const response = await client.chat.completions.create({
-        model: 'gpt-4o-mini',
+        model: getAIModel(),
         messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: contextSummary },
         ],
-        max_tokens: 500,
+        max_tokens: 1500,
+        response_format: { type: 'json_object' },
     });
 
     const raw = response.choices[0]?.message?.content || '{}';
     console.log('[AI Assistant] raw response:', raw);
     let parsed;
     try {
-        parsed = JSON.parse(raw);
+        parsed = JSON.parse(extractJSON(raw));
     } catch {
         parsed = {
             focus: raw,
@@ -436,18 +460,19 @@ Rules:
 - Return only the JSON object, no other text`;
 
     const response = await client.chat.completions.create({
-        model: 'gpt-4o-mini',
+        model: getAIModel(),
         messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: lines.join('\n') },
         ],
         max_tokens: 1000,
+        response_format: { type: 'json_object' },
     });
 
     const raw = response.choices[0]?.message?.content || '{}';
     let parsed;
     try {
-        parsed = JSON.parse(raw);
+        parsed = JSON.parse(extractJSON(raw));
     } catch {
         parsed = {};
     }
@@ -565,18 +590,19 @@ Rules:
 - Return only the JSON object, no other text`;
 
     const response = await client.chat.completions.create({
-        model: 'gpt-4o-mini',
+        model: getAIModel(),
         messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: lines.join('\n') },
         ],
         max_tokens: 600,
+        response_format: { type: 'json_object' },
     });
 
     const raw = response.choices[0]?.message?.content || '{}';
     let parsed;
     try {
-        parsed = JSON.parse(raw);
+        parsed = JSON.parse(extractJSON(raw));
     } catch {
         parsed = {};
     }

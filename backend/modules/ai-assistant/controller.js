@@ -4,6 +4,23 @@ const { getAuthenticatedUserId } = require('../../utils/request-utils');
 const aiAssistantService = require('./service');
 
 const controller = {
+    getConfig(req, res) {
+        const userId = getAuthenticatedUserId(req);
+        if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+
+        const apiKeySet = !!(
+            process.env.LLM_API_KEY || process.env.OPENAI_API_KEY
+        );
+        const baseUrl =
+            process.env.LLM_BASE_URL || process.env.OPENAI_BASE_URL || null;
+        const model =
+            process.env.LLM_MODEL ||
+            process.env.TUDUDI_AI_MODEL ||
+            'gpt-4o-mini';
+
+        res.json({ api_key_set: apiKeySet, base_url: baseUrl, model });
+    },
+
     async getCachedBrief(req, res, next) {
         try {
             const userId = getAuthenticatedUserId(req);
