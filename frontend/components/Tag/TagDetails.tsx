@@ -8,11 +8,11 @@ import {
     TrashIcon,
     TagIcon,
     MagnifyingGlassIcon,
-    BookmarkIcon as BookmarkSolidIcon,
+    MapPinIcon as MapPinSolidIcon,
 } from '@heroicons/react/24/solid';
 import {
     FolderIcon as FolderOutlineIcon,
-    BookmarkIcon as BookmarkOutlineIcon,
+    MapPinIcon as MapPinOutlineIcon,
 } from '@heroicons/react/24/outline';
 import { Task } from '../../entities/Task';
 import { Note } from '../../entities/Note';
@@ -547,8 +547,8 @@ const TagDetails: React.FC = () => {
                                 title={tag.pinned ? t('tags.unpinFromSidebar', 'Unpin from sidebar') : t('tags.pinToSidebar', 'Pin to sidebar')}
                             >
                                 {tag.pinned
-                                    ? <BookmarkSolidIcon className="h-5 w-5" />
-                                    : <BookmarkOutlineIcon className="h-5 w-5" />
+                                    ? <MapPinSolidIcon className="h-5 w-5" />
+                                    : <MapPinOutlineIcon className="h-5 w-5" />
                                 }
                             </button>
                             {tag.tag_type !== 'system' && (

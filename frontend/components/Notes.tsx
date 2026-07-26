@@ -17,7 +17,7 @@ import {
     EllipsisVerticalIcon,
     XMarkIcon,
     ArrowsPointingOutIcon,
-    BookmarkIcon,
+    MapPinIcon,
 } from '@heroicons/react/24/outline';
 import { useToast } from './Shared/ToastContext';
 import { Link, useParams, useNavigate } from 'react-router-dom';
@@ -896,7 +896,7 @@ const Notes: React.FC = () => {
                                                             }}
                                                             className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
                                                         >
-                                                            <BookmarkIcon className="h-4 w-4" />
+                                                            <MapPinIcon className="h-4 w-4" />
                                                             {editingNote.pin_to_sidebar
                                                                 ? t('notes.unpinFromSidebar', 'Unpin from sidebar')
                                                                 : t('notes.pinToSidebar', 'Pin to sidebar')}
@@ -1292,7 +1292,7 @@ const Notes: React.FC = () => {
                                                         }}
                                                         className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
                                                     >
-                                                        <BookmarkIcon className="h-4 w-4" />
+                                                        <MapPinIcon className="h-4 w-4" />
                                                         {previewNote.pin_to_sidebar
                                                             ? t('notes.unpinFromSidebar', 'Unpin from sidebar')
                                                             : t('notes.pinToSidebar', 'Pin to sidebar')}

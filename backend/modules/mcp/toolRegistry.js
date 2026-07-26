@@ -8,6 +8,7 @@ const { registerHabitTools } = require('./tools/habitTools');
 const { registerAreaTools } = require('./tools/areaTools');
 const { registerTagTools } = require('./tools/tagTools');
 const { registerNoteTools } = require('./tools/noteTools');
+const { registerGoalTools } = require('./tools/goalTools');
 
 /**
  * Register all MCP tools with the server
@@ -24,6 +25,7 @@ function registerAllTools(server, context, tools) {
     registerAreaTools(server, context, tools);
     registerTagTools(server, context, tools);
     registerNoteTools(server, context, tools);
+    registerGoalTools(server, context, tools);
 }
 
 module.exports = { registerAllTools };

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Location } from 'react-router-dom';
 import {
-    BookmarkIcon,
+    MapPinIcon,
     FolderIcon,
     BookOpenIcon,
     TagIcon,
@@ -138,12 +138,12 @@ const SidebarBookmarks: React.FC<SidebarBookmarksProps> = ({
                 onClick={() => setIsExpanded((v) => !v)}
             >
                 <span className="flex items-center">
-                    <BookmarkIcon className="h-5 w-5 mr-2" />
-                    {t('sidebar.bookmarks', 'Bookmarks')}
+                    <MapPinIcon className="h-5 w-5 mr-2" />
+                    {t('sidebar.bookmarks', 'Pinned Items')}
                 </span>
                 <button
                     className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none"
-                    aria-label={isExpanded ? 'Collapse bookmarks' : 'Expand bookmarks'}
+                    aria-label={isExpanded ? 'Collapse pinned items' : 'Expand pinned items'}
                 >
                     {isExpanded ? (
                         <ChevronDownIcon className="h-4 w-4" />

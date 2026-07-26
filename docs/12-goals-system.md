@@ -254,11 +254,28 @@ is_maintenance BOOLEAN  DEFAULT false
 | Service | `/backend/modules/goals/service.js` |
 | Controller | `/backend/modules/goals/controller.js` |
 | Routes | `/backend/modules/goals/routes.js` |
+| MCP tools | `/backend/modules/mcp/tools/goalTools.js` |
 | Frontend entity | `/frontend/entities/Goal.ts` |
 | Frontend API client | `/frontend/utils/goalsService.ts` |
 | Goal dropdown component | `/frontend/components/Shared/GoalDropdown.tsx` |
 | Area detail page (primary UI) | `/frontend/components/Area/AreaDetails.tsx` |
 | Project modal (goal picker) | `/frontend/components/Project/ProjectModal.tsx` |
+
+---
+
+## MCP Tools
+
+Goals are accessible via the MCP integration using five tools:
+
+| Tool | Description |
+|------|-------------|
+| `list_goals` | List goals, optionally filtered by `area_id` or `status` |
+| `get_goal` | Get a single goal by UID |
+| `create_goal` | Create a new goal (requires `title` and `area_id`) |
+| `update_goal` | Update title, why, horizon, target_date, or status |
+| `delete_goal` | Delete a goal (linked projects become unlinked) |
+
+See [MCP Integration](14-mcp-integration.md#goals-tools-5) for full parameter details.
 
 ---
 
@@ -268,6 +285,7 @@ is_maintenance BOOLEAN  DEFAULT false
 - [Projects](06-projects.md) - Projects carry `goal_id` and `is_maintenance` fields
 - [Database & Migrations](database.md) - Migration workflow
 - [Backend Patterns](backend-patterns.md) - Module structure followed by the goals module
+- [MCP Integration](14-mcp-integration.md) - AI tool access to goals via Model Context Protocol
 
 ---
 
