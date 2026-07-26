@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Location } from 'react-router-dom';
 import {
-    MapPinIcon,
     FolderIcon,
     BookOpenIcon,
     TagIcon,
@@ -9,6 +8,7 @@ import {
     ChevronRightIcon,
     XMarkIcon,
 } from '@heroicons/react/24/outline';
+import PushPinIcon from '../Shared/Icons/PushPinIcon';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../../store/useStore';
 import { updateProject } from '../../utils/projectsService';
@@ -138,7 +138,7 @@ const SidebarBookmarks: React.FC<SidebarBookmarksProps> = ({
                 onClick={() => setIsExpanded((v) => !v)}
             >
                 <span className="flex items-center">
-                    <MapPinIcon className="h-5 w-5 mr-2" />
+                    <PushPinIcon className="h-5 w-5 mr-2" />
                     {t('sidebar.bookmarks', 'Pinned Items')}
                 </span>
                 <button

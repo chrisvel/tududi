@@ -8,12 +8,11 @@ import {
     TrashIcon,
     TagIcon,
     MagnifyingGlassIcon,
-    MapPinIcon as MapPinSolidIcon,
 } from '@heroicons/react/24/solid';
 import {
     FolderIcon as FolderOutlineIcon,
-    MapPinIcon as MapPinOutlineIcon,
 } from '@heroicons/react/24/outline';
+import PushPinIcon from '../Shared/Icons/PushPinIcon';
 import { Task } from '../../entities/Task';
 import { Note } from '../../entities/Note';
 import { Project, ProjectStatus } from '../../entities/Project';
@@ -547,8 +546,8 @@ const TagDetails: React.FC = () => {
                                 title={tag.pinned ? t('tags.unpinFromSidebar', 'Unpin from sidebar') : t('tags.pinToSidebar', 'Pin to sidebar')}
                             >
                                 {tag.pinned
-                                    ? <MapPinSolidIcon className="h-5 w-5" />
-                                    : <MapPinOutlineIcon className="h-5 w-5" />
+                                    ? <PushPinIcon className="h-5 w-5" filled />
+                                    : <PushPinIcon className="h-5 w-5" />
                                 }
                             </button>
                             {tag.tag_type !== 'system' && (
