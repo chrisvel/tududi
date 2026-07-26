@@ -127,6 +127,11 @@ EMAIL_SMTP_PASSWORD=pass
 EMAIL_FROM_ADDRESS=noreply@example.com
 EMAIL_FROM_NAME=Tududi
 
+# Optional - AI Assistant (any OpenAI-compatible provider)
+LLM_API_KEY=sk-...            # or OPENAI_API_KEY as fallback
+LLM_BASE_URL=http://localhost:11434/v1  # omit to use OpenAI; set for Ollama etc.
+LLM_MODEL=gpt-4o-mini         # model name for the chosen provider
+
 # Optional - Integrations
 DISABLE_TELEGRAM=false
 GOOGLE_CLIENT_ID=your-google-oauth-client-id

@@ -148,6 +148,7 @@ class UsersService {
             ui_settings,
             notification_preferences,
             keyboard_shortcuts,
+            ai_profile,
             currentPassword,
             newPassword,
         } = data;
@@ -191,6 +192,8 @@ class UsersService {
             allowedUpdates.notification_preferences = notification_preferences;
         if (keyboard_shortcuts !== undefined)
             allowedUpdates.keyboard_shortcuts = keyboard_shortcuts;
+        if (ai_profile !== undefined)
+            allowedUpdates.ai_profile = ai_profile || null;
 
         // Handle password change/set if provided
         if (newPassword) {

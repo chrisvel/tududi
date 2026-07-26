@@ -24,6 +24,7 @@ const PROFILE_ATTRIBUTES = [
     'sidebar_settings',
     'notification_preferences',
     'keyboard_shortcuts',
+    'ai_profile',
 ];
 
 const PROFILE_UPDATE_ATTRIBUTES = [
@@ -43,6 +44,7 @@ const PROFILE_UPDATE_ATTRIBUTES = [
     'features',
     'notification_preferences',
     'keyboard_shortcuts',
+    'ai_profile',
 ];
 
 class UsersRepository extends BaseRepository {

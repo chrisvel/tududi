@@ -226,6 +226,11 @@ module.exports = (sequelize) => {
                 allowNull: true,
                 defaultValue: null,
             },
+            ai_profile: {
+                type: DataTypes.TEXT,
+                allowNull: true,
+                defaultValue: null,
+            },
             email_verified: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,
