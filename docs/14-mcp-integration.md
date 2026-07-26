@@ -19,9 +19,15 @@ This guide explains how to configure and use the Model Context Protocol (MCP) in
     - [HTTP Mode (Remote)](#http-mode-remote)
 - [Available Tools](#available-tools)
     - [Tasks Tools (8)](#tasks-tools-8)
-    - [Projects Tools (3)](#projects-tools-3)
-    - [Inbox Tools (2)](#inbox-tools-2)
-    - [Misc Tools (3)](#misc-tools-3)
+    - [Projects Tools (5)](#projects-tools-5)
+    - [Inbox Tools (6)](#inbox-tools-6)
+    - [Views Tools (5)](#views-tools-5)
+    - [Areas Tools (5)](#areas-tools-5)
+    - [Notes Tools (5)](#notes-tools-5)
+    - [Tags Tools (5)](#tags-tools-5)
+    - [Habits Tools (9)](#habits-tools-9)
+    - [People Tools (5)](#people-tools-5)
+    - [Misc Tools (1)](#misc-tools-1)
 - [Claude Desktop Setup](#claude-desktop-setup)
 - [Cursor Setup](#cursor-setup)
 - [VS Code + Continue Setup](#vs-code--continue-setup)
@@ -37,7 +43,7 @@ Tududi's MCP integration allows AI assistants (Claude, Cursor, VS Code extension
 
 **Key Features:**
 
-- **16 Tools:** Complete CRUD operations for tasks, projects, and inbox
+- **54 Tools:** Complete CRUD operations for tasks, projects, inbox, views, areas, notes, tags, habits, and people
 - **Secure Authentication:** API token-based authentication with user isolation
 - **Local or Remote:** Two transport modes for different use cases
 - **Feature Flag:** Opt-in via `FF_ENABLE_MCP` to control availability
@@ -173,7 +179,7 @@ Tududi supports two transport modes for different deployment scenarios:
 
 ## Available Tools
 
-Tududi exposes 16 MCP tools organized into 4 categories. All tools are scoped to the authenticated user — you can never access another user's data.
+Tududi exposes 54 MCP tools organized into 10 categories. All tools are scoped to the authenticated user — you can never access another user's data.
 
 ### Tasks Tools (8)
 
@@ -351,7 +357,7 @@ Get productivity metrics and task statistics.
 
 ---
 
-### Projects Tools (3)
+### Projects Tools (5)
 
 #### `list_projects`
 
@@ -363,6 +369,17 @@ List projects with optional filtering.
 | `status` | string | No | — | Filter: `not_started`, `planned`, `in_progress`, `waiting`, `done`, `cancelled`, `all` |
 | `area_id` | number | No | — | Filter by area ID |
 | `limit` | number | No | 30 | Maximum projects to return |
+
+---
+
+#### `get_project`
+
+Get a single project by UID.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Project UID |
 
 ---
 
@@ -400,7 +417,18 @@ Update an existing project.
 
 ---
 
-### Inbox Tools (2)
+#### `delete_project`
+
+Permanently delete a project and all its tasks (notes are orphaned).
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Project UID |
+
+---
+
+### Inbox Tools (6)
 
 #### `list_inbox`
 
@@ -426,15 +454,484 @@ Add an item to the inbox.
 
 ---
 
-### Misc Tools (3)
+#### `get_inbox_item`
+
+Get a single inbox item by ID.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number | Yes | Inbox item ID |
+
+---
+
+#### `update_inbox_item`
+
+Update an existing inbox item.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number | Yes | Inbox item ID |
+| `content` | string | No | New content |
+
+---
+
+#### `process_inbox_item`
+
+Convert an inbox item into a task, note, or project.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number | Yes | Inbox item ID |
+| `type` | string | Yes | `task`, `note`, or `project` |
+
+---
+
+#### `delete_inbox_item`
+
+Delete an inbox item.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number | Yes | Inbox item ID |
+
+---
+
+### Views Tools (5)
+
+#### `list_views`
+
+List saved smart views (saved searches).
+
+**Parameters:**
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `pinned_only` | boolean | No | `false` | Return only pinned views |
+
+**Returns:** View objects with name, search query, filter config, and pin state.
+
+---
+
+#### `get_view`
+
+Get a specific smart view by UID.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | View UID |
+
+---
+
+#### `create_view`
+
+Create a new smart view (saved search).
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `name` | string | Yes | View name |
+| `search_query` | string | No | Text search query |
+| `is_pinned` | boolean | No | Pin to sidebar (default: false) |
+| `priority` | string | No | Priority filter: `low`, `medium`, `high` |
+| `due` | string | No | Due date filter (e.g. `today`, `this_week`) |
+| `tags` | string[] | No | Tag filters |
+
+**Example:**
+
+```json
+{
+    "name": "High priority this week",
+    "priority": "high",
+    "due": "this_week",
+    "is_pinned": true
+}
+```
+
+---
+
+#### `update_view`
+
+Update an existing smart view.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | View UID |
+| `name` | string | No | New name |
+| `search_query` | string | No | New search query |
+| `is_pinned` | boolean | No | Pin or unpin from sidebar |
+| `priority` | string | No | New priority filter |
+| `due` | string | No | New due date filter |
+| `tags` | string[] | No | New tag filters |
+
+---
+
+#### `delete_view`
+
+Delete a smart view.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | View UID |
+
+---
+
+### Areas Tools (5)
 
 #### `list_areas`
 
 List all organizational areas. No parameters.
 
+---
+
+#### `get_area`
+
+Get a specific area by UID.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Area UID |
+
+---
+
+#### `create_area`
+
+Create a new organizational area.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `name` | string | Yes | Area name |
+| `description` | string | No | Optional description |
+| `color` | string | No | Hex color (e.g. `#ff6b6b`) |
+
+---
+
+#### `update_area`
+
+Update an existing area.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Area UID |
+| `name` | string | No | New name |
+| `description` | string | No | New description |
+| `color` | string | No | New hex color or empty string to remove |
+
+---
+
+#### `delete_area`
+
+Delete an area. Projects are orphaned, not deleted.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Area UID |
+
+---
+
+### Notes Tools (5)
+
+#### `list_notes`
+
+List notes with optional filtering. No required parameters.
+
+---
+
+#### `get_note`
+
+Get a specific note by UID.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Note UID |
+
+---
+
+#### `create_note`
+
+Create a new note.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `title` | string | Yes | Note title |
+| `content` | string | No | Note body (Markdown supported) |
+| `project_id` | number | No | Link to a project |
+| `tags` | string[] | No | Array of tag names |
+
+---
+
+#### `update_note`
+
+Update an existing note.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Note UID |
+| `title` | string | No | New title |
+| `content` | string | No | New content |
+
+---
+
+#### `delete_note`
+
+Delete a note permanently.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Note UID |
+
+---
+
+### Tags Tools (5)
+
 #### `list_tags`
 
 List all tags. No parameters.
+
+---
+
+#### `get_tag`
+
+Get a specific tag by ID.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number | Yes | Tag ID |
+
+---
+
+#### `create_tag`
+
+Create a new tag.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `name` | string | Yes | Tag name |
+
+---
+
+#### `update_tag`
+
+Rename a tag.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number | Yes | Tag ID |
+| `name` | string | Yes | New tag name |
+
+---
+
+#### `delete_tag`
+
+Delete a tag. Removes it from all entities.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number | Yes | Tag ID |
+
+---
+
+### Habits Tools (9)
+
+#### `list_habits`
+
+List all habits. No required parameters.
+
+---
+
+#### `get_habit`
+
+Get a specific habit by UID.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Habit UID |
+
+---
+
+#### `create_habit`
+
+Create a new habit.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `name` | string | Yes | Habit name |
+| `frequency` | string | No | Recurrence pattern |
+
+---
+
+#### `update_habit`
+
+Update an existing habit.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Habit UID |
+| `name` | string | No | New name |
+
+---
+
+#### `delete_habit`
+
+Delete a habit and all its completions.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Habit UID |
+
+---
+
+#### `log_habit_completion`
+
+Record a completion entry for a habit.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Habit UID |
+| `completed_at` | string | No | ISO 8601 datetime (defaults to now) |
+
+---
+
+#### `get_habit_completions`
+
+Get completion history for a habit.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Habit UID |
+
+---
+
+#### `delete_habit_completion`
+
+Remove a specific completion entry.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number | Yes | Completion ID |
+
+---
+
+#### `get_habit_stats`
+
+Get aggregated statistics for a habit.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Habit UID |
+
+---
+
+### People Tools (5)
+
+#### `list_people`
+
+List people (contacts) with optional filtering.
+
+**Parameters:**
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `archived` | boolean | No | `false` | Include archived contacts |
+| `relationship_type` | string | No | — | Filter by type: `colleague`, `friend`, `family`, `other` |
+| `sort` | string | No | `name` | Sort order: `name` or `created_at` |
+
+**Returns:** Contact objects with name, email, phone, relationship type, notes, and color.
+
+---
+
+#### `get_person`
+
+Get a specific person by UID, including their assigned task count.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Person UID |
+
+---
+
+#### `create_person`
+
+Create a new person/contact.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `name` | string | Yes | Full name |
+| `email` | string | No | Email address |
+| `phone` | string | No | Phone number |
+| `relationship_type` | string | No | `colleague`, `friend`, `family`, `other` (default: `other`) |
+| `notes` | string | No | Free-text notes |
+| `color` | string | No | Hex color (e.g. `#4f9ef8`) |
+
+**Example:**
+
+```json
+{
+    "name": "Alice Smith",
+    "email": "alice@example.com",
+    "relationship_type": "colleague",
+    "color": "#4f9ef8"
+}
+```
+
+---
+
+#### `update_person`
+
+Update an existing person/contact.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Person UID |
+| `name` | string | No | New name |
+| `email` | string | No | New email |
+| `phone` | string | No | New phone |
+| `relationship_type` | string | No | New relationship type |
+| `notes` | string | No | New notes |
+| `color` | string | No | New hex color or empty string to remove |
+| `archived` | boolean | No | Archive or unarchive |
+
+---
+
+#### `delete_person`
+
+Permanently delete a person/contact.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Person UID |
+
+---
+
+### Misc Tools (1)
 
 #### `search`
 
@@ -748,10 +1245,16 @@ FF_ENABLE_MCP=true
 | `backend/modules/mcp/server.js`               | Stdio MCP server entry point  |
 | `backend/modules/mcp/httpTransport.js`        | HTTP transport handler        |
 | `backend/modules/mcp/toolRegistry.js`         | Registers all tool categories |
-| `backend/modules/mcp/tools/taskTools.js`      | Task-related tools (8)        |
-| `backend/modules/mcp/tools/projectTools.js`   | Project tools (3)             |
-| `backend/modules/mcp/tools/inboxTools.js`     | Inbox tools (2)               |
-| `backend/modules/mcp/tools/miscTools.js`      | Area, tag, search tools (3)   |
+| `backend/modules/mcp/tools/taskTools.js`      | Task tools (8)                |
+| `backend/modules/mcp/tools/projectTools.js`   | Project tools (5)             |
+| `backend/modules/mcp/tools/inboxTools.js`     | Inbox tools (6)               |
+| `backend/modules/mcp/tools/viewTools.js`      | Smart view tools (5)          |
+| `backend/modules/mcp/tools/areaTools.js`      | Area tools (5)                |
+| `backend/modules/mcp/tools/noteTools.js`      | Note tools (5)                |
+| `backend/modules/mcp/tools/tagTools.js`       | Tag tools (5)                 |
+| `backend/modules/mcp/tools/habitTools.js`     | Habit tools (9)               |
+| `backend/modules/mcp/tools/peopleTools.js`    | People/contact tools (5)      |
+| `backend/modules/mcp/tools/miscTools.js`      | Search tool (1)               |
 | `backend/modules/mcp/middleware.js`           | API token authentication      |
 | `backend/modules/mcp/controller.js`           | REST API endpoints            |
 | `backend/modules/mcp/routes.js`               | Express route definitions     |
@@ -759,6 +1262,6 @@ FF_ENABLE_MCP=true
 
 ---
 
-- **Document Version:** 1.0.0
-- **Last Updated:** 2026-04-26
+- **Document Version:** 1.1.0
+- **Last Updated:** 2026-07-26
 - **Minimum Tududi Version:** v1.0.0 (released 2026-03-27)
