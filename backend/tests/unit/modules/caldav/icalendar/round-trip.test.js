@@ -27,8 +27,10 @@ describe('CalDAV Round-Trip Conversion', () => {
         expect(parsedTask.status).toBe(originalTask.status);
         expect(parsedTask.priority).toBe(originalTask.priority);
         expect(parsedTask.note).toBe(originalTask.note);
+        // DATE-only values are stored as end-of-day in UTC (the fallback timezone
+        // when no user timezone is passed to the parser).
         expect(parsedTask.due_date.toISOString()).toBe(
-            '2026-06-01T00:00:00.000Z'
+            '2026-06-01T23:59:59.999Z'
         );
         expect(parsedTask.defer_until.toISOString()).toBe(
             '2026-05-25T00:00:00.000Z'
@@ -50,9 +52,10 @@ describe('CalDAV Round-Trip Conversion', () => {
         const vtodoString = await serializeTaskToVTODO(originalTask);
         const parsedTask = await parseVTODOToTask(vtodoString);
 
-        // DUE/DTSTART are always emitted as VALUE=DATE - time is stripped
+        // DUE/DTSTART are always emitted as VALUE=DATE; after parsing the date
+        // is stored as end-of-day in UTC (fallback when no user timezone provided).
         expect(parsedTask.due_date.toISOString()).toBe(
-            '2026-06-04T00:00:00.000Z'
+            '2026-06-04T23:59:59.999Z'
         );
         expect(parsedTask.defer_until.toISOString()).toBe(
             '2026-06-04T00:00:00.000Z'

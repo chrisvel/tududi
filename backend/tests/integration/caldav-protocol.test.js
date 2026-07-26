@@ -145,10 +145,12 @@ describe('CalDAV Protocol - Phase 3', () => {
 
         // eslint-disable-next-line jest/expect-expect
         test('should accept requests with valid HTTP Basic Auth', async () => {
-            await request(app)
+            // Collection GET now returns 200 with iCalendar data and an ETag.
+            const response = await request(app)
                 .get('/caldav/caldav@test.com/tasks/')
                 .set('Authorization', authHeader)
-                .expect(207);
+                .expect(200);
+            expect(response.headers.etag).toBeDefined();
         });
 
         // eslint-disable-next-line jest/expect-expect

@@ -4,8 +4,12 @@ const {
     icalToTududiPriority,
 } = require('./field-mappings');
 const { parseRRULE } = require('./rrule-parser');
+const {
+    processDueDateForStorage,
+    processDeferUntilForStorage,
+} = require('../../../utils/timezone-utils');
 
-async function parseVTODOToTask(vtodoString) {
+async function parseVTODOToTask(vtodoString, userTimezone) {
     try {
         if (!vtodoString || typeof vtodoString !== 'string') {
             throw new Error('Invalid VTODO data: expected a non-empty string');
@@ -81,11 +85,13 @@ async function parseVTODOToTask(vtodoString) {
         const due = vtodo.getFirstPropertyValue('due');
         if (due) {
             if (due.isDate) {
-                const year = due.year;
-                const month = due.month - 1;
-                const day = due.day;
-                task.due_date = new Date(
-                    Date.UTC(year, month, day, 0, 0, 0, 0)
+                // DATE-only values are timezone-independent; store as end-of-day
+                // in the user's timezone so Tududi's date display is consistent
+                // with tasks created via the web UI.
+                const dateStr = `${due.year}-${String(due.month).padStart(2, '0')}-${String(due.day).padStart(2, '0')}`;
+                task.due_date = processDueDateForStorage(
+                    dateStr,
+                    userTimezone || 'UTC'
                 );
             } else {
                 task.due_date = due.toJSDate();
@@ -95,11 +101,10 @@ async function parseVTODOToTask(vtodoString) {
         const dtstart = vtodo.getFirstPropertyValue('dtstart');
         if (dtstart) {
             if (dtstart.isDate) {
-                const year = dtstart.year;
-                const month = dtstart.month - 1;
-                const day = dtstart.day;
-                task.defer_until = new Date(
-                    Date.UTC(year, month, day, 0, 0, 0, 0)
+                const dateStr = `${dtstart.year}-${String(dtstart.month).padStart(2, '0')}-${String(dtstart.day).padStart(2, '0')}`;
+                task.defer_until = processDeferUntilForStorage(
+                    dateStr,
+                    userTimezone || 'UTC'
                 );
             } else {
                 task.defer_until = dtstart.toJSDate();
