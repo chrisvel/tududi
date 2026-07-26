@@ -19,9 +19,14 @@ This guide explains how to configure and use the Model Context Protocol (MCP) in
     - [HTTP Mode (Remote)](#http-mode-remote)
 - [Available Tools](#available-tools)
     - [Tasks Tools (8)](#tasks-tools-8)
-    - [Projects Tools (3)](#projects-tools-3)
-    - [Inbox Tools (2)](#inbox-tools-2)
-    - [Misc Tools (3)](#misc-tools-3)
+    - [Projects Tools (5)](#projects-tools-5)
+    - [Inbox Tools (6)](#inbox-tools-6)
+    - [Goals Tools (5)](#goals-tools-5)
+    - [Areas Tools (5)](#areas-tools-5)
+    - [Notes Tools (5)](#notes-tools-5)
+    - [Tags Tools (5)](#tags-tools-5)
+    - [Habits Tools (9)](#habits-tools-9)
+    - [Misc Tools (1)](#misc-tools-1)
 - [Claude Desktop Setup](#claude-desktop-setup)
 - [Cursor Setup](#cursor-setup)
 - [VS Code + Continue Setup](#vs-code--continue-setup)
@@ -37,7 +42,7 @@ Tududi's MCP integration allows AI assistants (Claude, Cursor, VS Code extension
 
 **Key Features:**
 
-- **16 Tools:** Complete CRUD operations for tasks, projects, and inbox
+- **49 Tools:** Complete CRUD operations for tasks, projects, inbox, goals, areas, notes, tags, and habits
 - **Secure Authentication:** API token-based authentication with user isolation
 - **Local or Remote:** Two transport modes for different use cases
 - **Feature Flag:** Opt-in via `FF_ENABLE_MCP` to control availability
@@ -173,7 +178,7 @@ Tududi supports two transport modes for different deployment scenarios:
 
 ## Available Tools
 
-Tududi exposes 16 MCP tools organized into 4 categories. All tools are scoped to the authenticated user — you can never access another user's data.
+Tududi exposes 49 MCP tools organized into 9 categories. All tools are scoped to the authenticated user — you can never access another user's data.
 
 ### Tasks Tools (8)
 
@@ -351,7 +356,7 @@ Get productivity metrics and task statistics.
 
 ---
 
-### Projects Tools (3)
+### Projects Tools (5)
 
 #### `list_projects`
 
@@ -363,6 +368,17 @@ List projects with optional filtering.
 | `status` | string | No | — | Filter: `not_started`, `planned`, `in_progress`, `waiting`, `done`, `cancelled`, `all` |
 | `area_id` | number | No | — | Filter by area ID |
 | `limit` | number | No | 30 | Maximum projects to return |
+
+---
+
+#### `get_project`
+
+Get a single project by UID.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Project UID |
 
 ---
 
@@ -400,7 +416,18 @@ Update an existing project.
 
 ---
 
-### Inbox Tools (2)
+#### `delete_project`
+
+Permanently delete a project and all its tasks (notes are orphaned).
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Project UID |
+
+---
+
+### Inbox Tools (6)
 
 #### `list_inbox`
 
@@ -426,15 +453,401 @@ Add an item to the inbox.
 
 ---
 
-### Misc Tools (3)
+#### `get_inbox_item`
+
+Get a single inbox item by ID.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number | Yes | Inbox item ID |
+
+---
+
+#### `update_inbox_item`
+
+Update an existing inbox item.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number | Yes | Inbox item ID |
+| `content` | string | No | New content |
+
+---
+
+#### `process_inbox_item`
+
+Convert an inbox item into a task, note, or project.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number | Yes | Inbox item ID |
+| `type` | string | Yes | `task`, `note`, or `project` |
+
+---
+
+#### `delete_inbox_item`
+
+Delete an inbox item.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number | Yes | Inbox item ID |
+
+---
+
+### Goals Tools (5)
+
+#### `list_goals`
+
+List goals with optional filtering by area or status.
+
+**Parameters:**
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `area_id` | number | No | — | Filter by area ID |
+| `status` | string | No | `all` | Filter: `active`, `achieved`, `paused`, `dropped`, `all` |
+
+**Returns:** Goal objects with title, why, horizon, status, target date, and linked area.
+
+---
+
+#### `get_goal`
+
+Get a single goal by UID.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Goal UID |
+
+---
+
+#### `create_goal`
+
+Create a new goal within an area.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `title` | string | Yes | Goal title |
+| `area_id` | number | Yes | Parent area ID |
+| `why` | string | No | Motivation behind the goal |
+| `horizon` | string | No | `season` or `year` (default: `season`) |
+| `target_date` | string | No | Target date (YYYY-MM-DD) |
+| `status` | string | No | `active`, `achieved`, `paused`, `dropped` (default: `active`) |
+
+**Example:**
+
+```json
+{
+    "title": "Ship the mobile app",
+    "area_id": 3,
+    "why": "Expand reach to users who prefer mobile",
+    "horizon": "season",
+    "target_date": "2026-09-30"
+}
+```
+
+---
+
+#### `update_goal`
+
+Update an existing goal.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Goal UID |
+| `title` | string | No | New title |
+| `why` | string | No | New motivation text |
+| `horizon` | string | No | `season` or `year` |
+| `target_date` | string | No | New target date or empty string to clear |
+| `status` | string | No | `active`, `achieved`, `paused`, `dropped` |
+
+---
+
+#### `delete_goal`
+
+Delete a goal. Linked projects become unlinked (their `goal_id` is set to null).
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Goal UID |
+
+---
+
+### Areas Tools (5)
 
 #### `list_areas`
 
 List all organizational areas. No parameters.
 
+---
+
+#### `get_area`
+
+Get a specific area by UID.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Area UID |
+
+---
+
+#### `create_area`
+
+Create a new organizational area.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `name` | string | Yes | Area name |
+| `description` | string | No | Optional description |
+| `color` | string | No | Hex color (e.g. `#ff6b6b`) |
+
+---
+
+#### `update_area`
+
+Update an existing area.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Area UID |
+| `name` | string | No | New name |
+| `description` | string | No | New description |
+| `color` | string | No | New hex color or empty string to remove |
+
+---
+
+#### `delete_area`
+
+Delete an area. Projects are orphaned, not deleted.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Area UID |
+
+---
+
+### Notes Tools (5)
+
+#### `list_notes`
+
+List notes with optional filtering. No required parameters.
+
+---
+
+#### `get_note`
+
+Get a specific note by UID.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Note UID |
+
+---
+
+#### `create_note`
+
+Create a new note.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `title` | string | Yes | Note title |
+| `content` | string | No | Note body (Markdown supported) |
+| `project_id` | number | No | Link to a project |
+| `tags` | string[] | No | Array of tag names |
+
+---
+
+#### `update_note`
+
+Update an existing note.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Note UID |
+| `title` | string | No | New title |
+| `content` | string | No | New content |
+
+---
+
+#### `delete_note`
+
+Delete a note permanently.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Note UID |
+
+---
+
+### Tags Tools (5)
+
 #### `list_tags`
 
 List all tags. No parameters.
+
+---
+
+#### `get_tag`
+
+Get a specific tag by ID.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number | Yes | Tag ID |
+
+---
+
+#### `create_tag`
+
+Create a new tag.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `name` | string | Yes | Tag name |
+
+---
+
+#### `update_tag`
+
+Rename a tag.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number | Yes | Tag ID |
+| `name` | string | Yes | New tag name |
+
+---
+
+#### `delete_tag`
+
+Delete a tag. Removes it from all entities.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number | Yes | Tag ID |
+
+---
+
+### Habits Tools (9)
+
+#### `list_habits`
+
+List all habits. No required parameters.
+
+---
+
+#### `get_habit`
+
+Get a specific habit by UID.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Habit UID |
+
+---
+
+#### `create_habit`
+
+Create a new habit.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `name` | string | Yes | Habit name |
+| `frequency` | string | No | Recurrence pattern |
+
+---
+
+#### `update_habit`
+
+Update an existing habit.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Habit UID |
+| `name` | string | No | New name |
+
+---
+
+#### `delete_habit`
+
+Delete a habit and all its completions.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Habit UID |
+
+---
+
+#### `log_habit_completion`
+
+Record a completion entry for a habit.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Habit UID |
+| `completed_at` | string | No | ISO 8601 datetime (defaults to now) |
+
+---
+
+#### `get_habit_completions`
+
+Get completion history for a habit.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Habit UID |
+
+---
+
+#### `delete_habit_completion`
+
+Remove a specific completion entry.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number | Yes | Completion ID |
+
+---
+
+#### `get_habit_stats`
+
+Get aggregated statistics for a habit.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Habit UID |
+
+---
+
+### Misc Tools (1)
 
 #### `search`
 
@@ -749,9 +1162,14 @@ FF_ENABLE_MCP=true
 | `backend/modules/mcp/httpTransport.js`        | HTTP transport handler        |
 | `backend/modules/mcp/toolRegistry.js`         | Registers all tool categories |
 | `backend/modules/mcp/tools/taskTools.js`      | Task-related tools (8)        |
-| `backend/modules/mcp/tools/projectTools.js`   | Project tools (3)             |
-| `backend/modules/mcp/tools/inboxTools.js`     | Inbox tools (2)               |
-| `backend/modules/mcp/tools/miscTools.js`      | Area, tag, search tools (3)   |
+| `backend/modules/mcp/tools/projectTools.js`   | Project tools (5)             |
+| `backend/modules/mcp/tools/inboxTools.js`     | Inbox tools (6)               |
+| `backend/modules/mcp/tools/goalTools.js`      | Goal tools (5)                |
+| `backend/modules/mcp/tools/areaTools.js`      | Area tools (5)                |
+| `backend/modules/mcp/tools/noteTools.js`      | Note tools (5)                |
+| `backend/modules/mcp/tools/tagTools.js`       | Tag tools (5)                 |
+| `backend/modules/mcp/tools/habitTools.js`     | Habit tools (9)               |
+| `backend/modules/mcp/tools/miscTools.js`      | Search tool (1)               |
 | `backend/modules/mcp/middleware.js`           | API token authentication      |
 | `backend/modules/mcp/controller.js`           | REST API endpoints            |
 | `backend/modules/mcp/routes.js`               | Express route definitions     |
@@ -759,6 +1177,6 @@ FF_ENABLE_MCP=true
 
 ---
 
-- **Document Version:** 1.0.0
-- **Last Updated:** 2026-04-26
+- **Document Version:** 1.1.0
+- **Last Updated:** 2026-07-26
 - **Minimum Tududi Version:** v1.0.0 (released 2026-03-27)
