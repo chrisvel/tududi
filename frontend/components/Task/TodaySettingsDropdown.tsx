@@ -18,6 +18,7 @@ interface TodaySettingsDropdownProps {
     isOpen: boolean;
     onClose: () => void;
     settings: {
+        showDailyBrief: boolean;
         showMetrics: boolean;
         showAreaBalance: boolean;
         showActiveProjects: boolean;
@@ -115,6 +116,11 @@ const TodaySettingsDropdown: React.FC<TodaySettingsDropdownProps> = ({
         icon: React.ElementType;
         disabled?: boolean;
     }> = [
+        {
+            key: 'showDailyBrief',
+            label: t('settings.showDailyBrief', 'Show AI Daily Brief'),
+            icon: SparklesIcon,
+        },
         {
             key: 'showDailyQuote',
             label: t('settings.showDailyQuote', 'Show Daily Quote'),

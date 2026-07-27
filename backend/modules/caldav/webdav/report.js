@@ -30,6 +30,8 @@ async function handleReport(req, res) {
                 .json({ error: 'Invalid calendar-query request' });
         }
 
+        const userTimezone = req.currentUser.timezone || 'UTC';
+
         if (queryRequest.isMultiget) {
             const responses = [];
 
@@ -60,8 +62,10 @@ async function handleReport(req, res) {
 
                 try {
                     const etag = generateETag(task);
-                    const vtodo =
-                        await vtodoSerializer.serializeTaskToVTODO(task);
+                    const vtodo = await vtodoSerializer.serializeTaskToVTODO(
+                        task,
+                        { userTimezone }
+                    );
                     const propstat = buildPropstat({
                         'D:getetag': etag,
                         'C:calendar-data': vtodo,
@@ -141,7 +145,8 @@ async function handleReport(req, res) {
             const response = await buildCalendarQueryResponse(
                 task,
                 username,
-                queryRequest
+                queryRequest,
+                userTimezone
             );
             if (response) {
                 responses.push(response);
@@ -159,7 +164,12 @@ async function handleReport(req, res) {
     }
 }
 
-async function buildCalendarQueryResponse(task, username, queryRequest) {
+async function buildCalendarQueryResponse(
+    task,
+    username,
+    queryRequest,
+    userTimezone
+) {
     try {
         const href = buildHref(username, task.uid);
         const etag = generateETag(task);
@@ -173,7 +183,9 @@ async function buildCalendarQueryResponse(task, username, queryRequest) {
         );
 
         if (includeCalendarData) {
-            const vtodo = await vtodoSerializer.serializeTaskToVTODO(task);
+            const vtodo = await vtodoSerializer.serializeTaskToVTODO(task, {
+                userTimezone,
+            });
             props['C:calendar-data'] = vtodo;
         }
 

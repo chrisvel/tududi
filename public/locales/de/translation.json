@@ -66,7 +66,12 @@
     "kanban": "Kanban-Board",
     "addHabitAriaLabel": "Gewohnheit hinzufügen",
     "addHabitTitle": "Gewohnheit hinzufügen",
-    "toggleDarkMode": "Dunkelmodus umschalten"
+    "toggleDarkMode": "Dunkelmodus umschalten",
+    "insights": "Einblicke",
+    "boards": "Boards",
+    "bookmarks": "Lesezeichen",
+    "reports": "Berichte",
+    "productivityAssistant": "Produktivitätsassistent"
   },
   "navigation": {
     "home": "Startseite",
@@ -414,7 +419,10 @@
     "noteOptions": "Notizoptionen",
     "clickToEdit": "Klicken Sie zum Bearbeiten",
     "contentPlaceholderFocus": "Schreiben Sie Ihre Notiz... (Markdown unterstützt)",
-    "contentPlaceholderMarkdown": "Schreiben Sie Ihren Inhalt mit Markdown-Formatierung...\n\nBeispiele:\n# Überschrift\n**Fetter Text**\n*Kursiver Text*\n- Listenpunkt\n```code```"
+    "contentPlaceholderMarkdown": "Schreiben Sie Ihren Inhalt mit Markdown-Formatierung...\n\nBeispiele:\n# Überschrift\n**Fetter Text**\n*Kursiver Text*\n- Listenpunkt\n```code```",
+    "pinToSidebar": "An der Seitenleiste anheften",
+    "unpinFromSidebar": "Von der Seitenleiste lösen",
+    "save": "Speichern"
   },
   "recurrence": {
     "none": "Keine",
@@ -1199,7 +1207,10 @@
     "day": "Tag",
     "days": "Tage",
     "sharedUser": "Geteilter Benutzer",
-    "moreSharedUsers": "+{{count}} weitere Benutzer"
+    "moreSharedUsers": "+{{count}} weitere Benutzer",
+    "saveAsTemplate": "Als Vorlage speichern",
+    "pinToSidebar": "An der Seitenleiste anheften",
+    "unpinFromSidebar": "Von der Seitenleiste lösen"
   },
   "areas": {
     "title": "Bereiche",
@@ -1621,7 +1632,7 @@
     "completeHabit": "Gewohnheit abschließen"
   },
   "aiAssistant": {
-    "title": "KI-Assistent",
+    "title": "AI-Tagesbericht",
     "generatedAt": "Generiert um {{time}}",
     "emptyState": "Klicken Sie auf 'Brief generieren', um Ihre KI-gestützte tägliche Zusammenfassung zu erhalten.",
     "focusForToday": "Fokus für heute",
@@ -1646,6 +1657,25 @@
     "statTotal": "Gesamt",
     "statDone": "Erledigt",
     "statActive": "Aktiv",
-    "statOverdue": "Überfällig"
+    "statOverdue": "Überfällig",
+    "pastBriefWarning": "Dieses Briefing stammt von {{date}} und spiegelt möglicherweise nicht mehr die heutigen Aufgaben wider. Klicken Sie auf Regenerieren für ein frisches Briefing."
+  },
+  "reports": {
+    "weeklyReview": "Wöchentliche Überprüfung",
+    "inboxItems": "Posteingangsartikel",
+    "stalledProjects": "Stillgelegte Projekte",
+    "waitingFor": "Warten auf",
+    "allClear": "Alles klar — keine stillgelegten Projekte oder wartenden Artikel.",
+    "projectHealth": "Projektgesundheit",
+    "allProjectsHaveActions": "Alle aktiven Projekte haben mindestens eine nächste Aktion.",
+    "projectsWithNoNextAction": "Projekt(e) haben keine nächste Aktion",
+    "completionTrends": "Abschluss-Trends",
+    "noCompletions": "In den letzten 8 Wochen keine abgeschlossenen Aufgaben.",
+    "areaBalance": "Bereichsbilanz",
+    "noAreaData": "Keine Bereichsdaten verfügbar. Weisen Sie Aufgaben Bereichen zu, um die Bilanz zu sehen.",
+    "completed": "Abgeschlossen (30 Tage)",
+    "open": "Offen",
+    "streaks": "Streaks",
+    "areaBreakdown": "Bereichsaufgliederung"
   }
 }

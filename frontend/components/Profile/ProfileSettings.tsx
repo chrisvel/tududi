@@ -21,6 +21,7 @@ import {
     CommandLineIcon,
     CpuChipIcon,
     CalendarIcon,
+    SparklesIcon,
 } from '@heroicons/react/24/outline';
 import { Squares2X2Icon } from '@heroicons/react/24/solid';
 import TelegramIcon from '../Shared/Icons/TelegramIcon';
@@ -52,6 +53,7 @@ import NotificationsTab from './tabs/NotificationsTab';
 import KeyboardShortcutsTab from './tabs/KeyboardShortcutsTab';
 import McpTab from './tabs/McpTab';
 import CalDAVTab from './tabs/CalDAVTab';
+import AIAssistantTab from './tabs/AIAssistantTab';
 import { getDefaultConfig } from '../../utils/keyboardShortcutsService';
 import {
     getFeatureFlags,
@@ -97,11 +99,12 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             'oidc',
             'api-keys',
             'productivity',
-            'telegram',
             'notifications',
+            'telegram',
             'keyboard-shortcuts',
             'caldav',
             'mcp',
+            'ai-assistant',
             'features',
         ];
         return section && validTabs.includes(section) ? section : 'general';
@@ -144,6 +147,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         },
         notification_preferences: null,
         keyboard_shortcuts: null,
+        ai_profile: '',
         currentPassword: '',
         newPassword: '',
         confirmPassword: '',
@@ -579,6 +583,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                         data.notification_preferences || null,
                     keyboard_shortcuts:
                         data.keyboard_shortcuts || getDefaultConfig(),
+                    ai_profile: data.ai_profile || '',
                 });
 
                 if (data.telegram_bot_token) {
@@ -1224,6 +1229,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             featureFlag: 'mcp',
         },
         {
+            id: 'ai-assistant',
+            name: t('profile.tabs.aiAssistant', 'AI Assistant'),
+            icon: <SparklesIcon className="w-5 h-5" />,
+        },
+        {
             id: 'features',
             name: t('profile.tabs.features', 'Features & Add-ons'),
             icon: <Squares2X2Icon className="w-5 h-5" />,
@@ -1445,6 +1455,26 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                                 ...prev.features,
                                                 [field]: !prev.features?.[field],
                                             },
+                                        }))
+                                    }
+                                />
+
+                                <AIAssistantTab
+                                    isActive={activeTab === 'ai-assistant'}
+                                    formData={formData}
+                                    onToggleAi={(field) =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            features: {
+                                                ...prev.features,
+                                                [field]: !prev.features?.[field],
+                                            },
+                                        }))
+                                    }
+                                    onAiProfileChange={(value) =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            ai_profile: value,
                                         }))
                                     }
                                 />

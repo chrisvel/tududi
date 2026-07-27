@@ -66,7 +66,12 @@
     "kanban": "Tableau Kanban",
     "addHabitAriaLabel": "Ajouter une habitude",
     "addHabitTitle": "Ajouter une habitude",
-    "toggleDarkMode": "Basculer en mode sombre"
+    "toggleDarkMode": "Basculer en mode sombre",
+    "insights": "Aperçus",
+    "boards": "Tableaux",
+    "bookmarks": "Signets",
+    "reports": "Rapports",
+    "productivityAssistant": "Assistant de productivité"
   },
   "navigation": {
     "home": "Accueil",
@@ -1100,7 +1105,10 @@
     "day": "jour",
     "days": "jours",
     "sharedUser": "Utilisateur partagé",
-    "moreSharedUsers": "+{{count}} utilisateurs de plus"
+    "moreSharedUsers": "+{{count}} utilisateurs de plus",
+    "saveAsTemplate": "Enregistrer comme modèle",
+    "pinToSidebar": "Épingler à la barre latérale",
+    "unpinFromSidebar": "Désépingler de la barre latérale"
   },
   "areas": {
     "title": "Zones",
@@ -1139,7 +1147,10 @@
     "noteOptions": "Options de la note",
     "clickToEdit": "Cliquez pour modifier",
     "contentPlaceholderFocus": "Écrivez votre note... (Markdown supporté)",
-    "contentPlaceholderMarkdown": "Écrivez votre contenu en utilisant le formatage Markdown...\n\nExemples:\n# Titre\n**Texte en gras**\n*Texte en italique*\n- Élément de liste\n```code```"
+    "contentPlaceholderMarkdown": "Écrivez votre contenu en utilisant le formatage Markdown...\n\nExemples:\n# Titre\n**Texte en gras**\n*Texte en italique*\n- Élément de liste\n```code```",
+    "pinToSidebar": "Épingler à la barre latérale",
+    "unpinFromSidebar": "Désépingler de la barre latérale",
+    "save": "Enregistrer"
   },
   "tags": {
     "loading": "Chargement des étiquettes...",
@@ -1637,6 +1648,25 @@
     "statTotal": "Total",
     "statDone": "Fait",
     "statActive": "Actif",
-    "statOverdue": "En retard"
+    "statOverdue": "En retard",
+    "pastBriefWarning": "Ce résumé date du {{date}} et peut ne plus refléter les tâches d'aujourd'hui. Cliquez sur Régénérer pour un nouveau résumé."
+  },
+  "reports": {
+    "weeklyReview": "Revue hebdomadaire",
+    "inboxItems": "Éléments de la boîte de réception",
+    "stalledProjects": "Projets en attente",
+    "waitingFor": "En attente de",
+    "allClear": "Tout est clair — aucun projet en attente ou élément en attente.",
+    "projectHealth": "Santé du projet",
+    "allProjectsHaveActions": "Tous les projets actifs ont au moins une action suivante.",
+    "projectsWithNoNextAction": "le(s) projet(s) n'ont pas d'action suivante",
+    "completionTrends": "Tendances de Complétion",
+    "noCompletions": "Aucune tâche complétée au cours des 8 dernières semaines.",
+    "areaBalance": "Équilibre de Zone",
+    "noAreaData": "Aucune donnée de zone disponible. Assignez des tâches aux zones pour voir l'équilibre.",
+    "completed": "Complété (30j)",
+    "open": "Ouvert",
+    "streaks": "Séries",
+    "areaBreakdown": "Répartition par Zone"
   }
 }

@@ -43,6 +43,7 @@ import BurndownChart from './BurndownChart';
 import LifeBalance from './LifeBalance';
 import AreaDonut from './AreaDonut';
 import ActiveProjectsSection from './ActiveProjectsSection';
+import DailyAssistant from '../AI/DailyAssistant';
 
 const filterNonHabitTasks = (tasks: Task[] = []) =>
     tasks.filter((task) => !task.habit_mode);
@@ -89,6 +90,7 @@ const TasksToday: React.FC = () => {
     const [dailyQuote, setDailyQuote] = useState<string>('');
     const [isSettingsEnabled, setIsSettingsEnabled] = useState(false);
     const [todaySettings, setTodaySettings] = useState({
+        showDailyBrief: true,
         showMetrics: true,
         showAreaBalance: true,
         showActiveProjects: true,
@@ -100,6 +102,7 @@ const TasksToday: React.FC = () => {
         showDailyQuote: true,
         showTaggedToday: true,
     });
+    const [hasBriefMounted, setHasBriefMounted] = useState(false);
     const [nextTaskSuggestionEnabled, setNextTaskSuggestionEnabled] =
         useState(true);
     const [profileSettings, setProfileSettings] = useState({
@@ -592,6 +595,7 @@ const TasksToday: React.FC = () => {
 
                         // Use parsed settings or fall back to defaults
                         settings = settings || {
+                            showDailyBrief: true,
                             showMetrics: true,
                             showAreaBalance: true,
                             showActiveProjects: true,
@@ -603,9 +607,12 @@ const TasksToday: React.FC = () => {
                             showDailyQuote: true,
                         };
                         // Back-fill keys missing from stored settings
+                        if (settings.showDailyBrief === undefined) settings.showDailyBrief = true;
                         if (settings.showAreaBalance === undefined) settings.showAreaBalance = true;
                         if (settings.showActiveProjects === undefined) settings.showActiveProjects = true;
                         if (settings.showTaggedToday === undefined) settings.showTaggedToday = true;
+
+                        if (settings.showDailyBrief) setHasBriefMounted(true);
 
                         // Store profile settings
                         setProfileSettings({
@@ -1245,6 +1252,7 @@ const TasksToday: React.FC = () => {
     // Handle settings change
     const handleSettingsChange = (newSettings: typeof todaySettings) => {
         setTodaySettings(newSettings);
+        if (newSettings.showDailyBrief) setHasBriefMounted(true);
     };
 
     // Show loading state until both data and settings are loaded (only for initial load)
@@ -1347,6 +1355,13 @@ const TasksToday: React.FC = () => {
                         </div>
                     </div>
                 </div>
+
+                {/* AI Daily Brief - kept mounted once opened to preserve fetched content */}
+                {hasBriefMounted && (
+                    <div className={todaySettings.showDailyBrief ? '' : 'hidden'}>
+                        <DailyAssistant />
+                    </div>
+                )}
 
                 {/* Overview Stats + Weekly Chart */}
                 {isSettingsLoaded && todaySettings.showMetrics && (

@@ -66,7 +66,12 @@
     "kanban": "Tabloul Kanban",
     "addHabitAriaLabel": "Adaugă obicei",
     "addHabitTitle": "Adaugă obicei",
-    "toggleDarkMode": "Comută modul întunecat"
+    "toggleDarkMode": "Comută modul întunecat",
+    "insights": "Perspectivă",
+    "boards": "Tablouri",
+    "bookmarks": "Marcaje",
+    "reports": "Rapoarte",
+    "productivityAssistant": "Asistent de Productivitate"
   },
   "navigation": {
     "home": "Acasă",
@@ -1100,7 +1105,10 @@
     "day": "zi",
     "days": "zile",
     "sharedUser": "Utilizator partajat",
-    "moreSharedUsers": "+{{count}} utilizatori în plus"
+    "moreSharedUsers": "+{{count}} utilizatori în plus",
+    "saveAsTemplate": "Salvează ca Șablon",
+    "pinToSidebar": "Fixează în bara laterală",
+    "unpinFromSidebar": "Dezfixează din bara laterală"
   },
   "areas": {
     "title": "Arii",
@@ -1139,7 +1147,10 @@
     "noteOptions": "Opțiuni notă",
     "clickToEdit": "Click pentru a edita",
     "contentPlaceholderFocus": "Scrie nota ta... (Markdown acceptat)",
-    "contentPlaceholderMarkdown": "Scrie conținutul tău folosind formatarea Markdown...\n\nExemple:\n# Titlu\n**Text îngroșat**\n*Text italic*\n- Element de listă\n```cod```"
+    "contentPlaceholderMarkdown": "Scrie conținutul tău folosind formatarea Markdown...\n\nExemple:\n# Titlu\n**Text îngroșat**\n*Text italic*\n- Element de listă\n```cod```",
+    "pinToSidebar": "Fixează în bara laterală",
+    "unpinFromSidebar": "Dezfixează din bara laterală",
+    "save": "Salvează"
   },
   "tags": {
     "loading": "Se încarcă etichetele...",
@@ -1637,6 +1648,25 @@
     "statTotal": "Total",
     "statDone": "Finalizat",
     "statActive": "Activ",
-    "statOverdue": "Întârziat"
+    "statOverdue": "Întârziat",
+    "pastBriefWarning": "Această sinteză este din {{date}} și s-ar putea să nu mai reflecte sarcinile de astăzi. Fă clic pe Regenerare pentru o sinteză nouă."
+  },
+  "reports": {
+    "weeklyReview": "Revizuirea Săptămânală",
+    "inboxItems": "Elemente din Inbox",
+    "stalledProjects": "Proiecte Încetinite",
+    "waitingFor": "Așteptând",
+    "allClear": "Totul este clar — nu sunt proiecte încetinite sau elemente în așteptare.",
+    "projectHealth": "Starea Proiectului",
+    "allProjectsHaveActions": "Toate proiectele active au cel puțin o acțiune următoare.",
+    "projectsWithNoNextAction": "proiect(e) nu au acțiune următoare",
+    "completionTrends": "Tendințe de finalizare",
+    "noCompletions": "Nu există sarcini finalizate în ultimele 8 săptămâni.",
+    "areaBalance": "Soldul zonei",
+    "noAreaData": "Nu sunt disponibile date pentru zonă. Atribuiți sarcini zonelor pentru a vedea soldul.",
+    "completed": "Finalizate (30z)",
+    "open": "Deschis",
+    "streaks": "Serii",
+    "areaBreakdown": "Detalierea zonei"
   }
 }

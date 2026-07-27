@@ -66,7 +66,12 @@
     "kanban": "Kanban Bord",
     "addHabitAriaLabel": "Voeg Gewoonte Toe",
     "addHabitTitle": "Voeg Gewoonte Toe",
-    "toggleDarkMode": "Schakel Donkere Modus In"
+    "toggleDarkMode": "Schakel Donkere Modus In",
+    "insights": "Inzichten",
+    "boards": "Borden",
+    "bookmarks": "Bladwijzers",
+    "reports": "Rapporten",
+    "productivityAssistant": "Productiviteitsassistent"
   },
   "navigation": {
     "home": "Home",
@@ -1100,7 +1105,10 @@
     "day": "dag",
     "days": "dagen",
     "sharedUser": "Gedeelde gebruiker",
-    "moreSharedUsers": "+{{count}} meer gebruikers"
+    "moreSharedUsers": "+{{count}} meer gebruikers",
+    "saveAsTemplate": "Opslaan als sjabloon",
+    "pinToSidebar": "Vastpinnen aan zijbalk",
+    "unpinFromSidebar": "Losmaken van zijbalk"
   },
   "areas": {
     "title": "Gebieden",
@@ -1139,7 +1147,10 @@
     "noteOptions": "Notitie-opties",
     "clickToEdit": "Klik om te bewerken",
     "contentPlaceholderFocus": "Schrijf je notitie... (Markdown ondersteund)",
-    "contentPlaceholderMarkdown": "Schrijf je inhoud met Markdown-opmaak...\n\nVoorbeelden:\n# Kop\n**Vetgedrukte tekst**\n*Schuingedrukte tekst*\n- Lijstitem\n```code```"
+    "contentPlaceholderMarkdown": "Schrijf je inhoud met Markdown-opmaak...\n\nVoorbeelden:\n# Kop\n**Vetgedrukte tekst**\n*Schuingedrukte tekst*\n- Lijstitem\n```code```",
+    "pinToSidebar": "Vastpinnen aan zijbalk",
+    "unpinFromSidebar": "Losmaken van zijbalk",
+    "save": "Opslaan"
   },
   "tags": {
     "loading": "Tags laden...",
@@ -1637,6 +1648,25 @@
     "statTotal": "Totaal",
     "statDone": "Voltooid",
     "statActive": "Actief",
-    "statOverdue": "Te laat"
+    "statOverdue": "Te laat",
+    "pastBriefWarning": "Deze samenvatting is van {{date}} en weerspiegelt mogelijk niet meer de taken van vandaag. Klik op Regenereren voor een nieuwe samenvatting."
+  },
+  "reports": {
+    "weeklyReview": "Wekelijkse beoordeling",
+    "inboxItems": "Inbox-items",
+    "stalledProjects": "Stagnerende projecten",
+    "waitingFor": "Wachten op",
+    "allClear": "Alles is duidelijk — geen stagnerende projecten of wachtende items.",
+    "projectHealth": "Projectgezondheid",
+    "allProjectsHaveActions": "Alle actieve projecten hebben ten minste één volgende actie.",
+    "projectsWithNoNextAction": "project(en) hebben geen volgende actie",
+    "completionTrends": "Voltooiingstrends",
+    "noCompletions": "Geen voltooide taken in de afgelopen 8 weken.",
+    "areaBalance": "Gebiedsbalans",
+    "noAreaData": "Geen gebiedsgegevens beschikbaar. Wijs taken toe aan gebieden om de balans te zien.",
+    "completed": "Voltooid (30d)",
+    "open": "Open",
+    "streaks": "Reeksen",
+    "areaBreakdown": "Gebiedsopdeling"
   }
 }

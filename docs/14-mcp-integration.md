@@ -22,6 +22,7 @@ This guide explains how to configure and use the Model Context Protocol (MCP) in
     - [Projects Tools (5)](#projects-tools-5)
     - [Inbox Tools (6)](#inbox-tools-6)
     - [Views Tools (5)](#views-tools-5)
+    - [Goals Tools (5)](#goals-tools-5)
     - [Areas Tools (5)](#areas-tools-5)
     - [Notes Tools (5)](#notes-tools-5)
     - [Tags Tools (5)](#tags-tools-5)
@@ -43,7 +44,7 @@ Tududi's MCP integration allows AI assistants (Claude, Cursor, VS Code extension
 
 **Key Features:**
 
-- **54 Tools:** Complete CRUD operations for tasks, projects, inbox, views, areas, notes, tags, habits, and people
+- **59 Tools:** Complete CRUD operations for tasks, projects, inbox, views, goals, areas, notes, tags, habits, and people
 - **Secure Authentication:** API token-based authentication with user isolation
 - **Local or Remote:** Two transport modes for different use cases
 - **Feature Flag:** Opt-in via `FF_ENABLE_MCP` to control availability
@@ -179,7 +180,7 @@ Tududi supports two transport modes for different deployment scenarios:
 
 ## Available Tools
 
-Tududi exposes 54 MCP tools organized into 10 categories. All tools are scoped to the authenticated user — you can never access another user's data.
+Tududi exposes 59 MCP tools organized into 11 categories. All tools are scoped to the authenticated user — you can never access another user's data.
 
 ### Tasks Tools (8)
 
@@ -578,6 +579,88 @@ Delete a smart view.
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `uid` | string | Yes | View UID |
+
+---
+
+### Goals Tools (5)
+
+#### `list_goals`
+
+List goals with optional filtering by area or status.
+
+**Parameters:**
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `area_id` | number | No | — | Filter by area ID |
+| `status` | string | No | `all` | Filter: `active`, `achieved`, `paused`, `dropped`, `all` |
+
+**Returns:** Goal objects with title, why, horizon, status, target date, and linked area.
+
+---
+
+#### `get_goal`
+
+Get a single goal by UID.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Goal UID |
+
+---
+
+#### `create_goal`
+
+Create a new goal within an area.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `title` | string | Yes | Goal title |
+| `area_id` | number | Yes | Parent area ID |
+| `why` | string | No | Motivation behind the goal |
+| `horizon` | string | No | `season` or `year` (default: `season`) |
+| `target_date` | string | No | Target date (YYYY-MM-DD) |
+| `status` | string | No | `active`, `achieved`, `paused`, `dropped` (default: `active`) |
+
+**Example:**
+
+```json
+{
+    "title": "Ship the mobile app",
+    "area_id": 3,
+    "why": "Expand reach to users who prefer mobile",
+    "horizon": "season",
+    "target_date": "2026-09-30"
+}
+```
+
+---
+
+#### `update_goal`
+
+Update an existing goal.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Goal UID |
+| `title` | string | No | New title |
+| `why` | string | No | New motivation text |
+| `horizon` | string | No | `season` or `year` |
+| `target_date` | string | No | New target date or empty string to clear |
+| `status` | string | No | `active`, `achieved`, `paused`, `dropped` |
+
+---
+
+#### `delete_goal`
+
+Delete a goal. Linked projects become unlinked (their `goal_id` is set to null).
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Goal UID |
 
 ---
 
@@ -1249,6 +1332,7 @@ FF_ENABLE_MCP=true
 | `backend/modules/mcp/tools/projectTools.js`   | Project tools (5)             |
 | `backend/modules/mcp/tools/inboxTools.js`     | Inbox tools (6)               |
 | `backend/modules/mcp/tools/viewTools.js`      | Smart view tools (5)          |
+| `backend/modules/mcp/tools/goalTools.js`      | Goal tools (5)                |
 | `backend/modules/mcp/tools/areaTools.js`      | Area tools (5)                |
 | `backend/modules/mcp/tools/noteTools.js`      | Note tools (5)                |
 | `backend/modules/mcp/tools/tagTools.js`       | Tag tools (5)                 |
@@ -1263,5 +1347,5 @@ FF_ENABLE_MCP=true
 ---
 
 - **Document Version:** 1.1.0
-- **Last Updated:** 2026-07-26
+- **Last Updated:** 2026-07-27
 - **Minimum Tududi Version:** v1.0.0 (released 2026-03-27)

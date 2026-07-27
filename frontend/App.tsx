@@ -36,6 +36,7 @@ import EisenhowerMatrix from './components/Eisenhower/EisenhowerMatrix';
 import KanbanBoard from './components/Kanban/KanbanBoard';
 import ProductivityPage from './components/Insights/ProductivityPage';
 import ReportsPage from './components/Insights/ReportsPage';
+import DailyBriefPage from './components/Insights/DailyBriefPage';
 import PeopleList from './components/People/PeopleList';
 import PersonDetails from './components/People/PersonDetails';
 import Templates from './components/Templates/Templates';
@@ -260,6 +261,7 @@ const App: React.FC = () => {
                             <Route path="/kanban" element={<Navigate to="/boards/kanban" replace />} />
                             <Route path="/boards/eisenhower" element={<EisenhowerMatrix />} />
                             <Route path="/boards/kanban" element={<KanbanBoard />} />
+                            <Route path="/insights/daily-brief" element={<DailyBriefPage />} />
                             <Route path="/insights/productivity" element={<ProductivityPage />} />
                             <Route path="/insights/reports" element={<ReportsPage />} />
                             <Route path="/inbox" element={<InboxItems />} />

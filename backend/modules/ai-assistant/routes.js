@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 const controller = require('./controller');
 
+router.get('/ai-assistant/config', controller.getConfig);
 router.get('/ai-assistant/daily-brief', controller.getCachedBrief);
 router.post('/ai-assistant/daily-brief', controller.getDailyBrief);
 router.get(
