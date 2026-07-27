@@ -578,7 +578,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                                     </div>
 
                                                     {activeTab === 'edit' ? (
-                                                        <div className="block w-full h-full min-h-0 sm:border sm:border-gray-300 sm:dark:border-gray-600 sm:rounded-md shadow-sm py-2 sm:py-3 px-3 text-sm bg-white dark:bg-gray-900">
+                                                        <div className="block w-full min-h-[200px] sm:border sm:border-gray-300 sm:dark:border-gray-600 sm:rounded-md shadow-sm py-2 sm:py-3 px-3 text-sm bg-white dark:bg-gray-900">
                                                             <MarkdownEditor
                                                                 value={formData.content || ''}
                                                                 onChange={(val) =>
@@ -590,7 +590,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                                             />
                                                         </div>
                                                     ) : (
-                                                        <div className="block w-full h-full min-h-0 sm:border sm:border-gray-300 sm:dark:border-gray-600 sm:rounded-md shadow-sm py-2 px-3 sm:py-3 sm:px-3 text-sm bg-gray-50 dark:bg-gray-800 overflow-y-auto">
+                                                        <div className="block w-full min-h-[200px] sm:border sm:border-gray-300 sm:dark:border-gray-600 sm:rounded-md shadow-sm py-2 sm:py-3 px-3 text-sm bg-white dark:bg-gray-900">
                                                             {formData.content ? (
                                                                 <MarkdownRenderer
                                                                     content={
