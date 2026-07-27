@@ -292,6 +292,24 @@ class NotesService {
     }
 
     /**
+     * Get all notes that contain [[noteTitle]] in their content (backlinks).
+     */
+    async getBacklinks(userId, uid) {
+        const validatedUid = validateUid(uid);
+        const note = await notesRepository.findByUid(validatedUid);
+        if (!note) {
+            throw new NotFoundError('Note not found.');
+        }
+
+        const { title } =
+            await notesRepository.findByUidWithIncludes(validatedUid);
+        const backlinks = await notesRepository.findBacklinks(userId, title);
+        return backlinks
+            .filter((b) => b.uid !== validatedUid)
+            .map((b) => ({ uid: b.uid, title: b.title }));
+    }
+
+    /**
      * Delete a note.
      */
     async delete(uid) {

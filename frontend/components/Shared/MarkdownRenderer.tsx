@@ -1,9 +1,24 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import hljs from 'highlight.js';
 import CalloutBlock, { CalloutType } from './CalloutBlock';
+import { useStore } from '../../store/useStore';
+
+const WIKILINK_PREFIX = '/__wikilink__/';
+
+function preprocessWikilinks(content: string): string {
+    return content.replace(/\[\[([^\][\n]+?)\]\]/g, (_match, title: string) => {
+        const t = title.trim();
+        return `[${t}](${WIKILINK_PREFIX}${encodeURIComponent(t)})`;
+    });
+}
+
+function slugify(text: string): string {
+    return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
 
 const CodeBlock: React.FC<React.HTMLAttributes<HTMLPreElement>> = ({ children, ...props }) => {
     const preRef = useRef<HTMLPreElement>(null);
@@ -52,6 +67,23 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     onContentChange,
     noteColor,
 }) => {
+    const storeNotes = useStore((state) => state.notesStore.notes);
+
+    const noteTitleToSlug = useMemo(() => {
+        const map = new Map<string, string>();
+        for (const n of storeNotes) {
+            if (n.uid && n.title) {
+                map.set(n.title.toLowerCase(), `${n.uid}-${slugify(n.title)}`);
+            }
+        }
+        return map;
+    }, [storeNotes]);
+
+    const processedContent = useMemo(
+        () => preprocessWikilinks(content),
+        [content]
+    );
+
     // Determine text color based on background
     const getTextColor = () => {
         if (!noteColor) return undefined;
@@ -291,13 +323,42 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                         />
                     ),
 
-                    // Customize link styles
-                    a: ({ ...props }) => (
-                        <a
-                            className="text-blue-600 dark:text-blue-400 hover:underline"
-                            {...props}
-                        />
-                    ),
+                    // Customize link styles — wikilinks get a note-chip style
+                    a: ({ href, children, ...props }) => {
+                        if (href?.startsWith(WIKILINK_PREFIX)) {
+                            const title = decodeURIComponent(href.slice(WIKILINK_PREFIX.length));
+                            const slug = noteTitleToSlug.get(title.toLowerCase());
+                            const to = slug ? `/note/${slug}` : null;
+                            const badge = (
+                                <span className="inline-flex items-stretch rounded overflow-hidden align-middle border border-blue-200 dark:border-blue-700/70 mt-1">
+                                    <span className="flex items-center px-1.5 text-[0.72em] font-bold uppercase tracking-wide text-blue-800 dark:text-blue-200 bg-blue-200/70 dark:bg-blue-700/60">
+                                        NOTE:
+                                    </span>
+                                    <span className="flex items-center px-1.5 py-0.5 text-[0.9em] text-blue-700 dark:text-blue-300 bg-blue-50/80 dark:bg-blue-900/30">
+                                        {title}
+                                    </span>
+                                </span>
+                            );
+                            return to ? (
+                                <Link to={to} className="no-underline">
+                                    {badge}
+                                </Link>
+                            ) : (
+                                <span className="cursor-default" title="Note not found">
+                                    {badge}
+                                </span>
+                            );
+                        }
+                        return (
+                            <a
+                                className="text-blue-600 dark:text-blue-400 hover:underline"
+                                href={href}
+                                {...props}
+                            >
+                                {children}
+                            </a>
+                        );
+                    },
 
                     // Customize code styles
                     code: ({ className, children, ...props }) => {
@@ -470,7 +531,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                     },
                 }}
             >
-                {content}
+                {processedContent}
             </ReactMarkdown>
         </div>
     );

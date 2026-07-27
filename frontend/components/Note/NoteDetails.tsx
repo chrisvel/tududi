@@ -12,6 +12,7 @@ import { useToast } from '../Shared/ToastContext';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import NoteModal from './NoteModal';
 import MarkdownRenderer from '../Shared/MarkdownRenderer';
+import BacklinksPanel from './BacklinksPanel';
 import { Note } from '../../entities/Note';
 import {
     fetchNoteBySlug,
@@ -304,6 +305,9 @@ const NoteDetails: React.FC = () => {
                             }
                         }}
                     />
+                    {note.uid && (
+                        <BacklinksPanel noteUid={note.uid} noteTitle={note.title} />
+                    )}
                 </div>
                 {/* NoteModal for editing */}
                 {isNoteModalOpen && (

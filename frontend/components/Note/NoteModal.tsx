@@ -48,6 +48,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
     const { tagsStore } = useStore();
     const availableTagsStore = tagsStore.getTags();
     const { addNewTags } = tagsStore;
+
     const [formData, setFormData] = useState<Note>(
         note || {
             title: '',

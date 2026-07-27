@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { EditorView, ViewUpdate, keymap, placeholder as cmPlaceholder } from '@codemirror/view';
 import { EditorState, Compartment } from '@codemirror/state';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
@@ -6,6 +6,10 @@ import { history, defaultKeymap, historyKeymap } from '@codemirror/commands';
 import { syntaxHighlighting, defaultHighlightStyle } from '@codemirror/language';
 import { oneDark } from '@codemirror/theme-one-dark';
 import FormattingToolbar from './FormattingToolbar';
+import SlashCommandMenu from './SlashCommandMenu';
+import WikilinkMenu, { NoteTitle } from './WikilinkMenu';
+import { livePreviewExtension } from './livePreviewExtension';
+import { useStore } from '../../store/useStore';
 
 interface MarkdownEditorProps {
     value: string;
@@ -86,6 +90,75 @@ const baseEditorTheme = EditorView.theme({
     '.cm-cursor, .cm-dropCursor': { borderLeftWidth: '2px' },
 });
 
+interface SlashMenuState {
+    open: boolean;
+    x: number;
+    y: number;
+    filter: string;
+    from: number;
+    to: number;
+}
+
+interface WikilinkMenuState {
+    open: boolean;
+    x: number;
+    y: number;
+    filter: string;
+    from: number;
+    to: number;
+}
+
+const CLOSED_SLASH: SlashMenuState = { open: false, x: 0, y: 0, filter: '', from: 0, to: 0 };
+const CLOSED_WIKI: WikilinkMenuState = { open: false, x: 0, y: 0, filter: '', from: 0, to: 0 };
+
+function detectSlashTrigger(
+    view: EditorView
+): { from: number; to: number; filter: string; coords: { x: number; y: number } } | null {
+    const { main } = view.state.selection;
+    if (!main.empty) return null;
+
+    const cursor = main.from;
+    const line = view.state.doc.lineAt(cursor);
+    const textToCursor = line.text.slice(0, cursor - line.from);
+
+    // Match /command at start-of-line or after whitespace
+    const m = textToCursor.match(/(?:^|(?<=\s))\/([a-z0-9-]*)$/i);
+    if (!m) return null;
+
+    const slashRelPos = textToCursor.length - 1 - m[1].length;
+    const slashAbsPos = line.from + slashRelPos;
+    const filter = m[1];
+
+    const coords = view.coordsAtPos(cursor);
+    if (!coords) return null;
+
+    return { from: slashAbsPos, to: cursor, filter, coords: { x: coords.left, y: coords.top } };
+}
+
+function detectWikilinkTrigger(
+    view: EditorView
+): { from: number; to: number; filter: string; coords: { x: number; y: number } } | null {
+    const { main } = view.state.selection;
+    if (!main.empty) return null;
+
+    const cursor = main.from;
+    const line = view.state.doc.lineAt(cursor);
+    const textToCursor = line.text.slice(0, cursor - line.from);
+
+    // Match [[ possibly followed by partial title text (no ]] yet)
+    const m = textToCursor.match(/\[\[([^[\]]*)$/);
+    if (!m) return null;
+
+    const openBracketRelPos = textToCursor.length - 2 - m[1].length;
+    const openBracketAbsPos = line.from + openBracketRelPos;
+    const filter = m[1];
+
+    const coords = view.coordsAtPos(cursor);
+    if (!coords) return null;
+
+    return { from: openBracketAbsPos, to: cursor, filter, coords: { x: coords.left, y: coords.top } };
+}
+
 const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     value,
     onChange,
@@ -101,14 +174,39 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     const onChangeRef = useRef(onChange);
     onChangeRef.current = onChange;
 
+    // Load notes from store for wikilink autocomplete
+    const storeNotes = useStore((state) => state.notesStore.notes);
+    const hasNotesLoaded = useStore((state) => state.notesStore.hasLoaded);
+    const loadNotes = useStore((state) => state.notesStore.loadNotes);
+
+    useEffect(() => {
+        if (!hasNotesLoaded) loadNotes();
+    }, [hasNotesLoaded, loadNotes]);
+
+    const noteTitles: NoteTitle[] = useMemo(
+        () => storeNotes.filter((n) => n.uid).map((n) => ({ uid: n.uid as string, title: n.title })),
+        [storeNotes]
+    );
+
     const [toolbarState, setToolbarState] = useState<{
         visible: boolean;
         x: number;
         y: number;
     }>({ visible: false, x: 0, y: 0 });
 
+    const [slashMenu, setSlashMenu] = useState<SlashMenuState>(CLOSED_SLASH);
+    const [wikilinkMenu, setWikilinkMenu] = useState<WikilinkMenuState>(CLOSED_WIKI);
+
+    const slashMenuRef = useRef(slashMenu);
+    slashMenuRef.current = slashMenu;
+    const wikilinkMenuRef = useRef(wikilinkMenu);
+    wikilinkMenuRef.current = wikilinkMenu;
+
     const lightText = shouldUseLightText(noteColor);
     const textColor = noteColor ? (lightText ? '#ffffff' : '#333333') : undefined;
+
+    const closeSlash = useCallback(() => setSlashMenu(CLOSED_SLASH), []);
+    const closeWikilink = useCallback(() => setWikilinkMenu(CLOSED_WIKI), []);
 
     useEffect(() => {
         if (!containerRef.current) return;
@@ -138,15 +236,19 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                 baseEditorTheme,
                 themeCompartment.of(getThemeExtension()),
                 colorOverride,
+                livePreviewExtension,
                 EditorView.updateListener.of((update: ViewUpdate) => {
                     if (update.docChanged) {
                         onChangeRef.current(update.state.doc.toString());
                     }
 
+                    const view = update.view;
+
+                    // Formatting toolbar (on selection)
                     const { main } = update.state.selection;
                     if (!main.empty) {
-                        const fromCoords = update.view.coordsAtPos(main.from);
-                        const toCoords = update.view.coordsAtPos(main.to);
+                        const fromCoords = view.coordsAtPos(main.from);
+                        const toCoords = view.coordsAtPos(main.to);
                         if (fromCoords && toCoords) {
                             const midX = (fromCoords.left + toCoords.right) / 2;
                             const topY = Math.min(fromCoords.top, toCoords.top);
@@ -157,6 +259,37 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                         }
                     } else {
                         setToolbarState((prev) => (prev.visible ? { ...prev, visible: false } : prev));
+                    }
+
+                    // Slash command trigger detection
+                    const slashTrigger = detectSlashTrigger(view);
+                    if (slashTrigger) {
+                        setSlashMenu({
+                            open: true,
+                            x: slashTrigger.coords.x,
+                            y: slashTrigger.coords.y,
+                            filter: slashTrigger.filter,
+                            from: slashTrigger.from,
+                            to: slashTrigger.to,
+                        });
+                        setWikilinkMenu(CLOSED_WIKI);
+                    } else {
+                        if (slashMenuRef.current.open) setSlashMenu(CLOSED_SLASH);
+
+                        // Wikilink trigger detection (only when slash not active)
+                        const wikilinkTrigger = detectWikilinkTrigger(view);
+                        if (wikilinkTrigger) {
+                            setWikilinkMenu({
+                                open: true,
+                                x: wikilinkTrigger.coords.x,
+                                y: wikilinkTrigger.coords.y,
+                                filter: wikilinkTrigger.filter,
+                                from: wikilinkTrigger.from,
+                                to: wikilinkTrigger.to,
+                            });
+                        } else {
+                            if (wikilinkMenuRef.current.open) setWikilinkMenu(CLOSED_WIKI);
+                        }
                     }
                 }),
             ],
@@ -169,7 +302,6 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
             setTimeout(() => view.focus(), 50);
         }
 
-        // Watch for dark mode class changes and reconfigure theme
         const observer = new MutationObserver(() => {
             view.dispatch({ effects: themeCompartment.reconfigure(getThemeExtension()) });
         });
@@ -219,6 +351,29 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                 onLink={handleLink}
                 onHeading={handleHeading}
             />
+            {slashMenu.open && viewRef.current && (
+                <SlashCommandMenu
+                    x={slashMenu.x}
+                    y={slashMenu.y}
+                    filter={slashMenu.filter}
+                    slashFrom={slashMenu.from}
+                    slashTo={slashMenu.to}
+                    view={viewRef.current}
+                    onClose={closeSlash}
+                />
+            )}
+            {wikilinkMenu.open && viewRef.current && (
+                <WikilinkMenu
+                    x={wikilinkMenu.x}
+                    y={wikilinkMenu.y}
+                    filter={wikilinkMenu.filter}
+                    triggerFrom={wikilinkMenu.from}
+                    triggerTo={wikilinkMenu.to}
+                    view={viewRef.current}
+                    noteTitles={noteTitles}
+                    onClose={closeWikilink}
+                />
+            )}
         </div>
     );
 };
