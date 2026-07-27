@@ -22,6 +22,9 @@ const {
 } = require('./webdav/projects');
 const apiRoutes = require('./api/routes');
 const { requireAuth } = require('../../middleware/auth');
+const taskRepository = require('../tasks/repository');
+const vtodoSerializer = require('./icalendar/vtodo-serializer');
+const { generateCTag } = require('./utils/ctag-generator');
 
 const router = express.Router();
 
@@ -176,11 +179,43 @@ router.all(
     }
 );
 
-router.get('/caldav/:username/tasks/', xmlParser, caldavAuth, (req, res) => {
-    res.status(207).send(
-        '<?xml version="1.0"?><D:multistatus xmlns:D="DAV:"/>'
-    );
-});
+// GET on the calendar collection: return the aggregated iCalendar so that
+// clients (Tasks.org, DAVx5) receive a proper 200 with an ETag (CTag).
+// Responding with 207 here breaks those clients with "GET response without ETag".
+router.get(
+    '/caldav/:username/tasks/',
+    xmlParser,
+    caldavAuth,
+    async (req, res) => {
+        try {
+            if (
+                !req.currentUser ||
+                req.currentUser.email !== req.params.username
+            ) {
+                return res.status(403).send('Forbidden');
+            }
+            const userId = req.currentUser.id;
+            const userTimezone = req.currentUser.timezone || 'UTC';
+            const tasks = await taskRepository.findByUser(userId);
+            const ctag = generateCTag(tasks);
+            const ical = await vtodoSerializer.serializeCollectionToVCALENDAR(
+                tasks,
+                { userTimezone }
+            );
+            return res
+                .status(200)
+                .set({
+                    'Content-Type': 'text/calendar; charset=utf-8',
+                    ETag: ctag,
+                    'Last-Modified': new Date().toUTCString(),
+                })
+                .send(ical);
+        } catch (err) {
+            console.error('GET collection error:', err);
+            return res.status(500).send('Internal Server Error');
+        }
+    }
+);
 
 router.get(
     '/caldav/:username/tasks/:uid',
