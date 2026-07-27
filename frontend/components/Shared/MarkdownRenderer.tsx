@@ -330,7 +330,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                             const slug = noteTitleToSlug.get(title.toLowerCase());
                             const to = slug ? `/note/${slug}` : null;
                             const badge = (
-                                <span className="inline-flex items-stretch rounded overflow-hidden align-middle border border-blue-200 dark:border-blue-700/70 mt-1">
+                                <span className="inline-flex items-stretch rounded overflow-hidden align-middle border border-blue-200 dark:border-blue-700/70 mt-2">
                                     <span className="flex items-center px-1.5 text-[0.72em] font-bold uppercase tracking-wide text-blue-800 dark:text-blue-200 bg-blue-200/70 dark:bg-blue-700/60">
                                         NOTE:
                                     </span>
