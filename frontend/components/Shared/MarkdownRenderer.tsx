@@ -3,6 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import hljs from 'highlight.js';
+import CalloutBlock, { CalloutType } from './CalloutBlock';
 
 const CodeBlock: React.FC<React.HTMLAttributes<HTMLPreElement>> = ({ children, ...props }) => {
     const preRef = useRef<HTMLPreElement>(null);
@@ -340,13 +341,36 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                     },
                     pre: ({ ...props }) => <CodeBlock {...props} />,
 
-                    // Customize blockquote styles
-                    blockquote: ({ ...props }) => (
-                        <blockquote
-                            className="mb-4 pl-4 border-l-4 border-gray-300 dark:border-gray-600 italic text-gray-600 dark:text-gray-400"
-                            {...props}
-                        />
-                    ),
+                    // Customize blockquote styles — detect Obsidian-style callouts
+                    blockquote: ({ node, children, ...props }) => {
+                        const firstHastChild = (node as any)?.children?.[0];
+                        if (firstHastChild?.type === 'element' && firstHastChild?.tagName === 'p') {
+                            const firstText = firstHastChild?.children?.[0];
+                            if (firstText?.type === 'text') {
+                                const match = (firstText.value as string)?.match(
+                                    /^\[!(NOTE|WARNING|TIP|IMPORTANT|DANGER)\](?:\s+(.*))?$/i
+                                );
+                                if (match) {
+                                    const calloutType = match[1].toUpperCase() as CalloutType;
+                                    const title = match[2]?.trim();
+                                    const contentChildren = React.Children.toArray(children).slice(1);
+                                    return (
+                                        <CalloutBlock type={calloutType} title={title}>
+                                            {contentChildren.length > 0 ? contentChildren : null}
+                                        </CalloutBlock>
+                                    );
+                                }
+                            }
+                        }
+                        return (
+                            <blockquote
+                                className="mb-4 pl-4 border-l-4 border-gray-300 dark:border-gray-600 italic text-gray-600 dark:text-gray-400"
+                                {...props}
+                            >
+                                {children}
+                            </blockquote>
+                        );
+                    },
 
                     // Customize table styles - hide tables in summary mode
                     table: ({ ...props }) =>

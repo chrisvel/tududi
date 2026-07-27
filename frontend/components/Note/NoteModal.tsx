@@ -10,6 +10,7 @@ import { Project } from '../../entities/Project';
 import { useToast } from '../Shared/ToastContext';
 import TagInput from '../Tag/TagInput';
 import MarkdownRenderer from '../Shared/MarkdownRenderer';
+import MarkdownEditor from './MarkdownEditor';
 import { Tag } from '../../entities/Tag';
 import { useStore } from '../../store/useStore';
 import { useTranslation } from 'react-i18next';
@@ -576,21 +577,17 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                                     </div>
 
                                                     {activeTab === 'edit' ? (
-                                                        <textarea
-                                                            id="noteContent"
-                                                            name="content"
-                                                            value={
-                                                                formData.content ||
-                                                                ''
-                                                            }
-                                                            onChange={
-                                                                handleChange
-                                                            }
-                                                            className="block w-full h-full min-h-0 sm:border sm:border-gray-300 sm:dark:border-gray-600 sm:rounded-md shadow-sm py-2 sm:py-3 px-3 sm:px-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 sm:focus:ring-2 sm:focus:ring-blue-500 transition duration-150 ease-in-out resize-none"
-                                                            placeholder={t('notes.contentPlaceholderMarkdown')}
-                                                            autoComplete="off"
-                                                            data-testid="note-content-textarea"
-                                                        />
+                                                        <div className="block w-full h-full min-h-0 sm:border sm:border-gray-300 sm:dark:border-gray-600 sm:rounded-md shadow-sm py-2 sm:py-3 px-3 text-sm bg-white dark:bg-gray-900">
+                                                            <MarkdownEditor
+                                                                value={formData.content || ''}
+                                                                onChange={(val) =>
+                                                                    setFormData((prev) => ({ ...prev, content: val }))
+                                                                }
+                                                                placeholder={t('notes.contentPlaceholderMarkdown')}
+                                                                minHeight="200px"
+                                                                data-testid="note-content-textarea"
+                                                            />
+                                                        </div>
                                                     ) : (
                                                         <div className="block w-full h-full min-h-0 sm:border sm:border-gray-300 sm:dark:border-gray-600 sm:rounded-md shadow-sm py-2 px-3 sm:py-3 sm:px-3 text-sm bg-gray-50 dark:bg-gray-800 overflow-y-auto">
                                                             {formData.content ? (
