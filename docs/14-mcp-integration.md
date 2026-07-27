@@ -21,11 +21,13 @@ This guide explains how to configure and use the Model Context Protocol (MCP) in
     - [Tasks Tools (8)](#tasks-tools-8)
     - [Projects Tools (5)](#projects-tools-5)
     - [Inbox Tools (6)](#inbox-tools-6)
+    - [Views Tools (5)](#views-tools-5)
     - [Goals Tools (5)](#goals-tools-5)
     - [Areas Tools (5)](#areas-tools-5)
     - [Notes Tools (5)](#notes-tools-5)
     - [Tags Tools (5)](#tags-tools-5)
     - [Habits Tools (9)](#habits-tools-9)
+    - [People Tools (5)](#people-tools-5)
     - [Misc Tools (1)](#misc-tools-1)
 - [Claude Desktop Setup](#claude-desktop-setup)
 - [Cursor Setup](#cursor-setup)
@@ -42,7 +44,7 @@ Tududi's MCP integration allows AI assistants (Claude, Cursor, VS Code extension
 
 **Key Features:**
 
-- **49 Tools:** Complete CRUD operations for tasks, projects, inbox, goals, areas, notes, tags, and habits
+- **59 Tools:** Complete CRUD operations for tasks, projects, inbox, views, goals, areas, notes, tags, habits, and people
 - **Secure Authentication:** API token-based authentication with user isolation
 - **Local or Remote:** Two transport modes for different use cases
 - **Feature Flag:** Opt-in via `FF_ENABLE_MCP` to control availability
@@ -178,7 +180,7 @@ Tududi supports two transport modes for different deployment scenarios:
 
 ## Available Tools
 
-Tududi exposes 49 MCP tools organized into 9 categories. All tools are scoped to the authenticated user — you can never access another user's data.
+Tududi exposes 59 MCP tools organized into 11 categories. All tools are scoped to the authenticated user — you can never access another user's data.
 
 ### Tasks Tools (8)
 
@@ -496,6 +498,87 @@ Delete an inbox item.
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `id` | number | Yes | Inbox item ID |
+
+---
+
+### Views Tools (5)
+
+#### `list_views`
+
+List saved smart views (saved searches).
+
+**Parameters:**
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `pinned_only` | boolean | No | `false` | Return only pinned views |
+
+**Returns:** View objects with name, search query, filter config, and pin state.
+
+---
+
+#### `get_view`
+
+Get a specific smart view by UID.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | View UID |
+
+---
+
+#### `create_view`
+
+Create a new smart view (saved search).
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `name` | string | Yes | View name |
+| `search_query` | string | No | Text search query |
+| `is_pinned` | boolean | No | Pin to sidebar (default: false) |
+| `priority` | string | No | Priority filter: `low`, `medium`, `high` |
+| `due` | string | No | Due date filter (e.g. `today`, `this_week`) |
+| `tags` | string[] | No | Tag filters |
+
+**Example:**
+
+```json
+{
+    "name": "High priority this week",
+    "priority": "high",
+    "due": "this_week",
+    "is_pinned": true
+}
+```
+
+---
+
+#### `update_view`
+
+Update an existing smart view.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | View UID |
+| `name` | string | No | New name |
+| `search_query` | string | No | New search query |
+| `is_pinned` | boolean | No | Pin or unpin from sidebar |
+| `priority` | string | No | New priority filter |
+| `due` | string | No | New due date filter |
+| `tags` | string[] | No | New tag filters |
+
+---
+
+#### `delete_view`
+
+Delete a smart view.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | View UID |
 
 ---
 
@@ -847,6 +930,90 @@ Get aggregated statistics for a habit.
 
 ---
 
+### People Tools (5)
+
+#### `list_people`
+
+List people (contacts) with optional filtering.
+
+**Parameters:**
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `archived` | boolean | No | `false` | Include archived contacts |
+| `relationship_type` | string | No | — | Filter by type: `colleague`, `friend`, `family`, `other` |
+| `sort` | string | No | `name` | Sort order: `name` or `created_at` |
+
+**Returns:** Contact objects with name, email, phone, relationship type, notes, and color.
+
+---
+
+#### `get_person`
+
+Get a specific person by UID, including their assigned task count.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Person UID |
+
+---
+
+#### `create_person`
+
+Create a new person/contact.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `name` | string | Yes | Full name |
+| `email` | string | No | Email address |
+| `phone` | string | No | Phone number |
+| `relationship_type` | string | No | `colleague`, `friend`, `family`, `other` (default: `other`) |
+| `notes` | string | No | Free-text notes |
+| `color` | string | No | Hex color (e.g. `#4f9ef8`) |
+
+**Example:**
+
+```json
+{
+    "name": "Alice Smith",
+    "email": "alice@example.com",
+    "relationship_type": "colleague",
+    "color": "#4f9ef8"
+}
+```
+
+---
+
+#### `update_person`
+
+Update an existing person/contact.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Person UID |
+| `name` | string | No | New name |
+| `email` | string | No | New email |
+| `phone` | string | No | New phone |
+| `relationship_type` | string | No | New relationship type |
+| `notes` | string | No | New notes |
+| `color` | string | No | New hex color or empty string to remove |
+| `archived` | boolean | No | Archive or unarchive |
+
+---
+
+#### `delete_person`
+
+Permanently delete a person/contact.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `uid` | string | Yes | Person UID |
+
+---
+
 ### Misc Tools (1)
 
 #### `search`
@@ -1161,14 +1328,16 @@ FF_ENABLE_MCP=true
 | `backend/modules/mcp/server.js`               | Stdio MCP server entry point  |
 | `backend/modules/mcp/httpTransport.js`        | HTTP transport handler        |
 | `backend/modules/mcp/toolRegistry.js`         | Registers all tool categories |
-| `backend/modules/mcp/tools/taskTools.js`      | Task-related tools (8)        |
+| `backend/modules/mcp/tools/taskTools.js`      | Task tools (8)                |
 | `backend/modules/mcp/tools/projectTools.js`   | Project tools (5)             |
 | `backend/modules/mcp/tools/inboxTools.js`     | Inbox tools (6)               |
+| `backend/modules/mcp/tools/viewTools.js`      | Smart view tools (5)          |
 | `backend/modules/mcp/tools/goalTools.js`      | Goal tools (5)                |
 | `backend/modules/mcp/tools/areaTools.js`      | Area tools (5)                |
 | `backend/modules/mcp/tools/noteTools.js`      | Note tools (5)                |
 | `backend/modules/mcp/tools/tagTools.js`       | Tag tools (5)                 |
 | `backend/modules/mcp/tools/habitTools.js`     | Habit tools (9)               |
+| `backend/modules/mcp/tools/peopleTools.js`    | People/contact tools (5)      |
 | `backend/modules/mcp/tools/miscTools.js`      | Search tool (1)               |
 | `backend/modules/mcp/middleware.js`           | API token authentication      |
 | `backend/modules/mcp/controller.js`           | REST API endpoints            |
@@ -1178,5 +1347,5 @@ FF_ENABLE_MCP=true
 ---
 
 - **Document Version:** 1.1.0
-- **Last Updated:** 2026-07-26
+- **Last Updated:** 2026-07-27
 - **Minimum Tududi Version:** v1.0.0 (released 2026-03-27)
