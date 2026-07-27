@@ -234,14 +234,11 @@ const Notes: React.FC = () => {
     };
 
     const handleNewNote = () => {
-        setEditingNote({
-            title: '',
-            content: '',
-            tags: [],
-        });
         setIsEditing(true);
+        setEditingNote({ title: '', content: '', tags: [] });
+        setPreviewNote(null);
         setSaveStatus('saved');
-        handleSelectNote(null);
+        navigate('/notes', { replace: true });
     };
 
     const handleSaveInlineNote = async () => {
@@ -463,6 +460,7 @@ const Notes: React.FC = () => {
             !uid &&
             sortedNotes.length > 0 &&
             !previewNote &&
+            !isEditing &&
             !hasAutoSelected.current
         ) {
             const isDesktop = window.innerWidth >= 768;
@@ -471,7 +469,7 @@ const Notes: React.FC = () => {
                 hasAutoSelected.current = true;
             }
         }
-    }, [sortedNotes, previewNote, uid]);
+    }, [sortedNotes, previewNote, uid, isEditing]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
