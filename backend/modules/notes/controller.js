@@ -125,6 +125,21 @@ const notesController = {
     },
 
     /**
+     * GET /api/note/:uid/backlinks
+     * Get all notes that link to this note via [[title]].
+     */
+    async backlinks(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const uid = extractUidFromSlug(req.params.uid);
+            const links = await notesService.getBacklinks(userId, uid);
+            res.json(links);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    /**
      * Get note UID if exists (for authorization middleware).
      */
     async getNoteUidForAuth(req) {

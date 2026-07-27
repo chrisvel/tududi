@@ -340,9 +340,126 @@
   .markdown-content table {
     font-size: 0.875rem;
   }
-  
+
   .markdown-content th,
   .markdown-content td {
     padding: 0.5rem;
   }
+}
+
+/* =====================================================
+   CodeMirror editor integration
+   ===================================================== */
+
+/* Transparent background so parent container controls bg color */
+.cm-editor-wrapper .cm-editor {
+  background-color: transparent !important;
+}
+
+/* Remove default CodeMirror focus outline (we handle focus styling via parent) */
+.cm-editor-wrapper .cm-editor.cm-focused {
+  outline: none !important;
+}
+
+/* Ensure the editor grows with content, never clips */
+.cm-editor-wrapper .cm-scroller {
+  overflow: visible !important;
+}
+
+/* Text color inherits from parent in light mode */
+.cm-editor-wrapper .cm-content {
+  color: inherit;
+}
+
+/* Dark mode: ensure text color is light when oneDark theme isn't set */
+.dark .cm-editor-wrapper .cm-content {
+  color: #e5e7eb; /* gray-200 */
+}
+
+/* Selection highlight */
+.cm-editor-wrapper .cm-selectionBackground {
+  background-color: rgba(59, 130, 246, 0.2) !important;
+}
+.cm-editor-wrapper .cm-focused .cm-selectionBackground {
+  background-color: rgba(59, 130, 246, 0.3) !important;
+}
+
+/* Cursor */
+.cm-editor-wrapper .cm-cursor,
+.cm-editor-wrapper .cm-dropCursor {
+  border-left-color: #6b7280;
+}
+.dark .cm-editor-wrapper .cm-cursor,
+.dark .cm-editor-wrapper .cm-dropCursor {
+  border-left-color: #9ca3af;
+}
+
+/* Heading sizes in syntax-highlighted markdown editing */
+.cm-editor-wrapper .cm-line .tok-heading1 {
+  font-size: 1.5em;
+  font-weight: 700;
+}
+.cm-editor-wrapper .cm-line .tok-heading2 {
+  font-size: 1.25em;
+  font-weight: 600;
+}
+.cm-editor-wrapper .cm-line .tok-heading3 {
+  font-size: 1.1em;
+  font-weight: 600;
+}
+
+/* =====================================================
+   Callout blocks (Obsidian-style > [!TYPE])
+   ===================================================== */
+
+.callout {
+  border-radius: 0.5rem;
+  border-left-width: 4px;
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+}
+
+.callout-note {
+  border-color: #60a5fa;
+  background-color: rgba(239, 246, 255, 0.8);
+}
+.dark .callout-note {
+  border-color: #3b82f6;
+  background-color: rgba(23, 37, 84, 0.3);
+}
+
+.callout-tip {
+  border-color: #4ade80;
+  background-color: rgba(240, 253, 244, 0.8);
+}
+.dark .callout-tip {
+  border-color: #22c55e;
+  background-color: rgba(5, 46, 22, 0.3);
+}
+
+.callout-warning {
+  border-color: #fbbf24;
+  background-color: rgba(255, 251, 235, 0.8);
+}
+.dark .callout-warning {
+  border-color: #f59e0b;
+  background-color: rgba(69, 26, 3, 0.3);
+}
+
+.callout-important {
+  border-color: #c084fc;
+  background-color: rgba(250, 245, 255, 0.8);
+}
+.dark .callout-important {
+  border-color: #a855f7;
+  background-color: rgba(59, 7, 100, 0.3);
+}
+
+.callout-danger {
+  border-color: #f87171;
+  background-color: rgba(254, 242, 242, 0.8);
+}
+.dark .callout-danger {
+  border-color: #ef4444;
+  background-color: rgba(69, 10, 10, 0.3);
 }

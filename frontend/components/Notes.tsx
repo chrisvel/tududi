@@ -36,6 +36,7 @@ import { createProject } from '../utils/projectsService';
 import { ENABLE_NOTE_COLOR } from '../config/featureFlags';
 import { COLORS } from './Shared/ColorPicker';
 import NoteFocusMode from './Note/NoteFocusMode';
+import MarkdownEditor from './Note/MarkdownEditor';
 
 
 const shouldUseLightText = (hexColor: string | undefined): boolean => {
@@ -1000,26 +1001,16 @@ const Notes: React.FC = () => {
                                     </div>
                                 )}
 
-                                <div className="flex-1 overflow-y-auto px-6 md:px-8">
-                                    <textarea
+                                <div className="flex-1 overflow-y-auto px-6 md:px-8 py-4">
+                                    <MarkdownEditor
                                         value={editingNote.content || ''}
-                                        onChange={(e) =>
-                                            handleNoteChange({
-                                                content: e.target.value,
-                                            })
+                                        onChange={(val) =>
+                                            handleNoteChange({ content: val })
                                         }
                                         onClick={(e) => e.stopPropagation()}
                                         placeholder={t('notes.contentPlaceholder')}
-                                        className="w-full h-full min-h-[300px] bg-transparent text-gray-900 dark:text-gray-100 border-none focus:outline-none focus:ring-0 resize-none py-4"
-                                        style={{
-                                            color: editingNoteColor
-                                                ? shouldUseLightText(
-                                                      editingNoteColor
-                                                  )
-                                                    ? '#ffffff'
-                                                    : '#333333'
-                                                : undefined,
-                                        }}
+                                        noteColor={editingNoteColor}
+                                        minHeight="300px"
                                     />
                                 </div>
                             </div>

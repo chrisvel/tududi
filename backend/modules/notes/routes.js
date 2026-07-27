@@ -40,4 +40,7 @@ router.delete(
     notesController.delete
 );
 
+// Get backlinks — notes that reference this note via [[title]]
+router.get('/note/:uid/backlinks', notesController.backlinks);
+
 module.exports = router;
