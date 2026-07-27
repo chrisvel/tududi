@@ -1,4 +1,11 @@
-const { Task, Tag, Project, Area, sequelize } = require('../../../models');
+const {
+    Task,
+    Tag,
+    Project,
+    Area,
+    Person,
+    sequelize,
+} = require('../../../models');
 const { Op, QueryTypes } = require('sequelize');
 const permissionsService = require('../../../services/permissionsService');
 const {
@@ -110,6 +117,12 @@ async function filterTasksByParams(
                 ['order', 'ASC'],
                 ['created_at', 'ASC'],
             ],
+        },
+        {
+            model: Person,
+            as: 'AssignedTo',
+            attributes: ['uid', 'name', 'color', 'relationship_type'],
+            required: false,
         },
     ];
 
@@ -481,6 +494,12 @@ function getTaskIncludeConfig() {
                 ['order', 'ASC'],
                 ['created_at', 'ASC'],
             ],
+        },
+        {
+            model: Person,
+            as: 'AssignedTo',
+            attributes: ['uid', 'name', 'color', 'relationship_type'],
+            required: false,
         },
     ];
 }

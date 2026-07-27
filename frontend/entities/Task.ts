@@ -2,6 +2,7 @@ import { Tag } from './Tag';
 import { Project } from './Project';
 import { Area } from './Area';
 import { Attachment } from './Attachment';
+import { Person } from './Person';
 
 export interface Task {
     id?: number;
@@ -48,6 +49,7 @@ export interface Task {
     habit_total_completions?: number;
     habit_last_completion_at?: string;
     assigned_to?: string | null;
+    AssignedTo?: Person | null;
     involves?: string[];
     // Transient UI field set by suggestion scoring - never persisted or sent to server
     _suggestionMeta?: {
