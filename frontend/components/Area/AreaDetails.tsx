@@ -407,11 +407,11 @@ const AreaDetails: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Goals spine + projects */}
                 <div className="lg:col-span-1 space-y-6">
-                    <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center justify-between mb-4">
                         <h2 className="text-lg font-light text-gray-700 dark:text-gray-300">Goals</h2>
                         <button
                             onClick={openNewGoalForm}
-                            className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                            className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 px-2 py-1 rounded-md transition-colors"
                         >
                             <PlusIcon className="h-3.5 w-3.5" /> Add goal
                         </button>
@@ -504,22 +504,22 @@ const AreaDetails: React.FC = () => {
 
                             {/* Maintenance bucket */}
                             {maintenanceProjects.length > 0 && (
-                                <div>
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <WrenchScrewdriverIcon className="h-4 w-4 text-gray-400" />
-                                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Maintenance</span>
-                                        <span className="relative group/tip">
-                                            <InformationCircleIcon className="h-3.5 w-3.5 text-gray-300 dark:text-gray-600 cursor-help" />
+                                <div className="rounded-xl shadow-sm overflow-hidden">
+                                    <div className="px-4 py-3 flex items-center gap-2 bg-gray-500 dark:bg-gray-600">
+                                        <WrenchScrewdriverIcon className="h-4 w-4 text-white/70" />
+                                        <span className="text-sm font-semibold tracking-widest uppercase text-white">Maintenance</span>
+                                        <span className="relative group/tip ml-1">
+                                            <InformationCircleIcon className="h-3.5 w-3.5 text-white/40 cursor-help" />
                                             <span className="pointer-events-none absolute left-5 top-0 z-10 w-52 rounded-md bg-gray-800 px-2.5 py-1.5 text-xs text-white opacity-0 group-hover/tip:opacity-100 transition-opacity shadow-lg">
                                                 Maintenance projects keep things running. They&apos;re ongoing work without a specific goal or end date.
                                             </span>
                                         </span>
                                     </div>
-                                    <div className="ml-6">
-                                        <p className="text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">
+                                    <div className="bg-white dark:bg-gray-800 border-x border-b border-gray-200 dark:border-gray-700 rounded-b-xl px-3 pt-3 pb-3">
+                                        <p className="text-xs font-medium uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-2 px-1">
                                             Projects
                                         </p>
-                                        <div className="space-y-2">
+                                        <div className="space-y-1.5">
                                             {maintenanceProjects.map((p) => (
                                                 <MaintenanceProjectRow
                                                     key={p.uid || p.id}
@@ -539,7 +539,7 @@ const AreaDetails: React.FC = () => {
                                     <summary className="text-xs text-gray-400 dark:text-gray-500 cursor-pointer select-none">
                                         Inactive goals ({goals.filter((g) => g.status !== 'active').length})
                                     </summary>
-                                    <div className="mt-2 space-y-3">
+                                    <div className="mt-3 space-y-4">
                                         {goals.filter((g) => g.status !== 'active').map((goal) => (
                                             <GoalBucket
                                                 key={goal.uid || goal.id}
@@ -558,18 +558,18 @@ const AreaDetails: React.FC = () => {
 
                             {/* Unlinked bucket */}
                             {unlinkedProjects.length > 0 && (
-                                <div>
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <ChevronRightIcon className="h-4 w-4 text-gray-300 dark:text-gray-600" />
-                                        <span className="text-sm text-gray-400 dark:text-gray-500">
+                                <div className="rounded-xl shadow-sm overflow-hidden">
+                                    <div className="px-4 py-3 flex items-center gap-2 bg-gray-400 dark:bg-gray-600">
+                                        <ChevronRightIcon className="h-4 w-4 text-white/70" />
+                                        <span className="text-sm font-semibold tracking-widest uppercase text-white">
                                             Unlinked ({unlinkedProjects.length})
                                         </span>
                                     </div>
-                                    <div className="ml-6">
-                                        <p className="text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">
+                                    <div className="bg-white dark:bg-gray-800 border-x border-b border-gray-200 dark:border-gray-700 rounded-b-xl px-3 pt-3 pb-3">
+                                        <p className="text-xs font-medium uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-2 px-1">
                                             Projects
                                         </p>
-                                        <div className="space-y-2">
+                                        <div className="space-y-1.5">
                                         {unlinkedProjects.map((p) => (
                                             <UnlinkedProjectRow
                                                 key={p.uid || p.id}
@@ -659,46 +659,56 @@ const GoalBucket: React.FC<GoalBucketProps> = ({
     goal, projects, areaColor, getProjectLink, onEdit, onDelete, dimmed,
 }) => {
     const { t } = useTranslation();
-    const dotColor = areaColor || '#6b7280';
+    const headerBg = areaColor || '#6b7280';
     return (
-        <div className={dimmed ? 'opacity-60' : ''}>
-            <div className="flex items-start justify-between gap-2 mb-1.5">
-                <div className="flex items-center gap-2 min-w-0">
-                    <FlagIcon className="h-4 w-4 flex-shrink-0" style={{ color: dotColor }} />
-                    <span className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
-                        {goal.title}
-                    </span>
-                    <span className="text-xs text-gray-400 dark:text-gray-500 flex-shrink-0">
+        <div className={`rounded-xl shadow-sm overflow-hidden ${dimmed ? 'opacity-60' : ''}`}>
+            {/* Colored header — matches Area/Tag/Project card template */}
+            <div
+                className="px-4 py-3 flex items-start justify-between gap-2"
+                style={{ backgroundColor: headerBg }}
+            >
+                <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                        <FlagIcon className="h-3.5 w-3.5 flex-shrink-0 text-white/70" />
+                        <span className="text-sm font-semibold tracking-widest uppercase text-white truncate">
+                            {goal.title}
+                        </span>
+                    </div>
+                    <p className="text-xs text-white/60 mt-0.5 ml-5">
                         {HORIZON_LABELS[goal.horizon]}
                         {goal.status !== 'active' && ` · ${STATUS_LABELS[goal.status]}`}
-                    </span>
+                    </p>
                 </div>
-                <div className="flex items-center gap-1 flex-shrink-0">
-                    <button onClick={onEdit} className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" title={t('areas.editGoal')}>
+                <div className="flex items-center gap-0.5 flex-shrink-0">
+                    <button onClick={onEdit} className="p-1 rounded text-white/60 hover:text-white hover:bg-white/10" title={t('areas.editGoal')}>
                         <PencilSquareIcon className="h-3.5 w-3.5" />
                     </button>
-                    <button onClick={onDelete} className="p-1 text-gray-400 hover:text-red-500" title={t('areas.deleteGoal')}>
+                    <button onClick={onDelete} className="p-1 rounded text-white/60 hover:text-red-300 hover:bg-white/10" title={t('areas.deleteGoal')}>
                         <TrashIcon className="h-3.5 w-3.5" />
                     </button>
                 </div>
             </div>
-            {goal.why && (
-                <p className="text-xs text-gray-400 dark:text-gray-500 ml-6 mb-1.5 italic">{goal.why}</p>
-            )}
-            {projects.length > 0 ? (
-                <div className="ml-6">
-                    <p className="text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">
-                        Projects
-                    </p>
-                    <div className="space-y-2">
-                        {projects.map((p) => (
-                            <ProjectChip key={p.uid || p.id} project={p} getLink={getProjectLink} />
-                        ))}
+
+            {/* White body */}
+            <div className="bg-white dark:bg-gray-800 border-x border-b border-gray-200 dark:border-gray-700 rounded-b-xl">
+                {goal.why && (
+                    <p className="text-xs text-gray-400 dark:text-gray-500 px-4 pt-3 italic">{goal.why}</p>
+                )}
+                {projects.length > 0 ? (
+                    <div className="px-3 pt-3 pb-3">
+                        <p className="text-xs font-medium uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-2 px-1">
+                            Projects
+                        </p>
+                        <div className="space-y-1.5">
+                            {projects.map((p) => (
+                                <ProjectChip key={p.uid || p.id} project={p} getLink={getProjectLink} />
+                            ))}
+                        </div>
                     </div>
-                </div>
-            ) : (
-                <p className="text-xs text-gray-300 dark:text-gray-600 ml-6 italic">No projects linked</p>
-            )}
+                ) : (
+                    <p className="text-xs text-gray-300 dark:text-gray-600 px-4 py-3 italic">No projects linked</p>
+                )}
+            </div>
         </div>
     );
 };
@@ -711,11 +721,11 @@ interface MaintenanceProjectRowProps {
 
 const MaintenanceProjectRow: React.FC<MaintenanceProjectRowProps> = ({ project, getLink, onUnmark }) => {
     const { t } = useTranslation();
-    const cardColor = (project as any).color || '#6b7280';
+    const accentColor = (project as any).color || '#6b7280';
     return (
         <div
-            className="flex items-center gap-3 px-3 py-3 rounded-md bg-white dark:bg-gray-900 shadow-sm border-l-4 group"
-            style={{ borderLeftColor: cardColor }}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800/70 transition-colors border-l-4 group"
+            style={{ borderLeftColor: accentColor }}
         >
             <Link
                 to={getLink(project)}
@@ -740,12 +750,12 @@ interface ProjectChipProps {
 }
 
 const ProjectChip: React.FC<ProjectChipProps> = ({ project, getLink }) => {
-    const cardColor = (project as any).color || '#6b7280';
+    const accentColor = (project as any).color || '#6b7280';
     return (
         <Link
             to={getLink(project)}
-            className="flex items-center gap-3 px-3 py-3 rounded-md bg-white dark:bg-gray-900 shadow-sm hover:shadow-md transition-shadow border-l-4"
-            style={{ borderLeftColor: cardColor }}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800/70 transition-colors border-l-4"
+            style={{ borderLeftColor: accentColor }}
         >
             <span className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
                 {project.name}
@@ -767,29 +777,28 @@ const UnlinkedProjectRow: React.FC<UnlinkedProjectRowProps> = ({
     project, goals, getLink, onLinkToGoal, onMarkMaintenance, onDrop,
 }) => {
     const [open, setOpen] = useState(false);
-
-    const cardColor = (project as any).color || '#9ca3af';
+    const accentColor = (project as any).color || '#9ca3af';
     return (
         <div
-            className="bg-white dark:bg-gray-900 rounded-md shadow-sm px-3 py-3 border-l-4"
-            style={{ borderLeftColor: cardColor }}
+            className="rounded-lg bg-gray-50 dark:bg-gray-900 border-l-4"
+            style={{ borderLeftColor: accentColor }}
         >
-            <div className="flex items-start justify-between gap-2">
+            <div className="flex items-center justify-between gap-2 px-3 py-2">
                 <Link
                     to={getLink(project)}
-                    className="min-w-0 flex-1 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 truncate"
+                    className="min-w-0 flex-1 text-sm font-medium text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-100 truncate"
                 >
                     {project.name}
                 </Link>
                 <button
                     onClick={() => setOpen((o) => !o)}
-                    className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 flex-shrink-0 mt-0.5"
+                    className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 flex-shrink-0"
                 >
                     {open ? 'cancel' : 'link…'}
                 </button>
             </div>
             {open && (
-                <div className="mt-2 space-y-1.5">
+                <div className="px-3 pb-2 space-y-1.5">
                     {goals.length > 0 ? (
                         <div className="flex flex-wrap gap-1.5">
                             {goals.map((g) => (
@@ -810,7 +819,7 @@ const UnlinkedProjectRow: React.FC<UnlinkedProjectRowProps> = ({
                     <div className="flex flex-wrap gap-1.5">
                         <button
                             onClick={() => onMarkMaintenance(project)}
-                            className="text-xs border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 px-2 py-1 rounded hover:bg-gray-50 dark:hover:bg-gray-800"
+                            className="text-xs border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
                         >
                             Maintenance
                         </button>
