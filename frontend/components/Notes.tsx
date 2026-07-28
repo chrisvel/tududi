@@ -20,7 +20,7 @@ import {
 } from '@heroicons/react/24/outline';
 import PushPinIcon from './Shared/Icons/PushPinIcon';
 import { useToast } from './Shared/ToastContext';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { SortOption } from './Shared/SortFilterButton';
 import NoteModal from './Note/NoteModal';
 import ConfirmDialog from './Shared/ConfirmDialog';
@@ -57,6 +57,7 @@ const Notes: React.FC = () => {
     const { showSuccessToast } = useToast();
     const { uid } = useParams<{ uid?: string }>();
     const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const [previewNote, setPreviewNote] = useState<Note | null>(null);
     const [isEditing, setIsEditing] = useState(false);
@@ -94,6 +95,16 @@ const Notes: React.FC = () => {
             loadNotes();
         }
     }, [hasLoaded, isLoading, isError, loadNotes]);
+
+    useEffect(() => {
+        if (searchParams.get('new') === '1') {
+            setIsEditing(true);
+            setEditingNote({ title: '', content: '', tags: [] });
+            setPreviewNote(null);
+            setSaveStatus('saved');
+            setSearchParams({}, { replace: true });
+        }
+    }, [searchParams]);
 
     const debouncedSave = useDebouncedCallback(async (noteToSave: Note) => {
         if (!noteToSave.title) return;

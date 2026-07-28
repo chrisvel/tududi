@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Location } from 'react-router-dom';
+import { Location, useNavigate } from 'react-router-dom';
 import {
     BookOpenIcon,
     PlusCircleIcon,
@@ -15,15 +15,14 @@ interface SidebarNotesProps {
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
     location: Location;
     isDarkMode: boolean;
-    openNoteModal: (note: Note | null) => void;
     notes: Note[];
 }
 
 const SidebarNotes: React.FC<SidebarNotesProps> = ({
     handleNavClick,
     location,
-    openNoteModal,
 }) => {
+    const router = useNavigate();
     const { t } = useTranslation();
     const [isExpanded, setIsExpanded] = useState(false);
 
@@ -77,7 +76,7 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
-                            openNoteModal(null);
+                            router('/notes?new=1');
                         }}
                         className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none"
                         aria-label={t('sidebar.addNoteAriaLabel')}
