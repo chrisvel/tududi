@@ -22,6 +22,7 @@ import { getApiPath, getAssetPath } from '../config/paths';
 import { getFeatureFlags, FeatureFlags } from '../utils/featureFlags';
 import { setUserTimezone } from '../utils/dateUtils';
 import { fetchProfile as fetchProfileFromService, invalidateProfileCache } from '../utils/profileService';
+import { notifySwClearCache } from '../utils/swUtils';
 
 interface NavbarProps {
     isDarkMode: boolean;
@@ -151,6 +152,7 @@ const Navbar: React.FC<NavbarProps> = ({
             });
 
             if (response.ok) {
+                notifySwClearCache();
                 setCurrentUser(null);
                 navigate('/login');
             } else {

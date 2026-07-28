@@ -2,6 +2,10 @@ const CACHE_VERSION = 'tududi-v1';
 const API_CACHE = 'tududi-api-v1';
 const SYNC_QUEUE = 'tududi-sync-queue';
 
+// Set via SESSION_UPDATE message from the client after login.
+// Used to tag queued mutations and detect cross-principal replays.
+let sessionUserId = null;
+
 const STATIC_ASSETS = [
     '/',
     '/manifest.json',
@@ -34,13 +38,47 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
+// ─── Message handler ─────────────────────────────────────────────────────────
+
+self.addEventListener('message', (event) => {
+    const { type, sessionId } = event.data || {};
+
+    if (type === 'SKIP_WAITING') {
+        self.skipWaiting();
+        return;
+    }
+    if (type === 'SESSION_UPDATE') {
+        sessionUserId = sessionId || null;
+        return;
+    }
+    if (type === 'CLEAR_CACHE') {
+        event.waitUntil(clearUserData());
+        return;
+    }
+});
+
+async function clearUserData() {
+    sessionUserId = null;
+    await caches.delete(API_CACHE);
+    await purgeQueue();
+}
+
+async function purgeQueue() {
+    const db = await openQueueDb();
+    const tx = db.transaction(SYNC_QUEUE, 'readwrite');
+    tx.objectStore(SYNC_QUEUE).clear();
+    return new Promise((resolve, reject) => {
+        tx.oncomplete = resolve;
+        tx.onerror = () => reject(tx.error);
+    });
+}
+
 // ─── Fetch ───────────────────────────────────────────────────────────────────
 
 self.addEventListener('fetch', (event) => {
     const { request } = event;
     const url = new URL(request.url);
 
-    // Only handle same-origin requests
     if (url.origin !== self.location.origin) return;
 
     if (url.pathname.startsWith('/api/')) {
@@ -52,7 +90,6 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // Navigation: network-first, fall back to cached shell
     if (request.mode === 'navigate') {
         event.respondWith(
             fetch(request).catch(() =>
@@ -62,7 +99,6 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // Static assets: cache-first
     event.respondWith(
         caches.match(request).then(
             (cached) =>
@@ -85,6 +121,20 @@ self.addEventListener('fetch', (event) => {
 async function handleApiGet(request) {
     try {
         const response = await fetch(request);
+
+        // A 401 means the session expired or a different user is now active.
+        // Clear cached data so the next user cannot see stale responses.
+        if (response.status === 401 || response.status === 403) {
+            clearUserData().then(() => {
+                self.clients.matchAll({ type: 'window' }).then((clients) =>
+                    clients.forEach((client) =>
+                        client.postMessage({ type: 'AUTH_EXPIRED' })
+                    )
+                );
+            });
+            return response;
+        }
+
         if (response.ok) {
             const cache = await caches.open(API_CACHE);
             cache.put(request, response.clone());
@@ -120,13 +170,31 @@ async function handleApiMutation(request) {
     }
 }
 
+// Sensitive headers that must not be persisted; the browser re-attaches
+// session cookies automatically when replaying via fetch().
+const SENSITIVE_HEADERS = new Set([
+    'authorization',
+    'cookie',
+    'cookie2',
+    'x-auth-token',
+]);
+
 async function queueRequest(request) {
     const body = await request.text().catch(() => '');
+
+    const safeHeaders = {};
+    for (const [k, v] of request.headers.entries()) {
+        if (!SENSITIVE_HEADERS.has(k.toLowerCase())) {
+            safeHeaders[k] = v;
+        }
+    }
+
     const entry = {
         url: request.url,
         method: request.method,
-        headers: Object.fromEntries(request.headers.entries()),
+        headers: safeHeaders,
         body,
+        sessionId: sessionUserId,
         timestamp: Date.now(),
     };
 
@@ -134,7 +202,6 @@ async function queueRequest(request) {
     const tx = db.transaction(SYNC_QUEUE, 'readwrite');
     tx.objectStore(SYNC_QUEUE).add(entry);
 
-    // Register background sync if supported
     if ('sync' in self.registration) {
         await self.registration.sync.register('tududi-sync');
     }
@@ -150,11 +217,22 @@ self.addEventListener('sync', (event) => {
 
 async function replayQueuedRequests() {
     const db = await openQueueDb();
-    const tx = db.transaction(SYNC_QUEUE, 'readwrite');
-    const store = tx.objectStore(SYNC_QUEUE);
-    const entries = await idbAll(store);
+    const tx = db.transaction(SYNC_QUEUE, 'readonly');
+    const entries = await idbAll(tx.objectStore(SYNC_QUEUE));
 
     for (const entry of entries) {
+        // Drop entries queued by a different user — never replay another
+        // principal's mutations under the current session.
+        if (
+            entry.sessionId !== null &&
+            sessionUserId !== null &&
+            entry.sessionId !== sessionUserId
+        ) {
+            const delTx = db.transaction(SYNC_QUEUE, 'readwrite');
+            delTx.objectStore(SYNC_QUEUE).delete(entry.id);
+            continue;
+        }
+
         try {
             const response = await fetch(entry.url, {
                 method: entry.method,
@@ -170,18 +248,9 @@ async function replayQueuedRequests() {
         }
     }
 
-    // Notify open clients to refresh data
     const clients = await self.clients.matchAll({ type: 'window' });
     clients.forEach((client) => client.postMessage({ type: 'SYNC_COMPLETE' }));
 }
-
-// ─── Message handler (e.g. SKIP_WAITING for instant updates) ────────────────
-
-self.addEventListener('message', (event) => {
-    if (event.data?.type === 'SKIP_WAITING') {
-        self.skipWaiting();
-    }
-});
 
 // ─── IndexedDB helpers ───────────────────────────────────────────────────────
 
