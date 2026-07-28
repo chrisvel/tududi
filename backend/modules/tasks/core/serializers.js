@@ -89,9 +89,13 @@ async function serializeTask(
         if (parentTaskMap && taskJson.parent_task_id in parentTaskMap) {
             parentTaskInfo = parentTaskMap[taskJson.parent_task_id] || null;
         } else {
-            const pt = await taskRepository.findById(taskJson.parent_task_id, {
-                attributes: ['id', 'uid', 'name'],
-            });
+            const pt = taskJson.user_id
+                ? await taskRepository.findByIdAndUser(
+                      taskJson.parent_task_id,
+                      taskJson.user_id,
+                      { attributes: ['id', 'uid', 'name'] }
+                  )
+                : null;
             parentTaskInfo = pt
                 ? { id: pt.id, uid: pt.uid, name: pt.name }
                 : null;
@@ -193,7 +197,8 @@ async function serializeTasks(
         }
     }
 
-    // Batch-fetch parent task info for subtasks to avoid per-task DB queries
+    // Batch-fetch parent task info for subtasks to avoid per-task DB queries.
+    // Scoped to the user IDs present in this task list to prevent cross-user info disclosure.
     const parentTaskIds = [
         ...new Set(
             tasks.filter((t) => t.parent_task_id).map((t) => t.parent_task_id)
@@ -201,8 +206,16 @@ async function serializeTasks(
     ];
     const parentTaskMap = {};
     if (parentTaskIds.length > 0) {
+        const userIds = [
+            ...new Set(tasks.map((t) => t.user_id).filter(Boolean)),
+        ];
         const parentTasks = await Task.findAll({
-            where: { id: { [Op.in]: parentTaskIds } },
+            where: {
+                id: { [Op.in]: parentTaskIds },
+                ...(userIds.length > 0
+                    ? { user_id: { [Op.in]: userIds } }
+                    : {}),
+            },
             attributes: ['id', 'uid', 'name'],
             raw: true,
         });
