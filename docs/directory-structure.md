@@ -39,7 +39,15 @@
 ├── Source Code
 ├── backend/               # Express backend → See Backend Structure
 ├── frontend/              # React frontend → See Frontend Structure
-├── public/                # Static assets (fonts, locales, images)
+├── public/                # Static assets served by webpack-dev-server / Express
+│   ├── sw.js              # Service worker: offline cache + mutation queue
+│   ├── manifest.json      # Web app manifest (PWA installability)
+│   ├── index.html         # HTML shell template (HtmlWebpackPlugin input)
+│   ├── icon-logo.png      # 512×512 app icon
+│   ├── apple-touch-icon.png # 180×180 iOS home-screen icon
+│   ├── favicon*.{ico,png} # Favicon variants
+│   ├── fonts/             # Self-hosted Lora WOFF2 files
+│   └── locales/           # i18n JSON translation files (27 locales)
 ├── dist/                  # Production build output
 ├── e2e/                   # Playwright E2E tests
 ├── scripts/               # Build and utility scripts
@@ -246,7 +254,9 @@
 │                        # - React root initialization
 │                        # - i18n setup
 │                        # - Dark mode initialization
-│                        # - Service worker cleanup
+│                        # - Service worker registration (production)
+│                        # - SW update lifecycle + SYNC_COMPLETE handler
+│                        # - Dev-mode SW cleanup
 │
 ├── App.tsx              # Root component (13KB)
 │                        # - Route definitions
@@ -378,7 +388,8 @@
 │   │   ├── slugUtils.ts           # URL slug handling
 │   │   ├── userUtils.ts           # User utilities
 │   │   ├── fetcher.ts             # SWR fetcher configuration
-│   │   └── featureFlags.ts        # Feature flag client
+│   │   ├── featureFlags.ts        # Feature flag client
+│   │   └── swUtils.ts             # Service worker messaging (session/cache)
 │   │
 │   └── config/
 │       └── paths.ts               # API and path configuration

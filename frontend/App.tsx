@@ -44,6 +44,7 @@ import { setCurrentUser as setUserInStorage } from './utils/userUtils';
 import { getApiPath, getLocalesPath } from './config/paths';
 import { useStore } from './store/useStore';
 import { invalidateProfileCache } from './utils/profileService';
+import { notifySwSession, notifySwClearCache } from './utils/swUtils';
 // Lazy load Tasks component to prevent issues with tags loading
 const Tasks = lazy(() => import('./components/Tasks'));
 
@@ -68,6 +69,7 @@ const App: React.FC = () => {
             if (!response.ok) {
                 if (response.status === 401) {
                     invalidateProfileCache();
+                    notifySwClearCache();
                     setCurrentUser(null);
                     return;
                 }
@@ -78,6 +80,7 @@ const App: React.FC = () => {
             if (data.user) {
                 setCurrentUser(data.user);
                 setUserInStorage(data.user);
+                notifySwSession(data.user.id);
                 useStore.getState().userSettingsStore.setEisenhowerEnabled(
                     data.user.features?.eisenhower_enabled === true
                 );

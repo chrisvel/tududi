@@ -1,6 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
+import { mutate } from 'swr';
 import App from './App';
 import { ToastProvider } from './components/Shared/ToastContext';
 import { TelegramStatusProvider } from './contexts/TelegramStatusContext';
@@ -11,6 +12,31 @@ import i18n from './i18n'; // Import the i18n instance with its configuration
 import { getBasePath } from './config/paths';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
+
+if (!isDevelopment && 'serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then((registration) => {
+            registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                if (newWorker) {
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            newWorker.postMessage({ type: 'SKIP_WAITING' });
+                        }
+                    });
+                }
+            });
+        }).catch(() => {
+            // Non-fatal: app functions without service worker
+        });
+
+        navigator.serviceWorker.addEventListener('message', (event) => {
+            if (event.data?.type === 'SYNC_COMPLETE') {
+                mutate(() => true, undefined, { revalidate: true });
+            }
+        });
+    });
+}
 
 // Clear out any lingering service workers/caches from other branches (e.g. PWA)
 if (isDevelopment && 'serviceWorker' in navigator) {

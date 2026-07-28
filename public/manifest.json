@@ -1,21 +1,31 @@
 {
+  "id": "/",
   "name": "tududi",
   "short_name": "tududi",
   "description": "A simple and effective task management application",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "theme_color": "#4a5568",
   "background_color": "#ffffff",
+  "lang": "en",
+  "orientation": "portrait-primary",
   "icons": [
     {
       "src": "/icon-logo.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "/favicon.png",
-      "sizes": "32x32",
+      "src": "/icon-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
       "type": "image/png"
     },
     {
@@ -27,11 +37,6 @@
       "src": "/favicon-16.png",
       "sizes": "16x16",
       "type": "image/png"
-    },
-    {
-      "src": "/favicon.ico",
-      "sizes": "16x16 32x32 48x48",
-      "type": "image/x-icon"
     }
   ]
 }

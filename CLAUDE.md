@@ -199,7 +199,14 @@ npm start  # Frontend on :8080, Backend on :3002
     - Claude Desktop, Cursor, VS Code configuration
     - API token authentication and security
 
-24. **[Claude Memory & Preferences](docs/MEMORY.md)**
+24. **[PWA & Offline Support](docs/15-pwa.md)**
+    - Installable as a Progressive Web App (home screen on mobile and desktop)
+    - Service worker cache strategy (static assets, API reads, offline mutation queue)
+    - Background Sync for replaying queued mutations on reconnect
+    - Session-scoped cache security (cleared on logout / 401)
+    - Known limitations (sub-path deployments, iOS background sync, offline task creation)
+
+25. **[Claude Memory & Preferences](docs/MEMORY.md)**
     - PR and commit message preferences
     - Testing preferences
     - Common patterns to remember
