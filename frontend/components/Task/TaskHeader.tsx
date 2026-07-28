@@ -7,6 +7,7 @@ import {
     ListBulletIcon,
     ChevronDownIcon,
     CheckIcon,
+    ArrowUpIcon,
 } from '@heroicons/react/24/outline';
 import { TagIcon, FolderIcon, FireIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
@@ -164,7 +165,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
         ? formatDeferUntil(task.defer_until)
         : null;
 
-    // Check if task has metadata (project, tags, due_date, completed_at, recurrence_type, recurring_parent_id, or defer_until)
+    // Check if task has metadata (project, tags, due_date, completed_at, recurrence_type, recurring_parent_id, defer_until, or parent_task)
     const hasMetadata =
         (project && project.name && !hideProjectName) ||
         (task.tags && task.tags.length > 0) ||
@@ -172,7 +173,8 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
         (isTaskCompleted(task.status) && task.completed_at) ||
         (task.recurrence_type && task.recurrence_type !== 'none') ||
         task.recurring_parent_id ||
-        !!formattedDeferUntil;
+        !!formattedDeferUntil ||
+        !!task.parent_task;
 
     return (
         <div
@@ -224,6 +226,19 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                     <SubtasksToggleButton />
                                 </div>
                                 {/* Show project and tags info in upcoming view */}
+                                {task.parent_task && (
+                                    <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                                        <ArrowUpIcon className="h-3 w-3 mr-1 flex-shrink-0" />
+                                        <Link
+                                            to={`/task/${task.parent_task.uid}`}
+                                            className="text-gray-500 dark:text-gray-400 hover:underline transition-colors max-w-[12rem] truncate"
+                                            title={task.parent_task.name}
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            {task.parent_task.name}
+                                        </Link>
+                                    </div>
+                                )}
                                 {project && project.name && !hideProjectName && (
                                     <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
                                         <FolderIcon className="h-3 w-3 mr-1" />
@@ -299,6 +314,19 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         {/* Project, tags, due date, and recurrence in same row, with spacing when they exist */}
                         {!isUpcomingView && (
                             <div className={`flex text-xs text-gray-500 dark:text-gray-400 ${isKanbanView ? 'flex-col space-y-0.5 mt-1.5' : 'items-center gap-3 whitespace-nowrap overflow-x-auto'}`}>
+                                {task.parent_task && (
+                                    <div className="flex items-center">
+                                        <ArrowUpIcon className="h-3 w-3 mr-1 flex-shrink-0" />
+                                        <Link
+                                            to={`/task/${task.parent_task.uid}`}
+                                            className="text-gray-500 dark:text-gray-400 hover:underline transition-colors max-w-[12rem] truncate"
+                                            title={task.parent_task.name}
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            {task.parent_task.name}
+                                        </Link>
+                                    </div>
+                                )}
                                 {project && project.name && !hideProjectName && (
                                     <div className="flex items-center">
                                         <FolderIcon className="h-3 w-3 mr-1" />
@@ -463,6 +491,19 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         <div
                             className={`flex flex-col text-xs text-gray-500 dark:text-gray-400 space-y-1 ${hasMetadata ? 'mt-1' : 'hidden'}`}
                         >
+                            {task.parent_task && (
+                                <div className="flex items-center">
+                                    <ArrowUpIcon className="h-3 w-3 mr-1 flex-shrink-0" />
+                                    <Link
+                                        to={`/task/${task.parent_task.uid}`}
+                                        className="text-gray-500 dark:text-gray-400 hover:underline transition-colors max-w-[12rem] truncate"
+                                        title={task.parent_task.name}
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        {task.parent_task.name}
+                                    </Link>
+                                </div>
+                            )}
                             {project && project.name && !hideProjectName && (
                                 <div className="flex items-center">
                                     <FolderIcon className="h-3 w-3 mr-1" />

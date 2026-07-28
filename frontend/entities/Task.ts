@@ -36,6 +36,7 @@ export interface Task {
     recurring_parent_uid?: string;
     completed_at: string | null;
     parent_task_id?: number;
+    parent_task?: { id: number; uid: string; name: string } | null;
     subtasks?: Task[];
     parent_child_logic_executed?: boolean;
     attachments?: Attachment[];

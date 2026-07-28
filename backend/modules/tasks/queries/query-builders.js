@@ -29,8 +29,10 @@ async function filterTasksByParams(
         params = { ...params };
         delete params.search;
     }
+    const includeSubtasks =
+        params.include_subtasks === true || params.include_subtasks === 'true';
     let whereClause = {
-        parent_task_id: null,
+        ...(includeSubtasks ? {} : { parent_task_id: null }),
     };
 
     whereClause[Op.or] = [
@@ -200,7 +202,7 @@ async function filterTasksByParams(
             const upcomingRange = getUpcomingRangeInUTC(safeTimezone, 7);
 
             whereClause = {
-                parent_task_id: null,
+                ...(includeSubtasks ? {} : { parent_task_id: null }),
                 [Op.or]: [
                     {
                         // Non-recurring tasks with due dates in the next 7 days

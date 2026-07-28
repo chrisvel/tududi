@@ -260,10 +260,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
         }
     };
 
-    const handleSubtaskClick = async () => {
-        // Navigate to the parent task URL (not the subtask URL)
-        if (task.uid) {
-            navigate(`/task/${task.uid}`, fromState);
+    const handleSubtaskClick = (subtask: Task) => {
+        if (subtask.uid) {
+            navigate(`/task/${subtask.uid}`, fromState);
         }
     };
 
@@ -503,9 +502,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     <SubtasksDisplay
                         loadingSubtasks={loadingSubtasks}
                         subtasks={subtasks}
-                        onTaskClick={(e) => {
+                        onTaskClick={(e, subtask) => {
                             e.stopPropagation();
-                            handleSubtaskClick();
+                            handleSubtaskClick(subtask);
                         }}
                         loadSubtasks={loadSubtasks}
                         onSubtaskUpdate={(updatedSubtask) => {

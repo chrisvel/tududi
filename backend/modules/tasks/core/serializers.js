@@ -24,7 +24,8 @@ async function serializeTask(
     userTimezone = 'UTC',
     options = {},
     moveCountMap = null,
-    parentUidMap = null
+    parentUidMap = null,
+    parentTaskMap = null
 ) {
     if (!task) {
         throw new Error('Task is null or undefined');
@@ -83,6 +84,20 @@ async function serializeTask(
         }
     }
 
+    let parentTaskInfo = null;
+    if (taskJson.parent_task_id) {
+        if (parentTaskMap && taskJson.parent_task_id in parentTaskMap) {
+            parentTaskInfo = parentTaskMap[taskJson.parent_task_id] || null;
+        } else {
+            const pt = await taskRepository.findById(taskJson.parent_task_id, {
+                attributes: ['id', 'uid', 'name'],
+            });
+            parentTaskInfo = pt
+                ? { id: pt.id, uid: pt.uid, name: pt.name }
+                : null;
+        }
+    }
+
     return {
         ...taskWithoutSubtasks,
         name: displayName,
@@ -135,6 +150,7 @@ async function serializeTask(
                 : new Date(task.completed_at).toISOString()
             : null,
         today_move_count: todayMoveCount,
+        parent_task: parentTaskInfo,
     };
 }
 
@@ -177,6 +193,24 @@ async function serializeTasks(
         }
     }
 
+    // Batch-fetch parent task info for subtasks to avoid per-task DB queries
+    const parentTaskIds = [
+        ...new Set(
+            tasks.filter((t) => t.parent_task_id).map((t) => t.parent_task_id)
+        ),
+    ];
+    const parentTaskMap = {};
+    if (parentTaskIds.length > 0) {
+        const parentTasks = await Task.findAll({
+            where: { id: { [Op.in]: parentTaskIds } },
+            attributes: ['id', 'uid', 'name'],
+            raw: true,
+        });
+        parentTasks.forEach((p) => {
+            parentTaskMap[p.id] = { id: p.id, uid: p.uid, name: p.name };
+        });
+    }
+
     return await Promise.all(
         tasks.map((task) =>
             serializeTask(
@@ -184,7 +218,8 @@ async function serializeTasks(
                 userTimezone,
                 options,
                 moveCountMap,
-                parentUidMap
+                parentUidMap,
+                parentTaskIds.length > 0 ? parentTaskMap : null
             )
         )
     );

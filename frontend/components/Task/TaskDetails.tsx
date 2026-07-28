@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { ExclamationTriangleIcon, ArrowUpIcon } from '@heroicons/react/24/outline';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
@@ -1281,6 +1281,18 @@ const TaskDetails: React.FC = () => {
                     attachmentCount={attachmentCount}
                     autoEditTitle={isNewTask}
                 />
+
+                {task.parent_task && (
+                    <div className="mt-3 mb-1">
+                        <button
+                            onClick={() => navigate(`/task/${task.parent_task!.uid}`)}
+                            className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                        >
+                            <ArrowUpIcon className="w-3.5 h-3.5" />
+                            <span>{task.parent_task.name}</span>
+                        </button>
+                    </div>
+                )}
 
                 {aiAssistantEnabled && (
                     <div className="mb-4 mt-6">

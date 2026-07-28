@@ -194,6 +194,11 @@ const Tasks: React.FC = () => {
                 allTasksUrl.set('groupBy', 'day');
                 allTasksUrl.set('maxDays', '7');
                 allTasksUrl.set('isMobile', isMobile.toString());
+                allTasksUrl.set('include_subtasks', 'true');
+            }
+
+            if (type === 'today') {
+                allTasksUrl.set('include_subtasks', 'true');
             }
 
             if (!options?.disablePagination && type !== 'upcoming') {
