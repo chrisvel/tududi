@@ -324,4 +324,26 @@ Located in `/backend/modules/`, each follows consistent architecture:
 
 ---
 
+## PWA / Offline Architecture
+
+Tududi ships as an installable Progressive Web App. See [docs/15-pwa.md](15-pwa.md) for the full specification; the key points for architecture purposes:
+
+- **`public/sw.js`** is the service worker. It is copied to `dist/` by `CopyWebpackPlugin` unchanged and served from the root scope.
+- **`public/manifest.json`** declares the app shell (name, icons, display mode). The `<link rel="manifest">` tag is in `public/index.html`.
+- The SW is registered in **production only** (`NODE_ENV === 'production'`) from `frontend/index.tsx`. Dev builds actively unregister any lingering SWs to prevent cache confusion.
+- `frontend/utils/swUtils.ts` provides `notifySwSession(userId)` and `notifySwClearCache()` — called at login and logout respectively to maintain session-scoped caches.
+
+**Cache strategy by request type:**
+
+| Request | Strategy |
+|---------|----------|
+| Static assets (JS, CSS, fonts, images) | Cache-first, populate on first network hit |
+| API `GET` requests | Network-first, stale cache fallback when offline |
+| API `POST / PUT / DELETE` | Network; if offline, queue to IndexedDB and replay via Background Sync |
+| Navigation (`mode: navigate`) | Network-first, fall back to cached `/` shell |
+
+**Session security:** API cache entries are cleared on 401/403, explicit logout, or `CLEAR_CACHE` postMessage. Queued mutations are tagged with the user's numeric ID; on replay a session-ID mismatch causes the entry to be dropped rather than executed under a different principal.
+
+---
+
 [← Back to Index](../CLAUDE.md)
