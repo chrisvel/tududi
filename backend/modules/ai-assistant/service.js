@@ -230,6 +230,33 @@ async function getCachedBrief(userId) {
     return user.ai_daily_brief;
 }
 
+function buildEntityMaps({ metrics, projects }) {
+    const taskMap = new Map();
+    const projectMap = new Map();
+
+    const allTasks = [
+        ...(metrics.tasks_overdue || []),
+        ...(metrics.tasks_in_progress || []),
+        ...(metrics.today_plan_tasks || []),
+        ...(metrics.suggested_tasks || []),
+        ...(metrics.tasks_due_today || []),
+    ];
+
+    allTasks.forEach((t) => {
+        if (t.name && t.uid && !taskMap.has(t.name)) {
+            taskMap.set(t.name, t.uid);
+        }
+    });
+
+    projects.forEach((p) => {
+        if (p.name && p.uid) {
+            projectMap.set(p.name, p.uid);
+        }
+    });
+
+    return { taskMap, projectMap };
+}
+
 async function generateDailyBrief(userId) {
     const context = await fetchUserContext(userId);
     const contextSummary = buildContextSummary(context);
@@ -240,6 +267,7 @@ async function generateDailyBrief(userId) {
 
 Return a JSON object with exactly this shape:
 {
+  "overview": "≤20 words. One honest pulse on momentum — what's progressing, what's stalling, relative to goals.",
   "focus": "≤10 words. The one most important task today. Include project name.",
   "priority_actions": [
     {
@@ -253,6 +281,7 @@ Return a JSON object with exactly this shape:
 }
 
 Rules:
+- overview: reference actual task/project/goal counts or patterns from the data; no filler
 - priority_actions: exactly 3 items, ordered by importance
 - suggestion: infer the task's nature from its name, then motivate — e.g. for "Write test cases" say "Start with the happy path, the rest will flow." Don't be generic.
 - watch_out: 0–2 items; empty array [] if nothing urgent
@@ -284,11 +313,24 @@ Rules:
     }
     console.log('[AI Assistant] parsed:', JSON.stringify(parsed));
 
+    const { taskMap, projectMap } = buildEntityMaps(context);
+    const rawActions = Array.isArray(parsed.priority_actions)
+        ? parsed.priority_actions
+        : [];
+    const enrichedActions = rawActions.map((a) => {
+        const project = a.project && a.project !== 'null' ? a.project : null;
+        return {
+            ...a,
+            project,
+            task_uid: a.action ? taskMap.get(a.action) || null : null,
+            project_uid: project ? projectMap.get(project) || null : null,
+        };
+    });
+
     const brief = {
+        overview: parsed.overview || '',
         focus: parsed.focus || '',
-        priority_actions: Array.isArray(parsed.priority_actions)
-            ? parsed.priority_actions
-            : [],
+        priority_actions: enrichedActions,
         watch_out: Array.isArray(parsed.watch_out) ? parsed.watch_out : [],
         generated_at: new Date().toISOString(),
         model: response.model,

@@ -6,9 +6,12 @@ export interface PriorityAction {
     project: string | null;
     reason?: string;
     suggestion?: string;
+    task_uid?: string | null;
+    project_uid?: string | null;
 }
 
 export interface DailyBrief {
+    overview?: string;
     focus: string;
     priority_actions: PriorityAction[];
     watch_out: string[];

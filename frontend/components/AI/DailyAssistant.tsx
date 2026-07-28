@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     SparklesIcon,
@@ -9,6 +10,7 @@ import {
     ExclamationTriangleIcon,
     FolderIcon,
     ClockIcon,
+    ChartBarIcon,
 } from '@heroicons/react/24/outline';
 import { fetchDailyBrief, fetchCachedBrief, DailyBrief } from '../../utils/aiAssistantService';
 
@@ -143,6 +145,16 @@ const DailyAssistant: React.FC = () => {
                 {/* Report */}
                 {brief && !isLoading && (
                     <>
+                        {/* Overview */}
+                        {brief.overview && (
+                            <div className="flex items-start gap-2.5 px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700/50">
+                                <ChartBarIcon className="h-3.5 w-3.5 flex-shrink-0 text-gray-400 dark:text-gray-500 mt-0.5" />
+                                <p className="text-xs text-gray-600 dark:text-gray-400 leading-snug">
+                                    {brief.overview}
+                                </p>
+                            </div>
+                        )}
+
                         {/* Focus */}
                         {brief.focus && (
                             <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800/40">
@@ -174,15 +186,34 @@ const DailyAssistant: React.FC = () => {
                                                 {i + 1}
                                             </span>
                                             <div className="min-w-0 flex-1">
-                                                <p className="text-sm font-medium text-gray-800 dark:text-gray-200 leading-snug">
-                                                    {item.action}
-                                                </p>
+                                                {item.task_uid ? (
+                                                    <Link
+                                                        to={`/task/${item.task_uid}`}
+                                                        className="text-sm font-medium text-gray-800 dark:text-gray-200 leading-snug hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                                                    >
+                                                        {item.action}
+                                                    </Link>
+                                                ) : (
+                                                    <p className="text-sm font-medium text-gray-800 dark:text-gray-200 leading-snug">
+                                                        {item.action}
+                                                    </p>
+                                                )}
                                                 <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                                                    {item.project && (
-                                                        <span className="inline-flex items-center gap-1 text-[10px] font-medium text-blue-600 dark:text-blue-400">
-                                                            <FolderIcon className="h-2.5 w-2.5" />
-                                                            {item.project}
-                                                        </span>
+                                                    {item.project && item.project !== 'null' && (
+                                                        item.project_uid ? (
+                                                            <Link
+                                                                to={`/project/${item.project_uid}`}
+                                                                className="inline-flex items-center gap-1 text-[10px] font-medium text-blue-600 dark:text-blue-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                                                            >
+                                                                <FolderIcon className="h-2.5 w-2.5" />
+                                                                {item.project}
+                                                            </Link>
+                                                        ) : (
+                                                            <span className="inline-flex items-center gap-1 text-[10px] font-medium text-blue-600 dark:text-blue-400">
+                                                                <FolderIcon className="h-2.5 w-2.5" />
+                                                                {item.project}
+                                                            </span>
+                                                        )
                                                     )}
                                                     {item.reason && (
                                                         <span className="text-xs text-gray-400 dark:text-gray-500">
