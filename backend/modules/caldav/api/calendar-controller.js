@@ -71,7 +71,7 @@ class CalendarController {
                 throw new AppError('Calendar name is required', 400);
             }
 
-            const validDirections = ['bidirectional', 'pull', 'push'];
+            const validDirections = ['bidirectional', 'pull_only', 'push_only'];
             if (!validDirections.includes(sync_direction)) {
                 throw new AppError(
                     `Invalid sync direction. Must be one of: ${validDirections.join(', ')}`,
@@ -153,7 +153,11 @@ class CalendarController {
             if (color !== undefined) updates.color = color;
             if (enabled !== undefined) updates.enabled = enabled;
             if (sync_direction !== undefined) {
-                const validDirections = ['bidirectional', 'pull', 'push'];
+                const validDirections = [
+                    'bidirectional',
+                    'pull_only',
+                    'push_only',
+                ];
                 if (!validDirections.includes(sync_direction)) {
                     throw new AppError(
                         `Invalid sync direction. Must be one of: ${validDirections.join(', ')}`,
