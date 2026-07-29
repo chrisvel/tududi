@@ -480,7 +480,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                         e.stopPropagation();
                                         setIsContextMenuOpen((prev) => !prev);
                                     }}
-                                    className="h-full px-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center"
+                                    className="h-full px-2 rounded-lg text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center"
                                     title={t('tasks.moreActions', 'More actions')}
                                 >
                                     <EllipsisVerticalIcon className="h-4 w-4" />
