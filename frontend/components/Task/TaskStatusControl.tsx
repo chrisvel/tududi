@@ -33,6 +33,7 @@ interface TaskStatusControlProps {
     variant?: 'pill' | 'square';
     showQuickActions?: boolean;
     onMenuOpenChange?: (isOpen: boolean) => void;
+    leadingAction?: React.ReactNode;
 }
 
 const quickStartStatuses = new Set([
@@ -52,6 +53,7 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
     variant = 'square',
     showQuickActions = true,
     onMenuOpenChange,
+    leadingAction,
 }) => {
     const { t } = useTranslation();
     const [completionMenuOpen, setCompletionMenuOpen] =
@@ -355,6 +357,11 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
                 className={`inline-flex items-stretch ${containerRoundedClass} border ${statusBorderColorClass} overflow-hidden ${hoverRevealQuickActions ? 'group' : ''}`}
                 ref={desktopCompletionMenuRef}
             >
+                {leadingAction && (
+                    <div className={`flex items-center border-r ${statusBorderColorClass}`}>
+                        {leadingAction}
+                    </div>
+                )}
                 <button
                     type="button"
                     onClick={
