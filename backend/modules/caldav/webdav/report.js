@@ -7,6 +7,7 @@ const {
 } = require('./utils');
 const { generateETag } = require('../utils/etag-generator');
 const taskRepository = require('../../tasks/repository');
+const { CALDAV_TASK_INCLUDES } = require('../task-includes');
 const vtodoSerializer = require('../icalendar/vtodo-serializer');
 const { Op } = require('sequelize');
 
@@ -48,7 +49,9 @@ async function handleReport(req, res) {
                 }
 
                 const uid = decodeURIComponent(match[1]);
-                const task = await taskRepository.findByUid(uid);
+                const task = await taskRepository.findByUid(uid, {
+                    include: CALDAV_TASK_INCLUDES,
+                });
 
                 if (!task || task.user_id !== userId) {
                     responses.push(
@@ -138,7 +141,9 @@ async function handleReport(req, res) {
             }
         }
 
-        const tasks = await taskRepository.findAll(where);
+        const tasks = await taskRepository.findAll(where, {
+            include: CALDAV_TASK_INCLUDES,
+        });
 
         const responses = [];
         for (const task of tasks) {

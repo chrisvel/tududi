@@ -18,12 +18,13 @@ const {
 const { generateETag } = require('../utils/etag-generator');
 const { generateCTag } = require('../utils/ctag-generator');
 const taskRepository = require('../../tasks/repository');
+const { CALDAV_TASK_INCLUDES } = require('../task-includes');
 const vtodoSerializer = require('../icalendar/vtodo-serializer');
 const { Project } = require('../../../models');
 const { Op } = require('sequelize');
 
 const INBOX_UID = '__inbox__';
-const INCLUDE_PROJECT = [{ model: Project, attributes: ['id', 'uid', 'name'] }];
+const INCLUDE_PROJECT = CALDAV_TASK_INCLUDES;
 const EMPTY_PROPFIND =
     '<?xml version="1.0"?><D:propfind xmlns:D="DAV:"><D:allprop/></D:propfind>';
 
