@@ -11,6 +11,7 @@ const FEATURE_KEYS = [
     'kanban_enabled',
     'habits_enabled',
     'calendar_enabled',
+    'templates_enabled',
 ];
 
 function sanitizeFeatures(raw) {
@@ -233,6 +234,13 @@ class UsersService {
                 }
             }
             updated.features = sanitizeFeatures(updated.features);
+            if (typeof updated.ui_settings === 'string') {
+                try {
+                    updated.ui_settings = JSON.parse(updated.ui_settings);
+                } catch {
+                    updated.ui_settings = null;
+                }
+            }
         }
         return updated;
     }
@@ -606,7 +614,7 @@ class UsersService {
             throw new NotFoundError('User not found.');
         }
 
-        const { project } = data;
+        const { project, appearance } = data;
 
         const currentSettings =
             user.ui_settings && typeof user.ui_settings === 'object'
@@ -626,6 +634,13 @@ class UsersService {
                 },
             },
         };
+
+        if (appearance !== undefined) {
+            newSettings.appearance = {
+                ...(currentSettings.appearance || {}),
+                ...appearance,
+            };
+        }
 
         await usersRepository.update(user, { ui_settings: newSettings });
 

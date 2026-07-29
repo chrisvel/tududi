@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import {
     CalendarDaysIcon,
@@ -8,6 +8,9 @@ import {
     ChevronDownIcon,
     CheckIcon,
     ArrowUpIcon,
+    EllipsisVerticalIcon,
+    PencilIcon,
+    TrashIcon,
 } from '@heroicons/react/24/outline';
 import { TagIcon, FolderIcon, FireIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
@@ -18,6 +21,7 @@ import { fetchSubtasks } from '../../utils/tasksService';
 import { isTaskCompleted, isTaskInProgress } from '../../constants/taskStatus';
 import TaskStatusControl from './TaskStatusControl';
 import { parseDateString, getTodayDateString, getTomorrowDateString, getYesterdayDateString } from '../../utils/dateUtils';
+import { useStore } from '../../store/useStore';
 
 const tagColorStyle = (color?: string): React.CSSProperties | undefined => {
     if (!color) return undefined;
@@ -46,6 +50,7 @@ interface TaskHeaderProps {
     onMenuOpenChange?: (isOpen: boolean) => void;
     hideStatusControl?: boolean;
     isKanbanView?: boolean;
+    compact?: boolean;
 }
 
 const TaskHeader: React.FC<TaskHeaderProps> = ({
@@ -59,18 +64,36 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
     showSubtasks,
     hasSubtasks,
     onSubtasksToggle,
-    // Props for edit and delete functionality
-    onEdit: _onEdit,
-    onDelete: _onDelete,
+    onEdit,
+    onDelete,
     isUpcomingView = false,
     onMenuOpenChange,
     hideStatusControl = false,
     isKanbanView = false,
+    compact = false,
 }) => {
     const { t } = useTranslation();
     void _onToggleToday;
-    void _onEdit;
-    void _onDelete;
+    const showTaskContextMenu = useStore(
+        (s) => s.userSettingsStore.showTaskContextMenu
+    );
+    const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
+    const desktopMenuRef = useRef<HTMLDivElement>(null);
+    const mobileMenuRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!isContextMenuOpen) return;
+        const handleClickOutside = (e: MouseEvent) => {
+            const target = e.target as Node;
+            const inDesktop = desktopMenuRef.current?.contains(target);
+            const inMobile = mobileMenuRef.current?.contains(target);
+            if (!inDesktop && !inMobile) {
+                setIsContextMenuOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [isContextMenuOpen]);
     const SubtasksToggleButton = () => {
         if (!hasSubtasks || !onSubtasksToggle) return null;
 
@@ -178,7 +201,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 
     return (
         <div
-            className={`${hasMetadata ? 'py-2' : 'py-3'} px-4 cursor-pointer group`}
+            className={`${compact ? 'py-3' : hasMetadata ? 'py-2' : 'py-3'} px-4 cursor-pointer group`}
             role="button"
             tabIndex={0}
             onClick={(e) => {
@@ -312,7 +335,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                             </div>
                         )}
                         {/* Project, tags, due date, and recurrence in same row, with spacing when they exist */}
-                        {!isUpcomingView && (
+                        {!isUpcomingView && !compact && (
                             <div className={`flex text-xs text-gray-500 dark:text-gray-400 ${isKanbanView ? 'flex-col space-y-0.5 mt-1.5' : 'items-center gap-3 whitespace-nowrap overflow-x-auto'}`}>
                                 {task.parent_task && (
                                     <div className="flex items-center">
@@ -443,7 +466,53 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                     </div>
                 </div>
                 {!isUpcomingView && !task.habit_mode && !hideStatusControl && onToggleCompletion && (
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center z-[1]">
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-1 z-[1]">
+                        {showTaskContextMenu && (
+                            <div
+                                ref={desktopMenuRef}
+                                className="relative opacity-0 group-hover:opacity-100 transition-opacity"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setIsContextMenuOpen((prev) => !prev);
+                                    }}
+                                    className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                                    title={t('tasks.moreActions', 'More actions')}
+                                >
+                                    <EllipsisVerticalIcon className="h-4 w-4" />
+                                </button>
+                                {isContextMenuOpen && (
+                                    <div className="absolute right-0 top-full mt-1 w-32 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 overflow-hidden">
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                setIsContextMenuOpen(false);
+                                                onEdit?.(e);
+                                            }}
+                                            className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                        >
+                                            <PencilIcon className="h-4 w-4" />
+                                            {t('common.edit', 'Edit')}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                setIsContextMenuOpen(false);
+                                                onDelete?.(e);
+                                            }}
+                                            className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                                        >
+                                            <TrashIcon className="h-4 w-4" />
+                                            {t('common.delete', 'Delete')}
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                         <TaskStatusControl
                             task={task}
                             onToggleCompletion={onToggleCompletion}
@@ -484,6 +553,52 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                     {task.original_name || task.name}
                                 </span>
                                 <SubtasksToggleButton />
+                                {showTaskContextMenu && (
+                                    <div
+                                        ref={mobileMenuRef}
+                                        className="relative flex-shrink-0"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                setIsContextMenuOpen((prev) => !prev);
+                                            }}
+                                            className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                                            title={t('tasks.moreActions', 'More actions')}
+                                        >
+                                            <EllipsisVerticalIcon className="h-4 w-4" />
+                                        </button>
+                                        {isContextMenuOpen && (
+                                            <div className="absolute right-0 top-full mt-1 w-32 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 overflow-hidden">
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        setIsContextMenuOpen(false);
+                                                        onEdit?.(e);
+                                                    }}
+                                                    className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                                >
+                                                    <PencilIcon className="h-4 w-4" />
+                                                    {t('common.edit', 'Edit')}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        setIsContextMenuOpen(false);
+                                                        onDelete?.(e);
+                                                    }}
+                                                    className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                                                >
+                                                    <TrashIcon className="h-4 w-4" />
+                                                    {t('common.delete', 'Delete')}
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </span>
                         </div>
 

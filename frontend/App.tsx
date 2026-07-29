@@ -96,6 +96,9 @@ const App: React.FC = () => {
                 useStore.getState().userSettingsStore.setAiAssistantEnabled(
                     data.user.features?.ai_assistant_enabled === true
                 );
+                useStore.getState().userSettingsStore.setShowTaskContextMenu(
+                    data.user.ui_settings?.appearance?.showTaskContextMenu === true
+                );
             } else {
                 setCurrentUser(null);
                 setUserInStorage(null);
@@ -167,6 +170,17 @@ const App: React.FC = () => {
         const newValue = !isDarkMode;
         setIsDarkMode(newValue);
         localStorage.setItem('isDarkMode', JSON.stringify(newValue));
+    };
+
+    const setAppearance = (theme: 'light' | 'dark' | 'system') => {
+        if (theme === 'system') {
+            localStorage.removeItem('isDarkMode');
+            setIsDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
+        } else {
+            const isDark = theme === 'dark';
+            setIsDarkMode(isDark);
+            localStorage.setItem('isDarkMode', JSON.stringify(isDark));
+        }
     };
 
     useEffect(() => {
@@ -305,6 +319,7 @@ const App: React.FC = () => {
                                         currentUser={currentUser}
                                         isDarkMode={isDarkMode}
                                         toggleDarkMode={toggleDarkMode}
+                                        setAppearance={setAppearance}
                                     />
                                 }
                             />

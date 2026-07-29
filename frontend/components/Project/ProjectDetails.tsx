@@ -862,7 +862,7 @@ const ProjectDetails: React.FC = () => {
     );
 
     return (
-        <div className="w-full pb-12">
+        <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-12">
             <ProjectBanner
                 project={project}
                 areas={areas}
@@ -879,7 +879,7 @@ const ProjectDetails: React.FC = () => {
                 onTogglePin={handleTogglePin}
             />
 
-            <div className="w-full px-4 sm:px-6 lg:px-10">
+            <div className="w-full">
                 <div className="w-full">
                     <div className="mb-4">
                         <div className="flex items-center justify-between min-h-[2.5rem]">

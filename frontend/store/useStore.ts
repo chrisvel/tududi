@@ -115,6 +115,8 @@ interface UserSettingsStore {
     setTemplatesEnabled: (enabled: boolean) => void;
     aiAssistantEnabled: boolean;
     setAiAssistantEnabled: (enabled: boolean) => void;
+    showTaskContextMenu: boolean;
+    setShowTaskContextMenu: (enabled: boolean) => void;
 }
 
 interface HabitsStore {
@@ -882,6 +884,14 @@ export const useStore = create<StoreState>((set: any) => ({
                 userSettingsStore: {
                     ...state.userSettingsStore,
                     aiAssistantEnabled: enabled,
+                },
+            })),
+        showTaskContextMenu: false,
+        setShowTaskContextMenu: (enabled) =>
+            set((state) => ({
+                userSettingsStore: {
+                    ...state.userSettingsStore,
+                    showTaskContextMenu: enabled,
                 },
             })),
     },

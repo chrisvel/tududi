@@ -91,7 +91,7 @@ const ProjectBanner: React.FC<ProjectBannerProps> = ({
                     text-overflow: ellipsis;
                 }
             `}</style>
-            <div className="mb-6 overflow-hidden relative group">
+            <div className="mb-6 overflow-hidden rounded-xl relative group">
                 {project.image_url ? (
                     <img
                         src={getAssetPath(project.image_url)}

@@ -12,7 +12,6 @@ import { useStore } from '../../store/useStore';
 import { getCsrfToken } from '../../utils/csrfService';
 import {
     UserIcon,
-    ClockIcon,
     ShieldCheckIcon,
     LinkIcon,
     KeyIcon,
@@ -22,6 +21,7 @@ import {
     CpuChipIcon,
     CalendarIcon,
     SparklesIcon,
+    SwatchIcon,
 } from '@heroicons/react/24/outline';
 import { Squares2X2Icon } from '@heroicons/react/24/solid';
 import TelegramIcon from '../Shared/Icons/TelegramIcon';
@@ -42,11 +42,11 @@ import {
     deleteApiKey,
 } from '../../utils/apiKeysService';
 import TabsNav, { type TabConfig } from './tabs/TabsNav';
+import AppearanceTab from './tabs/AppearanceTab';
 import GeneralTab from './tabs/GeneralTab';
 import SecurityTab from './tabs/SecurityTab';
 import OIDCTab from './tabs/OIDCTab';
 import ApiKeysTab from './tabs/ApiKeysTab';
-import ProductivityTab from './tabs/ProductivityTab';
 import FeaturesTab from './tabs/FeaturesTab';
 import TelegramTab from './tabs/TelegramTab';
 import NotificationsTab from './tabs/NotificationsTab';
@@ -83,6 +83,7 @@ const formatFrequency = (frequency: string): string => {
 const ProfileSettings: React.FC<ProfileSettingsProps> = ({
     isDarkMode,
     toggleDarkMode,
+    setAppearance,
 }) => {
     const { t, i18n } = useTranslation();
     const { showSuccessToast, showErrorToast } = useToast();
@@ -95,6 +96,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         const section = params.get('section');
         const validTabs = [
             'general',
+            'appearance',
             'security',
             'oidc',
             'api-keys',
@@ -144,6 +146,12 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             habits_enabled: true,
             calendar_enabled: false,
             templates_enabled: true,
+        },
+        ui_settings: {
+            appearance: {
+                theme: isDarkMode ? 'dark' : 'light',
+                showTaskContextMenu: false,
+            },
         },
         notification_preferences: null,
         keyboard_shortcuts: null,
@@ -516,8 +524,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 setFormData({
                     name: data.name || '',
                     surname: data.surname || '',
-                    appearance:
-                        data.appearance || (isDarkMode ? 'dark' : 'light'),
+                    appearance: (data.ui_settings?.appearance?.theme ??
+                        data.appearance ??
+                        (isDarkMode ? 'dark' : 'light')) as 'light' | 'dark' | 'system',
                     language: data.language || 'en',
                     timezone: data.timezone || 'UTC',
                     first_day_of_week:
@@ -578,6 +587,13 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                             data.features?.templates_enabled !== undefined
                                 ? data.features.templates_enabled
                                 : true,
+                    },
+                    ui_settings: {
+                        ...(data.ui_settings || {}),
+                        appearance: {
+                            theme: (data.ui_settings?.appearance?.theme ?? data.appearance ?? (isDarkMode ? 'dark' : 'light')) as 'light' | 'dark' | 'system',
+                            showTaskContextMenu: data.ui_settings?.appearance?.showTaskContextMenu ?? false,
+                        },
                     },
                     notification_preferences:
                         data.notification_preferences || null,
@@ -691,6 +707,13 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         setFormData((prev) => ({
             ...prev,
             appearance: isDarkMode ? 'dark' : 'light',
+            ui_settings: {
+                ...(prev.ui_settings || {}),
+                appearance: {
+                    ...(prev.ui_settings?.appearance || {}),
+                    theme: isDarkMode ? 'dark' : 'light',
+                },
+            },
         }));
     }, [isDarkMode]);
 
@@ -1014,6 +1037,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 delete dataToSend.newPassword;
                 delete dataToSend.confirmPassword;
             }
+            // 'system' is not a valid value for the appearance DB column — the preference
+            // is stored in ui_settings.appearance.theme instead.
+            if (dataToSend.appearance === 'system') {
+                delete dataToSend.appearance;
+            }
 
             const response = await fetch(getApiPath('profile'), {
                 method: 'PATCH',
@@ -1032,6 +1060,27 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             }
 
             const updatedProfile: Profile = await response.json();
+
+            // Save ui_settings via the dedicated endpoint which does a guaranteed
+            // deep-merge (bypasses any Sequelize JSON change-detection issues).
+            if (formData.ui_settings?.appearance !== undefined) {
+                const uiResponse = await fetch(getApiPath('profile/ui-settings'), {
+                    method: 'PUT',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-csrf-token': await getCsrfToken(),
+                        Accept: 'application/json',
+                    },
+                    body: JSON.stringify({
+                        appearance: formData.ui_settings.appearance,
+                    }),
+                });
+                if (uiResponse.ok) {
+                    const uiData = await uiResponse.json();
+                    updatedProfile.ui_settings = uiData.ui_settings;
+                }
+            }
 
             if (avatarFile) {
                 const avatarUrl = await uploadAvatar(avatarFile);
@@ -1081,9 +1130,19 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     ...prev.features,
                     ...updatedProfile.features,
                 },
+                ui_settings: {
+                    ...(prev.ui_settings || {}),
+                    ...(updatedProfile.ui_settings || {}),
+                    appearance: {
+                        ...(prev.ui_settings?.appearance || {}),
+                        ...(updatedProfile.ui_settings?.appearance || {}),
+                    },
+                },
             }));
 
-            if (
+            if (setAppearance && updatedProfile.appearance) {
+                setAppearance(updatedProfile.appearance);
+            } else if (
                 updatedProfile.appearance !== (isDarkMode ? 'dark' : 'light') &&
                 toggleDarkMode
             ) {
@@ -1138,6 +1197,12 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 );
             }
 
+            if (updatedProfile.ui_settings?.appearance?.showTaskContextMenu !== undefined) {
+                useStore.getState().userSettingsStore.setShowTaskContextMenu(
+                    Boolean(updatedProfile.ui_settings.appearance.showTaskContextMenu)
+                );
+            }
+
             if (isPasswordChange) {
                 setFormData((prev) => ({
                     ...prev,
@@ -1182,6 +1247,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             icon: <UserIcon className="w-5 h-5" />,
         },
         {
+            id: 'appearance',
+            name: t('profile.tabs.appearance', 'Appearance'),
+            icon: <SwatchIcon className="w-5 h-5" />,
+        },
+        {
             id: 'security',
             name: t('profile.tabs.security', 'Security'),
             icon: <ShieldCheckIcon className="w-5 h-5" />,
@@ -1195,11 +1265,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             id: 'api-keys',
             name: t('profile.tabs.apiKeys', 'API Keys'),
             icon: <KeyIcon className="w-5 h-5" />,
-        },
-        {
-            id: 'productivity',
-            name: t('profile.tabs.productivity', 'Productivity'),
-            icon: <ClockIcon className="w-5 h-5" />,
         },
         {
             id: 'notifications',
@@ -1276,12 +1341,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                     isActive={activeTab === 'general'}
                                     formData={formData}
                                     onChange={handleChange}
-                                    onAppearanceChange={(appearance) =>
-                                        setFormData((prev) => ({
-                                            ...prev,
-                                            appearance,
-                                        }))
-                                    }
                                     onLanguageChange={(languageCode) => {
                                         const localeFirstDay =
                                             getLocaleFirstDayOfWeek(
@@ -1310,6 +1369,40 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                     onAvatarRemove={handleAvatarRemove}
                                     timezonesByRegion={timezonesByRegion}
                                     getRegionDisplayName={getRegionDisplayName}
+                                />
+
+                                <AppearanceTab
+                                    isActive={activeTab === 'appearance'}
+                                    formData={formData}
+                                    onAppearanceChange={(appearance) =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            appearance,
+                                            ui_settings: {
+                                                ...(prev.ui_settings || {}),
+                                                appearance: {
+                                                    ...(prev.ui_settings?.appearance || {}),
+                                                    theme: appearance,
+                                                },
+                                            },
+                                        }))
+                                    }
+                                    showTaskContextMenu={Boolean(
+                                        formData.ui_settings?.appearance?.showTaskContextMenu
+                                    )}
+                                    onToggleTaskContextMenu={() =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            ui_settings: {
+                                                ...(prev.ui_settings || {}),
+                                                appearance: {
+                                                    ...(prev.ui_settings?.appearance || {}),
+                                                    showTaskContextMenu:
+                                                        !prev.ui_settings?.appearance?.showTaskContextMenu,
+                                                },
+                                            },
+                                        }))
+                                    }
                                 />
 
                                 <SecurityTab
@@ -1361,23 +1454,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                     getApiKeyStatus={getApiKeyStatus}
                                     formatDateTime={formatDateTime}
                                     isCreatingApiKey={isCreatingApiKey}
-                                />
-
-                                <ProductivityTab
-                                    isActive={activeTab === 'productivity'}
-                                    pomodoroEnabled={Boolean(
-                                        formData.features?.pomodoro_enabled
-                                    )}
-                                    onTogglePomodoro={() =>
-                                        setFormData((prev) => ({
-                                            ...prev,
-                                            features: {
-                                                ...prev.features,
-                                                pomodoro_enabled:
-                                                    !prev.features?.pomodoro_enabled,
-                                            },
-                                        }))
-                                    }
                                 />
 
                                 <FeaturesTab
@@ -1444,6 +1520,19 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                                 ...prev.features,
                                                 templates_enabled:
                                                     !(prev.features?.templates_enabled ?? true),
+                                            },
+                                        }))
+                                    }
+                                    pomodoroEnabled={Boolean(
+                                        formData.features?.pomodoro_enabled
+                                    )}
+                                    onTogglePomodoro={() =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            features: {
+                                                ...prev.features,
+                                                pomodoro_enabled:
+                                                    !prev.features?.pomodoro_enabled,
                                             },
                                         }))
                                     }
