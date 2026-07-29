@@ -503,7 +503,7 @@ const TasksToday: React.FC = () => {
             setIsLoading(true);
             try {
                 const result = await fetchTasks(
-                    `?type=today&limit=20&offset=0&include_lists=true`
+                    `?type=today&limit=20&offset=0&include_lists=true&include_subtasks=true`
                 );
                 if (isMounted.current) {
                     setMetrics({
@@ -980,7 +980,7 @@ const TasksToday: React.FC = () => {
                 await deleteTask(taskUid);
 
                 // Reload tasks to reflect the change
-                const result = await fetchTasks('?type=today');
+                const result = await fetchTasks('?type=today&include_subtasks=true');
                 if (isMounted.current) {
                     useStore.getState().tasksStore.setTasks(result.tasks);
                     setMetrics({
@@ -1203,7 +1203,7 @@ const TasksToday: React.FC = () => {
                     !updatedTask.recurring_parent_id;
 
                 if (isRecurringParent) {
-                    const result = await fetchTasks('?type=today');
+                    const result = await fetchTasks('?type=today&include_subtasks=true');
                     if (isMounted.current) {
                         setMetrics((prevMetrics) => ({
                             ...prevMetrics,

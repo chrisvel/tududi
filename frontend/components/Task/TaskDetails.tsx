@@ -95,7 +95,7 @@ const TaskDetails: React.FC = () => {
     const [loadingIterations, setLoadingIterations] = useState(false);
     const [parentTask, setParentTask] = useState<Task | null>(null);
     const [loadingParent, setLoadingParent] = useState(false);
-    const [pendingSubtasks, setPendingSubtasks] = useState<Task[]>([]);
+    const [ancestorChain, setAncestorChain] = useState<Array<{ uid: string; name: string }>>([]);
     const [actionsMenuOpen, setActionsMenuOpen] = useState(false);
     const actionsMenuRef = useRef<HTMLDivElement>(null);
     const aiAssistantEnabled = useStore(
@@ -602,9 +602,6 @@ const TaskDetails: React.FC = () => {
         loadSubtasks();
     }, [task?.uid, task?.subtasks, hasLoadedSubtasks, tasksStore]);
 
-    useEffect(() => {
-        setPendingSubtasks(subtasks);
-    }, [subtasks]);
 
     useEffect(() => {
         const loadNextIterations = async () => {
@@ -682,6 +679,87 @@ const TaskDetails: React.FC = () => {
         loadParentTask();
     }, [task?.recurring_parent_uid]);
 
+    useEffect(() => {
+        if (!task?.parent_task?.uid) {
+            setAncestorChain([]);
+            return;
+        }
+
+        let cancelled = false;
+
+        const buildAncestorChain = async () => {
+            const chain: Array<{ uid: string; name: string }> = [
+                { uid: task.parent_task!.uid, name: task.parent_task!.name },
+            ];
+
+            let currentUid = task.parent_task!.uid;
+            for (let i = 0; i < 5; i++) {
+                try {
+                    const fetched = await fetchTaskByUid(currentUid);
+                    if (!fetched.parent_task?.uid) break;
+                    chain.unshift({ uid: fetched.parent_task.uid, name: fetched.parent_task.name });
+                    currentUid = fetched.parent_task.uid;
+                } catch {
+                    break;
+                }
+            }
+
+            if (!cancelled) setAncestorChain(chain);
+        };
+
+        buildAncestorChain();
+        return () => { cancelled = true; };
+    }, [task?.parent_task?.uid]);
+
+    const handleSubtaskUpdate = async (updatedSubtask: Task) => {
+        const taskIndex = tasksStore.tasks.findIndex((t: Task) => t.uid === uid);
+        if (taskIndex >= 0) {
+            const storeTask = tasksStore.tasks[taskIndex];
+            const updatedSubtasks = (storeTask.subtasks || []).map((s: Task) =>
+                s.id === updatedSubtask.id ? updatedSubtask : s
+            );
+            const updatedTasks = [...tasksStore.tasks];
+            updatedTasks[taskIndex] = { ...storeTask, subtasks: updatedSubtasks };
+            tasksStore.setTasks(updatedTasks);
+        }
+    };
+
+    const handleSubtaskDelete = async (taskUid: string) => {
+        try {
+            await deleteTask(taskUid);
+            const taskIndex = tasksStore.tasks.findIndex((t: Task) => t.uid === uid);
+            if (taskIndex >= 0) {
+                const storeTask = tasksStore.tasks[taskIndex];
+                const updatedSubtasks = (storeTask.subtasks || []).filter(
+                    (s: Task) => s.uid !== taskUid
+                );
+                const updatedTasks = [...tasksStore.tasks];
+                updatedTasks[taskIndex] = { ...storeTask, subtasks: updatedSubtasks };
+                tasksStore.setTasks(updatedTasks);
+                lastKnownSubtaskCount.current = updatedSubtasks.length;
+            }
+            showSuccessToast(t('task.deleteSuccess', 'Task deleted successfully'));
+        } catch (error) {
+            console.error('Error deleting subtask:', error);
+            showErrorToast(t('task.deleteError', 'Failed to delete task'));
+        }
+    };
+
+    const handleQuickAddSubtask = (name: string) => {
+        if (!task?.id) return;
+        const newSubtask = {
+            name,
+            status: 'not_started',
+            priority: 'low',
+            today: false,
+            parent_task_id: task.id,
+            _isNew: true,
+            isNew: true,
+            completed_at: null,
+        } as unknown as Task;
+        handleSaveSubtasks([...subtasks, newSubtask]);
+    };
+
     const handleSaveSubtasks = async (subtasksToSave: Task[]) => {
         if (!task?.uid) {
             return;
@@ -727,7 +805,6 @@ const TaskDetails: React.FC = () => {
             showErrorToast(
                 t('task.subtasksUpdateError', 'Failed to update subtasks')
             );
-            setPendingSubtasks([...subtasks]);
         }
     };
 
@@ -1258,7 +1335,7 @@ const TaskDetails: React.FC = () => {
     }
 
     return (
-        <div className="px-4 lg:px-6 pt-4">
+        <div className="px-2 sm:px-4 lg:px-6 pt-4">
             <div className="w-full">
                 <TaskDetailsHeader
                     task={task}
@@ -1280,7 +1357,9 @@ const TaskDetails: React.FC = () => {
                     aiInsightsActive={aiInsightsActive}
                     attachmentCount={attachmentCount}
                     autoEditTitle={isNewTask}
+                    ancestorChain={ancestorChain}
                 />
+
 
                 {aiAssistantEnabled && (
                     <div className="mb-4 mt-6">
@@ -1304,10 +1383,11 @@ const TaskDetails: React.FC = () => {
                                     onUpdate={handleContentUpdate}
                                 />
                                 <TaskSubtasksCard
-                                    task={task}
-                                    subtasks={pendingSubtasks}
-                                    onSubtasksChange={setPendingSubtasks}
-                                    onSave={handleSaveSubtasks}
+                                    subtasks={subtasks}
+                                    projects={projectsStore.projects}
+                                    onSubtaskUpdate={handleSubtaskUpdate}
+                                    onSubtaskDelete={handleSubtaskDelete}
+                                    onQuickAdd={handleQuickAddSubtask}
                                 />
                                 <TaskRecurrenceCard
                                     task={task}

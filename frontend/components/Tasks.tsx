@@ -194,6 +194,11 @@ const Tasks: React.FC = () => {
                 allTasksUrl.set('groupBy', 'day');
                 allTasksUrl.set('maxDays', '7');
                 allTasksUrl.set('isMobile', isMobile.toString());
+                allTasksUrl.set('include_subtasks', 'true');
+            }
+
+            if (type === 'today') {
+                allTasksUrl.set('include_subtasks', 'true');
             }
 
             if (!options?.disablePagination && type !== 'upcoming') {
@@ -510,7 +515,7 @@ const Tasks: React.FC = () => {
 
     return (
         <div
-            className={`w-full pt-4 pb-8 ${isUpcomingView ? 'pl-4 sm:pl-6 md:pl-8' : 'px-2 sm:px-4 lg:px-6'}`}
+            className="w-full pt-4 pb-8 px-2 sm:px-4 lg:px-6"
         >
             <div
                 className={`w-full ${isUpcomingView ? '' : 'max-w-5xl mx-auto'}`}

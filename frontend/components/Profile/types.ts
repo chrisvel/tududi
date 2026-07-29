@@ -4,6 +4,7 @@ export interface ProfileSettingsProps {
     currentUser: { uid: string; email: string };
     isDarkMode?: boolean;
     toggleDarkMode?: () => void;
+    setAppearance?: (theme: 'light' | 'dark' | 'system') => void;
 }
 
 export interface Features {
@@ -18,6 +19,21 @@ export interface Features {
     habits_enabled: boolean;
     calendar_enabled: boolean;
     templates_enabled: boolean;
+}
+
+export interface UiSettingsAppearance {
+    theme?: 'light' | 'dark' | 'system';
+    showTaskContextMenu?: boolean;
+}
+
+export interface UiSettings {
+    appearance?: UiSettingsAppearance;
+    project?: {
+        details?: {
+            showMetrics?: boolean;
+        };
+    };
+    [key: string]: unknown;
 }
 
 export interface NotificationPreferences {
@@ -58,7 +74,7 @@ export interface Profile {
     email: string;
     name?: string;
     surname?: string;
-    appearance: 'light' | 'dark';
+    appearance: 'light' | 'dark' | 'system';
     language: string;
     timezone: string;
     first_day_of_week: number;
@@ -70,6 +86,7 @@ export interface Profile {
     task_summary_enabled: boolean;
     task_summary_frequency: string;
     features: Features;
+    ui_settings?: UiSettings | null;
     notification_preferences?: NotificationPreferences | null;
     keyboard_shortcuts?: KeyboardShortcutsConfig | null;
     ai_profile?: string | null;

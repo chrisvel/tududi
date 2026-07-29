@@ -12,7 +12,8 @@ import {
     ArrowDownIcon,
     SparklesIcon,
 } from '@heroicons/react/24/outline';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import Tooltip from '../../Shared/Tooltip';
 import { Task, PriorityType } from '../../../entities/Task';
 import BackButton from '../../Shared/BackButton';
 import { formatDateTime } from '../../../utils/dateUtils';
@@ -39,6 +40,7 @@ interface TaskDetailsHeaderProps {
     aiInsightsActive?: boolean;
     attachmentCount?: number;
     autoEditTitle?: boolean;
+    ancestorChain?: Array<{ uid: string; name: string }>;
 }
 
 const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
@@ -61,7 +63,9 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
     aiInsightsActive = false,
     attachmentCount = 0,
     autoEditTitle = false,
+    ancestorChain = [],
 }) => {
+    const navigate = useNavigate();
     const { t } = useTranslation();
     const [isEditingTitle, setIsEditingTitle] = useState(autoEditTitle);
     const [editedTitle, setEditedTitle] = useState(task.name);
@@ -584,7 +588,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                             </>
                         )}
                     </div>
-                    <BackButton className="flex-shrink-0 self-start" />
+                    <BackButton className="flex-shrink-0 self-center" />
                 </div>
 
                 {/* Divider - Edge to edge */}
@@ -595,7 +599,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                     <div className="flex gap-2 flex-wrap">
                         <button
                             onClick={() => onPillChange('overview')}
-                            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                            className={`h-7 px-3 flex items-center rounded-lg text-xs font-medium transition-colors ${
                                 activePill === 'overview'
                                     ? 'bg-blue-500 dark:bg-blue-600 text-white'
                                     : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
@@ -605,7 +609,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                         </button>
                         <button
                             onClick={() => onPillChange('attachments')}
-                            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors relative ${
+                            className={`h-7 px-3 flex items-center rounded-lg text-xs font-medium transition-colors relative ${
                                 activePill === 'attachments'
                                     ? 'bg-blue-500 dark:bg-blue-600 text-white'
                                     : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
@@ -618,7 +622,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                         </button>
                         <button
                             onClick={() => onPillChange('activity')}
-                            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                            className={`h-7 px-3 flex items-center rounded-lg text-xs font-medium transition-colors ${
                                 activePill === 'activity'
                                     ? 'bg-blue-500 dark:bg-blue-600 text-white'
                                     : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
@@ -627,11 +631,42 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                             {t('task.activity', 'Activity')}
                         </button>
                     </div>
-                    <div className="flex items-center gap-2 flex-shrink-0">
+                    <div className="flex items-center gap-2 min-w-0">
+                        {task.parent_task && (() => {
+                            const chain = ancestorChain.length > 0 ? ancestorChain : [{ uid: task.parent_task.uid, name: task.parent_task.name }];
+                            const tooltipText = chain.map(a => a.name).join(' < ');
+                            return (
+                                <Tooltip content={tooltipText} position="bottom">
+                                    <span className="inline-flex items-stretch h-7 rounded-lg overflow-hidden border border-blue-200 dark:border-blue-700/70 transition-opacity hover:opacity-80 min-w-0 shrink">
+                                        <span className="flex sm:hidden items-center px-1.5 text-blue-800 dark:text-blue-200 bg-blue-200/70 dark:bg-blue-700/60 select-none flex-shrink-0">
+                                            <ArrowUpIcon className="h-3 w-3" />
+                                        </span>
+                                        <span className="hidden sm:flex items-center px-1.5 text-[0.72em] font-bold uppercase tracking-wide text-blue-800 dark:text-blue-200 bg-blue-200/70 dark:bg-blue-700/60 select-none whitespace-nowrap flex-shrink-0">
+                                            PARENT TASK:
+                                        </span>
+                                        <span className="flex items-center gap-1 px-1.5 bg-blue-50/80 dark:bg-blue-900/30 overflow-hidden min-w-0">
+                                            {chain.map((ancestor, i) => (
+                                                <React.Fragment key={ancestor.uid}>
+                                                    {i > 0 && (
+                                                        <span className="text-blue-300 dark:text-blue-600 text-[0.8em] select-none flex-shrink-0">&lt;</span>
+                                                    )}
+                                                    <button
+                                                        onClick={() => navigate(`/task/${ancestor.uid}`)}
+                                                        className="text-[0.9em] text-blue-700 dark:text-blue-300 hover:text-blue-900 dark:hover:text-blue-100 transition-colors truncate min-w-0"
+                                                    >
+                                                        {ancestor.name}
+                                                    </button>
+                                                </React.Fragment>
+                                            ))}
+                                        </span>
+                                    </span>
+                                </Tooltip>
+                            );
+                        })()}
                         {onAiInsightsClick && (
                             <button
                                 onClick={onAiInsightsClick}
-                                className={`flex items-center transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded-lg p-1.5 ${
+                                className={`flex items-center h-7 flex-shrink-0 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded-lg px-1.5 ${
                                     aiInsightsActive
                                         ? 'bg-indigo-100 dark:bg-indigo-900/40'
                                         : 'bg-gray-100 dark:bg-gray-800 hover:bg-indigo-50 dark:hover:bg-indigo-900/30'
@@ -726,7 +761,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                 ref={actionsMenuRef}
                             >
                                 <button
-                                    className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex items-center justify-center"
+                                    className="h-7 w-7 flex-shrink-0 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center"
                                     onClick={(e) => {
                                         e.preventDefault();
                                         e.stopPropagation();

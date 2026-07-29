@@ -14,6 +14,8 @@ interface FeaturesTabProps {
     onToggleCalendar: () => void;
     templatesEnabled: boolean;
     onToggleTemplates: () => void;
+    pomodoroEnabled: boolean;
+    onTogglePomodoro: () => void;
     formData: ProfileFormData;
     onToggleAi: (field: keyof Features) => void;
 }
@@ -73,6 +75,8 @@ const FeaturesTab: React.FC<FeaturesTabProps> = ({
     onToggleCalendar,
     templatesEnabled,
     onToggleTemplates,
+    pomodoroEnabled,
+    onTogglePomodoro,
     formData,
     onToggleAi,
 }) => {
@@ -131,6 +135,15 @@ const FeaturesTab: React.FC<FeaturesTabProps> = ({
                     )}
                     value={templatesEnabled}
                     onToggle={onToggleTemplates}
+                />
+                <ToggleRow
+                    label={t('profile.enablePomodoro', 'Pomodoro Timer')}
+                    description={t(
+                        'profile.pomodoroDescription',
+                        'Enable the Pomodoro timer in the navigation bar for focused work sessions.'
+                    )}
+                    value={pomodoroEnabled}
+                    onToggle={onTogglePomodoro}
                 />
             </div>
 
