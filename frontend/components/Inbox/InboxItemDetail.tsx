@@ -250,9 +250,15 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     );
     const projectRefs = parseProjectRefs(fullContent);
     const hasLongContent =
-        Boolean(item.title && item.title.trim()) &&
-        item.title !== null &&
-        item.title !== fullContent;
+        (Boolean(item.title && item.title.trim()) &&
+            item.title !== null &&
+            item.title !== fullContent) ||
+        fullContent.includes('\n');
+
+    const previewFirstLine = previewText.split('\n')[0];
+    const extraLineCount = previewText
+        .split('\n')
+        .filter((l) => l.trim().length > 0).length - 1;
     const iconTooltip = isBookmarkItem
         ? t('inbox.iconTooltip.bookmark', 'Bookmark link')
         : t('inbox.iconTooltip.text', 'Captured text');
@@ -677,7 +683,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                     openProjectModal={openProjectModal}
                     openNoteModal={openNoteModal}
                     cardClassName="mb-0"
-                    multiline={hasLongContent}
+                    multiline={true}
                 />
             ) : (
                 <InboxCard className="w-full">
@@ -705,7 +711,15 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                                     onClick={handleStartEdit}
                                     className="text-base font-medium text-gray-900 dark:text-gray-300 break-all text-left cursor-pointer w-full hover:text-blue-600 dark:hover:text-blue-400"
                                 >
-                                    {linkifyContent(previewText)}
+                                    {linkifyContent(previewFirstLine)}
+                                    {extraLineCount > 0 && (
+                                        <span className="ml-2 text-xs font-normal text-gray-400 dark:text-gray-500 align-middle">
+                                            +{extraLineCount}{' '}
+                                            {extraLineCount === 1
+                                                ? 'line'
+                                                : 'lines'}
+                                        </span>
+                                    )}
                                 </button>
                             </div>
                         </div>
