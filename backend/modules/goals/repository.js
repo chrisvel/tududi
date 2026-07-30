@@ -4,14 +4,14 @@ const { Goal, Area, Project, Task, sequelize } = require('../../models');
 const { Op } = require('sequelize');
 
 class GoalsRepository {
-    async _attachCounts(goals) {
+    async _attachCounts(goals, userId) {
         if (goals.length === 0) return [];
 
         const goalIds = goals.map((g) => g.id);
 
         const [projectCounts, taskCounts] = await Promise.all([
             Project.findAll({
-                where: { goal_id: { [Op.in]: goalIds } },
+                where: { goal_id: { [Op.in]: goalIds }, user_id: userId },
                 attributes: [
                     'goal_id',
                     [sequelize.fn('COUNT', sequelize.col('id')), 'count'],
@@ -20,7 +20,11 @@ class GoalsRepository {
                 raw: true,
             }),
             Task.findAll({
-                where: { goal_id: { [Op.in]: goalIds }, parent_task_id: null },
+                where: {
+                    goal_id: { [Op.in]: goalIds },
+                    user_id: userId,
+                    parent_task_id: null,
+                },
                 attributes: [
                     'goal_id',
                     [sequelize.fn('COUNT', sequelize.col('id')), 'count'],
@@ -54,7 +58,7 @@ class GoalsRepository {
             ],
             order: [['title', 'ASC']],
         });
-        return this._attachCounts(goals);
+        return this._attachCounts(goals, userId);
     }
 
     async findAllByArea(userId, areaId) {
@@ -65,7 +69,7 @@ class GoalsRepository {
             ],
             order: [['title', 'ASC']],
         });
-        return this._attachCounts(goals);
+        return this._attachCounts(goals, userId);
     }
 
     async findByUid(userId, uid) {
@@ -76,11 +80,15 @@ class GoalsRepository {
                 {
                     model: Project,
                     as: 'Projects',
+                    where: { user_id: userId },
+                    required: false,
                     attributes: ['id', 'uid', 'name', 'status', 'color'],
                 },
                 {
                     model: Task,
                     as: 'Tasks',
+                    where: { user_id: userId },
+                    required: false,
                     attributes: [
                         'id',
                         'uid',
