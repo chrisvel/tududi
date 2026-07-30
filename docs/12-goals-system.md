@@ -6,23 +6,25 @@ This document explains how goals work in tududi. For technical details see `/bac
 
 ## Overview
 
-**Goals** are outcome-level intentions that answer *why* a group of projects or tasks exists. They sit between Areas and Projects in the conceptual hierarchy, but are now first-class standalone entities with their own list page, detail page, and sidebar navigation — not embedded inside any single area.
+**Goals** are top-level outcome intentions that answer *why* a group of projects or tasks exists. They are the highest-level planning layer — above Areas — with their own list page, detail page, and sidebar navigation.
 
 **Hierarchy position:**
 ```
-Areas (life domains, optional)
-  └── Goals (season- or year-scale outcomes)
-        ├── Projects (specific initiatives)
-        │     └── Tasks (actionable items)
-        └── Tasks (directly assigned, without a project)
+Goals (season- or year-scale outcomes)   ← top level
+  ├── Projects (specific initiatives)
+  │     └── Tasks (actionable items)
+  └── Tasks (directly assigned, without a project)
+
+Areas (life domains, organizational containers)  ← parallel, not parent
+  └── Projects (can belong to an area AND a goal)
 ```
 
 **Key characteristics:**
-- Standalone entities — accessible from `/goals` and the sidebar
-- Area is optional (`area_id` is nullable); a goal can exist without belonging to any area
+- Top-level standalone entities — accessible from `/goals` and the sidebar
+- Not tied to any area; goals are independent of the Areas system
+- Projects can link to a goal regardless of which area they belong to
 - Have a time horizon: `season` or `year`
 - Have a status lifecycle: `active → achieved / paused / dropped`
-- Projects can be linked to a goal, flagged as maintenance, or left unlinked
 - Tasks can be assigned directly to a goal (in addition to the project→goal path)
 
 ---
@@ -36,7 +38,7 @@ Areas (life domains, optional)
 | `horizon` | enum | yes | `season` or `year`. Default: `season`. |
 | `target_date` | date | no | Optional deadline for the goal. |
 | `status` | enum | yes | `active`, `achieved`, `paused`, `dropped`. Default: `active`. |
-| `area_id` | integer | no | Optional parent area. Can be null. |
+| `area_id` | integer | no | Stored in DB but not exposed in UI. Goals are area-independent. |
 | `uid` | string | auto | URL-safe unique identifier. |
 
 ---
