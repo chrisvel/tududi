@@ -26,28 +26,26 @@ const SidebarAdmin: React.FC<SidebarAdminProps> = ({ handleNavClick, location, c
     };
 
     return (
-        <div>
-            <ul className="flex flex-col space-y-1">
-                {templatesEnabled && (
-                    <li
-                        className={linkClass('/templates')}
-                        onClick={() => handleNavClick('/templates', t('navigation.templates', 'Templates'))}
-                    >
-                        <RectangleStackIcon className="h-5 w-5 mr-2 shrink-0" />
-                        {t('navigation.templates', 'Templates')}
-                    </li>
-                )}
-                {currentUser?.is_admin === true && (
-                    <li
-                        className={linkClass('/admin')}
-                        onClick={() => handleNavClick('/admin/users', t('admin.userManagement', 'User Management'))}
-                    >
-                        <UsersIcon className="h-5 w-5 mr-2 shrink-0" />
-                        {t('admin.userManagement', 'User Management')}
-                    </li>
-                )}
-            </ul>
-        </div>
+        <ul className="flex flex-col">
+            {templatesEnabled && (
+                <li
+                    className={linkClass('/templates')}
+                    onClick={() => handleNavClick('/templates', t('navigation.templates', 'Templates'))}
+                >
+                    <RectangleStackIcon className="h-5 w-5 mr-2 shrink-0" />
+                    {t('navigation.templates', 'Templates')}
+                </li>
+            )}
+            {currentUser?.is_admin === true && (
+                <li
+                    className={linkClass('/admin')}
+                    onClick={() => handleNavClick('/admin/users', t('admin.userManagement', 'User Management'))}
+                >
+                    <UsersIcon className="h-5 w-5 mr-2 shrink-0" />
+                    {t('admin.userManagement', 'User Management')}
+                </li>
+            )}
+        </ul>
     );
 };
 
