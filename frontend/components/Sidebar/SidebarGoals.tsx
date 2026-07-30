@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Location } from 'react-router-dom';
+import { Location, useNavigate } from 'react-router-dom';
 import {
     FlagIcon,
     PlusCircleIcon,
@@ -14,15 +14,14 @@ import { createGoalUrl } from '../../utils/slugUtils';
 interface SidebarGoalsProps {
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
     location: Location;
-    openGoalModal: (goal: Goal | null) => void;
 }
 
 const SidebarGoals: React.FC<SidebarGoalsProps> = ({
     handleNavClick,
     location,
-    openGoalModal,
 }) => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const [isExpanded, setIsExpanded] = useState(false);
 
     const goals = useStore((state: any) => state.goalsStore.goals);
@@ -64,7 +63,7 @@ const SidebarGoals: React.FC<SidebarGoalsProps> = ({
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
-                            openGoalModal(null);
+                            navigate('/goal/new');
                         }}
                         className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none"
                         aria-label={t('sidebar.addGoalAriaLabel', 'Add Goal')}

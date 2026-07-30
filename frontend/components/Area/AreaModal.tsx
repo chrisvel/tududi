@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Area } from '../../entities/Area';
+import { Goal } from '../../entities/Goal';
 import { useToast } from '../Shared/ToastContext';
 import { useTranslation } from 'react-i18next';
 import DiscardChangesDialog from '../Shared/DiscardChangesDialog';
-import { TrashIcon } from '@heroicons/react/24/outline';
+import { TrashIcon, ChevronDownIcon, FlagIcon, CheckIcon } from '@heroicons/react/24/outline';
 import ColorPicker from '../Shared/ColorPicker';
+import { useStore } from '../../store/useStore';
+import { updateGoal } from '../../utils/goalsService';
 
 interface AreaModalProps {
     isOpen: boolean;
@@ -36,8 +39,26 @@ const AreaModal: React.FC<AreaModalProps> = ({
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [isClosing, setIsClosing] = useState(false);
     const [showDiscardDialog, setShowDiscardDialog] = useState(false);
+    const [isGoalDropdownOpen, setIsGoalDropdownOpen] = useState(false);
+    const [selectedGoalUids, setSelectedGoalUids] = useState<string[]>([]);
+    const [initialGoalUids, setInitialGoalUids] = useState<string[]>([]);
+    const goalDropdownRef = useRef<HTMLDivElement>(null);
 
     const { showSuccessToast, showErrorToast } = useToast();
+
+    const allGoals: Goal[] = useStore((state: any) => state.goalsStore.goals);
+    const goalsLoaded = useStore((state: any) => state.goalsStore.hasLoaded);
+    const loadGoals = useStore((state: any) => state.goalsStore.loadGoals);
+    const setGoals = useStore((state: any) => state.goalsStore.setGoals);
+
+    useEffect(() => {
+        if (!goalsLoaded) loadGoals();
+    }, [goalsLoaded, loadGoals]);
+
+    // Available goals: already linked to this area, or unlinked
+    const availableGoals = allGoals.filter(
+        (g) => !g.area_id || (area && g.Area?.uid === area.uid)
+    );
 
     useEffect(() => {
         if (isOpen) {
@@ -50,45 +71,34 @@ const AreaModal: React.FC<AreaModalProps> = ({
             });
             setError(null);
 
-            // Auto-focus on the name input when modal opens
-            setTimeout(() => {
-                nameInputRef.current?.focus();
-            }, 100);
+            const linked = allGoals
+                .filter((g) => area && g.Area?.uid === area.uid)
+                .map((g) => g.uid!)
+                .filter(Boolean);
+            setSelectedGoalUids(linked);
+            setInitialGoalUids(linked);
+
+            setTimeout(() => nameInputRef.current?.focus(), 100);
         }
     }, [isOpen, area]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (showDiscardDialog) return;
-            if (
-                modalRef.current &&
-                !modalRef.current.contains(event.target as Node)
-            ) {
+            if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
                 handleClose();
             }
         };
-
-        if (isOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-        }
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
+        if (isOpen) document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [isOpen, showDiscardDialog]);
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
-                // Don't show discard dialog if already showing
-                if (showDiscardDialog) {
-                    // Let the dialog handle its own Escape
-                    return;
-                }
-
+                if (showDiscardDialog) return;
                 event.preventDefault();
                 event.stopPropagation();
-
-                // Check for unsaved changes using ref to get current value
                 if (hasUnsavedChangesRef.current()) {
                     setShowDiscardDialog(true);
                 } else {
@@ -96,45 +106,61 @@ const AreaModal: React.FC<AreaModalProps> = ({
                 }
             }
         };
-
-        if (isOpen) {
-            document.addEventListener('keydown', handleKeyDown);
-        }
-        return () => {
-            document.removeEventListener('keydown', handleKeyDown);
-        };
+        if (isOpen) document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
     }, [isOpen, showDiscardDialog]);
 
-    const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-    ) => {
+    useEffect(() => {
+        if (!isGoalDropdownOpen) return;
+        const handleOutside = (e: MouseEvent) => {
+            if (goalDropdownRef.current && !goalDropdownRef.current.contains(e.target as Node)) {
+                setIsGoalDropdownOpen(false);
+            }
+        };
+        setTimeout(() => document.addEventListener('mousedown', handleOutside), 50);
+        return () => document.removeEventListener('mousedown', handleOutside);
+    }, [isGoalDropdownOpen]);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
+        setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const toggleGoal = (uid: string) => {
+        setSelectedGoalUids((prev) =>
+            prev.includes(uid) ? prev.filter((u) => u !== uid) : [...prev, uid]
+        );
     };
 
     const handleSubmit = async (e?: React.FormEvent) => {
-        if (e) {
-            e.preventDefault();
-        }
-
+        if (e) e.preventDefault();
         if (!formData.name.trim()) {
             setError(t('errors.areaNameRequired'));
             return;
         }
-
         setIsSubmitting(true);
         setError(null);
-
         try {
             await onSave(formData);
-            showSuccessToast(
-                formData.uid
-                    ? t('success.areaUpdated')
-                    : t('success.areaCreated')
-            );
+
+            // Sync goal area assignments for existing areas
+            if (area?.id) {
+                const added = selectedGoalUids.filter((u) => !initialGoalUids.includes(u));
+                const removed = initialGoalUids.filter((u) => !selectedGoalUids.includes(u));
+
+                const updates = await Promise.all([
+                    ...added.map((uid) => updateGoal(uid, { area_id: area.id })),
+                    ...removed.map((uid) => updateGoal(uid, { area_id: null })),
+                ]);
+
+                if (updates.length > 0) {
+                    const updatedMap: Record<string, Goal> = {};
+                    updates.forEach((r) => { updatedMap[r.goal.uid!] = r.goal; });
+                    setGoals(allGoals.map((g) => updatedMap[g.uid!] ?? g));
+                }
+            }
+
+            showSuccessToast(formData.uid ? t('success.areaUpdated') : t('success.areaCreated'));
             handleClose();
         } catch (err) {
             setError((err as Error).message);
@@ -144,29 +170,20 @@ const AreaModal: React.FC<AreaModalProps> = ({
         }
     };
 
-    // Check if there are unsaved changes
     const hasUnsavedChanges = () => {
         if (!area) {
-            // New area - check if any field has been filled
-            return (
-                formData.name.trim() !== '' ||
-                formData.description?.trim() !== ''
-            );
+            return formData.name.trim() !== '' || (formData.description?.trim() ?? '') !== '';
         }
-
-        // Existing area - compare with original
         return (
             formData.name !== area.name ||
             formData.description !== area.description ||
-            formData.color !== area.color
+            formData.color !== area.color ||
+            selectedGoalUids.join(',') !== initialGoalUids.join(',')
         );
     };
 
-    // Use ref to store hasUnsavedChanges so it's always current in the event handler
     const hasUnsavedChangesRef = useRef(hasUnsavedChanges);
-    useEffect(() => {
-        hasUnsavedChangesRef.current = hasUnsavedChanges;
-    });
+    useEffect(() => { hasUnsavedChangesRef.current = hasUnsavedChanges; });
 
     const handleClose = () => {
         setIsClosing(true);
@@ -174,36 +191,26 @@ const AreaModal: React.FC<AreaModalProps> = ({
             onClose();
             setIsClosing(false);
             setShowDiscardDialog(false);
+            setIsGoalDropdownOpen(false);
         }, 300);
-    };
-
-    const handleDiscardChanges = () => {
-        setShowDiscardDialog(false);
-        handleClose();
-    };
-
-    const handleCancelDiscard = () => {
-        setShowDiscardDialog(false);
     };
 
     const handleDeleteArea = async () => {
         if (formData.uid && onDelete) {
             try {
                 await onDelete(formData.uid);
-                showSuccessToast(
-                    t('success.areaDeleted', 'Area deleted successfully!')
-                );
+                showSuccessToast(t('success.areaDeleted', 'Area deleted successfully!'));
                 handleClose();
             } catch (err) {
                 setError((err as Error).message);
-                showErrorToast(
-                    t('errors.failedToDeleteArea', 'Failed to delete area.')
-                );
+                showErrorToast(t('errors.failedToDeleteArea', 'Failed to delete area.'));
             }
         }
     };
 
     if (!isOpen) return null;
+
+    const selectedGoals = availableGoals.filter((g) => selectedGoalUids.includes(g.uid!));
 
     return (
         <>
@@ -220,21 +227,15 @@ const AreaModal: React.FC<AreaModalProps> = ({
                         } h-full sm:h-auto sm:my-4`}
                     >
                         <div className="flex flex-col h-full sm:min-h-[400px] sm:max-h-[90vh]">
-                            {/* Main Form Section */}
                             <div className="flex-1 flex flex-col transition-all duration-300 bg-white dark:bg-gray-800 sm:rounded-lg">
                                 <div className="flex-1 relative">
                                     <div
                                         className="absolute inset-0 overflow-y-auto overflow-x-hidden"
-                                        style={{
-                                            WebkitOverflowScrolling: 'touch',
-                                        }}
+                                        style={{ WebkitOverflowScrolling: 'touch' }}
                                     >
-                                        <form
-                                            className="h-full"
-                                            onSubmit={handleSubmit}
-                                        >
+                                        <form className="h-full" onSubmit={handleSubmit}>
                                             <fieldset className="h-full flex flex-col">
-                                                {/* Area Title Section - Always Visible */}
+                                                {/* Name */}
                                                 <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4 pt-4 sm:rounded-t-lg">
                                                     <input
                                                         ref={nameInputRef}
@@ -245,72 +246,113 @@ const AreaModal: React.FC<AreaModalProps> = ({
                                                         onChange={handleChange}
                                                         required
                                                         className="block w-full text-xl font-semibold bg-transparent text-black dark:text-white border-none focus:outline-none shadow-sm py-2"
-                                                        placeholder={t(
-                                                            'forms.areaNamePlaceholder'
-                                                        )}
+                                                        placeholder={t('forms.areaNamePlaceholder')}
                                                         data-testid="area-name-input"
                                                     />
                                                 </div>
 
-                                                {/* Description Section - Always Visible */}
-                                                <div className="flex-1 pb-4 sm:px-4">
+                                                {/* Description */}
+                                                <div className="pb-4 px-4">
                                                     <textarea
                                                         id="areaDescription"
                                                         name="description"
-                                                        value={
-                                                            formData.description
-                                                        }
+                                                        value={formData.description}
                                                         onChange={handleChange}
-                                                        className="block w-full h-full sm:border sm:border-gray-300 sm:dark:border-gray-600 sm:rounded-md shadow-sm py-2 px-3 sm:py-3 sm:px-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 sm:focus:ring-2 sm:focus:ring-blue-500 transition duration-150 ease-in-out resize-none"
-                                                        placeholder={t(
-                                                            'forms.areaDescriptionPlaceholder'
-                                                        )}
-                                                        style={{
-                                                            minHeight: '150px',
-                                                        }}
+                                                        className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 resize-none"
+                                                        placeholder={t('forms.areaDescriptionPlaceholder')}
+                                                        rows={3}
                                                     />
                                                 </div>
 
-                                                {/* Color Section */}
+                                                {/* Color */}
                                                 <div className="border-t border-gray-200 dark:border-gray-700 pt-4 pb-4 px-4">
-                                                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                                                    <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wider">
                                                         {t('forms.color', 'Color')}
                                                     </h3>
                                                     <ColorPicker
                                                         value={formData.color || ''}
                                                         onChange={(color) =>
-                                                            setFormData((prev) => ({
-                                                                ...prev,
-                                                                color: color || '',
-                                                            }))
+                                                            setFormData((prev) => ({ ...prev, color: color || '' }))
                                                         }
                                                     />
                                                 </div>
 
-                                                {/* Error Message */}
-                                                {error && (
-                                                    <div className="text-red-500 px-4 mb-4">
-                                                        {error}
+                                                {/* Goals — only shown when editing an existing area */}
+                                                {area?.id && (
+                                                    <div className="border-t border-gray-200 dark:border-gray-700 pt-4 pb-4 px-4">
+                                                        <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wider">
+                                                            {t('goals.title', 'Goals')}
+                                                        </h3>
+
+                                                        <div className="relative" ref={goalDropdownRef}>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setIsGoalDropdownOpen((v) => !v)}
+                                                                className="w-full flex items-center justify-between gap-2 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 hover:border-gray-400 dark:hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                                                            >
+                                                                <span className="truncate text-left">
+                                                                    {selectedGoals.length === 0
+                                                                        ? t('goals.noGoalsSelected', 'No goals selected')
+                                                                        : selectedGoals.map((g) => g.title).join(', ')}
+                                                                </span>
+                                                                <ChevronDownIcon className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform ${isGoalDropdownOpen ? 'rotate-180' : ''}`} />
+                                                            </button>
+
+                                                            {isGoalDropdownOpen && (
+                                                                <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-lg z-50 max-h-52 overflow-y-auto">
+                                                                    {availableGoals.length === 0 ? (
+                                                                        <p className="px-3 py-2.5 text-sm text-gray-400 dark:text-gray-500">
+                                                                            {t('goals.noAvailableGoals', 'No available goals')}
+                                                                        </p>
+                                                                    ) : (
+                                                                        availableGoals.map((goal) => {
+                                                                            const checked = selectedGoalUids.includes(goal.uid!);
+                                                                            return (
+                                                                                <button
+                                                                                    key={goal.uid}
+                                                                                    type="button"
+                                                                                    onClick={() => toggleGoal(goal.uid!)}
+                                                                                    className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
+                                                                                >
+                                                                                    <div className={`flex-shrink-0 w-4 h-4 rounded border flex items-center justify-center ${
+                                                                                        checked
+                                                                                            ? 'bg-blue-600 border-blue-600'
+                                                                                            : 'border-gray-300 dark:border-gray-500'
+                                                                                    }`}>
+                                                                                        {checked && <CheckIcon className="h-3 w-3 text-white" />}
+                                                                                    </div>
+                                                                                    <FlagIcon className="h-4 w-4 text-blue-500 flex-shrink-0" />
+                                                                                    <div className="min-w-0 flex-1">
+                                                                                        <p className="text-sm text-gray-800 dark:text-gray-200 truncate">{goal.title}</p>
+                                                                                        <p className="text-xs text-gray-400 dark:text-gray-500">{t(`goals.horizon.${goal.horizon}`, goal.horizon)} · {t(`goals.status.${goal.status}`, goal.status)}</p>
+                                                                                    </div>
+                                                                                </button>
+                                                                            );
+                                                                        })
+                                                                    )}
+                                                                </div>
+                                                            )}
+                                                        </div>
                                                     </div>
+                                                )}
+
+                                                {error && (
+                                                    <div className="text-red-500 px-4 mb-4 text-sm">{error}</div>
                                                 )}
                                             </fieldset>
                                         </form>
                                     </div>
                                 </div>
 
-                                {/* Action Buttons - Below border with custom layout */}
+                                {/* Footer */}
                                 <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center justify-between sm:rounded-b-lg">
-                                    {/* Left side: Delete and Cancel */}
                                     <div className="flex items-center space-x-3">
                                         {area && area.uid && onDelete && (
                                             <button
                                                 type="button"
                                                 onClick={handleDeleteArea}
                                                 className="p-2 border border-red-300 dark:border-red-600 text-red-600 dark:text-red-400 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 focus:outline-none transition duration-150 ease-in-out"
-                                                title={t(
-                                                    'common.delete',
-                                                    'Delete'
-                                                )}
+                                                title={t('common.delete', 'Delete')}
                                             >
                                                 <TrashIcon className="h-4 w-4" />
                                             </button>
@@ -323,16 +365,12 @@ const AreaModal: React.FC<AreaModalProps> = ({
                                             {t('common.cancel')}
                                         </button>
                                     </div>
-
-                                    {/* Right side: Save */}
                                     <button
                                         type="button"
                                         onClick={() => handleSubmit()}
                                         disabled={isSubmitting}
                                         className={`px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none transition duration-150 ease-in-out text-sm ${
-                                            isSubmitting
-                                                ? 'opacity-50 cursor-not-allowed'
-                                                : ''
+                                            isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
                                         }`}
                                         data-testid="area-save-button"
                                     >
@@ -350,8 +388,8 @@ const AreaModal: React.FC<AreaModalProps> = ({
             </div>
             {showDiscardDialog && (
                 <DiscardChangesDialog
-                    onDiscard={handleDiscardChanges}
-                    onCancel={handleCancelDiscard}
+                    onDiscard={() => { setShowDiscardDialog(false); handleClose(); }}
+                    onCancel={() => setShowDiscardDialog(false)}
                 />
             )}
         </>

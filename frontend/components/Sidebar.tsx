@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Area } from '../entities/Area';
 import { Note } from '../entities/Note';
 import { Tag } from '../entities/Tag';
-import { Goal } from '../entities/Goal';
 import SidebarAreas from './Sidebar/SidebarAreas';
 import SidebarFooter from './Sidebar/SidebarFooter';
 import SidebarNav from './Sidebar/SidebarNav';
@@ -32,7 +31,6 @@ interface SidebarProps {
     openNoteModal: (note: Note | null) => void;
     openAreaModal: (area: Area | null) => void;
     openTagModal: (tag: Tag | null) => void;
-    openGoalModal: (goal: Goal | null) => void;
     openNewHabit: () => void;
     notes: Note[];
     areas: Area[];
@@ -51,7 +49,6 @@ const Sidebar: React.FC<SidebarProps> = ({
     openNoteModal,
     openAreaModal,
     openTagModal,
-    openGoalModal,
     openNewHabit,
     notes,
     areas,
@@ -115,7 +112,6 @@ const Sidebar: React.FC<SidebarProps> = ({
                         <SidebarGoals
                             handleNavClick={handleNavClick}
                             location={location}
-                            openGoalModal={openGoalModal}
                         />
                         <SidebarNotes
                             handleNavClick={handleNavClick}

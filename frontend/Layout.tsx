@@ -9,18 +9,15 @@ import ProjectModal from './components/Project/ProjectModal';
 import NoteModal from './components/Note/NoteModal';
 import AreaModal from './components/Area/AreaModal';
 import TagModal from './components/Tag/TagModal';
-import GoalModal from './components/Goal/GoalModal';
 import { Note } from './entities/Note';
 import { Area } from './entities/Area';
 import { Tag } from './entities/Tag';
-import { Goal } from './entities/Goal';
 import { Project } from './entities/Project';
 import { User } from './entities/User';
 import { useStore } from './store/useStore';
 import { createNote, updateNote } from './utils/notesService';
 import { createArea, updateArea } from './utils/areasService';
 import { createTag, updateTag } from './utils/tagsService';
-import { createGoal, updateGoal } from './utils/goalsService';
 import {
     fetchProjects,
     createProject,
@@ -59,12 +56,10 @@ const Layout: React.FC<LayoutProps> = ({
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
     const [isAreaModalOpen, setIsAreaModalOpen] = useState(false);
     const [isTagModalOpen, setIsTagModalOpen] = useState(false);
-    const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
 
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const [selectedArea, setSelectedArea] = useState<Area | null>(null);
     const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
-    const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
     const [keyboardShortcuts, setKeyboardShortcuts] = useState<KeyboardShortcutsConfig | null>(null);
 
     // Fetch keyboard shortcuts from profile
@@ -218,38 +213,6 @@ const Layout: React.FC<LayoutProps> = ({
     const closeTagModal = () => {
         setIsTagModalOpen(false);
         setSelectedTag(null);
-    };
-
-    const openGoalModal = (goal: Goal | null = null) => {
-        setSelectedGoal(goal);
-        setIsGoalModalOpen(true);
-    };
-
-    const closeGoalModal = () => {
-        setIsGoalModalOpen(false);
-        setSelectedGoal(null);
-    };
-
-    const handleSaveGoal = async (goalData: Partial<Goal>) => {
-        try {
-            if (goalData.uid || selectedGoal?.uid) {
-                const uid = (goalData.uid ?? selectedGoal?.uid)!;
-                const result = await updateGoal(uid, goalData);
-                const currentGoals = useStore.getState().goalsStore.goals;
-                useStore.getState().goalsStore.setGoals(
-                    currentGoals.map((g) => (g.uid === result.goal.uid ? result.goal : g))
-                );
-            } else {
-                const result = await createGoal(goalData as any);
-                const currentGoals = useStore.getState().goalsStore.goals;
-                useStore.getState().goalsStore.setGoals([...currentGoals, result.goal]);
-            }
-            closeGoalModal();
-        } catch (error: any) {
-            console.error('Error saving goal:', error);
-            if (isAuthError(error)) return;
-            throw error;
-        }
     };
 
     const handleSaveNote = async (noteData: Note) => {
@@ -420,7 +383,6 @@ const Layout: React.FC<LayoutProps> = ({
                     openNoteModal={openNoteModal}
                     openAreaModal={openAreaModal}
                     openTagModal={openTagModal}
-                    openGoalModal={openGoalModal}
                     openNewHabit={openNewHabit}
                     notes={notes}
                     areas={areas}
@@ -460,7 +422,6 @@ const Layout: React.FC<LayoutProps> = ({
                     openNoteModal={openNoteModal}
                     openAreaModal={openAreaModal}
                     openTagModal={openTagModal}
-                    openGoalModal={openGoalModal}
                     openNewHabit={openNewHabit}
                     notes={notes}
                     areas={areas}
@@ -500,7 +461,6 @@ const Layout: React.FC<LayoutProps> = ({
                     openNoteModal={openNoteModal}
                     openAreaModal={openAreaModal}
                     openTagModal={openTagModal}
-                    openGoalModal={openGoalModal}
                     openNewHabit={openNewHabit}
                     notes={notes}
                     areas={areas}
@@ -599,15 +559,6 @@ const Layout: React.FC<LayoutProps> = ({
                     />
                 )}
 
-                {isGoalModalOpen && (
-                    <GoalModal
-                        isOpen={isGoalModalOpen}
-                        onClose={closeGoalModal}
-                        onSave={handleSaveGoal}
-                        goal={selectedGoal}
-                        areas={areas}
-                    />
-                )}
             </div>
         </SidebarProvider>
     );
