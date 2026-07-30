@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     PencilSquareIcon,
@@ -47,7 +47,7 @@ const GoalDetails: React.FC = () => {
 
         fetchGoalByUid(uid)
             .then((data) => setGoal(data))
-            .catch(() => setError(t('goals.notFound', 'Goal not found')))
+            .catch((err) => setError(err?.message || t('goals.notFound', 'Goal not found')))
             .finally(() => setLoading(false));
     }, [uidSlug, t]);
 
@@ -124,15 +124,6 @@ const GoalDetails: React.FC = () => {
                                     <span className="text-xs text-gray-400 dark:text-gray-500">
                                         {t('goals.targetDate', 'Target')}: {new Date(goal.target_date).toLocaleDateString()}
                                     </span>
-                                )}
-                                {goal.Area && (
-                                    <Link
-                                        to={`/area/${goal.Area.uid}-${(goal.Area.name ?? '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`}
-                                        className="text-xs text-blue-500 hover:text-blue-600 dark:text-blue-400"
-                                        onClick={(e) => e.stopPropagation()}
-                                    >
-                                        {goal.Area.name}
-                                    </Link>
                                 )}
                             </div>
                             <div className="mt-3 flex gap-4 text-xs text-gray-500 dark:text-gray-400">

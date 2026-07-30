@@ -605,6 +605,7 @@ const Layout: React.FC<LayoutProps> = ({
                         onClose={closeGoalModal}
                         onSave={handleSaveGoal}
                         goal={selectedGoal}
+                        areas={areas}
                     />
                 )}
             </div>

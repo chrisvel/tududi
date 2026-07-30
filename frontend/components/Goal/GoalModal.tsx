@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { TrashIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 import { Goal, GoalHorizon, GoalStatus } from '../../entities/Goal';
+import { Area } from '../../entities/Area';
 import { useToast } from '../Shared/ToastContext';
 import DiscardChangesDialog from '../Shared/DiscardChangesDialog';
-import { useStore } from '../../store/useStore';
 
 interface GoalModalProps {
     isOpen: boolean;
@@ -12,6 +12,7 @@ interface GoalModalProps {
     onSave: (data: Partial<Goal>) => Promise<void>;
     onDelete?: (uid: string) => Promise<void>;
     goal?: Goal | null;
+    areas?: Area[];
     defaultAreaId?: number | null;
 }
 
@@ -21,6 +22,7 @@ const GoalModal: React.FC<GoalModalProps> = ({
     onSave,
     onDelete,
     goal,
+    areas = [],
     defaultAreaId,
 }) => {
     const { t } = useTranslation();
@@ -29,11 +31,7 @@ const GoalModal: React.FC<GoalModalProps> = ({
     const modalRef = useRef<HTMLDivElement>(null);
     const hasUnsavedChangesRef = useRef<() => boolean>(() => false);
 
-    const areas = useStore((state: any) => state.areasStore.areas);
-    const loadAreas = useStore((state: any) => state.areasStore.loadAreas);
-    const areasLoaded = useStore((state: any) => state.areasStore.hasLoaded);
-
-    const emptyForm = (): Partial<Goal> => ({
+    const getDefaultForm = (): Partial<Goal> => ({
         title: '',
         why: '',
         horizon: 'season' as GoalHorizon,
@@ -42,15 +40,11 @@ const GoalModal: React.FC<GoalModalProps> = ({
         area_id: defaultAreaId ?? null,
     });
 
-    const [formData, setFormData] = useState<Partial<Goal>>(emptyForm());
+    const [formData, setFormData] = useState<Partial<Goal>>(getDefaultForm());
     const [error, setError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
     const [showDiscardDialog, setShowDiscardDialog] = useState(false);
-
-    useEffect(() => {
-        if (!areasLoaded) loadAreas();
-    }, [areasLoaded, loadAreas]);
 
     useEffect(() => {
         if (isOpen) {
@@ -64,7 +58,7 @@ const GoalModal: React.FC<GoalModalProps> = ({
                           target_date: goal.target_date ?? '',
                           area_id: goal.area_id ?? null,
                       }
-                    : emptyForm()
+                    : getDefaultForm()
             );
             setError(null);
             setTimeout(() => titleInputRef.current?.focus(), 100);
@@ -129,7 +123,7 @@ const GoalModal: React.FC<GoalModalProps> = ({
         const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
-            [name]: name === 'area_id' ? (value ? parseInt(value) : null) : value,
+            [name]: name === 'area_id' ? (value ? parseInt(value, 10) : null) : value,
         }));
     };
 
@@ -275,25 +269,27 @@ const GoalModal: React.FC<GoalModalProps> = ({
                                                         />
                                                     </div>
 
-                                                    {/* Area (optional) */}
-                                                    <div>
-                                                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider">
-                                                            {t('forms.goalArea', 'Area')} ({t('common.optional', 'optional')})
-                                                        </label>
-                                                        <select
-                                                            name="area_id"
-                                                            value={formData.area_id ?? ''}
-                                                            onChange={handleChange}
-                                                            className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500"
-                                                        >
-                                                            <option value="">{t('forms.noArea', 'No area')}</option>
-                                                            {areas.map((area: any) => (
-                                                                <option key={area.id} value={area.id}>
-                                                                    {area.name}
-                                                                </option>
-                                                            ))}
-                                                        </select>
-                                                    </div>
+                                                    {/* Area (optional, only shown if areas list provided) */}
+                                                    {areas.length > 0 && (
+                                                        <div>
+                                                            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider">
+                                                                {t('forms.goalArea', 'Area')} ({t('common.optional', 'optional')})
+                                                            </label>
+                                                            <select
+                                                                name="area_id"
+                                                                value={formData.area_id ?? ''}
+                                                                onChange={handleChange}
+                                                                className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500"
+                                                            >
+                                                                <option value="">{t('forms.noArea', 'No area')}</option>
+                                                                {areas.map((area) => (
+                                                                    <option key={area.id} value={area.id}>
+                                                                        {area.name}
+                                                                    </option>
+                                                                ))}
+                                                            </select>
+                                                        </div>
+                                                    )}
                                                 </div>
 
                                                 {error && (

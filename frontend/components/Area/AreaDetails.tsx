@@ -209,14 +209,9 @@ const AreaDetails: React.FC = () => {
     };
 
     const handleLinkToGoal = async (project: Project, goal: Goal) => {
-        console.log('[handleLinkToGoal]', { projectUid: project.uid, goalId: goal.id, goalUid: goal.uid });
-        if (!project.uid || !goal.id) {
-            console.warn('[handleLinkToGoal] early return – missing uid or goal.id', { projectUid: project.uid, goalId: goal.id });
-            return;
-        }
+        if (!project.uid || !goal.id) return;
         try {
             const saved = await updateProject(project.uid, { goal_id: goal.id, is_maintenance: false });
-            console.log('[handleLinkToGoal] server response goal_id:', saved.goal_id);
             const savedGoalId = saved.goal_id ?? (saved as any).Goal?.id ?? null;
             patchProjectInStore(project.uid, {
                 goal_id: savedGoalId,
@@ -285,7 +280,6 @@ const AreaDetails: React.FC = () => {
     );
     const completedTasks = areaTasks.filter((t) => t.status === 'done' || t.status === 2);
 
-    // Bucket projects into: under a goal / maintenance / unlinked
     const projectsByGoal = new Map<number, Project[]>();
     const maintenanceProjects: Project[] = [];
     const unlinkedProjects: Project[] = [];
@@ -382,7 +376,6 @@ const AreaDetails: React.FC = () => {
                         <p className="text-sm text-gray-400 dark:text-gray-500">Loading goals…</p>
                     ) : (
                         <div className="space-y-4">
-                            {/* Empty state: only when there are no goals AND no projects at all */}
                             {goals.length === 0 && areaProjects.length === 0 && (
                                 <p className="text-sm text-gray-400 dark:text-gray-500">
                                     No goals yet. Add a goal to group projects by outcome.
@@ -470,17 +463,17 @@ const AreaDetails: React.FC = () => {
                                             Projects
                                         </p>
                                         <div className="space-y-2">
-                                        {unlinkedProjects.map((p) => (
-                                            <UnlinkedProjectRow
-                                                key={p.uid || p.id}
-                                                project={p}
-                                                goals={goals.filter((g) => g.status === 'active')}
-                                                getLink={getProjectLink}
-                                                onLinkToGoal={handleLinkToGoal}
-                                                onMarkMaintenance={handleMarkMaintenance}
-                                                onDrop={handleDropProject}
-                                            />
-                                        ))}
+                                            {unlinkedProjects.map((p) => (
+                                                <UnlinkedProjectRow
+                                                    key={p.uid || p.id}
+                                                    project={p}
+                                                    goals={goals.filter((g) => g.status === 'active')}
+                                                    getLink={getProjectLink}
+                                                    onLinkToGoal={handleLinkToGoal}
+                                                    onMarkMaintenance={handleMarkMaintenance}
+                                                    onDrop={handleDropProject}
+                                                />
+                                            ))}
                                         </div>
                                     </div>
                                 </div>
@@ -546,6 +539,7 @@ const AreaDetails: React.FC = () => {
                     onClose={handleGoalModalClose}
                     onSave={handleGoalSave}
                     goal={editingGoal}
+                    areas={areasStore.areas}
                     defaultAreaId={area?.id}
                 />
             )}
@@ -724,25 +718,25 @@ const UnlinkedProjectRow: React.FC<UnlinkedProjectRowProps> = ({
                                     onClick={() => onLinkToGoal(project, g)}
                                     className="text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700 px-2 py-1 rounded hover:bg-blue-100 dark:hover:bg-blue-800/40"
                                 >
-                                    → {g.title}
+                                    {g.title}
                                 </button>
                             ))}
                         </div>
                     ) : (
-                        <p className="text-xs text-gray-400 dark:text-gray-500 italic">
+                        <p className="text-xs text-gray-400 dark:text-gray-500">
                             No active goals yet. Add one above to link this project.
                         </p>
                     )}
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex gap-2 pt-1">
                         <button
                             onClick={() => onMarkMaintenance(project)}
-                            className="text-xs border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 px-2 py-1 rounded hover:bg-gray-50 dark:hover:bg-gray-800"
+                            className="text-xs text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-600 px-2 py-1 rounded hover:bg-gray-50 dark:hover:bg-gray-800"
                         >
                             Maintenance
                         </button>
                         <button
                             onClick={() => onDrop(project)}
-                            className="text-xs text-red-400 hover:text-red-600 px-1 py-1"
+                            className="text-xs text-red-500 dark:text-red-400 border border-red-200 dark:border-red-700 px-2 py-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20"
                         >
                             Drop
                         </button>
