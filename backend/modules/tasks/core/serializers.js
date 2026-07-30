@@ -109,6 +109,7 @@ async function serializeTask(
         uid: task.uid,
         project_uid: taskJson.Project?.uid || null,
         area_uid: taskJson.Area?.uid || null,
+        goal_uid: taskJson.Goal?.uid || null,
         recurring_parent_uid: recurringParentUid,
         due_date: processDueDateForResponse(taskJson.due_date, safeTimezone),
         defer_until: processDeferUntilForResponse(

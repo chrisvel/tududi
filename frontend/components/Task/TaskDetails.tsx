@@ -33,6 +33,7 @@ import {
     TaskDeferUntilCard,
     TaskAttachmentsCard,
     TaskAssignedToCard,
+    TaskGoalCard,
 } from './TaskDetails/';
 import TaskAIInsights, { TaskAIInsightsHandle } from '../AI/TaskAIInsights';
 import {
@@ -79,6 +80,7 @@ const TaskDetails: React.FC = () => {
     const tagsStore = useStore((state: any) => state.tagsStore);
     const tasksStore = useStore((state: any) => state.tasksStore);
     const areasStore = useStore((state: any) => state.areasStore);
+    const goalsStore = useStore((state: any) => state.goalsStore);
     const task = useStore((state: any) =>
         state.tasksStore.tasks.find((t: Task) => t.uid === uid)
     );
@@ -202,6 +204,12 @@ const TaskDetails: React.FC = () => {
             areasStore.loadAreas();
         }
     }, [areasStore]);
+
+    useEffect(() => {
+        if (!goalsStore.hasLoaded && !goalsStore.isLoading) {
+            goalsStore.loadGoals();
+        }
+    }, [goalsStore]);
 
     const handleStartRecurrenceEdit = () => {
         setRecurrenceForm({
@@ -1200,6 +1208,40 @@ const TaskDetails: React.FC = () => {
         }
     };
 
+    const handleGoalSelection = async (goal: any) => {
+        if (!task?.uid) return;
+        try {
+            taskModifiedRef.current = true;
+            await updateTask(task.uid, { goal_id: goal.id });
+            if (uid) {
+                const updatedTask = await fetchTaskByUid(uid);
+                tasksStore.updateTaskInStore(updatedTask);
+            }
+            showSuccessToast(t('task.goalUpdated', 'Goal updated'));
+            setTimelineRefreshKey((prev) => prev + 1);
+        } catch (error) {
+            console.error('Error updating goal:', error);
+            showErrorToast(t('task.goalUpdateError', 'Failed to update goal'));
+        }
+    };
+
+    const handleClearGoal = async () => {
+        if (!task?.uid) return;
+        try {
+            taskModifiedRef.current = true;
+            await updateTask(task.uid, { goal_id: null });
+            if (uid) {
+                const updatedTask = await fetchTaskByUid(uid);
+                tasksStore.updateTaskInStore(updatedTask);
+            }
+            showSuccessToast(t('task.goalCleared', 'Goal cleared'));
+            setTimelineRefreshKey((prev) => prev + 1);
+        } catch (error) {
+            console.error('Error clearing goal:', error);
+            showErrorToast(t('task.goalClearError', 'Failed to clear goal'));
+        }
+    };
+
     const handleAssignPerson = async (personUid: string | null) => {
         if (!task?.uid) return;
         try {
@@ -1423,6 +1465,13 @@ const TaskDetails: React.FC = () => {
                                     onAreaSelect={handleAreaSelection}
                                     onAreaClear={handleClearArea}
                                     getAreaLink={getAreaLink}
+                                />
+
+                                <TaskGoalCard
+                                    task={task}
+                                    goals={goalsStore.goals}
+                                    onGoalSelect={handleGoalSelection}
+                                    onGoalClear={handleClearGoal}
                                 />
 
                                 <TaskAssignedToCard

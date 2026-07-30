@@ -112,6 +112,8 @@ Goal.belongsTo(User, { foreignKey: 'user_id' });
 Area.hasMany(Goal, { foreignKey: 'area_id', as: 'Goals' });
 Goal.belongsTo(Area, { foreignKey: 'area_id' });
 Goal.hasMany(Project, { foreignKey: 'goal_id', as: 'Projects' });
+Goal.hasMany(Task, { foreignKey: 'goal_id', as: 'Tasks' });
+Task.belongsTo(Goal, { foreignKey: 'goal_id', allowNull: true, as: 'Goal' });
 
 User.hasMany(Project, { foreignKey: 'user_id' });
 Project.belongsTo(User, { foreignKey: 'user_id' });

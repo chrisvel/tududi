@@ -17,6 +17,8 @@ import AreaDetails from './components/Area/AreaDetails';
 import Areas from './components/Areas';
 import TagDetails from './components/Tag/TagDetails';
 import Tags from './components/Tags';
+import GoalDetails from './components/Goal/GoalDetails';
+import Goals from './components/Goals';
 import Views from './components/Views';
 import ViewDetail from './components/ViewDetail';
 import Notes from './components/Notes';
@@ -299,6 +301,11 @@ const App: React.FC = () => {
                             <Route
                                 path="/tag/:uidSlug"
                                 element={<TagDetails />}
+                            />
+                            <Route path="/goals" element={<Goals />} />
+                            <Route
+                                path="/goal/:uidSlug"
+                                element={<GoalDetails />}
                             />
                             <Route path="/views" element={<Views />} />
                             <Route

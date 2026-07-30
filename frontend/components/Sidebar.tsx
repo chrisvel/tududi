@@ -10,6 +10,7 @@ import SidebarNotes from './Sidebar/SidebarNotes';
 import SidebarHabits from './Sidebar/SidebarHabits';
 import SidebarProjects from './Sidebar/SidebarProjects';
 import SidebarTags from './Sidebar/SidebarTags';
+import SidebarGoals from './Sidebar/SidebarGoals';
 import SidebarViews from './Sidebar/SidebarViews';
 import SidebarPeople from './Sidebar/SidebarPeople';
 import SidebarBoards from './Sidebar/SidebarBoards';
@@ -107,6 +108,10 @@ const Sidebar: React.FC<SidebarProps> = ({
                             location={location}
                             isDarkMode={isDarkMode}
                             openAreaModal={openAreaModal}
+                        />
+                        <SidebarGoals
+                            handleNavClick={handleNavClick}
+                            location={location}
                         />
                         <SidebarNotes
                             handleNavClick={handleNavClick}

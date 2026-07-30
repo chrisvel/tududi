@@ -134,6 +134,14 @@ module.exports = (sequelize) => {
                     key: 'id',
                 },
             },
+            goal_id: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                references: {
+                    model: 'goals',
+                    key: 'id',
+                },
+            },
             recurring_parent_id: {
                 type: DataTypes.INTEGER,
                 allowNull: true,

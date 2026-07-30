@@ -22,6 +22,8 @@ export interface Task {
     area_id?: number;
     area_uid?: string;
     Area?: Area;
+    goal_id?: number | null;
+    goal_uid?: string | null;
     created_at?: string;
     updated_at?: string;
     recurrence_type?: RecurrenceType;
