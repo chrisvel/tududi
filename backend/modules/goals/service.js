@@ -30,12 +30,9 @@ class GoalsService {
         if (!title || !title.trim()) {
             throw new ValidationError('Goal title is required');
         }
-        if (!area_id) {
-            throw new ValidationError('Goal must belong to an area');
-        }
         return goalsRepository.create({
             user_id: userId,
-            area_id,
+            area_id: area_id || null,
             title: title.trim(),
             why: why || null,
             horizon: horizon || 'season',

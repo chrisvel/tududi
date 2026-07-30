@@ -43,6 +43,7 @@ const {
     validateParentTaskAccess,
     validateDeferUntilAndDueDate,
     validateAreaAccess,
+    validateGoalAccess,
 } = require('./utils/validation');
 const {
     buildTaskAttributes,
@@ -413,6 +414,7 @@ router.post('/task', async (req, res) => {
             project_uid,
             area_id,
             area_uid,
+            goal_id,
             parent_task_id,
             tags,
             Tags,
@@ -475,6 +477,16 @@ router.post('/task', async (req, res) => {
                 req.currentUser.id
             );
             if (validParentId) taskAttributes.parent_task_id = validParentId;
+        } catch (error) {
+            return res.status(400).json({ error: error.message });
+        }
+
+        try {
+            const validGoalId = await validateGoalAccess(
+                goal_id,
+                req.currentUser.id
+            );
+            if (validGoalId) taskAttributes.goal_id = validGoalId;
         } catch (error) {
             return res.status(400).json({ error: error.message });
         }
@@ -566,6 +578,7 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
             project_uid,
             area_id,
             area_uid,
+            goal_id,
             parent_task_id,
             tags,
             Tags,
@@ -710,6 +723,22 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
                 }
             } else {
                 taskAttributes.parent_task_id = null;
+            }
+        }
+
+        if (goal_id !== undefined) {
+            if (goal_id && goal_id.toString().trim()) {
+                try {
+                    const validGoalId = await validateGoalAccess(
+                        goal_id,
+                        req.currentUser.id
+                    );
+                    taskAttributes.goal_id = validGoalId;
+                } catch (error) {
+                    return res.status(400).json({ error: error.message });
+                }
+            } else {
+                taskAttributes.goal_id = null;
             }
         }
 

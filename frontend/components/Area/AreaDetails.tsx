@@ -22,7 +22,10 @@ import { updateArea } from '../../utils/areasService';
 import { fetchGoals, createGoal, updateGoal, deleteGoal } from '../../utils/goalsService';
 import { updateProject } from '../../utils/projectsService';
 import AreaModal from './AreaModal';
+import GoalModal from '../Goal/GoalModal';
+import ConfirmDialog from '../Shared/ConfirmDialog';
 import TaskList from '../Task/TaskList';
+import { createGoalUrl } from '../../utils/slugUtils';
 
 const HORIZON_LABELS: Record<GoalHorizon, string> = {
     season: 'season',
@@ -35,22 +38,6 @@ const STATUS_LABELS: Record<GoalStatus, string> = {
     paused: 'paused',
     dropped: 'dropped',
 };
-
-interface GoalFormState {
-    title: string;
-    why: string;
-    horizon: GoalHorizon;
-    target_date: string;
-    status: GoalStatus;
-}
-
-const emptyGoalForm = (): GoalFormState => ({
-    title: '',
-    why: '',
-    horizon: 'season',
-    target_date: '',
-    status: 'active',
-});
 
 const AreaDetails: React.FC = () => {
     const { t } = useTranslation();
@@ -70,10 +57,9 @@ const AreaDetails: React.FC = () => {
 
     const [goals, setGoals] = useState<Goal[]>([]);
     const [loadingGoals, setLoadingGoals] = useState(false);
-
-    const [goalForm, setGoalForm] = useState<GoalFormState | null>(null);
-    const [editingGoalUid, setEditingGoalUid] = useState<string | null>(null);
-    const [savingGoal, setSavingGoal] = useState(false);
+    const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
+    const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
+    const [goalToDelete, setGoalToDelete] = useState<Goal | null>(null);
 
     const areaUid = uidSlug?.split('-')[0] || '';
 
@@ -181,62 +167,37 @@ const AreaDetails: React.FC = () => {
     };
 
     const openNewGoalForm = () => {
-        setEditingGoalUid(null);
-        setGoalForm(emptyGoalForm());
+        setEditingGoal(null);
+        setIsGoalModalOpen(true);
     };
 
     const openEditGoalForm = (goal: Goal) => {
-        setEditingGoalUid(goal.uid || null);
-        setGoalForm({
-            title: goal.title,
-            why: goal.why || '',
-            horizon: goal.horizon,
-            target_date: goal.target_date || '',
-            status: goal.status,
-        });
+        setEditingGoal(goal);
+        setIsGoalModalOpen(true);
     };
 
-    const cancelGoalForm = () => {
-        setGoalForm(null);
-        setEditingGoalUid(null);
+    const handleGoalModalClose = () => {
+        setIsGoalModalOpen(false);
+        setEditingGoal(null);
     };
 
-    const saveGoal = async () => {
-        if (!goalForm || !area?.id) return;
-        if (!goalForm.title.trim()) return;
-        setSavingGoal(true);
-        try {
-            if (editingGoalUid) {
-                const { goal } = await updateGoal(editingGoalUid, {
-                    title: goalForm.title.trim(),
-                    why: goalForm.why || null,
-                    horizon: goalForm.horizon,
-                    target_date: goalForm.target_date || null,
-                    status: goalForm.status,
-                });
-                setGoals((prev) => prev.map((g) => (g.uid === editingGoalUid ? goal : g)));
-            } else {
-                const { goal } = await createGoal({
-                    area_id: area.id!,
-                    title: goalForm.title.trim(),
-                    why: goalForm.why || null,
-                    horizon: goalForm.horizon,
-                    target_date: goalForm.target_date || null,
-                    status: goalForm.status,
-                });
-                setGoals((prev) => [...prev, goal]);
-            }
-            cancelGoalForm();
-        } finally {
-            setSavingGoal(false);
+    const handleGoalSave = async (data: Partial<Goal>) => {
+        if (!area?.id) return;
+        if (editingGoal?.uid) {
+            const { goal } = await updateGoal(editingGoal.uid, data);
+            setGoals((prev) => prev.map((g) => (g.uid === editingGoal.uid ? goal : g)));
+        } else {
+            const { goal } = await createGoal({ ...data, area_id: area.id } as any);
+            setGoals((prev) => [...prev, goal]);
         }
+        handleGoalModalClose();
     };
 
-    const handleDeleteGoal = async (goal: Goal) => {
-        if (!goal.uid) return;
-        if (!window.confirm(`Drop goal "${goal.title}"? Projects under it will become unlinked.`)) return;
-        await deleteGoal(goal.uid);
-        setGoals((prev) => prev.filter((g) => g.uid !== goal.uid));
+    const handleDeleteGoal = async () => {
+        if (!goalToDelete?.uid) return;
+        await deleteGoal(goalToDelete.uid);
+        setGoals((prev) => prev.filter((g) => g.uid !== goalToDelete.uid));
+        setGoalToDelete(null);
     };
 
     const patchProjectInStore = (uid: string, patch: Partial<Project>) => {
@@ -417,73 +378,12 @@ const AreaDetails: React.FC = () => {
                         </button>
                     </div>
 
-                    {/* Inline goal form */}
-                    {goalForm && (
-                        <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-900 space-y-3">
-                            <input
-                                autoFocus
-                                type="text"
-                                placeholder={t('areas.goalTitlePlaceholder')}
-                                value={goalForm.title}
-                                onChange={(e) => setGoalForm((f) => f ? { ...f, title: e.target.value } : f)}
-                                className="w-full text-sm border border-gray-300 dark:border-gray-600 rounded-md py-1.5 px-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500"
-                            />
-                            <input
-                                type="text"
-                                placeholder={t('areas.goalWhyPlaceholder')}
-                                value={goalForm.why}
-                                onChange={(e) => setGoalForm((f) => f ? { ...f, why: e.target.value } : f)}
-                                className="w-full text-sm border border-gray-300 dark:border-gray-600 rounded-md py-1.5 px-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500"
-                            />
-                            <div className="flex gap-2">
-                                <select
-                                    value={goalForm.horizon}
-                                    onChange={(e) => setGoalForm((f) => f ? { ...f, horizon: e.target.value as GoalHorizon } : f)}
-                                    className="flex-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md py-1.5 px-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                                >
-                                    <option value="season">{t('areas.horizonSeason')}</option>
-                                    <option value="year">{t('areas.horizonYear')}</option>
-                                </select>
-                                <select
-                                    value={goalForm.status}
-                                    onChange={(e) => setGoalForm((f) => f ? { ...f, status: e.target.value as GoalStatus } : f)}
-                                    className="flex-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md py-1.5 px-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                                >
-                                    {(Object.keys(STATUS_LABELS) as GoalStatus[]).map((s) => (
-                                        <option key={s} value={s}>{STATUS_LABELS[s]}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <input
-                                type="date"
-                                value={goalForm.target_date}
-                                onChange={(e) => setGoalForm((f) => f ? { ...f, target_date: e.target.value } : f)}
-                                className="w-full text-sm border border-gray-300 dark:border-gray-600 rounded-md py-1.5 px-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                            />
-                            <div className="flex gap-2 justify-end">
-                                <button
-                                    onClick={cancelGoalForm}
-                                    className="text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 px-3 py-1"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={saveGoal}
-                                    disabled={savingGoal || !goalForm.title.trim()}
-                                    className="text-xs bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700 disabled:opacity-50"
-                                >
-                                    {savingGoal ? 'Saving…' : editingGoalUid ? 'Update' : 'Add goal'}
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
                     {loadingGoals ? (
                         <p className="text-sm text-gray-400 dark:text-gray-500">Loading goals…</p>
                     ) : (
                         <div className="space-y-4">
                             {/* Empty state: only when there are no goals AND no projects at all */}
-                            {goals.length === 0 && areaProjects.length === 0 && !goalForm && (
+                            {goals.length === 0 && areaProjects.length === 0 && (
                                 <p className="text-sm text-gray-400 dark:text-gray-500">
                                     No goals yet. Add a goal to group projects by outcome.
                                 </p>
@@ -498,7 +398,7 @@ const AreaDetails: React.FC = () => {
                                     areaColor={area.color}
                                     getProjectLink={getProjectLink}
                                     onEdit={() => openEditGoalForm(goal)}
-                                    onDelete={() => handleDeleteGoal(goal)}
+                                    onDelete={() => setGoalToDelete(goal)}
                                 />
                             ))}
 
@@ -548,7 +448,7 @@ const AreaDetails: React.FC = () => {
                                                 areaColor={area.color}
                                                 getProjectLink={getProjectLink}
                                                 onEdit={() => openEditGoalForm(goal)}
-                                                onDelete={() => handleDeleteGoal(goal)}
+                                                onDelete={() => setGoalToDelete(goal)}
                                                 dimmed
                                             />
                                         ))}
@@ -639,6 +539,25 @@ const AreaDetails: React.FC = () => {
                     onClose={() => setIsEditModalOpen(false)}
                 />
             )}
+
+            {isGoalModalOpen && (
+                <GoalModal
+                    isOpen={isGoalModalOpen}
+                    onClose={handleGoalModalClose}
+                    onSave={handleGoalSave}
+                    goal={editingGoal}
+                    defaultAreaId={area?.id}
+                />
+            )}
+
+            {goalToDelete && (
+                <ConfirmDialog
+                    title={t('modals.deleteGoal.title', 'Delete Goal')}
+                    message={`${t('modals.deleteGoal.message', 'Are you sure you want to delete')} "${goalToDelete.title}"? Projects under it will become unlinked.`}
+                    onConfirm={handleDeleteGoal}
+                    onCancel={() => setGoalToDelete(null)}
+                />
+            )}
         </div>
     );
 };
@@ -660,14 +579,21 @@ const GoalBucket: React.FC<GoalBucketProps> = ({
 }) => {
     const { t } = useTranslation();
     const dotColor = areaColor || '#6b7280';
+    const goalUrl = goal.uid ? createGoalUrl({ uid: goal.uid, title: goal.title }) : null;
     return (
         <div className={dimmed ? 'opacity-60' : ''}>
             <div className="flex items-start justify-between gap-2 mb-1.5">
                 <div className="flex items-center gap-2 min-w-0">
                     <FlagIcon className="h-4 w-4 flex-shrink-0" style={{ color: dotColor }} />
-                    <span className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
-                        {goal.title}
-                    </span>
+                    {goalUrl ? (
+                        <Link to={goalUrl} className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate hover:text-blue-600 dark:hover:text-blue-400">
+                            {goal.title}
+                        </Link>
+                    ) : (
+                        <span className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
+                            {goal.title}
+                        </span>
+                    )}
                     <span className="text-xs text-gray-400 dark:text-gray-500 flex-shrink-0">
                         {HORIZON_LABELS[goal.horizon]}
                         {goal.status !== 'active' && ` · ${STATUS_LABELS[goal.status]}`}

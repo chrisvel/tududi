@@ -1,6 +1,6 @@
 'use strict';
 
-const { Goal, Area } = require('../../models');
+const { Goal, Area, Project, Task } = require('../../models');
 
 class GoalsRepository {
     async findAllByUser(userId) {
@@ -28,6 +28,25 @@ class GoalsRepository {
             where: { uid, user_id: userId },
             include: [
                 { model: Area, attributes: ['id', 'uid', 'name', 'color'] },
+                {
+                    model: Project,
+                    as: 'Projects',
+                    attributes: ['id', 'uid', 'name', 'status', 'active_until'],
+                },
+                {
+                    model: Task,
+                    as: 'Tasks',
+                    attributes: [
+                        'id',
+                        'uid',
+                        'name',
+                        'status',
+                        'priority',
+                        'due_date',
+                        'project_id',
+                        'area_id',
+                    ],
+                },
             ],
         });
     }

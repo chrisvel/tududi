@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Area } from '../entities/Area';
 import { Note } from '../entities/Note';
 import { Tag } from '../entities/Tag';
+import { Goal } from '../entities/Goal';
 import SidebarAreas from './Sidebar/SidebarAreas';
 import SidebarFooter from './Sidebar/SidebarFooter';
 import SidebarNav from './Sidebar/SidebarNav';
@@ -10,6 +11,7 @@ import SidebarNotes from './Sidebar/SidebarNotes';
 import SidebarHabits from './Sidebar/SidebarHabits';
 import SidebarProjects from './Sidebar/SidebarProjects';
 import SidebarTags from './Sidebar/SidebarTags';
+import SidebarGoals from './Sidebar/SidebarGoals';
 import SidebarViews from './Sidebar/SidebarViews';
 import SidebarPeople from './Sidebar/SidebarPeople';
 import SidebarBoards from './Sidebar/SidebarBoards';
@@ -30,6 +32,7 @@ interface SidebarProps {
     openNoteModal: (note: Note | null) => void;
     openAreaModal: (area: Area | null) => void;
     openTagModal: (tag: Tag | null) => void;
+    openGoalModal: (goal: Goal | null) => void;
     openNewHabit: () => void;
     notes: Note[];
     areas: Area[];
@@ -48,6 +51,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     openNoteModal,
     openAreaModal,
     openTagModal,
+    openGoalModal,
     openNewHabit,
     notes,
     areas,
@@ -107,6 +111,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                             location={location}
                             isDarkMode={isDarkMode}
                             openAreaModal={openAreaModal}
+                        />
+                        <SidebarGoals
+                            handleNavClick={handleNavClick}
+                            location={location}
+                            openGoalModal={openGoalModal}
                         />
                         <SidebarNotes
                             handleNavClick={handleNavClick}
