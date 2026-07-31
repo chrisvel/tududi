@@ -15,7 +15,7 @@ export interface Goal {
     horizon: GoalHorizon;
     target_date?: string | null;
     status: GoalStatus;
-    color?: string | null;
+    color?: string;
     created_at?: string;
     updated_at?: string;
     Area?: Area | null;
