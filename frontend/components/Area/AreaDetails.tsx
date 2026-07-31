@@ -225,7 +225,8 @@ const AreaDetails: React.FC = () => {
                                 <div key={goal.uid} className="flex items-center gap-2 group">
                                     <Link
                                         to={goalUrl}
-                                        className="flex-1 flex items-center gap-3 px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 hover:bg-white dark:hover:bg-gray-800 transition-colors"
+                                        className={`flex-1 flex items-center gap-3 px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 hover:bg-white dark:hover:bg-gray-800 transition-colors ${goal.color ? 'border-l-4' : ''}`}
+                                        style={goal.color ? { borderLeftColor: goal.color } : {}}
                                     >
                                         <FlagIcon className="h-4 w-4 text-blue-500 flex-shrink-0" />
                                         <span className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate flex-1">
