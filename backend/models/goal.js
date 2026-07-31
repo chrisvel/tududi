@@ -54,6 +54,10 @@ module.exports = (sequelize) => {
                 allowNull: false,
                 defaultValue: 'active',
             },
+            color: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
         },
         {
             tableName: 'goals',

@@ -5,6 +5,7 @@ import { Goal, GoalHorizon, GoalStatus } from '../../entities/Goal';
 import { Area } from '../../entities/Area';
 import { useToast } from '../Shared/ToastContext';
 import DiscardChangesDialog from '../Shared/DiscardChangesDialog';
+import ColorPicker from '../Shared/ColorPicker';
 
 interface GoalModalProps {
     isOpen: boolean;
@@ -38,6 +39,7 @@ const GoalModal: React.FC<GoalModalProps> = ({
         status: 'active' as GoalStatus,
         target_date: '',
         area_id: defaultAreaId ?? null,
+        color: '',
     });
 
     const [formData, setFormData] = useState<Partial<Goal>>(getDefaultForm());
@@ -57,6 +59,7 @@ const GoalModal: React.FC<GoalModalProps> = ({
                           status: goal.status,
                           target_date: goal.target_date ?? '',
                           area_id: goal.area_id ?? null,
+                          color: goal.color ?? '',
                       }
                     : getDefaultForm()
             );
@@ -100,7 +103,8 @@ const GoalModal: React.FC<GoalModalProps> = ({
             formData.horizon !== goal.horizon ||
             formData.status !== goal.status ||
             formData.target_date !== (goal.target_date ?? '') ||
-            formData.area_id !== (goal.area_id ?? null)
+            formData.area_id !== (goal.area_id ?? null) ||
+            formData.color !== (goal.color ?? '')
         );
     };
 
@@ -266,6 +270,19 @@ const GoalModal: React.FC<GoalModalProps> = ({
                                                             value={formData.target_date ?? ''}
                                                             onChange={handleChange}
                                                             className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500"
+                                                        />
+                                                    </div>
+
+                                                    {/* Color */}
+                                                    <div>
+                                                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider">
+                                                            {t('forms.color', 'Color')}
+                                                        </label>
+                                                        <ColorPicker
+                                                            value={formData.color || ''}
+                                                            onChange={(color) =>
+                                                                setFormData((prev) => ({ ...prev, color: color || '' }))
+                                                            }
                                                         />
                                                     </div>
 

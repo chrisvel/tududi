@@ -16,6 +16,7 @@ import ConfirmDialog from '../Shared/ConfirmDialog';
 import TaskList from '../Task/TaskList';
 import { useStore } from '../../store/useStore';
 import { useToast } from '../Shared/ToastContext';
+import ColorPicker from '../Shared/ColorPicker';
 
 const TASK_STATUS_DONE = [2, 3, 'done', 'archived'];
 
@@ -26,6 +27,7 @@ const defaultFormData = (): Partial<Goal> => ({
     status: 'active' as GoalStatus,
     target_date: '',
     area_id: null,
+    color: '',
 });
 
 const GoalDetails: React.FC = () => {
@@ -67,6 +69,7 @@ const GoalDetails: React.FC = () => {
                     status: data.status,
                     target_date: data.target_date ?? '',
                     area_id: data.area_id ?? null,
+                    color: data.color ?? '',
                 });
             })
             .catch((err) => setError(err?.message || t('goals.notFound', 'Goal not found')))
@@ -133,6 +136,7 @@ const GoalDetails: React.FC = () => {
                 status: goal.status,
                 target_date: goal.target_date ?? '',
                 area_id: goal.area_id ?? null,
+                color: goal.color ?? '',
             });
         }
     };
@@ -189,8 +193,8 @@ const GoalDetails: React.FC = () => {
     const activeTasks = tasks.filter((t) => !TASK_STATUS_DONE.includes(t.status as any));
     const completedTasks = tasks.filter((t) => TASK_STATUS_DONE.includes(t.status as any));
 
-    const areaColor = goal?.Area?.color;
-    const hasColor = !!areaColor;
+    const effectiveColor = goal?.color || goal?.Area?.color;
+    const hasColor = !!effectiveColor;
     const showForm = isEditing || isNew;
 
     return (
@@ -198,7 +202,7 @@ const GoalDetails: React.FC = () => {
             {/* Header banner */}
             <div
                 className="rounded-xl mb-8 overflow-hidden"
-                style={hasColor && !showForm ? { backgroundColor: areaColor } : undefined}
+                style={hasColor && !showForm ? { backgroundColor: effectiveColor } : undefined}
             >
                 <div className={`p-6 ${(!hasColor || showForm) ? 'bg-gray-50 dark:bg-gray-900 rounded-xl' : ''}`}>
                     {showForm ? (
@@ -278,6 +282,18 @@ const GoalDetails: React.FC = () => {
                                     value={formData.target_date ?? ''}
                                     onChange={handleChange}
                                     className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider">
+                                    {t('forms.color', 'Color')}
+                                </label>
+                                <ColorPicker
+                                    value={formData.color || ''}
+                                    onChange={(color) =>
+                                        setFormData((prev) => ({ ...prev, color: color || '' }))
+                                    }
                                 />
                             </div>
 

@@ -136,8 +136,8 @@ const Goals: React.FC = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         {filteredGoals.map((goal: Goal) => {
                             const goalUrl = goal.uid ? createGoalUrl({ uid: goal.uid, title: goal.title }) : '/goals';
-                            const areaColor = goal.Area?.color;
-                            const hasColor = !!areaColor;
+                            const effectiveColor = goal.color || goal.Area?.color;
+                            const hasColor = !!effectiveColor;
 
                             return (
                                 <Link
@@ -148,7 +148,7 @@ const Goals: React.FC = () => {
                                             ? 'bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600'
                                             : ''
                                     } ${dropdownOpen === goal.uid ? 'z-50' : ''}`}
-                                    style={hasColor ? { backgroundColor: areaColor } : {}}
+                                    style={hasColor ? { backgroundColor: effectiveColor } : {}}
                                 >
                                     {/* Three-dot menu */}
                                     <div className="absolute top-2 right-2 z-10" ref={dropdownRef}>
