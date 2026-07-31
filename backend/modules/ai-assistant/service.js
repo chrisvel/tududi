@@ -42,6 +42,29 @@ function extractJSON(raw) {
     return fenced ? fenced[1] : raw;
 }
 
+function buildResponseFormat(name, schema) {
+    return {
+        type: 'json_schema',
+        json_schema: { name, strict: false, schema },
+    };
+}
+
+async function callWithFallback(client, params) {
+    try {
+        return await client.chat.completions.create(params);
+    } catch (err) {
+        const is400 = err?.status === 400;
+        const mentionsFormat =
+            err?.message?.includes('response_format') ||
+            err?.error?.message?.includes('response_format');
+        if (is400 && mentionsFormat) {
+            const { response_format: _dropped, ...fallbackParams } = params;
+            return await client.chat.completions.create(fallbackParams);
+        }
+        throw err;
+    }
+}
+
 async function fetchUserContext(userId) {
     const user = await User.findByPk(userId, {
         attributes: ['id', 'timezone', 'email', 'ai_profile'],
@@ -288,14 +311,33 @@ Rules:
 - Plain text only — no markdown, no ** formatting
 - Return only the JSON object, no other text`;
 
-    const response = await client.chat.completions.create({
+    const response = await callWithFallback(client, {
         model: getAIModel(),
         messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: contextSummary },
         ],
         max_tokens: 1500,
-        response_format: { type: 'json_object' },
+        response_format: buildResponseFormat('daily_brief', {
+            type: 'object',
+            properties: {
+                overview: { type: 'string' },
+                focus: { type: 'string' },
+                priority_actions: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        properties: {
+                            action: { type: 'string' },
+                            project: { type: 'string' },
+                            reason: { type: 'string' },
+                            suggestion: { type: 'string' },
+                        },
+                    },
+                },
+                watch_out: { type: 'array', items: { type: 'string' } },
+            },
+        }),
     });
 
     const raw = response.choices[0]?.message?.content || '{}';
@@ -501,14 +543,32 @@ Rules:
 - Always reference the actual task name, project name, or tags in your response
 - Return only the JSON object, no other text`;
 
-    const response = await client.chat.completions.create({
+    const response = await callWithFallback(client, {
         model: getAIModel(),
         messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: lines.join('\n') },
         ],
         max_tokens: 1000,
-        response_format: { type: 'json_object' },
+        response_format: buildResponseFormat('task_insights', {
+            type: 'object',
+            properties: {
+                insight: { type: 'string' },
+                next_step: { type: 'string' },
+                breakdown: { type: 'array', items: { type: 'string' } },
+                links: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        properties: {
+                            label: { type: 'string' },
+                            url: { type: 'string' },
+                        },
+                    },
+                },
+                watch_out: { type: 'string' },
+            },
+        }),
     });
 
     const raw = response.choices[0]?.message?.content || '{}';
@@ -631,14 +691,22 @@ Rules:
 - watch_out should be null (JSON null) if there's no meaningful risk to flag
 - Return only the JSON object, no other text`;
 
-    const response = await client.chat.completions.create({
+    const response = await callWithFallback(client, {
         model: getAIModel(),
         messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: lines.join('\n') },
         ],
         max_tokens: 600,
-        response_format: { type: 'json_object' },
+        response_format: buildResponseFormat('project_insights', {
+            type: 'object',
+            properties: {
+                insight: { type: 'string' },
+                next_action: { type: 'string' },
+                health: { type: 'string' },
+                watch_out: { type: 'string' },
+            },
+        }),
     });
 
     const raw = response.choices[0]?.message?.content || '{}';
