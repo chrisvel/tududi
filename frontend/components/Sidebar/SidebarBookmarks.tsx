@@ -54,7 +54,7 @@ const SidebarBookmarks: React.FC<SidebarBookmarksProps> = ({
 }) => {
     const { t } = useTranslation();
     const [isExpanded, setIsExpanded] = useState(() => {
-        return localStorage.getItem('bookmarksSidebarCollapsed') !== 'true';
+        return localStorage.getItem('bookmarksSidebarCollapsed') === 'false';
     });
 
     const projects = useStore((state) => state.projectsStore.projects);
