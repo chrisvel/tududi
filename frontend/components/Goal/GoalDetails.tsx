@@ -193,8 +193,8 @@ const GoalDetails: React.FC = () => {
     const activeTasks = tasks.filter((t) => !TASK_STATUS_DONE.includes(t.status as any));
     const completedTasks = tasks.filter((t) => TASK_STATUS_DONE.includes(t.status as any));
 
-    const areaColor = goal?.Area?.color;
-    const hasColor = !!areaColor;
+    const effectiveColor = goal?.color || goal?.Area?.color;
+    const hasColor = !!effectiveColor;
     const showForm = isEditing || isNew;
 
     return (
@@ -202,7 +202,7 @@ const GoalDetails: React.FC = () => {
             {/* Header banner */}
             <div
                 className="rounded-xl mb-8 overflow-hidden"
-                style={hasColor && !showForm ? { backgroundColor: areaColor } : undefined}
+                style={hasColor && !showForm ? { backgroundColor: effectiveColor } : undefined}
             >
                 <div className={`p-6 ${(!hasColor || showForm) ? 'bg-gray-50 dark:bg-gray-900 rounded-xl' : ''}`}>
                     {showForm ? (
