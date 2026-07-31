@@ -71,6 +71,9 @@ const TasksToday: React.FC = () => {
     // Get tasks from store at the top level to avoid conditional hook usage
     const storeTasks = useStore((state) => state.tasksStore.tasks);
     const tagsStore = useStore((state) => state.tagsStore);
+    const aiAssistantEnabled = useStore(
+        (state) => state.userSettingsStore.aiAssistantEnabled
+    );
     const todayHabits = useStore((state) => state.habitsStore.habits);
     const loadHabitsStore = useStore((state) => state.habitsStore.loadHabits);
     const logHabitCompletion = useStore(
@@ -1357,7 +1360,7 @@ const TasksToday: React.FC = () => {
                 </div>
 
                 {/* AI Daily Brief - kept mounted once opened to preserve fetched content */}
-                {hasBriefMounted && (
+                {hasBriefMounted && aiAssistantEnabled && (
                     <div className={todaySettings.showDailyBrief ? '' : 'hidden'}>
                         <DailyAssistant />
                     </div>

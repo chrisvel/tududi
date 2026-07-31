@@ -16,7 +16,7 @@ interface SidebarInsightsProps {
 const SidebarInsights: React.FC<SidebarInsightsProps> = ({ handleNavClick, location }) => {
     const { t } = useTranslation();
     const [isCollapsed, setIsCollapsed] = useState(() => {
-        return localStorage.getItem('insightsSidebarCollapsed') === 'true';
+        return localStorage.getItem('insightsSidebarCollapsed') !== 'false';
     });
 
     const toggleCollapsed = () => {

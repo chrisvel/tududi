@@ -20,7 +20,7 @@ const SidebarBoards: React.FC<SidebarBoardsProps> = ({ handleNavClick, location 
     const eisenhowerEnabled = useStore((state) => state.userSettingsStore.eisenhowerEnabled);
     const kanbanEnabled = useStore((state) => state.userSettingsStore.kanbanEnabled);
     const [isCollapsed, setIsCollapsed] = useState(() => {
-        return localStorage.getItem('boardsSidebarCollapsed') === 'true';
+        return localStorage.getItem('boardsSidebarCollapsed') !== 'false';
     });
 
     if (!eisenhowerEnabled && !kanbanEnabled) return null;
