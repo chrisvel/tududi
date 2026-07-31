@@ -26,7 +26,8 @@ class GoalsService {
     }
 
     async create(userId, data) {
-        const { title, area_id, why, horizon, target_date, status, color } = data;
+        const { title, area_id, why, horizon, target_date, status, color } =
+            data;
         if (!title || !title.trim()) {
             throw new ValidationError('Goal title is required');
         }
@@ -46,7 +47,8 @@ class GoalsService {
         const goal = await goalsRepository.findByUid(userId, uid);
         if (!goal) throw new NotFoundError('Goal not found');
 
-        const { title, area_id, why, horizon, target_date, status, color } = data;
+        const { title, area_id, why, horizon, target_date, status, color } =
+            data;
         const updates = {};
         if (title !== undefined) updates.title = title.trim();
         if (area_id !== undefined) updates.area_id = area_id;
