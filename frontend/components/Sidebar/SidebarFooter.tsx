@@ -10,6 +10,7 @@ import {
     Squares2X2Icon,
     TagIcon,
     InboxIcon,
+    ChevronUpIcon,
 } from '@heroicons/react/24/outline';
 import TelegramIcon from '../Shared/Icons/TelegramIcon';
 import { useTranslation } from 'react-i18next';
@@ -27,7 +28,7 @@ import {
 } from '../../utils/keyboardShortcutsService';
 
 interface SidebarFooterProps {
-    currentUser: { email: string };
+    currentUser: { email: string; avatar_image?: string };
     isDarkMode: boolean;
     toggleDarkMode: () => void;
     isSidebarOpen: boolean;
@@ -43,9 +44,9 @@ interface SidebarFooterProps {
 }
 
 const SidebarFooter: React.FC<SidebarFooterProps> = ({
+    currentUser,
     isDarkMode,
     toggleDarkMode,
-    isSidebarOpen,
     setIsSidebarOpen,
     openTaskModal,
     openProjectModal,
@@ -56,6 +57,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
 }) => {
     const { t } = useTranslation();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const { status: telegramStatus } = useTelegramStatus();
     const dropdownRef = useRef<HTMLDivElement>(null);
     const [version, setVersion] = useState<string>('v0.86');
@@ -72,7 +74,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
         setIsDropdownOpen(!isDropdownOpen);
     };
 
-    // Handle click outside to close dropdown
+    // Handle click outside to close dropdowns
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (
@@ -80,17 +82,18 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                 !dropdownRef.current.contains(event.target as Node)
             ) {
                 setIsDropdownOpen(false);
+                setIsUserMenuOpen(false);
             }
         };
 
-        if (isDropdownOpen) {
+        if (isDropdownOpen || isUserMenuOpen) {
             document.addEventListener('mousedown', handleClickOutside);
         }
 
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [isDropdownOpen]);
+    }, [isDropdownOpen, isUserMenuOpen]);
 
     // Fetch version from API
     useEffect(() => {
@@ -194,115 +197,119 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
         },
     ];
 
+    const userInitial = currentUser.email ? currentUser.email[0].toUpperCase() : '?';
+
     return (
-        <div className="mt-auto p-3">
-            {/* Version Display */}
-            {isSidebarOpen && (
-                <div className="flex justify-end pb-2">
-                    <span className="text-xs text-gray-400 dark:text-gray-600 font-light italic opacity-60">
-                        {version}
-                    </span>
-                </div>
-            )}
-            <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
-                {isSidebarOpen && (
-                    <div
-                        className="flex items-center justify-between"
-                        ref={dropdownRef}
+        <div className="flex-shrink-0" ref={dropdownRef}>
+            {/* Toolbar row: + create | dark mode */}
+            <div className="border-t border-gray-100 dark:border-white/10 px-[14px] py-[10px] flex items-center justify-between">
+                {/* Plus / Create dropdown */}
+                <div className="relative">
+                    <button
+                        onClick={toggleDropdown}
+                        className="flex items-center justify-center w-[22px] h-[22px] rounded-[5px] focus:outline-none text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-colors duration-150"
+                        aria-label={t('sidebar.createNew')}
                     >
-                        {/* Plus Icon Button - Left */}
-                        <div className="relative">
-                            <button
-                                onClick={toggleDropdown}
-                                className="group flex items-center focus:outline-none text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 ease-out rounded-lg px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 hover:shadow-md"
-                                aria-label={t('sidebar.createNew')}
-                            >
-                                <PlusIcon className="h-6 w-6 flex-shrink-0 transition-transform duration-300 ease-out group-hover:rotate-90" />
-                                <span className="ml-2 text-sm font-medium whitespace-nowrap opacity-0 max-w-0 overflow-hidden group-hover:opacity-100 group-hover:max-w-[120px] transition-all duration-300 ease-out transform translate-x-[-10px] group-hover:translate-x-0">
-                                    {t('dropdown.createNew', 'Create new')}
-                                </span>
-                            </button>
+                        <PlusIcon className="h-4 w-4" />
+                    </button>
 
-                            {/* Dropdown Menu */}
-                            {isDropdownOpen && (
-                                <div className="absolute bottom-full left-0 mb-2 w-60 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
-                                    <div className="py-1">
-                                        {dropdownItems.map(
-                                            ({
-                                                label,
-                                                translationKey,
-                                                icon,
-                                                action,
-                                            }) => (
-                                                <button
-                                                    key={label}
-                                                    onClick={() =>
-                                                        handleDropdownSelect(
-                                                            label
-                                                        )
-                                                    }
-                                                    className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-between transition-colors duration-150"
-                                                >
-                                                    <div className="flex items-center">
-                                                        {icon}
-                                                        {t(
-                                                            translationKey,
-                                                            label
-                                                        )}
-                                                    </div>
-                                                    <span
-                                                        className="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded text-xs font-mono text-gray-500 dark:text-gray-400"
-                                                        style={{
-                                                            fontSize: '10px',
-                                                        }}
-                                                    >
-                                                        {getShortcutDisplay(action)}
-                                                    </span>
-                                                </button>
-                                            )
-                                        )}
-                                    </div>
-                                </div>
-                            )}
+                    {isDropdownOpen && (
+                        <div className="absolute bottom-full left-0 mb-2 w-60 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                            <div className="py-1">
+                                {dropdownItems.map(({ label, translationKey, icon, action }) => (
+                                    <button
+                                        key={label}
+                                        onClick={() => handleDropdownSelect(label)}
+                                        className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-between transition-colors duration-150"
+                                    >
+                                        <div className="flex items-center">
+                                            {icon}
+                                            {t(translationKey, label)}
+                                        </div>
+                                        <span
+                                            className="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded text-xs font-mono text-gray-500 dark:text-gray-400"
+                                            style={{ fontSize: '10px' }}
+                                        >
+                                            {getShortcutDisplay(action)}
+                                        </span>
+                                    </button>
+                                ))}
+                            </div>
                         </div>
+                    )}
+                </div>
 
-                        {/* Telegram Status and Dark Mode Toggle - Right */}
-                        <div className="flex items-center space-x-2">
-                            {/* Telegram Status Indicator */}
-                            {telegramStatus !== 'none' && (
-                                <div
-                                    className="flex items-center justify-center"
-                                    title={
-                                        telegramStatus === 'healthy'
-                                            ? 'Telegram connected and polling'
-                                            : 'Telegram connection problem'
-                                    }
-                                >
-                                    <TelegramIcon
-                                        className={`h-5 w-5 ${
-                                            telegramStatus === 'healthy'
-                                                ? 'text-green-500'
-                                                : 'text-red-500'
-                                        }`}
-                                    />
-                                </div>
-                            )}
+                {/* Right side: telegram + dark mode */}
+                <div className="flex items-center gap-1.5">
+                    {telegramStatus !== 'none' && (
+                        <div
+                            className="flex items-center justify-center"
+                            title={telegramStatus === 'healthy' ? 'Telegram connected' : 'Telegram connection problem'}
+                        >
+                            <TelegramIcon
+                                className={`h-4 w-4 ${telegramStatus === 'healthy' ? 'text-green-500' : 'text-red-500'}`}
+                            />
+                        </div>
+                    )}
+                    <button
+                        onClick={toggleDarkMode}
+                        className="flex items-center justify-center w-[22px] h-[22px] rounded-[5px] focus:outline-none text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-colors duration-150"
+                        aria-label={t('sidebar.toggleDarkMode')}
+                    >
+                        {isDarkMode ? (
+                            <SunIcon className="h-4 w-4 text-yellow-500" />
+                        ) : (
+                            <MoonIcon className="h-4 w-4" />
+                        )}
+                    </button>
+                </div>
+            </div>
 
-                            {/* Dark Mode Toggle */}
+            {/* User row */}
+            <div className="relative border-t border-gray-100 dark:border-white/10">
+                {isUserMenuOpen && (
+                    <div className="absolute bottom-full left-2 right-2 mb-1.5 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 overflow-hidden">
+                        <div className="py-1">
                             <button
-                                onClick={toggleDarkMode}
-                                className="flex items-center justify-center focus:outline-none text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg px-2 py-1 transition-colors duration-200"
-                                aria-label={t('sidebar.toggleDarkMode')}
+                                onClick={() => { navigate('/profile'); setIsUserMenuOpen(false); }}
+                                className="w-full text-left px-3 py-2 text-[13.5px] text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150"
                             >
-                                {isDarkMode ? (
-                                    <SunIcon className="h-6 w-6 text-yellow-500" />
-                                ) : (
-                                    <MoonIcon className="h-6 w-6 text-gray-500" />
-                                )}
+                                {t('navigation.profile', 'Profile & Settings')}
                             </button>
+                            <div className="h-px bg-gray-100 dark:bg-gray-700 mx-2 my-1" />
+                            <div className="px-3 py-1.5 text-[11px] text-gray-400 dark:text-gray-500">
+                                {version}
+                            </div>
                         </div>
                     </div>
                 )}
+
+                <button
+                    onClick={() => setIsUserMenuOpen((v) => !v)}
+                    className="w-full flex items-center gap-2.5 px-[14px] py-[10px] hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-150 focus:outline-none"
+                >
+                    <div className="flex-shrink-0 w-[26px] h-[26px] rounded-full overflow-hidden">
+                        {currentUser.avatar_image ? (
+                            <img
+                                src={getApiPath(currentUser.avatar_image)}
+                                alt="User Avatar"
+                                className="w-full h-full object-cover"
+                            />
+                        ) : (
+                            <div className="w-full h-full bg-rose-400 dark:bg-rose-500 flex items-center justify-center text-white text-[11.5px] font-bold">
+                                {userInitial}
+                            </div>
+                        )}
+                    </div>
+                    <div className="flex-1 min-w-0 text-left">
+                        <div className="text-[13px] font-semibold text-gray-800 dark:text-gray-100 truncate">
+                            {currentUser.email}
+                        </div>
+                    </div>
+                    <ChevronUpIcon
+                        className={`h-[13px] w-[13px] flex-shrink-0 text-gray-400 dark:text-gray-500 transition-transform duration-150 ${isUserMenuOpen ? 'rotate-180' : ''}`}
+                    />
+                </button>
             </div>
         </div>
     );
