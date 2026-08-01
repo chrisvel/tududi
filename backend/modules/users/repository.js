@@ -22,8 +22,10 @@ const PROFILE_ATTRIBUTES = [
     'features',
     'today_settings',
     'sidebar_settings',
+    'ui_settings',
     'notification_preferences',
     'keyboard_shortcuts',
+    'ai_profile',
 ];
 
 const PROFILE_UPDATE_ATTRIBUTES = [
@@ -41,8 +43,10 @@ const PROFILE_UPDATE_ATTRIBUTES = [
     'task_summary_enabled',
     'task_summary_frequency',
     'features',
+    'ui_settings',
     'notification_preferences',
     'keyboard_shortcuts',
+    'ai_profile',
 ];
 
 class UsersRepository extends BaseRepository {

@@ -677,7 +677,7 @@ const HabitDetails: React.FC = () => {
 
     return (
         <div className="w-full pb-12">
-            <div className="w-full px-4 sm:px-6 lg:px-10">
+            <div className="w-full px-2 sm:px-4 lg:px-6">
                 {/* Header */}
                 <div className="mb-6">
                     <button

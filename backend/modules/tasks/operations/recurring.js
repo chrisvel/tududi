@@ -73,17 +73,28 @@ async function handleRecurrenceUpdate(task, recurrenceFields, reqBody) {
 async function calculateNextIterations(task, startFromDate, userTimezone) {
     const iterations = [];
     const safeTimezone = getSafeTimezone(userTimezone);
+    const moment = require('moment-timezone');
 
-    // Parse start date properly in user's timezone
-    let startDate;
+    // Get today's date string in user's local timezone (YYYY-MM-DD)
+    let todayLocalStr;
     if (startFromDate) {
-        // Convert the date string from user timezone to UTC
-        startDate = dateStringToUTC(startFromDate, safeTimezone, 'start');
+        if (typeof startFromDate === 'string') {
+            todayLocalStr = moment
+                .tz(startFromDate, safeTimezone)
+                .format('YYYY-MM-DD');
+        } else {
+            // Handle Date objects passed from tests
+            todayLocalStr = moment
+                .utc(startFromDate)
+                .tz(safeTimezone)
+                .format('YYYY-MM-DD');
+        }
     } else {
-        // Get today's date in user's timezone and convert to UTC
-        const todayInUserTz = getCurrentDateInTimezone(safeTimezone);
-        startDate = dateStringToUTC(todayInUserTz, safeTimezone, 'start');
+        todayLocalStr = getCurrentDateInTimezone(safeTimezone);
     }
+
+    // Parse start date using start-of-day in user timezone (used for weekly/daily logic)
+    let startDate = dateStringToUTC(todayLocalStr, safeTimezone, 'start');
 
     let nextDate = new Date(startDate);
     let includesToday = false;
@@ -113,32 +124,34 @@ async function calculateNextIterations(task, startFromDate, userTimezone) {
     } else if (task.recurrence_type === 'daily') {
         includesToday = true;
     } else if (task.recurrence_type === 'monthly') {
+        // Use the LOCAL date components to avoid UTC offset drift.
+        // For UTC+ users, start-of-day UTC is the previous UTC day, so
+        // startDate.getUTCDate() would return the wrong day number.
+        const localParts = todayLocalStr.split('-');
+        const localYear = parseInt(localParts[0], 10);
+        const localMonth = parseInt(localParts[1], 10) - 1; // 0-indexed
+        const localDay = parseInt(localParts[2], 10);
+
         const targetDay =
             task.recurrence_month_day !== null &&
             task.recurrence_month_day !== undefined
                 ? task.recurrence_month_day
-                : startDate.getUTCDate();
-        const todayDay = startDate.getUTCDate();
+                : localDay;
 
-        if (targetDay > todayDay) {
-            const currentMonth = startDate.getUTCMonth();
-            const currentYear = startDate.getUTCFullYear();
+        if (targetDay > localDay) {
             const maxDayInMonth = new Date(
-                Date.UTC(currentYear, currentMonth + 1, 0)
+                Date.UTC(localYear, localMonth + 1, 0)
             ).getUTCDate();
 
             if (targetDay <= maxDayInMonth) {
                 includesToday = true;
-                nextDate = new Date(
-                    Date.UTC(
-                        currentYear,
-                        currentMonth,
-                        targetDay,
-                        startDate.getUTCHours(),
-                        startDate.getUTCMinutes(),
-                        startDate.getUTCSeconds(),
-                        startDate.getUTCMilliseconds()
-                    )
+                // Build the target date from local components and convert to UTC.
+                // This avoids the UTC-hour carry that causes a +1 day shift for UTC+ zones.
+                const targetLocalDateStr = `${localParts[0]}-${localParts[1]}-${String(targetDay).padStart(2, '0')}`;
+                nextDate = dateStringToUTC(
+                    targetLocalDateStr,
+                    safeTimezone,
+                    'start'
                 );
             }
         }
@@ -196,6 +209,28 @@ async function calculateNextIterations(task, startFromDate, userTimezone) {
             } else {
                 nextDate.setUTCDate(nextDate.getUTCDate() + interval * 7);
             }
+        } else if (task.recurrence_type === 'monthly') {
+            // Advance to next month's occurrence using local timezone arithmetic
+            // to avoid UTC-hour drift that causes off-by-one dates for UTC+ users.
+            const localParts = todayLocalStr.split('-');
+            const localYear = parseInt(localParts[0], 10);
+            const localMonth = parseInt(localParts[1], 10); // 1-indexed
+            const localDay = parseInt(localParts[2], 10);
+            const interval = task.recurrence_interval || 1;
+            const targetDay =
+                task.recurrence_month_day !== null &&
+                task.recurrence_month_day !== undefined
+                    ? task.recurrence_month_day
+                    : localDay;
+            const totalMonths = localMonth - 1 + interval;
+            const nextYear = localYear + Math.floor(totalMonths / 12);
+            const nextMonthZeroIdx = totalMonths % 12;
+            const maxDay = new Date(
+                Date.UTC(nextYear, nextMonthZeroIdx + 1, 0)
+            ).getUTCDate();
+            const finalDay = Math.min(targetDay, maxDay);
+            const nextLocalDateStr = `${nextYear}-${String(nextMonthZeroIdx + 1).padStart(2, '0')}-${String(finalDay).padStart(2, '0')}`;
+            nextDate = dateStringToUTC(nextLocalDateStr, safeTimezone, 'start');
         } else {
             nextDate = calculateNextDueDate(task, startDate);
         }
@@ -254,6 +289,30 @@ async function calculateNextIterations(task, startFromDate, userTimezone) {
                     nextDate.getUTCDate() + (task.recurrence_interval || 1) * 7
                 );
             }
+        } else if (task.recurrence_type === 'monthly') {
+            // Advance by interval months using local timezone date arithmetic.
+            // Using processDueDateForResponse gives us the local date string from
+            // the current nextDate, letting us advance months without UTC drift.
+            const currentLocalStr = processDueDateForResponse(
+                nextDate,
+                safeTimezone
+            );
+            const [y, m, d] = currentLocalStr.split('-').map(Number);
+            const interval = task.recurrence_interval || 1;
+            const targetDay =
+                task.recurrence_month_day !== null &&
+                task.recurrence_month_day !== undefined
+                    ? task.recurrence_month_day
+                    : d;
+            const totalMonths = m - 1 + interval;
+            const nextYear = y + Math.floor(totalMonths / 12);
+            const nextMonthZeroIdx = totalMonths % 12;
+            const maxDay = new Date(
+                Date.UTC(nextYear, nextMonthZeroIdx + 1, 0)
+            ).getUTCDate();
+            const finalDay = Math.min(targetDay, maxDay);
+            const nextLocalDateStr = `${nextYear}-${String(nextMonthZeroIdx + 1).padStart(2, '0')}-${String(finalDay).padStart(2, '0')}`;
+            nextDate = dateStringToUTC(nextLocalDateStr, safeTimezone, 'start');
         } else {
             nextDate = calculateNextDueDate(task, nextDate);
         }

@@ -17,16 +17,57 @@ const STATUS_LABELS = {
 };
 
 function getOpenAIClient() {
-    const apiKey = process.env.OPENAI_API_KEY;
+    const apiKey = process.env.LLM_API_KEY || process.env.OPENAI_API_KEY;
     if (!apiKey) {
-        throw new Error('OPENAI_API_KEY environment variable is not set');
+        throw new Error(
+            'LLM_API_KEY (or OPENAI_API_KEY) environment variable is not set'
+        );
     }
-    return new OpenAI({ apiKey });
+    const options = { apiKey };
+    const baseURL = process.env.LLM_BASE_URL || process.env.OPENAI_BASE_URL;
+    if (baseURL) {
+        options.baseURL = baseURL;
+    }
+    return new OpenAI(options);
+}
+
+function getAIModel() {
+    return (
+        process.env.LLM_MODEL || process.env.TUDUDI_AI_MODEL || 'gpt-4o-mini'
+    );
+}
+
+function extractJSON(raw) {
+    const fenced = raw.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+    return fenced ? fenced[1] : raw;
+}
+
+function buildResponseFormat(name, schema) {
+    return {
+        type: 'json_schema',
+        json_schema: { name, strict: false, schema },
+    };
+}
+
+async function callWithFallback(client, params) {
+    try {
+        return await client.chat.completions.create(params);
+    } catch (err) {
+        const is400 = err?.status === 400;
+        const mentionsFormat =
+            err?.message?.includes('response_format') ||
+            err?.error?.message?.includes('response_format');
+        if (is400 && mentionsFormat) {
+            const { response_format: _dropped, ...fallbackParams } = params;
+            return await client.chat.completions.create(fallbackParams);
+        }
+        throw err;
+    }
 }
 
 async function fetchUserContext(userId) {
     const user = await User.findByPk(userId, {
-        attributes: ['id', 'timezone', 'email'],
+        attributes: ['id', 'timezone', 'email', 'ai_profile'],
     });
     if (!user) throw new Error('User not found');
 
@@ -69,6 +110,11 @@ function buildContextSummary({ user, timezone, goals, projects, metrics }) {
 
     lines.push(`# User Context`);
     lines.push(`Date: ${dateStr} | Time: ${timeStr} | Timezone: ${timezone}`);
+    if (user.ai_profile) {
+        lines.push('');
+        lines.push(`## About This User`);
+        lines.push(user.ai_profile);
+    }
     lines.push('');
 
     // Goals
@@ -207,6 +253,33 @@ async function getCachedBrief(userId) {
     return user.ai_daily_brief;
 }
 
+function buildEntityMaps({ metrics, projects }) {
+    const taskMap = new Map();
+    const projectMap = new Map();
+
+    const allTasks = [
+        ...(metrics.tasks_overdue || []),
+        ...(metrics.tasks_in_progress || []),
+        ...(metrics.today_plan_tasks || []),
+        ...(metrics.suggested_tasks || []),
+        ...(metrics.tasks_due_today || []),
+    ];
+
+    allTasks.forEach((t) => {
+        if (t.name && t.uid && !taskMap.has(t.name)) {
+            taskMap.set(t.name, t.uid);
+        }
+    });
+
+    projects.forEach((p) => {
+        if (p.name && p.uid) {
+            projectMap.set(p.name, p.uid);
+        }
+    });
+
+    return { taskMap, projectMap };
+}
+
 async function generateDailyBrief(userId) {
     const context = await fetchUserContext(userId);
     const contextSummary = buildContextSummary(context);
@@ -217,6 +290,7 @@ async function generateDailyBrief(userId) {
 
 Return a JSON object with exactly this shape:
 {
+  "overview": "≤20 words. One honest pulse on momentum — what's progressing, what's stalling, relative to goals.",
   "focus": "≤10 words. The one most important task today. Include project name.",
   "priority_actions": [
     {
@@ -230,26 +304,47 @@ Return a JSON object with exactly this shape:
 }
 
 Rules:
+- overview: reference actual task/project/goal counts or patterns from the data; no filler
 - priority_actions: exactly 3 items, ordered by importance
 - suggestion: infer the task's nature from its name, then motivate — e.g. for "Write test cases" say "Start with the happy path, the rest will flow." Don't be generic.
 - watch_out: 0–2 items; empty array [] if nothing urgent
 - Plain text only — no markdown, no ** formatting
 - Return only the JSON object, no other text`;
 
-    const response = await client.chat.completions.create({
-        model: 'gpt-4o-mini',
+    const response = await callWithFallback(client, {
+        model: getAIModel(),
         messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: contextSummary },
         ],
-        max_tokens: 500,
+        max_tokens: 1500,
+        response_format: buildResponseFormat('daily_brief', {
+            type: 'object',
+            properties: {
+                overview: { type: 'string' },
+                focus: { type: 'string' },
+                priority_actions: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        properties: {
+                            action: { type: 'string' },
+                            project: { type: 'string' },
+                            reason: { type: 'string' },
+                            suggestion: { type: 'string' },
+                        },
+                    },
+                },
+                watch_out: { type: 'array', items: { type: 'string' } },
+            },
+        }),
     });
 
     const raw = response.choices[0]?.message?.content || '{}';
     console.log('[AI Assistant] raw response:', raw);
     let parsed;
     try {
-        parsed = JSON.parse(raw);
+        parsed = JSON.parse(extractJSON(raw));
     } catch {
         parsed = {
             focus: raw,
@@ -260,11 +355,24 @@ Rules:
     }
     console.log('[AI Assistant] parsed:', JSON.stringify(parsed));
 
+    const { taskMap, projectMap } = buildEntityMaps(context);
+    const rawActions = Array.isArray(parsed.priority_actions)
+        ? parsed.priority_actions
+        : [];
+    const enrichedActions = rawActions.map((a) => {
+        const project = a.project && a.project !== 'null' ? a.project : null;
+        return {
+            ...a,
+            project,
+            task_uid: a.action ? taskMap.get(a.action) || null : null,
+            project_uid: project ? projectMap.get(project) || null : null,
+        };
+    });
+
     const brief = {
+        overview: parsed.overview || '',
         focus: parsed.focus || '',
-        priority_actions: Array.isArray(parsed.priority_actions)
-            ? parsed.priority_actions
-            : [],
+        priority_actions: enrichedActions,
         watch_out: Array.isArray(parsed.watch_out) ? parsed.watch_out : [],
         generated_at: new Date().toISOString(),
         model: response.model,
@@ -435,19 +543,38 @@ Rules:
 - Always reference the actual task name, project name, or tags in your response
 - Return only the JSON object, no other text`;
 
-    const response = await client.chat.completions.create({
-        model: 'gpt-4o-mini',
+    const response = await callWithFallback(client, {
+        model: getAIModel(),
         messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: lines.join('\n') },
         ],
         max_tokens: 1000,
+        response_format: buildResponseFormat('task_insights', {
+            type: 'object',
+            properties: {
+                insight: { type: 'string' },
+                next_step: { type: 'string' },
+                breakdown: { type: 'array', items: { type: 'string' } },
+                links: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        properties: {
+                            label: { type: 'string' },
+                            url: { type: 'string' },
+                        },
+                    },
+                },
+                watch_out: { type: 'string' },
+            },
+        }),
     });
 
     const raw = response.choices[0]?.message?.content || '{}';
     let parsed;
     try {
-        parsed = JSON.parse(raw);
+        parsed = JSON.parse(extractJSON(raw));
     } catch {
         parsed = {};
     }
@@ -564,19 +691,28 @@ Rules:
 - watch_out should be null (JSON null) if there's no meaningful risk to flag
 - Return only the JSON object, no other text`;
 
-    const response = await client.chat.completions.create({
-        model: 'gpt-4o-mini',
+    const response = await callWithFallback(client, {
+        model: getAIModel(),
         messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: lines.join('\n') },
         ],
         max_tokens: 600,
+        response_format: buildResponseFormat('project_insights', {
+            type: 'object',
+            properties: {
+                insight: { type: 'string' },
+                next_action: { type: 'string' },
+                health: { type: 'string' },
+                watch_out: { type: 'string' },
+            },
+        }),
     });
 
     const raw = response.choices[0]?.message?.content || '{}';
     let parsed;
     try {
-        parsed = JSON.parse(raw);
+        parsed = JSON.parse(extractJSON(raw));
     } catch {
         parsed = {};
     }

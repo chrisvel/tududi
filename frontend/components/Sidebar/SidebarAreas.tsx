@@ -29,7 +29,7 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
             <ul className="flex flex-col space-y-1">
                 {/* "AREAS" Title with Add Button */}
                 <li
-                    className={`flex justify-between items-center px-4 py-2 rounded-md uppercase text-xs tracking-wider cursor-pointer hover:text-black dark:hover:text-white ${isActiveArea(
+                    className={`group flex justify-between items-center px-4 py-2 rounded-md uppercase text-xs tracking-wider cursor-pointer hover:text-black dark:hover:text-white ${isActiveArea(
                         '/areas'
                     )}`}
                     onClick={() =>
@@ -49,7 +49,7 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
                             e.stopPropagation();
                             openAreaModal(null);
                         }}
-                        className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none"
                         aria-label={t('sidebar.addAreaAriaLabel')}
                         title={t('sidebar.addAreaTitle')}
                         data-testid="add-area-button"

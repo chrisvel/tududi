@@ -247,7 +247,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
             <button
                 onClick={handleToggle}
                 className="relative flex items-center focus:outline-none"
-                aria-label="Notifications"
+                aria-label={t('profile.notifications')}
             >
                 <BellIcon className="h-6 w-6 text-gray-700 dark:text-gray-300" />
                 {unreadCount > 0 && (

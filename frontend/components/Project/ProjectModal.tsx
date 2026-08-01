@@ -107,18 +107,10 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     };
 
     useEffect(() => {
-        if (formData.area_id) {
-            const area = areas.find((a) => a.id === formData.area_id);
-            const areaUid = area?.uid || formData.area_uid;
-            if (areaUid) {
-                fetchGoals(areaUid)
-                    .then(setAvailableGoals)
-                    .catch(() => setAvailableGoals([]));
-            }
-        } else {
-            setAvailableGoals([]);
-        }
-    }, [formData.area_id]);
+        fetchGoals()
+            .then(setAvailableGoals)
+            .catch(() => setAvailableGoals([]));
+    }, []);
 
     // Manage body scroll when modal is open
     useEffect(() => {
@@ -636,24 +628,18 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                     <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                                                         Goal
                                                     </h3>
-                                                    {!formData.area_id ? (
-                                                        <p className="text-sm text-gray-400 dark:text-gray-500">
-                                                            Select an area first to see its goals.
-                                                        </p>
-                                                    ) : (
-                                                        <GoalDropdown
-                                                            goalId={formData.goal_id ?? null}
-                                                            isMaintenance={!!formData.is_maintenance}
-                                                            goals={availableGoals}
-                                                            onChange={(id, maintenance) =>
-                                                                setFormData((prev) => ({
-                                                                    ...prev,
-                                                                    goal_id: id,
-                                                                    is_maintenance: maintenance,
-                                                                }))
-                                                            }
-                                                        />
-                                                    )}
+                                                    <GoalDropdown
+                                                        goalId={formData.goal_id ?? null}
+                                                        isMaintenance={!!formData.is_maintenance}
+                                                        goals={availableGoals}
+                                                        onChange={(id, maintenance) =>
+                                                            setFormData((prev) => ({
+                                                                ...prev,
+                                                                goal_id: id,
+                                                                is_maintenance: maintenance,
+                                                            }))
+                                                        }
+                                                    />
                                                 </div>
                                             )}
 
@@ -699,7 +685,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                             onChange={
                                                                 handleDueDateChange
                                                             }
-                                                            placeholder="Select due date"
+                                                            placeholder={t('projects.selectDueDatePlaceholder')}
                                                         />
                                                     </div>
                                                 </div>
@@ -806,7 +792,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                     ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
                                                     : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
                                             }`}
-                                            title="Goal"
+                                            title={t('projects.goalTitle')}
                                         >
                                             <FlagIcon className="h-5 w-5" />
                                             {(formData.goal_id != null || formData.is_maintenance) && (

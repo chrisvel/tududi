@@ -129,3 +129,16 @@ export function createTagUrl(tag: { uid?: string; name: string }): string {
     const uidSlug = createUidSlug(tag.uid, tag.name);
     return `/tag/${uidSlug}`;
 }
+
+/**
+ * Creates a goal URL using uid-slug format
+ * @param goal - Goal object with uid and title
+ * @returns The goal URL path (e.g., "/goal/abc123-launch-new-product")
+ */
+export function createGoalUrl(goal: { uid?: string; title: string }): string {
+    if (!goal.uid) {
+        throw new Error('Goal uid is required');
+    }
+    const uidSlug = createUidSlug(goal.uid, goal.title);
+    return `/goal/${uidSlug}`;
+}

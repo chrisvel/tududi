@@ -26,21 +26,20 @@ class GoalsService {
     }
 
     async create(userId, data) {
-        const { title, area_id, why, horizon, target_date, status } = data;
+        const { title, area_id, why, horizon, target_date, status, color } =
+            data;
         if (!title || !title.trim()) {
             throw new ValidationError('Goal title is required');
         }
-        if (!area_id) {
-            throw new ValidationError('Goal must belong to an area');
-        }
         return goalsRepository.create({
             user_id: userId,
-            area_id,
+            area_id: area_id || null,
             title: title.trim(),
             why: why || null,
             horizon: horizon || 'season',
             target_date: target_date || null,
             status: status || 'active',
+            color: color || null,
         });
     }
 
@@ -48,7 +47,8 @@ class GoalsService {
         const goal = await goalsRepository.findByUid(userId, uid);
         if (!goal) throw new NotFoundError('Goal not found');
 
-        const { title, area_id, why, horizon, target_date, status } = data;
+        const { title, area_id, why, horizon, target_date, status, color } =
+            data;
         const updates = {};
         if (title !== undefined) updates.title = title.trim();
         if (area_id !== undefined) updates.area_id = area_id;
@@ -57,6 +57,7 @@ class GoalsService {
         if (target_date !== undefined)
             updates.target_date = target_date || null;
         if (status !== undefined) updates.status = status;
+        if (color !== undefined) updates.color = color || null;
 
         return goalsRepository.update(goal, updates);
     }

@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const { v4: uuid } = require('uuid');
+const { randomUUID } = require('crypto');
 
 module.exports = (sequelize) => {
     const Notification = sequelize.define(
@@ -14,7 +14,7 @@ module.exports = (sequelize) => {
                 type: DataTypes.STRING,
                 unique: true,
                 allowNull: false,
-                defaultValue: () => uuid(),
+                defaultValue: () => randomUUID(),
             },
             user_id: {
                 type: DataTypes.INTEGER,

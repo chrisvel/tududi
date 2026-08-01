@@ -11,6 +11,7 @@ const {
     sendVerificationEmail,
     verifyUserEmail,
 } = require('./registrationService');
+const peopleService = require('../people/service');
 const packageJson = require('../../../package.json');
 const {
     ValidationError,
@@ -73,6 +74,12 @@ class AuthService {
 
             await transaction.commit();
 
+            try {
+                await peopleService.createSelfPerson(user);
+            } catch (err) {
+                logError(err, 'Failed to create self-person for new user');
+            }
+
             return {
                 message:
                     'Registration successful. Please check your email to verify your account.',
@@ -134,6 +141,7 @@ class AuthService {
                     'timezone',
                     'avatar_image',
                     'features',
+                    'ui_settings',
                 ],
             });
             if (user) {
@@ -144,6 +152,14 @@ class AuthService {
                         features = JSON.parse(features);
                     } catch {
                         features = {};
+                    }
+                }
+                let uiSettings = user.ui_settings;
+                if (uiSettings && typeof uiSettings === 'string') {
+                    try {
+                        uiSettings = JSON.parse(uiSettings);
+                    } catch {
+                        uiSettings = null;
                     }
                 }
                 return {
@@ -157,6 +173,7 @@ class AuthService {
                         timezone: user.timezone,
                         avatar_image: user.avatar_image,
                         features: features || {},
+                        ui_settings: uiSettings || null,
                         is_admin: admin,
                     },
                 };

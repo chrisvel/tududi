@@ -18,7 +18,7 @@ module.exports = (sequelize) => {
             },
             area_id: {
                 type: DataTypes.INTEGER,
-                allowNull: false,
+                allowNull: true,
                 references: {
                     model: 'areas',
                     key: 'id',
@@ -53,6 +53,10 @@ module.exports = (sequelize) => {
                 type: DataTypes.ENUM('active', 'achieved', 'paused', 'dropped'),
                 allowNull: false,
                 defaultValue: 'active',
+            },
+            color: {
+                type: DataTypes.STRING,
+                allowNull: true,
             },
         },
         {

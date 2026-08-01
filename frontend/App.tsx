@@ -1,5 +1,11 @@
 import React, { useEffect, useState, Suspense, lazy } from 'react';
-import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { Routes, Route, Navigate, Outlet, useParams } from 'react-router-dom';
+
+const NoteRedirect: React.FC = () => {
+    const { uidSlug } = useParams<{ uidSlug: string }>();
+    const uid = uidSlug?.split('-')[0] || '';
+    return <Navigate to={`/notes/${uid}`} replace />;
+};
 import { useTranslation } from 'react-i18next';
 import Login from './components/Login';
 import Register from './components/Register';
@@ -11,10 +17,11 @@ import AreaDetails from './components/Area/AreaDetails';
 import Areas from './components/Areas';
 import TagDetails from './components/Tag/TagDetails';
 import Tags from './components/Tags';
+import GoalDetails from './components/Goal/GoalDetails';
+import Goals from './components/Goals';
 import Views from './components/Views';
 import ViewDetail from './components/ViewDetail';
 import Notes from './components/Notes';
-import NoteDetails from './components/Note/NoteDetails';
 import Calendar from './components/Calendar';
 import ProfileSettings from './components/Profile/ProfileSettings';
 import About from './components/About';
@@ -29,9 +36,17 @@ import Habits from './components/Habits/Habits';
 import HabitDetails from './components/Habits/HabitDetails';
 import EisenhowerMatrix from './components/Eisenhower/EisenhowerMatrix';
 import KanbanBoard from './components/Kanban/KanbanBoard';
+import ProductivityPage from './components/Insights/ProductivityPage';
+import ReportsPage from './components/Insights/ReportsPage';
+import DailyBriefPage from './components/Insights/DailyBriefPage';
+import PeopleList from './components/People/PeopleList';
+import PersonDetails from './components/People/PersonDetails';
+import Templates from './components/Templates/Templates';
 import { setCurrentUser as setUserInStorage } from './utils/userUtils';
 import { getApiPath, getLocalesPath } from './config/paths';
 import { useStore } from './store/useStore';
+import { invalidateProfileCache } from './utils/profileService';
+import { notifySwSession, notifySwClearCache } from './utils/swUtils';
 // Lazy load Tasks component to prevent issues with tags loading
 const Tasks = lazy(() => import('./components/Tasks'));
 
@@ -55,6 +70,8 @@ const App: React.FC = () => {
 
             if (!response.ok) {
                 if (response.status === 401) {
+                    invalidateProfileCache();
+                    notifySwClearCache();
                     setCurrentUser(null);
                     return;
                 }
@@ -65,6 +82,7 @@ const App: React.FC = () => {
             if (data.user) {
                 setCurrentUser(data.user);
                 setUserInStorage(data.user);
+                notifySwSession(data.user.id);
                 useStore.getState().userSettingsStore.setEisenhowerEnabled(
                     data.user.features?.eisenhower_enabled === true
                 );
@@ -79,6 +97,9 @@ const App: React.FC = () => {
                 );
                 useStore.getState().userSettingsStore.setAiAssistantEnabled(
                     data.user.features?.ai_assistant_enabled === true
+                );
+                useStore.getState().userSettingsStore.setShowTaskContextMenu(
+                    data.user.ui_settings?.appearance?.showTaskContextMenu === true
                 );
             } else {
                 setCurrentUser(null);
@@ -99,6 +120,7 @@ const App: React.FC = () => {
     // Listen for login events to update user state
     useEffect(() => {
         const handleUserLoggedIn = (event: CustomEvent) => {
+            invalidateProfileCache();
             const user = event.detail;
             setCurrentUser(user);
             setUserInStorage(user);
@@ -150,6 +172,17 @@ const App: React.FC = () => {
         const newValue = !isDarkMode;
         setIsDarkMode(newValue);
         localStorage.setItem('isDarkMode', JSON.stringify(newValue));
+    };
+
+    const setAppearance = (theme: 'light' | 'dark' | 'system') => {
+        if (theme === 'system') {
+            localStorage.removeItem('isDarkMode');
+            setIsDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
+        } else {
+            const isDark = theme === 'dark';
+            setIsDarkMode(isDark);
+            localStorage.setItem('isDarkMode', JSON.stringify(isDark));
+        }
     };
 
     useEffect(() => {
@@ -243,14 +276,20 @@ const App: React.FC = () => {
                                     </Suspense>
                                 }
                             />
-                            <Route path="/eisenhower" element={<EisenhowerMatrix />} />
-                            <Route path="/kanban" element={<KanbanBoard />} />
+                            <Route path="/eisenhower" element={<Navigate to="/boards/eisenhower" replace />} />
+                            <Route path="/kanban" element={<Navigate to="/boards/kanban" replace />} />
+                            <Route path="/boards/eisenhower" element={<EisenhowerMatrix />} />
+                            <Route path="/boards/kanban" element={<KanbanBoard />} />
+                            <Route path="/insights/daily-brief" element={<DailyBriefPage />} />
+                            <Route path="/insights/productivity" element={<ProductivityPage />} />
+                            <Route path="/insights/reports" element={<ReportsPage />} />
                             <Route path="/inbox" element={<InboxItems />} />
                             <Route path="/habits" element={<Habits />} />
                             <Route
                                 path="/habit/:uid"
                                 element={<HabitDetails />}
                             />
+                            <Route path="/templates" element={<Templates />} />
                             <Route path="/projects" element={<Projects />} />
                             <Route
                                 path="/project/:uidSlug"
@@ -263,6 +302,11 @@ const App: React.FC = () => {
                                 path="/tag/:uidSlug"
                                 element={<TagDetails />}
                             />
+                            <Route path="/goals" element={<Goals />} />
+                            <Route
+                                path="/goal/:uidSlug"
+                                element={<GoalDetails />}
+                            />
                             <Route path="/views" element={<Views />} />
                             <Route
                                 path="/views/:uid"
@@ -272,7 +316,7 @@ const App: React.FC = () => {
                             <Route path="/notes/:uid" element={<Notes />} />
                             <Route
                                 path="/note/:uidSlug"
-                                element={<NoteDetails />}
+                                element={<NoteRedirect />}
                             />
                             <Route path="/calendar" element={<Calendar />} />
                             <Route
@@ -282,6 +326,7 @@ const App: React.FC = () => {
                                         currentUser={currentUser}
                                         isDarkMode={isDarkMode}
                                         toggleDarkMode={toggleDarkMode}
+                                        setAppearance={setAppearance}
                                     />
                                 }
                             />
@@ -290,6 +335,8 @@ const App: React.FC = () => {
                                 element={<About isDarkMode={isDarkMode} />}
                             />
                             <Route path="/backup" element={<BackupRestore />} />
+                            <Route path="/people" element={<PeopleList />} />
+                            <Route path="/person/:uid" element={<PersonDetails />} />
                             <Route
                                 path="/admin/users"
                                 element={

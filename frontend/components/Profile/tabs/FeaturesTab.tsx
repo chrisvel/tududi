@@ -12,6 +12,10 @@ interface FeaturesTabProps {
     onToggleHabits: () => void;
     calendarEnabled: boolean;
     onToggleCalendar: () => void;
+    templatesEnabled: boolean;
+    onToggleTemplates: () => void;
+    pomodoroEnabled: boolean;
+    onTogglePomodoro: () => void;
     formData: ProfileFormData;
     onToggleAi: (field: keyof Features) => void;
 }
@@ -69,6 +73,10 @@ const FeaturesTab: React.FC<FeaturesTabProps> = ({
     onToggleHabits,
     calendarEnabled,
     onToggleCalendar,
+    templatesEnabled,
+    onToggleTemplates,
+    pomodoroEnabled,
+    onTogglePomodoro,
     formData,
     onToggleAi,
 }) => {
@@ -118,6 +126,24 @@ const FeaturesTab: React.FC<FeaturesTabProps> = ({
                     )}
                     value={calendarEnabled}
                     onToggle={onToggleCalendar}
+                />
+                <ToggleRow
+                    label={t('navigation.templates', 'Templates')}
+                    description={t(
+                        'profile.templatesDescription',
+                        'Enable Project Templates to save and reuse project structures.'
+                    )}
+                    value={templatesEnabled}
+                    onToggle={onToggleTemplates}
+                />
+                <ToggleRow
+                    label={t('profile.enablePomodoro', 'Pomodoro Timer')}
+                    description={t(
+                        'profile.pomodoroDescription',
+                        'Enable the Pomodoro timer in the navigation bar for focused work sessions.'
+                    )}
+                    value={pomodoroEnabled}
+                    onToggle={onTogglePomodoro}
                 />
             </div>
 
@@ -179,18 +205,6 @@ const FeaturesTab: React.FC<FeaturesTabProps> = ({
                         onToggle={() =>
                             onToggleAi('next_task_suggestion_enabled')
                         }
-                    />
-                    <ToggleRow
-                        label={t(
-                            'profile.aiAssistantLabel',
-                            'AI Assistant (Daily Brief & Insights)'
-                        )}
-                        description={t(
-                            'profile.aiAssistantDescription',
-                            'Enable AI-powered daily brief on the Today page and task/project insights. Requires OPENAI_API_KEY configured on the server.'
-                        )}
-                        value={Boolean(formData.features?.ai_assistant_enabled)}
-                        onToggle={() => onToggleAi('ai_assistant_enabled')}
                         last
                     />
                 </div>

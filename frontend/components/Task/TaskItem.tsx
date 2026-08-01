@@ -4,7 +4,6 @@ import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import TaskHeader from './TaskHeader';
 import { useToast } from '../Shared/ToastContext';
-import TaskPriorityIcon from '../Shared/Icons/TaskPriorityIcon';
 import { isTaskCompleted } from '../../constants/taskStatus';
 import {
     ExclamationTriangleIcon,
@@ -15,145 +14,25 @@ import {
     ArrowRightCircleIcon,
     SparklesIcon,
 } from '@heroicons/react/24/outline';
-
-// Import SubtasksDisplay component from TaskHeader
-interface SubtasksDisplayProps {
-    loadingSubtasks: boolean;
-    subtasks: Task[];
-    onTaskClick: (e: React.MouseEvent, task: Task) => void;
-    loadSubtasks: () => Promise<void>;
-    onSubtaskUpdate: (updatedSubtask: Task) => void;
-}
-
-const getPriorityBorderClassName = (
-    priority?: Task['priority'] | number
-): string => {
-    let normalizedPriority = priority;
-    if (typeof normalizedPriority === 'number') {
-        const priorityNames: Array<'low' | 'medium' | 'high'> = [
-            'low',
-            'medium',
-            'high',
-        ];
-        normalizedPriority = priorityNames[normalizedPriority] || undefined;
-    }
-
-    switch (normalizedPriority) {
-        case 'high':
-            return 'border-l-4 border-l-red-500';
-        case 'medium':
-            return 'border-l-4 border-l-yellow-400';
-        case 'low':
-            return 'border-l-4 border-l-blue-400';
-        default:
-            return 'border-l-4 border-l-transparent';
-    }
-};
-
-const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
-    loadingSubtasks,
-    subtasks,
-    onTaskClick,
-    loadSubtasks,
-    onSubtaskUpdate,
-}) => {
-    const { t } = useTranslation();
-
-    if (loadingSubtasks) {
-        return (
-            <div className="ml-[10%] text-sm text-gray-500 dark:text-gray-400">
-                {t('loading.subtasks', 'Loading subtasks...')}
-            </div>
-        );
-    }
-
-    if (subtasks.length === 0) {
-        return (
-            <div className="ml-[10%] text-sm text-gray-500 dark:text-gray-400">
-                {t('subtasks.noSubtasks', 'No subtasks found')}
-            </div>
-        );
-    }
-
-    return (
-        <div className="mt-1 space-y-1 relative z-0">
-            {subtasks.map((subtask) => {
-                const borderClass = isTaskCompleted(subtask.status)
-                    ? 'border-l-4 border-l-green-500'
-                    : getPriorityBorderClassName(subtask.priority);
-                return (
-                    <div key={subtask.id} className="ml-[10%]">
-                        <div
-                            className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 relative overflow-visible transition-colors duration-200 ease-in-out hover:ring-1 hover:ring-gray-200 dark:hover:ring-gray-700 cursor-pointer ${borderClass}`}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onTaskClick(e, subtask);
-                            }}
-                        >
-                            <div className="px-3 py-2.5 flex items-center justify-between">
-                                <div className="flex items-center space-x-2 flex-1 min-w-0">
-                                    <TaskPriorityIcon
-                                        priority={subtask.priority || 'low'}
-                                        status={subtask.status || 'not_started'}
-                                        onToggleCompletion={async () => {
-                                            if (subtask.uid) {
-                                                try {
-                                                    const updatedSubtask =
-                                                        await toggleTaskCompletion(
-                                                            subtask.uid,
-                                                            subtask
-                                                        );
-
-                                                    if (
-                                                        updatedSubtask.parent_child_logic_executed
-                                                    ) {
-                                                        setTimeout(() => {
-                                                            window.location.reload();
-                                                        }, 200);
-                                                        return;
-                                                    }
-
-                                                    onSubtaskUpdate(
-                                                        updatedSubtask
-                                                    );
-                                                } catch (error) {
-                                                    console.error(
-                                                        'Error toggling subtask completion:',
-                                                        error
-                                                    );
-                                                    await loadSubtasks();
-                                                }
-                                            }
-                                        }}
-                                    />
-                                    <span
-                                        className={`text-sm truncate min-w-0 ${
-                                            isTaskCompleted(subtask.status)
-                                                ? 'text-gray-500 dark:text-gray-400 line-through'
-                                                : 'text-gray-900 dark:text-gray-100'
-                                        }`}
-                                    >
-                                        {subtask.original_name || subtask.name}
-                                    </span>
-                                </div>
-                                {isTaskCompleted(subtask.status) && (
-                                    <span className="text-xs text-green-600 dark:text-green-400">
-                                        ✓
-                                    </span>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                );
-            })}
-        </div>
-    );
-};
-import { toggleTaskCompletion, updateTask, fetchSubtasks } from '../../utils/tasksService';
+import { toggleTaskCompletion, updateTask, fetchSubtasks, deleteTask } from '../../utils/tasksService';
 import { isTaskOverdueInTodayPlan } from '../../utils/dateUtils';
 import { useTranslation } from 'react-i18next';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import { getApiPath } from '../../config/paths';
+
+const getPriorityBorderClassName = (priority?: Task['priority'] | number): string => {
+    let normalizedPriority = priority;
+    if (typeof normalizedPriority === 'number') {
+        const priorityNames: Array<'low' | 'medium' | 'high'> = ['low', 'medium', 'high'];
+        normalizedPriority = priorityNames[normalizedPriority] || undefined;
+    }
+    switch (normalizedPriority) {
+        case 'high': return 'border-l-4 border-l-red-500';
+        case 'medium': return 'border-l-4 border-l-yellow-400';
+        case 'low': return 'border-l-4 border-l-blue-400';
+        default: return 'border-l-4 border-l-transparent';
+    }
+};
 
 interface TaskItemProps {
     task: Task;
@@ -169,6 +48,7 @@ interface TaskItemProps {
     hideStatusControl?: boolean;
     isKanbanView?: boolean;
     showSuggestionChips?: boolean;
+    compact?: boolean;
 }
 
 const TaskItem: React.FC<TaskItemProps> = ({
@@ -185,6 +65,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
     hideStatusControl = false,
     isKanbanView = false,
     showSuggestionChips = false,
+    compact = false,
 }) => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -260,13 +141,6 @@ const TaskItem: React.FC<TaskItemProps> = ({
         }
     };
 
-    const handleSubtaskClick = async () => {
-        // Navigate to the parent task URL (not the subtask URL)
-        if (task.uid) {
-            navigate(`/task/${task.uid}`, fromState);
-        }
-    };
-
     const handleSubtasksToggle = async (e: React.MouseEvent) => {
         e.stopPropagation();
 
@@ -339,15 +213,17 @@ const TaskItem: React.FC<TaskItemProps> = ({
                         <>Task <span className="font-semibold">&apos;{task.name}&apos;</span> completed.</>,
                         async () => {
                             try {
+                                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                                const { subtasks: _taskSubtasks, ...taskWithoutSubtasks } = task;
                                 const reverted = await updateTask(task.uid!, {
-                                    ...task,
+                                    ...taskWithoutSubtasks,
                                     status: previousStatus,
                                     completed_at: null,
                                 });
                                 if (onTaskCompletionToggle) {
                                     onTaskCompletionToggle(reverted);
                                 } else {
-                                    await onTaskUpdate({ ...task, ...reverted });
+                                    await onTaskUpdate({ ...taskWithoutSubtasks, ...reverted });
                                 }
                             } catch {
                                 showErrorToast('Failed to undo task completion.');
@@ -452,6 +328,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     onMenuOpenChange={setIsStatusMenuOpen}
                     hideStatusControl={hideStatusControl}
                     isKanbanView={isKanbanView}
+                    compact={compact}
                 />
 
                 {/* Progress bar at bottom of parent task */}
@@ -494,28 +371,45 @@ const TaskItem: React.FC<TaskItemProps> = ({
                 );
             })()}
 
-            {/* Hide subtasks display for archived tasks */}
+            {/* Subtasks displayed as full task item cards */}
             {showSubtasks &&
                 (subtasks.length > 0 || loadingSubtasks) &&
                 !(task.status === 'archived' || task.status === 3) && (
-                    <SubtasksDisplay
-                        loadingSubtasks={loadingSubtasks}
-                        subtasks={subtasks}
-                        onTaskClick={(e) => {
-                            e.stopPropagation();
-                            handleSubtaskClick();
-                        }}
-                        loadSubtasks={loadSubtasks}
-                        onSubtaskUpdate={(updatedSubtask) => {
-                            setSubtasks((prev) =>
-                                prev.map((st) =>
-                                    st.id === updatedSubtask.id
-                                        ? updatedSubtask
-                                        : st
-                                )
-                            );
-                        }}
-                    />
+                    <div className="mt-1 ml-4 space-y-1 relative z-0">
+                        {loadingSubtasks ? (
+                            <div className="text-sm text-gray-500 dark:text-gray-400 px-3 py-2">
+                                {t('loading.subtasks', 'Loading subtasks...')}
+                            </div>
+                        ) : (
+                            subtasks.map((subtask) => (
+                                <TaskItem
+                                    key={subtask.id ?? subtask.uid}
+                                    task={subtask}
+                                    onTaskUpdate={async (updated) => {
+                                        setSubtasks((prev) =>
+                                            prev.map((st) =>
+                                                st.id === updated.id ? updated : st
+                                            )
+                                        );
+                                    }}
+                                    onTaskDelete={(subtaskUid) => {
+                                        deleteTask(subtaskUid)
+                                            .then(() => {
+                                                setSubtasks((prev) =>
+                                                    prev.filter((st) => st.uid !== subtaskUid)
+                                                );
+                                            })
+                                            .catch((err) => {
+                                                console.error('Error deleting subtask:', err);
+                                            });
+                                    }}
+                                    projects={projects}
+                                    hideProjectName
+                                    compact
+                                />
+                            ))
+                        )}
+                    </div>
                 )}
             {/* Confirm Delete Dialog */}
             {isConfirmDialogOpen && (

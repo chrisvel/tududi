@@ -1,8 +1,10 @@
 'use strict';
 
+const { safeCreateTable, safeAddIndex } = require('../utils/migration-utils');
+
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('permissions', {
+        await safeCreateTable(queryInterface, 'permissions', {
             id: {
                 type: Sequelize.INTEGER,
                 primaryKey: true,
@@ -49,20 +51,27 @@ module.exports = {
             },
         });
 
-        await queryInterface.addConstraint('permissions', {
-            fields: ['user_id', 'resource_type', 'resource_uid'],
-            type: 'unique',
-            name: 'uniq_permissions_user_resource',
-        });
-        await queryInterface.addIndex('permissions', [
+        try {
+            await queryInterface.addConstraint('permissions', {
+                fields: ['user_id', 'resource_type', 'resource_uid'],
+                type: 'unique',
+                name: 'uniq_permissions_user_resource',
+            });
+        } catch (e) {
+            console.log(
+                'Constraint uniq_permissions_user_resource may already exist, skipping'
+            );
+        }
+
+        await safeAddIndex(queryInterface, 'permissions', [
             'resource_type',
             'resource_uid',
         ]);
-        await queryInterface.addIndex('permissions', ['user_id']);
-        await queryInterface.addIndex('permissions', ['access_level']);
+        await safeAddIndex(queryInterface, 'permissions', ['user_id']);
+        await safeAddIndex(queryInterface, 'permissions', ['access_level']);
     },
 
-    async down(queryInterface, Sequelize) {
+    async down(queryInterface) {
         await queryInterface.dropTable('permissions');
     },
 };

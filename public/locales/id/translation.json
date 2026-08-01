@@ -25,7 +25,12 @@
     "yesDiscard": "Ya, buang",
     "uploading": "Mengunggah...",
     "refresh": "Segarkan",
-    "unlinking": "Menghapus tautan..."
+    "unlinking": "Menghapus tautan...",
+    "preview": "Pratonton",
+    "download": "Unduh",
+    "exitFocusMode": "Keluar dari mode fokus",
+    "searchTimezones": "Cari zona waktu...",
+    "dismiss": "Tutup"
   },
   "sidebar": {
     "dashboard": "Dasbor",
@@ -58,7 +63,15 @@
     "unpinView": "Lepaskan tampilan",
     "pinView": "Sematkan tampilan",
     "eisenhower": "Matriks Eisenhower",
-    "kanban": "Papan Kanban"
+    "kanban": "Papan Kanban",
+    "addHabitAriaLabel": "Tambahkan Kebiasaan",
+    "addHabitTitle": "Tambahkan Kebiasaan",
+    "toggleDarkMode": "Beralih ke Mode Gelap",
+    "insights": "Wawasan",
+    "boards": "Papan",
+    "bookmarks": "Tanda Buku",
+    "reports": "Laporan",
+    "productivityAssistant": "Asisten Produktivitas"
   },
   "navigation": {
     "home": "Beranda",
@@ -68,7 +81,11 @@
     "settings": "Pengaturan",
     "about": "Tentang",
     "logout": "Keluar",
-    "backupRestore": "Cadangkan & Pulihkan"
+    "backupRestore": "Cadangkan & Pulihkan",
+    "toggleSearch": "Beralih ke Pencarian",
+    "quickInboxCapture": "Tangkap Kotak Masuk Cepat",
+    "userMenu": "Menu Pengguna",
+    "search": "Cari"
   },
   "settings": {
     "todayPageSettings": "Pengaturan Halaman Hari Ini",
@@ -181,7 +198,9 @@
       "waiting": "Menunggu",
       "done": "Selesai",
       "dropHere": "Jatuhkan di sini"
-    }
+    },
+    "chaseUp": "Tindak Lanjut",
+    "habit": "Kebiasaan"
   },
   "timeline": {
     "activityTimeline": "Garis Waktu Aktivitas",
@@ -503,7 +522,9 @@
       "serverSettings": "Pengaturan Server",
       "syncSettings": "Pengaturan Sinkronisasi",
       "setupSuccess": "Kalender berhasil dikonfigurasi!",
-      "setupFailed": "Gagal membuat kalender"
+      "setupFailed": "Gagal membuat kalender",
+      "serverUrlPlaceholder": "https://caldav.example.com",
+      "calendarPathPlaceholder": "/calendars/user/tasks"
     },
     "conflictResolver": {
       "title": "Selesaikan Konflik Sinkronisasi",
@@ -538,7 +559,9 @@
       "intervalError": "Interval sinkronisasi harus antara 1 dan 1440 menit",
       "updateSuccess": "Kalender berhasil diperbarui",
       "updateError": "Gagal memperbarui kalender"
-    }
+    },
+    "telegramTokenPlaceholder": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+    "telegramAllowedUsersPlaceholder": "@username1, 123456789, @username2"
   },
   "productivity": {
     "stalledProjects": "Proyek Terhenti",
@@ -777,7 +800,11 @@
     "projectSaveFailed": "Gagal untuk menyimpan proyek.",
     "projectImageTooLarge": "Gambar terlalu besar. Silakan pilih file di bawah 10MB.",
     "projectImageUpload": "Gagal mengunggah gambar. Silakan coba file yang lebih kecil atau format yang berbeda.",
-    "bannerSaveFailed": "Gagal menyimpan spanduk"
+    "bannerSaveFailed": "Gagal menyimpan spanduk",
+    "loginFailed": "Gagal masuk. Silakan coba lagi.",
+    "generalError": "Terjadi kesalahan. Silakan coba lagi.",
+    "viewNameRequired": "Nama tampilan diperlukan",
+    "viewSaveFailed": "Gagal menyimpan tampilan. Silakan coba lagi."
   },
   "inbox": {
     "title": "Kotak Masuk",
@@ -810,7 +837,9 @@
     "loadMoreError": "Gagal memuat lebih banyak item",
     "loading": "Memuat...",
     "loadMore": "Muat lebih banyak item kotak masuk",
-    "showingItems": "Menampilkan {{current}} dari {{total}} item"
+    "showingItems": "Menampilkan {{current}} dari {{total}} item",
+    "removeTag": "Hapus tag",
+    "removeProject": "Hapus proyek"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1056,7 +1085,9 @@
     "nextUp": "Tindakan terbaik selanjutnya",
     "focusTask": "Tugas paling berdampak",
     "focusHint": "Memindahkan tugas ini ke sedang berlangsung dan hari ini",
-    "noNextAction": "Semua bersih-tidak ada tugas tertunda."
+    "noNextAction": "Semua bersih-tidak ada tugas tertunda.",
+    "selectDueDatePlaceholder": "Pilih tanggal jatuh tempo",
+    "goalTitle": "Tujuan"
   },
   "projectItem": {
     "edit": "Sunting",
@@ -1074,7 +1105,10 @@
     "day": "hari",
     "days": "hari",
     "sharedUser": "Pengguna bersama",
-    "moreSharedUsers": "+{{count}} pengguna lagi"
+    "moreSharedUsers": "+{{count}} pengguna lagi",
+    "saveAsTemplate": "Simpan sebagai Template",
+    "pinToSidebar": "Sematkan ke sidebar",
+    "unpinFromSidebar": "Lepaskan dari sidebar"
   },
   "areas": {
     "title": "Area",
@@ -1088,7 +1122,14 @@
     "error": "Kesalahan memuat detail area.",
     "notFound": "Area tidak ditemukan.",
     "details": "Detail Area",
-    "viewProjects": "Lihat Proyek di {{name}}"
+    "viewProjects": "Lihat Proyek di {{name}}",
+    "goalTitlePlaceholder": "Judul tujuan",
+    "goalWhyPlaceholder": "Mengapa ini penting (opsional)",
+    "editGoal": "Edit tujuan",
+    "deleteGoal": "Hapus tujuan",
+    "moveBackToUnlinked": "Kembali ke tidak terhubung",
+    "horizonSeason": "Musim",
+    "horizonYear": "Tahun"
   },
   "notes": {
     "loading": "Memuat catatan...",
@@ -1099,7 +1140,17 @@
     "deleteNoteAriaLabel": "Hapus catatan {{noteTitle}}",
     "deleteNoteTitle": "Hapus catatan {{noteTitle}}",
     "editNoteAriaLabel": "Edit catatan {{noteTitle}}",
-    "editNoteTitle": "Edit catatan {{noteTitle}}"
+    "editNoteTitle": "Edit catatan {{noteTitle}}",
+    "titlePlaceholder": "Judul catatan...",
+    "contentPlaceholder": "Tulis konten catatan Anda di sini... (Markdown didukung)",
+    "focusMode": "Mode fokus",
+    "noteOptions": "Opsi catatan",
+    "clickToEdit": "Klik untuk mengedit",
+    "contentPlaceholderFocus": "Tulis catatan Anda... (Markdown didukung)",
+    "contentPlaceholderMarkdown": "Tulis konten Anda menggunakan format Markdown...\n\nContoh:\n# Judul\n**Teks tebal**\n*Teks miring*\n- Item daftar\n```kode```",
+    "pinToSidebar": "Sematkan ke sidebar",
+    "unpinFromSidebar": "Lepaskan dari sidebar",
+    "save": "Simpan"
   },
   "tags": {
     "loading": "Memuat tag...",
@@ -1123,7 +1174,11 @@
     "systemTag": "Tag sistem",
     "systemTagDescription": "Dibuat secara otomatis oleh aplikasi. Mereka mendukung fitur bawaan dan tidak dapat diubah namanya atau dihapus.",
     "userTag": "Tag pengguna",
-    "userTagDescription": "Tag Anda sendiri untuk mengorganisir tugas, catatan, dan proyek."
+    "userTagDescription": "Tag Anda sendiri untuk mengorganisir tugas, catatan, dan proyek.",
+    "systemTags": "Tag Sistem",
+    "systemTagsDescription": "Dikelola secara otomatis · Tidak dapat dihapus atau dinamai ulang",
+    "system": "Sistem",
+    "customize": "Kustomisasi"
   },
   "recurrence": {
     "none": "Tidak ada",
@@ -1399,7 +1454,14 @@
     "priorityLabel": "Prioritas:",
     "dueLabel": "Jatuh Tempo:",
     "tags": "Tag",
-    "recurring": "Berulang"
+    "recurring": "Berulang",
+    "saveAsSmartView": "Simpan sebagai Tampilan Cerdas",
+    "viewNamePlaceholder": "Masukkan nama tampilan",
+    "viewNameLabel": "Nama Tampilan",
+    "viewWillSave": "Tampilan ini akan disimpan:",
+    "saveView": "Simpan Tampilan",
+    "filtersLabel": "Filter:",
+    "searchLabel": "Cari:"
   },
   "search": {
     "placeholder": "Cari tugas, proyek, catatan...",
@@ -1556,5 +1618,55 @@
     "done_desc": "Telah selesai dan selesai",
     "cancelled": "Dibatalkan",
     "cancelled_desc": "Tidak akan diselesaikan"
+  },
+  "habits": {
+    "completeHabit": "Selesaikan kebiasaan"
+  },
+  "aiAssistant": {
+    "title": "Asisten AI",
+    "generatedAt": "Dihasilkan pada {{time}}",
+    "emptyState": "Klik 'Hasilkan Ringkasan' untuk mendapatkan ringkasan harian yang didukung AI.",
+    "focusForToday": "Fokus untuk hari ini",
+    "priorityActions": "Tindakan prioritas",
+    "taskInsightsTitle": "Wawasan AI",
+    "projectInsightsTitle": "Wawasan AI",
+    "taskInsight": "Tentang tugas ini",
+    "taskNextStep": "Langkah selanjutnya",
+    "taskBreakdown": "Cara mendekatinya",
+    "projectInsight": "Tentang proyek ini",
+    "projectNextAction": "Tindakan selanjutnya",
+    "projectHealth": "Kesehatan proyek",
+    "watchOut": "Hati-hati",
+    "suggestedLinks": "Tautan yang disarankan",
+    "generate": "Hasilkan Ringkasan",
+    "regenerate": "Hasilkan ulang",
+    "generating": "Menghasilkan...",
+    "errorDefault": "Gagal menghasilkan wawasan. Silakan coba lagi.",
+    "lowContextTitle": "Tidak cukup konteks untuk saran yang baik",
+    "lowContextHint": "Tambahkan deskripsi, catatan, tag, atau tetapkan proyek untuk mendapatkan wawasan yang lebih baik. Anda masih bisa menghasilkan di bawah.",
+    "generateAnyway": "Hasilkan saja",
+    "statTotal": "Total",
+    "statDone": "Selesai",
+    "statActive": "Aktif",
+    "statOverdue": "Terlambat",
+    "pastBriefWarning": "Brief ini berasal dari {{date}} dan mungkin tidak lagi mencerminkan tugas hari ini. Klik Regenerasi untuk brief yang baru."
+  },
+  "reports": {
+    "weeklyReview": "Tinjauan Mingguan",
+    "inboxItems": "Item Kotak Masuk",
+    "stalledProjects": "Proyek Terhenti",
+    "waitingFor": "Menunggu",
+    "allClear": "Semua jelas — tidak ada proyek terhenti atau item yang menunggu.",
+    "projectHealth": "Kesehatan Proyek",
+    "allProjectsHaveActions": "Semua proyek aktif memiliki setidaknya satu tindakan berikutnya.",
+    "projectsWithNoNextAction": "proyek tidak memiliki tindakan berikutnya",
+    "completionTrends": "Tren Penyelesaian",
+    "noCompletions": "Tidak ada tugas yang diselesaikan dalam 8 minggu terakhir.",
+    "areaBalance": "Saldo Area",
+    "noAreaData": "Tidak ada data area yang tersedia. Tetapkan tugas ke area untuk melihat saldo.",
+    "completed": "Diselesaikan (30h)",
+    "open": "Terbuka",
+    "streaks": "Rangkaian",
+    "areaBreakdown": "Rincian Area"
   }
 }

@@ -18,6 +18,7 @@ import {
     XMarkIcon,
     ArrowsPointingOutIcon,
 } from '@heroicons/react/24/outline';
+import PushPinIcon from './Shared/Icons/PushPinIcon';
 import { useToast } from './Shared/ToastContext';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { SortOption } from './Shared/SortFilterButton';
@@ -35,6 +36,7 @@ import { createProject } from '../utils/projectsService';
 import { ENABLE_NOTE_COLOR } from '../config/featureFlags';
 import { COLORS } from './Shared/ColorPicker';
 import NoteFocusMode from './Note/NoteFocusMode';
+import MarkdownEditor from './Note/MarkdownEditor';
 
 
 const shouldUseLightText = (hexColor: string | undefined): boolean => {
@@ -230,18 +232,14 @@ const Notes: React.FC = () => {
         });
         setIsEditing(true);
         setSaveStatus('saved');
-        handleSelectNote(null);
     };
 
     const handleNewNote = () => {
-        setEditingNote({
-            title: '',
-            content: '',
-            tags: [],
-        });
         setIsEditing(true);
+        setEditingNote({ title: '', content: '', tags: [] });
+        setPreviewNote(null);
         setSaveStatus('saved');
-        handleSelectNote(null);
+        navigate('/notes', { replace: true });
     };
 
     const handleSaveInlineNote = async () => {
@@ -373,6 +371,25 @@ const Notes: React.FC = () => {
         }
     };
 
+    const handleTogglePin = async (note: Note) => {
+        if (!note.uid) return;
+        const newValue = !note.pin_to_sidebar;
+        const updated = { ...note, pin_to_sidebar: newValue };
+
+        if (previewNote?.uid === note.uid) setPreviewNote(updated);
+        if (editingNote?.uid === note.uid) setEditingNote(updated);
+        setNotes(notes.map((n) => (n.uid === note.uid ? { ...n, pin_to_sidebar: newValue } : n)));
+
+        try {
+            await updateNote(note.uid, { pin_to_sidebar: newValue } as any);
+        } catch (err) {
+            console.error('Error toggling pin:', err);
+            if (previewNote?.uid === note.uid) setPreviewNote(note);
+            if (editingNote?.uid === note.uid) setEditingNote(note);
+            setNotes(notes.map((n) => (n.uid === note.uid ? { ...n, pin_to_sidebar: !newValue } : n)));
+        }
+    };
+
     const filteredNotes = useMemo(() => {
         return notes.filter(
             (note) =>
@@ -420,6 +437,10 @@ const Notes: React.FC = () => {
     }, [filteredNotes, orderBy]);
 
     useEffect(() => {
+        hasAutoSelected.current = false;
+    }, [uid]);
+
+    useEffect(() => {
         if (uid && sortedNotes.length > 0 && !hasAutoSelected.current) {
             const noteFromUrl = sortedNotes.find((note) => note.uid === uid);
             if (noteFromUrl) {
@@ -440,6 +461,7 @@ const Notes: React.FC = () => {
             !uid &&
             sortedNotes.length > 0 &&
             !previewNote &&
+            !isEditing &&
             !hasAutoSelected.current
         ) {
             const isDesktop = window.innerWidth >= 768;
@@ -448,7 +470,7 @@ const Notes: React.FC = () => {
                 hasAutoSelected.current = true;
             }
         }
-    }, [sortedNotes, previewNote, uid]);
+    }, [sortedNotes, previewNote, uid, isEditing]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -863,11 +885,22 @@ const Notes: React.FC = () => {
                                                         className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
                                                     >
                                                         <PencilIcon className="h-4 w-4" />
-                                                        {t(
-                                                            'notes.save',
-                                                            'Save'
-                                                        )}
+                                                        {t('notes.save', 'Save')}
                                                     </button>
+                                                    {editingNote.uid && (
+                                                        <button
+                                                            onClick={() => {
+                                                                handleTogglePin(editingNote);
+                                                                setShowNoteOptionsDropdown(false);
+                                                            }}
+                                                            className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                                                        >
+                                                            <PushPinIcon className="h-4 w-4" />
+                                                            {editingNote.pin_to_sidebar
+                                                                ? t('notes.unpinFromSidebar', 'Unpin from sidebar')
+                                                                : t('notes.pinToSidebar', 'Pin to sidebar')}
+                                                        </button>
+                                                    )}
                                                     {editingNote.uid && (
                                                         <button
                                                             onClick={() => {
@@ -968,26 +1001,16 @@ const Notes: React.FC = () => {
                                     </div>
                                 )}
 
-                                <div className="flex-1 overflow-y-auto px-6 md:px-8">
-                                    <textarea
+                                <div className="flex-1 overflow-y-auto px-6 md:px-8 py-4">
+                                    <MarkdownEditor
                                         value={editingNote.content || ''}
-                                        onChange={(e) =>
-                                            handleNoteChange({
-                                                content: e.target.value,
-                                            })
+                                        onChange={(val) =>
+                                            handleNoteChange({ content: val })
                                         }
                                         onClick={(e) => e.stopPropagation()}
                                         placeholder={t('notes.contentPlaceholder')}
-                                        className="w-full h-full min-h-[300px] bg-transparent text-gray-900 dark:text-gray-100 border-none focus:outline-none focus:ring-0 resize-none py-4"
-                                        style={{
-                                            color: editingNoteColor
-                                                ? shouldUseLightText(
-                                                      editingNoteColor
-                                                  )
-                                                    ? '#ffffff'
-                                                    : '#333333'
-                                                : undefined,
-                                        }}
+                                        noteColor={editingNoteColor}
+                                        minHeight="300px"
                                     />
                                 </div>
                             </div>
@@ -1249,10 +1272,19 @@ const Notes: React.FC = () => {
                                                         className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
                                                     >
                                                         <PencilIcon className="h-4 w-4" />
-                                                        {t(
-                                                            'notes.edit',
-                                                            'Edit'
-                                                        )}
+                                                        {t('notes.edit', 'Edit')}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => {
+                                                            handleTogglePin(previewNote);
+                                                            setShowNoteOptionsDropdown(false);
+                                                        }}
+                                                        className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                                                    >
+                                                        <PushPinIcon className="h-4 w-4" />
+                                                        {previewNote.pin_to_sidebar
+                                                            ? t('notes.unpinFromSidebar', 'Unpin from sidebar')
+                                                            : t('notes.pinToSidebar', 'Pin to sidebar')}
                                                     </button>
                                                     <button
                                                         onClick={() => {

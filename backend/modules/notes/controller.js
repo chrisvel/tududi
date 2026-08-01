@@ -84,8 +84,15 @@ const notesController = {
         try {
             const userId = requireUserId(req);
             const { uid } = req.params;
-            const { title, content, project_uid, project_id, tags, color } =
-                req.body;
+            const {
+                title,
+                content,
+                project_uid,
+                project_id,
+                tags,
+                color,
+                pin_to_sidebar,
+            } = req.body;
 
             const note = await notesService.update(userId, uid, {
                 title,
@@ -94,6 +101,7 @@ const notesController = {
                 project_id,
                 tags,
                 color,
+                pin_to_sidebar,
             });
 
             res.json(note);
@@ -111,6 +119,21 @@ const notesController = {
             const { uid } = req.params;
             const result = await notesService.delete(uid);
             res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    /**
+     * GET /api/note/:uid/backlinks
+     * Get all notes that link to this note via [[title]].
+     */
+    async backlinks(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const uid = extractUidFromSlug(req.params.uid);
+            const links = await notesService.getBacklinks(userId, uid);
+            res.json(links);
         } catch (error) {
             next(error);
         }

@@ -32,6 +32,8 @@ import {
     TaskDueDateCard,
     TaskDeferUntilCard,
     TaskAttachmentsCard,
+    TaskAssignedToCard,
+    TaskGoalCard,
 } from './TaskDetails/';
 import TaskAIInsights, { TaskAIInsightsHandle } from '../AI/TaskAIInsights';
 import {
@@ -48,6 +50,7 @@ const TaskDetails: React.FC = () => {
     const isNewTask = location.state?.isNew === true;
     const isNewTaskRef = useRef(isNewTask);
     const taskModifiedRef = useRef(false);
+    const hasFetchedRef = useRef<string | null>(null);
     const { showSuccessToast, showErrorToast } = useToast();
 
     // Clear navigation state so refresh/back doesn't re-trigger edit mode
@@ -77,6 +80,7 @@ const TaskDetails: React.FC = () => {
     const tagsStore = useStore((state: any) => state.tagsStore);
     const tasksStore = useStore((state: any) => state.tasksStore);
     const areasStore = useStore((state: any) => state.areasStore);
+    const goalsStore = useStore((state: any) => state.goalsStore);
     const task = useStore((state: any) =>
         state.tasksStore.tasks.find((t: Task) => t.uid === uid)
     );
@@ -93,7 +97,7 @@ const TaskDetails: React.FC = () => {
     const [loadingIterations, setLoadingIterations] = useState(false);
     const [parentTask, setParentTask] = useState<Task | null>(null);
     const [loadingParent, setLoadingParent] = useState(false);
-    const [pendingSubtasks, setPendingSubtasks] = useState<Task[]>([]);
+    const [ancestorChain, setAncestorChain] = useState<Array<{ uid: string; name: string }>>([]);
     const [actionsMenuOpen, setActionsMenuOpen] = useState(false);
     const actionsMenuRef = useRef<HTMLDivElement>(null);
     const aiAssistantEnabled = useStore(
@@ -196,10 +200,16 @@ const TaskDetails: React.FC = () => {
     }, [tagsStore]);
 
     useEffect(() => {
-        if (!areasStore.isLoading && areasStore.areas.length === 0) {
+        if (!areasStore.hasLoaded && !areasStore.isLoading) {
             areasStore.loadAreas();
         }
     }, [areasStore]);
+
+    useEffect(() => {
+        if (!goalsStore.hasLoaded && !goalsStore.isLoading) {
+            goalsStore.loadGoals();
+        }
+    }, [goalsStore]);
 
     const handleStartRecurrenceEdit = () => {
         setRecurrenceForm({
@@ -506,22 +516,39 @@ const TaskDetails: React.FC = () => {
                 return;
             }
 
-            if (!task) {
-                try {
-                    setLoading(true);
-                    const fetchedTask = await fetchTaskByUid(uid);
+            if (hasFetchedRef.current === uid) {
+                return;
+            }
+
+            hasFetchedRef.current = uid;
+
+            const alreadyInStore = tasksStore.tasks.some(
+                (t: Task) => t.uid === uid
+            );
+
+            try {
+                if (!alreadyInStore) setLoading(true);
+                const fetchedTask = await fetchTaskByUid(uid);
+                const existingIndex = tasksStore.tasks.findIndex(
+                    (t: Task) => t.uid === uid
+                );
+                if (existingIndex >= 0) {
+                    const updatedTasks = [...tasksStore.tasks];
+                    updatedTasks[existingIndex] = fetchedTask;
+                    tasksStore.setTasks(updatedTasks);
+                } else {
                     tasksStore.setTasks([...tasksStore.tasks, fetchedTask]);
-                } catch (fetchError) {
-                    setError('Task not found');
-                    console.error('Error fetching task:', fetchError);
-                } finally {
-                    setLoading(false);
                 }
+            } catch (fetchError) {
+                if (!alreadyInStore) setError('Task not found');
+                console.error('Error fetching task:', fetchError);
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchTaskData();
-    }, [uid, task, tasksStore]);
+    }, [uid, tasksStore]);
 
     useEffect(() => {
         const loadAttachmentCount = async () => {
@@ -545,7 +572,7 @@ const TaskDetails: React.FC = () => {
 
     useEffect(() => {
         const loadSubtasks = async () => {
-            if (activePill !== 'subtasks' || !task?.uid) {
+            if (!task?.uid) {
                 return;
             }
 
@@ -581,11 +608,8 @@ const TaskDetails: React.FC = () => {
         };
 
         loadSubtasks();
-    }, [activePill, task?.uid, task?.subtasks, hasLoadedSubtasks, tasksStore]);
+    }, [task?.uid, task?.subtasks, hasLoadedSubtasks, tasksStore]);
 
-    useEffect(() => {
-        setPendingSubtasks(subtasks);
-    }, [subtasks]);
 
     useEffect(() => {
         const loadNextIterations = async () => {
@@ -663,6 +687,87 @@ const TaskDetails: React.FC = () => {
         loadParentTask();
     }, [task?.recurring_parent_uid]);
 
+    useEffect(() => {
+        if (!task?.parent_task?.uid) {
+            setAncestorChain([]);
+            return;
+        }
+
+        let cancelled = false;
+
+        const buildAncestorChain = async () => {
+            const chain: Array<{ uid: string; name: string }> = [
+                { uid: task.parent_task!.uid, name: task.parent_task!.name },
+            ];
+
+            let currentUid = task.parent_task!.uid;
+            for (let i = 0; i < 5; i++) {
+                try {
+                    const fetched = await fetchTaskByUid(currentUid);
+                    if (!fetched.parent_task?.uid) break;
+                    chain.unshift({ uid: fetched.parent_task.uid, name: fetched.parent_task.name });
+                    currentUid = fetched.parent_task.uid;
+                } catch {
+                    break;
+                }
+            }
+
+            if (!cancelled) setAncestorChain(chain);
+        };
+
+        buildAncestorChain();
+        return () => { cancelled = true; };
+    }, [task?.parent_task?.uid]);
+
+    const handleSubtaskUpdate = async (updatedSubtask: Task) => {
+        const taskIndex = tasksStore.tasks.findIndex((t: Task) => t.uid === uid);
+        if (taskIndex >= 0) {
+            const storeTask = tasksStore.tasks[taskIndex];
+            const updatedSubtasks = (storeTask.subtasks || []).map((s: Task) =>
+                s.id === updatedSubtask.id ? updatedSubtask : s
+            );
+            const updatedTasks = [...tasksStore.tasks];
+            updatedTasks[taskIndex] = { ...storeTask, subtasks: updatedSubtasks };
+            tasksStore.setTasks(updatedTasks);
+        }
+    };
+
+    const handleSubtaskDelete = async (taskUid: string) => {
+        try {
+            await deleteTask(taskUid);
+            const taskIndex = tasksStore.tasks.findIndex((t: Task) => t.uid === uid);
+            if (taskIndex >= 0) {
+                const storeTask = tasksStore.tasks[taskIndex];
+                const updatedSubtasks = (storeTask.subtasks || []).filter(
+                    (s: Task) => s.uid !== taskUid
+                );
+                const updatedTasks = [...tasksStore.tasks];
+                updatedTasks[taskIndex] = { ...storeTask, subtasks: updatedSubtasks };
+                tasksStore.setTasks(updatedTasks);
+                lastKnownSubtaskCount.current = updatedSubtasks.length;
+            }
+            showSuccessToast(t('task.deleteSuccess', 'Task deleted successfully'));
+        } catch (error) {
+            console.error('Error deleting subtask:', error);
+            showErrorToast(t('task.deleteError', 'Failed to delete task'));
+        }
+    };
+
+    const handleQuickAddSubtask = (name: string) => {
+        if (!task?.id) return;
+        const newSubtask = {
+            name,
+            status: 'not_started',
+            priority: 'low',
+            today: false,
+            parent_task_id: task.id,
+            _isNew: true,
+            isNew: true,
+            completed_at: null,
+        } as unknown as Task;
+        handleSaveSubtasks([...subtasks, newSubtask]);
+    };
+
     const handleSaveSubtasks = async (subtasksToSave: Task[]) => {
         if (!task?.uid) {
             return;
@@ -708,7 +813,6 @@ const TaskDetails: React.FC = () => {
             showErrorToast(
                 t('task.subtasksUpdateError', 'Failed to update subtasks')
             );
-            setPendingSubtasks([...subtasks]);
         }
     };
 
@@ -1104,6 +1208,55 @@ const TaskDetails: React.FC = () => {
         }
     };
 
+    const handleGoalSelection = async (goal: any) => {
+        if (!task?.uid) return;
+        try {
+            taskModifiedRef.current = true;
+            await updateTask(task.uid, { goal_id: goal.id });
+            if (uid) {
+                const updatedTask = await fetchTaskByUid(uid);
+                tasksStore.updateTaskInStore(updatedTask);
+            }
+            showSuccessToast(t('task.goalUpdated', 'Goal updated'));
+            setTimelineRefreshKey((prev) => prev + 1);
+        } catch (error) {
+            console.error('Error updating goal:', error);
+            showErrorToast(t('task.goalUpdateError', 'Failed to update goal'));
+        }
+    };
+
+    const handleClearGoal = async () => {
+        if (!task?.uid) return;
+        try {
+            taskModifiedRef.current = true;
+            await updateTask(task.uid, { goal_id: null });
+            if (uid) {
+                const updatedTask = await fetchTaskByUid(uid);
+                tasksStore.updateTaskInStore(updatedTask);
+            }
+            showSuccessToast(t('task.goalCleared', 'Goal cleared'));
+            setTimelineRefreshKey((prev) => prev + 1);
+        } catch (error) {
+            console.error('Error clearing goal:', error);
+            showErrorToast(t('task.goalClearError', 'Failed to clear goal'));
+        }
+    };
+
+    const handleAssignPerson = async (personUid: string | null) => {
+        if (!task?.uid) return;
+        try {
+            taskModifiedRef.current = true;
+            await updateTask(task.uid, { assigned_to: personUid });
+            if (uid) {
+                const updatedTask = await fetchTaskByUid(uid);
+                tasksStore.updateTaskInStore(updatedTask);
+            }
+        } catch (error) {
+            console.error('Error assigning person:', error);
+            showErrorToast('Failed to update assignment');
+        }
+    };
+
     const getAreaLink = (area: Area) => {
         if (area.uid) {
             const slug = area.name
@@ -1224,7 +1377,7 @@ const TaskDetails: React.FC = () => {
     }
 
     return (
-        <div className="px-4 lg:px-6 pt-4">
+        <div className="px-2 sm:px-4 lg:px-6 pt-4">
             <div className="w-full">
                 <TaskDetailsHeader
                     task={task}
@@ -1245,9 +1398,10 @@ const TaskDetails: React.FC = () => {
                     onAiInsightsClick={aiAssistantEnabled ? handleAiInsightsClick : undefined}
                     aiInsightsActive={aiInsightsActive}
                     attachmentCount={attachmentCount}
-                    subtasksCount={subtasks.length}
                     autoEditTitle={isNewTask}
+                    ancestorChain={ancestorChain}
                 />
+
 
                 {aiAssistantEnabled && (
                     <div className="mb-4 mt-6">
@@ -1270,6 +1424,27 @@ const TaskDetails: React.FC = () => {
                                     content={task.note || ''}
                                     onUpdate={handleContentUpdate}
                                 />
+                                <TaskSubtasksCard
+                                    subtasks={subtasks}
+                                    projects={projectsStore.projects}
+                                    onSubtaskUpdate={handleSubtaskUpdate}
+                                    onSubtaskDelete={handleSubtaskDelete}
+                                    onQuickAdd={handleQuickAddSubtask}
+                                />
+                                <TaskRecurrenceCard
+                                    task={task}
+                                    parentTask={parentTask}
+                                    loadingParent={loadingParent}
+                                    isEditing={isEditingRecurrence}
+                                    recurrenceForm={recurrenceForm}
+                                    onStartEdit={handleStartRecurrenceEdit}
+                                    onChange={handleRecurrenceChange}
+                                    onSave={handleSaveRecurrence}
+                                    onCancel={handleCancelRecurrenceEdit}
+                                    loadingIterations={loadingIterations}
+                                    nextIterations={nextIterations}
+                                    canEdit={!task.recurring_parent_id}
+                                />
                             </div>
 
                             <div className="space-y-6">
@@ -1290,6 +1465,18 @@ const TaskDetails: React.FC = () => {
                                     onAreaSelect={handleAreaSelection}
                                     onAreaClear={handleClearArea}
                                     getAreaLink={getAreaLink}
+                                />
+
+                                <TaskGoalCard
+                                    task={task}
+                                    goals={goalsStore.goals}
+                                    onGoalSelect={handleGoalSelection}
+                                    onGoalClear={handleClearGoal}
+                                />
+
+                                <TaskAssignedToCard
+                                    task={task}
+                                    onAssign={handleAssignPerson}
                                 />
 
                                 <TaskTagsCard
@@ -1322,36 +1509,6 @@ const TaskDetails: React.FC = () => {
                                     onCancel={handleCancelDeferUntilEdit}
                                 />
                             </div>
-                        </div>
-                    )}
-
-                    {activePill === 'recurrence' && (
-                        <div className="grid grid-cols-1">
-                            <TaskRecurrenceCard
-                                task={task}
-                                parentTask={parentTask}
-                                loadingParent={loadingParent}
-                                isEditing={isEditingRecurrence}
-                                recurrenceForm={recurrenceForm}
-                                onStartEdit={handleStartRecurrenceEdit}
-                                onChange={handleRecurrenceChange}
-                                onSave={handleSaveRecurrence}
-                                onCancel={handleCancelRecurrenceEdit}
-                                loadingIterations={loadingIterations}
-                                nextIterations={nextIterations}
-                                canEdit={!task.recurring_parent_id}
-                            />
-                        </div>
-                    )}
-
-                    {activePill === 'subtasks' && (
-                        <div className="grid grid-cols-1">
-                            <TaskSubtasksCard
-                                task={task}
-                                subtasks={pendingSubtasks}
-                                onSubtasksChange={setPendingSubtasks}
-                                onSave={handleSaveSubtasks}
-                            />
                         </div>
                     )}
 

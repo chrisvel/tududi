@@ -26,7 +26,7 @@ const goalsController = {
         try {
             const userId = requireUserId(req);
             const goal = await goalsService.getByUid(userId, req.params.uid);
-            res.json(goal);
+            res.json({ goal });
         } catch (err) {
             next(err);
         }

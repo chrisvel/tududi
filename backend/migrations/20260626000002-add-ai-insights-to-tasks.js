@@ -1,15 +1,19 @@
 'use strict';
 
+const { safeAddColumns } = require('../utils/migration-utils');
+
 module.exports = {
     async up(queryInterface, Sequelize) {
-        const tableInfo = await queryInterface.describeTable('tasks');
-        if (!tableInfo.ai_insights) {
-            await queryInterface.addColumn('tasks', 'ai_insights', {
-                type: Sequelize.JSON,
-                allowNull: true,
-                defaultValue: null,
-            });
-        }
+        await safeAddColumns(queryInterface, 'tasks', [
+            {
+                name: 'ai_insights',
+                definition: {
+                    type: Sequelize.JSON,
+                    allowNull: true,
+                    defaultValue: null,
+                },
+            },
+        ]);
     },
 
     async down(queryInterface) {

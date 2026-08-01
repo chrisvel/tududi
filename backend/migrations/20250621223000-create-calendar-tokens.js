@@ -1,8 +1,10 @@
 'use strict';
 
+const { safeCreateTable, safeAddIndex } = require('../utils/migration-utils');
+
 module.exports = {
-    up: async (queryInterface, Sequelize) => {
-        await queryInterface.createTable('calendar_tokens', {
+    async up(queryInterface, Sequelize) {
+        await safeCreateTable(queryInterface, 'calendar_tokens', {
             id: {
                 type: Sequelize.INTEGER,
                 primaryKey: true,
@@ -60,19 +62,18 @@ module.exports = {
             },
         });
 
-        await queryInterface.addIndex('calendar_tokens', {
-            fields: ['user_id', 'provider'],
-            unique: true,
-            name: 'calendar_tokens_user_provider_unique',
-        });
-
-        await queryInterface.addIndex('calendar_tokens', {
-            fields: ['user_id'],
+        await safeAddIndex(
+            queryInterface,
+            'calendar_tokens',
+            ['user_id', 'provider'],
+            { unique: true, name: 'calendar_tokens_user_provider_unique' }
+        );
+        await safeAddIndex(queryInterface, 'calendar_tokens', ['user_id'], {
             name: 'calendar_tokens_user_id_index',
         });
     },
 
-    down: async (queryInterface, Sequelize) => {
+    async down(queryInterface) {
         await queryInterface.dropTable('calendar_tokens');
     },
 };

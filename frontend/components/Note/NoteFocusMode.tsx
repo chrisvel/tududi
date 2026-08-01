@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 import MarkdownRenderer from '../Shared/MarkdownRenderer';
+import MarkdownEditor from './MarkdownEditor';
 import { Note } from '../../entities/Note';
 import { ENABLE_NOTE_COLOR } from '../../config/featureFlags';
 
@@ -38,7 +39,6 @@ const NoteFocusMode: React.FC<NoteFocusModeProps> = ({
     onClose,
 }) => {
     const { t } = useTranslation();
-    const textareaRef = useRef<HTMLTextAreaElement>(null);
     const noteColor = ENABLE_NOTE_COLOR ? note.color : undefined;
     const lightText = shouldUseLightText(noteColor);
 
@@ -65,12 +65,6 @@ const NoteFocusMode: React.FC<NoteFocusModeProps> = ({
         document.addEventListener('keydown', handleKeyDown, true);
         return () => document.removeEventListener('keydown', handleKeyDown, true);
     }, [isEditing, onExitEditing, onClose]);
-
-    useEffect(() => {
-        if (isEditing && textareaRef.current) {
-            textareaRef.current.focus();
-        }
-    }, [isEditing]);
 
     const textColor = noteColor
         ? lightText
@@ -152,15 +146,14 @@ const NoteFocusMode: React.FC<NoteFocusModeProps> = ({
                                     paddingRight: 0,
                                 }}
                             />
-                            <textarea
-                                ref={textareaRef}
+                            <MarkdownEditor
                                 value={note.content || ''}
-                                onChange={(e) =>
-                                    onNoteChange({ content: e.target.value })
-                                }
+                                onChange={(val) => onNoteChange({ content: val })}
                                 placeholder={t('notes.contentPlaceholderFocus')}
-                                className="w-full h-full min-h-[60vh] bg-transparent text-gray-900 dark:text-gray-100 border-none focus:outline-none focus:ring-0 resize-none text-lg leading-relaxed"
-                                style={textColor ? { color: textColor } : undefined}
+                                noteColor={noteColor}
+                                autoFocus={isEditing}
+                                minHeight="60vh"
+                                className="text-lg"
                             />
                         </>
                     ) : (

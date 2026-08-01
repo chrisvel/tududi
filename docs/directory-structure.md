@@ -39,7 +39,15 @@
 ├── Source Code
 ├── backend/               # Express backend → See Backend Structure
 ├── frontend/              # React frontend → See Frontend Structure
-├── public/                # Static assets (fonts, locales, images)
+├── public/                # Static assets served by webpack-dev-server / Express
+│   ├── sw.js              # Service worker: offline cache + mutation queue
+│   ├── manifest.json      # Web app manifest (PWA installability)
+│   ├── index.html         # HTML shell template (HtmlWebpackPlugin input)
+│   ├── icon-logo.png      # 512×512 app icon
+│   ├── apple-touch-icon.png # 180×180 iOS home-screen icon
+│   ├── favicon*.{ico,png} # Favicon variants
+│   ├── fonts/             # Self-hosted Lora WOFF2 files
+│   └── locales/           # i18n JSON translation files (27 locales)
 ├── dist/                  # Production build output
 ├── e2e/                   # Playwright E2E tests
 ├── scripts/               # Build and utility scripts
@@ -107,6 +115,11 @@
 │   │       └── validation.js
 │   │
 │   ├── areas/            # Area organization
+│   ├── goals/            # Goals management (standalone goals system)
+│   │   ├── routes.js
+│   │   ├── repository.js
+│   │   ├── service.js
+│   │   └── controller.js
 │   ├── notes/            # Notes management
 │   ├── tags/             # Tag system
 │   ├── users/            # User management
@@ -126,9 +139,10 @@
 │
 ├── models/               # Sequelize model definitions
 │   ├── index.js         # Model initialization & associations
-│   ├── task.js          # Task model (recurrence fields)
-│   ├── project.js       # Project model
+│   ├── task.js          # Task model (recurrence fields, goal_id)
+│   ├── project.js       # Project model (goal_id, is_maintenance)
 │   ├── area.js          # Area model
+│   ├── goal.js          # Goal model (standalone, area optional)
 │   ├── note.js          # Note model
 │   ├── tag.js           # Tag model
 │   ├── user.js          # User model (bcrypt password, settings)
@@ -246,7 +260,9 @@
 │                        # - React root initialization
 │                        # - i18n setup
 │                        # - Dark mode initialization
-│                        # - Service worker cleanup
+│                        # - Service worker registration (production)
+│                        # - SW update lifecycle + SYNC_COMPLETE handler
+│                        # - Dev-mode SW cleanup
 │
 ├── App.tsx              # Root component (13KB)
 │                        # - Route definitions
@@ -264,11 +280,14 @@
 │   ├── Task/           # Task-related components
 │   │   ├── TasksToday.tsx
 │   │   ├── TaskDetails.tsx
-│   │   ├── TaskForm.tsx
 │   │   ├── TaskItem.tsx
 │   │   ├── TaskList.tsx
-│   │   ├── TaskFilters.tsx
-│   │   ├── SubtaskList.tsx
+│   │   ├── TaskDetails/         # Task detail sidebar cards
+│   │   │   ├── TaskProjectCard.tsx
+│   │   │   ├── TaskAreaCard.tsx
+│   │   │   ├── TaskGoalCard.tsx  # Goal picker card in task detail
+│   │   │   ├── TaskTagsCard.tsx
+│   │   │   └── ...
 │   │   └── ...
 │   │
 │   ├── Project/        # Project components
@@ -279,9 +298,15 @@
 │   │   └── ...
 │   │
 │   ├── Area/           # Area components
-│   │   ├── AreaDetails.tsx
-│   │   ├── AreaForm.tsx
+│   │   ├── AreaDetails.tsx  # Area detail + goals spine + project buckets
+│   │   ├── AreaModal.tsx
 │   │   └── ...
+│   │
+│   ├── Goal/           # Goal components (standalone goals system)
+│   │   ├── GoalDetails.tsx  # Goal detail page (projects + tasks)
+│   │   └── GoalModal.tsx    # Create/edit modal
+│   │
+│   ├── Goals.tsx       # Goals list page (grid, mirrors Areas.tsx)
 │   │
 │   ├── Note/           # Note components
 │   │   ├── NoteDetails.tsx
@@ -289,6 +314,13 @@
 │   │   └── ...
 │   │
 │   ├── Tag/            # Tag components
+│   │
+│   ├── Sidebar/        # Sidebar sub-components
+│   │   ├── SidebarAreas.tsx
+│   │   ├── SidebarGoals.tsx   # Goals section (expandable active goals list)
+│   │   ├── SidebarTags.tsx
+│   │   └── ...
+│   │
 │   ├── Habits/         # Recurring tasks UI
 │   ├── Inbox/          # Inbox management
 │   │
@@ -332,11 +364,10 @@
 │       └── Register.tsx
 │
 ├── store/              # Zustand state management
-│   └── useStore.ts    # Global store (28KB)
-│                       # - Task state & cache
-│                       # - Project state & cache
-│                       # - UI state (modals, filters, selections)
-│                       # - Cache management functions
+│   └── useStore.ts    # Global store
+│                       # - notesStore, areasStore, goalsStore
+│                       # - projectsStore, tagsStore, tasksStore
+│                       # - inboxStore, habitsStore, userSettingsStore
 │
 ├── contexts/           # React contexts
 │   ├── ModalContext.tsx          # Modal state management
@@ -356,6 +387,7 @@
 │   │   ├── notesService.ts
 │   │   ├── tagsService.ts
 │   │   ├── areasService.ts
+│   │   ├── goalsService.ts        # Goals API client (fetchGoals, fetchGoalByUid, createGoal, updateGoal, deleteGoal)
 │   │   ├── profileService.ts      # User profile API
 │   │   ├── apiKeysService.ts      # API token management
 │   │   ├── searchService.ts       # Search API client
@@ -378,7 +410,8 @@
 │   │   ├── slugUtils.ts           # URL slug handling
 │   │   ├── userUtils.ts           # User utilities
 │   │   ├── fetcher.ts             # SWR fetcher configuration
-│   │   └── featureFlags.ts        # Feature flag client
+│   │   ├── featureFlags.ts        # Feature flag client
+│   │   └── swUtils.ts             # Service worker messaging (session/cache)
 │   │
 │   └── config/
 │       └── paths.ts               # API and path configuration

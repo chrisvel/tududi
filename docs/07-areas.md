@@ -745,10 +745,12 @@ Clicking an area card navigates to `/area/:uid-slug`, the Area detail page. This
 
 **Left column - Goals spine:**
 - Lists active goals, each with their linked project cards underneath
+- Goal titles are clickable links that navigate to the Goal detail page (`/goal/:uid-slug`)
+- "Add goal" button opens GoalModal (area pre-filled) to create a new goal
+- Deleting a goal opens a ConfirmDialog before proceeding
 - A "Maintenance" bucket for projects flagged as maintenance work
 - An "Unlinked" bucket for projects not yet assigned to a goal
 - A collapsed "Inactive goals" section
-- "Add goal" button to create goals inline
 - Warning banner if there are more than 5 active goals (scarcity nudge)
 
 **Right column - Tasks:**

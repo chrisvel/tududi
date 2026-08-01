@@ -4,6 +4,7 @@ import {
     ArrowDownTrayIcon,
     EyeIcon,
 } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
 import { Attachment } from '../../entities/Attachment';
 import FileIcon from './Icons/FileIcon';
 
@@ -22,6 +23,7 @@ const AttachmentCard: React.FC<AttachmentCardProps> = ({
     onDownload,
     onPreview,
 }) => {
+    const { t } = useTranslation();
     const isImage = attachment.mime_type.startsWith('image/');
     const isPdf = attachment.mime_type === 'application/pdf';
     const canPreview = isImage || isPdf;
@@ -76,7 +78,7 @@ const AttachmentCard: React.FC<AttachmentCardProps> = ({
                                     onPreview(attachment);
                                 }}
                                 className="p-2 bg-white dark:bg-gray-800 rounded-full shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                                title="Preview"
+                                title={t('common.preview')}
                             >
                                 <EyeIcon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
                             </button>
@@ -87,7 +89,7 @@ const AttachmentCard: React.FC<AttachmentCardProps> = ({
                                 onDownload(attachment);
                             }}
                             className="p-2 bg-white dark:bg-gray-800 rounded-full shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                            title="Download"
+                            title={t('common.download')}
                         >
                             <ArrowDownTrayIcon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
                         </button>
@@ -97,7 +99,7 @@ const AttachmentCard: React.FC<AttachmentCardProps> = ({
                                 onDelete(attachment);
                             }}
                             className="p-2 bg-white dark:bg-gray-800 rounded-full shadow-lg hover:bg-red-100 dark:hover:bg-red-900 transition-colors"
-                            title="Delete"
+                            title={t('common.delete')}
                         >
                             <TrashIcon className="h-5 w-5 text-red-600 dark:text-red-400" />
                         </button>

@@ -35,6 +35,7 @@ async function handlePropfind(req, res) {
 
         const isTaskRequest = req.params.uid;
         const responses = [];
+        const userTimezone = req.currentUser.timezone || 'UTC';
 
         if (isTaskRequest) {
             const taskUid = req.params.uid.replace('.ics', '');
@@ -47,7 +48,8 @@ async function handlePropfind(req, res) {
             const response = await buildTaskResponse(
                 task,
                 username,
-                propfindRequest
+                propfindRequest,
+                userTimezone
             );
             responses.push(response);
         } else {
@@ -64,7 +66,8 @@ async function handlePropfind(req, res) {
                     const taskResponse = await buildTaskResponse(
                         task,
                         username,
-                        propfindRequest
+                        propfindRequest,
+                        userTimezone
                     );
                     responses.push(taskResponse);
                 }
@@ -122,12 +125,19 @@ async function buildCalendarResponse(username, userId, propfindRequest) {
     return buildResponse(href, propstat);
 }
 
-async function buildTaskResponse(task, username, propfindRequest) {
+async function buildTaskResponse(
+    task,
+    username,
+    propfindRequest,
+    userTimezone
+) {
     const href = buildHref(username, task.uid);
     const etag = generateETag(task);
 
     try {
-        const vtodo = await vtodoSerializer.serializeTaskToVTODO(task);
+        const vtodo = await vtodoSerializer.serializeTaskToVTODO(task, {
+            userTimezone,
+        });
 
         const props = {
             'D:resourcetype': '',

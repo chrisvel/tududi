@@ -120,10 +120,12 @@ const config = {
             return false;
         }
         if (val === 'true') {
-            console.log(
-                '[Config] TUDUDI_TRUST_PROXY=true parsed as boolean true'
+            console.warn(
+                '[Config] TUDUDI_TRUST_PROXY=true is permissive — converting to 1 (single hop). ' +
+                    'Set TUDUDI_TRUST_PROXY=1 explicitly to silence this warning, ' +
+                    'or use a higher number if you have multiple proxy hops.'
             );
-            return true;
+            return 1;
         }
         if (val === 'false') {
             console.log(
@@ -141,6 +143,14 @@ const config = {
         console.log(`[Config] TUDUDI_TRUST_PROXY=${val} parsed as string`);
         return val;
     })(),
+
+    // Project templates marketplace
+    marketplaceUrl: process.env.MARKETPLACE_URL || '',
+    marketplaceApiKey: process.env.MARKETPLACE_API_KEY || '',
+    templatesEnabled: process.env.PROJECT_TEMPLATES_ENABLED !== 'false',
+    maxTemplatesPerUser: process.env.MAX_TEMPLATES_PER_USER
+        ? parseInt(process.env.MAX_TEMPLATES_PER_USER, 10)
+        : 50,
 
     // Encryption key for CalDAV credentials (falls back to SECRET_KEY or session secret)
     encryptionKey: process.env.ENCRYPTION_KEY,

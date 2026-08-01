@@ -2,7 +2,7 @@
 
 const SYSTEM_TAGS = ['someday', 'today'];
 
-async function seedSystemTagsForUser(userId) {
+async function seedSystemTagsForUser(userId, transaction) {
     const { Tag } = require('../../models');
 
     for (const name of SYSTEM_TAGS) {
@@ -14,6 +14,7 @@ async function seedSystemTagsForUser(userId) {
                 tag_type: 'system',
                 pinned: true,
             },
+            transaction,
         });
     }
 }

@@ -397,7 +397,7 @@ const Tags: React.FC = () => {
                 {/* ConfirmDialog */}
                 {isConfirmDialogOpen && tagToDelete && (
                     <ConfirmDialog
-                        title="Delete Tag"
+                        title={t('modals.deleteTag.title')}
                         message={`Are you sure you want to delete the tag "${tagToDelete.name}"?`}
                         onConfirm={handleDeleteTag}
                         onCancel={closeConfirmDialog}

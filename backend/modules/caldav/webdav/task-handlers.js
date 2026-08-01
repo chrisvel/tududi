@@ -4,6 +4,7 @@ const taskRepository = require('../../tasks/repository');
 const vtodoSerializer = require('../icalendar/vtodo-serializer');
 const vtodoParser = require('../icalendar/vtodo-parser');
 const syncStateRepository = require('../repositories/sync-state-repository');
+const { resolveProjectIdForPut } = require('./projects');
 const { nanoid } = require('nanoid');
 
 async function handleGetTask(req, res) {
@@ -25,10 +26,15 @@ async function handleGetTask(req, res) {
         const ifNoneMatch = req.headers['if-none-match'];
 
         if (ifNoneMatch && matchesETag(ifNoneMatch, etag)) {
-            return res.status(304).end();
+            // RFC 7232 §4.1: a 304 SHOULD echo the ETag so the client can
+            // confirm which version it already has cached.
+            return res.status(304).set('ETag', etag).end();
         }
 
-        const vtodo = await vtodoSerializer.serializeTaskToVTODO(task);
+        const userTimezone = req.currentUser.timezone || 'UTC';
+        const vtodo = await vtodoSerializer.serializeTaskToVTODO(task, {
+            userTimezone,
+        });
 
         res.status(200)
             .set({
@@ -80,7 +86,11 @@ async function handlePutTask(req, res) {
 
         let taskData;
         try {
-            taskData = await vtodoParser.parseVTODOToTask(vtodoData);
+            const userTimezone = req.currentUser.timezone || 'UTC';
+            taskData = await vtodoParser.parseVTODOToTask(
+                vtodoData,
+                userTimezone
+            );
         } catch (error) {
             console.error('VTODO parse error:', error);
             return res.status(400).send('Bad Request: Invalid VTODO data');
@@ -88,6 +98,18 @@ async function handlePutTask(req, res) {
 
         taskData.uid = taskUid;
         taskData.user_id = userId;
+
+        // Per-project route: file the task into the URL's project (or null for
+        // the "(No Project)" calendar). This also fixes the case where the
+        // VTODO's x-tududi-project-uid is parsed into taskData.project_uid but
+        // never mapped to project_id (Sequelize silently drops the unknown key).
+        if (req.params.projectUid !== undefined) {
+            taskData.project_id = await resolveProjectIdForPut(
+                req.params.projectUid,
+                userId
+            );
+        }
+        delete taskData.project_uid;
 
         let task;
         if (existingTask) {

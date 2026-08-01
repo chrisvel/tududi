@@ -25,7 +25,12 @@
     "yesDiscard": "Da, renunță",
     "uploading": "Se încarcă...",
     "refresh": "Reîmprospătare",
-    "unlinking": "Dezlegare..."
+    "unlinking": "Dezlegare...",
+    "preview": "Previzualizare",
+    "download": "Descarcă",
+    "exitFocusMode": "Ieși din modul de concentrare",
+    "searchTimezones": "Caută fusuri orare...",
+    "dismiss": "Respinge"
   },
   "sidebar": {
     "dashboard": "Tabloul de bord",
@@ -58,7 +63,15 @@
     "unpinView": "Deblochează vizualizarea",
     "pinView": "Fixează vizualizarea",
     "eisenhower": "Matricea Eisenhower",
-    "kanban": "Tabloul Kanban"
+    "kanban": "Tabloul Kanban",
+    "addHabitAriaLabel": "Adaugă obicei",
+    "addHabitTitle": "Adaugă obicei",
+    "toggleDarkMode": "Comută modul întunecat",
+    "insights": "Perspectivă",
+    "boards": "Tablouri",
+    "bookmarks": "Marcaje",
+    "reports": "Rapoarte",
+    "productivityAssistant": "Asistent de Productivitate"
   },
   "navigation": {
     "home": "Acasă",
@@ -68,7 +81,11 @@
     "settings": "Setări",
     "about": "Despre",
     "logout": "Deconectare",
-    "backupRestore": "Backup și Restaurare"
+    "backupRestore": "Backup și Restaurare",
+    "toggleSearch": "Comută căutarea",
+    "quickInboxCapture": "Captură rapidă din inbox",
+    "userMenu": "Meniu utilizator",
+    "search": "Caută"
   },
   "settings": {
     "todayPageSettings": "Setări Pagina de Azi",
@@ -181,7 +198,9 @@
       "waiting": "Așteptare",
       "done": "Finalizat",
       "dropHere": "Aruncă aici"
-    }
+    },
+    "chaseUp": "Urmărește",
+    "habit": "Obicei"
   },
   "timeline": {
     "activityTimeline": "Cronologia activităților",
@@ -503,7 +522,9 @@
       "serverSettings": "Setări Server",
       "syncSettings": "Setări Sincronizare",
       "setupSuccess": "Calendar configurat cu succes!",
-      "setupFailed": "Crearea calendarului a eșuat"
+      "setupFailed": "Crearea calendarului a eșuat",
+      "serverUrlPlaceholder": "https://caldav.example.com",
+      "calendarPathPlaceholder": "/calendars/user/tasks"
     },
     "conflictResolver": {
       "title": "Rezolvă Conflictele de Sincronizare",
@@ -538,7 +559,9 @@
       "intervalError": "Intervalul de sincronizare trebuie să fie între 1 și 1440 de minute",
       "updateSuccess": "Calendar actualizat cu succes",
       "updateError": "Actualizarea calendarului a eșuat"
-    }
+    },
+    "telegramTokenPlaceholder": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+    "telegramAllowedUsersPlaceholder": "@username1, 123456789, @username2"
   },
   "productivity": {
     "stalledProjects": "Proiecte Blocate",
@@ -777,7 +800,11 @@
     "projectSaveFailed": "Nu s-a putut salva proiectul.",
     "projectImageTooLarge": "Imaginea este prea mare. Te rugăm să alegi un fișier de sub 10MB.",
     "projectImageUpload": "Încărcarea imaginii a eșuat. Te rugăm să încerci un fișier mai mic sau un format diferit.",
-    "bannerSaveFailed": "Salvarea bannerului a eșuat"
+    "bannerSaveFailed": "Salvarea bannerului a eșuat",
+    "loginFailed": "Autentificarea a eșuat. Te rugăm să încerci din nou.",
+    "generalError": "A apărut o eroare. Te rugăm să încerci din nou.",
+    "viewNameRequired": "Numele vizualizării este necesar",
+    "viewSaveFailed": "Salvarea vizualizării a eșuat. Te rugăm să încerci din nou."
   },
   "inbox": {
     "title": "Căsuța de primire",
@@ -810,7 +837,9 @@
     "loadMoreError": "Eșec la încărcarea mai multor elemente",
     "loading": "Se încarcă...",
     "loadMore": "Încărcați mai multe elemente din inbox",
-    "showingItems": "Afișare {{current}} din {{total}} elemente"
+    "showingItems": "Afișare {{current}} din {{total}} elemente",
+    "removeTag": "Șterge eticheta",
+    "removeProject": "Șterge proiectul"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1056,7 +1085,9 @@
     "nextUp": "Următoarea cea mai bună acțiune",
     "focusTask": "Sarcina cu cel mai mare impact",
     "focusHint": "Mută această sarcină la în progres și astăzi",
-    "noNextAction": "Totul în regulă - nicio sarcină în așteptare."
+    "noNextAction": "Totul în regulă - nicio sarcină în așteptare.",
+    "selectDueDatePlaceholder": "Selectează data limită",
+    "goalTitle": "Obiectiv"
   },
   "projectItem": {
     "edit": "Editează",
@@ -1074,7 +1105,10 @@
     "day": "zi",
     "days": "zile",
     "sharedUser": "Utilizator partajat",
-    "moreSharedUsers": "+{{count}} utilizatori în plus"
+    "moreSharedUsers": "+{{count}} utilizatori în plus",
+    "saveAsTemplate": "Salvează ca Șablon",
+    "pinToSidebar": "Fixează în bara laterală",
+    "unpinFromSidebar": "Dezfixează din bara laterală"
   },
   "areas": {
     "title": "Arii",
@@ -1088,7 +1122,14 @@
     "error": "Eroare la încărcarea detaliilor ariei.",
     "notFound": "Aria nu a fost găsită.",
     "details": "Detalii Arie",
-    "viewProjects": "Vezi Proiecte în {{name}}"
+    "viewProjects": "Vezi Proiecte în {{name}}",
+    "goalTitlePlaceholder": "Titlul obiectivului",
+    "goalWhyPlaceholder": "De ce este important (opțional)",
+    "editGoal": "Editează obiectivul",
+    "deleteGoal": "Șterge obiectivul",
+    "moveBackToUnlinked": "Mută înapoi la neconectat",
+    "horizonSeason": "Sezon",
+    "horizonYear": "An"
   },
   "notes": {
     "loading": "Se încarcă notițele...",
@@ -1099,7 +1140,17 @@
     "deleteNoteAriaLabel": "Șterge nota {{noteTitle}}",
     "deleteNoteTitle": "Șterge nota {{noteTitle}}",
     "editNoteAriaLabel": "Editează nota {{noteTitle}}",
-    "editNoteTitle": "Editează nota {{noteTitle}}"
+    "editNoteTitle": "Editează nota {{noteTitle}}",
+    "titlePlaceholder": "Titlul notei...",
+    "contentPlaceholder": "Scrie conținutul notei aici... (Markdown acceptat)",
+    "focusMode": "Mod de concentrare",
+    "noteOptions": "Opțiuni notă",
+    "clickToEdit": "Click pentru a edita",
+    "contentPlaceholderFocus": "Scrie nota ta... (Markdown acceptat)",
+    "contentPlaceholderMarkdown": "Scrie conținutul tău folosind formatarea Markdown...\n\nExemple:\n# Titlu\n**Text îngroșat**\n*Text italic*\n- Element de listă\n```cod```",
+    "pinToSidebar": "Fixează în bara laterală",
+    "unpinFromSidebar": "Dezfixează din bara laterală",
+    "save": "Salvează"
   },
   "tags": {
     "loading": "Se încarcă etichetele...",
@@ -1123,7 +1174,11 @@
     "systemTag": "Etichete de sistem",
     "systemTagDescription": "Create automat de aplicație. Acestea activează funcții încorporate și nu pot fi redenumite sau șterse.",
     "userTag": "Etichete de utilizator",
-    "userTagDescription": "Etichetele tale pentru organizarea sarcinilor, notelor și proiectelor."
+    "userTagDescription": "Etichetele tale pentru organizarea sarcinilor, notelor și proiectelor.",
+    "systemTags": "Etichete de sistem",
+    "systemTagsDescription": "Gestionate automat · Nu pot fi șterse sau redenumite",
+    "system": "Sistem",
+    "customize": "Personalizează"
   },
   "recurrence": {
     "none": "Niciuna",
@@ -1399,7 +1454,14 @@
     "priorityLabel": "Prioritate:",
     "dueLabel": "Termen:",
     "tags": "Etichete",
-    "recurring": "Recurent"
+    "recurring": "Recurent",
+    "saveAsSmartView": "Salvează ca Vedere Inteligentă",
+    "viewNamePlaceholder": "Introdu numele vederii",
+    "viewNameLabel": "Numele Vederii",
+    "viewWillSave": "Această vedere va salva:",
+    "saveView": "Salvează Vederea",
+    "filtersLabel": "Filtre:",
+    "searchLabel": "Caută:"
   },
   "search": {
     "placeholder": "Caută sarcini, proiecte, note...",
@@ -1556,5 +1618,55 @@
     "done_desc": "Terminată și finalizată",
     "cancelled": "Anulat",
     "cancelled_desc": "Nu va fi finalizat"
+  },
+  "habits": {
+    "completeHabit": "Finalizare obicei"
+  },
+  "aiAssistant": {
+    "title": "Asistent AI",
+    "generatedAt": "Generat la {{time}}",
+    "emptyState": "Click pe 'Generează Rezumat' pentru a obține rezumatul zilnic alimentat de AI.",
+    "focusForToday": "Concentrează-te pe astăzi",
+    "priorityActions": "Acțiuni prioritare",
+    "taskInsightsTitle": "Informații AI",
+    "projectInsightsTitle": "Informații AI",
+    "taskInsight": "Despre această sarcină",
+    "taskNextStep": "Pasul următor",
+    "taskBreakdown": "Cum să abordăm",
+    "projectInsight": "Despre acest proiect",
+    "projectNextAction": "Următoarea acțiune",
+    "projectHealth": "Starea proiectului",
+    "watchOut": "Fii atent",
+    "suggestedLinks": "Linkuri sugerate",
+    "generate": "Generare Breif",
+    "regenerate": "Regenerare",
+    "generating": "Generare...",
+    "errorDefault": "Generarea de informații a eșuat. Te rugăm să încerci din nou.",
+    "lowContextTitle": "Nu este suficient context pentru o sugestie bună",
+    "lowContextHint": "Adaugă o descriere, note, etichete sau atribuie un proiect pentru a obține informații mai bune. Poți genera în continuare mai jos.",
+    "generateAnyway": "Generare oricum",
+    "statTotal": "Total",
+    "statDone": "Finalizat",
+    "statActive": "Activ",
+    "statOverdue": "Întârziat",
+    "pastBriefWarning": "Această sinteză este din {{date}} și s-ar putea să nu mai reflecte sarcinile de astăzi. Fă clic pe Regenerare pentru o sinteză nouă."
+  },
+  "reports": {
+    "weeklyReview": "Revizuirea Săptămânală",
+    "inboxItems": "Elemente din Inbox",
+    "stalledProjects": "Proiecte Încetinite",
+    "waitingFor": "Așteptând",
+    "allClear": "Totul este clar — nu sunt proiecte încetinite sau elemente în așteptare.",
+    "projectHealth": "Starea Proiectului",
+    "allProjectsHaveActions": "Toate proiectele active au cel puțin o acțiune următoare.",
+    "projectsWithNoNextAction": "proiect(e) nu au acțiune următoare",
+    "completionTrends": "Tendințe de finalizare",
+    "noCompletions": "Nu există sarcini finalizate în ultimele 8 săptămâni.",
+    "areaBalance": "Soldul zonei",
+    "noAreaData": "Nu sunt disponibile date pentru zonă. Atribuiți sarcini zonelor pentru a vedea soldul.",
+    "completed": "Finalizate (30z)",
+    "open": "Deschis",
+    "streaks": "Serii",
+    "areaBreakdown": "Detalierea zonei"
   }
 }

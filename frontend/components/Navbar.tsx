@@ -6,7 +6,14 @@ import {
     BoltIcon,
     InboxIcon,
 } from '@heroicons/react/24/solid';
-import { EnvelopeIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import {
+    EnvelopeIcon,
+    MagnifyingGlassIcon,
+    Cog6ToothIcon,
+    CircleStackIcon,
+    InformationCircleIcon,
+    ArrowRightStartOnRectangleIcon,
+} from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 import PomodoroTimer from './Shared/PomodoroTimer';
 import UniversalSearch from './UniversalSearch/UniversalSearch';
@@ -14,6 +21,8 @@ import NotificationsDropdown from './Notifications/NotificationsDropdown';
 import { getApiPath, getAssetPath } from '../config/paths';
 import { getFeatureFlags, FeatureFlags } from '../utils/featureFlags';
 import { setUserTimezone } from '../utils/dateUtils';
+import { fetchProfile as fetchProfileFromService, invalidateProfileCache } from '../utils/profileService';
+import { notifySwClearCache } from '../utils/swUtils';
 
 interface NavbarProps {
     isDarkMode: boolean;
@@ -46,7 +55,6 @@ const Navbar: React.FC<NavbarProps> = ({
     });
     const dropdownRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
-
     // Dispatch event when mobile search state changes
     useEffect(() => {
         window.dispatchEvent(
@@ -89,26 +97,19 @@ const Navbar: React.FC<NavbarProps> = ({
 
     // Fetch user's pomodoro setting and feature flags
     useEffect(() => {
-        const fetchProfile = async () => {
+        const loadProfile = async () => {
             try {
-                const response = await fetch(getApiPath('profile'), {
-                    credentials: 'include',
-                });
-                if (response.ok) {
-                    const profile = await response.json();
-                    setPomodoroEnabled(
-                        profile.features?.pomodoro_enabled !== undefined
-                            ? profile.features.pomodoro_enabled
-                            : true
-                    );
-                    // Set user timezone for date formatting
-                    if (profile.timezone) {
-                        setUserTimezone(profile.timezone);
-                    }
+                const profile = await fetchProfileFromService();
+                setPomodoroEnabled(
+                    profile.features?.pomodoro_enabled !== undefined
+                        ? profile.features.pomodoro_enabled
+                        : true
+                );
+                if (profile.timezone) {
+                    setUserTimezone(profile.timezone);
                 }
             } catch (error) {
                 console.error('Error fetching profile:', error);
-                // Keep default value (true) if fetch fails
             }
         };
 
@@ -117,7 +118,7 @@ const Navbar: React.FC<NavbarProps> = ({
             setFeatureFlags(flags);
         };
 
-        fetchProfile();
+        loadProfile();
         fetchFlags();
 
         // Listen for Pomodoro setting changes from ProfileSettings
@@ -143,6 +144,7 @@ const Navbar: React.FC<NavbarProps> = ({
     };
 
     const handleLogout = async () => {
+        invalidateProfileCache();
         try {
             const response = await fetch(getApiPath('logout'), {
                 method: 'GET',
@@ -150,6 +152,7 @@ const Navbar: React.FC<NavbarProps> = ({
             });
 
             if (response.ok) {
+                notifySwClearCache();
                 setCurrentUser(null);
                 navigate('/login');
             } else {
@@ -182,7 +185,7 @@ const Navbar: React.FC<NavbarProps> = ({
 
                     <Link
                         to="/"
-                        className={`flex items-center no-underline ml-2 ${isSidebarOpen ? 'sm:ml-0' : 'sm:ml-2'}`}
+                        className={`flex items-center no-underline ml-2 ${isSidebarOpen ? 'sm:ml-0' : 'sm:hidden'}`}
                     >
                         <img
                             src={getAssetPath(
@@ -259,9 +262,10 @@ const Navbar: React.FC<NavbarProps> = ({
                                 )}
                                 <Link
                                     to="/profile"
-                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                                     onClick={() => setIsDropdownOpen(false)}
                                 >
+                                    <Cog6ToothIcon className="h-4 w-4 mr-2 shrink-0" />
                                     {t(
                                         'navigation.profileSettings',
                                         'Profile Settings'
@@ -270,29 +274,22 @@ const Navbar: React.FC<NavbarProps> = ({
                                 {featureFlags.backups && (
                                     <Link
                                         to="/backup"
-                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                        className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                                         onClick={() => setIsDropdownOpen(false)}
                                     >
+                                        <CircleStackIcon className="h-4 w-4 mr-2 shrink-0" />
                                         {t(
                                             'navigation.backupRestore',
                                             'Backup & Restore'
                                         )}
                                     </Link>
                                 )}
-                                {currentUser?.is_admin === true && (
-                                    <Link
-                                        to="/admin/users"
-                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                        onClick={() => setIsDropdownOpen(false)}
-                                    >
-                                        {t('admin.manageUsers', 'Manage users')}
-                                    </Link>
-                                )}
                                 <Link
                                     to="/about"
-                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                                     onClick={() => setIsDropdownOpen(false)}
                                 >
+                                    <InformationCircleIcon className="h-4 w-4 mr-2 shrink-0" />
                                     {t('navigation.about', 'About')}
                                 </Link>
                                 <hr className="my-1 border-gray-200 dark:border-gray-600" />
@@ -301,8 +298,9 @@ const Navbar: React.FC<NavbarProps> = ({
                                         setIsDropdownOpen(false);
                                         handleLogout();
                                     }}
-                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    className="w-full flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                                 >
+                                    <ArrowRightStartOnRectangleIcon className="h-4 w-4 mr-2 shrink-0" />
                                     {t('navigation.logout', 'Logout')}
                                 </button>
                             </div>

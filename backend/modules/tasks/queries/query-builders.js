@@ -1,4 +1,11 @@
-const { Task, Tag, Project, Area, sequelize } = require('../../../models');
+const {
+    Task,
+    Tag,
+    Project,
+    Area,
+    Person,
+    sequelize,
+} = require('../../../models');
 const { Op, QueryTypes } = require('sequelize');
 const permissionsService = require('../../../services/permissionsService');
 const {
@@ -22,8 +29,10 @@ async function filterTasksByParams(
         params = { ...params };
         delete params.search;
     }
+    const includeSubtasks =
+        params.include_subtasks === true || params.include_subtasks === 'true';
     let whereClause = {
-        parent_task_id: null,
+        ...(includeSubtasks ? {} : { parent_task_id: null }),
     };
 
     whereClause[Op.or] = [
@@ -111,6 +120,12 @@ async function filterTasksByParams(
                 ['created_at', 'ASC'],
             ],
         },
+        {
+            model: Person,
+            as: 'AssignedTo',
+            attributes: ['uid', 'name', 'color', 'relationship_type'],
+            required: false,
+        },
     ];
 
     switch (params.type) {
@@ -187,7 +202,7 @@ async function filterTasksByParams(
             const upcomingRange = getUpcomingRangeInUTC(safeTimezone, 7);
 
             whereClause = {
-                parent_task_id: null,
+                ...(includeSubtasks ? {} : { parent_task_id: null }),
                 [Op.or]: [
                     {
                         // Non-recurring tasks with due dates in the next 7 days
@@ -303,6 +318,8 @@ async function filterTasksByParams(
                         'cancelled',
                     ],
                 };
+            } else if (params.status === 'all') {
+                // No status filter - return tasks of all statuses
             } else if (!params.client_side_filtering) {
                 whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
             }
@@ -408,6 +425,17 @@ async function filterTasksByParams(
         };
     }
 
+    if (params.project_uid) {
+        const project = await Project.findOne({
+            where: { uid: params.project_uid },
+        });
+        if (project) {
+            whereClause.project_id = project.id;
+        }
+    } else if (params.project_id) {
+        whereClause.project_id = params.project_id;
+    }
+
     if (params.area_uid) {
         const area = await Area.findOne({ where: { uid: params.area_uid } });
         if (area) {
@@ -415,6 +443,10 @@ async function filterTasksByParams(
         }
     } else if (params.area_id) {
         whereClause.area_id = params.area_id;
+    }
+
+    if (params.assigned_to) {
+        whereClause.assigned_to = params.assigned_to;
     }
 
     const finalWhereClause = {
@@ -464,6 +496,12 @@ function getTaskIncludeConfig() {
                 ['order', 'ASC'],
                 ['created_at', 'ASC'],
             ],
+        },
+        {
+            model: Person,
+            as: 'AssignedTo',
+            attributes: ['uid', 'name', 'color', 'relationship_type'],
+            required: false,
         },
     ];
 }

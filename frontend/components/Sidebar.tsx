@@ -10,14 +10,20 @@ import SidebarNotes from './Sidebar/SidebarNotes';
 import SidebarHabits from './Sidebar/SidebarHabits';
 import SidebarProjects from './Sidebar/SidebarProjects';
 import SidebarTags from './Sidebar/SidebarTags';
+import SidebarGoals from './Sidebar/SidebarGoals';
 import SidebarViews from './Sidebar/SidebarViews';
+import SidebarPeople from './Sidebar/SidebarPeople';
+import SidebarBoards from './Sidebar/SidebarBoards';
+import SidebarInsights from './Sidebar/SidebarInsights';
+import SidebarAdmin from './Sidebar/SidebarAdmin';
+import SidebarBookmarks from './Sidebar/SidebarBookmarks';
 import { KeyboardShortcutsConfig } from '../utils/keyboardShortcutsService';
 import { useStore } from '../store/useStore';
 
 interface SidebarProps {
     isSidebarOpen: boolean;
     setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    currentUser: { email: string };
+    currentUser: { email: string; is_admin?: boolean; avatar_image?: string };
     isDarkMode: boolean;
     toggleDarkMode: () => void;
     openTaskModal: () => void;
@@ -75,55 +81,106 @@ const Sidebar: React.FC<SidebarProps> = ({
             }}
         >
             {isSidebarOpen && (
-                <div className="flex flex-col h-full overflow-y-auto">
-                    <div className="px-3 pb-3 pt-8">
+                <div className="flex flex-col h-full">
+                    <div className="flex-1 min-h-0 overflow-y-auto px-2.5 py-4">
                         {/* Sidebar Contents */}
-                        <SidebarNav
-                            handleNavClick={handleNavClick}
-                            location={location}
-                            isDarkMode={isDarkMode}
-                            openTaskModal={openTaskModal}
-                        />
-                        <SidebarProjects
-                            handleNavClick={handleNavClick}
-                            location={location}
-                            isDarkMode={isDarkMode}
-                            openProjectModal={openProjectModal}
-                        />
-                        <SidebarNotes
-                            handleNavClick={handleNavClick}
-                            openNoteModal={openNoteModal}
-                            notes={notes}
-                            location={location}
-                            isDarkMode={isDarkMode}
-                        />
-                        {habitsEnabled && (
-                            <SidebarHabits
+                        <div className="mb-[18px]">
+                            <SidebarNav
                                 handleNavClick={handleNavClick}
                                 location={location}
                                 isDarkMode={isDarkMode}
-                                openNewHabit={openNewHabit}
+                                openTaskModal={openTaskModal}
                             />
+                        </div>
+                        <div className="mb-[14px]">
+                            <SidebarBookmarks
+                                handleNavClick={handleNavClick}
+                                location={location}
+                            />
+                        </div>
+                        <div className="mb-[14px]">
+                            <SidebarProjects
+                                handleNavClick={handleNavClick}
+                                location={location}
+                                isDarkMode={isDarkMode}
+                                openProjectModal={openProjectModal}
+                            />
+                        </div>
+                        <div className="mb-[14px]">
+                            <SidebarAreas
+                                handleNavClick={handleNavClick}
+                                areas={areas}
+                                location={location}
+                                isDarkMode={isDarkMode}
+                                openAreaModal={openAreaModal}
+                            />
+                        </div>
+                        <div className="mb-[14px]">
+                            <SidebarGoals
+                                handleNavClick={handleNavClick}
+                                location={location}
+                            />
+                        </div>
+                        <div className="mb-[14px]">
+                            <SidebarNotes
+                                handleNavClick={handleNavClick}
+                                openNoteModal={openNoteModal}
+                                notes={notes}
+                                location={location}
+                                isDarkMode={isDarkMode}
+                            />
+                        </div>
+                        <div className="mb-[14px]">
+                            <SidebarTags
+                                handleNavClick={handleNavClick}
+                                location={location}
+                                isDarkMode={isDarkMode}
+                                openTagModal={openTagModal}
+                                tags={tags}
+                            />
+                        </div>
+                        <div className="mb-[14px]">
+                            <SidebarPeople
+                                handleNavClick={handleNavClick}
+                                location={location}
+                            />
+                        </div>
+                        {habitsEnabled && (
+                            <div className="mb-[14px]">
+                                <SidebarHabits
+                                    handleNavClick={handleNavClick}
+                                    location={location}
+                                    isDarkMode={isDarkMode}
+                                    openNewHabit={openNewHabit}
+                                />
+                            </div>
                         )}
-                        <SidebarAreas
-                            handleNavClick={handleNavClick}
-                            areas={areas}
-                            location={location}
-                            isDarkMode={isDarkMode}
-                            openAreaModal={openAreaModal}
-                        />
-                        <SidebarTags
-                            handleNavClick={handleNavClick}
-                            location={location}
-                            isDarkMode={isDarkMode}
-                            openTagModal={openTagModal}
-                            tags={tags}
-                        />
-                        <SidebarViews
-                            handleNavClick={handleNavClick}
-                            location={location}
-                            isDarkMode={isDarkMode}
-                        />
+                        <div className="mb-[14px]">
+                            <SidebarViews
+                                handleNavClick={handleNavClick}
+                                location={location}
+                                isDarkMode={isDarkMode}
+                            />
+                        </div>
+                        <div className="mb-[14px]">
+                            <SidebarBoards
+                                handleNavClick={handleNavClick}
+                                location={location}
+                            />
+                        </div>
+                        <div className="mb-[14px]">
+                            <SidebarInsights
+                                handleNavClick={handleNavClick}
+                                location={location}
+                            />
+                        </div>
+                        <div className="mb-[14px]">
+                            <SidebarAdmin
+                                handleNavClick={handleNavClick}
+                                location={location}
+                                currentUser={currentUser}
+                            />
+                        </div>
                     </div>
 
                     <SidebarFooter

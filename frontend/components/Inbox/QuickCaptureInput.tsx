@@ -128,7 +128,7 @@ const QuickCaptureInput = React.forwardRef<
             openProjectModal,
             openNoteModal,
             cardClassName,
-            multiline = false,
+            multiline = true,
         },
         ref
     ) => {
@@ -187,6 +187,17 @@ const QuickCaptureInput = React.forwardRef<
                 inputRef.current.focus();
             }
         }, [autoFocus]);
+
+        useEffect(() => {
+            if (!multiline) return;
+            const el = inputRef.current;
+            if (!el) return;
+            el.style.height = 'auto';
+            const maxHeight = 300;
+            el.style.height = `${Math.min(el.scrollHeight, maxHeight)}px`;
+            (el as HTMLElement).style.overflowY =
+                el.scrollHeight > maxHeight ? 'auto' : 'hidden';
+        }, [inputText, multiline]);
 
         const clearComposerText = useCallback(() => {
             setInputText('');
@@ -1436,7 +1447,7 @@ const QuickCaptureInput = React.forwardRef<
                                             inputRef.current = el;
                                         }}
                                         value={inputText}
-                                        rows={6}
+                                        rows={2}
                                         onChange={handleChange}
                                         onSelect={(e) => {
                                             const pos =
@@ -1489,10 +1500,10 @@ const QuickCaptureInput = React.forwardRef<
                                                 setDropdownPosition(position);
                                             }
                                         }}
-                                        className="w-full text-base font-normal bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 px-0 py-2 placeholder-gray-400 dark:placeholder-gray-500 resize-none"
+                                        className="w-full text-base font-normal bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 px-0 py-2 placeholder-gray-400 dark:placeholder-gray-500 resize-none overflow-hidden"
                                         placeholder={t(
-                                            'inbox.captureThought',
-                                            'Capture a thought...'
+                                            'inbox.captureThoughtMultiline',
+                                            'Capture a thought...  ·  Shift+Enter for new line'
                                         )}
                                         onKeyDown={(e) => {
                                             const hasTagSuggestions =

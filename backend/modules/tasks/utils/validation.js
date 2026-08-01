@@ -1,4 +1,4 @@
-const { Project, Task, Area } = require('../../../models');
+const { Project, Task, Area, Goal } = require('../../../models');
 const permissionsService = require('../../../services/permissionsService');
 
 function isUid(value) {
@@ -159,9 +159,27 @@ async function validateAreaAccess(areaIdOrUid, userId) {
     return area.id;
 }
 
+async function validateGoalAccess(goalIdOrUid, userId) {
+    if (!goalIdOrUid || !goalIdOrUid.toString().trim()) {
+        return null;
+    }
+
+    const value = goalIdOrUid.toString().trim();
+    const where = isUid(value)
+        ? { uid: value, user_id: userId }
+        : { id: value, user_id: userId };
+    const goal = await Goal.findOne({ where });
+    if (!goal) {
+        throw new Error('Invalid goal.');
+    }
+
+    return goal.id;
+}
+
 module.exports = {
     validateProjectAccess,
     validateParentTaskAccess,
     validateDeferUntilAndDueDate,
     validateAreaAccess,
+    validateGoalAccess,
 };

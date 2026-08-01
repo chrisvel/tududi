@@ -1,8 +1,10 @@
 'use strict';
 
+const { safeCreateTable, safeAddIndex } = require('../utils/migration-utils');
+
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('settings', {
+        await safeCreateTable(queryInterface, 'settings', {
             id: {
                 type: Sequelize.INTEGER,
                 primaryKey: true,
@@ -27,13 +29,11 @@ module.exports = {
             },
         });
 
-        // Add unique index on key column
-        await queryInterface.addIndex('settings', ['key'], {
+        await safeAddIndex(queryInterface, 'settings', ['key'], {
             name: 'settings_key_idx',
             unique: true,
         });
 
-        // Seed initial registration_enabled setting with default value of false
         await queryInterface.bulkInsert('settings', [
             {
                 key: 'registration_enabled',

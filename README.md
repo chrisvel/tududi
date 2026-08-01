@@ -55,6 +55,7 @@ For the thinking behind tududi, read:
 - **Area Categorization**: Group projects into areas for better organization and focus.
 - **Due Date Tracking**: Set due dates for tasks and view them based on due date categories.
 - **Responsive Design**: Accessible from various devices, ensuring a consistent experience across desktops, tablets, and mobile phones.
+- **Installable PWA**: Add tududi to your home screen on Android, iOS, and desktop browsers for a native app-like experience. The app stays readable from cache when offline, and write operations are queued and synced automatically when connectivity returns.
 - **Multi-Language Support**: Available in 24 languages with full localization support for a truly global productivity experience.
 - **Telegram Integration**:
     - Create tasks directly through Telegram messages
@@ -92,8 +93,8 @@ docker run \
   -e TUDUDI_USER_EMAIL=admin@example.com \
   -e TUDUDI_USER_PASSWORD=your-secure-password \
   -e TUDUDI_SESSION_SECRET=$(openssl rand -hex 64) \
-  -v ~/tududi_db:/app/backend/db \
-  -v ~/tududi_uploads:/app/backend/uploads \
+  -v ~/tududi_db:/app/db \
+  -v ~/tududi_uploads:/app/uploads \
   -p 3002:3002 \
   -d chrisvel/tududi:latest
 ```
@@ -258,6 +259,36 @@ Connect Tududi to external CalDAV servers like Nextcloud, Baikal, or other CalDA
 - Encrypted password storage (AES-256-GCM)
 
 **Documentation:** See [docs/11-caldav-sync.md](docs/11-caldav-sync.md) for client setup guides, server configuration, and troubleshooting.
+
+### Upgrading
+
+#### v1.1.x to v1.2.x: Volume path change
+
+The Docker volume mount path changed in v1.2.0 from `/app/backend/db` to `/app/db`. If you are upgrading from v1.1.x and your `docker-compose.yml` still uses the old path, **new data will be lost on container recreation** because writes go to an anonymous Docker volume that is discarded when the container is recreated.
+
+**How to check:** Look at your `docker-compose.yml` volumes section:
+
+```yaml
+# OLD (v1.1.x) - update this
+volumes:
+  - ./tududi_db:/app/backend/db
+  - ./uploads:/app/backend/uploads
+
+# NEW (v1.2.x+) - use these paths
+volumes:
+  - ./tududi_db:/app/db
+  - ./uploads:/app/uploads
+```
+
+**Migration steps:**
+
+1. Stop the container: `docker-compose down`
+2. Update `docker-compose.yml` to use the new volume paths (see above)
+3. Start the container: `docker-compose up -d`
+
+Your existing data directory (`./tududi_db`) stays the same - only the mount point inside the container changes. No data copying is needed when using bind mounts.
+
+> **Note:** While you still use the old path, Tududi will print a warning at startup and continue using the old location to prevent data loss. Once you update the volume mount, the warning disappears and writes go to the correct persistent location.
 
 ### 📚 Documentation
 

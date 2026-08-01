@@ -19,7 +19,8 @@ import {
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { Task } from '../entities/Task';
 import { Note } from '../entities/Note';
-import { Project } from '../entities/Project';
+import { Project, ProjectStatus } from '../entities/Project';
+import { updateProject } from '../utils/projectsService';
 import TaskList from './Task/TaskList';
 import GroupedTaskList from './Task/GroupedTaskList';
 import ProjectItem from './Project/ProjectItem';
@@ -568,6 +569,17 @@ const ViewDetail: React.FC = () => {
         }
     };
 
+    const handleProjectStatusChange = async (project: Project, newStatus: ProjectStatus) => {
+        if (!project.uid) return;
+        const prevProjects = projects;
+        setProjects(projects.map((p) => (p.uid === project.uid ? { ...p, status: newStatus } : p)));
+        try {
+            await updateProject(project.uid, { status: newStatus });
+        } catch {
+            setProjects(prevProjects);
+        }
+    };
+
     const handleEditName = () => {
         if (view) {
             setEditedName(view.name);
@@ -949,7 +961,7 @@ const ViewDetail: React.FC = () => {
                         <button
                             onClick={openConfirmDialog}
                             className="p-2 rounded-lg transition-colors text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800"
-                            title="Delete view"
+                            title={t('views.deleteView')}
                         >
                             <TrashIcon className="h-5 w-5" />
                         </button>
@@ -1196,6 +1208,7 @@ const ViewDetail: React.FC = () => {
                                         onOpenShare={() => {
                                             /* noop in view detail */
                                         }}
+                                        onStatusChange={handleProjectStatusChange}
                                     />
                                 );
                             })}

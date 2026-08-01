@@ -20,6 +20,7 @@ const { isAdmin } = require('../../services/rolesService');
 const {
     getDefaultNotificationPreferences,
 } = require('../../utils/notificationPreferences');
+const { logError } = require('../../services/logService');
 
 class AdminService {
     /**
@@ -119,6 +120,7 @@ class AdminService {
 
         const { email, password, name, surname, role } =
             validateCreateUser(body);
+        const { linked_person_uid } = body || {};
 
         const userData = {
             email,
@@ -146,6 +148,26 @@ class AdminService {
                 userRole.is_admin = true;
                 await userRole.save();
             }
+        }
+
+        if (linked_person_uid) {
+            const { Person } = require('../../models');
+            const person = await Person.findOne({
+                where: { uid: linked_person_uid, user_id: requesterId },
+            });
+            if (person && person.linked_user_id == null) {
+                await person.update({ linked_user_id: user.id });
+            }
+        }
+
+        const peopleService = require('../people/service');
+        try {
+            await peopleService.createSelfPerson(user);
+        } catch (err) {
+            logError(
+                err,
+                'Failed to create self-person for admin-created user'
+            );
         }
 
         return {

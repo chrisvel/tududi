@@ -1,15 +1,19 @@
 'use strict';
 
+const { safeAddColumns } = require('../utils/migration-utils');
+
 module.exports = {
     async up(queryInterface, Sequelize) {
-        const tableDescription = await queryInterface.describeTable('users');
-        if (!tableDescription.eisenhower_enabled) {
-            await queryInterface.addColumn('users', 'eisenhower_enabled', {
-                type: Sequelize.BOOLEAN,
-                allowNull: false,
-                defaultValue: false,
-            });
-        }
+        await safeAddColumns(queryInterface, 'users', [
+            {
+                name: 'eisenhower_enabled',
+                definition: {
+                    type: Sequelize.BOOLEAN,
+                    allowNull: false,
+                    defaultValue: false,
+                },
+            },
+        ]);
     },
 
     async down(queryInterface) {

@@ -1,6 +1,9 @@
 const { groupTasksByDay } = require('./grouping');
 const { serializeTasks } = require('../core/serializers');
 const { computeTaskMetrics } = require('../queries/metrics-computation');
+const { getTaskTodayMoveCounts } = require('../taskEventService');
+const { Task } = require('../../../models');
+const { Op } = require('sequelize');
 
 async function handleRecurringTasks(userId, queryType) {
     return;
@@ -53,28 +56,65 @@ async function addDashboardLists(
         return;
     }
 
-    const metricsData = await computeTaskMetrics(userId, timezone);
+    const permissionCache = new Map();
+    const metricsData = await computeTaskMetrics(
+        userId,
+        timezone,
+        permissionCache
+    );
 
-    const listKeys = [
-        'tasks_in_progress',
-        'tasks_today_plan',
-        'tasks_due_today',
-        'tasks_overdue',
-        'suggested_tasks',
-        'tasks_completed_today',
+    const listKeyMap = {
+        tasks_in_progress: metricsData.tasks_in_progress,
+        tasks_today_plan: metricsData.today_plan_tasks,
+        tasks_due_today: metricsData.tasks_due_today,
+        tasks_overdue: metricsData.tasks_overdue,
+        suggested_tasks: metricsData.suggested_tasks,
+        tasks_completed_today: metricsData.tasks_completed_today,
+    };
+
+    // Single move-count query covering all lists
+    const allTasks = Object.values(listKeyMap).flat();
+    const allTaskIds = [...new Set(allTasks.map((t) => t.id))];
+    const moveCountMap = await getTaskTodayMoveCounts(allTaskIds);
+
+    // Single batch query for all recurring parent UIDs
+    const parentIds = [
+        ...new Set(
+            allTasks
+                .filter((t) => t.recurring_parent_id)
+                .map((t) => t.recurring_parent_id)
+        ),
     ];
+    const parentUidMap = {};
+    if (parentIds.length > 0) {
+        const parents = await Task.findAll({
+            where: { id: { [Op.in]: parentIds } },
+            attributes: ['id', 'uid'],
+            raw: true,
+        });
+        parents.forEach((p) => {
+            parentUidMap[p.id] = p.uid;
+        });
+    }
+
+    // Parallelize all serialization calls with shared pre-fetched maps
+    const keys = Object.keys(listKeyMap);
+    const serializedArrays = await Promise.all(
+        keys.map((key) =>
+            serializeTasks(
+                listKeyMap[key],
+                timezone,
+                serializationOptions,
+                moveCountMap,
+                parentUidMap
+            )
+        )
+    );
 
     const serializedLists = {};
-
-    for (const key of listKeys) {
-        const metricsKey =
-            key === 'tasks_today_plan' ? 'today_plan_tasks' : key;
-        serializedLists[key] = await serializeTasks(
-            metricsData[metricsKey],
-            timezone,
-            serializationOptions
-        );
-    }
+    keys.forEach((key, i) => {
+        serializedLists[key] = serializedArrays[i];
+    });
 
     Object.assign(response, serializedLists);
     response.dashboard_lists = serializedLists;

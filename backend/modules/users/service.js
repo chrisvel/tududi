@@ -11,6 +11,7 @@ const FEATURE_KEYS = [
     'kanban_enabled',
     'habits_enabled',
     'calendar_enabled',
+    'templates_enabled',
 ];
 
 function sanitizeFeatures(raw) {
@@ -148,6 +149,7 @@ class UsersService {
             ui_settings,
             notification_preferences,
             keyboard_shortcuts,
+            ai_profile,
             currentPassword,
             newPassword,
         } = data;
@@ -191,20 +193,30 @@ class UsersService {
             allowedUpdates.notification_preferences = notification_preferences;
         if (keyboard_shortcuts !== undefined)
             allowedUpdates.keyboard_shortcuts = keyboard_shortcuts;
+        if (ai_profile !== undefined)
+            allowedUpdates.ai_profile = ai_profile || null;
 
-        // Handle password change if provided
-        if (currentPassword && newPassword) {
+        // Handle password change/set if provided
+        if (newPassword) {
             validatePassword(newPassword, 'newPassword');
 
-            const isValidPassword = await User.checkPassword(
-                currentPassword,
-                user.password_digest
-            );
-            if (!isValidPassword) {
-                throw new ValidationError(
-                    'Current password is incorrect',
-                    'currentPassword'
+            if (user.password_digest) {
+                if (!currentPassword) {
+                    throw new ValidationError(
+                        'Current password is required',
+                        'currentPassword'
+                    );
+                }
+                const isValidPassword = await User.checkPassword(
+                    currentPassword,
+                    user.password_digest
                 );
+                if (!isValidPassword) {
+                    throw new ValidationError(
+                        'Current password is incorrect',
+                        'currentPassword'
+                    );
+                }
             }
 
             const hashedNewPassword = await User.hashPassword(newPassword);
@@ -222,6 +234,13 @@ class UsersService {
                 }
             }
             updated.features = sanitizeFeatures(updated.features);
+            if (typeof updated.ui_settings === 'string') {
+                try {
+                    updated.ui_settings = JSON.parse(updated.ui_settings);
+                } catch {
+                    updated.ui_settings = null;
+                }
+            }
         }
         return updated;
     }
@@ -286,10 +305,8 @@ class UsersService {
      * Change password.
      */
     async changePassword(userId, currentPassword, newPassword) {
-        if (!currentPassword || !newPassword) {
-            throw new ValidationError(
-                'Current password and new password are required'
-            );
+        if (!newPassword) {
+            throw new ValidationError('New password is required');
         }
 
         validatePassword(newPassword, 'newPassword');
@@ -299,15 +316,23 @@ class UsersService {
             throw new NotFoundError('User not found');
         }
 
-        const isValidPassword = await User.checkPassword(
-            currentPassword,
-            user.password_digest
-        );
-        if (!isValidPassword) {
-            throw new ValidationError(
-                'Current password is incorrect',
-                'currentPassword'
+        if (user.password_digest) {
+            if (!currentPassword) {
+                throw new ValidationError(
+                    'Current password is required',
+                    'currentPassword'
+                );
+            }
+            const isValidPassword = await User.checkPassword(
+                currentPassword,
+                user.password_digest
             );
+            if (!isValidPassword) {
+                throw new ValidationError(
+                    'Current password is incorrect',
+                    'currentPassword'
+                );
+            }
         }
 
         const hashedNewPassword = await User.hashPassword(newPassword);
@@ -589,7 +614,7 @@ class UsersService {
             throw new NotFoundError('User not found.');
         }
 
-        const { project } = data;
+        const { project, appearance } = data;
 
         const currentSettings =
             user.ui_settings && typeof user.ui_settings === 'object'
@@ -609,6 +634,13 @@ class UsersService {
                 },
             },
         };
+
+        if (appearance !== undefined) {
+            newSettings.appearance = {
+                ...(currentSettings.appearance || {}),
+                ...appearance,
+            };
+        }
 
         await usersRepository.update(user, { ui_settings: newSettings });
 

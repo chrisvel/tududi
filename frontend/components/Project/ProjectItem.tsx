@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
 import {
@@ -12,6 +12,7 @@ import {
     XCircleIcon,
     ShareIcon,
     ExclamationTriangleIcon,
+    RectangleStackIcon,
 } from '@heroicons/react/24/outline';
 import { Project, ProjectStatus } from '../../entities/Project';
 import { useTranslation } from 'react-i18next';
@@ -32,6 +33,8 @@ interface ProjectItemProps {
     setProjectToDelete: React.Dispatch<React.SetStateAction<Project | null>>;
     setIsConfirmDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
     onOpenShare: (project: Project) => void;
+    onStatusChange: (project: Project, newStatus: ProjectStatus) => Promise<void>;
+    onSaveAsTemplate?: (project: Project) => void;
 }
 
 const getProjectInitials = (name: string, maxLetters?: number) => {
@@ -112,12 +115,16 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
     setProjectToDelete,
     setIsConfirmDialogOpen,
     onOpenShare,
+    onStatusChange,
+    onSaveAsTemplate,
 }) => {
     const { t } = useTranslation();
     const { showErrorToast } = useToast();
     const currentUser = getCurrentUser();
     const isOwner =
         currentUser && (project as any).user_uid === currentUser.uid;
+    const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
+    const statusDropdownRef = useRef<HTMLDivElement>(null);
     const descriptionText = project.description?.trim();
     const listTitleClasses =
         'block w-full text-md font-semibold text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-gray-200 transition-colors truncate';
@@ -136,6 +143,26 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
             {project.name}
         </Link>
     );
+    const statusOptions: { value: ProjectStatus; label: string; Icon: React.ElementType }[] = [
+        { value: 'not_started', label: t('projectStatus.not_started', 'Not Started'), Icon: EllipsisHorizontalCircleIcon },
+        { value: 'planned', label: t('projectStatus.planned', 'Planned'), Icon: ClipboardDocumentListIcon },
+        { value: 'in_progress', label: t('projectStatus.in_progress', 'In Progress'), Icon: PlayIcon },
+        { value: 'waiting', label: t('projectStatus.waiting', 'Waiting'), Icon: ClockIcon },
+        { value: 'done', label: t('projectStatus.done', 'Completed'), Icon: CheckCircleIcon },
+        { value: 'cancelled', label: t('projectStatus.cancelled', 'Cancelled'), Icon: XCircleIcon },
+    ];
+
+    useEffect(() => {
+        if (!statusDropdownOpen) return;
+        const handleOutsideClick = (e: MouseEvent) => {
+            if (statusDropdownRef.current && !statusDropdownRef.current.contains(e.target as Node)) {
+                setStatusDropdownOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleOutsideClick);
+        return () => document.removeEventListener('mousedown', handleOutsideClick);
+    }, [statusDropdownOpen]);
+
     const [sharedUsers, setSharedUsers] = useState<
         ListSharesResponseRow[] | null
     >(() => {
@@ -303,7 +330,10 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                     style={{ backgroundColor: project.color }}
                                 />
                             )}
-                            <div className="absolute top-2 right-2 z-20 flex items-center space-x-2">
+                        </div>
+                    </Link>
+                    {/* Overlay buttons positioned from outer relative div so dropdowns are not clipped by overflow-hidden */}
+                    <div className="absolute top-2 right-2 z-20 flex items-center space-x-2">
                                 {project.is_shared && (
                                     <ShareIcon
                                         className="h-4 w-4 text-green-400 drop-shadow-sm"
@@ -313,20 +343,47 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                         )}
                                     />
                                 )}
-                                {(() => {
-                                    const { icon: StatusIcon } = getStatusIcon(
-                                        project.status
-                                    );
-                                    return (
-                                        <StatusIcon
-                                            className="h-4 w-4 text-white/80 drop-shadow-sm"
-                                            title={getStatusLabel(
-                                                project.status,
-                                                t
-                                            )}
-                                        />
-                                    );
-                                })()}
+                                <div className="relative" ref={statusDropdownRef}>
+                                    <button
+                                        className="p-1 rounded-full hover:bg-black/40 backdrop-blur-sm transition-colors"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            setStatusDropdownOpen((prev) => !prev);
+                                            setActiveDropdown(null);
+                                        }}
+                                        title={getStatusLabel(project.status, t)}
+                                        aria-label={t('projectItem.changeStatus', 'Change status')}
+                                    >
+                                        {(() => {
+                                            const { icon: StatusIcon } = getStatusIcon(project.status);
+                                            return <StatusIcon className="h-4 w-4 text-white/80 drop-shadow-sm" />;
+                                        })()}
+                                    </button>
+                                    {statusDropdownOpen && (
+                                        <div className="absolute right-0 top-8 z-50 min-w-[10rem] bg-white dark:bg-gray-800 shadow-xl rounded-md border border-gray-200 dark:border-gray-600 overflow-hidden">
+                                            {statusOptions.map(({ value, label, Icon }) => (
+                                                <button
+                                                    key={value}
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        onStatusChange(project, value);
+                                                        setStatusDropdownOpen(false);
+                                                    }}
+                                                    className={`flex items-center gap-2 px-3 py-2 text-sm w-full text-left transition-colors ${
+                                                        project.status === value
+                                                            ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                                                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                                                    }`}
+                                                >
+                                                    <Icon className="h-4 w-4 flex-shrink-0" />
+                                                    <span>{label}</span>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                                 <div className="relative dropdown-container">
                                     <button
                                         className="p-1.5 rounded-full bg-black/30 text-white hover:bg-black/60 focus:outline-none backdrop-blur-sm"
@@ -351,7 +408,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                     </button>
                                     {project.id !== undefined &&
                                         activeDropdown === project.id && (
-                                            <div className="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-800 shadow-lg rounded-md z-30">
+                                            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-md z-30">
                                                 <button
                                                     onClick={(e) => {
                                                         e.preventDefault();
@@ -398,6 +455,19 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                                         )}
                                                     </button>
                                                 )}
+                                                {isOwner && onSaveAsTemplate && (
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
+                                                            onSaveAsTemplate(project);
+                                                            setActiveDropdown(null);
+                                                        }}
+                                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                                                    >
+                                                        {t('projectItem.saveAsTemplate', 'Save as Template')}
+                                                    </button>
+                                                )}
                                                 <button
                                                     onClick={(e) => {
                                                         e.preventDefault();
@@ -430,9 +500,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                         )}
                                 </div>
                             </div>
-                        </div>
-                    </Link>
-                </div>
+                    </div>
             )}
 
             {viewMode === 'cards' && (
@@ -615,7 +683,48 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                     <div className="flex items-center min-w-0">
                         {listTitleLink}
                     </div>
-                    <div className="relative dropdown-container">
+                    <div className="relative dropdown-container flex items-center gap-2">
+                        <div className="relative" ref={statusDropdownRef}>
+                            <button
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setStatusDropdownOpen((prev) => !prev);
+                                }}
+                                className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors p-1 rounded"
+                                title={getStatusLabel(project.status, t)}
+                                aria-label={t('projectItem.changeStatus', 'Change status')}
+                            >
+                                {(() => {
+                                    const { icon: StatusIcon } = getStatusIcon(project.status);
+                                    return <StatusIcon className="h-4 w-4" />;
+                                })()}
+                                <span className="hidden sm:inline">{getStatusLabel(project.status, t)}</span>
+                            </button>
+                            {statusDropdownOpen && (
+                                <div className="absolute right-0 top-8 z-50 min-w-[10rem] bg-white dark:bg-gray-800 shadow-xl rounded-md border border-gray-200 dark:border-gray-600 overflow-hidden">
+                                    {statusOptions.map(({ value, label, Icon }) => (
+                                        <button
+                                            key={value}
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                onStatusChange(project, value);
+                                                setStatusDropdownOpen(false);
+                                            }}
+                                            className={`flex items-center gap-2 px-3 py-2 text-sm w-full text-left transition-colors ${
+                                                project.status === value
+                                                    ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                                            }`}
+                                        >
+                                            <Icon className="h-4 w-4 flex-shrink-0" />
+                                            <span>{label}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                         <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             <button
                                 onClick={(e) => {
@@ -652,6 +761,19 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                     data-testid={`project-share-list-${project.id}`}
                                 >
                                     <ShareIcon className="h-5 w-5" />
+                                </button>
+                            )}
+                            {isOwner && onSaveAsTemplate && (
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        onSaveAsTemplate(project);
+                                    }}
+                                    className="text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200"
+                                    title={t('projectItem.saveAsTemplate', 'Save as Template')}
+                                >
+                                    <RectangleStackIcon className="h-5 w-5" />
                                 </button>
                             )}
                             <button

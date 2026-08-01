@@ -4,10 +4,14 @@ const { validateTagName } = require('../../tags/tagsService');
 async function updateTaskTags(task, tagsData, userId) {
     if (!tagsData) return;
 
+    const normalizedTags = tagsData.map((tag) =>
+        typeof tag === 'string' ? { name: tag } : tag
+    );
+
     const validTagNames = [];
     const invalidTags = [];
 
-    for (const tag of tagsData) {
+    for (const tag of normalizedTags) {
         const validation = validateTagName(tag.name);
         if (validation.valid) {
             if (!validTagNames.includes(validation.name)) {

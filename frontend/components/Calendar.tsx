@@ -71,7 +71,7 @@ const Calendar: React.FC = () => {
     const loadTasks = async () => {
         setIsLoadingTasks(true);
         try {
-            const response = await fetch(getApiPath('tasks'), {
+            const response = await fetch(getApiPath('tasks?type=calendar'), {
                 credentials: 'include',
             });
             if (response.ok) {
@@ -101,7 +101,7 @@ const Calendar: React.FC = () => {
         if (!Array.isArray(tasks)) return [];
 
         tasks.forEach((task) => {
-            const name = task.name || task.title || `Task ${task.id}`;
+            const name = task.original_name || task.name || task.title || `Task ${task.id}`;
 
             if (task.defer_until) {
                 const deferDate = new Date(task.defer_until);
@@ -176,7 +176,7 @@ const Calendar: React.FC = () => {
             if (task) {
                 const taskEntity: Task = {
                     ...task,
-                    name: task.name || task.title || `Task ${task.id}`,
+                    name: task.original_name || task.name || task.title || `Task ${task.id}`,
                     priority: task.priority || 'low',
                     status: task.status || 'not_started',
                     tags: task.tags || [],

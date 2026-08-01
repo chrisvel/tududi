@@ -186,11 +186,27 @@ npm start  # Frontend on :8080, Backend on :3002
 
 22. **[AI Assistant](docs/13-ai-assistant.md)**
     - Daily Brief, Task Insights, and Project Insights features
-    - OpenAI integration (gpt-4o-mini, OPENAI_API_KEY)
+    - Provider-agnostic LLM integration (LLM_API_KEY, LLM_BASE_URL, LLM_MODEL)
+    - OpenAI, Ollama, Groq, and any OpenAI-compatible provider supported
+    - User "About You" profile context for personalised briefs
     - Caching strategy and API endpoints
     - Adding new AI features
 
-23. **[Claude Memory & Preferences](docs/MEMORY.md)**
+23. **[MCP Integration](docs/14-mcp-integration.md)**
+    - Model Context Protocol server for AI tool integration
+    - 16 tools: tasks, projects, inbox, and search operations
+    - Stdio and HTTP transport modes
+    - Claude Desktop, Cursor, VS Code configuration
+    - API token authentication and security
+
+24. **[PWA & Offline Support](docs/15-pwa.md)**
+    - Installable as a Progressive Web App (home screen on mobile and desktop)
+    - Service worker cache strategy (static assets, API reads, offline mutation queue)
+    - Background Sync for replaying queued mutations on reconnect
+    - Session-scoped cache security (cleared on logout / 401)
+    - Known limitations (sub-path deployments, iOS background sync, offline task creation)
+
+25. **[Claude Memory & Preferences](docs/MEMORY.md)**
     - PR and commit message preferences
     - Testing preferences
     - Common patterns to remember
@@ -216,6 +232,7 @@ Tududi is a self-hosted task management system designed around hierarchical orga
 - **REST API:** Swagger docs + personal API tokens
 - **Telegram Integration:** Create tasks via messages, daily digests
 - **Tag System:** Flexible tagging across tasks, notes, projects
+- **MCP Integration:** AI tool connectivity via Model Context Protocol (16 tools)
 
 **Target Users:** Self-hosting individuals and teams managing personal or collaborative productivity
 

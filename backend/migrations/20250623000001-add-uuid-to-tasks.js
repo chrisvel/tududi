@@ -1,6 +1,6 @@
 'use strict';
 
-const { v4: uuidv4 } = require('uuid');
+const { randomUUID } = require('crypto');
 const { safeAddColumns, safeAddIndex } = require('../utils/migration-utils');
 
 module.exports = {
@@ -21,7 +21,7 @@ module.exports = {
         );
 
         for (const task of tasks) {
-            const uuid = uuidv4();
+            const uuid = randomUUID();
             await queryInterface.sequelize.query(
                 'UPDATE tasks SET uuid = ? WHERE id = ?',
                 { replacements: [uuid, task.id] }

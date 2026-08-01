@@ -8,24 +8,45 @@
 
 The AI Assistant adds three context-aware intelligence features to Tududi:
 
-1. **Daily Brief** — a morning summary with a focus task, top priority actions, and risk flags
-2. **Task Insights** — domain-level analysis, next steps, and useful links for a specific task
-3. **Project Insights** — health assessment, next action, and risk flags for a specific project
+1. **Daily Brief**: a morning summary with a focus task, top priority actions, and risk flags
+2. **Task Insights**: domain-level analysis, next steps, and useful links for a specific task
+3. **Project Insights**: health assessment, next action, and risk flags for a specific project
 
-All three features call the OpenAI API (`gpt-4o-mini`) and cache results in the database. Results persist until the user explicitly regenerates them.
+All three features call an OpenAI-compatible API and cache results in the database. Results persist until the user explicitly regenerates them.
 
 ---
 
 ## Setup
 
-Set the `OPENAI_API_KEY` environment variable before starting the server:
+### Required
+
+Set an API key before starting the server. Use the generic `LLM_API_KEY` for any provider, or `OPENAI_API_KEY` if you're using OpenAI directly (both are supported; `LLM_API_KEY` takes precedence):
 
 ```bash
-# .env or Docker environment
+# Generic: works with any provider
+LLM_API_KEY=sk-...
+
+# OpenAI legacy name: still works as a fallback
 OPENAI_API_KEY=sk-...
 ```
 
-Without this key, all AI Assistant endpoints return HTTP 500.
+Without a key, all AI Assistant endpoints return HTTP 500.
+
+### Optional: custom provider or model
+
+The service uses the [OpenAI Node.js SDK](https://github.com/openai/openai-node), which is compatible with any provider that implements the OpenAI chat completions API (Ollama, LM Studio, Groq, Azure OpenAI, etc.).
+
+```bash
+# Base URL of the provider (defaults to OpenAI)
+LLM_BASE_URL=http://localhost:11434/v1  # e.g. local Ollama
+# OPENAI_BASE_URL is still accepted as a fallback
+
+# Model name the provider expects (defaults to gpt-4o-mini)
+LLM_MODEL=llama3.2
+# TUDUDI_AI_MODEL is still accepted as a fallback
+```
+
+> **Note on reasoning models:** reasoning models (e.g. DeepSeek-R1, o1-mini) consume hidden tokens before producing output. The daily brief allows up to 1500 completion tokens to accommodate this; task and project insights allow 1000 and 600 respectively.
 
 ---
 
@@ -42,7 +63,7 @@ frontend/
 backend/modules/ai-assistant/
   routes.js      # Express route definitions
   controller.js  # Request handlers, auth checks
-  service.js     # OpenAI client, prompt building, caching logic
+  service.js     # API client, prompt building, caching logic
 ```
 
 ---
@@ -68,12 +89,12 @@ Appears on the Today page inside the `DailyAssistant` component. Generates once 
   ],
   "watch_out": ["At-risk task or project name"],
   "generated_at": "ISO timestamp",
-  "model": "gpt-4o-mini",
+  "model": "model name echoed from API response",
   "usage": { "prompt_tokens": 0, "completion_tokens": 0 }
 }
 ```
 
-**Context sent to the model:** active goals, active projects, today's task breakdown (overdue, in-progress, planned, suggested), weekly completion trend.
+**Context sent to the model:** active goals, active projects, today's task breakdown (overdue, in-progress, planned, suggested), weekly completion trend, and the user's "About You" profile text (if set).
 
 **Caching:** stored in `users.ai_daily_brief` and `users.ai_daily_brief_date`. `GET /api/ai-assistant/daily-brief` returns the cache; `POST` regenerates it.
 
@@ -149,13 +170,23 @@ All endpoints require an authenticated session. Unauthenticated requests return 
 
 ## Model and Provider
 
-| Setting | Value |
-|---------|-------|
-| Provider | OpenAI |
-| Model | `gpt-4o-mini` |
-| Environment variable | `OPENAI_API_KEY` |
+| Setting | Primary variable | Fallback variable | Default |
+|---------|-----------------|-------------------|---------|
+| API key | `LLM_API_KEY` | `OPENAI_API_KEY` | (required) |
+| Base URL | `LLM_BASE_URL` | `OPENAI_BASE_URL` | OpenAI (`https://api.openai.com/v1`) |
+| Model | `LLM_MODEL` | `TUDUDI_AI_MODEL` | `gpt-4o-mini` |
 
-The client is initialized in `service.js:getOpenAIClient()`. Switching models or providers requires updating that function and the three `chat.completions.create` calls in the same file.
+The client is initialized in `service.js:getOpenAIClient()`. Any provider that speaks the OpenAI chat completions protocol works: set `LLM_BASE_URL` to the provider's endpoint and `LLM_MODEL` to the model name that provider expects.
+
+All three LLM calls request `response_format: { type: 'json_object' }` for structured output. If your backend does not support this parameter, the response parser will still attempt to extract JSON from raw text (including code-fenced output).
+
+---
+
+## User Profile Context
+
+Users can set an "About You" text in **Profile → Features → Intelligence → About You**. This text is injected into the daily brief prompt as an `## About This User` section, allowing the AI to tailor its language and framing to the user's actual domain (e.g. academic research, healthcare, design) rather than defaulting to software development metaphors.
+
+The field is stored in `users.ai_profile` (TEXT, max 500 chars in the UI).
 
 ---
 
@@ -173,7 +204,7 @@ Cached values are JSON objects stored as TEXT. The `generated_at` timestamp is i
 
 ## Adding a New AI Feature
 
-1. Add a new function in `service.js` that builds a prompt and calls `client.chat.completions.create()`
+1. Add a new function in `service.js` that builds a prompt and calls `client.chat.completions.create()`, using `getAIModel()` for the model name and `response_format: { type: 'json_object' }` for structured output
 2. Add a controller method in `controller.js` with auth check and error delegation via `next(error)`
 3. Register the route in `routes.js`
 4. Add the typed API client function to `frontend/utils/aiAssistantService.ts`

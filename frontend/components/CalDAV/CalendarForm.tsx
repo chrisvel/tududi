@@ -36,7 +36,7 @@ const CalendarForm: React.FC<CalendarFormProps> = ({ onComplete, onCancel }) => 
         username: '',
         password: '',
         authType: 'basic' as 'basic' | 'bearer',
-        syncDirection: 'bidirectional' as 'bidirectional' | 'pull' | 'push',
+        syncDirection: 'bidirectional' as 'bidirectional' | 'pull_only' | 'push_only',
         syncInterval: 15,
         conflictResolution: 'manual' as 'last_write_wins' | 'local_wins' | 'remote_wins' | 'manual',
         enabled: true,
@@ -308,7 +308,7 @@ const CalendarForm: React.FC<CalendarFormProps> = ({ onComplete, onCancel }) => 
                         className={`block w-full border rounded-md px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 ${
                             errors.serverUrl ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                         }`}
-                        placeholder="https://caldav.example.com"
+                        placeholder={t('profile.caldavWizard.serverUrlPlaceholder')}
                     />
                     {errors.serverUrl && (
                         <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.serverUrl}</p>
@@ -331,7 +331,7 @@ const CalendarForm: React.FC<CalendarFormProps> = ({ onComplete, onCancel }) => 
                         className={`block w-full border rounded-md px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 ${
                             errors.calendarPath ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                         }`}
-                        placeholder="/calendars/user/tasks"
+                        placeholder={t('profile.caldavWizard.calendarPathPlaceholder')}
                     />
                     {errors.calendarPath && (
                         <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.calendarPath}</p>
@@ -463,7 +463,7 @@ const CalendarForm: React.FC<CalendarFormProps> = ({ onComplete, onCancel }) => 
                         onChange={(e) =>
                             setFormData({
                                 ...formData,
-                                syncDirection: e.target.value as 'bidirectional' | 'pull' | 'push',
+                                syncDirection: e.target.value as 'bidirectional' | 'pull_only' | 'push_only',
                             })
                         }
                         className="block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
@@ -471,10 +471,10 @@ const CalendarForm: React.FC<CalendarFormProps> = ({ onComplete, onCancel }) => 
                         <option value="bidirectional">
                             {t('profile.caldavWizard.bidirectional', 'Bidirectional (sync both ways)')}
                         </option>
-                        <option value="pull">
+                        <option value="pull_only">
                             {t('profile.caldavWizard.pullOnly', 'Pull only (from server to Tududi)')}
                         </option>
-                        <option value="push">
+                        <option value="push_only">
                             {t('profile.caldavWizard.pushOnly', 'Push only (from Tududi to server)')}
                         </option>
                     </select>

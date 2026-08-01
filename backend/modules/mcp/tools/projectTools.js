@@ -3,10 +3,8 @@
 const { Project, Area, Tag } = require('../../../models');
 const { Op } = require('sequelize');
 const projectsRepository = require('../../projects/repository');
+const permissionsService = require('../../../services/permissionsService');
 
-/**
- * Register all project-related MCP tools
- */
 function registerProjectTools(server, context, tools) {
     // 1. list_projects - List projects
     tools.push({
@@ -40,21 +38,23 @@ function registerProjectTools(server, context, tools) {
             },
         },
         handler: async (params) => {
-            const where = { user_id: context.userId };
+            const whereClause =
+                await permissionsService.ownershipOrPermissionWhere(
+                    'project',
+                    context.userId
+                );
             const limit = params.limit || 30;
 
-            // Apply status filter
             if (params.status && params.status !== 'all') {
-                where.status = params.status;
+                whereClause.status = params.status;
             }
 
-            // Apply area filter
             if (params.area_id) {
-                where.area_id = params.area_id;
+                whereClause.area_id = params.area_id;
             }
 
             const projects = await Project.findAll({
-                where: where,
+                where: whereClause,
                 include: [
                     { model: Area, as: 'Area' },
                     { model: Tag, as: 'Tags' },
@@ -115,7 +115,7 @@ function registerProjectTools(server, context, tools) {
         },
         handler: async (params) => {
             const project = await Project.findOne({
-                where: { uid: params.uid, user_id: context.userId },
+                where: { uid: params.uid },
                 include: [
                     { model: Area, as: 'Area' },
                     { model: Tag, as: 'Tags' },
@@ -123,6 +123,15 @@ function registerProjectTools(server, context, tools) {
             });
 
             if (!project) {
+                throw new Error(`Project not found: ${params.uid}`);
+            }
+
+            const access = await permissionsService.getAccess(
+                context.userId,
+                'project',
+                project.uid
+            );
+            if (access === permissionsService.ACCESS.NONE) {
                 throw new Error(`Project not found: ${params.uid}`);
             }
 
@@ -218,7 +227,6 @@ function registerProjectTools(server, context, tools) {
 
             const project = await Project.create(projectData);
 
-            // Handle tags if provided
             if (params.tags && params.tags.length > 0) {
                 const tagInstances = await Promise.all(
                     params.tags.map(async (tagName) => {
@@ -231,7 +239,6 @@ function registerProjectTools(server, context, tools) {
                 await project.setTags(tagInstances);
             }
 
-            // Reload with associations
             const reloadedProject = await Project.findByPk(project.id, {
                 include: [
                     { model: Area, as: 'Area' },
@@ -321,10 +328,23 @@ function registerProjectTools(server, context, tools) {
         },
         handler: async (params) => {
             const project = await Project.findOne({
-                where: { uid: params.uid, user_id: context.userId },
+                where: { uid: params.uid },
             });
 
             if (!project) {
+                throw new Error(`Project not found: ${params.uid}`);
+            }
+
+            const access = await permissionsService.getAccess(
+                context.userId,
+                'project',
+                project.uid
+            );
+            const canWrite =
+                project.user_id === context.userId ||
+                access === permissionsService.ACCESS.RW ||
+                access === permissionsService.ACCESS.ADMIN;
+            if (!canWrite) {
                 throw new Error(`Project not found: ${params.uid}`);
             }
 
@@ -344,7 +364,6 @@ function registerProjectTools(server, context, tools) {
 
             await project.update(updates);
 
-            // Reload with associations
             const reloadedProject = await Project.findByPk(project.id, {
                 include: [
                     { model: Area, as: 'Area' },
@@ -386,7 +405,7 @@ function registerProjectTools(server, context, tools) {
         },
     });
 
-    // 5. delete_project - Delete a project
+    // 5. delete_project - Delete a project (owner only)
     tools.push({
         name: 'delete_project',
         description: 'Delete a project and all its tasks (notes are orphaned)',

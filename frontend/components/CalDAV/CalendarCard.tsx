@@ -50,9 +50,9 @@ const CalendarCard: React.FC<CalendarCardProps> = ({
         switch (calendar.sync_direction) {
             case 'bidirectional':
                 return t('profile.caldav.bidirectional', 'Bidirectional');
-            case 'pull':
+            case 'pull_only':
                 return t('profile.caldav.pullOnly', 'Pull only');
-            case 'push':
+            case 'push_only':
                 return t('profile.caldav.pushOnly', 'Push only');
             default:
                 return calendar.sync_direction;

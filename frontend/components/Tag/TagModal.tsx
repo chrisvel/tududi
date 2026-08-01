@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Tag } from '../../entities/Tag';
 import { TrashIcon } from '@heroicons/react/24/outline';
-import { MapPinIcon } from '@heroicons/react/24/solid';
 import { useToast } from '../Shared/ToastContext';
 import { useTranslation } from 'react-i18next';
 import DiscardChangesDialog from '../Shared/DiscardChangesDialog';
@@ -258,7 +257,6 @@ const TagModal: React.FC<TagModalProps> = ({
                                             }`}
                                             data-testid="tag-pin-toggle"
                                         >
-                                            <MapPinIcon className="h-3.5 w-3.5" />
                                             {formData.pinned
                                                 ? t('tags.pinned', 'Pinned for quick access')
                                                 : t('tags.pinTag', 'Pin for quick access')}

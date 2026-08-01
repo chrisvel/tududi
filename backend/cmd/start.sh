@@ -77,6 +77,31 @@ backup_db() {
   fi
 }
 
+# Before v1.2.0, the database was mounted at /app/backend/db. If the new path
+# does not exist but the old path does, redirect DB_FILE to the old path so
+# writes stay on the persistent (user-mounted) volume rather than being copied
+# to an anonymous Docker volume that is discarded on container recreation.
+OLD_DB_PATH="/app/backend/db/${NODE_ENV}.sqlite3"
+if [ ! -f "$DB_FILE" ] && [ -f "$OLD_DB_PATH" ]; then
+  echo ""
+  echo "⚠️  =============================================================="
+  echo "⚠️  ACTION REQUIRED: Volume mount path changed in v1.2.0"
+  echo "⚠️"
+  echo "⚠️  Your database is at the old location: $OLD_DB_PATH"
+  echo "⚠️  The new canonical location is:        $DB_FILE"
+  echo "⚠️"
+  echo "⚠️  To prevent data loss, using old path until you update:"
+  echo "⚠️    docker-compose.yml volumes:"
+  echo "⚠️      - ./tududi_db:/app/backend/db  (OLD - change this)"
+  echo "⚠️      + ./tududi_db:/app/db           (NEW)"
+  echo "⚠️"
+  echo "⚠️  WARNING: New data will be LOST on container recreation until"
+  echo "⚠️  you update the volume mount. See upgrade docs for details."
+  echo "⚠️  =============================================================="
+  echo ""
+  export DB_FILE="$OLD_DB_PATH"
+fi
+
 # Check if database exists and create/authenticate
 if [ ! -f "$DB_FILE" ]; then
   echo "Creating new database..."
@@ -89,16 +114,20 @@ fi
 
 # Run database migrations automatically
 echo "Running database migrations..."
-if npx sequelize-cli db:migrate --config config/database.js; then
-  echo "Migrations completed successfully"
-else
-  echo "Migration failed, but continuing startup (may be expected for new installations)"
+if ! npx sequelize-cli db:migrate --config config/database.js; then
+  echo "❌ Migration failed. Container cannot start with an incomplete schema."
+  echo "   Check the migration error above and restore from backup if needed."
+  exit 1
 fi
+echo "Migrations completed successfully"
 
 if [ -n "${TUDUDI_USER_EMAIL:-}" ] && [ -n "${TUDUDI_USER_PASSWORD:-}" ]; then
   # Trim whitespace/carriage returns that may come from docker-compose env vars
   TUDUDI_USER_EMAIL=$(printf '%s' "$TUDUDI_USER_EMAIL" | tr -d '[:space:]')
-  node scripts/user-create.js "$TUDUDI_USER_EMAIL" "$TUDUDI_USER_PASSWORD" true || exit 1
+  if ! node scripts/user-create.js "$TUDUDI_USER_EMAIL" "$TUDUDI_USER_PASSWORD" true; then
+    echo "❌ Failed to create/update user. Check migration errors above."
+    exit 1
+  fi
 fi
 
 exec node app.js

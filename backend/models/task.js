@@ -101,7 +101,7 @@ module.exports = (sequelize) => {
                 type: DataTypes.INTEGER,
                 allowNull: true,
                 validate: {
-                    min: 1,
+                    min: -1,
                     max: 5,
                 },
             },
@@ -131,6 +131,14 @@ module.exports = (sequelize) => {
                 allowNull: true,
                 references: {
                     model: 'areas',
+                    key: 'id',
+                },
+            },
+            goal_id: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                references: {
+                    model: 'goals',
                     key: 'id',
                 },
             },
@@ -205,6 +213,30 @@ module.exports = (sequelize) => {
                 type: DataTypes.JSON,
                 allowNull: true,
                 defaultValue: null,
+            },
+            assigned_to: {
+                type: DataTypes.STRING,
+                allowNull: true,
+                defaultValue: null,
+                references: {
+                    model: 'people',
+                    key: 'uid',
+                },
+            },
+            involves: {
+                type: DataTypes.TEXT,
+                allowNull: true,
+                defaultValue: null,
+                get() {
+                    const raw = this.getDataValue('involves');
+                    return raw ? JSON.parse(raw) : [];
+                },
+                set(value) {
+                    this.setDataValue(
+                        'involves',
+                        value && value.length > 0 ? JSON.stringify(value) : null
+                    );
+                },
             },
         },
         {

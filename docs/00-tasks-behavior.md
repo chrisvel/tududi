@@ -202,6 +202,19 @@ This document explains how tasks work in tududi from a user behavior perspective
     - Subtasks inherit parent task's project
     - Changing parent's project doesn't automatically update subtasks
 
+### Goal Assignment
+
+29. **Tasks can be directly assigned to a goal:**
+    - Optional `goal_id` field links the task to a specific goal
+    - Independent of any project — a task's goal and its project's goal are separate fields
+    - Set via the **Goal** card in the Task detail page sidebar (below the Area card)
+    - When a goal is deleted, `goal_id` is set to `null` on all tasks that referenced it
+
+30. **Goal assignment effects:**
+    - The task appears in the Goal detail page's Tasks section
+    - Useful for tracking work-toward-a-goal that doesn't fit inside a project
+    - No permission changes — goal access follows the task's normal permissions
+
 ---
 
 ## **Tags**

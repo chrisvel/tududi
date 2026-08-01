@@ -7,11 +7,12 @@ import {
     TagIcon,
     FolderIcon,
 } from '@heroicons/react/24/solid';
-import { DocumentDuplicateIcon } from '@heroicons/react/24/outline';
+import { DocumentDuplicateIcon, MapPinIcon } from '@heroicons/react/24/outline';
 import { useToast } from '../Shared/ToastContext';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import NoteModal from './NoteModal';
 import MarkdownRenderer from '../Shared/MarkdownRenderer';
+import BacklinksPanel from './BacklinksPanel';
 import { Note } from '../../entities/Note';
 import {
     fetchNoteBySlug,
@@ -34,6 +35,8 @@ const NoteDetails: React.FC = () => {
     const [isError, setIsError] = useState(false);
     const projects = useStore((state: any) => state.projectsStore.projects);
     const { setProjects } = useStore((state: any) => state.projectsStore);
+    const storeNotes = useStore((state) => state.notesStore.notes);
+    const setStoreNotes = useStore((state) => state.notesStore.setNotes);
     const navigate = useNavigate();
 
     // Dispatch global modal events
@@ -115,6 +118,20 @@ const NoteDetails: React.FC = () => {
         } catch (error) {
             console.error('Error creating project:', error);
             throw error;
+        }
+    };
+
+    const handleTogglePin = async () => {
+        if (!note?.uid) return;
+        const newValue = !note.pin_to_sidebar;
+        const updated = { ...note, pin_to_sidebar: newValue };
+        setNote(updated);
+        setStoreNotes(storeNotes.map((n) => (n.uid === note.uid ? { ...n, pin_to_sidebar: newValue } : n)));
+        try {
+            await apiUpdateNote(note.uid, { pin_to_sidebar: newValue } as any);
+        } catch {
+            setNote(note);
+            setStoreNotes(storeNotes.map((n) => (n.uid === note.uid ? { ...n, pin_to_sidebar: !newValue } : n)));
         }
     };
 
@@ -221,6 +238,14 @@ const NoteDetails: React.FC = () => {
                     {/* Action Buttons */}
                     <div className="flex space-x-2">
                         <button
+                            onClick={handleTogglePin}
+                            className={`focus:outline-none ${note?.pin_to_sidebar ? 'text-blue-500 hover:text-blue-700 dark:hover:text-blue-300' : 'text-gray-500 hover:text-blue-600 dark:hover:text-blue-300'}`}
+                            aria-label={note?.pin_to_sidebar ? t('notes.unpinFromSidebar', 'Unpin from sidebar') : t('notes.pinToSidebar', 'Pin to sidebar')}
+                            title={note?.pin_to_sidebar ? t('notes.unpinFromSidebar', 'Unpin from sidebar') : t('notes.pinToSidebar', 'Pin to sidebar')}
+                        >
+                            <MapPinIcon className="h-5 w-5" />
+                        </button>
+                        <button
                             onClick={handleCopyNote}
                             className="text-gray-500 hover:text-green-700 dark:hover:text-green-300 focus:outline-none"
                             aria-label={t('notes.copyContent', 'Copy note content')}
@@ -280,6 +305,9 @@ const NoteDetails: React.FC = () => {
                             }
                         }}
                     />
+                    {note.uid && (
+                        <BacklinksPanel noteUid={note.uid} noteTitle={note.title} />
+                    )}
                 </div>
                 {/* NoteModal for editing */}
                 {isNoteModalOpen && (
@@ -307,7 +335,7 @@ const NoteDetails: React.FC = () => {
                 {/* ConfirmDialog */}
                 {isConfirmDialogOpen && noteToDelete && (
                     <ConfirmDialog
-                        title="Delete Note"
+                        title={t('modals.deleteNote.title')}
                         message={`Are you sure you want to delete the note "${noteToDelete.title}"?`}
                         onConfirm={handleDeleteNote}
                         onCancel={() => {

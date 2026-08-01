@@ -1,8 +1,6 @@
 import React, { ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-    SunIcon,
-    MoonIcon,
     PhotoIcon,
     UserCircleIcon,
     UserIcon,
@@ -21,7 +19,6 @@ interface GeneralTabProps {
     isActive: boolean;
     formData: ProfileFormData;
     onChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
-    onAppearanceChange: (appearance: 'light' | 'dark') => void;
     onLanguageChange: (languageCode: string) => void;
     onTimezoneChange: (timezone: string) => void;
     onFirstDayChange: (value: number) => void;
@@ -36,7 +33,6 @@ const GeneralTab: React.FC<GeneralTabProps> = ({
     isActive,
     formData,
     onChange,
-    onAppearanceChange,
     onLanguageChange,
     onTimezoneChange,
     onFirstDayChange,
@@ -162,38 +158,6 @@ const GeneralTab: React.FC<GeneralTabProps> = ({
                             'Enter your surname'
                         )}
                     />
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        {t('profile.appearance')}
-                    </label>
-                    <div className="flex rounded-md border border-gray-300 dark:border-gray-600 overflow-hidden">
-                        <button
-                            type="button"
-                            onClick={() => onAppearanceChange('light')}
-                            className={`flex-1 flex items-center justify-center px-4 py-2 text-sm font-medium transition-colors ${
-                                formData.appearance === 'light'
-                                    ? 'bg-blue-500 text-white'
-                                    : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
-                            }`}
-                        >
-                            <SunIcon className="h-4 w-4 mr-2" />
-                            {t('profile.lightMode', 'Light')}
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => onAppearanceChange('dark')}
-                            className={`flex-1 flex items-center justify-center px-4 py-2 text-sm font-medium transition-colors ${
-                                formData.appearance === 'dark'
-                                    ? 'bg-blue-500 text-white'
-                                    : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
-                            }`}
-                        >
-                            <MoonIcon className="h-4 w-4 mr-2" />
-                            {t('profile.darkMode', 'Dark')}
-                        </button>
-                    </div>
                 </div>
 
                 <div>

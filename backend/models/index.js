@@ -9,6 +9,13 @@ dbConfig = {
     dialect: 'sqlite',
     storage: config.dbFile,
     logging: config.environment === 'development' ? console.log : false,
+    // Allow concurrent reads under WAL mode; SQLite serializes writes internally
+    pool: {
+        max: 5,
+        min: 1,
+        idle: 10000,
+        acquire: 60000,
+    },
     define: {
         timestamps: true,
         underscored: true,
@@ -21,26 +28,41 @@ const sequelize = new Sequelize(dbConfig);
 
 // SQLite performance optimizations for slow I/O systems (e.g., Synology NAS with HDDs)
 if (dbConfig.dialect === 'sqlite') {
-    const pragmas = [
-        // WAL mode: sequential writes instead of random I/O, better for Btrfs COW
-        'PRAGMA journal_mode=WAL;',
-        // Relaxed sync: faster writes with minimal durability risk for single-user app
-        'PRAGMA synchronous=NORMAL;',
-        // 5 second busy timeout: prevents "database is locked" errors under load
-        'PRAGMA busy_timeout=5000;',
-        // 64MB cache: keeps more data in memory, reduces disk reads
-        'PRAGMA cache_size=-64000;',
-        // Store temp tables in memory instead of disk
-        'PRAGMA temp_store=MEMORY;',
-        // Enable memory-mapped I/O (256MB): faster reads on large databases
-        'PRAGMA mmap_size=268435456;',
-    ];
+    // Per-connection PRAGMAs via afterConnect, which runs inside _connect() before
+    // the connection is returned to the pool. This guarantees busy_timeout is set
+    // on every connection before first use, preventing SQLITE_BUSY errors when
+    // startup scripts race against an async IIFE that might not yet have run.
+    sequelize.afterConnect(async (connection) => {
+        await new Promise((resolve, reject) => {
+            connection.exec(
+                [
+                    // Relaxed sync: faster writes with minimal durability risk for single-user app
+                    'PRAGMA synchronous=NORMAL;',
+                    // 5 second busy timeout: prevents "database is locked" errors under load
+                    'PRAGMA busy_timeout=5000;',
+                    // 64MB cache: keeps more data in memory, reduces disk reads
+                    'PRAGMA cache_size=-64000;',
+                    // Store temp tables in memory instead of disk
+                    'PRAGMA temp_store=MEMORY;',
+                    // Enable memory-mapped I/O (256MB): faster reads on large databases
+                    'PRAGMA mmap_size=268435456;',
+                    // Checkpoint WAL every 200 frames instead of the 1000-frame default.
+                    // Keeps the WAL file smaller so reads traverse fewer frames on slow disks.
+                    'PRAGMA wal_autocheckpoint=200;',
+                ].join('\n'),
+                (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                }
+            );
+        });
+    });
 
+    // WAL mode persists in the DB file — set it once on startup.
+    // afterConnect ensures busy_timeout is already applied on the connection used here.
     (async () => {
         try {
-            for (const pragma of pragmas) {
-                await sequelize.query(pragma);
-            }
+            await sequelize.query('PRAGMA journal_mode=WAL;');
             if (config.environment === 'development') {
                 console.log('SQLite performance optimizations enabled');
             }
@@ -79,6 +101,8 @@ const CalDAVOccurrenceOverride = require('./caldav_occurrence_override')(
 const CalDAVRemoteCalendar = require('./caldav_remote_calendar')(sequelize);
 const CalendarToken = require('./calendar_token')(sequelize);
 const Goal = require('./goal')(sequelize);
+const Person = require('./person')(sequelize);
+const UserProjectArea = require('./user_project_area')(sequelize);
 
 User.hasMany(Area, { foreignKey: 'user_id' });
 Area.belongsTo(User, { foreignKey: 'user_id' });
@@ -88,6 +112,8 @@ Goal.belongsTo(User, { foreignKey: 'user_id' });
 Area.hasMany(Goal, { foreignKey: 'area_id', as: 'Goals' });
 Goal.belongsTo(Area, { foreignKey: 'area_id' });
 Goal.hasMany(Project, { foreignKey: 'goal_id', as: 'Projects' });
+Goal.hasMany(Task, { foreignKey: 'goal_id', as: 'Tasks' });
+Task.belongsTo(Goal, { foreignKey: 'goal_id', allowNull: true, as: 'Goal' });
 
 User.hasMany(Project, { foreignKey: 'user_id' });
 Project.belongsTo(User, { foreignKey: 'user_id' });
@@ -271,11 +297,143 @@ User.hasMany(CalendarToken, {
 });
 CalendarToken.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 
+// UserProjectArea associations (per-user area placement for shared projects)
+User.hasMany(UserProjectArea, {
+    foreignKey: 'user_id',
+    as: 'ProjectAreaOverrides',
+});
+UserProjectArea.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+Project.hasMany(UserProjectArea, {
+    foreignKey: 'project_id',
+    as: 'AreaOverrides',
+});
+UserProjectArea.belongsTo(Project, { foreignKey: 'project_id', as: 'Project' });
+UserProjectArea.belongsTo(Area, { foreignKey: 'area_id', as: 'Area' });
+
+// Person associations
+User.hasMany(Person, { foreignKey: 'user_id', as: 'People' });
+Person.belongsTo(User, { foreignKey: 'user_id' });
+Task.belongsTo(Person, {
+    foreignKey: 'assigned_to',
+    targetKey: 'uid',
+    as: 'AssignedTo',
+    allowNull: true,
+});
+Person.hasMany(Task, {
+    foreignKey: 'assigned_to',
+    sourceKey: 'uid',
+    as: 'AssignedTasks',
+});
+User.hasOne(Person, { foreignKey: 'linked_user_id', as: 'SelfPerson' });
+Person.belongsTo(User, { foreignKey: 'linked_user_id', as: 'LinkedUser' });
+
+// Auto-create a self-person for every new user
+User.addHook('afterCreate', async (user, options) => {
+    try {
+        const existing = await Person.findOne({
+            where: { user_id: user.id, linked_user_id: user.id },
+            transaction: options.transaction,
+        });
+        if (existing) return;
+
+        const nameParts = [user.name, user.surname].filter(Boolean);
+        let personName =
+            nameParts.length > 0
+                ? nameParts.join(' ').trim()
+                : user.email.split('@')[0];
+
+        const nameConflict = await Person.findOne({
+            where: { user_id: user.id, name: personName },
+            transaction: options.transaction,
+        });
+        if (nameConflict) personName = personName + ' (me)';
+
+        await Person.create(
+            {
+                user_id: user.id,
+                linked_user_id: user.id,
+                name: personName,
+                email: user.email || null,
+                relationship_type: 'other',
+                archived: false,
+            },
+            { transaction: options.transaction }
+        );
+    } catch (err) {
+        const { logError } = require('../services/logService');
+        logError(err, `Failed to create self-person for user ${user.id}`);
+    }
+});
+
+// Sync name/email changes to the self-person
+User.addHook('afterUpdate', async (user, options) => {
+    if (
+        !user.changed('name') &&
+        !user.changed('surname') &&
+        !user.changed('email')
+    )
+        return;
+    try {
+        const selfPerson = await Person.findOne({
+            where: { user_id: user.id, linked_user_id: user.id },
+            transaction: options.transaction,
+        });
+        if (!selfPerson) return;
+
+        const updates = {};
+        if (user.changed('name') || user.changed('surname')) {
+            const nameParts = [user.name, user.surname].filter(Boolean);
+            updates.name =
+                nameParts.length > 0
+                    ? nameParts.join(' ').trim()
+                    : user.email.split('@')[0];
+        }
+        if (user.changed('email')) updates.email = user.email || null;
+
+        await selfPerson.update(updates, { transaction: options.transaction });
+    } catch (err) {
+        const { logError } = require('../services/logService');
+        logError(err, `Failed to sync self-person for user ${user.id}`);
+    }
+});
+
+// Sync self-person name changes back to the linked User
+// Only fires for self-persons (linked_user_id === user_id) and only syncs name, not email
+// (email is auth-sensitive; Person → User email sync is intentionally excluded)
+Person.addHook('afterUpdate', async (person, options) => {
+    if (!person.changed('name')) return;
+    if (
+        person.linked_user_id == null ||
+        person.linked_user_id !== person.user_id
+    )
+        return;
+    try {
+        const linkedUser = await User.findByPk(person.linked_user_id, {
+            transaction: options.transaction,
+        });
+        if (!linkedUser) return;
+
+        const [firstName, ...rest] = person.name.trim().split(' ');
+        const surname = rest.length > 0 ? rest.join(' ') : null;
+
+        await linkedUser.update(
+            { name: firstName || null, surname },
+            { transaction: options.transaction }
+        );
+    } catch (err) {
+        const { logError } = require('../services/logService');
+        logError(err, `Failed to sync user from self-person ${person.id}`);
+    }
+});
+
 // Seed system tags for every new user
-User.addHook('afterCreate', async (user) => {
+User.addHook('afterCreate', async (user, options) => {
     try {
         const { seedSystemTagsForUser } = require('../modules/tags/systemTags');
-        await seedSystemTagsForUser(user.id);
+        // Pass the parent transaction so Tag.findOrCreate doesn't open a nested
+        // transaction while User.findOrCreate's transaction is still active,
+        // which causes SQLITE_BUSY on first-time database initialization.
+        await seedSystemTagsForUser(user.id, options.transaction);
     } catch (err) {
         // Non-fatal: system tags can be seeded via migration if this fails
         const { logError } = require('../services/logService');
@@ -312,4 +470,6 @@ module.exports = {
     CalDAVOccurrenceOverride,
     CalDAVRemoteCalendar,
     CalendarToken,
+    Person,
+    UserProjectArea,
 };

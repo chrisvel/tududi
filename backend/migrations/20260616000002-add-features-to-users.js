@@ -1,5 +1,7 @@
 'use strict';
 
+const { safeAddColumns } = require('../utils/migration-utils');
+
 const DEFAULT_FEATURES = {
     task_intelligence_enabled: true,
     auto_suggest_next_actions_enabled: false,
@@ -11,14 +13,15 @@ const DEFAULT_FEATURES = {
 
 module.exports = {
     async up(queryInterface, Sequelize) {
-        const tableDescription = await queryInterface.describeTable('users');
-
-        if (!tableDescription.features) {
-            await queryInterface.addColumn('users', 'features', {
-                type: Sequelize.TEXT,
-                allowNull: true,
-            });
-        }
+        await safeAddColumns(queryInterface, 'users', [
+            {
+                name: 'features',
+                definition: {
+                    type: Sequelize.TEXT,
+                    allowNull: true,
+                },
+            },
+        ]);
 
         const [users] = await queryInterface.sequelize.query(
             `SELECT id,

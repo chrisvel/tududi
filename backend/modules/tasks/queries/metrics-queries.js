@@ -192,7 +192,8 @@ async function fetchTasksDueToday(
     visibleTasksWhere,
     userTimezone,
     userId,
-    somedayExcludedIds = []
+    somedayExcludedIds = [],
+    permissionCache = null
 ) {
     const safeTimezone = getSafeTimezone(userTimezone);
     const todayBounds = getTodayBoundsInUTC(safeTimezone);
@@ -200,7 +201,8 @@ async function fetchTasksDueToday(
     // Get project permissions
     const projectWhere = await permissionsService.ownershipOrPermissionWhere(
         'project',
-        userId
+        userId,
+        permissionCache
     );
 
     // Build project access SQL condition
@@ -277,7 +279,8 @@ async function fetchOverdueTasks(
     visibleTasksWhere,
     userTimezone,
     userId,
-    somedayExcludedIds = []
+    somedayExcludedIds = [],
+    permissionCache = null
 ) {
     const safeTimezone = getSafeTimezone(userTimezone);
     const todayBounds = getTodayBoundsInUTC(safeTimezone);
@@ -285,7 +288,8 @@ async function fetchOverdueTasks(
     // Get project permissions
     const projectWhere = await permissionsService.ownershipOrPermissionWhere(
         'project',
-        userId
+        userId,
+        permissionCache
     );
 
     // Build project access SQL condition
@@ -516,13 +520,14 @@ async function fetchTasksCompletedToday(userId, userTimezone) {
     const safeTimezone = getSafeTimezone(userTimezone);
     const todayBounds = getTodayBoundsInUTC(safeTimezone);
 
-    // Fetch regular completed tasks
+    // Fetch regular completed tasks (exclude habit tasks — those are captured via RecurringCompletion)
     const regularCompletedTasks = await Task.findAll({
         where: {
             user_id: userId,
             status: Task.STATUS.DONE,
             parent_task_id: null,
             recurring_parent_id: null,
+            habit_mode: false,
             completed_at: {
                 [Op.gte]: todayBounds.start,
                 [Op.lte]: todayBounds.end,

@@ -294,31 +294,17 @@ const sendSummaryToUser = async (userId) => {
         const summary = await generateSummaryForUser(userId);
         if (!summary) return false;
 
-        // Send the message via Telegram with MarkdownV2 formatting
-        // If MarkdownV2 parsing fails (e.g. unescaped characters), retry as plain text
-        try {
-            await sendTelegramMessage(
-                user.telegram_bot_token,
-                user.telegram_chat_id,
-                summary,
-                null,
-                { parseMode: 'MarkdownV2' }
-            );
-        } catch (markdownError) {
-            console.warn(
-                `MarkdownV2 send failed for user ${userId}, retrying as plain text:`,
-                markdownError.message
-            );
-            const plainSummary = summary.replace(
-                /\\([_*\[\]()~`>#+\-=|{}.!\\])/g,
-                '$1'
-            );
-            await sendTelegramMessage(
-                user.telegram_bot_token,
-                user.telegram_chat_id,
-                plainSummary
-            );
-        }
+        // Strip MarkdownV2 escape sequences and send as plain text to avoid
+        // double-send if Telegram accepts the message but the HTTP response is lost
+        const plainSummary = summary.replace(
+            /\\([_*\[\]()~`>#+\-=|{}.!\\])/g,
+            '$1'
+        );
+        await sendTelegramMessage(
+            user.telegram_bot_token,
+            user.telegram_chat_id,
+            plainSummary
+        );
 
         // Update tracking fields
         const now = new Date();

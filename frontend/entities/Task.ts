@@ -2,6 +2,7 @@ import { Tag } from './Tag';
 import { Project } from './Project';
 import { Area } from './Area';
 import { Attachment } from './Attachment';
+import { Person } from './Person';
 
 export interface Task {
     id?: number;
@@ -21,6 +22,8 @@ export interface Task {
     area_id?: number;
     area_uid?: string;
     Area?: Area;
+    goal_id?: number | null;
+    goal_uid?: string | null;
     created_at?: string;
     updated_at?: string;
     recurrence_type?: RecurrenceType;
@@ -35,6 +38,7 @@ export interface Task {
     recurring_parent_uid?: string;
     completed_at: string | null;
     parent_task_id?: number;
+    parent_task?: { id: number; uid: string; name: string } | null;
     subtasks?: Task[];
     parent_child_logic_executed?: boolean;
     attachments?: Attachment[];
@@ -47,6 +51,9 @@ export interface Task {
     habit_best_streak?: number;
     habit_total_completions?: number;
     habit_last_completion_at?: string;
+    assigned_to?: string | null;
+    AssignedTo?: Person | null;
+    involves?: string[];
     // Transient UI field set by suggestion scoring - never persisted or sent to server
     _suggestionMeta?: {
         score: number;

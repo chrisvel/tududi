@@ -68,7 +68,7 @@ const AutoSuggestNextActionBox: React.FC<AutoSuggestNextActionBoxProps> = ({
                 <button
                     onClick={onDismiss}
                     className="text-blue-400 hover:text-blue-600 dark:text-blue-500 dark:hover:text-blue-300 transition-colors"
-                    aria-label="Dismiss"
+                    aria-label={t('common.dismiss')}
                 >
                     <svg
                         className="w-5 h-5"

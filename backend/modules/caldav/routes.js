@@ -14,8 +14,17 @@ const {
     handlePutTask,
     handleDeleteTask,
 } = require('./webdav/task-handlers');
+// Per-project calendars (opt-in via CALDAV_PROJECTS_AS_CALENDARS)
+const {
+    handleCalendarHomePropfind,
+    handleProjectPropfind,
+    handleProjectReport,
+} = require('./webdav/projects');
 const apiRoutes = require('./api/routes');
 const { requireAuth } = require('../../middleware/auth');
+const taskRepository = require('../tasks/repository');
+const vtodoSerializer = require('./icalendar/vtodo-serializer');
+const { generateCTag } = require('./utils/ctag-generator');
 
 const router = express.Router();
 
@@ -58,6 +67,25 @@ router.options(
     caldavAuth,
     handleOptions
 );
+// Per-project OPTIONS
+router.options(
+    '/caldav/:username/projects/',
+    xmlParser,
+    caldavAuth,
+    handleOptions
+);
+router.options(
+    '/caldav/:username/projects/:projectUid/',
+    xmlParser,
+    caldavAuth,
+    handleOptions
+);
+router.options(
+    '/caldav/:username/projects/:projectUid/:uid',
+    xmlParser,
+    caldavAuth,
+    handleOptions
+);
 
 function registerMethod(method, path, handler) {
     router.all(path, xmlParser, caldavAuth, (req, res, next) => {
@@ -74,6 +102,52 @@ registerMethod('PROPFIND', '/caldav/:username/tasks/', handlePropfind);
 registerMethod('PROPFIND', '/caldav/:username/tasks/:uid', handlePropfind);
 
 registerMethod('REPORT', '/caldav/:username/tasks/', handleReport);
+
+// Per-project calendar tree (opt-in). calendar-home is /caldav/<user>/projects/,
+// which lists one calendar per project plus a "(No Project)" calendar. These
+// handlers 404 unless CALDAV_PROJECTS_AS_CALENDARS=true.
+registerMethod(
+    'PROPFIND',
+    '/caldav/:username/projects/',
+    handleCalendarHomePropfind
+);
+registerMethod(
+    'PROPFIND',
+    '/caldav/:username/projects/:projectUid/',
+    handleProjectPropfind
+);
+registerMethod(
+    'PROPFIND',
+    '/caldav/:username/projects/:projectUid/:uid',
+    handleProjectPropfind
+);
+registerMethod(
+    'REPORT',
+    '/caldav/:username/projects/:projectUid/',
+    handleProjectReport
+);
+
+// MKCOL on the projects home or a project calendar: 405 Method Not Allowed.
+router.all(
+    '/caldav/:username/projects/',
+    xmlParser,
+    caldavAuth,
+    (req, res, next) => {
+        if (req.method !== 'MKCOL') return next();
+        res.set('Allow', 'OPTIONS, GET, HEAD, PROPFIND');
+        return res.status(405).end();
+    }
+);
+router.all(
+    '/caldav/:username/projects/:projectUid/',
+    xmlParser,
+    caldavAuth,
+    (req, res, next) => {
+        if (req.method !== 'MKCOL') return next();
+        res.set('Allow', 'OPTIONS, GET, HEAD, PROPFIND, REPORT');
+        return res.status(405).end();
+    }
+);
 
 // MKCOL on the existing tasks calendar: 405 Method Not Allowed (already exists).
 router.all(
@@ -105,11 +179,43 @@ router.all(
     }
 );
 
-router.get('/caldav/:username/tasks/', xmlParser, caldavAuth, (req, res) => {
-    res.status(207).send(
-        '<?xml version="1.0"?><D:multistatus xmlns:D="DAV:"/>'
-    );
-});
+// GET on the calendar collection: return the aggregated iCalendar so that
+// clients (Tasks.org, DAVx5) receive a proper 200 with an ETag (CTag).
+// Responding with 207 here breaks those clients with "GET response without ETag".
+router.get(
+    '/caldav/:username/tasks/',
+    xmlParser,
+    caldavAuth,
+    async (req, res) => {
+        try {
+            if (
+                !req.currentUser ||
+                req.currentUser.email !== req.params.username
+            ) {
+                return res.status(403).send('Forbidden');
+            }
+            const userId = req.currentUser.id;
+            const userTimezone = req.currentUser.timezone || 'UTC';
+            const tasks = await taskRepository.findByUser(userId);
+            const ctag = generateCTag(tasks);
+            const ical = await vtodoSerializer.serializeCollectionToVCALENDAR(
+                tasks,
+                { userTimezone }
+            );
+            return res
+                .status(200)
+                .set({
+                    'Content-Type': 'text/calendar; charset=utf-8',
+                    ETag: ctag,
+                    'Last-Modified': new Date().toUTCString(),
+                })
+                .send(ical);
+        } catch (err) {
+            console.error('GET collection error:', err);
+            return res.status(500).send('Internal Server Error');
+        }
+    }
+);
 
 router.get(
     '/caldav/:username/tasks/:uid',
@@ -125,6 +231,39 @@ router.put(
 );
 router.delete(
     '/caldav/:username/tasks/:uid',
+    xmlParser,
+    caldavAuth,
+    handleDeleteTask
+);
+
+// Per-project collection GET (empty 207) + item GET/PUT/DELETE. Item handlers are
+// keyed by the globally-unique task uid, so the existing task-handlers work
+// unchanged; handlePutTask reads :projectUid to file new tasks into the right
+// project.
+router.get(
+    '/caldav/:username/projects/:projectUid/',
+    xmlParser,
+    caldavAuth,
+    (req, res) => {
+        res.status(207).send(
+            '<?xml version="1.0"?><D:multistatus xmlns:D="DAV:"/>'
+        );
+    }
+);
+router.get(
+    '/caldav/:username/projects/:projectUid/:uid',
+    xmlParser,
+    caldavAuth,
+    handleGetTask
+);
+router.put(
+    '/caldav/:username/projects/:projectUid/:uid',
+    xmlParser,
+    caldavAuth,
+    handlePutTask
+);
+router.delete(
+    '/caldav/:username/projects/:projectUid/:uid',
     xmlParser,
     caldavAuth,
     handleDeleteTask

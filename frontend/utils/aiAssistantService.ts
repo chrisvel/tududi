@@ -6,9 +6,12 @@ export interface PriorityAction {
     project: string | null;
     reason?: string;
     suggestion?: string;
+    task_uid?: string | null;
+    project_uid?: string | null;
 }
 
 export interface DailyBrief {
+    overview?: string;
     focus: string;
     priority_actions: PriorityAction[];
     watch_out: string[];
@@ -19,6 +22,26 @@ export interface DailyBrief {
         completion_tokens?: number;
     };
 }
+
+export const fetchCachedBrief = async (): Promise<DailyBrief | null> => {
+    const response = await fetch(getApiPath('ai-assistant/daily-brief'), {
+        method: 'GET',
+        credentials: 'include',
+    });
+    if (!response.ok) return null;
+    const data = await response.json();
+    return data || null;
+};
+
+export const fetchDailyBrief = async (): Promise<DailyBrief> => {
+    const response = await fetch(getApiPath('ai-assistant/daily-brief'), {
+        method: 'POST',
+        credentials: 'include',
+        headers: await getPostHeadersWithCsrf(),
+    });
+    await handleAuthResponse(response, 'Failed to generate daily brief.');
+    return response.json();
+};
 
 export interface TaskInsightsRequest {
     taskUid?: string;
@@ -153,22 +176,3 @@ export const updateProjectInsightsDismissed = async (
     );
 };
 
-export const fetchCachedBrief = async (): Promise<DailyBrief | null> => {
-    const response = await fetch(getApiPath('ai-assistant/daily-brief'), {
-        method: 'GET',
-        credentials: 'include',
-    });
-    if (!response.ok) return null;
-    const data = await response.json();
-    return data || null;
-};
-
-export const fetchDailyBrief = async (): Promise<DailyBrief> => {
-    const response = await fetch(getApiPath('ai-assistant/daily-brief'), {
-        method: 'POST',
-        credentials: 'include',
-        headers: await getPostHeadersWithCsrf(),
-    });
-    await handleAuthResponse(response, 'Failed to generate daily brief.');
-    return response.json();
-};

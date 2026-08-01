@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { extractTitleFromText, UrlTitleResult } from '../../utils/urlService';
 import { XMarkIcon, PhotoIcon } from '@heroicons/react/24/outline';
 
@@ -8,6 +9,7 @@ interface UrlPreviewProps {
 }
 
 const UrlPreview: React.FC<UrlPreviewProps> = ({ text, onPreviewChange }) => {
+    const { t } = useTranslation();
     const [preview, setPreview] = useState<UrlTitleResult | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isVisible, setIsVisible] = useState(true);
@@ -75,7 +77,7 @@ const UrlPreview: React.FC<UrlPreviewProps> = ({ text, onPreviewChange }) => {
             <button
                 onClick={handleDismiss}
                 className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 z-10"
-                aria-label="Dismiss preview"
+                aria-label={t('common.dismiss')}
             >
                 <XMarkIcon className="h-4 w-4" />
             </button>

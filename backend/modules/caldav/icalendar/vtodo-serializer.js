@@ -4,8 +4,11 @@ const {
     tududiToIcalPriority,
 } = require('./field-mappings');
 const { generateRRULE } = require('./rrule-generator');
+const { utcToUserDateString } = require('../../../utils/timezone-utils');
 
 function serializeTaskToVTODO(task, options = {}) {
+    const { userTimezone } = options;
+
     const comp = new ICAL.Component('vcalendar');
     comp.addPropertyWithValue('version', '2.0');
     comp.addPropertyWithValue('prodid', '-//Tududi//Task Manager//EN');
@@ -28,12 +31,16 @@ function serializeTaskToVTODO(task, options = {}) {
     if (task.due_date) {
         try {
             const d = new Date(task.due_date);
-            const dueDate = new ICAL.Time({
-                year: d.getUTCFullYear(),
-                month: d.getUTCMonth() + 1,
-                day: d.getUTCDate(),
-                isDate: true,
-            });
+            // Use user timezone to get the correct calendar date; Tududi stores
+            // due_date as end-of-day in the user's timezone, so converting with
+            // UTC date parts gives the wrong date for non-UTC users.
+            const dateStr = userTimezone
+                ? utcToUserDateString(d, userTimezone)
+                : null;
+            const [year, month, day] = dateStr
+                ? dateStr.split('-').map(Number)
+                : [d.getUTCFullYear(), d.getUTCMonth() + 1, d.getUTCDate()];
+            const dueDate = new ICAL.Time({ year, month, day, isDate: true });
             vtodo.addPropertyWithValue('due', dueDate);
         } catch (error) {
             console.error('Error formatting due date:', error);
@@ -43,12 +50,14 @@ function serializeTaskToVTODO(task, options = {}) {
     if (task.defer_until) {
         try {
             const d = new Date(task.defer_until);
-            const startDate = new ICAL.Time({
-                year: d.getUTCFullYear(),
-                month: d.getUTCMonth() + 1,
-                day: d.getUTCDate(),
-                isDate: true,
-            });
+            // Same timezone-aware conversion for DTSTART.
+            const dateStr = userTimezone
+                ? utcToUserDateString(d, userTimezone)
+                : null;
+            const [year, month, day] = dateStr
+                ? dateStr.split('-').map(Number)
+                : [d.getUTCFullYear(), d.getUTCMonth() + 1, d.getUTCDate()];
+            const startDate = new ICAL.Time({ year, month, day, isDate: true });
             vtodo.addPropertyWithValue('dtstart', startDate);
         } catch (error) {
             console.error('Error formatting defer_until date:', error);
@@ -201,6 +210,32 @@ function getStatusName(status) {
     return statusMap[status];
 }
 
+async function serializeCollectionToVCALENDAR(tasks, options = {}) {
+    const comp = new ICAL.Component('vcalendar');
+    comp.addPropertyWithValue('version', '2.0');
+    comp.addPropertyWithValue('prodid', '-//Tududi//Task Manager//EN');
+    comp.addPropertyWithValue('calscale', 'GREGORIAN');
+
+    for (const task of tasks) {
+        try {
+            const vtodoStr = serializeTaskToVTODO(task, options);
+            const taskComp = new ICAL.Component(ICAL.parse(vtodoStr));
+            const vtodo = taskComp.getFirstSubcomponent('vtodo');
+            if (vtodo) {
+                comp.addSubcomponent(vtodo);
+            }
+        } catch (err) {
+            console.error(
+                `Error serializing task ${task.uid} for collection:`,
+                err
+            );
+        }
+    }
+
+    return comp.toString();
+}
+
 module.exports = {
     serializeTaskToVTODO,
+    serializeCollectionToVCALENDAR,
 };

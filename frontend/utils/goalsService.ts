@@ -14,6 +14,16 @@ export const fetchGoals = async (areaUid?: string): Promise<Goal[]> => {
     return data.goals;
 };
 
+export const fetchGoalByUid = async (uid: string): Promise<Goal> => {
+    const response = await fetch(getApiPath(`goals/${uid}`), {
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
+    });
+    await handleAuthResponse(response, 'Failed to fetch goal.');
+    const data = await response.json();
+    return data.goal;
+};
+
 export const createGoal = async (
     data: Omit<Goal, 'id' | 'uid' | 'user_id' | 'created_at' | 'updated_at'>
 ): Promise<{ goal: Goal; active_goals_count: number }> => {

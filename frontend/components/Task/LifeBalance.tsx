@@ -7,7 +7,7 @@ import { fetchAreas } from '../../utils/areasService';
 interface AreaStats {
     name: string;
     color: string;
-    areaId: number | null;
+    areaUid: string | null;
     total: number;
     done: number;
     inProgress: number;
@@ -66,15 +66,15 @@ function generateConclusion(areas: AreaStats[]): string {
 
 const LifeBalance: React.FC<Props> = ({ projects }) => {
     const navigate = useNavigate();
-    const [areaMetaMap, setAreaMetaMap] = useState<Map<string, { color: string; id: number }>>(new Map());
+    const [areaMetaMap, setAreaMetaMap] = useState<Map<string, { color: string; uid: string }>>(new Map());
 
     useEffect(() => {
         fetchAreas()
             .then((fetched: Area[]) => {
-                const map = new Map<string, { color: string; id: number }>();
+                const map = new Map<string, { color: string; uid: string }>();
                 fetched.forEach((a) => {
-                    if (a.name && a.id != null) {
-                        map.set(a.name, { color: a.color ?? FALLBACK_COLOR, id: a.id });
+                    if (a.name && a.uid != null) {
+                        map.set(a.name, { color: a.color ?? FALLBACK_COLOR, uid: a.uid });
                     }
                 });
                 setAreaMetaMap(map);
@@ -83,14 +83,14 @@ const LifeBalance: React.FC<Props> = ({ projects }) => {
     }, []);
 
     const areas = useMemo<AreaStats[]>(() => {
-        const map = new Map<string, { color: string; areaId: number | null; total: number; done: number; inProgress: number }>();
+        const map = new Map<string, { color: string; areaUid: string | null; total: number; done: number; inProgress: number }>();
 
         projects.forEach((p) => {
             const areaObj = (p as any).Area ?? p.area;
             const name = areaObj?.name ?? 'No Area';
             const meta = areaMetaMap.get(name);
             const color: string = meta?.color ?? areaObj?.color ?? FALLBACK_COLOR;
-            const areaId: number | null = meta?.id ?? areaObj?.id ?? null;
+            const areaUid: string | null = meta?.uid ?? areaObj?.uid ?? null;
             const total = p.task_status?.total ?? 0;
             const done = p.task_status?.done ?? 0;
             const inProgress = p.task_status?.in_progress ?? 0;
@@ -100,7 +100,7 @@ const LifeBalance: React.FC<Props> = ({ projects }) => {
                 existing.done += done;
                 existing.inProgress += inProgress;
             } else {
-                map.set(name, { color, areaId, total, done, inProgress });
+                map.set(name, { color, areaUid, total, done, inProgress });
             }
         });
 
@@ -108,10 +108,10 @@ const LifeBalance: React.FC<Props> = ({ projects }) => {
 
         return Array.from(map.entries())
             .filter(([, a]) => a.total > 0)
-            .map(([name, { color, areaId, total, done, inProgress }]) => ({
+            .map(([name, { color, areaUid, total, done, inProgress }]) => ({
                 name,
                 color,
-                areaId,
+                areaUid,
                 total,
                 done,
                 inProgress,
@@ -134,8 +134,8 @@ const LifeBalance: React.FC<Props> = ({ projects }) => {
                     {areas.map((area) => (
                         <div
                             key={area.name}
-                            className={`flex items-center gap-3 ${area.areaId != null ? 'cursor-pointer group' : ''}`}
-                            onClick={() => area.areaId != null && navigate(`/area/${area.areaId}`)}
+                            className={`flex items-center gap-3 ${area.areaUid != null ? 'cursor-pointer group' : ''}`}
+                            onClick={() => area.areaUid != null && navigate(`/area/${area.areaUid}-${area.name.toLowerCase().replace(/\s+/g, '-')}`)}
                         >
                             <div className="w-36 flex-shrink-0 flex items-center justify-end gap-1.5 min-w-0">
                                 <span className="text-xs text-gray-600 dark:text-gray-400 truncate group-hover:text-blue-500 transition-colors">

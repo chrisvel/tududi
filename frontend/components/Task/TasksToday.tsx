@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
 import { useNavigate } from 'react-router-dom';
 import { getLocalesPath, getApiPath } from '../../config/paths';
-import { getCsrfToken } from '../../utils/csrfService';
 import { sortTasksByPriorityDueDateProject } from '../../utils/taskSortUtils';
 import { scoreAndSortSuggestedTasks } from '../../utils/suggestionScoringUtils';
 import { getTodayDateString } from '../../utils/dateUtils';
@@ -22,7 +21,6 @@ import {
     CalendarDaysIcon,
     QueueListIcon,
     ExclamationTriangleIcon,
-    SparklesIcon,
 } from '@heroicons/react/24/outline';
 import { fetchTasks, updateTask, deleteTask } from '../../utils/tasksService';
 import {
@@ -39,14 +37,13 @@ import { useStore } from '../../store/useStore';
 import TaskList from './TaskList';
 import TodayPlan from './TodayPlan';
 import { Metrics } from '../../entities/Metrics';
-import ProductivityAssistant from '../Productivity/ProductivityAssistant';
 import NextTaskSuggestion from './NextTaskSuggestion';
-import DailyAssistant from '../AI/DailyAssistant';
 import TodaySettingsDropdown from './TodaySettingsDropdown';
 import BurndownChart from './BurndownChart';
 import LifeBalance from './LifeBalance';
 import AreaDonut from './AreaDonut';
 import ActiveProjectsSection from './ActiveProjectsSection';
+import DailyAssistant from '../AI/DailyAssistant';
 
 const filterNonHabitTasks = (tasks: Task[] = []) =>
     tasks.filter((task) => !task.habit_mode);
@@ -74,6 +71,9 @@ const TasksToday: React.FC = () => {
     // Get tasks from store at the top level to avoid conditional hook usage
     const storeTasks = useStore((state) => state.tasksStore.tasks);
     const tagsStore = useStore((state) => state.tagsStore);
+    const aiAssistantEnabled = useStore(
+        (state) => state.userSettingsStore.aiAssistantEnabled
+    );
     const todayHabits = useStore((state) => state.habitsStore.habits);
     const loadHabitsStore = useStore((state) => state.habitsStore.loadHabits);
     const logHabitCompletion = useStore(
@@ -91,30 +91,26 @@ const TasksToday: React.FC = () => {
     const [localProjects, setLocalProjects] = useState<any[]>([]);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
     const [dailyQuote, setDailyQuote] = useState<string>('');
-    const [productivityAssistantEnabled, setProductivityAssistantEnabled] =
-        useState(true);
     const [isSettingsEnabled, setIsSettingsEnabled] = useState(false);
     const [todaySettings, setTodaySettings] = useState({
+        showDailyBrief: true,
         showMetrics: true,
         showAreaBalance: true,
         showActiveProjects: true,
-        showProductivity: false,
         showNextTaskSuggestion: false,
-        showDailyBrief: false,
         showSuggestions: true,
         showDueToday: true,
         showCompleted: true,
         showProgressBar: true, // Always enabled
         showDailyQuote: true,
+        showTaggedToday: true,
     });
+    const [hasBriefMounted, setHasBriefMounted] = useState(false);
     const [nextTaskSuggestionEnabled, setNextTaskSuggestionEnabled] =
         useState(true);
     const [profileSettings, setProfileSettings] = useState({
-        productivity_assistant_enabled: false,
         next_task_suggestion_enabled: false,
-        ai_assistant_enabled: false,
     });
-    const [hasBriefMounted, setHasBriefMounted] = useState(false);
     const [showNextTaskSuggestion, setShowNextTaskSuggestion] = useState(true);
     const [isSuggestedCollapsed, setIsSuggestedCollapsed] = useState(() => {
         const stored = localStorage.getItem('suggestedTasksCollapsed');
@@ -134,6 +130,10 @@ const TasksToday: React.FC = () => {
     });
     const [isDueTodayCollapsed, setIsDueTodayCollapsed] = useState(() => {
         const stored = localStorage.getItem('dueTodayTasksCollapsed');
+        return stored === 'true';
+    });
+    const [isTaggedTodayCollapsed, setIsTaggedTodayCollapsed] = useState(() => {
+        const stored = localStorage.getItem('taggedTodayTasksCollapsed');
         return stored === 'true';
     });
     const [isSettingsLoaded, setIsSettingsLoaded] = useState(false);
@@ -237,6 +237,19 @@ const TasksToday: React.FC = () => {
         return sortTasksByPriorityDueDateProject(tasks);
     }, [metrics.tasks_overdue, getTasksFromStore]);
 
+    const taggedTodayTasks = useMemo(() => {
+        return sortTasksByPriorityDueDateProject(
+            storeTasks.filter(
+                (t: Task) =>
+                    !t.habit_mode &&
+                    !isTaskDone(t.status) &&
+                    t.status !== 'archived' &&
+                    t.status !== 'cancelled' &&
+                    t.tags?.some((tag) => tag.name.toLowerCase() === 'today')
+            )
+        );
+    }, [storeTasks]);
+
     const getCompletionTrend = () => {
         const todayCount = metrics.tasks_completed_today.length;
         if (metrics.weekly_completions.length === 0) {
@@ -299,6 +312,12 @@ const TasksToday: React.FC = () => {
         const newState = !isDueTodayCollapsed;
         setIsDueTodayCollapsed(newState);
         localStorage.setItem('dueTodayTasksCollapsed', newState.toString());
+    };
+
+    const toggleTaggedTodayCollapsed = () => {
+        const newState = !isTaggedTodayCollapsed;
+        setIsTaggedTodayCollapsed(newState);
+        localStorage.setItem('taggedTodayTasksCollapsed', newState.toString());
     };
 
     const isHabitCompletedToday = useCallback((habit: Task) => {
@@ -487,7 +506,7 @@ const TasksToday: React.FC = () => {
             setIsLoading(true);
             try {
                 const result = await fetchTasks(
-                    `?type=today&limit=20&offset=0&include_lists=true`
+                    `?type=today&limit=20&offset=0&include_lists=true&include_subtasks=true`
                 );
                 if (isMounted.current) {
                     setMetrics({
@@ -550,13 +569,6 @@ const TasksToday: React.FC = () => {
                     if (isMounted.current) {
                         const userFeatures = userData.features || {};
 
-                        // Set productivity assistant setting
-                        setProductivityAssistantEnabled(
-                            userFeatures.productivity_assistant_enabled !== undefined
-                                ? userFeatures.productivity_assistant_enabled
-                                : true
-                        );
-
                         // Set next task suggestion setting
                         setNextTaskSuggestionEnabled(
                             userFeatures.next_task_suggestion_enabled !== undefined
@@ -586,10 +598,10 @@ const TasksToday: React.FC = () => {
 
                         // Use parsed settings or fall back to defaults
                         settings = settings || {
+                            showDailyBrief: true,
                             showMetrics: true,
                             showAreaBalance: true,
                             showActiveProjects: true,
-                            showProductivity: false,
                             showNextTaskSuggestion: false,
                             showSuggestions: true,
                             showDueToday: true,
@@ -598,26 +610,20 @@ const TasksToday: React.FC = () => {
                             showDailyQuote: true,
                         };
                         // Back-fill keys missing from stored settings
+                        if (settings.showDailyBrief === undefined) settings.showDailyBrief = true;
                         if (settings.showAreaBalance === undefined) settings.showAreaBalance = true;
                         if (settings.showActiveProjects === undefined) settings.showActiveProjects = true;
-                        if (settings.showDailyBrief === undefined) settings.showDailyBrief = false;
+                        if (settings.showTaggedToday === undefined) settings.showTaggedToday = true;
+
+                        if (settings.showDailyBrief) setHasBriefMounted(true);
 
                         // Store profile settings
-                        const currentProfileSettings = {
-                            productivity_assistant_enabled:
-                                userFeatures.productivity_assistant_enabled === true,
+                        setProfileSettings({
                             next_task_suggestion_enabled:
                                 userFeatures.next_task_suggestion_enabled === true,
-                            ai_assistant_enabled:
-                                userFeatures.ai_assistant_enabled === true,
-                        };
-                        setProfileSettings(currentProfileSettings);
+                        });
 
                         // Sync with profile features
-                        if (userFeatures.productivity_assistant_enabled !== undefined) {
-                            settings.showProductivity =
-                                userFeatures.productivity_assistant_enabled;
-                        }
                         if (userFeatures.next_task_suggestion_enabled !== undefined) {
                             settings.showNextTaskSuggestion =
                                 userFeatures.next_task_suggestion_enabled;
@@ -626,7 +632,6 @@ const TasksToday: React.FC = () => {
                         settings.showProgressBar = true;
 
                         setTodaySettings(settings);
-                        if (settings.showDailyBrief) setHasBriefMounted(true);
                         setIsSettingsLoaded(true);
                     }
                 } else {
@@ -636,7 +641,6 @@ const TasksToday: React.FC = () => {
                 console.error('Failed to load profile settings:', error);
                 // Set defaults on error
                 if (isMounted.current) {
-                    setProductivityAssistantEnabled(true);
                     setNextTaskSuggestionEnabled(true);
                     setIsSettingsLoaded(true);
                 }
@@ -979,7 +983,7 @@ const TasksToday: React.FC = () => {
                 await deleteTask(taskUid);
 
                 // Reload tasks to reflect the change
-                const result = await fetchTasks('?type=today');
+                const result = await fetchTasks('?type=today&include_subtasks=true');
                 if (isMounted.current) {
                     useStore.getState().tasksStore.setTasks(result.tasks);
                     setMetrics({
@@ -1202,7 +1206,7 @@ const TasksToday: React.FC = () => {
                     !updatedTask.recurring_parent_id;
 
                 if (isRecurringParent) {
-                    const result = await fetchTasks('?type=today');
+                    const result = await fetchTasks('?type=today&include_subtasks=true');
                     if (isMounted.current) {
                         setMetrics((prevMetrics) => ({
                             ...prevMetrics,
@@ -1251,28 +1255,7 @@ const TasksToday: React.FC = () => {
     // Handle settings change
     const handleSettingsChange = (newSettings: typeof todaySettings) => {
         setTodaySettings(newSettings);
-    };
-
-    const handleToggleDailyBrief = async () => {
-        if (!hasBriefMounted) setHasBriefMounted(true);
-        const newSettings = {
-            ...todaySettings,
-            showDailyBrief: !todaySettings.showDailyBrief,
-        };
-        setTodaySettings(newSettings);
-        try {
-            await fetch(getApiPath('profile/today-settings'), {
-                method: 'PUT',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-csrf-token': await getCsrfToken(),
-                },
-                body: JSON.stringify(newSettings),
-            });
-        } catch (error) {
-            console.error('Error saving daily brief setting:', error);
-        }
+        if (newSettings.showDailyBrief) setHasBriefMounted(true);
     };
 
     // Show loading state until both data and settings are loaded (only for initial load)
@@ -1317,21 +1300,6 @@ const TasksToday: React.FC = () => {
 
                             {/* Today Navigation Icons */}
                             <div className="flex items-center space-x-2">
-                                {profileSettings.ai_assistant_enabled && (
-                                    <button
-                                        onClick={handleToggleDailyBrief}
-                                        className={`flex items-center justify-center w-8 h-8 rounded-md transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
-                                            todaySettings.showDailyBrief
-                                                ? 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-300'
-                                                : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400'
-                                        }`}
-                                        aria-pressed={todaySettings.showDailyBrief}
-                                        aria-label={t('aiAssistant.dailyBriefTitle', 'AI Daily Brief')}
-                                        title={t('aiAssistant.dailyBriefTitle', 'AI Daily Brief')}
-                                    >
-                                        <SparklesIcon className="h-5 w-5" />
-                                    </button>
-                                )}
                                 <div className="relative">
                                     <button
                                         onClick={() =>
@@ -1391,8 +1359,8 @@ const TasksToday: React.FC = () => {
                     </div>
                 </div>
 
-                {/* AI Daily Brief - top of page, kept mounted once opened to preserve content */}
-                {isSettingsLoaded && profileSettings.ai_assistant_enabled && hasBriefMounted && (
+                {/* AI Daily Brief - kept mounted once opened to preserve fetched content */}
+                {hasBriefMounted && aiAssistantEnabled && (
                     <div className={todaySettings.showDailyBrief ? '' : 'hidden'}>
                         <DailyAssistant />
                     </div>
@@ -1517,24 +1485,6 @@ const TasksToday: React.FC = () => {
                     <ActiveProjectsSection projects={localProjects} />
                 )}
 
-                {/* Productivity Assistant - Conditionally Rendered */}
-                {!isSettingsLoaded ? (
-                    // Invisible placeholder for productivity assistant
-                    <div
-                        className="mb-4 opacity-0 pointer-events-none"
-                        aria-hidden="true"
-                    >
-                        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 h-24"></div>
-                    </div>
-                ) : todaySettings.showProductivity &&
-                  productivityAssistantEnabled &&
-                  profileSettings.productivity_assistant_enabled === true ? (
-                    <ProductivityAssistant
-                        tasks={storeTasks}
-                        projects={localProjects}
-                    />
-                ) : null}
-
                 {/* Next Task Suggestion - At top of tasks section */}
                 {!isSettingsLoaded ? (
                     // Invisible placeholder for next task suggestion
@@ -1562,6 +1512,41 @@ const TasksToday: React.FC = () => {
                         />
                     </div>
                 ) : null}
+
+                {/* Tagged #today Tasks */}
+                {isSettingsLoaded && todaySettings.showTaggedToday && taggedTodayTasks.length > 0 && (
+                    <div className="mb-6" data-testid="tagged-today-section">
+                        <div
+                            className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
+                            onClick={toggleTaggedTodayCollapsed}
+                            data-testid="tagged-today-section-header"
+                        >
+                            <h3 className="text-sm font-medium uppercase text-indigo-600 dark:text-indigo-400">
+                                {t('tasks.taggedToday', 'today')}
+                            </h3>
+                            <div className="flex items-center">
+                                <span className="text-sm text-gray-500 mr-2">
+                                    {taggedTodayTasks.length}
+                                </span>
+                                {isTaggedTodayCollapsed ? (
+                                    <ChevronRightIcon className="h-5 w-5 text-gray-500" />
+                                ) : (
+                                    <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+                                )}
+                            </div>
+                        </div>
+                        {!isTaggedTodayCollapsed && (
+                            <TaskList
+                                tasks={taggedTodayTasks}
+                                onTaskUpdate={handleTaskUpdate}
+                                onTaskDelete={handleTaskDelete}
+                                projects={localProjects}
+                                onToggleToday={undefined}
+                                onTaskCompletionToggle={handleTaskCompletionToggle}
+                            />
+                        )}
+                    </div>
+                )}
 
                 {/* Overdue Tasks - Displayed first */}
                 {isSettingsLoaded &&

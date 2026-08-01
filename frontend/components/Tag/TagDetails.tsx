@@ -9,10 +9,14 @@ import {
     TagIcon,
     MagnifyingGlassIcon,
 } from '@heroicons/react/24/solid';
-import { FolderIcon as FolderOutlineIcon } from '@heroicons/react/24/outline';
+import {
+    FolderIcon as FolderOutlineIcon,
+} from '@heroicons/react/24/outline';
+import PushPinIcon from '../Shared/Icons/PushPinIcon';
 import { Task } from '../../entities/Task';
 import { Note } from '../../entities/Note';
-import { Project } from '../../entities/Project';
+import { Project, ProjectStatus } from '../../entities/Project';
+import { updateProject } from '../../utils/projectsService';
 import TaskList from '../Task/TaskList';
 import GroupedTaskList from '../Task/GroupedTaskList';
 import ProjectItem from '../Project/ProjectItem';
@@ -37,6 +41,9 @@ const TagDetails: React.FC = () => {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [notes, setNotes] = useState<Note[]>([]);
     const allProjects = useStore((state: any) => state.projectsStore.projects);
+    const setProjects = useStore((state: any) => state.projectsStore.setProjects);
+    const storeTags = useStore((state) => state.tagsStore.tags);
+    const setStoreTags = useStore((state) => state.tagsStore.setTags);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -361,6 +368,17 @@ const TagDetails: React.FC = () => {
         }
     };
 
+    const handleProjectStatusChange = async (project: Project, newStatus: ProjectStatus) => {
+        if (!project.uid) return;
+        const prevProjects = allProjects;
+        setProjects(allProjects.map((p: Project) => (p.uid === project.uid ? { ...p, status: newStatus } : p)));
+        try {
+            await updateProject(project.uid, { status: newStatus });
+        } catch {
+            setProjects(prevProjects);
+        }
+    };
+
     // Tag handlers
     const handleSaveTag = async (tagData: Tag) => {
         try {
@@ -372,6 +390,20 @@ const TagDetails: React.FC = () => {
         } catch (error) {
             console.error('Error updating tag:', error);
             throw error;
+        }
+    };
+
+    const handleTogglePin = async () => {
+        if (!tag?.uid) return;
+        const newValue = !tag.pinned;
+        const updated = { ...tag, pinned: newValue };
+        setTag(updated);
+        setStoreTags(storeTags.map((t) => (t.uid === tag.uid ? { ...t, pinned: newValue } : t)));
+        try {
+            await updateTag(tag.uid, updated);
+        } catch {
+            setTag(tag);
+            setStoreTags(storeTags.map((t) => (t.uid === tag.uid ? { ...t, pinned: !newValue } : t)));
         }
     };
 
@@ -499,6 +531,24 @@ const TagDetails: React.FC = () => {
                                 title={t('common.search', 'Search tasks')}
                             >
                                 <MagnifyingGlassIcon className="h-5 w-5" />
+                            </button>
+                            <button
+                                onClick={handleTogglePin}
+                                className={`p-2 rounded-lg transition-colors ${
+                                    tag.pinned
+                                        ? tag.color
+                                            ? 'text-white hover:bg-white/10'
+                                            : 'text-blue-500 hover:text-blue-600 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                        : tag.color
+                                            ? 'text-white/80 hover:text-white hover:bg-white/10'
+                                            : 'text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                }`}
+                                title={tag.pinned ? t('tags.unpinFromSidebar', 'Unpin from sidebar') : t('tags.pinToSidebar', 'Pin to sidebar')}
+                            >
+                                {tag.pinned
+                                    ? <PushPinIcon className="h-5 w-5" filled />
+                                    : <PushPinIcon className="h-5 w-5" />
+                                }
                             </button>
                             {tag.tag_type !== 'system' && (
                                 <>
@@ -922,6 +972,7 @@ const TagDetails: React.FC = () => {
                                                 project: p,
                                             })
                                         }
+                                        onStatusChange={handleProjectStatusChange}
                                     />
                                 );
                             })}

@@ -1,8 +1,10 @@
 'use strict';
 
+const { safeCreateTable, safeAddIndex } = require('../utils/migration-utils');
+
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('roles', {
+        await safeCreateTable(queryInterface, 'roles', {
             id: {
                 type: Sequelize.INTEGER,
                 primaryKey: true,
@@ -32,10 +34,11 @@ module.exports = {
                 defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
             },
         });
-        await queryInterface.addIndex('roles', ['is_admin']);
+
+        await safeAddIndex(queryInterface, 'roles', ['is_admin']);
     },
 
-    async down(queryInterface, Sequelize) {
+    async down(queryInterface) {
         await queryInterface.dropTable('roles');
     },
 };

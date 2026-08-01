@@ -2,18 +2,6 @@ const rateLimit = require('express-rate-limit');
 const { ipKeyGenerator } = require('express-rate-limit');
 const { getConfig } = require('../config/config');
 
-/**
- * Rate limiting middleware for different endpoint types
- *
- * Rate limits are configured based on authentication state and endpoint sensitivity:
- * - Strict limits for authentication endpoints (login, register)
- * - Moderate limits for general API endpoints
- * - Higher limits for authenticated users with API tokens
- *
- * Configuration is centralized in backend/config/config.js and can be customized via environment variables.
- * Rate limiting is automatically disabled in test environment.
- */
-
 const config = getConfig();
 const rateLimitConfig = config.rateLimiting;
 
@@ -30,8 +18,8 @@ const authLimiter = rateLimit({
     message: {
         error: 'Too many authentication attempts from this IP, please try again after 15 minutes',
     },
-    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+    standardHeaders: true,
+    legacyHeaders: false,
     skip: skipInTest,
     handler: (req, res) => {
         res.status(429).json({
@@ -54,7 +42,6 @@ const apiLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
-    // Skip rate limiting for authenticated users or if disabled
     skip: (req) => {
         // Skip if rate limiting is disabled
         if (!rateLimitConfig.enabled) return true;
@@ -80,7 +67,6 @@ const authenticatedApiLimiter = rateLimit({
     max: rateLimitConfig.authenticatedApi.max,
     standardHeaders: true,
     legacyHeaders: false,
-    // Use user ID as the key instead of IP for authenticated requests
     keyGenerator: (req) => {
         // Prefer user ID from session or API token authentication
         const userId =

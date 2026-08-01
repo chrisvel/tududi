@@ -4,6 +4,8 @@ const { sequelize } = require('../../models');
 const {
     getDefaultNotificationPreferences,
 } = require('../../utils/notificationPreferences');
+const peopleService = require('../people/service');
+const { logError } = require('../../services/logService');
 
 function shouldBeAdmin(config, email) {
     if (!config.adminEmailDomains || config.adminEmailDomains.length === 0) {
@@ -118,6 +120,14 @@ async function provisionUser(providerSlug, claims, req) {
         );
 
         await transaction.commit();
+
+        if (isNewUser) {
+            try {
+                await peopleService.createSelfPerson(user);
+            } catch (err) {
+                logError(err, 'Failed to create self-person for new OIDC user');
+            }
+        }
 
         return { user, isNewUser };
     } catch (error) {

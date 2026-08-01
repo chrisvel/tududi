@@ -8,13 +8,10 @@ const { registerHabitTools } = require('./tools/habitTools');
 const { registerAreaTools } = require('./tools/areaTools');
 const { registerTagTools } = require('./tools/tagTools');
 const { registerNoteTools } = require('./tools/noteTools');
+const { registerViewTools } = require('./tools/viewTools');
+const { registerPeopleTools } = require('./tools/peopleTools');
+const { registerGoalTools } = require('./tools/goalTools');
 
-/**
- * Register all MCP tools with the server
- * @param {Object} server - MCP server instance
- * @param {Object} context - User context {userId, user, apiToken}
- * @param {Array} tools - Tools registry array
- */
 function registerAllTools(server, context, tools) {
     registerTaskTools(server, context, tools);
     registerProjectTools(server, context, tools);
@@ -24,6 +21,9 @@ function registerAllTools(server, context, tools) {
     registerAreaTools(server, context, tools);
     registerTagTools(server, context, tools);
     registerNoteTools(server, context, tools);
+    registerViewTools(server, context, tools);
+    registerPeopleTools(server, context, tools);
+    registerGoalTools(server, context, tools);
 }
 
 module.exports = { registerAllTools };

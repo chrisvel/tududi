@@ -1,8 +1,10 @@
 'use strict';
 
+const { safeCreateTable } = require('../utils/migration-utils');
+
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('users', {
+        await safeCreateTable(queryInterface, 'users', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
@@ -55,7 +57,7 @@ module.exports = {
         });
     },
 
-    async down(queryInterface, Sequelize) {
+    async down(queryInterface) {
         await queryInterface.dropTable('users');
     },
 };

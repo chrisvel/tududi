@@ -3,7 +3,6 @@ import { getCsrfToken } from '../../utils/csrfService';
 import { useTranslation } from 'react-i18next';
 import {
     ChartBarIcon,
-    LightBulbIcon,
     SparklesIcon,
     ClockIcon,
     TrophyIcon,
@@ -11,6 +10,7 @@ import {
     ListBulletIcon,
     ScaleIcon,
     RocketLaunchIcon,
+    TagIcon,
 } from '@heroicons/react/24/outline';
 import { getApiPath } from '../../config/paths';
 
@@ -18,22 +18,20 @@ interface TodaySettingsDropdownProps {
     isOpen: boolean;
     onClose: () => void;
     settings: {
+        showDailyBrief: boolean;
         showMetrics: boolean;
         showAreaBalance: boolean;
         showActiveProjects: boolean;
-        showProductivity: boolean;
         showNextTaskSuggestion: boolean;
-        showDailyBrief: boolean;
         showSuggestions: boolean;
         showDueToday: boolean;
         showCompleted: boolean;
         showProgressBar: boolean;
         showDailyQuote: boolean;
+        showTaggedToday: boolean;
     };
     profileSettings?: {
-        productivity_assistant_enabled?: boolean;
         next_task_suggestion_enabled?: boolean;
-        ai_assistant_enabled?: boolean;
     };
     onSettingsChange: (settings: any) => void;
 }
@@ -119,6 +117,11 @@ const TodaySettingsDropdown: React.FC<TodaySettingsDropdownProps> = ({
         disabled?: boolean;
     }> = [
         {
+            key: 'showDailyBrief',
+            label: t('settings.showDailyBrief', 'Show AI Daily Brief'),
+            icon: SparklesIcon,
+        },
+        {
             key: 'showDailyQuote',
             label: t('settings.showDailyQuote', 'Show Daily Quote'),
             icon: ChatBubbleBottomCenterTextIcon,
@@ -138,19 +141,6 @@ const TodaySettingsDropdown: React.FC<TodaySettingsDropdownProps> = ({
             label: t('settings.showActiveProjects', 'Show Active Projects'),
             icon: RocketLaunchIcon,
         },
-        // Only show productivity option if enabled in profile
-        ...(profileSettings?.productivity_assistant_enabled === true
-            ? [
-                  {
-                      key: 'showProductivity' as keyof typeof localSettings,
-                      label: t(
-                          'settings.showProductivity',
-                          'Show Productivity Insights'
-                      ),
-                      icon: LightBulbIcon,
-                  },
-              ]
-            : []),
         // Only show next task suggestion option if enabled in profile
         ...(profileSettings?.next_task_suggestion_enabled === true
             ? [
@@ -164,6 +154,11 @@ const TodaySettingsDropdown: React.FC<TodaySettingsDropdownProps> = ({
                   },
               ]
             : []),
+        {
+            key: 'showTaggedToday',
+            label: t('settings.showTaggedToday', 'Show Tagged Today'),
+            icon: TagIcon,
+        },
         {
             key: 'showSuggestions',
             label: t('settings.showSuggestions', 'Show Suggested'),

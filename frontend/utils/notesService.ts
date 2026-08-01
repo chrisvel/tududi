@@ -88,6 +88,21 @@ export const deleteNote = async (noteUid: string): Promise<void> => {
     await handleAuthResponse(response, 'Failed to delete note.');
 };
 
+export interface BacklinkNote {
+    uid: string;
+    title: string;
+}
+
+export const fetchNoteBacklinks = async (noteUid: string): Promise<BacklinkNote[]> => {
+    const response = await fetch(getApiPath(`note/${noteUid}/backlinks`), {
+        credentials: 'include',
+        headers: getDefaultHeaders(),
+        cache: 'no-store',
+    });
+    await handleAuthResponse(response, 'Failed to fetch backlinks.');
+    return await response.json();
+};
+
 export const fetchNoteBySlug = async (uidSlug: string): Promise<Note> => {
     const response = await fetch(getApiPath(`note/${uidSlug}`), {
         credentials: 'include',

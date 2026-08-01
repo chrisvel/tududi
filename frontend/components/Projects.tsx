@@ -21,15 +21,17 @@ import { fetchAreas } from '../utils/areasService';
 import { useTranslation } from 'react-i18next';
 import { SortOption } from './Shared/SortFilterButton';
 
-import { Project } from '../entities/Project';
-import { useSearchParams } from 'react-router-dom';
+import { Project, ProjectStatus } from '../entities/Project';
+import { useSearchParams, Link } from 'react-router-dom';
+import { RectangleStackIcon } from '@heroicons/react/24/outline';
 import ProjectItem from './Project/ProjectItem';
 import ProjectShareModal from './Project/ProjectShareModal';
 import { useToast } from './Shared/ToastContext';
+import { saveProjectAsTemplate } from '../utils/templatesService';
 
 const Projects: React.FC = () => {
     const { t } = useTranslation();
-    const { showErrorToast } = useToast();
+    const { showErrorToast, showSuccessToast } = useToast();
     const {
         areas,
         setAreas,
@@ -38,10 +40,10 @@ const Projects: React.FC = () => {
     const {
         projects,
         setProjects,
-        setLoading: setProjectsLoading,
         setError: setProjectsError,
     } = useStore((state) => state.projectsStore);
     const { isLoading, isError } = useStore((state) => state.projectsStore);
+    const templatesEnabled = useStore((state) => state.userSettingsStore.templatesEnabled);
 
     // Try using a ref to avoid React state conflicts
     const modalStateRef = useRef({
@@ -56,6 +58,10 @@ const Projects: React.FC = () => {
         null
     );
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
+        useState<boolean>(false);
+    const [projectToSaveAsTemplate, setProjectToSaveAsTemplate] =
+        useState<Project | null>(null);
+    const [isTemplateConfirmOpen, setIsTemplateConfirmOpen] =
         useState<boolean>(false);
     const [shareModal, setShareModal] = useState<{
         isOpen: boolean;
@@ -230,7 +236,6 @@ const Projects: React.FC = () => {
     };
 
     const handleSaveProject = async (project: Project) => {
-        setProjectsLoading(true);
         try {
             if (project.uid) {
                 await updateProject(project.uid, project);
@@ -244,7 +249,6 @@ const Projects: React.FC = () => {
             console.error('Error saving project:', error);
             setProjectsError(true);
         } finally {
-            setProjectsLoading(false);
             setModalState({ isOpen: false, projectToEdit: null });
         }
     };
@@ -260,12 +264,29 @@ const Projects: React.FC = () => {
         });
     };
 
+    const handleSaveAsTemplate = (project: Project) => {
+        setProjectToSaveAsTemplate(project);
+        setIsTemplateConfirmOpen(true);
+    };
+
+    const handleConfirmSaveAsTemplate = async () => {
+        if (!projectToSaveAsTemplate?.uid) return;
+        try {
+            await saveProjectAsTemplate(projectToSaveAsTemplate.uid, { name: projectToSaveAsTemplate.name });
+            showSuccessToast(t('projects.savedAsTemplate', '"{{name}}" saved as template.', { name: projectToSaveAsTemplate.name }));
+        } catch {
+            showErrorToast(t('projects.saveAsTemplateError', 'Failed to save project as template.'));
+        } finally {
+            setIsTemplateConfirmOpen(false);
+            setProjectToSaveAsTemplate(null);
+        }
+    };
+
     const handleDeleteProject = async () => {
         if (!projectToDelete) return;
 
         try {
             if (projectToDelete.uid !== undefined) {
-                setProjectsLoading(true);
                 await deleteProject(projectToDelete.uid);
 
                 // Fetch all projects without filters to keep global store complete
@@ -284,9 +305,21 @@ const Projects: React.FC = () => {
                     : t('projects.deleteError', 'Failed to delete project');
             showErrorToast(msg);
         } finally {
-            setProjectsLoading(false);
             setIsConfirmDialogOpen(false);
             setProjectToDelete(null);
+        }
+    };
+
+    const handleStatusChange = async (project: Project, newStatus: ProjectStatus) => {
+        if (!project.uid) return;
+        const prevProjects = projects;
+        setProjects(projects.map((p) => (p.uid === project.uid ? { ...p, status: newStatus } : p)));
+        try {
+            await updateProject(project.uid, { status: newStatus });
+        } catch (error) {
+            console.error('Error updating project status:', error);
+            setProjects(prevProjects);
+            showErrorToast(t('errors.projectStatusUpdateFailed', 'Failed to update project status'));
         }
     };
 
@@ -454,10 +487,19 @@ const Projects: React.FC = () => {
     return (
         <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">
             <div className="w-full">
-                <div className="flex items-center mb-8">
+                <div className="flex items-center justify-between mb-8">
                     <h2 className="text-2xl font-light">
                         {t('projects.title')}
                     </h2>
+                    {templatesEnabled && (
+                        <Link
+                            to="/templates"
+                            className="flex items-center gap-1.5 text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors"
+                        >
+                            <RectangleStackIcon className="h-4 w-4" />
+                            {t('projects.fromTemplate', 'From Template')}
+                        </Link>
+                    )}
                 </div>
 
                 {/* View Mode and Filters */}
@@ -613,6 +655,8 @@ const Projects: React.FC = () => {
                                 onOpenShare={(p) =>
                                     setShareModal({ isOpen: true, project: p })
                                 }
+                                onStatusChange={handleStatusChange}
+                                onSaveAsTemplate={templatesEnabled ? handleSaveAsTemplate : undefined}
                             />
                         ))
                     )}
@@ -657,6 +701,19 @@ const Projects: React.FC = () => {
                     })}
                     onConfirm={handleDeleteProject}
                     onCancel={() => setIsConfirmDialogOpen(false)}
+                />
+            )}
+
+            {isTemplateConfirmOpen && (
+                <ConfirmDialog
+                    title={t('modals.saveAsTemplate.title', 'Save as Template')}
+                    message={t('modals.saveAsTemplate.message', 'Save "{{name}}" as a template? This will create a reusable template based on this project.', { name: projectToSaveAsTemplate?.name })}
+                    onConfirm={handleConfirmSaveAsTemplate}
+                    onCancel={() => {
+                        setIsTemplateConfirmOpen(false);
+                        setProjectToSaveAsTemplate(null);
+                    }}
+                    confirmButtonText={t('common.save', 'Save')}
                 />
             )}
 

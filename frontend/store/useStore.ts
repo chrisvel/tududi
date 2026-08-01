@@ -5,6 +5,7 @@ import { Note } from '../entities/Note';
 import { Task } from '../entities/Task';
 import { Tag } from '../entities/Tag';
 import { InboxItem } from '../entities/InboxItem';
+import { Goal } from '../entities/Goal';
 
 interface NotesStore {
     notes: Note[];
@@ -111,8 +112,23 @@ interface UserSettingsStore {
     setHabitsEnabled: (enabled: boolean) => void;
     calendarEnabled: boolean;
     setCalendarEnabled: (enabled: boolean) => void;
+    templatesEnabled: boolean;
+    setTemplatesEnabled: (enabled: boolean) => void;
     aiAssistantEnabled: boolean;
     setAiAssistantEnabled: (enabled: boolean) => void;
+    showTaskContextMenu: boolean;
+    setShowTaskContextMenu: (enabled: boolean) => void;
+}
+
+interface GoalsStore {
+    goals: Goal[];
+    isLoading: boolean;
+    isError: boolean;
+    hasLoaded: boolean;
+    setGoals: (goals: Goal[]) => void;
+    setLoading: (isLoading: boolean) => void;
+    setError: (isError: boolean) => void;
+    loadGoals: (forceReload?: boolean) => Promise<void>;
 }
 
 interface HabitsStore {
@@ -130,6 +146,7 @@ interface HabitsStore {
 interface StoreState {
     notesStore: NotesStore;
     areasStore: AreasStore;
+    goalsStore: GoalsStore;
     projectsStore: ProjectsStore;
     tagsStore: TagsStore;
     tasksStore: TasksStore;
@@ -231,6 +248,57 @@ export const useStore = create<StoreState>((set: any) => ({
                 set((state) => ({
                     areasStore: {
                         ...state.areasStore,
+                        isError: true,
+                        isLoading: false,
+                        hasLoaded: true,
+                    },
+                }));
+            }
+        },
+    },
+    goalsStore: {
+        goals: [],
+        isLoading: false,
+        isError: false,
+        hasLoaded: false,
+        setGoals: (goals) =>
+            set((state) => ({ goalsStore: { ...state.goalsStore, goals } })),
+        setLoading: (isLoading) =>
+            set((state) => ({
+                goalsStore: { ...state.goalsStore, isLoading },
+            })),
+        setError: (isError) =>
+            set((state) => ({ goalsStore: { ...state.goalsStore, isError } })),
+        loadGoals: async (forceReload = false) => {
+            const state = useStore.getState();
+            if (state.goalsStore.isLoading) return;
+            if (state.goalsStore.hasLoaded && !forceReload) return;
+
+            const { fetchGoals } = await import('../utils/goalsService');
+
+            set((state) => ({
+                goalsStore: {
+                    ...state.goalsStore,
+                    isLoading: true,
+                    isError: false,
+                },
+            }));
+
+            try {
+                const goals = await fetchGoals();
+                set((state) => ({
+                    goalsStore: {
+                        ...state.goalsStore,
+                        goals,
+                        isLoading: false,
+                        hasLoaded: true,
+                    },
+                }));
+            } catch (error) {
+                console.error('loadGoals: Failed to load goals:', error);
+                set((state) => ({
+                    goalsStore: {
+                        ...state.goalsStore,
                         isError: true,
                         isLoading: false,
                         hasLoaded: true,
@@ -866,12 +934,28 @@ export const useStore = create<StoreState>((set: any) => ({
                     calendarEnabled: enabled,
                 },
             })),
+        templatesEnabled: true,
+        setTemplatesEnabled: (enabled) =>
+            set((state) => ({
+                userSettingsStore: {
+                    ...state.userSettingsStore,
+                    templatesEnabled: enabled,
+                },
+            })),
         aiAssistantEnabled: false,
         setAiAssistantEnabled: (enabled) =>
             set((state) => ({
                 userSettingsStore: {
                     ...state.userSettingsStore,
                     aiAssistantEnabled: enabled,
+                },
+            })),
+        showTaskContextMenu: false,
+        setShowTaskContextMenu: (enabled) =>
+            set((state) => ({
+                userSettingsStore: {
+                    ...state.userSettingsStore,
+                    showTaskContextMenu: enabled,
                 },
             })),
     },
