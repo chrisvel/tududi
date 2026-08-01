@@ -1,6 +1,6 @@
 import React from 'react';
 import { Location } from 'react-router-dom';
-import { FireIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
+import { FireIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 
 interface SidebarHabitsProps {
@@ -13,20 +13,19 @@ interface SidebarHabitsProps {
 const SidebarHabits: React.FC<SidebarHabitsProps> = ({
     handleNavClick,
     location,
-    openNewHabit,
 }) => {
     const { t } = useTranslation();
     const isActiveHabit = (path: string) => {
         return location.pathname.startsWith(path)
-            ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
-            : 'text-gray-700 dark:text-gray-300';
+            ? 'bg-gray-100 dark:bg-[oklch(27%_0.02_250)] text-gray-900 dark:text-[oklch(88%_0.004_95)] font-medium'
+            : 'text-gray-500 dark:text-[oklch(52%_0.006_95)]';
     };
 
     return (
         <>
-            <ul className="flex flex-col space-y-1">
+            <ul className="flex flex-col">
                 <li
-                    className={`group flex justify-between items-center rounded-md px-4 py-2 uppercase text-xs tracking-wider cursor-pointer hover:text-black dark:hover:text-white ${isActiveHabit(
+                    className={`group flex items-center rounded-[8px] px-[10px] py-[5px] text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] hover:text-gray-900 dark:hover:text-white ${isActiveHabit(
                         '/habits'
                     )}`}
                     onClick={() =>
@@ -37,21 +36,7 @@ const SidebarHabits: React.FC<SidebarHabitsProps> = ({
                         )
                     }
                 >
-                    <span className="flex items-center">
-                        <FireIcon className="h-5 w-5 mr-2" />
-                        {t('sidebar.habits', 'HABITS')}
-                    </span>
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            openNewHabit();
-                        }}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none"
-                        aria-label={t('sidebar.addHabitAriaLabel')}
-                        title={t('sidebar.addHabitTitle')}
-                    >
-                        <PlusCircleIcon className="h-5 w-5" />
-                    </button>
+                    {t('sidebar.habits', 'Habits')}
                 </li>
             </ul>
         </>

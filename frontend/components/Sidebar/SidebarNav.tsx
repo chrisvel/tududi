@@ -7,8 +7,7 @@ import {
     ListBulletIcon,
     ClockIcon,
     CalendarIcon,
-} from '@heroicons/react/24/solid';
-import { PlusCircleIcon } from '@heroicons/react/24/outline';
+} from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
 import { loadInboxItemsToStore } from '../../utils/inboxService';
 
@@ -22,7 +21,6 @@ interface SidebarNavProps {
 const SidebarNav: React.FC<SidebarNavProps> = ({
     handleNavClick,
     location,
-    openTaskModal,
 }) => {
     const { t } = useTranslation();
     const store = useStore();
@@ -38,29 +36,29 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
         {
             path: '/inbox',
             title: t('sidebar.inbox', 'Inbox'),
-            icon: <InboxIcon className="h-5 w-5" />,
+            icon: <InboxIcon className="h-[15px] w-[15px]" />,
         },
         {
             path: '/today',
             title: t('sidebar.today', 'Today'),
-            icon: <CalendarDaysIcon className="h-5 w-5" />,
+            icon: <CalendarDaysIcon className="h-[15px] w-[15px]" />,
             query: 'type=today',
         },
         {
             path: '/upcoming?status=active',
             title: t('sidebar.upcoming', 'Upcoming'),
-            icon: <ClockIcon className="h-5 w-5" />,
+            icon: <ClockIcon className="h-[15px] w-[15px]" />,
         },
         {
             path: '/calendar',
             title: t('sidebar.calendar', 'Calendar'),
-            icon: <CalendarIcon className="h-5 w-5" />,
+            icon: <CalendarIcon className="h-[15px] w-[15px]" />,
             userFlag: 'calendar',
         },
         {
             path: '/tasks?status=active',
             title: t('sidebar.allTasks', 'All Tasks'),
-            icon: <ListBulletIcon className="h-5 w-5" />,
+            icon: <ListBulletIcon className="h-[15px] w-[15px]" />,
             query: 'status=active',
         },
     ];
@@ -72,93 +70,43 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
         return true;
     });
 
+    const activeClass =
+        'bg-blue-50 dark:bg-[oklch(27%_0.02_250)] text-gray-900 dark:text-[oklch(90%_0.01_250)] font-semibold hover:bg-blue-100 dark:hover:bg-[oklch(27%_0.02_250)]';
+    const inactiveClass =
+        'text-gray-700 dark:text-[oklch(75%_0.006_95)] hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)]';
+
     const isActive = (path: string, query?: string) => {
         if (path === '/inbox' || path === '/today' || path === '/calendar') {
-            const isPathMatch = location.pathname === path;
-            return isPathMatch
-                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
-                : 'text-gray-700 dark:text-gray-300';
+            return location.pathname === path ? activeClass : inactiveClass;
         }
-
         if (path.startsWith('/upcoming')) {
-            const isPathMatch = location.pathname === '/upcoming';
-            return isPathMatch
-                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
-                : 'text-gray-700 dark:text-gray-300';
+            return location.pathname === '/upcoming' ? activeClass : inactiveClass;
         }
-
         const isPathMatch = location.pathname === '/tasks';
-        const isQueryMatch = query
-            ? location.search.includes(query)
-            : location.search === '';
-        return isPathMatch && isQueryMatch
-            ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
-            : 'text-gray-700 dark:text-gray-300';
+        const isQueryMatch = query ? location.search.includes(query) : location.search === '';
+        return isPathMatch && isQueryMatch ? activeClass : inactiveClass;
     };
 
     return (
-        <ul className="flex flex-col space-y-1">
+        <ul className="flex flex-col gap-px">
             {navLinks.map((link) => (
-                <React.Fragment key={link.path}>
-                    <li>
-                        <button
-                            onClick={() =>
-                                handleNavClick(link.path, link.title, link.icon)
-                            }
-                            data-testid={`sidebar-nav-${link.path.replace(/^\//, '').replace(/\?.*$/, '')}`}
-                            className={`group w-full text-left px-4 py-1 flex items-center justify-between rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 ${isActive(
-                                link.path,
-                                link.query
-                            )}`}
-                        >
-                            <div className="flex items-center">
-                                {link.icon}
-                                <span className="ml-2">{link.title}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                {link.path === '/inbox' &&
-                                    inboxItemsCount > 0 && (
-                                        <span className="text-sm font-bold text-blue-500 dark:text-blue-400">
-                                            {inboxItemsCount > 99
-                                                ? '99+'
-                                                : inboxItemsCount}
-                                        </span>
-                                    )}
-                                {link.path === '/tasks?status=active' && (
-                                    <div
-                                        role="button"
-                                        tabIndex={0}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            openTaskModal();
-                                        }}
-                                        onKeyDown={(e) => {
-                                            if (
-                                                e.key === 'Enter' ||
-                                                e.key === ' '
-                                            ) {
-                                                e.stopPropagation();
-                                                e.preventDefault();
-                                                openTaskModal();
-                                            }
-                                        }}
-                                        className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none cursor-pointer"
-                                        aria-label={t(
-                                            'sidebar.addTaskAriaLabel',
-                                            'Add Task'
-                                        )}
-                                        title={t(
-                                            'sidebar.addTaskTitle',
-                                            'Add Task'
-                                        )}
-                                    >
-                                        <PlusCircleIcon className="h-5 w-5" />
-                                    </div>
-                                )}
-                            </div>
-                        </button>
-                    </li>
-                </React.Fragment>
+                <li key={link.path}>
+                    <button
+                        onClick={() => handleNavClick(link.path, link.title, link.icon)}
+                        data-testid={`sidebar-nav-${link.path.replace(/^\//, '').replace(/\?.*$/, '')}`}
+                        className={`w-full flex items-center gap-[10px] px-[10px] py-[4px] rounded-[8px] transition-colors duration-150 ${isActive(link.path, link.query)}`}
+                    >
+                        <span className="flex-shrink-0 dark:text-[oklch(55%_0.006_95)]">
+                            {link.icon}
+                        </span>
+                        <span className="flex-1 text-left text-[13.5px]">{link.title}</span>
+                        {link.path === '/inbox' && inboxItemsCount > 0 && (
+                            <span className="text-[12px] text-gray-400 dark:text-[oklch(60%_0.01_250)]">
+                                {inboxItemsCount > 99 ? '99+' : inboxItemsCount}
+                            </span>
+                        )}
+                    </button>
+                </li>
             ))}
         </ul>
     );

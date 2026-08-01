@@ -3,7 +3,6 @@ import { Location } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     QueueListIcon,
-    ChevronDownIcon,
     ChevronRightIcon,
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
@@ -80,19 +79,17 @@ const SortableViewItem: React.FC<SortableViewItemProps> = ({
         <li
             ref={setNodeRef}
             style={style}
-            className={`flex justify-between items-center rounded-md px-4 py-1.5 text-sm cursor-pointer hover:text-black dark:hover:text-white ${
+            className={`flex justify-between items-center rounded-[8px] px-[10px] py-1.5 text-[13.5px] cursor-pointer hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
                 isActive
-                    ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
-                    : 'text-gray-700 dark:text-gray-300'
+                    ? 'bg-gray-100 dark:bg-[oklch(27%_0.02_250)] text-gray-900 dark:text-[oklch(88%_0.004_95)] font-medium'
+                    : 'text-gray-500 dark:text-[oklch(82%_0.006_95)]'
             } ${isDragging ? 'opacity-50' : ''}`}
             onClick={handleClick}
             {...listeners}
             {...attributes}
         >
-            <span className="flex items-center truncate">
-                <span className="w-5 mr-2 flex items-center justify-center flex-shrink-0">
-                    <QueueListIcon className="h-4 w-4" />
-                </span>
+            <span className="flex items-center gap-2 min-w-0">
+                <span className="w-1 h-[14px] rounded-full flex-shrink-0 bg-gray-400 dark:bg-gray-500" />
                 <span className="truncate">{view.name}</span>
             </span>
             <button
@@ -268,23 +265,22 @@ const SidebarViews: React.FC<SidebarViewsProps> = ({
     };
 
     return (
-        <ul className={`flex flex-col space-y-1${isExpanded ? ' pb-3' : ''}`}>
-            <li
-                className={`group flex justify-between items-center px-4 py-2 uppercase rounded-md text-xs tracking-wider cursor-pointer hover:text-black dark:hover:text-white ${
-                    isActiveView('/views')
-                        ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
-                        : 'text-gray-700 dark:text-gray-300'
-                }`}
-                onClick={() =>
-                    handleNavClick(
-                        '/views',
-                        t('sidebar.views'),
-                        <QueueListIcon className="h-5 w-5 mr-2" />
-                    )
-                }
-            >
-                <span className="flex items-center">
-                    <QueueListIcon className="h-5 w-5 mr-2" />
+        <ul className="flex flex-col">
+            <li className="flex justify-between items-center px-2.5 py-1 rounded-md mb-px">
+                <span
+                    className={`text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-black dark:hover:text-white ${
+                        isActiveView('/views')
+                            ? 'text-gray-900 dark:text-white'
+                            : 'text-gray-500 dark:text-[oklch(48%_0.006_95)]'
+                    }`}
+                    onClick={() =>
+                        handleNavClick(
+                            '/views',
+                            t('sidebar.views'),
+                            <QueueListIcon className="h-5 w-5 mr-2" />
+                        )
+                    }
+                >
                     {t('sidebar.views')}
                 </span>
                 {orderedViews.length > 0 && (
@@ -293,25 +289,20 @@ const SidebarViews: React.FC<SidebarViewsProps> = ({
                             e.stopPropagation();
                             setIsExpanded((v) => !v);
                         }}
-                        className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none"
-                        aria-label={
-                            isExpanded
-                                ? 'Collapse views list'
-                                : 'Expand views list'
-                        }
+                        className="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
+                        aria-label={isExpanded ? 'Collapse views list' : 'Expand views list'}
                     >
-                        {isExpanded ? (
-                            <ChevronDownIcon className="h-4 w-4" />
-                        ) : (
-                            <ChevronRightIcon className="h-4 w-4" />
-                        )}
+                        <ChevronRightIcon
+                            className="h-3 w-3 transition-transform duration-150"
+                            style={{ transform: isExpanded ? 'rotate(90deg)' : 'none' }}
+                        />
                     </button>
                 )}
             </li>
 
             {isExpanded && (
                 <li className="p-0 list-none">
-                    <div className="max-h-80 overflow-y-auto overscroll-y-contain flex flex-col space-y-1">
+                    <div className="max-h-[168px] overflow-y-auto overscroll-y-contain flex flex-col gap-0.5">
                         <DndContext
                             sensors={sensors}
                             collisionDetection={closestCenter}
