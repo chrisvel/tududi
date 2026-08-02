@@ -108,7 +108,7 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
                             >
                                 <span className="flex items-center gap-2 min-w-0">
                                     <span
-                                        className="w-1 h-[14px] rounded-full flex-shrink-0"
+                                        className="w-1.5 h-[14px] rounded-full flex-shrink-0"
                                         style={{ backgroundColor: project.color || '#9ca3af' }}
                                     />
                                     <span className="truncate">{project.name}</span>

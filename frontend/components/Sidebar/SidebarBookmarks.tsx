@@ -173,7 +173,7 @@ const SidebarBookmarks: React.FC<SidebarBookmarksProps> = ({
                         >
                             <span className="flex items-center gap-2 min-w-0">
                                 <span
-                                    className="w-1 h-[14px] rounded-full flex-shrink-0"
+                                    className="w-1.5 h-[14px] rounded-full flex-shrink-0"
                                     style={{ backgroundColor: project.color || '#9ca3af' }}
                                 />
                                 <span className="truncate">{project.name}</span>
@@ -203,7 +203,7 @@ const SidebarBookmarks: React.FC<SidebarBookmarksProps> = ({
                         >
                             <span className="flex items-center gap-2 min-w-0">
                                 <span
-                                    className="w-1 h-[14px] rounded-full flex-shrink-0"
+                                    className="w-1.5 h-[14px] rounded-full flex-shrink-0"
                                     style={{ backgroundColor: note.color || '#9ca3af' }}
                                 />
                                 <span className="truncate">{note.title}</span>
@@ -233,7 +233,7 @@ const SidebarBookmarks: React.FC<SidebarBookmarksProps> = ({
                         >
                             <span className="flex items-center gap-2 min-w-0">
                                 <span
-                                    className="w-1 h-[14px] rounded-full flex-shrink-0"
+                                    className="w-1.5 h-[14px] rounded-full flex-shrink-0"
                                     style={{ backgroundColor: tag.color || '#9ca3af' }}
                                 />
                                 <span className="truncate">{tag.name}</span>
