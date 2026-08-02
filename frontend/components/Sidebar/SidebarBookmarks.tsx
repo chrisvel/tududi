@@ -77,7 +77,7 @@ const SidebarBookmarks: React.FC<SidebarBookmarksProps> = ({
     const isActive = (path: string) => location.pathname === path;
 
     const itemClass = (path: string) =>
-        `group flex justify-between items-center rounded-[8px] px-[10px] py-1.5 text-[13.5px] cursor-pointer hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
+        `group flex justify-between items-center rounded-[8px] px-[10px] py-1 text-[13.5px] cursor-pointer hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
             isActive(path)
                 ? 'bg-gray-100 dark:bg-[oklch(27%_0.02_250)] text-gray-900 dark:text-[oklch(88%_0.004_95)] font-medium'
                 : 'text-gray-500 dark:text-[oklch(82%_0.006_95)]'
