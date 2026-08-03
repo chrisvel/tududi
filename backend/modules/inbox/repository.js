@@ -1,5 +1,6 @@
 'use strict';
 
+const { Op } = require('sequelize');
 const { InboxItem } = require('../../models');
 const BaseRepository = require('../../shared/database/BaseRepository');
 
@@ -19,11 +20,10 @@ class InboxRepository extends BaseRepository {
     }
 
     async findAllActive(userId, { limit, offset } = {}) {
-        const { Op } = require('sequelize');
         const options = {
             where: {
                 user_id: userId,
-                status: { [Op.notIn]: ['deleted', 'trashed'] },
+                status: { [Op.notIn]: ['deleted', 'trashed', 'processed'] },
             },
             order: [['created_at', 'DESC']],
         };
@@ -37,11 +37,10 @@ class InboxRepository extends BaseRepository {
     }
 
     async countActive(userId) {
-        const { Op } = require('sequelize');
         return this.model.count({
             where: {
                 user_id: userId,
-                status: { [Op.notIn]: ['deleted', 'trashed'] },
+                status: { [Op.notIn]: ['deleted', 'trashed', 'processed'] },
             },
             raw: true,
         });

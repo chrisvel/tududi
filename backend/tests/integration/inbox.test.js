@@ -83,7 +83,7 @@ describe('Inbox Routes', () => {
 
             expect(response.status).toBe(200);
             expect(Array.isArray(response.body)).toBe(true);
-            expect(response.body.length).toBe(2); // Items with status not 'deleted' or 'trashed' are returned
+            expect(response.body.length).toBe(1); // Only items with status 'added' are returned
             expect(response.body.map((i) => i.uid)).toContain(inboxItem1.uid);
         });
 
@@ -104,10 +104,9 @@ describe('Inbox Routes', () => {
             const response = await agent.get('/api/inbox');
 
             expect(response.status).toBe(200);
-            expect(response.body.length).toBe(2); // Only inboxItem1 and inboxItem2 (added + processed)
+            expect(response.body.length).toBe(1); // Only inboxItem1 (added); processed items excluded
             const uids = response.body.map((i) => i.uid);
             expect(uids).toContain(inboxItem1.uid);
-            expect(uids).toContain(inboxItem2.uid);
         });
 
         it('should return inbox items ordered by created_at DESC (newest first)', async () => {
@@ -141,7 +140,7 @@ describe('Inbox Routes', () => {
             const response = await agent.get('/api/inbox');
 
             expect(response.status).toBe(200);
-            expect(response.body.length).toBe(5); // Including inboxItem1 and inboxItem2 from beforeEach
+            expect(response.body.length).toBe(4); // Including inboxItem1 from beforeEach (inboxItem2 is processed, excluded)
 
             // Check that items are ordered by newest first
             expect(response.body[0].uid).toBe(item3.uid);
@@ -180,7 +179,7 @@ describe('Inbox Routes', () => {
             const response1 = await agent.get('/api/inbox?limit=20&offset=0');
             expect(response1.status).toBe(200);
             expect(response1.body.items.length).toBe(20);
-            expect(response1.body.pagination.total).toBe(27); // 25 + 2 from beforeEach (added + processed)
+            expect(response1.body.pagination.total).toBe(26); // 25 + 1 from beforeEach (only added; processed excluded)
             expect(response1.body.pagination.hasMore).toBe(true);
             expect(response1.body.pagination.offset).toBe(0);
             expect(response1.body.pagination.limit).toBe(20);
@@ -188,8 +187,8 @@ describe('Inbox Routes', () => {
             // Test second page
             const response2 = await agent.get('/api/inbox?limit=20&offset=20');
             expect(response2.status).toBe(200);
-            expect(response2.body.items.length).toBe(7); // Remaining items
-            expect(response2.body.pagination.total).toBe(27);
+            expect(response2.body.items.length).toBe(6); // Remaining items
+            expect(response2.body.pagination.total).toBe(26);
             expect(response2.body.pagination.hasMore).toBe(false);
             expect(response2.body.pagination.offset).toBe(20);
         });
@@ -206,11 +205,11 @@ describe('Inbox Routes', () => {
                 await new Promise((resolve) => setTimeout(resolve, 5));
             }
 
-            // Request 40 items (should get all 32: 30 + 2 from beforeEach — added + processed)
+            // Request 40 items (should get all 31: 30 + 1 from beforeEach — only added; processed excluded)
             const response = await agent.get('/api/inbox?limit=40&offset=0');
             expect(response.status).toBe(200);
-            expect(response.body.items.length).toBe(32);
-            expect(response.body.pagination.total).toBe(32);
+            expect(response.body.items.length).toBe(31);
+            expect(response.body.pagination.total).toBe(31);
             expect(response.body.pagination.hasMore).toBe(false);
             expect(response.body.pagination.limit).toBe(40);
         });
