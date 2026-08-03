@@ -114,6 +114,16 @@ const inboxController = {
             next(error);
         }
     },
+
+    async restoreAll(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const result = await inboxService.restoreAll(userId);
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    },
 };
 
 module.exports = inboxController;

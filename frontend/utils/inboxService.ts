@@ -330,7 +330,7 @@ export const restoreInboxItemWithStore = async (itemUid: string): Promise<void> 
 export const restoreAllTrashedWithStore = async (): Promise<void> => {
     const inboxStore = useStore.getState().inboxStore;
     try {
-        await fetch(getApiPath('inbox/restore-all'), {
+        const response = await fetch(getApiPath('inbox/restore-all'), {
             method: 'PATCH',
             credentials: 'include',
             headers: {
@@ -338,6 +338,7 @@ export const restoreAllTrashedWithStore = async (): Promise<void> => {
                 'x-csrf-token': await getCsrfToken(),
             },
         });
+        await handleAuthResponse(response, 'Failed to restore items.');
         inboxStore.setTrashedCount(0);
         await loadInboxItemsToStore(true);
     } catch (error) {

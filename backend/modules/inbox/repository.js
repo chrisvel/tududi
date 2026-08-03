@@ -105,6 +105,14 @@ class InboxRepository extends BaseRepository {
         await item.update({ status: 'processed' });
         return item;
     }
+
+    async restoreAllTrashed(userId) {
+        const { Op } = require('sequelize');
+        await this.model.update(
+            { status: 'added' },
+            { where: { user_id: userId, status: 'trashed' } }
+        );
+    }
 }
 
 module.exports = new InboxRepository();

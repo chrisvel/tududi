@@ -140,6 +140,11 @@ class InboxService {
         return _.pick(item, PUBLIC_ATTRIBUTES);
     }
 
+    async restoreAll(userId) {
+        await inboxRepository.restoreAllTrashed(userId);
+        return { message: 'All trashed items restored' };
+    }
+
     analyzeText(content) {
         validateContent(content);
         return processInboxItem(content);
