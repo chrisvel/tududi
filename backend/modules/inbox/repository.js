@@ -107,7 +107,6 @@ class InboxRepository extends BaseRepository {
     }
 
     async restoreAllTrashed(userId) {
-        const { Op } = require('sequelize');
         await this.model.update(
             { status: 'added' },
             { where: { user_id: userId, status: 'trashed' } }

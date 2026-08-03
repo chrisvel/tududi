@@ -318,6 +318,32 @@ const InboxItems: React.FC = () => {
             return;
         }
 
+        if (outcome === 'task') {
+            try {
+                await createTask({ name: itemName, status: 'not_started', priority: null, completed_at: null });
+                await processInboxItemWithStore(uid);
+                showSuccessToast(t('task.createdSuccessfully', 'Task created successfully!'));
+            } catch {
+                showErrorToast(t('task.createError'));
+                return;
+            }
+            advanceClarify();
+            return;
+        }
+
+        if (outcome === 'waiting') {
+            try {
+                await createTask({ name: itemName, status: 'waiting', priority: null, completed_at: null, tags: [{ name: 'waiting-for' }] });
+                await processInboxItemWithStore(uid);
+                showSuccessToast(t('task.createdSuccessfully', 'Task created successfully!'));
+            } catch {
+                showErrorToast(t('task.createError'));
+                return;
+            }
+            advanceClarify();
+            return;
+        }
+
         // Modal-based outcomes: open the modal; advance happens in modal's onSave
         setClarify((prev) => ({ ...prev, pendingModalUid: uid }));
 
@@ -326,22 +352,6 @@ const InboxItems: React.FC = () => {
             await handleOpenNoteModal({ title: itemName, content: noteContent }, uid);
         } else if (outcome === 'project') {
             handleOpenProjectModal({ name: itemName, description: '', status: 'planned' as const }, uid);
-        } else if (outcome === 'task') {
-            await handleOpenTaskModal(
-                { name: itemName, status: 'not_started', priority: null, completed_at: null },
-                uid
-            );
-        } else if (outcome === 'waiting') {
-            await handleOpenTaskModal(
-                {
-                    name: itemName,
-                    status: 'waiting',
-                    priority: null,
-                    completed_at: null,
-                    tags: [{ name: 'waiting-for' }],
-                },
-                uid
-            );
         }
     };
 
