@@ -862,6 +862,19 @@
       "twomin": "Can you do it in under 2 minutes?",
       "deferDelegate": "Later yourself, or hand it off?"
     },
+    "clarifyChoice": {
+      "yesActionable": "Yes, actionable",
+      "notActionable": "Not actionable",
+      "trash": "Trash",
+      "someday": "Someday / Maybe",
+      "referenceNote": "Reference note",
+      "oneStep": "One step",
+      "severalSteps": "Several steps (project)",
+      "doItNow": "Yes — do it now",
+      "no": "No",
+      "scheduleIt": "Schedule it",
+      "delegate": "Delegate"
+    },
     "somedayCreated": "Added to Someday",
     "reClarifyLink": "Re-clarify"
   },

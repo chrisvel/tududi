@@ -30,49 +30,49 @@ interface ClarifyOverlayProps {
 }
 
 type Choice =
-    | { label: string; action: 'step'; target: ClarifyStep }
-    | { label: string; action: 'file'; target: ClarifyOutcome };
+    | { label: string; labelKey: string; action: 'step'; target: ClarifyStep }
+    | { label: string; labelKey: string; action: 'file'; target: ClarifyOutcome };
 
 const STEPS: Record<ClarifyStep, { question: string; questionKey: string; choices: Choice[] }> = {
     actionable: {
         question: 'Is this actionable?',
         questionKey: 'inbox.clarifyQ.actionable',
         choices: [
-            { label: 'Yes, actionable', action: 'step', target: 'steps' },
-            { label: 'Not actionable', action: 'step', target: 'notActionable' },
+            { label: 'Yes, actionable', labelKey: 'inbox.clarifyChoice.yesActionable', action: 'step', target: 'steps' },
+            { label: 'Not actionable', labelKey: 'inbox.clarifyChoice.notActionable', action: 'step', target: 'notActionable' },
         ],
     },
     notActionable: {
         question: 'What kind of thing is it?',
         questionKey: 'inbox.clarifyQ.notActionable',
         choices: [
-            { label: 'Trash', action: 'file', target: 'trash' },
-            { label: 'Someday / Maybe', action: 'file', target: 'someday' },
-            { label: 'Reference note', action: 'file', target: 'note' },
+            { label: 'Trash', labelKey: 'inbox.clarifyChoice.trash', action: 'file', target: 'trash' },
+            { label: 'Someday / Maybe', labelKey: 'inbox.clarifyChoice.someday', action: 'file', target: 'someday' },
+            { label: 'Reference note', labelKey: 'inbox.clarifyChoice.referenceNote', action: 'file', target: 'note' },
         ],
     },
     steps: {
         question: 'One step, or several?',
         questionKey: 'inbox.clarifyQ.steps',
         choices: [
-            { label: 'One step', action: 'step', target: 'twomin' },
-            { label: 'Several steps (project)', action: 'file', target: 'project' },
+            { label: 'One step', labelKey: 'inbox.clarifyChoice.oneStep', action: 'step', target: 'twomin' },
+            { label: 'Several steps (project)', labelKey: 'inbox.clarifyChoice.severalSteps', action: 'file', target: 'project' },
         ],
     },
     twomin: {
         question: 'Can you do it in under 2 minutes?',
         questionKey: 'inbox.clarifyQ.twomin',
         choices: [
-            { label: 'Yes — do it now', action: 'file', target: 'done' },
-            { label: 'No', action: 'step', target: 'deferDelegate' },
+            { label: 'Yes — do it now', labelKey: 'inbox.clarifyChoice.doItNow', action: 'file', target: 'done' },
+            { label: 'No', labelKey: 'inbox.clarifyChoice.no', action: 'step', target: 'deferDelegate' },
         ],
     },
     deferDelegate: {
         question: 'Later yourself, or hand it off?',
         questionKey: 'inbox.clarifyQ.deferDelegate',
         choices: [
-            { label: 'Schedule it', action: 'file', target: 'task' },
-            { label: 'Delegate', action: 'file', target: 'waiting' },
+            { label: 'Schedule it', labelKey: 'inbox.clarifyChoice.scheduleIt', action: 'file', target: 'task' },
+            { label: 'Delegate', labelKey: 'inbox.clarifyChoice.delegate', action: 'file', target: 'waiting' },
         ],
     },
 };
@@ -148,7 +148,7 @@ const ClarifyOverlay: React.FC<ClarifyOverlayProps> = ({
                         }}
                         className="px-5 py-2 rounded-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/10 text-[13.5px] font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/[0.1] transition-colors"
                     >
-                        {choice.label}
+                        {t(choice.labelKey, choice.label)}
                     </button>
                 ))}
             </div>
