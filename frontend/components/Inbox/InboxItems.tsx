@@ -660,7 +660,7 @@ const InboxItems: React.FC = () => {
                             onClick={() => setInboxListExpanded(prev => !prev)}
                             className="flex items-center gap-2.5 w-full px-4 py-2.5 mt-1 rounded-lg text-left hover:bg-gray-100/60 dark:hover:bg-white/[0.04] transition-colors"
                         >
-                            <span className="text-[10.5px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 flex-1">
+                            <span className="text-[10.5px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500">
                                 {t('inbox.recentlyCaptured', 'Recently captured')}
                             </span>
                             <span className="text-[11px] text-gray-400 dark:text-gray-500">
@@ -702,6 +702,8 @@ const InboxItems: React.FC = () => {
                                     {t('inbox.trashedRestore', '{{count}} trashed · restore', { count: trashedCount })}
                                 </span>
                             )}
+
+                            <span className="flex-1" />
 
                             <svg
                                 className={`w-3 h-3 text-gray-400 dark:text-gray-500 transition-transform duration-150 ${inboxListExpanded ? 'rotate-90' : ''}`}
