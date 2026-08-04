@@ -75,17 +75,20 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
     const inactiveClass =
         'text-gray-700 dark:text-[oklch(75%_0.006_95)] hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)]';
 
-    const isActive = (path: string, query?: string) => {
+    const isActiveLink = (path: string, query?: string): boolean => {
         if (path === '/inbox' || path === '/today' || path === '/calendar') {
-            return location.pathname === path ? activeClass : inactiveClass;
+            return location.pathname === path;
         }
         if (path.startsWith('/upcoming')) {
-            return location.pathname === '/upcoming' ? activeClass : inactiveClass;
+            return location.pathname === '/upcoming';
         }
         const isPathMatch = location.pathname === '/tasks';
         const isQueryMatch = query ? location.search.includes(query) : location.search === '';
-        return isPathMatch && isQueryMatch ? activeClass : inactiveClass;
+        return isPathMatch && isQueryMatch;
     };
+
+    const isActive = (path: string, query?: string) =>
+        isActiveLink(path, query) ? activeClass : inactiveClass;
 
     return (
         <ul className="flex flex-col gap-px">
@@ -96,7 +99,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                         data-testid={`sidebar-nav-${link.path.replace(/^\//, '').replace(/\?.*$/, '')}`}
                         className={`w-full flex items-center gap-[10px] px-[10px] py-[4px] rounded-[8px] transition-colors duration-150 ${isActive(link.path, link.query)}`}
                     >
-                        <span className="flex-shrink-0 dark:text-[oklch(55%_0.006_95)]">
+                        <span className={`flex-shrink-0 ${isActiveLink(link.path, link.query) ? 'text-blue-600 dark:text-[oklch(68%_0.14_250)]' : 'text-gray-400 dark:text-[oklch(55%_0.006_95)]'}`}>
                             {link.icon}
                         </span>
                         <span className="flex-1 text-left text-[13.5px]">{link.title}</span>

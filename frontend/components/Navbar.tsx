@@ -169,7 +169,7 @@ const Navbar: React.FC<NavbarProps> = ({
             <div className="h-16 flex items-center justify-between">
                 {/* Sidebar-width area with logo and hamburger */}
                 <div
-                    className={`${isSidebarOpen ? 'sm:w-72' : 'w-auto sm:w-16'} flex items-center ${isSidebarOpen ? 'sm:justify-center' : 'sm:justify-start'} transition-all duration-300 ease-in-out px-4 relative flex-shrink-0`}
+                    className={`${isSidebarOpen ? 'sm:w-sidebar' : 'w-auto sm:w-16'} flex items-center ${isSidebarOpen ? 'sm:justify-center' : 'sm:justify-start'} transition-all duration-300 ease-in-out px-4 relative flex-shrink-0`}
                 >
                     <button
                         onClick={() => setIsSidebarOpen(!isSidebarOpen)}

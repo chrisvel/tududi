@@ -346,7 +346,7 @@ const Layout: React.FC<LayoutProps> = ({
         }
     };
 
-    const mainContentMarginLeft = isSidebarOpen ? 'ml-72' : 'ml-0';
+    const mainContentMarginLeft = isSidebarOpen ? 'ml-sidebar' : 'ml-0';
 
     const isLoading =
         isNotesLoading ||

@@ -4,7 +4,6 @@ import {
     FolderIcon,
     BookOpenIcon,
     TagIcon,
-    StarIcon,
     ChevronRightIcon,
     XMarkIcon,
 } from '@heroicons/react/24/outline';
@@ -143,7 +142,6 @@ const SidebarBookmarks: React.FC<SidebarBookmarksProps> = ({
                 }}
             >
                 <span className="flex items-center text-[10.5px] tracking-[0.01em] font-semibold uppercase text-gray-500 dark:text-[oklch(48%_0.006_95)] hover:text-gray-900 dark:hover:text-white">
-                    <StarIcon className="h-3 w-3 mr-2" />
                     {t('sidebar.bookmarks', 'Favorites')}
                 </span>
                 <button
