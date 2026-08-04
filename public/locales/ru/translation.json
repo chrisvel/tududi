@@ -839,7 +839,13 @@
     "loadMore": "Загрузить больше элементов в почтовом ящике",
     "showingItems": "Показано {{current}} из {{total}} элементов",
     "removeTag": "Удалить тег",
-    "removeProject": "Удалить проект"
+    "removeProject": "Удалить проект",
+    "rollingMsg1": "Что у вас на уме?",
+    "rollingMsg2": "Есть что-то, от чего нужно избавиться?",
+    "rollingMsg3": "Запишите это…",
+    "saveAs": "Сохранить как",
+    "shiftEnterHint": "Shift + Enter для новой строки",
+    "addToInbox": "Добавить как элемент входящих (Enter)"
   },
   "dateFormats": {
     "long": "EEEE, d MMMM, yyyy",

@@ -839,7 +839,13 @@
     "loadMore": "加载更多收件箱项目",
     "showingItems": "显示 {{current}} / {{total}} 项",
     "removeTag": "移除标签",
-    "removeProject": "移除项目"
+    "removeProject": "移除项目",
+    "rollingMsg1": "你在想什么？",
+    "rollingMsg2": "有什么想放下的吗？",
+    "rollingMsg3": "记下来…",
+    "saveAs": "另存为",
+    "shiftEnterHint": "Shift + Enter 换行",
+    "addToInbox": "添加为收件箱项目（Enter）"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",

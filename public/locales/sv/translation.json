@@ -839,7 +839,13 @@
     "loadMore": "Ladda fler inkorgsobjekt",
     "showingItems": "Visar {{current}} av {{total}} objekt",
     "removeTag": "Ta bort tagg",
-    "removeProject": "Ta bort projekt"
+    "removeProject": "Ta bort projekt",
+    "rollingMsg1": "Vad tänker du på?",
+    "rollingMsg2": "Något att släppa?",
+    "rollingMsg3": "Skriv ner det…",
+    "saveAs": "Spara som",
+    "shiftEnterHint": "Shift + Enter för en ny rad",
+    "addToInbox": "Lägg till som inkorgsobjekt (Enter)"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",

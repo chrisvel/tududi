@@ -839,7 +839,13 @@
     "loadMore": "Заредете повече елементи от входящата поща",
     "showingItems": "Показване на {{current}} от {{total}} елемента",
     "removeTag": "Премахни етикет",
-    "removeProject": "Премахни проект"
+    "removeProject": "Премахни проект",
+    "rollingMsg1": "Какво ви е на ума?",
+    "rollingMsg2": "Има ли нещо, от което да се освободите?",
+    "rollingMsg3": "Запишете го...",
+    "saveAs": "Запази като",
+    "shiftEnterHint": "Shift + Enter за нов ред",
+    "addToInbox": "Добави като елемент в пощенската кутия (Enter)"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",

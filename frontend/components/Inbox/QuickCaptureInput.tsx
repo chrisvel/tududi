@@ -17,11 +17,6 @@ import { isAuthError } from '../../utils/authUtils';
 import { createTag } from '../../utils/tagsService';
 import { createProject } from '../../utils/projectsService';
 import {
-    ClipboardDocumentListIcon,
-    DocumentTextIcon,
-    FolderIcon,
-    PlusIcon,
-    LightBulbIcon,
     LinkIcon,
     XMarkIcon,
 } from '@heroicons/react/24/outline';
@@ -31,8 +26,6 @@ import { getApiPath } from '../../config/paths';
 import { getCsrfToken } from '../../utils/csrfService';
 import InboxSelectedChips from './InboxSelectedChips';
 import SuggestionsDropdown from './SuggestionsDropdown';
-import InboxCard from './InboxCard';
-
 export interface QuickCaptureInputHandle {
     submit: (forceInbox?: boolean) => Promise<void>;
 }
@@ -156,6 +149,15 @@ const QuickCaptureInput = React.forwardRef<
         const [selectedSuggestionIndex, setSelectedSuggestionIndex] =
             useState(-1);
 
+        const placeholderData = [
+            { key: 'inbox.captureThought', fallback: 'Capture a thought…' },
+            { key: 'inbox.rollingMsg1', fallback: "What's on your mind?" },
+            { key: 'inbox.rollingMsg2', fallback: 'Anything to let go of?' },
+            { key: 'inbox.rollingMsg3', fallback: 'Jot it down…' },
+        ] as const;
+        const [placeholderIdx, setPlaceholderIdx] = useState(0);
+        const [placeholderFading, setPlaceholderFading] = useState(false);
+
         const [analysisResult, setAnalysisResult] = useState<{
             parsed_tags: string[];
             parsed_projects: string[];
@@ -187,6 +189,18 @@ const QuickCaptureInput = React.forwardRef<
                 inputRef.current.focus();
             }
         }, [autoFocus]);
+
+        useEffect(() => {
+            if (isEditMode) return;
+            const id = setInterval(() => {
+                setPlaceholderFading(true);
+                setTimeout(() => {
+                    setPlaceholderIdx((i) => (i + 1) % placeholderData.length);
+                    setPlaceholderFading(false);
+                }, 300);
+            }, 4000);
+            return () => clearInterval(id);
+        }, [isEditMode]);
 
         useEffect(() => {
             if (!multiline) return;
@@ -524,129 +538,77 @@ const QuickCaptureInput = React.forwardRef<
             }
         };
 
+        const getCaretViewportCoords = (
+            element: HTMLTextAreaElement | HTMLInputElement,
+            position: number
+        ): { left: number; top: number } => {
+            const cs = window.getComputedStyle(element);
+            const rect = element.getBoundingClientRect();
+
+            const mirror = document.createElement('div');
+            Object.assign(mirror.style, {
+                position: 'fixed',
+                visibility: 'hidden',
+                pointerEvents: 'none',
+                top: `${rect.top}px`,
+                left: `${rect.left}px`,
+                width: `${element.offsetWidth}px`,
+                boxSizing: 'border-box',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
+                fontSize: cs.fontSize,
+                fontFamily: cs.fontFamily,
+                fontWeight: cs.fontWeight,
+                fontStyle: cs.fontStyle,
+                lineHeight: cs.lineHeight,
+                letterSpacing: cs.letterSpacing,
+                paddingTop: cs.paddingTop,
+                paddingRight: cs.paddingRight,
+                paddingBottom: cs.paddingBottom,
+                paddingLeft: cs.paddingLeft,
+                borderTopWidth: cs.borderTopWidth,
+                borderRightWidth: cs.borderRightWidth,
+                borderBottomWidth: cs.borderBottomWidth,
+                borderLeftWidth: cs.borderLeftWidth,
+            });
+
+            mirror.appendChild(
+                document.createTextNode(element.value.substring(0, position))
+            );
+
+            const caret = document.createElement('span');
+            caret.textContent = element.value[position] || '|';
+            mirror.appendChild(caret);
+
+            document.body.appendChild(mirror);
+            const caretRect = caret.getBoundingClientRect();
+            document.body.removeChild(mirror);
+
+            return {
+                left: caretRect.left,
+                top: caretRect.bottom + 4,
+            };
+        };
+
         const calculateDropdownPosition = (
             input: HTMLInputElement | HTMLTextAreaElement,
             cursorPos: number
         ) => {
-            const temp = document.createElement('span');
-            temp.style.visibility = 'hidden';
-            temp.style.position = 'absolute';
-            temp.style.fontSize = getComputedStyle(input).fontSize;
-            temp.style.fontFamily = getComputedStyle(input).fontFamily;
-            temp.style.fontWeight = getComputedStyle(input).fontWeight;
-            temp.textContent = inputText.substring(0, cursorPos);
-
-            document.body.appendChild(temp);
-            const textWidth = temp.getBoundingClientRect().width;
-            document.body.removeChild(temp);
-
-            const inputRect = input.getBoundingClientRect();
             const beforeCursor = inputText.substring(0, cursorPos);
-            const afterCursor = inputText.substring(cursorPos);
-            const hashtagMatch = beforeCursor.match(/#[a-zA-Z0-9_]*$/);
+            const hashtagMatch = beforeCursor.match(/#([a-zA-Z0-9_]*)$/);
             const projectMatch = beforeCursor.match(/\+[a-zA-Z0-9_\s]*$/);
 
             if (hashtagMatch) {
-                const hashtagStart = beforeCursor.lastIndexOf('#');
-                const textBeforeHashtag = inputText
-                    .substring(0, hashtagStart)
-                    .trim();
-                const textAfterCursor = afterCursor.trim();
-
-                let showDropdown = false;
-
-                if (textAfterCursor === '' || textBeforeHashtag === '') {
-                    showDropdown = true;
-                } else {
-                    const wordsBeforeHashtag = textBeforeHashtag
-                        .split(/\s+/)
-                        .filter((word) => word.length > 0);
-                    const allWordsAreTagsOrProjects = wordsBeforeHashtag.every(
-                        (word) => word.startsWith('#') || word.startsWith('+')
-                    );
-                    if (allWordsAreTagsOrProjects) {
-                        showDropdown = true;
-                    }
-                }
-
-                if (showDropdown) {
-                    const tempToHashtag = document.createElement('span');
-                    tempToHashtag.style.visibility = 'hidden';
-                    tempToHashtag.style.position = 'absolute';
-                    tempToHashtag.style.fontSize =
-                        getComputedStyle(input).fontSize;
-                    tempToHashtag.style.fontFamily =
-                        getComputedStyle(input).fontFamily;
-                    tempToHashtag.style.fontWeight =
-                        getComputedStyle(input).fontWeight;
-                    tempToHashtag.textContent = inputText.substring(
-                        0,
-                        hashtagStart
-                    );
-
-                    document.body.appendChild(tempToHashtag);
-                    const hashtagOffset =
-                        tempToHashtag.getBoundingClientRect().width;
-                    document.body.removeChild(tempToHashtag);
-
-                    return {
-                        left: inputRect.left + hashtagOffset,
-                        top: inputRect.bottom + 4,
-                    };
-                }
+                const triggerPos = beforeCursor.lastIndexOf('#');
+                return getCaretViewportCoords(input, triggerPos);
             }
 
             if (projectMatch) {
-                const projectStart = beforeCursor.lastIndexOf('+');
-                const textBeforeProject = inputText
-                    .substring(0, projectStart)
-                    .trim();
-                const textAfterCursor = afterCursor.trim();
-
-                let showDropdown = false;
-
-                if (textAfterCursor === '' || textBeforeProject === '') {
-                    showDropdown = true;
-                } else {
-                    const wordsBeforeProject = textBeforeProject
-                        .split(/\s+/)
-                        .filter((word) => word.length > 0);
-                    const allWordsAreTagsOrProjects = wordsBeforeProject.every(
-                        (word) => word.startsWith('#') || word.startsWith('+')
-                    );
-                    if (allWordsAreTagsOrProjects) {
-                        showDropdown = true;
-                    }
-                }
-
-                if (showDropdown) {
-                    const tempToProject = document.createElement('span');
-                    tempToProject.style.visibility = 'hidden';
-                    tempToProject.style.position = 'absolute';
-                    tempToProject.style.fontSize =
-                        getComputedStyle(input).fontSize;
-                    tempToProject.style.fontFamily =
-                        getComputedStyle(input).fontFamily;
-                    tempToProject.style.fontWeight =
-                        getComputedStyle(input).fontWeight;
-                    tempToProject.textContent = inputText.substring(
-                        0,
-                        projectStart
-                    );
-
-                    document.body.appendChild(tempToProject);
-                    const projectOffset =
-                        tempToProject.getBoundingClientRect().width;
-                    document.body.removeChild(tempToProject);
-
-                    return {
-                        left: inputRect.left + projectOffset,
-                        top: inputRect.bottom + 4,
-                    };
-                }
+                const triggerPos = beforeCursor.lastIndexOf('+');
+                return getCaretViewportCoords(input, triggerPos);
             }
 
-            return { left: inputRect.left + textWidth, top: inputRect.bottom + 4 };
+            return getCaretViewportCoords(input, cursorPos);
         };
 
         const handleChange = (
@@ -1285,11 +1247,19 @@ const QuickCaptureInput = React.forwardRef<
             !renderFooterActions &&
             !isEditMode &&
             (openTaskModal || openProjectModal || openNoteModal) ? (
-                <div className="pt-3 mt-3 border-t border-gray-100 dark:border-gray-800">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                        <div className="flex flex-wrap items-center gap-2">
+                <div className="mt-2 flex items-center gap-3.5 h-5 overflow-hidden">
+                    {!inputText.trim() ? (
+                        <span className="text-[10px] text-gray-300 dark:text-gray-600">
+                            {t('inbox.shiftEnterHint')}
+                        </span>
+                    ) : (
+                        <>
+                            <span className="text-[11px] text-gray-400 dark:text-gray-500">
+                                {t('inbox.saveAs')}
+                            </span>
                             {openTaskModal && (
                                 <button
+                                    type="button"
                                     onClick={() => {
                                         const taskTags = buildTagObjects(
                                             composerFooterContext.hashtags
@@ -1318,21 +1288,14 @@ const QuickCaptureInput = React.forwardRef<
                                         void openTaskModal(newTask);
                                         composerFooterContext.clearText();
                                     }}
-                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-700 dark:text-blue-200 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-200 dark:focus:ring-offset-gray-900"
+                                    className="text-[12px] text-blue-600 dark:text-blue-400 hover:underline transition-colors focus:outline-none"
                                 >
-                                    <span className="flex items-center gap-1">
-                                        <span className="sm:hidden text-sm font-semibold leading-none">
-                                            +
-                                        </span>
-                                        <ClipboardDocumentListIcon className="h-4 w-4" />
-                                        <span className="hidden sm:inline">
-                                            {t('inbox.createTask', 'Task')}
-                                        </span>
-                                    </span>
+                                    {t('inbox.createTask', 'Task')}
                                 </button>
                             )}
                             {openNoteModal && (
                                 <button
+                                    type="button"
                                     onClick={() => {
                                         const hashtagTags = buildTagObjects(
                                             composerFooterContext.hashtags
@@ -1368,21 +1331,14 @@ const QuickCaptureInput = React.forwardRef<
                                         openNoteModal(newNote);
                                         composerFooterContext.clearText();
                                     }}
-                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-purple-700 dark:text-purple-200 bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800 rounded-md hover:bg-purple-100 dark:hover:bg-purple-900/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-200 dark:focus:ring-offset-gray-900"
+                                    className="text-[12px] text-purple-600 dark:text-purple-400 hover:underline transition-colors focus:outline-none"
                                 >
-                                    <span className="flex items-center gap-1">
-                                        <span className="sm:hidden text-sm font-semibold leading-none">
-                                            +
-                                        </span>
-                                        <DocumentTextIcon className="h-4 w-4" />
-                                        <span className="hidden sm:inline">
-                                            {t('inbox.createNote', 'Note')}
-                                        </span>
-                                    </span>
+                                    {t('inbox.createNote', 'Note')}
                                 </button>
                             )}
                             {openProjectModal && (
                                 <button
+                                    type="button"
                                     onClick={() => {
                                         const cleaned =
                                             composerFooterContext.cleanedText ||
@@ -1401,24 +1357,13 @@ const QuickCaptureInput = React.forwardRef<
                                         openProjectModal(newProject);
                                         composerFooterContext.clearText();
                                     }}
-                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-green-700 dark:text-green-200 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 rounded-md hover:bg-green-100 dark:hover:bg-green-900/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-200 dark:focus:ring-offset-gray-900"
+                                    className="text-[12px] text-green-600 dark:text-green-400 hover:underline transition-colors focus:outline-none"
                                 >
-                                    <span className="flex items-center gap-1">
-                                        <span className="sm:hidden text-sm font-semibold leading-none">
-                                            +
-                                        </span>
-                                        <FolderIcon className="h-4 w-4" />
-                                        <span className="hidden sm:inline">
-                                            {t(
-                                                'inbox.createProject',
-                                                'Project'
-                                            )}
-                                        </span>
-                                    </span>
+                                    {t('inbox.createProject', 'Project')}
                                 </button>
                             )}
-                        </div>
-                    </div>
+                        </>
+                    )}
                 </div>
             ) : null;
 
@@ -1431,23 +1376,51 @@ const QuickCaptureInput = React.forwardRef<
         const cardClasses = cardClassName ?? 'mb-6';
 
         return (
-            <InboxCard
-                className={`w-full border border-blue-300 dark:border-blue-600 ${cardClasses}`}
+            <div
+                className={`relative w-full bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden ${cardClasses}`}
             >
-                <div className="px-4 py-3">
-                    <div
-                        className={`flex flex-row gap-3 ${shouldShowPrimaryButton ? 'items-start justify-between' : 'items-start'}`}
+                {!isEditMode && (
+                    <svg
+                        width="110"
+                        height="110"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="0.9"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="absolute right-6 bottom-5 pointer-events-none opacity-[0.09] dark:opacity-[0.08] text-gray-400 dark:text-[oklch(55%_0.006_95)]"
+                        aria-hidden="true"
                     >
+                        <path d="M2.25 13.5h3.86a2.25 2.25 0 012.012 1.244l.256.512a2.25 2.25 0 002.013 1.244h3.218a2.25 2.25 0 002.013-1.244l.256-.512a2.25 2.25 0 012.013-1.244h3.859M2.25 13.5V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18v-4.5M2.25 13.5V9.75A2.25 2.25 0 014.5 7.5h15a2.25 2.25 0 012.25 2.25v3.75" />
+                    </svg>
+                )}
+                <div className="p-[30px]">
+                    <div className="flex flex-row gap-3 items-start">
                         <div className="relative flex-1">
-                            <div className="flex items-center gap-3">
-                                <LightBulbIcon className="h-5 w-5 text-amber-400 dark:text-amber-300" />
+                            {!inputText && !isEditMode && (
+                                <div
+                                    className={`absolute left-0 top-[5px] z-0 pointer-events-none select-none text-[18px] leading-relaxed font-normal text-gray-400 dark:text-gray-500 transition-opacity duration-300 ${
+                                        placeholderFading
+                                            ? 'opacity-0'
+                                            : 'opacity-100'
+                                    }`}
+                                    aria-hidden="true"
+                                >
+                                    {t(
+                                        placeholderData[placeholderIdx].key,
+                                        placeholderData[placeholderIdx].fallback
+                                    )}
+                                </div>
+                            )}
+                            <div className="relative z-10 flex items-start">
                                 {multiline ? (
                                     <textarea
                                         ref={(el) => {
                                             inputRef.current = el;
                                         }}
                                         value={inputText}
-                                        rows={2}
+                                        rows={3}
                                         onChange={handleChange}
                                         onSelect={(e) => {
                                             const pos =
@@ -1500,11 +1473,8 @@ const QuickCaptureInput = React.forwardRef<
                                                 setDropdownPosition(position);
                                             }
                                         }}
-                                        className="w-full text-base font-normal bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 px-0 py-2 placeholder-gray-400 dark:placeholder-gray-500 resize-none overflow-hidden"
-                                        placeholder={t(
-                                            'inbox.captureThoughtMultiline',
-                                            'Capture a thought...  ·  Shift+Enter for new line'
-                                        )}
+                                        className="w-full text-[18px] leading-relaxed font-normal bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 px-0 py-1.5 resize-none overflow-hidden"
+                                        placeholder=""
                                         onKeyDown={(e) => {
                                             const hasTagSuggestions =
                                                 showTagSuggestions &&
@@ -1723,11 +1693,8 @@ const QuickCaptureInput = React.forwardRef<
                                                 setDropdownPosition(position);
                                             }
                                         }}
-                                        className="w-full text-base font-normal bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 px-0 py-2 placeholder-gray-400 dark:placeholder-gray-500"
-                                        placeholder={t(
-                                            'inbox.captureThought',
-                                            'Capture a thought...'
-                                        )}
+                                        className="w-full text-[18px] leading-relaxed font-normal bg-transparent text-gray-900 dark:text-gray-100 border-0 focus:outline-none focus:ring-0 px-0 py-1.5"
+                                        placeholder=""
                                         onKeyDown={(e) => {
                                             const hasTagSuggestions =
                                                 showTagSuggestions &&
@@ -2105,49 +2072,21 @@ const QuickCaptureInput = React.forwardRef<
                             <button
                                 type="button"
                                 onClick={() => handleSubmit(false)}
-                                disabled={!inputText.trim() || isSaving}
-                                className={`flex-shrink-0 self-start mt-2 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:ring-offset-1 dark:focus:ring-offset-gray-800 transition-colors ${
+                                disabled={isSaving}
+                                title={t('inbox.addToInbox')}
+                                className={`flex-shrink-0 self-start mt-3 text-[13px] font-medium px-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none transition-opacity ${
                                     inputText.trim() && !isSaving
-                                        ? 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600'
-                                        : 'bg-blue-400 dark:bg-blue-700 cursor-not-allowed'
+                                        ? 'opacity-100'
+                                        : 'opacity-0 pointer-events-none'
                                 }`}
                             >
-                                {isSaving ? (
-                                    <>
-                                        <svg
-                                            className="animate-spin h-3.5 w-3.5"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <circle
-                                                className="opacity-25"
-                                                cx="12"
-                                                cy="12"
-                                                r="10"
-                                                stroke="currentColor"
-                                                strokeWidth="4"
-                                            ></circle>
-                                            <path
-                                                className="opacity-75"
-                                                fill="currentColor"
-                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                            ></path>
-                                        </svg>
-                                        {t('common.saving')}
-                                    </>
-                                ) : (
-                                    <>
-                                        <PlusIcon className="h-3.5 w-3.5" />
-                                        {t('common.add', 'Add')}
-                                    </>
-                                )}
+                                ↵
                             </button>
                         )}
                     </div>
                     {footerActions}
                 </div>
-            </InboxCard>
+            </div>
         );
     }
 );

@@ -839,7 +839,13 @@
     "loadMore": "더 많은 받은 편지함 항목 불러오기",
     "showingItems": "{{current}} / {{total}} 항목 표시 중",
     "removeTag": "태그 제거",
-    "removeProject": "프로젝트 제거"
+    "removeProject": "프로젝트 제거",
+    "rollingMsg1": "무슨 생각을 하고 계신가요?",
+    "rollingMsg2": "놓아줄 것이 있나요?",
+    "rollingMsg3": "적어 두세요…",
+    "saveAs": "다른 이름으로 저장",
+    "shiftEnterHint": "새 줄을 위해 Shift + Enter",
+    "addToInbox": "받은 편지함 항목으로 추가 (Enter)"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",

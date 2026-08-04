@@ -839,7 +839,13 @@
     "loadMore": "Naloži več predmetov v prejeto",
     "showingItems": "Prikazujem {{current}} od {{total}} predmetov",
     "removeTag": "Odstrani oznako",
-    "removeProject": "Odstrani projekt"
+    "removeProject": "Odstrani projekt",
+    "rollingMsg1": "Kaj vam leži na srcu?",
+    "rollingMsg2": "Ali je kaj, česar se želite znebiti?",
+    "rollingMsg3": "Zapišite to…",
+    "saveAs": "Shrani kot",
+    "shiftEnterHint": "Shift + Enter za novo vrstico",
+    "addToInbox": "Dodaj kot element v mapo Prejeto (Enter)"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",

@@ -839,7 +839,13 @@
     "loadMore": "Tải thêm mục trong hộp thư đến",
     "showingItems": "Đang hiển thị {{current}} trong tổng số {{total}} mục",
     "removeTag": "Xóa thẻ",
-    "removeProject": "Xóa dự án"
+    "removeProject": "Xóa dự án",
+    "rollingMsg1": "Bạn đang nghĩ gì?",
+    "rollingMsg2": "Có điều gì cần buông bỏ không?",
+    "rollingMsg3": "Ghi lại nào…",
+    "saveAs": "Lưu dưới dạng",
+    "shiftEnterHint": "Shift + Enter để xuống dòng mới",
+    "addToInbox": "Thêm vào mục hộp thư đến (Enter)"
   },
   "dateFormats": {
     "long": "EEEE, d tháng MMMM, yyyy",

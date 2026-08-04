@@ -839,7 +839,13 @@
     "loadMore": "Załaduj więcej elementów skrzynki odbiorczej",
     "showingItems": "Wyświetlanie {{current}} z {{total}} elementów",
     "removeTag": "Usuń tag",
-    "removeProject": "Usuń projekt"
+    "removeProject": "Usuń projekt",
+    "rollingMsg1": "Co masz na myśli?",
+    "rollingMsg2": "Czy jest coś, co chcesz puścić?",
+    "rollingMsg3": "Zapisz to...",
+    "saveAs": "Zapisz jako",
+    "shiftEnterHint": "Shift + Enter, aby dodać nową linię",
+    "addToInbox": "Dodaj jako element skrzynki odbiorczej (Enter)"
   },
   "dateFormats": {
     "long": "EEEE, d MMMM yyyy",

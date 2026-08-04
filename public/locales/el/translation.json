@@ -1090,7 +1090,13 @@
     "loadMore": "Φόρτωση περισσότερων στοιχείων εισερχομένων",
     "showingItems": "Εμφάνιση {{current}} από {{total}} στοιχεία",
     "removeTag": "Αφαίρεση ετικέτας",
-    "removeProject": "Αφαίρεση έργου"
+    "removeProject": "Αφαίρεση έργου",
+    "rollingMsg1": "Τι σκέφτεσαι;",
+    "rollingMsg2": "Κάτι που να αφήσεις;",
+    "rollingMsg3": "Κατέγραψέ το…",
+    "saveAs": "Αποθήκευση ως",
+    "shiftEnterHint": "Shift + Enter για νέα γραμμή",
+    "addToInbox": "Προσθήκη ως στοιχείο εισερχομένων (Enter)"
   },
   "success": {
     "noteUpdated": "Η σημείωση ενημερώθηκε με επιτυχία!",

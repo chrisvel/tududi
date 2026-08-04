@@ -839,7 +839,13 @@
     "loadMore": "Daha fazla gelen kutusu öğesi yükle",
     "showingItems": "{{current}} / {{total}} öğe gösteriliyor",
     "removeTag": "Etiketi kaldır",
-    "removeProject": "Projeyi kaldır"
+    "removeProject": "Projeyi kaldır",
+    "rollingMsg1": "Aklında ne var?",
+    "rollingMsg2": "Bırakman gereken bir şey var mı?",
+    "rollingMsg3": "Not al…",
+    "saveAs": "Farklı kaydet",
+    "shiftEnterHint": "Yeni satır için Shift + Enter",
+    "addToInbox": "Gelen kutusu öğesi olarak ekle (Enter)"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",

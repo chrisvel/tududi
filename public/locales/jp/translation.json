@@ -1010,7 +1010,13 @@
     "loadMore": "さらにインボックスアイテムを読み込む",
     "showingItems": "{{total}}アイテム中{{current}}を表示しています",
     "removeTag": "タグを削除",
-    "removeProject": "プロジェクトを削除"
+    "removeProject": "プロジェクトを削除",
+    "rollingMsg1": "何を考えていますか？",
+    "rollingMsg2": "手放すべきことはありますか？",
+    "rollingMsg3": "メモしておきましょう…",
+    "saveAs": "名前を付けて保存",
+    "shiftEnterHint": "新しい行のために Shift + Enter",
+    "addToInbox": "受信トレイアイテムとして追加 (Enter)"
   },
   "project": {
     "projectImage": "プロジェクト画像",

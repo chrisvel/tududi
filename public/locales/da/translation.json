@@ -839,7 +839,13 @@
     "loadMore": "Indlæs flere indbakkeelementer",
     "showingItems": "Viser {{current}} af {{total}} elementer",
     "removeTag": "Fjern tag",
-    "removeProject": "Fjern projekt"
+    "removeProject": "Fjern projekt",
+    "rollingMsg1": "Hvad tænker du på?",
+    "rollingMsg2": "Er der noget, du vil give slip på?",
+    "rollingMsg3": "Skriv det ned…",
+    "saveAs": "Gem som",
+    "shiftEnterHint": "Shift + Enter for en ny linje",
+    "addToInbox": "Tilføj som indbakkeelement (Enter)"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",

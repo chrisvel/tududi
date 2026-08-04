@@ -839,7 +839,13 @@
     "loadMore": "Lataa lisää saapuneita kohteita",
     "showingItems": "Näytetään {{current}} / {{total}} kohteista",
     "removeTag": "Poista tunniste",
-    "removeProject": "Poista projekti"
+    "removeProject": "Poista projekti",
+    "rollingMsg1": "Mitä mieltä olet?",
+    "rollingMsg2": "Onko jotain, josta haluaisit luopua?",
+    "rollingMsg3": "Kirjoita se ylös…",
+    "saveAs": "Tallenna nimellä",
+    "shiftEnterHint": "Shift + Enter uuden rivin lisäämiseksi",
+    "addToInbox": "Lisää saapuneisiin (Enter)"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",

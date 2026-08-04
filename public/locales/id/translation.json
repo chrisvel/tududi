@@ -839,7 +839,13 @@
     "loadMore": "Muat lebih banyak item kotak masuk",
     "showingItems": "Menampilkan {{current}} dari {{total}} item",
     "removeTag": "Hapus tag",
-    "removeProject": "Hapus proyek"
+    "removeProject": "Hapus proyek",
+    "rollingMsg1": "Apa yang ada di pikiranmu?",
+    "rollingMsg2": "Ada yang ingin kamu lepaskan?",
+    "rollingMsg3": "Catat…",
+    "saveAs": "Simpan sebagai",
+    "shiftEnterHint": "Shift + Enter untuk baris baru",
+    "addToInbox": "Tambahkan sebagai item kotak masuk (Enter)"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",

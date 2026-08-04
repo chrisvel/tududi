@@ -1052,7 +1052,13 @@
     "loadMore": "Cargar más elementos de la bandeja de entrada",
     "showingItems": "Mostrando {{current}} de {{total}} elementos",
     "removeTag": "Eliminar etiqueta",
-    "removeProject": "Eliminar proyecto"
+    "removeProject": "Eliminar proyecto",
+    "rollingMsg1": "¿Qué tienes en mente?",
+    "rollingMsg2": "¿Algo que dejar ir?",
+    "rollingMsg3": "Anótalo…",
+    "saveAs": "Guardar como",
+    "shiftEnterHint": "Shift + Enter para una nueva línea",
+    "addToInbox": "Agregar como elemento de bandeja de entrada (Enter)"
   },
   "areas": {
     "title": "Áreas",

@@ -839,7 +839,13 @@
     "loadMore": "Charger plus d'éléments dans la boîte de réception",
     "showingItems": "Affichage de {{current}} sur {{total}} éléments",
     "removeTag": "Supprimer l'étiquette",
-    "removeProject": "Supprimer le projet"
+    "removeProject": "Supprimer le projet",
+    "rollingMsg1": "Qu'est-ce qui vous préoccupe ?",
+    "rollingMsg2": "Quelque chose à laisser aller ?",
+    "rollingMsg3": "Notez-le…",
+    "saveAs": "Enregistrer sous",
+    "shiftEnterHint": "Maj + Entrée pour une nouvelle ligne",
+    "addToInbox": "Ajouter comme élément de la boîte de réception (Entrée)"
   },
   "dateFormats": {
     "long": "EEEE, d MMMM yyyy",
