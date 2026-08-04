@@ -87,13 +87,26 @@ describe('Inbox Routes', () => {
             expect(response.body.map((i) => i.uid)).toContain(inboxItem1.uid);
         });
 
-        it('should only return items with added status', async () => {
+        it('should exclude deleted and trashed items', async () => {
+            await InboxItem.create({
+                content: 'Deleted item',
+                status: 'deleted',
+                source: 'test',
+                user_id: user.id,
+            });
+            await InboxItem.create({
+                content: 'Trashed item',
+                status: 'trashed',
+                source: 'test',
+                user_id: user.id,
+            });
+
             const response = await agent.get('/api/inbox');
 
             expect(response.status).toBe(200);
-            expect(response.body.length).toBe(1);
-            expect(response.body[0].uid).toBe(inboxItem1.uid);
-            expect(response.body[0].status).toBe('added');
+            expect(response.body.length).toBe(1); // Only inboxItem1 (added); processed items excluded
+            const uids = response.body.map((i) => i.uid);
+            expect(uids).toContain(inboxItem1.uid);
         });
 
         it('should return inbox items ordered by created_at DESC (newest first)', async () => {
@@ -127,7 +140,7 @@ describe('Inbox Routes', () => {
             const response = await agent.get('/api/inbox');
 
             expect(response.status).toBe(200);
-            expect(response.body.length).toBe(4); // Including the item from beforeEach
+            expect(response.body.length).toBe(4); // Including inboxItem1 from beforeEach (inboxItem2 is processed, excluded)
 
             // Check that items are ordered by newest first
             expect(response.body[0].uid).toBe(item3.uid);
@@ -166,7 +179,7 @@ describe('Inbox Routes', () => {
             const response1 = await agent.get('/api/inbox?limit=20&offset=0');
             expect(response1.status).toBe(200);
             expect(response1.body.items.length).toBe(20);
-            expect(response1.body.pagination.total).toBe(26); // 25 + 1 from beforeEach
+            expect(response1.body.pagination.total).toBe(26); // 25 + 1 from beforeEach (only added; processed excluded)
             expect(response1.body.pagination.hasMore).toBe(true);
             expect(response1.body.pagination.offset).toBe(0);
             expect(response1.body.pagination.limit).toBe(20);
@@ -192,7 +205,7 @@ describe('Inbox Routes', () => {
                 await new Promise((resolve) => setTimeout(resolve, 5));
             }
 
-            // Request 40 items (should get all 31: 30 + 1 from beforeEach)
+            // Request 40 items (should get all 31: 30 + 1 from beforeEach — only added; processed excluded)
             const response = await agent.get('/api/inbox?limit=40&offset=0');
             expect(response.status).toBe(200);
             expect(response.body.items.length).toBe(31);
@@ -440,6 +453,121 @@ describe('Inbox Routes', () => {
 
             expect(response.status).toBe(401);
             expect(response.body.error).toBe('Authentication required');
+        });
+    });
+
+    describe('PATCH /api/inbox/:uid/trash', () => {
+        let inboxItem;
+
+        beforeEach(async () => {
+            inboxItem = await InboxItem.create({
+                content: 'Test content',
+                status: 'added',
+                source: 'test',
+                user_id: user.id,
+            });
+        });
+
+        it('should mark inbox item as trashed', async () => {
+            const response = await agent.patch(
+                `/api/inbox/${inboxItem.uid}/trash`
+            );
+            expect(response.status).toBe(200);
+            expect(response.body.status).toBe('trashed');
+        });
+
+        it('should exclude trashed items from GET /api/inbox', async () => {
+            await agent.patch(`/api/inbox/${inboxItem.uid}/trash`);
+            const listResponse = await agent.get(
+                '/api/inbox?limit=20&offset=0'
+            );
+            const uids = listResponse.body.items.map((i) => i.uid);
+            expect(uids).not.toContain(inboxItem.uid);
+        });
+
+        it('should return 404 for non-existent uid', async () => {
+            const response = await agent.patch(
+                '/api/inbox/abcd1234efghijk/trash'
+            );
+            expect(response.status).toBe(404);
+        });
+
+        it('should require authentication', async () => {
+            const response = await request(app).patch(
+                `/api/inbox/${inboxItem.uid}/trash`
+            );
+            expect(response.status).toBe(401);
+        });
+    });
+
+    describe('PATCH /api/inbox/:uid/restore', () => {
+        let trashedItem;
+
+        beforeEach(async () => {
+            trashedItem = await InboxItem.create({
+                content: 'Trashed content',
+                status: 'trashed',
+                source: 'test',
+                user_id: user.id,
+            });
+        });
+
+        it('should restore a trashed inbox item to added', async () => {
+            const response = await agent.patch(
+                `/api/inbox/${trashedItem.uid}/restore`
+            );
+            expect(response.status).toBe(200);
+            expect(response.body.status).toBe('added');
+        });
+
+        it('should make the item appear in GET /api/inbox after restore', async () => {
+            await agent.patch(`/api/inbox/${trashedItem.uid}/restore`);
+            const listResponse = await agent.get(
+                '/api/inbox?limit=20&offset=0'
+            );
+            const uids = listResponse.body.items.map((i) => i.uid);
+            expect(uids).toContain(trashedItem.uid);
+        });
+
+        it('should require authentication', async () => {
+            const response = await request(app).patch(
+                `/api/inbox/${trashedItem.uid}/restore`
+            );
+            expect(response.status).toBe(401);
+        });
+    });
+
+    describe('GET /api/inbox trashedCount', () => {
+        it('should include trashedCount in paginated response', async () => {
+            await InboxItem.create({
+                content: 'Active',
+                status: 'added',
+                source: 'test',
+                user_id: user.id,
+            });
+            await InboxItem.create({
+                content: 'Trashed',
+                status: 'trashed',
+                source: 'test',
+                user_id: user.id,
+            });
+
+            const response = await agent.get('/api/inbox?limit=20&offset=0');
+            expect(response.status).toBe(200);
+            expect(response.body).toHaveProperty('trashedCount');
+            expect(response.body.trashedCount).toBeGreaterThanOrEqual(1);
+        });
+
+        it('should return trashedCount of 0 when none trashed', async () => {
+            await InboxItem.create({
+                content: 'Active',
+                status: 'added',
+                source: 'test',
+                user_id: user.id,
+            });
+            const response = await agent.get('/api/inbox?limit=20&offset=0');
+            expect(response.status).toBe(200);
+            expect(response.body.trashedCount).toBe(0);
         });
     });
 });

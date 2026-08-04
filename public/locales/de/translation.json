@@ -486,7 +486,13 @@
     "loadMore": "Weitere Posteingangsartikel laden",
     "showingItems": "Zeige {{current}} von {{total}} Elementen",
     "removeTag": "Tag entfernen",
-    "removeProject": "Projekt entfernen"
+    "removeProject": "Projekt entfernen",
+    "rollingMsg1": "Was denkst du gerade?",
+    "rollingMsg2": "Gibt es etwas, das du loslassen möchtest?",
+    "rollingMsg3": "Notiere es…",
+    "saveAs": "Speichern unter",
+    "shiftEnterHint": "Umschalt + Eingabetaste für eine neue Zeile",
+    "addToInbox": "Als Posteingangsartikel hinzufügen (Eingabetaste)"
   },
   "project": {
     "projectImage": "Projektbild",

@@ -9,6 +9,8 @@ import {
     processInboxItemWithStore,
     deleteInboxItemWithStore,
     updateInboxItemWithStore,
+    trashInboxItemWithStore,
+    restoreAllTrashedWithStore,
 } from '../../utils/inboxService';
 import InboxItemDetail from './InboxItemDetail';
 import { useToast } from '../Shared/ToastContext';
@@ -25,6 +27,27 @@ import { isUrl } from '../../utils/urlService';
 import { fetchAreas } from '../../utils/areasService';
 import { fetchProjects } from '../../utils/projectsService';
 import { useStore } from '../../store/useStore';
+import ClarifyOverlay, { ClarifyStep, ClarifyOutcome } from './ClarifyOverlay';
+
+interface ClarifyState {
+    active: boolean;
+    itemUids: string[];
+    currentIndex: number;
+    step: ClarifyStep;
+    history: Array<{ step: ClarifyStep }>;
+    singleMode: boolean;
+    pendingModalUid: string | null;
+}
+
+const CLARIFY_INITIAL: ClarifyState = {
+    active: false,
+    itemUids: [],
+    currentIndex: 0,
+    step: 'actionable',
+    history: [],
+    singleMode: false,
+    pendingModalUid: null,
+};
 
 const InboxItems: React.FC = () => {
     const { t } = useTranslation();
@@ -35,7 +58,7 @@ const InboxItems: React.FC = () => {
 
     const [hasInitialized, setHasInitialized] = useState(false);
 
-    const { inboxItems, isLoading, pagination } = useStore(
+    const { inboxItems, isLoading, pagination, trashedCount } = useStore(
         (state) => state.inboxStore
     );
     const {
@@ -54,6 +77,8 @@ const InboxItems: React.FC = () => {
     const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
     const [isInfoExpanded, setIsInfoExpanded] = useState(false);
+    const [inboxListExpanded, setInboxListExpanded] = useState(false);
+    const [lastAddedUid, setLastAddedUid] = useState<string | null>(null);
 
     const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
     const [noteToEdit, setNoteToEdit] = useState<Note | null>(null);
@@ -61,6 +86,8 @@ const InboxItems: React.FC = () => {
     const [currentConversionItemUid, setCurrentConversionItemUid] = useState<
         string | null
     >(null);
+
+    const [clarify, setClarify] = useState<ClarifyState>(CLARIFY_INITIAL);
 
     useEffect(() => {
         const urlPageSize = searchParams.get('loaded');
@@ -175,6 +202,161 @@ const InboxItems: React.FC = () => {
         }
     }, [inboxItems.length, hasInitialized]);
 
+    // Track newly-added items: when the list grows while initialized, mark the
+    // newest item as "new" (entry animation) and auto-expand the list.
+    const prevInboxLengthRef = React.useRef<number>(0);
+    useEffect(() => {
+        if (!hasInitialized) {
+            prevInboxLengthRef.current = inboxItems.length;
+            return;
+        }
+        const prev = prevInboxLengthRef.current;
+        const curr = inboxItems.length;
+        if (curr > prev && inboxItems[0]?.uid) {
+            setLastAddedUid(inboxItems[0].uid);
+            setInboxListExpanded(true);
+            // Clear the "new" flag after the animation completes
+            const timer = setTimeout(() => setLastAddedUid(null), 500);
+            prevInboxLengthRef.current = curr;
+            return () => clearTimeout(timer);
+        }
+        prevInboxLengthRef.current = curr;
+    }, [inboxItems, hasInitialized]);
+
+    // ── Clarify lifecycle ─────────────────────────────────────────────────────
+
+    const startClarify = () => {
+        const uids = inboxItems.map((i) => i.uid).filter((uid): uid is string => Boolean(uid));
+        if (uids.length === 0) return;
+        setInboxListExpanded(true);
+        setClarify({
+            active: true,
+            itemUids: uids,
+            currentIndex: 0,
+            step: 'actionable',
+            history: [],
+            singleMode: false,
+            pendingModalUid: null,
+        });
+    };
+
+    const startSingleClarify = (uid: string) => {
+        setInboxListExpanded(true);
+        setClarify({
+            active: true,
+            itemUids: [uid],
+            currentIndex: 0,
+            step: 'actionable',
+            history: [],
+            singleMode: true,
+            pendingModalUid: null,
+        });
+    };
+
+    const exitClarify = () => setClarify(CLARIFY_INITIAL);
+
+    const advanceClarify = () => {
+        setClarify((prev) => ({
+            ...prev,
+            currentIndex: prev.currentIndex + 1,
+            step: 'actionable',
+            history: [],
+            pendingModalUid: null,
+        }));
+    };
+
+    const stepClarifyTo = (step: ClarifyStep) => {
+        setClarify((prev) => ({
+            ...prev,
+            step,
+            history: [...prev.history, { step: prev.step }],
+        }));
+    };
+
+    const goBackClarify = () => {
+        setClarify((prev) => {
+            const history = [...prev.history];
+            const last = history.pop();
+            if (!last) return prev;
+            return { ...prev, step: last.step, history };
+        });
+    };
+
+    const fileClarifyOutcome = async (outcome: ClarifyOutcome) => {
+        const uid = clarify.itemUids[clarify.currentIndex];
+        if (!uid) return;
+        const item = inboxItems.find((i) => i.uid === uid);
+        const itemName = item?.title?.trim() || item?.content?.trim() || '';
+
+        if (outcome === 'trash' || outcome === 'done') {
+            try {
+                await trashInboxItemWithStore(uid);
+            } catch {
+                showErrorToast(t('inbox.trashError', 'Failed to trash item'));
+                return;
+            }
+            advanceClarify();
+            return;
+        }
+
+        if (outcome === 'someday') {
+            try {
+                await createTask({
+                    name: itemName,
+                    status: 'not_started',
+                    priority: null,
+                    completed_at: null,
+                    tags: [{ name: 'someday' }],
+                });
+                await processInboxItemWithStore(uid);
+                showSuccessToast(t('inbox.somedayCreated', 'Added to Someday'));
+            } catch {
+                showErrorToast(t('task.createError'));
+                return;
+            }
+            advanceClarify();
+            return;
+        }
+
+        if (outcome === 'task') {
+            try {
+                await createTask({ name: itemName, status: 'not_started', priority: null, completed_at: null });
+                await processInboxItemWithStore(uid);
+                showSuccessToast(t('task.createdSuccessfully', 'Task created successfully!'));
+            } catch {
+                showErrorToast(t('task.createError'));
+                return;
+            }
+            advanceClarify();
+            return;
+        }
+
+        if (outcome === 'waiting') {
+            try {
+                await createTask({ name: itemName, status: 'waiting', priority: null, completed_at: null, tags: [{ name: 'waiting-for' }] });
+                await processInboxItemWithStore(uid);
+                showSuccessToast(t('task.createdSuccessfully', 'Task created successfully!'));
+            } catch {
+                showErrorToast(t('task.createError'));
+                return;
+            }
+            advanceClarify();
+            return;
+        }
+
+        // Modal-based outcomes: open the modal; advance happens in modal's onSave
+        setClarify((prev) => ({ ...prev, pendingModalUid: uid }));
+
+        if (outcome === 'note') {
+            const noteContent = item?.content || '';
+            await handleOpenNoteModal({ title: itemName, content: noteContent }, uid);
+        } else if (outcome === 'project') {
+            handleOpenProjectModal({ name: itemName, description: '', status: 'planned' as const }, uid);
+        }
+    };
+
+    // ── Item handlers ─────────────────────────────────────────────────────────
+
     const handleProcessItem = async (
         uid: string,
         showToast: boolean = true
@@ -255,6 +437,9 @@ const InboxItems: React.FC = () => {
         } finally {
             if (options.inboxItemUid) {
                 setCurrentConversionItemUid(null);
+                if (clarify.pendingModalUid) {
+                    advanceClarify();
+                }
             }
         }
     };
@@ -338,6 +523,9 @@ const InboxItems: React.FC = () => {
             if (currentConversionItemUid !== null) {
                 await handleProcessItem(currentConversionItemUid, false);
                 setCurrentConversionItemUid(null);
+                if (clarify.pendingModalUid) {
+                    advanceClarify();
+                }
             }
         } catch (error) {
             console.error('Failed to create project:', error);
@@ -369,6 +557,9 @@ const InboxItems: React.FC = () => {
             if (currentConversionItemUid !== null) {
                 await handleProcessItem(currentConversionItemUid, false);
                 setCurrentConversionItemUid(null);
+                if (clarify.pendingModalUid) {
+                    advanceClarify();
+                }
             }
 
             setIsNoteModalOpen(false);
@@ -406,64 +597,50 @@ const InboxItems: React.FC = () => {
     }
 
     return (
-        <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">
-            <div className="w-full max-w-5xl mx-auto">
-                <div className="flex items-center mb-8 justify-between">
-                    <div className="flex items-center">
-                        <h1 className="text-2xl font-light">
-                            {t('inbox.title')}
-                        </h1>
-                    </div>
+        <div className="w-full px-4 sm:px-6 lg:px-8 pt-4 pb-8">
+            <div className="w-full max-w-7xl mx-auto">
+                {/* ── Page header ─────────────────────────────────────────── */}
+                <div className="flex items-center justify-between mb-6">
+                    <h1 className="text-2xl font-light text-gray-900 dark:text-gray-100">
+                        {t('inbox.title')}
+                    </h1>
                     <button
                         onClick={() => setIsInfoExpanded(!isInfoExpanded)}
-                        className={`flex items-center hover:bg-blue-100/50 dark:hover:bg-blue-800/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg${isInfoExpanded ? ' bg-blue-50/70 dark:bg-blue-900/20' : ''} p-2`}
-                        aria-expanded={isInfoExpanded}
-                        aria-label={
+                        className={`flex items-center justify-center w-8 h-8 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/40 ${
                             isInfoExpanded
-                                ? 'Collapse info panel'
-                                : 'Show inbox information'
-                        }
+                                ? 'text-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                                : 'text-gray-400 dark:text-gray-500 hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-white/[0.06]'
+                        }`}
+                        aria-expanded={isInfoExpanded}
+                        aria-label={isInfoExpanded ? 'Collapse info panel' : 'Show inbox information'}
                         title={isInfoExpanded ? 'Hide info' : 'About Inbox'}
                     >
-                        <InformationCircleIcon className="h-5 w-5 text-blue-500" />
-                        <span className="sr-only">
-                            {isInfoExpanded ? 'Hide info' : 'About Inbox'}
-                        </span>
+                        <InformationCircleIcon className="h-5 w-5" />
                     </button>
                 </div>
 
+                {/* ── Info banner ──────────────────────────────────────────── */}
                 <div
-                    className={`transition-all duration-300 ease-in-out ${
-                        isInfoExpanded
-                            ? 'max-h-96 opacity-100 mb-6'
-                            : 'max-h-0 opacity-0 mb-0'
-                    } overflow-hidden`}
+                    className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                        isInfoExpanded ? 'max-h-48 opacity-100 mb-5' : 'max-h-0 opacity-0 mb-0'
+                    }`}
                 >
-                    <div className="bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/30 rounded-lg px-6 py-5 flex items-start gap-4">
-                        <div className="flex-shrink-0">
-                            <InformationCircleIcon className="h-12 w-12 text-blue-400 opacity-20" />
-                        </div>
-                        <div className="flex-1">
-                            <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                                {t(
-                                    'taskViews.inbox',
-                                    "Inbox is where all uncategorized tasks are located. Tasks that have not been assigned to a project or don't have a due date will appear here. This is your 'brain dump' area where you can quickly note down tasks and organize them later."
-                                )}
-                            </p>
-                            <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-xs text-gray-500 dark:text-gray-400">
-                                <span>
-                                    <code className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded font-mono">#tag</code>
-                                    {' '}{t('inbox.shortcutTag', 'to label with a tag')}
-                                </span>
-                                <span>
-                                    <code className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded font-mono">+Project</code>
-                                    {' '}{t('inbox.shortcutProject', 'to assign to a project')}
-                                </span>
-                            </div>
+                    <div className="flex gap-3 px-4 py-3.5 bg-blue-50/60 dark:bg-blue-900/10 rounded-xl border border-blue-100 dark:border-blue-800/20">
+                        <InformationCircleIcon className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
+                        <div className="text-[13.5px] text-gray-600 dark:text-gray-300 leading-relaxed">
+                            {t(
+                                'inbox.infoShort',
+                                'Inbox is where uncategorized thoughts land — jot things down, sort them later.'
+                            )}{' '}
+                            <span className="text-blue-600 dark:text-blue-400 font-semibold">#tag</span>
+                            {' '}{t('inbox.shortcutTag', 'to label with a tag')},{' '}
+                            <span className="text-green-700 dark:text-green-400 font-semibold">+Project</span>
+                            {' '}{t('inbox.shortcutProject', 'to assign to a project')}.
                         </div>
                     </div>
                 </div>
 
+                {/* ── Quick capture ────────────────────────────────────────── */}
                 <QuickCaptureInput
                     onTaskCreate={handleSaveTask}
                     onNoteCreate={handleSaveNote}
@@ -472,83 +649,152 @@ const InboxItems: React.FC = () => {
                     openTaskModal={handleOpenTaskModal}
                     openProjectModal={handleOpenProjectModal}
                     openNoteModal={handleOpenNoteModal}
-                    cardClassName="mb-4"
+                    cardClassName="mb-5"
                 />
 
+                {/* ── Item list ────────────────────────────────────────────── */}
                 {inboxItems.length > 0 && (
-                    <div className="space-y-4">
-                        <div className="space-y-2">
-                            {inboxItems.map((item) => (
-                                <InboxItemDetail
-                                    key={item.uid || item.id}
-                                    item={item}
-                                    onDelete={handleDeleteItem}
-                                    onUpdate={handleUpdateItem}
-                                    openTaskModal={handleOpenTaskModal}
-                                    openProjectModal={handleOpenProjectModal}
-                                    openNoteModal={handleOpenNoteModal}
-                                    projects={projects}
-                                />
-                            ))}
-                        </div>
+                    <>
+                        {/* Recently captured – collapsible header */}
+                        <button
+                            onClick={() => setInboxListExpanded(prev => !prev)}
+                            className="flex items-center gap-2.5 w-full px-4 py-2.5 mt-1 rounded-lg text-left hover:bg-gray-100/60 dark:hover:bg-white/[0.04] transition-colors"
+                        >
+                            <span className="text-[10.5px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500">
+                                {t('inbox.recentlyCaptured', 'Recently captured')}
+                            </span>
+                            <span className="text-[11px] text-gray-400 dark:text-gray-500">
+                                {inboxItems.length}
+                            </span>
 
-                        {pagination.hasMore && (
-                            <div className="flex justify-center pt-4">
-                                <button
-                                    onClick={handleLoadMore}
-                                    disabled={isLoading}
-                                    className="inline-flex items-center px-6 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            {/* Process N button */}
+                            {inboxItems.length > 0 && !clarify.active && (
+                                <span
+                                    role="button"
+                                    tabIndex={0}
+                                    onClick={(e) => { e.stopPropagation(); startClarify(); }}
+                                    onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); startClarify(); } }}
+                                    className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:opacity-75 transition-opacity cursor-pointer"
                                 >
-                                    {isLoading ? (
-                                        <>
-                                            <svg
-                                                className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-500"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <circle
-                                                    className="opacity-25"
-                                                    cx="12"
-                                                    cy="12"
-                                                    r="10"
-                                                    stroke="currentColor"
-                                                    strokeWidth="4"
-                                                ></circle>
-                                                <path
-                                                    className="opacity-75"
-                                                    fill="currentColor"
-                                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                                ></path>
-                                            </svg>
-                                            {t('inbox.loading', 'Loading...')}
-                                        </>
-                                    ) : (
-                                        <>
-                                            <InboxIcon className="h-4 w-4 mr-2" />
-                                            {t(
-                                                'inbox.loadMore',
-                                                'Load more inbox items'
-                                            )}
-                                        </>
-                                    )}
-                                </button>
-                            </div>
-                        )}
+                                    {t('inbox.processN', 'Process {{count}}', { count: inboxItems.length })}
+                                </span>
+                            )}
 
-                        {inboxItems.length > 0 && (
-                            <div className="text-center text-sm text-gray-500 dark:text-gray-400 pt-2">
-                                {t(
-                                    'inbox.showingItems',
-                                    'Showing {{current}} of {{total}} items',
-                                    {
-                                        current: inboxItems.length,
-                                        total: pagination.total,
-                                    }
+                            {/* Trashed affordance */}
+                            {trashedCount > 0 && (
+                                <span
+                                    role="button"
+                                    tabIndex={0}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        void (async () => {
+                                            try {
+                                                await restoreAllTrashedWithStore();
+                                                showSuccessToast(t('inbox.restored', 'Trashed items restored'));
+                                            } catch {
+                                                showErrorToast(t('inbox.restoreError', 'Failed to restore'));
+                                            }
+                                        })();
+                                    }}
+                                    onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.click(); }}
+                                    className="text-[10.5px] text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer"
+                                >
+                                    {t('inbox.trashedRestore', '{{count}} trashed · restore', { count: trashedCount })}
+                                </span>
+                            )}
+
+                            <span className="flex-1" />
+
+                            <svg
+                                className={`w-3 h-3 text-gray-400 dark:text-gray-500 transition-transform duration-150 ${inboxListExpanded ? 'rotate-90' : ''}`}
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                strokeWidth={2}
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <path d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                            </svg>
+                        </button>
+
+                        {inboxListExpanded && (
+                            <div className="flex flex-col">
+                                {/* Clarify overlay — shown instead of the list when active */}
+                                {clarify.active && !clarify.pendingModalUid && (() => {
+                                    const uid = clarify.itemUids[clarify.currentIndex];
+                                    const currentItem = inboxItems.find((i) => i.uid === uid);
+                                    const isDone = clarify.currentIndex >= clarify.itemUids.length;
+                                    return (
+                                        <ClarifyOverlay
+                                            itemText={currentItem?.title?.trim() || currentItem?.content?.trim() || ''}
+                                            step={clarify.step}
+                                            progress={`${Math.min(clarify.currentIndex + 1, clarify.itemUids.length)} of ${clarify.itemUids.length}`}
+                                            canGoBack={clarify.history.length > 0}
+                                            isDone={isDone}
+                                            onStepTo={stepClarifyTo}
+                                            onFile={(outcome) => void fileClarifyOutcome(outcome)}
+                                            onBack={goBackClarify}
+                                            onExit={exitClarify}
+                                        />
+                                    );
+                                })()}
+
+                                {/* Normal item list — hidden while clarify is active */}
+                                {!clarify.active && inboxItems.map((item) => (
+                                    <InboxItemDetail
+                                        key={item.uid || item.id}
+                                        item={item}
+                                        onDelete={handleDeleteItem}
+                                        onUpdate={handleUpdateItem}
+                                        openTaskModal={handleOpenTaskModal}
+                                        openProjectModal={handleOpenProjectModal}
+                                        openNoteModal={handleOpenNoteModal}
+                                        projects={projects}
+                                        isNew={item.uid === lastAddedUid}
+                                        onReClarify={startSingleClarify}
+                                    />
+                                ))}
+
+                                {/* Load more */}
+                                {!clarify.active && pagination.hasMore && (
+                                    <div className="flex justify-center pt-5">
+                                        <button
+                                            onClick={handleLoadMore}
+                                            disabled={isLoading}
+                                            className="inline-flex items-center gap-2 px-5 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-white/[0.04] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                        >
+                                            {isLoading ? (
+                                                <>
+                                                    <svg className="animate-spin h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                                    </svg>
+                                                    {t('inbox.loading', 'Loading…')}
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <InboxIcon className="h-3.5 w-3.5" />
+                                                    {t('inbox.loadMore', 'Load more')}
+                                                </>
+                                            )}
+                                        </button>
+                                    </div>
+                                )}
+
+                                {/* Item count */}
+                                {!clarify.active && (
+                                    <div className="text-center text-xs text-gray-400 dark:text-gray-500 pt-4 pb-2">
+                                        {t(
+                                            'inbox.showingItems',
+                                            'Showing {{current}} of {{total}} items',
+                                            { current: inboxItems.length, total: pagination.total }
+                                        )}
+                                    </div>
                                 )}
                             </div>
                         )}
-                    </div>
+                    </>
                 )}
 
                 {(() => {
@@ -562,6 +808,9 @@ const InboxItems: React.FC = () => {
                                         onClose={() => {
                                             setIsProjectModalOpen(false);
                                             setProjectToEdit(null);
+                                            if (clarify.pendingModalUid) {
+                                                setClarify((prev) => ({ ...prev, pendingModalUid: null }));
+                                            }
                                         }}
                                         onSave={handleSaveProject}
                                         project={projectToEdit || undefined}
@@ -589,6 +838,9 @@ const InboxItems: React.FC = () => {
                                 onClose={() => {
                                     setIsNoteModalOpen(false);
                                     setNoteToEdit(null);
+                                    if (clarify.pendingModalUid) {
+                                        setClarify((prev) => ({ ...prev, pendingModalUid: null }));
+                                    }
                                 }}
                                 onSave={handleSaveNote}
                                 note={noteToEdit}

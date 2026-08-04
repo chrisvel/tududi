@@ -839,7 +839,13 @@
     "loadMore": "Laad meer inboxitems",
     "showingItems": "Toont {{current}} van {{total}} items",
     "removeTag": "Verwijder tag",
-    "removeProject": "Verwijder project"
+    "removeProject": "Verwijder project",
+    "rollingMsg1": "Wat is er aan de hand?",
+    "rollingMsg2": "Iets om los te laten?",
+    "rollingMsg3": "Schrijf het op…",
+    "saveAs": "Opslaan als",
+    "shiftEnterHint": "Shift + Enter voor een nieuwe regel",
+    "addToInbox": "Toevoegen als inbox-item (Enter)"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",

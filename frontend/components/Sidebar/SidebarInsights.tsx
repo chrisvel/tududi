@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import {
     ChartBarIcon,
     LightBulbIcon,
-    ChevronDownIcon,
     ChevronRightIcon,
 } from '@heroicons/react/24/outline';
 
@@ -27,8 +26,8 @@ const SidebarInsights: React.FC<SidebarInsightsProps> = ({ handleNavClick, locat
 
     const isActive = (path: string) =>
         location.pathname === path
-            ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
-            : 'text-gray-700 dark:text-gray-300';
+            ? 'bg-gray-100 dark:bg-[oklch(27%_0.02_250)] text-gray-900 dark:text-[oklch(88%_0.004_95)] font-medium'
+            : 'text-gray-500 dark:text-[oklch(82%_0.006_95)]';
 
     const links = [
         {
@@ -44,31 +43,25 @@ const SidebarInsights: React.FC<SidebarInsightsProps> = ({ handleNavClick, locat
     ];
 
     return (
-        <ul className={`flex flex-col space-y-1${!isCollapsed && links.length > 0 ? ' pb-3' : ''}`}>
-            <li
-                className="group flex justify-between items-center rounded-md px-4 py-2 uppercase text-xs tracking-wider cursor-pointer hover:text-black dark:hover:text-white text-gray-700 dark:text-gray-300"
-                onClick={toggleCollapsed}
-            >
-                <span className="flex items-center">
-                    <ChartBarIcon className="h-5 w-5 mr-2" />
+        <ul className="flex flex-col">
+            <li className="flex justify-between items-center px-2.5 py-1 rounded-md mb-px">
+                <span className="text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-gray-900 dark:hover:text-white text-gray-500 dark:text-[oklch(48%_0.006_95)]" onClick={toggleCollapsed}>
                     {t('sidebar.insights', 'Insights')}
                 </span>
-                {isCollapsed ? (
-                    <ChevronRightIcon className="h-4 w-4" />
-                ) : (
-                    <ChevronDownIcon className="h-4 w-4" />
-                )}
+                <button onClick={toggleCollapsed} className="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none">
+                    <ChevronRightIcon
+                        className="h-3 w-3 transition-transform duration-150"
+                        style={{ transform: !isCollapsed ? 'rotate(90deg)' : 'none' }}
+                    />
+                </button>
             </li>
             {!isCollapsed &&
                 links.map((link) => (
                     <li
                         key={link.path}
-                        className={`flex items-center rounded-md px-4 py-1.5 text-sm cursor-pointer hover:text-black dark:hover:text-white ${isActive(link.path)}`}
+                        className={`flex items-center rounded-[8px] px-[10px] py-1.5 text-[13.5px] cursor-pointer hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${isActive(link.path)}`}
                         onClick={() => handleNavClick(link.path, link.title, link.icon)}
                     >
-                        <span className="w-5 mr-2 flex items-center justify-center flex-shrink-0">
-                            {link.icon}
-                        </span>
                         {link.title}
                     </li>
                 ))}

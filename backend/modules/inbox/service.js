@@ -13,10 +13,6 @@ const { NotFoundError } = require('../../shared/errors');
 const { processInboxItem } = require('./inboxProcessingService');
 
 class InboxService {
-    /**
-     * Get all active inbox items for a user.
-     * Supports pagination if limit/offset provided.
-     */
     async getAll(userId, { limit, offset } = {}) {
         const hasPagination = limit !== undefined || offset !== undefined;
 
@@ -24,12 +20,13 @@ class InboxService {
             const parsedLimit = parseInt(limit, 10) || 20;
             const parsedOffset = parseInt(offset, 10) || 0;
 
-            const [items, totalCount] = await Promise.all([
+            const [items, totalCount, trashedCount] = await Promise.all([
                 inboxRepository.findAllActive(userId, {
                     limit: parsedLimit,
                     offset: parsedOffset,
                 }),
                 inboxRepository.countActive(userId),
+                inboxRepository.countTrashed(userId),
             ]);
 
             return {
@@ -40,16 +37,13 @@ class InboxService {
                     offset: parsedOffset,
                     hasMore: parsedOffset + items.length < totalCount,
                 },
+                trashedCount,
             };
         }
 
-        // Return simple array for backward compatibility
         return inboxRepository.findAllActive(userId);
     }
 
-    /**
-     * Get a single inbox item by UID.
-     */
     async getByUid(userId, uid) {
         validateUid(uid);
 
@@ -62,9 +56,6 @@ class InboxService {
         return item;
     }
 
-    /**
-     * Create a new inbox item.
-     */
     async create(userId, { content, source }) {
         const validatedContent = validateContent(content);
         const validatedSource = validateSource(source);
@@ -79,9 +70,6 @@ class InboxService {
         return _.pick(item, PUBLIC_ATTRIBUTES);
     }
 
-    /**
-     * Update an inbox item.
-     */
     async update(userId, uid, { content, status }) {
         validateUid(uid);
 
@@ -108,9 +96,6 @@ class InboxService {
         return _.pick(item, PUBLIC_ATTRIBUTES);
     }
 
-    /**
-     * Soft delete an inbox item.
-     */
     async delete(userId, uid) {
         validateUid(uid);
 
@@ -125,9 +110,6 @@ class InboxService {
         return { message: 'Inbox item successfully deleted' };
     }
 
-    /**
-     * Mark an inbox item as processed.
-     */
     async process(userId, uid) {
         validateUid(uid);
 
@@ -142,9 +124,27 @@ class InboxService {
         return _.pick(item, PUBLIC_ATTRIBUTES);
     }
 
-    /**
-     * Analyze text content without creating an inbox item.
-     */
+    async trash(userId, uid) {
+        validateUid(uid);
+        const item = await inboxRepository.findByUid(userId, uid);
+        if (!item) throw new NotFoundError('Inbox item not found.');
+        await inboxRepository.markTrashed(item);
+        return _.pick(item, PUBLIC_ATTRIBUTES);
+    }
+
+    async restore(userId, uid) {
+        validateUid(uid);
+        const item = await inboxRepository.findByUid(userId, uid);
+        if (!item) throw new NotFoundError('Inbox item not found.');
+        await inboxRepository.markRestored(item);
+        return _.pick(item, PUBLIC_ATTRIBUTES);
+    }
+
+    async restoreAll(userId) {
+        await inboxRepository.restoreAllTrashed(userId);
+        return { message: 'All trashed items restored' };
+    }
+
     analyzeText(content) {
         validateContent(content);
         return processInboxItem(content);

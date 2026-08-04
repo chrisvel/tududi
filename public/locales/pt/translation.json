@@ -839,7 +839,13 @@
     "loadMore": "Carregar mais itens da caixa de entrada",
     "showingItems": "Mostrando {{current}} de {{total}} itens",
     "removeTag": "Remover etiqueta",
-    "removeProject": "Remover projeto"
+    "removeProject": "Remover projeto",
+    "rollingMsg1": "O que você está pensando?",
+    "rollingMsg2": "Algo para deixar ir?",
+    "rollingMsg3": "Anote…",
+    "saveAs": "Salvar como",
+    "shiftEnterHint": "Shift + Enter para uma nova linha",
+    "addToInbox": "Adicionar como item da caixa de entrada (Enter)"
   },
   "dateFormats": {
     "long": "EEEE, d 'de' MMMM 'de' yyyy",

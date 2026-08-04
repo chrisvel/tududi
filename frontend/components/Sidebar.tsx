@@ -74,7 +74,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
     return (
         <div
-            className={`fixed top-16 left-0 ${isSidebarOpen ? 'w-full sm:w-72' : 'w-0'} h-[calc(100vh-4rem)] bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-width duration-300 ease-in-out z-40`}
+            className={`fixed top-16 left-0 ${isSidebarOpen ? 'w-full sm:w-sidebar' : 'w-0'} h-[calc(100vh-4rem)] bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-width duration-300 ease-in-out z-40`}
             style={{
                 visibility: isSidebarOpen ? 'visible' : 'hidden',
                 overflow: 'hidden',
@@ -84,7 +84,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <div className="flex flex-col h-full">
                     <div className="flex-1 min-h-0 overflow-y-auto px-2.5 py-4">
                         {/* Sidebar Contents */}
-                        <div className="mb-[18px]">
+                        <div className="mb-[10px]">
                             <SidebarNav
                                 handleNavClick={handleNavClick}
                                 location={location}
@@ -92,13 +92,13 @@ const Sidebar: React.FC<SidebarProps> = ({
                                 openTaskModal={openTaskModal}
                             />
                         </div>
-                        <div className="mb-[14px]">
+                        <div className="mb-[6px]">
                             <SidebarBookmarks
                                 handleNavClick={handleNavClick}
                                 location={location}
                             />
                         </div>
-                        <div className="mb-[14px]">
+                        <div className="mb-[6px]">
                             <SidebarProjects
                                 handleNavClick={handleNavClick}
                                 location={location}
@@ -106,7 +106,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                                 openProjectModal={openProjectModal}
                             />
                         </div>
-                        <div className="mb-[14px]">
+                        <div className="mb-[6px]">
                             <SidebarAreas
                                 handleNavClick={handleNavClick}
                                 areas={areas}
@@ -115,13 +115,13 @@ const Sidebar: React.FC<SidebarProps> = ({
                                 openAreaModal={openAreaModal}
                             />
                         </div>
-                        <div className="mb-[14px]">
+                        <div className="mb-[6px]">
                             <SidebarGoals
                                 handleNavClick={handleNavClick}
                                 location={location}
                             />
                         </div>
-                        <div className="mb-[14px]">
+                        <div className="mb-[6px]">
                             <SidebarNotes
                                 handleNavClick={handleNavClick}
                                 openNoteModal={openNoteModal}
@@ -130,7 +130,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                                 isDarkMode={isDarkMode}
                             />
                         </div>
-                        <div className="mb-[14px]">
+                        <div className="mb-[6px]">
                             <SidebarTags
                                 handleNavClick={handleNavClick}
                                 location={location}
@@ -139,14 +139,14 @@ const Sidebar: React.FC<SidebarProps> = ({
                                 tags={tags}
                             />
                         </div>
-                        <div className="mb-[14px]">
+                        <div className="mb-[6px]">
                             <SidebarPeople
                                 handleNavClick={handleNavClick}
                                 location={location}
                             />
                         </div>
                         {habitsEnabled && (
-                            <div className="mb-[14px]">
+                            <div className="mb-[6px]">
                                 <SidebarHabits
                                     handleNavClick={handleNavClick}
                                     location={location}
@@ -155,26 +155,26 @@ const Sidebar: React.FC<SidebarProps> = ({
                                 />
                             </div>
                         )}
-                        <div className="mb-[14px]">
+                        <div className="mb-[6px]">
                             <SidebarViews
                                 handleNavClick={handleNavClick}
                                 location={location}
                                 isDarkMode={isDarkMode}
                             />
                         </div>
-                        <div className="mb-[14px]">
+                        <div className="mb-[6px]">
                             <SidebarBoards
                                 handleNavClick={handleNavClick}
                                 location={location}
                             />
                         </div>
-                        <div className="mb-[14px]">
+                        <div className="mb-[6px]">
                             <SidebarInsights
                                 handleNavClick={handleNavClick}
                                 location={location}
                             />
                         </div>
-                        <div className="mb-[14px]">
+                        <div className="mb-[6px]">
                             <SidebarAdmin
                                 handleNavClick={handleNavClick}
                                 location={location}

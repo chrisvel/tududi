@@ -4,9 +4,6 @@ const inboxService = require('./service');
 const { UnauthorizedError } = require('../../shared/errors');
 const { getAuthenticatedUserId } = require('../../utils/request-utils');
 
-/**
- * Get authenticated user ID or throw UnauthorizedError.
- */
 function requireUserId(req) {
     const userId = getAuthenticatedUserId(req);
     if (!userId) {
@@ -15,14 +12,7 @@ function requireUserId(req) {
     return userId;
 }
 
-/**
- * Inbox controller - handles HTTP requests/responses.
- */
 const inboxController = {
-    /**
-     * GET /api/inbox
-     * List all active inbox items for the current user.
-     */
     async list(req, res, next) {
         try {
             const userId = requireUserId(req);
@@ -34,10 +24,6 @@ const inboxController = {
         }
     },
 
-    /**
-     * GET /api/inbox/:uid
-     * Get a single inbox item by UID.
-     */
     async getOne(req, res, next) {
         try {
             const userId = requireUserId(req);
@@ -49,10 +35,6 @@ const inboxController = {
         }
     },
 
-    /**
-     * POST /api/inbox
-     * Create a new inbox item.
-     */
     async create(req, res, next) {
         try {
             const userId = requireUserId(req);
@@ -64,10 +46,6 @@ const inboxController = {
         }
     },
 
-    /**
-     * PATCH /api/inbox/:uid
-     * Update an inbox item.
-     */
     async update(req, res, next) {
         try {
             const userId = requireUserId(req);
@@ -83,10 +61,6 @@ const inboxController = {
         }
     },
 
-    /**
-     * DELETE /api/inbox/:uid
-     * Soft delete an inbox item.
-     */
     async delete(req, res, next) {
         try {
             const userId = requireUserId(req);
@@ -98,10 +72,6 @@ const inboxController = {
         }
     },
 
-    /**
-     * PATCH /api/inbox/:uid/process
-     * Mark an inbox item as processed.
-     */
     async process(req, res, next) {
         try {
             const userId = requireUserId(req);
@@ -113,14 +83,42 @@ const inboxController = {
         }
     },
 
-    /**
-     * POST /api/inbox/analyze-text
-     * Analyze text content without creating an inbox item.
-     */
     async analyzeText(req, res, next) {
         try {
             const { content } = req.body;
             const result = inboxService.analyzeText(content);
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    async trash(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const { uid } = req.params;
+            const item = await inboxService.trash(userId, uid);
+            res.json(item);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    async restore(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const { uid } = req.params;
+            const item = await inboxService.restore(userId, uid);
+            res.json(item);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    async restoreAll(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const result = await inboxService.restoreAll(userId);
             res.json(result);
         } catch (error) {
             next(error);

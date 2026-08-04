@@ -1,5 +1,6 @@
 'use strict';
 
+const { Op } = require('sequelize');
 const { InboxItem } = require('../../models');
 const BaseRepository = require('../../shared/database/BaseRepository');
 
@@ -18,14 +19,11 @@ class InboxRepository extends BaseRepository {
         super(InboxItem);
     }
 
-    /**
-     * Find all active inbox items for a user (status = 'added').
-     */
     async findAllActive(userId, { limit, offset } = {}) {
         const options = {
             where: {
                 user_id: userId,
-                status: 'added',
+                status: { [Op.notIn]: ['deleted', 'trashed', 'processed'] },
             },
             order: [['created_at', 'DESC']],
         };
@@ -38,22 +36,33 @@ class InboxRepository extends BaseRepository {
         return this.model.findAll(options);
     }
 
-    /**
-     * Count active inbox items for a user.
-     */
     async countActive(userId) {
         return this.model.count({
             where: {
                 user_id: userId,
-                status: 'added',
+                status: { [Op.notIn]: ['deleted', 'trashed', 'processed'] },
             },
             raw: true,
         });
     }
 
-    /**
-     * Find an inbox item by UID for a specific user.
-     */
+    async countTrashed(userId) {
+        return this.model.count({
+            where: { user_id: userId, status: 'trashed' },
+            raw: true,
+        });
+    }
+
+    async markTrashed(item) {
+        await item.update({ status: 'trashed' });
+        return item;
+    }
+
+    async markRestored(item) {
+        await item.update({ status: 'added' });
+        return item;
+    }
+
     async findByUid(userId, uid) {
         return this.model.findOne({
             where: {
@@ -63,9 +72,6 @@ class InboxRepository extends BaseRepository {
         });
     }
 
-    /**
-     * Find an inbox item by UID with limited public attributes.
-     */
     async findByUidPublic(userId, uid) {
         return this.model.findOne({
             where: {
@@ -76,9 +82,6 @@ class InboxRepository extends BaseRepository {
         });
     }
 
-    /**
-     * Create a new inbox item for a user.
-     */
     async createForUser(userId, { content, title, source }) {
         return this.model.create({
             content,
@@ -88,28 +91,26 @@ class InboxRepository extends BaseRepository {
         });
     }
 
-    /**
-     * Update an inbox item.
-     */
     async updateItem(item, data) {
         await item.update(data);
         return item;
     }
 
-    /**
-     * Soft delete an inbox item (mark as 'deleted').
-     */
     async softDelete(item) {
         await item.update({ status: 'deleted' });
         return item;
     }
 
-    /**
-     * Mark an inbox item as processed.
-     */
     async markProcessed(item) {
         await item.update({ status: 'processed' });
         return item;
+    }
+
+    async restoreAllTrashed(userId) {
+        await this.model.update(
+            { status: 'added' },
+            { where: { user_id: userId, status: 'trashed' } }
+        );
     }
 }
 

@@ -689,8 +689,8 @@ const ViewDetail: React.FC = () => {
     }
 
     return (
-        <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">
-            <div className="w-full">
+        <div className="w-full px-4 sm:px-6 lg:px-8 pt-4 pb-8">
+            <div className="w-full max-w-7xl mx-auto">
                 {/* View Banner Header */}
                 <div className="rounded-xl mb-8 overflow-hidden">
                     <div className="p-6 bg-gray-50 dark:bg-gray-900 rounded-xl">

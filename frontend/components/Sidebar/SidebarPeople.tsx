@@ -10,13 +10,13 @@ interface SidebarPeopleProps {
 const SidebarPeople: React.FC<SidebarPeopleProps> = ({ handleNavClick, location }) => {
     const isActive = () =>
         location.pathname.startsWith('/people') || location.pathname.startsWith('/person/')
-            ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
-            : 'text-gray-700 dark:text-gray-300';
+            ? 'bg-gray-100 dark:bg-[oklch(27%_0.02_250)] text-gray-900 dark:text-[oklch(88%_0.004_95)] font-medium'
+            : 'text-gray-500 dark:text-[oklch(52%_0.006_95)]';
 
     return (
-        <ul className="flex flex-col space-y-1">
+        <ul className="flex flex-col">
             <li
-                className={`flex items-center rounded-md px-4 py-2 uppercase text-xs tracking-wider cursor-pointer hover:text-black dark:hover:text-white ${isActive()}`}
+                className={`flex items-center rounded-[8px] px-[10px] py-[5px] text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] hover:text-gray-900 dark:hover:text-white ${isActive()}`}
                 onClick={() =>
                     handleNavClick(
                         '/people',
@@ -25,7 +25,6 @@ const SidebarPeople: React.FC<SidebarPeopleProps> = ({ handleNavClick, location 
                     )
                 }
             >
-                <UserGroupIcon className="h-5 w-5 mr-2" />
                 People
             </li>
         </ul>

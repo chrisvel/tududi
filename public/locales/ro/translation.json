@@ -839,7 +839,13 @@
     "loadMore": "Încărcați mai multe elemente din inbox",
     "showingItems": "Afișare {{current}} din {{total}} elemente",
     "removeTag": "Șterge eticheta",
-    "removeProject": "Șterge proiectul"
+    "removeProject": "Șterge proiectul",
+    "rollingMsg1": "Ce ai pe suflet?",
+    "rollingMsg2": "Ai ceva de lăsat deoparte?",
+    "rollingMsg3": "Notează-l...",
+    "saveAs": "Salvează ca",
+    "shiftEnterHint": "Shift + Enter pentru un nou rând",
+    "addToInbox": "Adaugă ca element în inbox (Enter)"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",

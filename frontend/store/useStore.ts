@@ -80,6 +80,7 @@ interface InboxStore {
     inboxItems: InboxItem[];
     isLoading: boolean;
     isError: boolean;
+    trashedCount: number;
     pagination: {
         total: number;
         limit: number;
@@ -101,6 +102,7 @@ interface InboxStore {
     setLoading: (isLoading: boolean) => void;
     setError: (isError: boolean) => void;
     resetPagination: () => void;
+    setTrashedCount: (count: number) => void;
 }
 
 interface UserSettingsStore {
@@ -699,6 +701,7 @@ export const useStore = create<StoreState>((set: any) => ({
         inboxItems: [],
         isLoading: false,
         isError: false,
+        trashedCount: 0,
         pagination: {
             total: 0,
             limit: 20,
@@ -794,6 +797,10 @@ export const useStore = create<StoreState>((set: any) => ({
                         hasMore: false,
                     },
                 },
+            })),
+        setTrashedCount: (trashedCount) =>
+            set((state) => ({
+                inboxStore: { ...state.inboxStore, trashedCount },
             })),
     },
     habitsStore: {

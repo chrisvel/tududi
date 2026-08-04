@@ -840,7 +840,13 @@
     "loadMore": "Last flere innboks-elementer",
     "showingItems": "Viser {{current}} av {{total}} elementer",
     "removeTag": "Fjern tag",
-    "removeProject": "Fjern prosjekt"
+    "removeProject": "Fjern prosjekt",
+    "rollingMsg1": "Hva tenker du på?",
+    "rollingMsg2": "Noe å gi slipp på?",
+    "rollingMsg3": "Skriv det ned…",
+    "saveAs": "Lagre som",
+    "shiftEnterHint": "Shift + Enter for ny linje",
+    "addToInbox": "Legg til som innboks-element (Enter)"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",

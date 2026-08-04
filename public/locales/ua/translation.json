@@ -581,7 +581,13 @@
     "loadMore": "Завантажити більше елементів вхідних повідомлень",
     "showingItems": "Показано {{current}} з {{total}} елементів",
     "removeTag": "Видалити тег",
-    "removeProject": "Видалити проект"
+    "removeProject": "Видалити проект",
+    "rollingMsg1": "Що у вас на думці?",
+    "rollingMsg2": "Є щось, чого потрібно позбутися?",
+    "rollingMsg3": "Запишіть це…",
+    "saveAs": "Зберегти як",
+    "shiftEnterHint": "Shift + Enter для нового рядка",
+    "addToInbox": "Додати як елемент вхідних повідомлень (Enter)"
   },
   "project": {
     "projectImage": "Зображення проекту",

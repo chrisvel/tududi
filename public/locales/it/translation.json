@@ -839,7 +839,13 @@
     "loadMore": "Carica ulteriori elementi della posta in arrivo",
     "showingItems": "Mostrando {{current}} di {{total}} elementi",
     "removeTag": "Rimuovi etichetta",
-    "removeProject": "Rimuovi progetto"
+    "removeProject": "Rimuovi progetto",
+    "rollingMsg1": "Cosa hai in mente?",
+    "rollingMsg2": "C'è qualcosa da lasciar andare?",
+    "rollingMsg3": "Annotalo...",
+    "saveAs": "Salva come",
+    "shiftEnterHint": "Shift + Enter per una nuova riga",
+    "addToInbox": "Aggiungi come elemento della posta in arrivo (Invio)"
   },
   "dateFormats": {
     "long": "EEEE, d MMMM yyyy",
