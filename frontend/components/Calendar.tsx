@@ -249,8 +249,8 @@ const Calendar: React.FC = () => {
     };
 
     return (
-        <div className="h-full flex flex-col px-2 sm:px-4 lg:px-6 pt-4">
-            <div className="w-full flex-1 flex flex-col min-h-0">
+        <div className="h-full flex flex-col px-4 sm:px-6 lg:px-8 pt-4">
+            <div className="w-full max-w-7xl mx-auto flex-1 flex flex-col min-h-0">
                 {/* Header */}
                 <div className="flex items-center justify-between gap-2 mb-6">
                     <div>

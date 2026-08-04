@@ -515,10 +515,10 @@ const Tasks: React.FC = () => {
 
     return (
         <div
-            className="w-full pt-4 pb-8 px-2 sm:px-4 lg:px-6"
+            className="w-full pt-4 pb-8 px-4 sm:px-6 lg:px-8"
         >
             <div
-                className={`w-full ${isUpcomingView ? '' : 'max-w-5xl mx-auto'}`}
+                className="w-full max-w-7xl mx-auto"
             >
                 {/* Title row with info button and filters dropdown on the right */}
                 <div
