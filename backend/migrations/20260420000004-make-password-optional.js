@@ -56,13 +56,7 @@ module.exports = {
         );
         const hasPassword = columns.some((col) => col.name === 'password');
 
-        const passwordColumn = hasPasswordDigest
-            ? 'password_digest'
-            : hasPassword
-              ? 'password'
-              : null;
-
-        if (!passwordColumn) {
+        if (!hasPasswordDigest && !hasPassword) {
             throw new Error(
                 'Neither password nor password_digest column found in users table'
             );
@@ -121,8 +115,21 @@ module.exports = {
         );
 
         const columnsWithoutPassword = columnsToSelect.filter(
-            (col) => col !== passwordColumn && col !== 'password_digest'
+            (col) => col !== 'password' && col !== 'password_digest'
         );
+
+        // When both columns exist, use COALESCE to prefer password_digest but
+        // fall back to password for users who still have their hash there.
+        // When only one column exists, select it directly.
+        let passwordSelectExpr;
+        if (hasPasswordDigest && hasPassword) {
+            passwordSelectExpr =
+                'COALESCE(password_digest, password) as password_digest';
+        } else if (hasPasswordDigest) {
+            passwordSelectExpr = 'password_digest as password_digest';
+        } else {
+            passwordSelectExpr = 'password as password_digest';
+        }
 
         const insertColumns = [
             ...columnsWithoutPassword,
@@ -131,7 +138,7 @@ module.exports = {
         ];
         const selectColumns = [
             ...columnsWithoutPassword,
-            `${passwordColumn} as password_digest`,
+            passwordSelectExpr,
             ...aiColumnsToSelect,
         ];
 

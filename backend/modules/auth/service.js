@@ -200,8 +200,15 @@ class AuthService {
         }
 
         if (!user.password_digest) {
+            const oidcEnabled =
+                (process.env.OIDC_ENABLED || '').toLowerCase() === 'true';
+            if (oidcEnabled) {
+                throw new UnauthorizedError(
+                    'This account has no password set. Please sign in with your SSO provider, or contact an administrator to set a password.'
+                );
+            }
             throw new UnauthorizedError(
-                'This account uses SSO. Please sign in with your SSO provider.'
+                'This account has no password set. Please contact an administrator to reset your password.'
             );
         }
 
