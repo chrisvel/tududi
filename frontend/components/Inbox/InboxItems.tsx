@@ -28,6 +28,7 @@ import { fetchAreas } from '../../utils/areasService';
 import { fetchProjects } from '../../utils/projectsService';
 import { useStore } from '../../store/useStore';
 import ClarifyOverlay, { ClarifyStep, ClarifyOutcome } from './ClarifyOverlay';
+import { ENABLE_INBOX_CLARIFY } from '../../config/featureFlags';
 
 interface ClarifyState {
     active: boolean;
@@ -668,7 +669,7 @@ const InboxItems: React.FC = () => {
                             </span>
 
                             {/* Process N button */}
-                            {inboxItems.length > 0 && !clarify.active && (
+                            {ENABLE_INBOX_CLARIFY && inboxItems.length > 0 && !clarify.active && (
                                 <span
                                     role="button"
                                     tabIndex={0}
@@ -681,7 +682,7 @@ const InboxItems: React.FC = () => {
                             )}
 
                             {/* Trashed affordance */}
-                            {trashedCount > 0 && (
+                            {ENABLE_INBOX_CLARIFY && trashedCount > 0 && (
                                 <span
                                     role="button"
                                     tabIndex={0}
@@ -721,7 +722,7 @@ const InboxItems: React.FC = () => {
                         {inboxListExpanded && (
                             <div className="flex flex-col">
                                 {/* Clarify overlay — shown instead of the list when active */}
-                                {clarify.active && !clarify.pendingModalUid && (() => {
+                                {ENABLE_INBOX_CLARIFY && clarify.active && !clarify.pendingModalUid && (() => {
                                     const uid = clarify.itemUids[clarify.currentIndex];
                                     const currentItem = inboxItems.find((i) => i.uid === uid);
                                     const isDone = clarify.currentIndex >= clarify.itemUids.length;
@@ -740,8 +741,8 @@ const InboxItems: React.FC = () => {
                                     );
                                 })()}
 
-                                {/* Normal item list — hidden while clarify is active */}
-                                {!clarify.active && inboxItems.map((item) => (
+                                {/* Normal item list */}
+                                {(!ENABLE_INBOX_CLARIFY || !clarify.active) && inboxItems.map((item) => (
                                     <InboxItemDetail
                                         key={item.uid || item.id}
                                         item={item}
@@ -752,12 +753,12 @@ const InboxItems: React.FC = () => {
                                         openNoteModal={handleOpenNoteModal}
                                         projects={projects}
                                         isNew={item.uid === lastAddedUid}
-                                        onReClarify={startSingleClarify}
+                                        onReClarify={ENABLE_INBOX_CLARIFY ? startSingleClarify : undefined}
                                     />
                                 ))}
 
                                 {/* Load more */}
-                                {!clarify.active && pagination.hasMore && (
+                                {(!ENABLE_INBOX_CLARIFY || !clarify.active) && pagination.hasMore && (
                                     <div className="flex justify-center pt-5">
                                         <button
                                             onClick={handleLoadMore}
@@ -783,7 +784,7 @@ const InboxItems: React.FC = () => {
                                 )}
 
                                 {/* Item count */}
-                                {!clarify.active && (
+                                {(!ENABLE_INBOX_CLARIFY || !clarify.active) && (
                                     <div className="text-center text-xs text-gray-400 dark:text-gray-500 pt-4 pb-2">
                                         {t(
                                             'inbox.showingItems',
