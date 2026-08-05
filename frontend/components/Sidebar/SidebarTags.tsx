@@ -39,7 +39,7 @@ const SidebarTags: React.FC<SidebarTagsProps> = ({
     const itemClass = (path: string) =>
         `group flex justify-between items-center rounded-[8px] px-[10px] py-1 text-[13.5px] cursor-pointer hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
             isActive(path)
-                ? 'bg-gray-100 dark:bg-[oklch(27%_0.02_250)] text-gray-900 dark:text-[oklch(88%_0.004_95)] font-medium'
+                ? 'bg-blue-50 dark:bg-[oklch(27%_0.08_250)] text-gray-900 dark:text-[oklch(88%_0.004_95)] font-medium'
                 : 'text-gray-500 dark:text-[oklch(82%_0.006_95)]'
         }`;
 

@@ -19,7 +19,7 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
     const { t } = useTranslation();
     const isActiveArea = (path: string) => {
         return location.pathname === path
-            ? 'bg-gray-100 dark:bg-[oklch(27%_0.02_250)] text-gray-900 dark:text-[oklch(88%_0.004_95)] font-medium'
+            ? 'bg-blue-50 dark:bg-[oklch(27%_0.08_250)] text-gray-900 dark:text-[oklch(88%_0.004_95)] font-medium'
             : 'text-gray-500 dark:text-[oklch(52%_0.006_95)]';
     };
 

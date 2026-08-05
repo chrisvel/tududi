@@ -4,7 +4,6 @@ import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import TaskHeader from './TaskHeader';
 import { useToast } from '../Shared/ToastContext';
-import { isTaskCompleted } from '../../constants/taskStatus';
 import {
     ExclamationTriangleIcon,
     BoltIcon,
@@ -20,18 +19,13 @@ import { useTranslation } from 'react-i18next';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import { getApiPath } from '../../config/paths';
 
-const getPriorityBorderClassName = (priority?: Task['priority'] | number): string => {
-    let normalizedPriority = priority;
-    if (typeof normalizedPriority === 'number') {
-        const priorityNames: Array<'low' | 'medium' | 'high'> = ['low', 'medium', 'high'];
-        normalizedPriority = priorityNames[normalizedPriority] || undefined;
-    }
-    switch (normalizedPriority) {
-        case 'high': return 'border-l-4 border-l-red-500';
-        case 'medium': return 'border-l-4 border-l-yellow-400';
-        case 'low': return 'border-l-4 border-l-blue-400';
-        default: return 'border-l-4 border-l-transparent';
-    }
+const getStatusPillColor = (status: Task['status']): string => {
+    if (status === 'in_progress' || status === 1) return 'bg-blue-400 dark:bg-blue-500';
+    if (status === 'done' || status === 2 || status === 'archived' || status === 3) return 'bg-green-400 dark:bg-green-500';
+    if (status === 'cancelled' || status === 5) return 'bg-red-400 dark:bg-red-400';
+    if (status === 'planned' || status === 4) return 'bg-purple-400 dark:bg-purple-400';
+    if (status === 'waiting') return 'bg-amber-400 dark:bg-amber-500';
+    return 'bg-gray-300 dark:bg-gray-600';
 };
 
 interface TaskItemProps {
@@ -61,7 +55,6 @@ const TaskItem: React.FC<TaskItemProps> = ({
     onToggleToday,
     isUpcomingView = false,
     showCompletedTasks = false,
-    isInCompletedSection = false,
     hideStatusControl = false,
     isKanbanView = false,
     showSuggestionChips = false,
@@ -286,62 +279,56 @@ const TaskItem: React.FC<TaskItemProps> = ({
         project = { ...project, id: task.project_id };
     }
 
-    // Check if task is in progress to apply pulsing border animation
-    const isInProgress = task.status === 'in_progress' || task.status === 1;
-
     // Check if task is overdue (created yesterday or earlier and not completed)
     const isOverdue = isTaskOverdueInTodayPlan(task);
-
-    const priorityBorderClass =
-        isInCompletedSection || isTaskCompleted(task.status)
-            ? 'border-l-4 border-l-green-500'
-            : getPriorityBorderClassName(task.priority);
 
     return (
         <div className={`relative ${isStatusMenuOpen ? 'z-[10001]' : ''}`}>
             <div
-                className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 relative overflow-visible transition-colors duration-200 ease-in-out hover:ring-1 hover:ring-gray-200 dark:hover:ring-gray-700 ${priorityBorderClass} ${
-                    isInProgress
-                        ? 'ring-1 ring-blue-500/60 dark:ring-blue-600/60'
-                        : ''
-                } ${isAnimatingOut ? 'opacity-0' : 'opacity-100'}`}
+                className={`relative flex items-stretch rounded-lg transition-colors duration-150 hover:bg-gray-200/50 dark:hover:bg-gray-700/40 ${isAnimatingOut ? 'opacity-0' : 'opacity-100'}`}
             >
-                <TaskHeader
-                    task={task}
-                    project={project}
-                    onTaskClick={handleTaskClick}
-                    onToggleCompletion={handleToggleCompletion}
-                    hideProjectName={hideProjectName}
-                    onToggleToday={onToggleToday}
-                    onTaskUpdate={onTaskUpdate}
-                    isOverdue={isOverdue}
-                    showSubtasks={showSubtasks}
-                    hasSubtasks={shouldShowSubtasksIcon}
-                    onSubtasksToggle={
-                        shouldShowSubtasksIcon
-                            ? handleSubtasksToggle
-                            : undefined
-                    }
-                    onEdit={handleEdit}
-                    onDelete={handleDeleteClick}
-                    isUpcomingView={isUpcomingView}
-                    onMenuOpenChange={setIsStatusMenuOpen}
-                    hideStatusControl={hideStatusControl}
-                    isKanbanView={isKanbanView}
-                    compact={compact}
-                />
+                {/* Left status pill */}
+                <span className={`flex-shrink-0 w-1.5 my-2 self-stretch rounded-sm ${getStatusPillColor(task.status)}`} />
 
-                {/* Progress bar at bottom of parent task */}
-                {subtasks.length > 0 && (
-                    <div className="absolute bottom-0 left-0 right-0 h-0.5 opacity-100">
-                        <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 ml-1 rounded-r-lg overflow-hidden">
-                            <div
-                                className="h-full bg-gradient-to-r from-green-400 via-green-500 to-green-600 transition-all duration-500 ease-out"
-                                style={{ width: `${completionPercentage}%` }}
-                            />
+                {/* Content */}
+                <div className="flex-1 min-w-0 relative overflow-visible">
+                    <TaskHeader
+                        task={task}
+                        project={project}
+                        onTaskClick={handleTaskClick}
+                        onToggleCompletion={handleToggleCompletion}
+                        hideProjectName={hideProjectName}
+                        onToggleToday={onToggleToday}
+                        onTaskUpdate={onTaskUpdate}
+                        isOverdue={isOverdue}
+                        showSubtasks={showSubtasks}
+                        hasSubtasks={shouldShowSubtasksIcon}
+                        onSubtasksToggle={
+                            shouldShowSubtasksIcon
+                                ? handleSubtasksToggle
+                                : undefined
+                        }
+                        onEdit={handleEdit}
+                        onDelete={handleDeleteClick}
+                        isUpcomingView={isUpcomingView}
+                        onMenuOpenChange={setIsStatusMenuOpen}
+                        hideStatusControl={hideStatusControl}
+                        isKanbanView={isKanbanView}
+                        compact={compact}
+                    />
+
+                    {/* Progress bar at bottom of parent task */}
+                    {subtasks.length > 0 && (
+                        <div className="absolute bottom-0 left-0 right-0 h-0.5 opacity-100">
+                            <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 ml-1 rounded-r-lg overflow-hidden">
+                                <div
+                                    className="h-full bg-gradient-to-r from-green-400 via-green-500 to-green-600 transition-all duration-500 ease-out"
+                                    style={{ width: `${completionPercentage}%` }}
+                                />
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
 
             {/* Suggestion reason row - only in Suggested section */}

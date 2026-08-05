@@ -164,7 +164,7 @@ const Navbar: React.FC<NavbarProps> = ({
     };
 
     return (
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-md">
+        <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-[#111827] text-gray-900 dark:text-white shadow-md">
             {/* Main navbar row */}
             <div className="h-16 flex items-center justify-between">
                 {/* Sidebar-width area with logo and hamburger */}

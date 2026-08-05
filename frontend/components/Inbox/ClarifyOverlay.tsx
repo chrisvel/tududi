@@ -121,7 +121,7 @@ const ClarifyOverlay: React.FC<ClarifyOverlayProps> = ({
     const current = STEPS[step];
 
     return (
-        <div className="flex flex-col items-center gap-5 px-6 py-9 mt-2 bg-gray-50/80 dark:bg-white/[0.03] rounded-2xl">
+        <div className="flex flex-col items-center gap-5 px-6 py-9 mt-2 bg-white dark:bg-gray-900 rounded-2xl shadow-sm">
             <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500">
                 {t('inbox.clarifyProgress', 'Clarify · {{progress}}', { progress })}
             </p>
