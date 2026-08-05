@@ -11,6 +11,7 @@ import {
     EllipsisVerticalIcon,
     PencilIcon,
     TrashIcon,
+    ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
 import { TagIcon, FolderIcon, FireIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
@@ -23,12 +24,10 @@ import TaskStatusControl from './TaskStatusControl';
 import { parseDateString, getTodayDateString, getTomorrowDateString, getYesterdayDateString } from '../../utils/dateUtils';
 import { useStore } from '../../store/useStore';
 
-const tagColorStyle = (color?: string): React.CSSProperties | undefined => {
+
+const tagTextColor = (color?: string): React.CSSProperties | undefined => {
     if (!color) return undefined;
-    const r = parseInt(color.slice(1, 3), 16);
-    const g = parseInt(color.slice(3, 5), 16);
-    const b = parseInt(color.slice(5, 7), 16);
-    return { backgroundColor: `rgba(${r}, ${g}, ${b}, 0.2)`, color };
+    return { color };
 };
 
 interface TaskHeaderProps {
@@ -66,6 +65,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
     onSubtasksToggle,
     onEdit,
     onDelete,
+    isOverdue = false,
     isUpcomingView = false,
     onMenuOpenChange,
     hideStatusControl = false,
@@ -201,7 +201,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 
     return (
         <div
-            className={`${compact ? 'py-3' : hasMetadata ? 'py-2' : 'py-3'} px-4 cursor-pointer group`}
+            className={`${compact ? 'py-2' : hasMetadata ? 'py-1.5' : 'py-2.5'} px-3 cursor-pointer group`}
             role="button"
             tabIndex={0}
             onClick={(e) => {
@@ -218,10 +218,8 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
             }}
         >
             {/* Full view (md and larger) */}
-            <div className="hidden md:flex flex-col md:flex-row md:items-center md:relative">
-                <div
-                    className={`flex items-center space-x-3 mb-2 md:mb-0 flex-1 min-w-0 ${!isUpcomingView && !hideStatusControl ? 'pr-56' : ''}`}
-                >
+            <div className="hidden md:flex items-center">
+                <div className="flex items-center space-x-3 flex-1 min-w-0">
                     <div className="hidden">
                         <TaskPriorityIcon
                             priority={task.priority}
@@ -242,7 +240,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                 title={t('tasks.habit')}
                                             />
                                         )}
-                                        <span className="text-sm font-medium text-gray-900 dark:text-gray-300 tracking-tight truncate">
+                                        <span className={`text-[14.5px] font-medium tracking-tight truncate ${isTaskCompleted(task.status) ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-900 dark:text-gray-300'}`}>
                                             {task.original_name || task.name}
                                         </span>
                                     </div>
@@ -308,8 +306,8 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                         ? `/tag/${tag.uid}-${tag.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`
                                                         : `/tag/${tag.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`
                                                 }
-                                                className="inline-flex items-center px-2 py-px rounded-full text-[10px] font-medium transition-opacity hover:opacity-80 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500"
-                                                style={tagColorStyle(tag.color)}
+                                                className="inline-flex items-center leading-none text-[10px] font-medium transition-opacity hover:opacity-80 text-gray-400 dark:text-gray-500"
+                                                style={tagTextColor(tag.color)}
                                                 onClick={(e) => e.stopPropagation()}
                                             >
                                                 {tag.name}
@@ -326,7 +324,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                         title={t('tasks.habit')}
                                     />
                                 )}
-                                <span className="text-md font-medium text-gray-900 dark:text-gray-300 truncate">
+                                <span className={`text-[14.5px] font-medium truncate ${isTaskCompleted(task.status) ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-900 dark:text-gray-300'}`}>
                                     {task.original_name || task.name}
                                 </span>
                                 <div className="flex-shrink-0">
@@ -337,6 +335,21 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         {/* Project, tags, due date, and recurrence in same row, with spacing when they exist */}
                         {!isUpcomingView && !compact && (
                             <div className={`flex text-xs text-gray-500 dark:text-gray-400 ${isKanbanView ? 'flex-col space-y-0.5 mt-1.5' : 'items-center gap-3 whitespace-nowrap overflow-x-auto'}`}>
+                                {isOverdue && (() => {
+                                    const daysOverdue = task.due_date
+                                        ? Math.floor((Date.now() - new Date(task.due_date).getTime()) / 86400000)
+                                        : 0;
+                                    return (
+                                        <div className="flex items-center text-orange-500 dark:text-orange-400 whitespace-nowrap">
+                                            <ExclamationTriangleIcon className="h-3 w-3 mr-1 flex-shrink-0" />
+                                            <span>
+                                                {daysOverdue > 0
+                                                    ? t('tasks.nDaysOverdue', '{{n}} {{unit}} overdue', { n: daysOverdue, unit: daysOverdue === 1 ? t('tasks.day', 'day') : t('tasks.days', 'days') })
+                                                    : t('tasks.overdue', 'Overdue')}
+                                            </span>
+                                        </div>
+                                    );
+                                })()}
                                 {task.parent_task && (
                                     <div className="flex items-center">
                                         <ArrowUpIcon className="h-3 w-3 mr-1 flex-shrink-0" />
@@ -396,8 +409,8 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                         ? `/tag/${tag.uid}-${tag.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`
                                                         : `/tag/${tag.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`
                                                 }
-                                                className="inline-flex items-center px-2 py-px rounded-full text-[10px] font-medium transition-opacity hover:opacity-80 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500"
-                                                style={tagColorStyle(tag.color)}
+                                                className="inline-flex items-center leading-none text-[10px] font-medium transition-opacity hover:opacity-80 text-gray-400 dark:text-gray-500"
+                                                style={tagTextColor(tag.color)}
                                                 onClick={(e) => e.stopPropagation()}
                                             >
                                                 {tag.name}
@@ -466,7 +479,49 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                     </div>
                 </div>
                 {!isUpcomingView && !task.habit_mode && !hideStatusControl && onToggleCompletion && (
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-stretch gap-1 z-[1]">
+                    <div className="flex-shrink-0 flex items-stretch gap-0.5">
+                        {/* Quick action: set in progress */}
+                        <button
+                            type="button"
+                            onClick={async (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                if (onTaskUpdate) {
+                                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                                    const { subtasks: _sub, ...rest } = task;
+                                    await onTaskUpdate({ ...rest, status: 'in_progress' as Task['status'], name: task.original_name || task.name });
+                                }
+                            }}
+                            className="self-center opacity-0 group-hover:opacity-100 transition-all h-6 w-6 flex items-center justify-center rounded text-gray-400 dark:text-gray-500 hover:text-blue-400 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                            title={t('task.status.inProgress', 'In progress')}
+                        >
+                            <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" className="h-3 w-3">
+                                <path d="M7 4.7c0-.9 1-1.4 1.7-.9l11 6.3c.7.4.7 1.4 0 1.8l-11 6.3c-.7.4-1.7-.1-1.7-.9V4.7z" />
+                            </svg>
+                        </button>
+                        {/* Quick action: mark done */}
+                        <button
+                            type="button"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                onToggleCompletion?.();
+                            }}
+                            className="self-center opacity-0 group-hover:opacity-100 transition-all h-6 w-6 flex items-center justify-center rounded text-gray-400 dark:text-gray-500 hover:text-green-400 dark:hover:text-green-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                            title={t('tasks.done', 'Done')}
+                        >
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5">
+                                <path d="M5 12.5l4.5 4.5L19 7.5" />
+                            </svg>
+                        </button>
+                        <TaskStatusControl
+                            task={task}
+                            onToggleCompletion={onToggleCompletion}
+                            onTaskUpdate={onTaskUpdate}
+                            showMobileVariant={false}
+                            className=""
+                            onMenuOpenChange={onMenuOpenChange}
+                        />
                         {showTaskContextMenu && (
                             <div
                                 ref={desktopMenuRef}
@@ -513,14 +568,6 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                 )}
                             </div>
                         )}
-                        <TaskStatusControl
-                            task={task}
-                            onToggleCompletion={onToggleCompletion}
-                            onTaskUpdate={onTaskUpdate}
-                            showMobileVariant={false}
-                            className=""
-                            onMenuOpenChange={onMenuOpenChange}
-                        />
                     </div>
                 )}
             </div>
@@ -541,7 +588,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                     {/* Task content - full width */}
                     <div className="ml-3 flex-1 min-w-0">
                         {/* Task Title */}
-                        <div className="font-medium text-md text-gray-900 dark:text-gray-300">
+                        <div className={`font-medium text-sm ${isTaskCompleted(task.status) ? 'text-gray-400 dark:text-gray-500' : 'text-gray-900 dark:text-gray-300'}`}>
                             <span className="inline-flex items-center gap-1.5 w-full min-w-0">
                                 {task.habit_mode && (
                                     <FireIcon
@@ -549,7 +596,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                         title={t('tasks.habit')}
                                     />
                                 )}
-                                <span className="truncate flex-1">
+                                <span className={`truncate flex-1 ${isTaskCompleted(task.status) ? 'line-through' : ''}`}>
                                     {task.original_name || task.name}
                                 </span>
                                 <SubtasksToggleButton />
@@ -662,8 +709,8 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                     ? `/tag/${tag.uid}-${tag.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`
                                                     : `/tag/${tag.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`
                                             }
-                                            className="inline-flex items-center px-2 py-px rounded-full text-[10px] font-medium transition-opacity hover:opacity-80 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500"
-                                            style={tagColorStyle(tag.color)}
+                                            className="inline-flex items-center leading-none text-[10px] font-medium transition-opacity hover:opacity-80 text-gray-400 dark:text-gray-500"
+                                            style={tagTextColor(tag.color)}
                                             onClick={(e) => e.stopPropagation()}
                                         >
                                             {tag.name}

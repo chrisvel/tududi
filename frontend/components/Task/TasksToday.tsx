@@ -1517,21 +1517,21 @@ const TasksToday: React.FC = () => {
                 {isSettingsLoaded && todaySettings.showTaggedToday && taggedTodayTasks.length > 0 && (
                     <div className="mb-6" data-testid="tagged-today-section">
                         <div
-                            className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
+                            className="flex items-center justify-between cursor-pointer mt-4 mb-2 pb-1.5 border-b border-gray-100 dark:border-gray-800"
                             onClick={toggleTaggedTodayCollapsed}
                             data-testid="tagged-today-section-header"
                         >
-                            <h3 className="text-sm font-medium uppercase text-indigo-600 dark:text-indigo-400">
+                            <h3 className="text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
                                 {t('tasks.taggedToday', 'today')}
                             </h3>
                             <div className="flex items-center">
-                                <span className="text-sm text-gray-500 mr-2">
+                                <span className="text-xs text-gray-400 dark:text-gray-500 mr-1.5">
                                     {taggedTodayTasks.length}
                                 </span>
                                 {isTaggedTodayCollapsed ? (
-                                    <ChevronRightIcon className="h-5 w-5 text-gray-500" />
+                                    <ChevronRightIcon className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                                 ) : (
-                                    <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+                                    <ChevronDownIcon className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                                 )}
                             </div>
                         </div>
@@ -1554,21 +1554,21 @@ const TasksToday: React.FC = () => {
                     sortedOverdueTasks.length > 0 && (
                         <div className="mb-6" data-testid="overdue-section">
                             <div
-                                className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
+                                className="flex items-center justify-between cursor-pointer mt-4 mb-2 pb-1.5 border-b border-gray-100 dark:border-gray-800"
                                 onClick={toggleOverdueCollapsed}
                                 data-testid="overdue-section-header"
                             >
-                                <h3 className="text-sm font-medium uppercase text-red-600 dark:text-red-400">
+                                <h3 className="text-xs font-semibold uppercase tracking-wider text-orange-500 dark:text-orange-400">
                                     {t('tasks.overdue', 'Overdue')}
                                 </h3>
                                 <div className="flex items-center">
-                                    <span className="text-sm text-gray-500 mr-2">
+                                    <span className="text-xs text-gray-400 dark:text-gray-500 mr-1.5">
                                         {sortedOverdueTasks.length}
                                     </span>
                                     {isOverdueCollapsed ? (
-                                        <ChevronRightIcon className="h-5 w-5 text-gray-500" />
+                                        <ChevronRightIcon className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                                     ) : (
-                                        <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+                                        <ChevronDownIcon className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                                     )}
                                 </div>
                             </div>
@@ -1645,21 +1645,21 @@ const TasksToday: React.FC = () => {
                 {totalPlannedItems > 0 && (
                     <div className="mb-6" data-testid="planned-section">
                         <div
-                            className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
+                            className="flex items-center justify-between cursor-pointer mt-4 mb-2 pb-1.5 border-b border-gray-100 dark:border-gray-800"
                             onClick={toggleTodayPlanCollapsed}
                             data-testid="planned-section-header"
                         >
-                            <h3 className="text-sm font-medium uppercase">
+                            <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                                 {t('tasks.planned', 'Planned')}
                             </h3>
                             <div className="flex items-center">
-                                <span className="text-sm text-gray-500 mr-2">
+                                <span className="text-xs text-gray-400 dark:text-gray-500 mr-1.5">
                                     {totalPlannedItems}
                                 </span>
                                 {isTodayPlanCollapsed ? (
-                                    <ChevronRightIcon className="h-5 w-5 text-gray-500" />
+                                    <ChevronRightIcon className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                                 ) : (
-                                    <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+                                    <ChevronDownIcon className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                                 )}
                             </div>
                         </div>
@@ -1743,21 +1743,21 @@ const TasksToday: React.FC = () => {
                     sortedDueTodayTasks.length > 0 && (
                         <div className="mb-6" data-testid="due-today-section">
                             <div
-                                className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
+                                className="flex items-center justify-between cursor-pointer mt-4 mb-2 pb-1.5 border-b border-gray-100 dark:border-gray-800"
                                 onClick={toggleDueTodayCollapsed}
                                 data-testid="due-today-section-header"
                             >
-                                <h3 className="text-sm font-medium uppercase">
+                                <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                                     {t('tasks.dueToday')}
                                 </h3>
                                 <div className="flex items-center">
-                                    <span className="text-sm text-gray-500 mr-2">
+                                    <span className="text-xs text-gray-400 dark:text-gray-500 mr-1.5">
                                         {sortedDueTodayTasks.length}
                                     </span>
                                     {isDueTodayCollapsed ? (
-                                        <ChevronRightIcon className="h-5 w-5 text-gray-500" />
+                                        <ChevronRightIcon className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                                     ) : (
-                                        <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+                                        <ChevronDownIcon className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                                     )}
                                 </div>
                             </div>
@@ -1848,20 +1848,20 @@ const TasksToday: React.FC = () => {
                             </p>
                         )}
                         <div
-                            className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
+                            className="flex items-center justify-between cursor-pointer mt-4 mb-2 pb-1.5 border-b border-gray-100 dark:border-gray-800"
                             onClick={toggleSuggestedCollapsed}
                         >
-                            <h3 className="text-sm font-medium uppercase">
+                            <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                                 {t('tasks.suggested')}
                             </h3>
                             <div className="flex items-center">
-                                <span className="text-sm text-gray-500 mr-2">
+                                <span className="text-xs text-gray-400 dark:text-gray-500 mr-1.5">
                                     {sortedSuggestedTasks.length}
                                 </span>
                                 {isSuggestedCollapsed ? (
-                                    <ChevronRightIcon className="h-5 w-5 text-gray-500" />
+                                    <ChevronRightIcon className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                                 ) : (
-                                    <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+                                    <ChevronDownIcon className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                                 )}
                             </div>
                         </div>
@@ -1906,23 +1906,23 @@ const TasksToday: React.FC = () => {
                 {isSettingsLoaded && todaySettings.showCompleted && (
                     <div className="mb-6" data-testid="completed-section">
                         <div
-                            className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
+                            className="flex items-center justify-between cursor-pointer mt-4 mb-2 pb-1.5 border-b border-gray-100 dark:border-gray-800"
                             onClick={toggleCompletedCollapsed}
                             data-testid="completed-section-header"
                         >
                             <h3
-                                className={`text-sm font-medium uppercase ${totalCompletedItems > 0 ? 'text-green-600 dark:text-green-400' : ''}`}
+                                className={`text-xs font-semibold uppercase tracking-wider ${totalCompletedItems > 0 ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}
                             >
                                 {t('tasks.completedToday')}
                             </h3>
                             <div className="flex items-center">
-                                <span className="text-sm text-gray-500 mr-2">
+                                <span className="text-xs text-gray-400 dark:text-gray-500 mr-1.5">
                                     {totalCompletedItems}
                                 </span>
                                 {isCompletedCollapsed ? (
-                                    <ChevronRightIcon className="h-5 w-5 text-gray-500" />
+                                    <ChevronRightIcon className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                                 ) : (
-                                    <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+                                    <ChevronDownIcon className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                                 )}
                             </div>
                         </div>

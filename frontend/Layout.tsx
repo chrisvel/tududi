@@ -390,7 +390,7 @@ const Layout: React.FC<LayoutProps> = ({
                     keyboardShortcuts={keyboardShortcuts}
                 />
                 <div
-                    className={`flex-1 flex items-center justify-center bg-gray-100 dark:bg-gray-800 transition-all duration-300 ease-in-out ${mainContentMarginLeft}`}
+                    className={`flex-1 flex items-center justify-center bg-[#eef0f3] dark:bg-[#0e1420] transition-all duration-300 ease-in-out ${mainContentMarginLeft}`}
                 >
                     <div className="text-xl text-gray-700 dark:text-gray-200">
                         {t('common.loading')}
@@ -429,7 +429,7 @@ const Layout: React.FC<LayoutProps> = ({
                     keyboardShortcuts={keyboardShortcuts}
                 />
                 <div
-                    className={`flex-1 flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800 transition-all duration-300 ease-in-out ${mainContentMarginLeft}`}
+                    className={`flex-1 flex flex-col items-center justify-center bg-[#eef0f3] dark:bg-[#0e1420] transition-all duration-300 ease-in-out ${mainContentMarginLeft}`}
                 >
                     <div className="text-xl text-red-500">
                         {t('errors.somethingWentWrong')}
@@ -471,7 +471,7 @@ const Layout: React.FC<LayoutProps> = ({
                 <div
                     className={`transition-all duration-300 ease-in-out ${mainContentMarginLeft} h-screen flex flex-col`}
                 >
-                    <div className="flex flex-col bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 flex-1 overflow-hidden">
+                    <div className="flex flex-col bg-[#eef0f3] dark:bg-[#0e1420] text-gray-900 dark:text-gray-100 flex-1 overflow-hidden">
                         <div
                             className={`flex-1 flex flex-col py-0 px-0 transition-all duration-300 ${
                                 isMobileSearchOpen ? 'pt-32' : 'pt-20'
