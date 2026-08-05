@@ -12,10 +12,17 @@ export const ENABLE_NOTE_COLOR = parseBooleanFlag(
     true
 );
 
+export const ENABLE_INBOX_CLARIFY = parseBooleanFlag(
+    process.env.ENABLE_INBOX_CLARIFY,
+    false
+);
+
 export type FeatureFlags = {
     ENABLE_NOTE_COLOR: boolean;
+    ENABLE_INBOX_CLARIFY: boolean;
 };
 
 export const featureFlags: FeatureFlags = {
     ENABLE_NOTE_COLOR,
+    ENABLE_INBOX_CLARIFY,
 };
