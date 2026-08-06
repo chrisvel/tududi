@@ -121,7 +121,10 @@ class UsersService {
             }
         }
 
-        return user;
+        const profile = user.toJSON();
+        profile.has_password = !!user.password_digest;
+        delete profile.password_digest;
+        return profile;
     }
 
     /**
