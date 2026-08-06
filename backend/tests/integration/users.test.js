@@ -37,6 +37,29 @@ describe('Users Routes', () => {
             expect(response.body).toHaveProperty('task_summary_frequency');
         });
 
+        it('should return has_password true when user has a password', async () => {
+            const response = await agent.get('/api/profile');
+
+            expect(response.status).toBe(200);
+            expect(response.body.has_password).toBe(true);
+        });
+
+        it('should return has_password false when user has no password', async () => {
+            await user.update({ password_digest: null });
+
+            const response = await agent.get('/api/profile');
+
+            expect(response.status).toBe(200);
+            expect(response.body.has_password).toBe(false);
+        });
+
+        it('should not expose password_digest in profile response', async () => {
+            const response = await agent.get('/api/profile');
+
+            expect(response.status).toBe(200);
+            expect(response.body).not.toHaveProperty('password_digest');
+        });
+
         it('should require authentication', async () => {
             const response = await request(app).get('/api/profile');
 
