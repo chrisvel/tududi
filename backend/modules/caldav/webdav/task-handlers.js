@@ -1,6 +1,7 @@
 const { generateETag } = require('../utils/etag-generator');
 const { matchesETag } = require('../utils/etag-generator');
 const taskRepository = require('../../tasks/repository');
+const { CALDAV_TASK_INCLUDES } = require('../task-includes');
 const vtodoSerializer = require('../icalendar/vtodo-serializer');
 const vtodoParser = require('../icalendar/vtodo-parser');
 const syncStateRepository = require('../repositories/sync-state-repository');
@@ -16,7 +17,9 @@ async function handleGetTask(req, res) {
         }
 
         const taskUid = uid.replace('.ics', '');
-        const task = await taskRepository.findByUid(taskUid);
+        const task = await taskRepository.findByUid(taskUid, {
+            include: CALDAV_TASK_INCLUDES,
+        });
 
         if (!task || task.user_id !== req.currentUser.id) {
             return res.status(404).send('Not Found');
@@ -70,7 +73,9 @@ async function handlePutTask(req, res) {
             return res.status(400).send('Bad Request: No data provided');
         }
 
-        const existingTask = await taskRepository.findByUid(taskUid);
+        const existingTask = await taskRepository.findByUid(taskUid, {
+            include: CALDAV_TASK_INCLUDES,
+        });
 
         if (existingTask && existingTask.user_id !== userId) {
             return res.status(403).json({ error: 'Forbidden' });
@@ -142,7 +147,9 @@ async function handleDeleteTask(req, res) {
         }
 
         const taskUid = uid.replace('.ics', '');
-        const task = await taskRepository.findByUid(taskUid);
+        const task = await taskRepository.findByUid(taskUid, {
+            include: CALDAV_TASK_INCLUDES,
+        });
 
         if (!task) {
             return res.status(404).send('Not Found');
