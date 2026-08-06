@@ -3,6 +3,7 @@ import { useStore } from '../../store/useStore';
 import { CheckCircleIcon, FireIcon } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { isHabitCompletedInPeriod } from '../../utils/habitUtils';
 
 /**
  * Compact widget for Today view showing today's habits
@@ -18,7 +19,9 @@ const HabitsTodayWidget: React.FC = () => {
         loadHabits();
     }, [loadHabits]);
 
-    const habitsForToday = habits.filter((h) => h.status !== 3); // Not archived
+    const habitsForToday = habits.filter(
+        (h) => h.status !== 3 && !isHabitCompletedInPeriod(h)
+    );
 
     if (habitsForToday.length === 0) return null;
 

@@ -8,6 +8,7 @@ import {
 import { CheckCircleIcon as CheckCircleSolid } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
 import { fetchHabitCompletions } from '../../utils/habitsService';
+import { isHabitCompletedInPeriod } from '../../utils/habitUtils';
 
 interface HabitCardProps {
     habit: Task;
@@ -58,16 +59,7 @@ const HabitCard: React.FC<HabitCardProps> = ({ habit, onComplete, onEdit }) => {
 
     const days = last30Days();
 
-    const isCompletedToday = (() => {
-        if (!habit.habit_last_completion_at) return false;
-        const last = new Date(habit.habit_last_completion_at);
-        const today = new Date();
-        return (
-            last.getFullYear() === today.getFullYear() &&
-            last.getMonth() === today.getMonth() &&
-            last.getDate() === today.getDate()
-        );
-    })();
+    const isCompletedToday = isHabitCompletedInPeriod(habit);
 
     const frequencyLabel =
         habit.habit_target_count && habit.habit_frequency_period
