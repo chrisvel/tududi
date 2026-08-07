@@ -183,8 +183,27 @@ async function calculateNotePerms(ctx, action) {
 }
 
 async function calculateAreaPerms(ctx, action) {
+    // Only a direct permission row is stored for the area itself. Projects in
+    // the area (and their tasks/notes) are resolved at query time — see
+    // permissionsService — so projects moved in/out of a shared area gain or
+    // lose visibility immediately, with no stale inherited rows to clean up.
     const changes = emptyChanges();
-    // TODO: implement area→projects→tasks/notes cascade later
+    if (action.verb === 'share_grant') {
+        pushUpsert(changes, {
+            userId: action.targetUserId,
+            resourceType: 'area',
+            resourceUid: action.resourceUid,
+            accessLevel: action.accessLevel,
+            propagation: 'direct',
+            grantedByUserId: action.actorUserId,
+        });
+    } else if (action.verb === 'share_revoke') {
+        pushDelete(changes, {
+            userId: action.targetUserId,
+            resourceType: 'area',
+            resourceUid: action.resourceUid,
+        });
+    }
     return changes;
 }
 

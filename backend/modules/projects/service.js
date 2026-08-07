@@ -3,7 +3,11 @@
 const { Op } = require('sequelize');
 const projectsRepository = require('./repository');
 const { validateUid, validateName, formatDate } = require('./validation');
-const { NotFoundError, ValidationError } = require('../../shared/errors');
+const {
+    NotFoundError,
+    ValidationError,
+    ForbiddenError,
+} = require('../../shared/errors');
 const { validateTagName } = require('../tags/tagsService');
 const permissionsService = require('../../services/permissionsService');
 const { sortTags } = require('../tasks/core/serializers');
@@ -14,6 +18,30 @@ const {
 const { uid: generateUid } = require('../../utils/uid');
 const { extractUidFromSlug } = require('../../utils/slug-utils');
 const { logError } = require('../../services/logService');
+
+/**
+ * Assert the user may place a project into the given area: they must own the
+ * area or hold rw access to it (e.g. via an area share).
+ */
+async function assertAreaWriteAccess(userId, areaId) {
+    if (!areaId) return;
+    const { Area } = require('../../models');
+    const area = await Area.findOne({
+        where: { id: areaId },
+        attributes: ['uid'],
+        raw: true,
+    });
+    if (!area) {
+        throw new NotFoundError('Area not found.');
+    }
+    const access = await permissionsService.getAccess(userId, 'area', area.uid);
+    if (
+        access !== permissionsService.ACCESS.RW &&
+        access !== permissionsService.ACCESS.ADMIN
+    ) {
+        throw new ForbiddenError('No write access to the target area.');
+    }
+}
 
 /**
  * Update project tags.
@@ -296,6 +324,7 @@ class ProjectsService {
         } = data;
 
         const validatedName = validateName(name);
+        await assertAreaWriteAccess(userId, area_id);
         const tagsData = tags || Tags;
         const projectUid = generateUid();
 
@@ -389,7 +418,11 @@ class ProjectsService {
         if (area_id !== undefined) {
             const resolvedAreaId = area_id === '' ? null : area_id;
             if (isOwner) {
-                // Owner controls the canonical area for all users
+                // Owner controls the canonical area for all users — but the
+                // target area must be one they may write to (their own or
+                // shared rw), so projects can't be injected into foreign
+                // shared areas.
+                await assertAreaWriteAccess(userId, resolvedAreaId);
                 updateData.area_id = resolvedAreaId;
             } else {
                 // Non-owners store their personal area placement without touching the project
