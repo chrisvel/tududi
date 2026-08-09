@@ -55,6 +55,9 @@ test-results/
 # Test files
 backend/tests/test-files/
 
+# Nix build artifacts
+result
+
 # Temporary files
 tmp/
 *.bak
