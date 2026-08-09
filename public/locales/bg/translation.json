@@ -1632,6 +1632,8 @@
     "title": "AI Асистент",
     "generatedAt": "Генерирано в {{time}}",
     "emptyState": "Кликнете 'Генерирай резюме', за да получите ежедневния си обзор, захранван от AI.",
+    "notConfigured": "ИИ не е конфигуриран на този сървър.",
+    "notConfiguredHint": "Задайте LLM_API_KEY (или OPENAI_API_KEY), за да активирате дневния обзор.",
     "focusForToday": "Фокус за днес",
     "priorityActions": "Приоритетни действия",
     "taskInsightsTitle": "AI Инсайти",

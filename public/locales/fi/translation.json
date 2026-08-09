@@ -1632,6 +1632,8 @@
     "title": "AI-avustaja",
     "generatedAt": "Luotu {{time}}",
     "emptyState": "Napsauta 'Luo yhteenveto' saadaksesi päivittäisen yhteenvedon, joka on tehty AI:n avulla.",
+    "notConfigured": "Tekoälyä ei ole määritetty tällä palvelimella.",
+    "notConfiguredHint": "Aseta LLM_API_KEY (tai OPENAI_API_KEY) ottaaksesi päivittäisen katsauksen käyttöön.",
     "focusForToday": "Tänään keskitytään",
     "priorityActions": "Tärkeitä toimia",
     "taskInsightsTitle": "AI-näkemykset",

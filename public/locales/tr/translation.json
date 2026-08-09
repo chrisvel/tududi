@@ -1632,6 +1632,8 @@
     "title": "Yapay Zeka Asistanı",
     "generatedAt": "{{time}} tarihinde oluşturuldu",
     "emptyState": "'Kısa Rapor Oluştur' butonuna tıklayarak yapay zeka destekli günlük özetinizi alın.",
+    "notConfigured": "Bu sunucuda yapay zekâ yapılandırılmamış.",
+    "notConfiguredHint": "Günlük özeti etkinleştirmek için LLM_API_KEY (veya OPENAI_API_KEY) ayarlayın.",
     "focusForToday": "Bugünkü Odak",
     "priorityActions": "Öncelikli Eylemler",
     "taskInsightsTitle": "Yapay Zeka İçgörüleri",

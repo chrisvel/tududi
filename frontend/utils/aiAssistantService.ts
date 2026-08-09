@@ -1,6 +1,21 @@
 import { getApiPath } from '../config/paths';
 import { getPostHeadersWithCsrf, handleAuthResponse } from './authUtils';
 
+export interface AIConfig {
+    api_key_set: boolean;
+    base_url: string | null;
+    model: string;
+}
+
+export const fetchAIConfig = async (): Promise<AIConfig | null> => {
+    const response = await fetch(getApiPath('ai-assistant/config'), {
+        method: 'GET',
+        credentials: 'include',
+    });
+    if (!response.ok) return null;
+    return response.json();
+};
+
 export interface PriorityAction {
     action: string;
     project: string | null;

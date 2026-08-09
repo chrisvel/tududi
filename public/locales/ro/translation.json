@@ -1632,6 +1632,8 @@
     "title": "Asistent AI",
     "generatedAt": "Generat la {{time}}",
     "emptyState": "Click pe 'Generează Rezumat' pentru a obține rezumatul zilnic alimentat de AI.",
+    "notConfigured": "IA nu este configurată pe acest server.",
+    "notConfiguredHint": "Setează LLM_API_KEY (sau OPENAI_API_KEY) pentru a activa rezumatul zilnic.",
     "focusForToday": "Concentrează-te pe astăzi",
     "priorityActions": "Acțiuni prioritare",
     "taskInsightsTitle": "Informații AI",

@@ -1632,6 +1632,8 @@
     "title": "AI Pomočnik",
     "generatedAt": "Ustvarjeno ob {{time}}",
     "emptyState": "Kliknite 'Ustvari povzetek', da dobite vaš dnevni povzetek, podprt z AI.",
+    "notConfigured": "UI ni nastavljena na tem strežniku.",
+    "notConfiguredHint": "Nastavite LLM_API_KEY (ali OPENAI_API_KEY), da omogočite dnevni pregled.",
     "focusForToday": "Osredotočite se na danes",
     "priorityActions": "Prednostne akcije",
     "taskInsightsTitle": "AI vpogledi",

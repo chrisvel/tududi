@@ -30,7 +30,7 @@ LLM_API_KEY=sk-...
 OPENAI_API_KEY=sk-...
 ```
 
-Without a key, all AI Assistant endpoints return HTTP 500.
+Without a key, the generation endpoints return HTTP `503` with `{ "error": "AI assistant is not configured...", "code": "AI_NOT_CONFIGURED" }`. `GET /api/ai-assistant/config` still responds with `api_key_set: false`, and the frontend uses it to skip auto-generation and show a calm "AI is not configured" state instead of an error.
 
 ### Optional: custom provider or model
 

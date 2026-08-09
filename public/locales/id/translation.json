@@ -1632,6 +1632,8 @@
     "title": "Asisten AI",
     "generatedAt": "Dihasilkan pada {{time}}",
     "emptyState": "Klik 'Hasilkan Ringkasan' untuk mendapatkan ringkasan harian yang didukung AI.",
+    "notConfigured": "AI belum dikonfigurasi di server ini.",
+    "notConfiguredHint": "Setel LLM_API_KEY (atau OPENAI_API_KEY) untuk mengaktifkan ringkasan harian.",
     "focusForToday": "Fokus untuk hari ini",
     "priorityActions": "Tindakan prioritas",
     "taskInsightsTitle": "Wawasan AI",

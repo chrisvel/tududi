@@ -1632,6 +1632,8 @@
     "title": "AI Assistent",
     "generatedAt": "Gegenereerd op {{time}}",
     "emptyState": "Klik op 'Genereer Samenvatting' om je AI-gestuurde dagelijkse samenvatting te krijgen.",
+    "notConfigured": "AI is niet geconfigureerd op deze server.",
+    "notConfiguredHint": "Stel LLM_API_KEY (of OPENAI_API_KEY) in om de dagelijkse briefing in te schakelen.",
     "focusForToday": "Focus voor vandaag",
     "priorityActions": "Prioriteitsacties",
     "taskInsightsTitle": "AI Inzichten",

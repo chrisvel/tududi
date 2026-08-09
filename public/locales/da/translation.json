@@ -1632,6 +1632,8 @@
     "title": "AI Assistent",
     "generatedAt": "Genereret kl. {{time}}",
     "emptyState": "Klik på 'Generer resumé' for at få dit AI-drevne daglige resumé.",
+    "notConfigured": "AI er ikke konfigureret på denne server.",
+    "notConfiguredHint": "Angiv LLM_API_KEY (eller OPENAI_API_KEY) for at aktivere den daglige briefing.",
     "focusForToday": "Fokus for i dag",
     "priorityActions": "Prioriterede handlinger",
     "taskInsightsTitle": "AI Indsigter",

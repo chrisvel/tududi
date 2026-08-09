@@ -1641,6 +1641,8 @@
     "title": "AI-Tagesbericht",
     "generatedAt": "Generiert um {{time}}",
     "emptyState": "Klicken Sie auf 'Brief generieren', um Ihre KI-gestützte tägliche Zusammenfassung zu erhalten.",
+    "notConfigured": "KI ist auf diesem Server nicht konfiguriert.",
+    "notConfiguredHint": "Setze LLM_API_KEY (oder OPENAI_API_KEY), um das tägliche Briefing zu aktivieren.",
     "focusForToday": "Fokus für heute",
     "priorityActions": "Prioritätsaktionen",
     "taskInsightsTitle": "KI-Einblicke",
