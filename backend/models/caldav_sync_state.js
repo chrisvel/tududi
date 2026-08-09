@@ -29,6 +29,13 @@ module.exports = (sequelize) => {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
+            // Path of the resource on the remote server. Set from the href the
+            // server reported, because a CalDAV resource is not required to live
+            // at <uid>.ics and externally created ones generally do not.
+            remote_href: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
             last_modified: {
                 type: DataTypes.DATE,
                 allowNull: false,
@@ -79,6 +86,9 @@ module.exports = (sequelize) => {
                 },
                 {
                     fields: ['sync_status'],
+                },
+                {
+                    fields: ['calendar_id', 'remote_href'],
                 },
                 {
                     fields: ['task_id', 'calendar_id'],

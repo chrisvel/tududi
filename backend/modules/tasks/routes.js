@@ -985,6 +985,18 @@ router.delete('/task/:uid', requireTaskWriteAccess, async (req, res) => {
             }
         }
 
+        // Before the row goes away, so the remote copy does not survive to be
+        // pulled back in as a new task on the next sync (#1371). Required lazily
+        // because the CalDAV module already depends on this one.
+        try {
+            const {
+                deleteTaskFromRemotes,
+            } = require('../caldav/services/task-deletion-service');
+            await deleteTaskFromRemotes(task);
+        } catch (error) {
+            logError('Error removing task from CalDAV remotes:', error);
+        }
+
         await sequelize.query('PRAGMA foreign_keys = OFF');
 
         try {
