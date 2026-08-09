@@ -2,6 +2,7 @@ services:
   tududi:
     image: chrisvel/tududi:latest
     container_name: tududi
+    # Requires: cp .env.example .env — see .env.example for all options
     env_file:
       - .env
     volumes:

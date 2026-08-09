@@ -101,6 +101,16 @@ docker run \
 
 Navigate to [http://localhost:3002](http://localhost:3002) and login with your credentials.
 
+### Using docker-compose
+
+The repo also includes a `docker-compose.yml`. It reads its configuration from a `.env` file, so copy the example first:
+
+```bash
+cp .env.example .env
+# edit .env with your values, then:
+docker-compose up -d
+```
+
 ### Reverse Proxy Setup
 
 When running behind a reverse proxy (Caddy, Nginx, Traefik, etc.), set `TUDUDI_TRUST_PROXY` so that Express correctly reads client IPs from `X-Forwarded-For` headers. Without this, `express-rate-limit` will log a validation error.
