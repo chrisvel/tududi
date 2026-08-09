@@ -219,4 +219,52 @@ describe('AI Assistant - configurable max_tokens', () => {
 
         expect(result.insight).toBe('from content field');
     });
+
+    it('does not leak non-JSON chain-of-thought from reasoning_content into the daily brief', async () => {
+        mockCreate.mockResolvedValue({
+            choices: [
+                {
+                    message: {
+                        content: null,
+                        reasoning_content:
+                            '<think>let me consider what the user needs today...',
+                    },
+                },
+            ],
+            model: 'test-model',
+            usage: { prompt_tokens: 10, completion_tokens: 1500 },
+        });
+        const user = await createTestUser({
+            email: 'ai-tokens-leak-1@example.com',
+        });
+
+        const result = await aiAssistantService.generateDailyBrief(user.id);
+
+        expect(result.focus).toBe('');
+        expect(result.priority_actions).toEqual([]);
+    });
+
+    it('does not leak non-JSON chain-of-thought from reasoning into the daily brief', async () => {
+        mockCreate.mockResolvedValue({
+            choices: [
+                {
+                    message: {
+                        content: null,
+                        reasoning:
+                            'Thinking Process:\n1. Analyze the user context...',
+                    },
+                },
+            ],
+            model: 'test-model',
+            usage: { prompt_tokens: 10, completion_tokens: 1500 },
+        });
+        const user = await createTestUser({
+            email: 'ai-tokens-leak-2@example.com',
+        });
+
+        const result = await aiAssistantService.generateDailyBrief(user.id);
+
+        expect(result.focus).toBe('');
+        expect(result.priority_actions).toEqual([]);
+    });
 });

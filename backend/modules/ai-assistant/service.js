@@ -73,13 +73,20 @@ function extractJSON(raw) {
 // even when the answer text itself is the intended final output (observed
 // with some vLLM + reasoning-parser configurations). Fall back to those
 // fields so the response isn't discarded just because content is empty.
+//
+// The fallback field usually holds hidden chain-of-thought rather than the
+// answer, so it's only trusted when it actually parses as JSON - otherwise
+// callers would cache raw internal reasoning text as if it were the result.
 function extractMessageContent(message) {
-    return (
-        message?.content ||
-        message?.reasoning_content ||
-        message?.reasoning ||
-        '{}'
-    );
+    if (message?.content) return message.content;
+    const fallback = message?.reasoning_content || message?.reasoning;
+    if (!fallback) return '{}';
+    try {
+        JSON.parse(extractJSON(fallback));
+        return fallback;
+    } catch {
+        return '{}';
+    }
 }
 
 function buildResponseFormat(name, schema) {
