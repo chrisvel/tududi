@@ -194,13 +194,13 @@ describe('Tasks Routes', () => {
             expect(response.body.original_name).toBe(updateData.name);
         });
 
-        it('should return 403 for non-existent task', async () => {
+        it('should return 404 for non-existent task', async () => {
             const response = await agent
                 .patch('/api/task/nonexistent-uid-12345')
                 .send({ name: 'Updated' });
 
-            expect(response.status).toBe(403);
-            expect(response.body.error).toBe('Forbidden');
+            expect(response.status).toBe(404);
+            expect(response.body.error).toBe('Task not found.');
         });
 
         it("should not allow updating other user's tasks", async () => {
@@ -254,13 +254,13 @@ describe('Tasks Routes', () => {
             expect(deletedTask).toBeNull();
         }, 10000); // 10 second timeout for DELETE operations
 
-        it('should return 403 for non-existent task', async () => {
+        it('should return 404 for non-existent task', async () => {
             const response = await agent.delete(
                 '/api/task/nonexistent-uid-12345'
             );
 
-            expect(response.status).toBe(403);
-            expect(response.body.error).toBe('Forbidden');
+            expect(response.status).toBe(404);
+            expect(response.body.error).toBe('Task not found.');
         });
 
         it("should not allow deleting other user's tasks", async () => {

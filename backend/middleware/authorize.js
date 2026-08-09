@@ -23,6 +23,19 @@ function hasAccess(requiredAccess, resourceType, getResourceUid, options = {}) {
             if (forbiddenStatus === 404) {
                 return res.status(404).json({ error: notFoundMessage });
             }
+
+            // A resource that no longer exists is not "forbidden" - it is gone.
+            // Answering 403 here leaves clients holding a stale uid (a deleted
+            // or never-synced task) unable to tell the two apart, so the row
+            // can never be cleared from the UI.
+            const exists = await permissionsService.resourceExists(
+                resourceType,
+                uid
+            );
+            if (!exists) {
+                return res.status(404).json({ error: notFoundMessage });
+            }
+
             return res.status(403).json({ error: 'Forbidden' });
         } catch (err) {
             next(err);

@@ -15,6 +15,8 @@ describe('authorize middleware – hasAccess', () => {
         res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
         next = jest.fn();
         jest.clearAllMocks();
+        // Default: the resource is there, only the permission is missing
+        permissionsService.resourceExists.mockResolvedValue(true);
     });
 
     // --- UID resolution ---
@@ -138,6 +140,30 @@ describe('authorize middleware – hasAccess', () => {
         expect(res.status).toHaveBeenCalledWith(403);
         expect(res.json).toHaveBeenCalledWith({ error: 'Forbidden' });
         expect(next).not.toHaveBeenCalled();
+    });
+
+    it('should return 404 when the resource does not exist', async () => {
+        permissionsService.getAccess.mockResolvedValue('none');
+        permissionsService.resourceExists.mockResolvedValue(false);
+        const mw = hasAccess('ro', 'task', () => 'gone-uid', {
+            notFoundMessage: 'Task not found.',
+        });
+
+        await mw(req, res, next);
+
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.json).toHaveBeenCalledWith({ error: 'Task not found.' });
+        expect(next).not.toHaveBeenCalled();
+    });
+
+    it('should not check existence when access is granted', async () => {
+        permissionsService.getAccess.mockResolvedValue('rw');
+        const mw = hasAccess('rw', 'task', () => 'uid1');
+
+        await mw(req, res, next);
+
+        expect(permissionsService.resourceExists).not.toHaveBeenCalled();
+        expect(next).toHaveBeenCalled();
     });
 
     // --- User ID extraction ---

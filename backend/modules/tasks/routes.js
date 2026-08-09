@@ -36,9 +36,9 @@ const {
     getUpcomingRangeInUTC,
 } = require('../../utils/timezone-utils');
 const permissionsService = require('../../services/permissionsService');
-const { isValidUid } = require('../../utils/slug-utils');
 
 const {
+    isValidTaskUid,
     validateProjectAccess,
     validateParentTaskAccess,
     validateDeferUntilAndDueDate,
@@ -1014,7 +1014,7 @@ router.delete('/task/:uid', requireTaskWriteAccess, async (req, res) => {
 
 router.get('/task/:uid/subtasks', async (req, res) => {
     try {
-        if (!isValidUid(req.params.uid)) {
+        if (!isValidTaskUid(req.params.uid)) {
             return res.status(400).json({ error: 'Invalid UID' });
         }
 
@@ -1046,7 +1046,7 @@ router.get('/task/:uid/subtasks', async (req, res) => {
 
 router.get('/task/:uid/next-iterations', async (req, res) => {
     try {
-        if (!isValidUid(req.params.uid)) {
+        if (!isValidTaskUid(req.params.uid)) {
             return res.status(400).json({ error: 'Invalid UID' });
         }
 

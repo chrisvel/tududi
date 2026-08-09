@@ -14,6 +14,22 @@ async function getSharedUidsForUser(resourceType, userId) {
     return Array.from(set);
 }
 
+const RESOURCE_MODELS = { project: Project, task: Task, note: Note };
+
+// Whether the resource row still exists, regardless of who may read it.
+// Used to tell "gone" apart from "not yours" when access is denied.
+async function resourceExists(resourceType, resourceUid) {
+    const model = RESOURCE_MODELS[resourceType];
+    if (!model || !resourceUid) return false;
+
+    const row = await model.findOne({
+        where: { uid: resourceUid },
+        attributes: ['id'],
+        raw: true,
+    });
+    return !!row;
+}
+
 async function getAccess(userId, resourceType, resourceUid) {
     if (await isAdmin(userId)) return ACCESS.ADMIN;
 
@@ -172,6 +188,7 @@ async function ownershipOrPermissionWhere(resourceType, userId, cache = null) {
 module.exports = {
     ACCESS,
     getAccess,
+    resourceExists,
     ownershipOrPermissionWhere,
     getSharedUidsForUser,
 };
