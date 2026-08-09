@@ -11,8 +11,14 @@ import {
     FolderIcon,
     ClockIcon,
     ChartBarIcon,
+    InformationCircleIcon,
 } from '@heroicons/react/24/outline';
-import { fetchDailyBrief, fetchCachedBrief, DailyBrief } from '../../utils/aiAssistantService';
+import {
+    fetchDailyBrief,
+    fetchCachedBrief,
+    fetchAIConfig,
+    DailyBrief,
+} from '../../utils/aiAssistantService';
 
 function isBriefFromToday(generatedAt: string): boolean {
     const briefDate = new Date(generatedAt);
@@ -31,6 +37,7 @@ const DailyAssistant: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingCached, setIsLoadingCached] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [isConfigured, setIsConfigured] = useState(true);
 
     const generate = useCallback(async () => {
         setIsLoading(true);
@@ -46,20 +53,35 @@ const DailyAssistant: React.FC = () => {
     }, [t]);
 
     useEffect(() => {
-        fetchCachedBrief()
-            .then((cached) => {
+        let cancelled = false;
+
+        Promise.all([
+            fetchAIConfig().catch(() => null),
+            fetchCachedBrief().catch(() => null),
+        ])
+            .then(([config, cached]) => {
+                if (cancelled) return;
+                // An unreachable config endpoint keeps the previous behaviour
+                const configured = config ? config.api_key_set : true;
+                setIsConfigured(configured);
                 if (cached) {
                     setBrief(cached);
                     setIsStale(!isBriefFromToday(cached.generated_at));
-                } else {
+                } else if (configured) {
                     generate();
                 }
             })
-            .catch(() => {})
-            .finally(() => setIsLoadingCached(false));
+            .finally(() => {
+                if (!cancelled) setIsLoadingCached(false);
+            });
+
+        return () => {
+            cancelled = true;
+        };
     }, [generate]);
 
-    if (!brief && !isLoading && !isLoadingCached && !error) return null;
+    if (!brief && !isLoading && !isLoadingCached && !error && isConfigured)
+        return null;
 
     return (
         <div className="mb-4 bg-white dark:bg-gray-900 rounded-lg shadow overflow-hidden">
@@ -81,23 +103,25 @@ const DailyAssistant: React.FC = () => {
                         </span>
                     )}
                 </div>
-                <button
-                    onClick={generate}
-                    disabled={isLoading}
-                    className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    {isLoading ? (
-                        <>
-                            <ArrowPathIcon className="h-3 w-3 animate-spin" />
-                            {t('aiAssistant.generating')}
-                        </>
-                    ) : (
-                        <>
-                            <SparklesIcon className="h-3 w-3" />
-                            {brief ? t('aiAssistant.regenerate') : t('aiAssistant.generate')}
-                        </>
-                    )}
-                </button>
+                {isConfigured && (
+                    <button
+                        onClick={generate}
+                        disabled={isLoading}
+                        className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {isLoading ? (
+                            <>
+                                <ArrowPathIcon className="h-3 w-3 animate-spin" />
+                                {t('aiAssistant.generating')}
+                            </>
+                        ) : (
+                            <>
+                                <SparklesIcon className="h-3 w-3" />
+                                {brief ? t('aiAssistant.regenerate') : t('aiAssistant.generate')}
+                            </>
+                        )}
+                    </button>
+                )}
             </div>
 
             {/* Stale warning */}
@@ -118,6 +142,27 @@ const DailyAssistant: React.FC = () => {
 
             {/* Body */}
             <div className="p-4 space-y-3">
+                {/* Not configured */}
+                {!isConfigured && !isLoadingCached && (
+                    <div className="flex items-start gap-2 text-sm text-gray-500 dark:text-gray-400">
+                        <InformationCircleIcon className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                        <div>
+                            <p>
+                                {t(
+                                    'aiAssistant.notConfigured',
+                                    'AI is not configured on this server.'
+                                )}
+                            </p>
+                            <p className="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
+                                {t(
+                                    'aiAssistant.notConfiguredHint',
+                                    'Set LLM_API_KEY (or OPENAI_API_KEY) to enable the daily brief.'
+                                )}
+                            </p>
+                        </div>
+                    </div>
+                )}
+
                 {/* Error */}
                 {error && (
                     <div className="flex items-start gap-2 text-sm text-red-600 dark:text-red-400">

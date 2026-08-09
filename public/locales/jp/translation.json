@@ -1632,6 +1632,8 @@
     "title": "AIアシスタント",
     "generatedAt": "生成日時: {{time}}",
     "emptyState": "'要約を生成'をクリックして、AIによる日次要約を取得します。",
+    "notConfigured": "このサーバーでは AI が設定されていません。",
+    "notConfiguredHint": "デイリーブリーフを有効にするには LLM_API_KEY（または OPENAI_API_KEY）を設定してください。",
     "focusForToday": "今日の焦点",
     "priorityActions": "優先アクション",
     "taskInsightsTitle": "AIインサイト",

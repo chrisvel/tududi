@@ -8,9 +8,7 @@ const controller = {
         const userId = getAuthenticatedUserId(req);
         if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
-        const apiKeySet = !!(
-            process.env.LLM_API_KEY || process.env.OPENAI_API_KEY
-        );
+        const apiKeySet = aiAssistantService.isAIConfigured();
         const baseUrl =
             process.env.LLM_BASE_URL || process.env.OPENAI_BASE_URL || null;
         const model =

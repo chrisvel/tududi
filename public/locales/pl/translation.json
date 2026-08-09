@@ -1632,6 +1632,8 @@
     "title": "Asystent AI",
     "generatedAt": "Wygenerowane o {{time}}",
     "emptyState": "Kliknij 'Generuj podsumowanie', aby uzyskać codzienne podsumowanie zasilane przez AI.",
+    "notConfigured": "AI nie jest skonfigurowane na tym serwerze.",
+    "notConfiguredHint": "Ustaw LLM_API_KEY (lub OPENAI_API_KEY), aby włączyć dzienny przegląd.",
     "focusForToday": "Skupienie na dzisiaj",
     "priorityActions": "Priorytetowe działania",
     "taskInsightsTitle": "Wnioski AI",

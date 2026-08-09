@@ -1632,6 +1632,8 @@
     "title": "Assistente AI",
     "generatedAt": "Generato alle {{time}}",
     "emptyState": "Clicca su 'Genera Riepilogo' per ottenere il tuo riepilogo giornaliero potenziato dall'AI.",
+    "notConfigured": "L'IA non è configurata su questo server.",
+    "notConfiguredHint": "Imposta LLM_API_KEY (o OPENAI_API_KEY) per abilitare il briefing giornaliero.",
     "focusForToday": "Focus per oggi",
     "priorityActions": "Azioni prioritarie",
     "taskInsightsTitle": "Approfondimenti AI",

@@ -1632,6 +1632,8 @@
     "title": "Trợ Lý AI",
     "generatedAt": "Tạo lúc {{time}}",
     "emptyState": "Nhấn 'Tạo Tóm Tắt' để nhận tóm tắt hàng ngày được hỗ trợ bởi AI.",
+    "notConfigured": "AI chưa được cấu hình trên máy chủ này.",
+    "notConfiguredHint": "Đặt LLM_API_KEY (hoặc OPENAI_API_KEY) để bật bản tóm tắt hằng ngày.",
     "focusForToday": "Tập trung cho hôm nay",
     "priorityActions": "Hành động ưu tiên",
     "taskInsightsTitle": "Thông Tin AI",

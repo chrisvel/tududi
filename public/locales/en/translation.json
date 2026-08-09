@@ -1636,6 +1636,8 @@
     "title": "AI Daily Brief",
     "generatedAt": "Generated at {{time}}",
     "emptyState": "Click 'Generate Brief' to get your AI-powered daily summary.",
+    "notConfigured": "AI is not configured on this server.",
+    "notConfiguredHint": "Set LLM_API_KEY (or OPENAI_API_KEY) to enable the daily brief.",
     "focusForToday": "Focus for today",
     "priorityActions": "Priority actions",
     "taskInsightsTitle": "AI Insights",

@@ -1632,6 +1632,8 @@
     "title": "AI 어시스턴트",
     "generatedAt": "생성된 시간: {{time}}",
     "emptyState": "'요약 생성'을 클릭하여 AI 기반의 일일 요약을 받으세요.",
+    "notConfigured": "이 서버에는 AI가 구성되어 있지 않습니다.",
+    "notConfiguredHint": "일일 브리핑을 사용하려면 LLM_API_KEY(또는 OPENAI_API_KEY)를 설정하세요.",
     "focusForToday": "오늘의 집중 사항",
     "priorityActions": "우선 작업",
     "taskInsightsTitle": "AI 통찰",

@@ -1632,6 +1632,8 @@
     "title": "مساعد الذكاء الاصطناعي",
     "generatedAt": "تم إنشاؤه في {{time}}",
     "emptyState": "اضغط على 'إنشاء ملخص' للحصول على ملخصك اليومي المدعوم بالذكاء الاصطناعي.",
+    "notConfigured": "الذكاء الاصطناعي غير مُهيأ على هذا الخادم.",
+    "notConfiguredHint": "قم بتعيين LLM_API_KEY (أو OPENAI_API_KEY) لتفعيل الملخص اليومي.",
     "focusForToday": "التركيز لليوم",
     "priorityActions": "الإجراءات ذات الأولوية",
     "taskInsightsTitle": "رؤى الذكاء الاصطناعي",

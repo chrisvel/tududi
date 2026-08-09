@@ -1632,6 +1632,8 @@
     "title": "AI 助手",
     "generatedAt": "生成于 {{time}}",
     "emptyState": "点击 '生成摘要' 获取您的 AI 驱动的每日总结。",
+    "notConfigured": "此服务器未配置 AI。",
+    "notConfiguredHint": "设置 LLM_API_KEY（或 OPENAI_API_KEY）以启用每日简报。",
     "focusForToday": "今天的重点",
     "priorityActions": "优先行动",
     "taskInsightsTitle": "AI 洞察",

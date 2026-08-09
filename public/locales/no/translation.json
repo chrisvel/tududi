@@ -1632,6 +1632,8 @@
     "regenerate": "Regenerer",
     "generating": "Genererer…",
     "emptyState": "Klikk \"Generer Sammendrag\" for å få en personlig daglig plan basert på oppgavene, prosjektene og målene dine.",
+    "notConfigured": "KI er ikke konfigurert på denne serveren.",
+    "notConfiguredHint": "Angi LLM_API_KEY (eller OPENAI_API_KEY) for å aktivere den daglige oppsummeringen.",
     "generatedAt": "Generert kl. {{time}}",
     "focusForToday": "Fokus for I Dag",
     "priorityActions": "Prioriterte Handlinger",

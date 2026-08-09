@@ -1647,6 +1647,8 @@
     "title": "AI Асистент",
     "generatedAt": "Згенеровано о {{time}}",
     "emptyState": "Натисніть 'Згенерувати короткий огляд', щоб отримати ваш щоденний підсумок на основі AI.",
+    "notConfigured": "ШІ не налаштовано на цьому сервері.",
+    "notConfiguredHint": "Задайте LLM_API_KEY (або OPENAI_API_KEY), щоб увімкнути щоденний огляд.",
     "focusForToday": "Фокус на сьогодні",
     "priorityActions": "Пріоритетні дії",
     "taskInsightsTitle": "AI Інсайти",

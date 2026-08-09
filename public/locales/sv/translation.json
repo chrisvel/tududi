@@ -1632,6 +1632,8 @@
     "title": "AI-assistent",
     "generatedAt": "Genererad vid {{time}}",
     "emptyState": "Klicka på 'Generera sammanfattning' för att få din AI-drivna dagliga sammanfattning.",
+    "notConfigured": "AI är inte konfigurerat på den här servern.",
+    "notConfiguredHint": "Ange LLM_API_KEY (eller OPENAI_API_KEY) för att aktivera den dagliga briefingen.",
     "focusForToday": "Fokus för idag",
     "priorityActions": "Prioriterade åtgärder",
     "taskInsightsTitle": "AI-insikter",

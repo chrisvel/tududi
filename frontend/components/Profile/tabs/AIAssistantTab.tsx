@@ -4,7 +4,7 @@ import {
     CheckCircleIcon,
     ExclamationCircleIcon,
 } from '@heroicons/react/24/outline';
-import { getApiPath } from '../../../config/paths';
+import { fetchAIConfig, AIConfig } from '../../../utils/aiAssistantService';
 import type { ProfileFormData, Features } from '../types';
 
 interface AIAssistantTabProps {
@@ -14,12 +14,6 @@ interface AIAssistantTabProps {
     onAiProfileChange: (value: string) => void;
 }
 
-interface LLMConfig {
-    api_key_set: boolean;
-    base_url: string | null;
-    model: string;
-}
-
 const AIAssistantTab: React.FC<AIAssistantTabProps> = ({
     isActive,
     formData,
@@ -27,12 +21,11 @@ const AIAssistantTab: React.FC<AIAssistantTabProps> = ({
     onAiProfileChange,
 }) => {
     const { t } = useTranslation();
-    const [config, setConfig] = useState<LLMConfig | null>(null);
+    const [config, setConfig] = useState<AIConfig | null>(null);
 
     useEffect(() => {
         if (!isActive) return;
-        fetch(getApiPath('ai-assistant/config'), { credentials: 'include' })
-            .then((r) => r.json())
+        fetchAIConfig()
             .then(setConfig)
             .catch(() => setConfig(null));
     }, [isActive]);

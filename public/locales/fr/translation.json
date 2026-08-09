@@ -1632,6 +1632,8 @@
     "title": "Assistant IA",
     "generatedAt": "Généré à {{time}}",
     "emptyState": "Cliquez sur 'Générer un Résumé' pour obtenir votre résumé quotidien alimenté par l'IA.",
+    "notConfigured": "L'IA n'est pas configurée sur ce serveur.",
+    "notConfiguredHint": "Définissez LLM_API_KEY (ou OPENAI_API_KEY) pour activer le brief quotidien.",
     "focusForToday": "Concentration pour aujourd'hui",
     "priorityActions": "Actions prioritaires",
     "taskInsightsTitle": "Aperçus IA",

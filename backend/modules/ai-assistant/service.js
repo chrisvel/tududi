@@ -4,6 +4,7 @@ const OpenAI = require('openai');
 const moment = require('moment-timezone');
 const { User, Goal, Project, Area } = require('../../models');
 const { computeTaskMetrics } = require('../tasks/queries/metrics-computation');
+const { AppError } = require('../../shared/errors');
 
 const PRIORITY_LABELS = { 0: 'low', 1: 'medium', 2: 'high' };
 const STATUS_LABELS = {
@@ -16,11 +17,17 @@ const STATUS_LABELS = {
     6: 'planned',
 };
 
+function isAIConfigured() {
+    return !!(process.env.LLM_API_KEY || process.env.OPENAI_API_KEY);
+}
+
 function getOpenAIClient() {
     const apiKey = process.env.LLM_API_KEY || process.env.OPENAI_API_KEY;
     if (!apiKey) {
-        throw new Error(
-            'LLM_API_KEY (or OPENAI_API_KEY) environment variable is not set'
+        throw new AppError(
+            'AI assistant is not configured. Set LLM_API_KEY (or OPENAI_API_KEY) on the server to enable it.',
+            503,
+            'AI_NOT_CONFIGURED'
         );
     }
     const options = { apiKey };
@@ -281,10 +288,10 @@ function buildEntityMaps({ metrics, projects }) {
 }
 
 async function generateDailyBrief(userId) {
+    const client = getOpenAIClient();
+
     const context = await fetchUserContext(userId);
     const contextSummary = buildContextSummary(context);
-
-    const client = getOpenAIClient();
 
     const systemPrompt = `You are a productivity assistant in Tududi. Return a daily brief as JSON. Keep every field very short — no full sentences, no filler words.
 
@@ -738,6 +745,7 @@ Rules:
 }
 
 module.exports = {
+    isAIConfigured,
     generateDailyBrief,
     getCachedBrief,
     generateTaskInsights,

@@ -1632,6 +1632,8 @@
     "title": "Assistente de IA",
     "generatedAt": "Gerado em {{time}}",
     "emptyState": "Clique em 'Gerar Resumo' para obter seu resumo diário com suporte de IA.",
+    "notConfigured": "A IA não está configurada neste servidor.",
+    "notConfiguredHint": "Defina LLM_API_KEY (ou OPENAI_API_KEY) para ativar o resumo diário.",
     "focusForToday": "Foco para hoje",
     "priorityActions": "Ações prioritárias",
     "taskInsightsTitle": "Insights de IA",
