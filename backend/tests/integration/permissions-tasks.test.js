@@ -20,15 +20,15 @@ describe('Tasks Permissions', () => {
             .send({ email: user.email, password: 'password123' });
     });
 
-    it("GET /api/task/:id should return 403 for other user's task", async () => {
+    it('GET /api/task/:id should return 404 (routes are keyed by uid)', async () => {
         const otherTask = await Task.create({
             name: 'Other Task',
             user_id: otherUser.id,
         });
 
         const res = await agent.get(`/api/task/${otherTask.id}`);
-        expect(res.status).toBe(403);
-        expect(res.body.error).toBe('Forbidden');
+        expect(res.status).toBe(404);
+        expect(res.body.error).toBe('Task not found.');
     });
 
     it("GET /api/task/:uid should return 403 for other user's task", async () => {

@@ -6,6 +6,19 @@ function isUid(value) {
     return isNaN(Number(str)) || !Number.isInteger(Number(str));
 }
 
+const MAX_TASK_UID_LENGTH = 255;
+
+// Tasks created by CalDAV clients (tasks.org, DAVx5, iOS Reminders) keep the
+// remote VTODO UID, which is not a Tududi nanoid. Route params must therefore
+// accept any non-empty identifier and let the database lookup decide.
+function isValidTaskUid(value) {
+    return (
+        typeof value === 'string' &&
+        value.length > 0 &&
+        value.length <= MAX_TASK_UID_LENGTH
+    );
+}
+
 async function validateProjectAccess(projectIdOrUid, userId) {
     if (!projectIdOrUid || !projectIdOrUid.toString().trim()) {
         return null;
@@ -177,6 +190,7 @@ async function validateGoalAccess(goalIdOrUid, userId) {
 }
 
 module.exports = {
+    isValidTaskUid,
     validateProjectAccess,
     validateParentTaskAccess,
     validateDeferUntilAndDueDate,

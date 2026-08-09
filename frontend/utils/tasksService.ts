@@ -164,6 +164,14 @@ export const deleteTask = async (taskUid: string): Promise<void> => {
         }
     );
 
+    // A task that is already gone on the server is in the state the caller
+    // asked for. Treating 404 as success lets stale rows (e.g. left behind by
+    // an interrupted CalDAV sync) be cleared from the UI instead of failing
+    // every delete attempt.
+    if (response.status === 404) {
+        return;
+    }
+
     await handleAuthResponse(response, 'Failed to delete task.');
 };
 
