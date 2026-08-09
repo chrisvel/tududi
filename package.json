@@ -114,7 +114,7 @@
     "react-i18next": "^15.4.1",
     "react-markdown": "^10.1.0",
     "react-refresh": "^0.14.2",
-    "react-router-dom": "^7.0.0",
+    "react-router-dom": "^7.18.2",
     "react-tagify": "^1.0.7",
     "recharts": "^2.15.4",
     "rehype-highlight": "^7.0.2",
