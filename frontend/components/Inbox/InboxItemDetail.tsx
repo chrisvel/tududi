@@ -179,7 +179,9 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     const displayText =
         item.title && item.title.trim().length > 0 ? item.title : fullContent;
     const baseContent = fullContent || displayText;
-
+    // Items captured through the API can end up with blank content; without a
+    // placeholder the row renders as an invisible strip that cannot be clicked.
+    const isBlank = displayText.trim().length === 0;
 
     const extraLineCount = displayText
         .split('\n')
@@ -448,7 +450,13 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                     {/* Text content */}
                     <div className="flex-1 min-w-0">
                         <p className="text-[13.5px] font-normal text-gray-700 dark:text-gray-300 leading-relaxed break-words">
-                            {renderInlineSegments(displayText)}
+                            {isBlank ? (
+                                <span className="italic text-gray-400 dark:text-gray-500">
+                                    {t('inbox.emptyItem', '(Empty item)')}
+                                </span>
+                            ) : (
+                                renderInlineSegments(displayText)
+                            )}
                             {extraLineCount > 0 && (
                                 <span className="ml-2 text-xs font-normal text-gray-400 dark:text-gray-500">
                                     +{extraLineCount}{' '}

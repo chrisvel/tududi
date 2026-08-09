@@ -838,6 +838,53 @@ describe('MCP Tools Integration', () => {
                 );
                 expect(content.item.content).toBe('Captured from MCP');
                 expect(content.item.source).toBe('mcp');
+                expect(content.item.title).toBe('Captured from MCP');
+            });
+
+            it('should trim surrounding whitespace from content', async () => {
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'add_to_inbox',
+                    { content: '  Padded item  ' }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.item.content).toBe('Padded item');
+            });
+
+            it('should reject empty content', async () => {
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'add_to_inbox',
+                    { content: '' }
+                );
+
+                const { content, isError } = getToolContent(response);
+                expect(isError).toBe(true);
+                expect(content._rawError).toContain('Content');
+
+                const items = await InboxItem.findAll({
+                    where: { user_id: user.id },
+                });
+                expect(items).toHaveLength(0);
+            });
+
+            it('should reject whitespace-only content', async () => {
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'add_to_inbox',
+                    { content: '   \n  ' }
+                );
+
+                const { content, isError } = getToolContent(response);
+                expect(isError).toBe(true);
+                expect(content._rawError).toContain('Content cannot be empty');
+
+                const items = await InboxItem.findAll({
+                    where: { user_id: user.id },
+                });
+                expect(items).toHaveLength(0);
             });
 
             it('should allow custom source', async () => {

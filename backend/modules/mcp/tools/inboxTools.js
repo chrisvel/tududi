@@ -85,21 +85,17 @@ function registerInboxTools(server, context, tools) {
             required: ['content'],
         },
         handler: async (params) => {
-            const inboxData = {
-                user_id: context.userId,
+            const item = await inboxService.create(context.userId, {
                 content: params.content,
                 source: params.source || 'mcp',
-                processed: false,
-            };
-
-            const item = await InboxItem.create(inboxData);
+            });
 
             const serialized = {
-                id: item.id,
                 uid: item.uid,
+                title: item.title,
                 content: item.content,
                 source: item.source,
-                processed: item.processed,
+                status: item.status,
                 created_at: item.created_at,
             };
 
