@@ -2,16 +2,8 @@ services:
   tududi:
     image: chrisvel/tududi:latest
     container_name: tududi
-    environment:
-      - TUDUDI_USER_EMAIL=admin@example.com
-      - TUDUDI_USER_PASSWORD=your-secure-password
-      - TUDUDI_SESSION_SECRET=changeme-please-use-openssl
-      - TUDUDI_ALLOWED_ORIGINS=http://localhost:3002
-      - TUDUDI_TRUST_PROXY=false
-      - TUDUDI_UPLOAD_PATH=/app/uploads
-      # Runtime UID/GID configuration - set these to match your host user/group
-      - PUID=1001
-      - PGID=1001
+    env_file:
+      - .env
     volumes:
       - ./tududi_db:/app/db
       - ./uploads:/app/uploads

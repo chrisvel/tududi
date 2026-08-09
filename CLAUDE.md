@@ -1,3 +1,7 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 # Tududi - Developer Guide
 
 This documentation is designed for AI assistants and developers working with the tududi codebase. For user-facing documentation, see [README.md](README.md). For contribution guidelines, see [CONTRIBUTING.md](.github/CONTRIBUTING.md).
@@ -18,6 +22,70 @@ npm install
 npm run db:init
 npm start  # Frontend on :8080, Backend on :3002
 ```
+
+---
+
+## Common Commands
+
+**Development** (two servers, run together via `npm start` or separately):
+```bash
+npm run backend:dev    # nodemon, backend on :3002
+npm run frontend:dev   # webpack-dev-server, frontend on :8080, proxies /api to :3002
+```
+
+**Build:**
+```bash
+npm run build           # tsc --noEmit + webpack production build -> /dist
+```
+
+**Lint & format** (run both frontend and backend unless scoped):
+```bash
+npm run lint             # eslint: frontend + backend
+npm run lint:fix
+npm run format:fix       # prettier --write: frontend + backend
+```
+
+**Tests:**
+```bash
+npm test                              # backend Jest suite (alias: npm run backend:test)
+npm run backend:test:unit             # backend/tests/unit only
+npm run backend:test:integration      # backend/tests/integration only
+cd backend && npx jest tests/unit/models/task.test.js   # single backend test file
+npm run frontend:test                 # frontend Jest + React Testing Library
+npm run frontend:test -- TaskItem     # single frontend test by name pattern
+npm run test:ui                       # Playwright E2E (headless)
+npm run test:ui:headed                # Playwright E2E, visible browser
+npm run test:coverage                 # coverage for both frontend and backend
+```
+
+**Before opening a PR:**
+```bash
+npm run pre-push   # lint-staged (runs on the staged diff)
+```
+(`pre-release` runs the full lint:fix + format:fix + test + test:ui suite.)
+
+**Database** (all operate on `backend/`):
+```bash
+npm run db:init             # first-time setup
+npm run db:migrate          # run pending migrations (dev)
+npm run db:reset            # wipe and reinit
+npm run db:seed             # seed dev data
+npm run migration:create    # scaffold a new migration
+npm run migration:status    # check applied/pending migrations
+```
+
+---
+
+## Architecture at a Glance
+
+See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentials:
+
+- **Dev mode is two servers.** Webpack dev server (`:8080`) serves the React app with HMR and proxies `/api/*` and `/locales/*` to the Express API (`:3002`). In production, Express serves the compiled `/dist` bundle directly alongside the API — one process, one port.
+- **Backend is organized into self-contained modules** under `/backend/modules/[feature]/`, each typically with `routes.js` (Express router, thin) → `repository.js` (Sequelize data access) → optional `operations/` (business logic too complex for the repository) and `core/` (`serializers.js`, `builders.js`, `parsers.js`). Routes never touch Sequelize models directly — they call the repository. See [docs/backend-patterns.md](docs/backend-patterns.md).
+- **Data hierarchy:** `User → Area → Project → Task → Subtask`, with `Tag` many-to-many across Tasks/Notes/Projects, and `Task` self-referencing for both subtasks (`parent_task_id`) and recurring instances (`recurring_parent_id`). Areas and Goals are optional containers — Projects can exist without either.
+- **Three auth methods**, all resolving to `req.currentUser`: session cookies (web UI, `express-session` + Sequelize store), Bearer API tokens (`tt_...`, for automation/MCP), and OAuth2 JWT bearer tokens (when OIDC is enabled, validated against the provider's JWKS). Authorization is enforced per-request via `hasAccess(level, resourceType, getResourceUid)` in `/backend/middleware/authorize.js`; ownership grants RW automatically, sharing grants RO/RW/ADMIN via the `Permission` model, and Tasks/Notes inherit access from their parent Project.
+- **Frontend state** is split three ways: Zustand (`/frontend/store/useStore.ts`) for global UI/cache state, SWR for server data fetching/revalidation, and local `useState` for component-only state. API calls go through `/frontend/utils/[resource]Service.ts` wrappers, not ad-hoc `fetch`.
+- **Recurring tasks** are the most complex subsystem — a recurring task is a pattern record; completed/generated instances are separate Task rows linked via `recurring_parent_id`, with `taskScheduler.js` (node-cron) and `recurringTaskService.js` driving generation. See [docs/01-recurring-tasks-behavior.md](docs/01-recurring-tasks-behavior.md) before touching this code.
 
 ---
 
