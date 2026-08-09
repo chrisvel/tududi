@@ -1,0 +1,14 @@
+services:
+  tududi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tududi-dev
+    env_file:
+      - .env
+    volumes:
+      - ./tududi_db:/app/db
+      - ./uploads:/app/uploads
+    ports:
+      - "3002:3002"
+    restart: unless-stopped

@@ -44,9 +44,42 @@ function getAIModel() {
     );
 }
 
+function getMaxTokens(envVar, defaultValue) {
+    const raw = process.env[envVar];
+    if (!raw) return defaultValue;
+    const parsed = parseInt(raw, 10);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : defaultValue;
+}
+
+// Some self-hosted reasoning models (e.g. Qwen3 served via vLLM) spend their
+// entire completion budget on hidden <think> tokens and never emit the final
+// answer. vLLM's chat template accepts chat_template_kwargs.enable_thinking
+// to skip that phase. Opt-in only: providers that reject unrecognized body
+// fields (e.g. strict OpenAI-compatible servers) would otherwise error.
+function getExtraBodyParams() {
+    if (process.env.LLM_DISABLE_THINKING === 'true') {
+        return { chat_template_kwargs: { enable_thinking: false } };
+    }
+    return {};
+}
+
 function extractJSON(raw) {
     const fenced = raw.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
     return fenced ? fenced[1] : raw;
+}
+
+// Some OpenAI-compatible reasoning servers put the model's actual answer in
+// a reasoning/reasoning_content field and leave message.content null/empty,
+// even when the answer text itself is the intended final output (observed
+// with some vLLM + reasoning-parser configurations). Fall back to those
+// fields so the response isn't discarded just because content is empty.
+function extractMessageContent(message) {
+    return (
+        message?.content ||
+        message?.reasoning_content ||
+        message?.reasoning ||
+        '{}'
+    );
 }
 
 function buildResponseFormat(name, schema) {
@@ -324,7 +357,8 @@ Rules:
             { role: 'system', content: systemPrompt },
             { role: 'user', content: contextSummary },
         ],
-        max_tokens: 1500,
+        max_tokens: getMaxTokens('LLM_MAX_TOKENS_DAILY_BRIEF', 1500),
+        ...getExtraBodyParams(),
         response_format: buildResponseFormat('daily_brief', {
             type: 'object',
             properties: {
@@ -347,7 +381,7 @@ Rules:
         }),
     });
 
-    const raw = response.choices[0]?.message?.content || '{}';
+    const raw = extractMessageContent(response.choices[0]?.message);
     console.log('[AI Assistant] raw response:', raw);
     let parsed;
     try {
@@ -556,7 +590,8 @@ Rules:
             { role: 'system', content: systemPrompt },
             { role: 'user', content: lines.join('\n') },
         ],
-        max_tokens: 1000,
+        max_tokens: getMaxTokens('LLM_MAX_TOKENS_TASK_INSIGHTS', 1000),
+        ...getExtraBodyParams(),
         response_format: buildResponseFormat('task_insights', {
             type: 'object',
             properties: {
@@ -578,7 +613,7 @@ Rules:
         }),
     });
 
-    const raw = response.choices[0]?.message?.content || '{}';
+    const raw = extractMessageContent(response.choices[0]?.message);
     let parsed;
     try {
         parsed = JSON.parse(extractJSON(raw));
@@ -704,7 +739,8 @@ Rules:
             { role: 'system', content: systemPrompt },
             { role: 'user', content: lines.join('\n') },
         ],
-        max_tokens: 600,
+        max_tokens: getMaxTokens('LLM_MAX_TOKENS_PROJECT_INSIGHTS', 600),
+        ...getExtraBodyParams(),
         response_format: buildResponseFormat('project_insights', {
             type: 'object',
             properties: {
@@ -716,7 +752,7 @@ Rules:
         }),
     });
 
-    const raw = response.choices[0]?.message?.content || '{}';
+    const raw = extractMessageContent(response.choices[0]?.message);
     let parsed;
     try {
         parsed = JSON.parse(extractJSON(raw));

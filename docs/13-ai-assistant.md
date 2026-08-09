@@ -46,7 +46,19 @@ LLM_MODEL=llama3.2
 # TUDUDI_AI_MODEL is still accepted as a fallback
 ```
 
-> **Note on reasoning models:** reasoning models (e.g. DeepSeek-R1, o1-mini) consume hidden tokens before producing output. The daily brief allows up to 1500 completion tokens to accommodate this; task and project insights allow 1000 and 600 respectively.
+> **Note on reasoning models:** reasoning models (e.g. DeepSeek-R1, o1-mini) consume hidden tokens before producing output. The daily brief allows up to 1500 completion tokens to accommodate this; task and project insights allow 1000 and 600 respectively. If a reasoning model still exhausts its budget before writing the final answer (cached result comes back with empty fields and `usage.completion_tokens` pinned at the cap), raise the relevant limit below rather than switching models.
+
+### Optional: per-feature token limits
+
+Each feature's `max_tokens` cap can be overridden independently. Unset falls back to the defaults noted above:
+
+```bash
+LLM_MAX_TOKENS_DAILY_BRIEF=1500       # default 1500
+LLM_MAX_TOKENS_TASK_INSIGHTS=1000     # default 1000
+LLM_MAX_TOKENS_PROJECT_INSIGHTS=600   # default 600
+```
+
+Non-numeric or non-positive values are ignored and fall back to the default.
 
 ---
 
@@ -175,6 +187,9 @@ All endpoints require an authenticated session. Unauthenticated requests return 
 | API key | `LLM_API_KEY` | `OPENAI_API_KEY` | (required) |
 | Base URL | `LLM_BASE_URL` | `OPENAI_BASE_URL` | OpenAI (`https://api.openai.com/v1`) |
 | Model | `LLM_MODEL` | `TUDUDI_AI_MODEL` | `gpt-4o-mini` |
+| Daily Brief max tokens | `LLM_MAX_TOKENS_DAILY_BRIEF` | — | `1500` |
+| Task Insights max tokens | `LLM_MAX_TOKENS_TASK_INSIGHTS` | — | `1000` |
+| Project Insights max tokens | `LLM_MAX_TOKENS_PROJECT_INSIGHTS` | — | `600` |
 
 The client is initialized in `service.js:getOpenAIClient()`. Any provider that speaks the OpenAI chat completions protocol works: set `LLM_BASE_URL` to the provider's endpoint and `LLM_MODEL` to the model name that provider expects.
 
