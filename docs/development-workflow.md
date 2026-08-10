@@ -131,6 +131,10 @@ EMAIL_FROM_NAME=Tududi
 LLM_API_KEY=sk-...            # or OPENAI_API_KEY as fallback
 LLM_BASE_URL=http://localhost:11434/v1  # omit to use OpenAI; set for Ollama etc.
 LLM_MODEL=gpt-4o-mini         # model name for the chosen provider
+LLM_MAX_TOKENS_DAILY_BRIEF=1500      # per-feature completion token caps,
+LLM_MAX_TOKENS_TASK_INSIGHTS=1000    # raise if a reasoning model exhausts
+LLM_MAX_TOKENS_PROJECT_INSIGHTS=600  # its budget before answering
+LLM_DISABLE_THINKING=false    # true to send chat_template_kwargs.enable_thinking=false
 
 # Optional - Integrations
 DISABLE_TELEGRAM=false

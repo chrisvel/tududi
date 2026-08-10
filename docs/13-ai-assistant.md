@@ -46,7 +46,39 @@ LLM_MODEL=llama3.2
 # TUDUDI_AI_MODEL is still accepted as a fallback
 ```
 
-> **Note on reasoning models:** reasoning models (e.g. DeepSeek-R1, o1-mini) consume hidden tokens before producing output. The daily brief allows up to 1500 completion tokens to accommodate this; task and project insights allow 1000 and 600 respectively.
+> **Note on reasoning models:** reasoning models (e.g. DeepSeek-R1, o1-mini) consume hidden tokens before producing output. The daily brief allows up to 1500 completion tokens to accommodate this; task and project insights allow 1000 and 600 respectively. If a reasoning model still exhausts its budget before writing the final answer (cached result comes back with empty fields and `usage.completion_tokens` pinned at the cap), raise the relevant limit below rather than switching models.
+
+### Optional: per-feature token limits
+
+Each feature's `max_tokens` cap can be overridden independently. Unset falls back to the defaults noted above:
+
+```bash
+LLM_MAX_TOKENS_DAILY_BRIEF=1500       # default 1500
+LLM_MAX_TOKENS_TASK_INSIGHTS=1000     # default 1000
+LLM_MAX_TOKENS_PROJECT_INSIGHTS=600   # default 600
+```
+
+Non-numeric or non-positive values are ignored and fall back to the default.
+
+### Optional: skip the thinking phase
+
+Some reasoning models keep spending tokens on hidden reasoning no matter how high `max_tokens` is raised. If your provider supports it (e.g. Qwen3 served via vLLM), set:
+
+```bash
+LLM_DISABLE_THINKING=true
+```
+
+This sends `chat_template_kwargs: { enable_thinking: false }` on every request. It's opt-in and off by default — some OpenAI-compatible servers reject unrecognized body fields, so only enable this if your provider documents support for it.
+
+### Reasoning-field fallback
+
+A small number of reasoning-parser configurations put the model's answer — not just its chain-of-thought — into `message.reasoning` or `message.reasoning_content` instead of `message.content`. tududi reads `content` first and falls back to `reasoning_content`, then `reasoning`, so these configurations still work without `LLM_DISABLE_THINKING`.
+
+The fallback only trusts a field if it actually parses as JSON. Most reasoning-parser configurations put hidden chain-of-thought (not the answer) in `reasoning`/`reasoning_content`, so treating that text as the result would cache and display the model's internal monologue instead of a real answer. If `content` is empty and neither fallback field parses as JSON, the feature returns its normal empty-state defaults rather than erroring or showing raw reasoning text.
+
+### `LLM_DISABLE_THINKING` failure mode
+
+If your provider doesn't support `chat_template_kwargs` and rejects it with an HTTP 400, the request fails loudly rather than silently retrying without the flag — `callWithFallback()` only auto-retries by dropping `response_format`, not `chat_template_kwargs`. This is intentional for an explicitly opt-in flag, but if you enable `LLM_DISABLE_THINKING` and start seeing errors instead of empty results, check that your provider actually documents support for it.
 
 ---
 
@@ -175,6 +207,9 @@ All endpoints require an authenticated session. Unauthenticated requests return 
 | API key | `LLM_API_KEY` | `OPENAI_API_KEY` | (required) |
 | Base URL | `LLM_BASE_URL` | `OPENAI_BASE_URL` | OpenAI (`https://api.openai.com/v1`) |
 | Model | `LLM_MODEL` | `TUDUDI_AI_MODEL` | `gpt-4o-mini` |
+| Daily Brief max tokens | `LLM_MAX_TOKENS_DAILY_BRIEF` | — | `1500` |
+| Task Insights max tokens | `LLM_MAX_TOKENS_TASK_INSIGHTS` | — | `1000` |
+| Project Insights max tokens | `LLM_MAX_TOKENS_PROJECT_INSIGHTS` | — | `600` |
 
 The client is initialized in `service.js:getOpenAIClient()`. Any provider that speaks the OpenAI chat completions protocol works: set `LLM_BASE_URL` to the provider's endpoint and `LLM_MODEL` to the model name that provider expects.
 
