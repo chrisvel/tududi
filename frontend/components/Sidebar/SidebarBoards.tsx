@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import {
     Squares2X2Icon,
     ViewColumnsIcon,
+    RectangleGroupIcon,
     ChevronRightIcon,
 } from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
@@ -49,8 +50,9 @@ const SidebarBoards: React.FC<SidebarBoardsProps> = ({ handleNavClick, location 
 
     return (
         <ul className="flex flex-col">
-            <li className="flex justify-between items-center px-2.5 py-1 rounded-md mb-px">
-                <span className="text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-gray-900 dark:hover:text-white text-gray-500 dark:text-[oklch(48%_0.006_95)]" onClick={toggleCollapsed}>
+            <li className="flex justify-between items-center px-2.5 py-1 rounded-md">
+                <span className="flex items-center gap-1.5 text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-gray-900 dark:hover:text-white text-gray-400 dark:text-[oklch(58%_0.006_95)]" onClick={toggleCollapsed}>
+                    <RectangleGroupIcon className="h-3.5 w-3.5" />
                     {t('sidebar.boards', 'Boards')}
                 </span>
                 <button onClick={toggleCollapsed} className="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none">
@@ -60,16 +62,22 @@ const SidebarBoards: React.FC<SidebarBoardsProps> = ({ handleNavClick, location 
                     />
                 </button>
             </li>
-            {!isCollapsed &&
-                boards.map((board) => (
-                    <li
-                        key={board.path}
-                        className={`flex items-center rounded-[8px] px-[10px] py-1.5 text-[13.5px] cursor-pointer hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${isActive(board.path)}`}
-                        onClick={() => handleNavClick(board.path, board.title, board.icon)}
-                    >
-                        {board.title}
-                    </li>
-                ))}
+            {!isCollapsed && (
+                <li className="p-0 list-none">
+                    <div className="flex flex-col gap-0.5 mb-1.5">
+                        {boards.map((board) => (
+                            <div
+                                key={board.path}
+                                className={`flex items-center gap-2 rounded-[8px] px-[10px] py-1 text-[13.5px] cursor-pointer hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${isActive(board.path)}`}
+                                onClick={() => handleNavClick(board.path, board.title, board.icon)}
+                            >
+                                {board.icon}
+                                {board.title}
+                            </div>
+                        ))}
+                    </div>
+                </li>
+            )}
         </ul>
     );
 };

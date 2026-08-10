@@ -11,7 +11,7 @@ const SidebarPeople: React.FC<SidebarPeopleProps> = ({ handleNavClick, location 
     const isActive = () =>
         location.pathname.startsWith('/people') || location.pathname.startsWith('/person/')
             ? 'bg-gray-100 dark:bg-[oklch(27%_0.02_250)] text-gray-900 dark:text-[oklch(88%_0.004_95)] font-medium'
-            : 'text-gray-500 dark:text-[oklch(52%_0.006_95)]';
+            : 'text-gray-400 dark:text-[oklch(58%_0.006_95)]';
 
     return (
         <ul className="flex flex-col">
@@ -25,6 +25,7 @@ const SidebarPeople: React.FC<SidebarPeopleProps> = ({ handleNavClick, location 
                     )
                 }
             >
+                <UserGroupIcon className="h-3.5 w-3.5 mr-1.5 shrink-0" />
                 People
             </li>
         </ul>

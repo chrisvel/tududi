@@ -68,17 +68,18 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
 
     return (
         <ul className="flex flex-col">
-            <li className="flex justify-between items-center px-2.5 py-1 rounded-md mb-px">
+            <li className="flex justify-between items-center px-2.5 py-1 rounded-md">
                 <span
-                    className={`text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-black dark:hover:text-white ${
+                    className={`flex items-center gap-1.5 text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-black dark:hover:text-white ${
                         location.pathname === '/projects'
                             ? 'text-gray-900 dark:text-white'
-                            : 'text-gray-500 dark:text-[oklch(48%_0.006_95)]'
+                            : 'text-gray-400 dark:text-[oklch(58%_0.006_95)]'
                     }`}
                     onClick={() =>
                         handleNavClick('/projects', t('sidebar.projects'), <FolderIcon className="h-4 w-4 mr-2" />)
                     }
                 >
+                    <FolderIcon className="h-3.5 w-3.5" />
                     {t('sidebar.projects')}
                 </span>
                 {activeProjects.length > 0 && (
@@ -99,7 +100,7 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
 
             {isExpanded && (
                 <li className="p-0 list-none">
-                    <div className="max-h-[168px] overflow-y-auto overscroll-y-contain flex flex-col gap-0.5">
+                    <div className="max-h-[168px] overflow-y-auto overscroll-y-contain flex flex-col gap-0.5 mb-1.5">
                         {activeProjects.map((project) => (
                             <div
                                 key={project.uid}

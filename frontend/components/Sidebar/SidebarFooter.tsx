@@ -10,7 +10,6 @@ import {
     Squares2X2Icon,
     TagIcon,
     InboxIcon,
-    ChevronUpIcon,
 } from '@heroicons/react/24/outline';
 import TelegramIcon from '../Shared/Icons/TelegramIcon';
 import { useTranslation } from 'react-i18next';
@@ -44,7 +43,6 @@ interface SidebarFooterProps {
 }
 
 const SidebarFooter: React.FC<SidebarFooterProps> = ({
-    currentUser,
     isDarkMode,
     toggleDarkMode,
     setIsSidebarOpen,
@@ -57,7 +55,6 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
 }) => {
     const { t } = useTranslation();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const { status: telegramStatus } = useTelegramStatus();
     const dropdownRef = useRef<HTMLDivElement>(null);
     const [version, setVersion] = useState<string>('v0.86');
@@ -74,7 +71,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
         setIsDropdownOpen(!isDropdownOpen);
     };
 
-    // Handle click outside to close dropdowns
+    // Handle click outside to close dropdown
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (
@@ -82,18 +79,17 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                 !dropdownRef.current.contains(event.target as Node)
             ) {
                 setIsDropdownOpen(false);
-                setIsUserMenuOpen(false);
             }
         };
 
-        if (isDropdownOpen || isUserMenuOpen) {
+        if (isDropdownOpen) {
             document.addEventListener('mousedown', handleClickOutside);
         }
 
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [isDropdownOpen, isUserMenuOpen]);
+    }, [isDropdownOpen]);
 
     // Fetch version from API
     useEffect(() => {
@@ -197,10 +193,15 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
         },
     ];
 
-    const userInitial = currentUser.email ? currentUser.email[0].toUpperCase() : '?';
-
     return (
         <div className="flex-shrink-0" ref={dropdownRef}>
+            {/* Version */}
+            <div className="px-[14px] pt-[10px] flex justify-end">
+                <span className="text-[11px] text-gray-400 dark:text-gray-600 font-light italic opacity-60">
+                    {version}
+                </span>
+            </div>
+
             {/* Toolbar row: + create | dark mode */}
             <div className="border-t border-gray-100 dark:border-white/10 px-[14px] py-[10px] flex items-center justify-between">
                 {/* Plus / Create dropdown */}
@@ -263,53 +264,6 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                         )}
                     </button>
                 </div>
-            </div>
-
-            {/* User row */}
-            <div className="relative border-t border-gray-100 dark:border-white/10">
-                {isUserMenuOpen && (
-                    <div className="absolute bottom-full left-2 right-2 mb-1.5 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 overflow-hidden">
-                        <div className="py-1">
-                            <button
-                                onClick={() => { navigate('/profile'); setIsUserMenuOpen(false); }}
-                                className="w-full text-left px-3 py-2 text-[13.5px] text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150"
-                            >
-                                {t('navigation.profile', 'Profile & Settings')}
-                            </button>
-                            <div className="h-px bg-gray-100 dark:bg-gray-700 mx-2 my-1" />
-                            <div className="px-3 py-1.5 text-[11px] text-gray-400 dark:text-gray-500">
-                                {version}
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                <button
-                    onClick={() => setIsUserMenuOpen((v) => !v)}
-                    className="w-full flex items-center gap-2.5 px-[14px] py-[10px] hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-150 focus:outline-none"
-                >
-                    <div className="flex-shrink-0 w-[26px] h-[26px] rounded-full overflow-hidden">
-                        {currentUser.avatar_image ? (
-                            <img
-                                src={getApiPath(currentUser.avatar_image)}
-                                alt="User Avatar"
-                                className="w-full h-full object-cover"
-                            />
-                        ) : (
-                            <div className="w-full h-full bg-rose-400 dark:bg-rose-500 flex items-center justify-center text-white text-[11.5px] font-bold">
-                                {userInitial}
-                            </div>
-                        )}
-                    </div>
-                    <div className="flex-1 min-w-0 text-left">
-                        <div className="text-[13px] font-semibold text-gray-800 dark:text-gray-100 truncate">
-                            {currentUser.email}
-                        </div>
-                    </div>
-                    <ChevronUpIcon
-                        className={`h-[13px] w-[13px] flex-shrink-0 text-gray-400 dark:text-gray-500 transition-transform duration-150 ${isUserMenuOpen ? 'rotate-180' : ''}`}
-                    />
-                </button>
             </div>
         </div>
     );

@@ -51,17 +51,18 @@ const SidebarGoals: React.FC<SidebarGoalsProps> = ({
 
     return (
         <div className="flex flex-col">
-            <div className="flex justify-between items-center px-2.5 py-1 rounded-md mb-px">
+            <div className="flex justify-between items-center px-2.5 py-1 rounded-md">
                 <span
-                    className={`text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-black dark:hover:text-white ${
+                    className={`flex items-center gap-1.5 text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-black dark:hover:text-white ${
                         location.pathname === '/goals'
                             ? 'text-gray-900 dark:text-white'
-                            : 'text-gray-500 dark:text-[oklch(48%_0.006_95)]'
+                            : 'text-gray-400 dark:text-[oklch(58%_0.006_95)]'
                     }`}
                     onClick={() =>
                         handleNavClick('/goals', t('sidebar.goals', 'Goals'), <FlagIcon className="h-4 w-4 mr-2" />)
                     }
                 >
+                    <FlagIcon className="h-3.5 w-3.5" />
                     {t('sidebar.goals', 'Goals')}
                 </span>
                 {activeGoals.length > 0 && (
@@ -81,7 +82,7 @@ const SidebarGoals: React.FC<SidebarGoalsProps> = ({
             </div>
 
             {isExpanded && (
-                <div className="max-h-[168px] overflow-y-auto overscroll-y-contain flex flex-col gap-0.5">
+                <div className="max-h-[168px] overflow-y-auto overscroll-y-contain flex flex-col gap-0.5 mb-1.5">
                     {activeGoals.map((goal: Goal) => {
                         const goalPath = goal.uid ? createGoalUrl({ uid: goal.uid, title: goal.title }) : '/goals';
                         return (

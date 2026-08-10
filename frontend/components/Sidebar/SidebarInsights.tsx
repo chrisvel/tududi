@@ -44,8 +44,9 @@ const SidebarInsights: React.FC<SidebarInsightsProps> = ({ handleNavClick, locat
 
     return (
         <ul className="flex flex-col">
-            <li className="flex justify-between items-center px-2.5 py-1 rounded-md mb-px">
-                <span className="text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-gray-900 dark:hover:text-white text-gray-500 dark:text-[oklch(48%_0.006_95)]" onClick={toggleCollapsed}>
+            <li className="flex justify-between items-center px-2.5 py-1 rounded-md">
+                <span className="flex items-center gap-1.5 text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-gray-900 dark:hover:text-white text-gray-400 dark:text-[oklch(58%_0.006_95)]" onClick={toggleCollapsed}>
+                    <ChartBarIcon className="h-3.5 w-3.5" />
                     {t('sidebar.insights', 'Insights')}
                 </span>
                 <button onClick={toggleCollapsed} className="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none">
@@ -55,16 +56,22 @@ const SidebarInsights: React.FC<SidebarInsightsProps> = ({ handleNavClick, locat
                     />
                 </button>
             </li>
-            {!isCollapsed &&
-                links.map((link) => (
-                    <li
-                        key={link.path}
-                        className={`flex items-center rounded-[8px] px-[10px] py-1.5 text-[13.5px] cursor-pointer hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${isActive(link.path)}`}
-                        onClick={() => handleNavClick(link.path, link.title, link.icon)}
-                    >
-                        {link.title}
-                    </li>
-                ))}
+            {!isCollapsed && (
+                <li className="p-0 list-none">
+                    <div className="flex flex-col gap-0.5 mb-1.5">
+                        {links.map((link) => (
+                            <div
+                                key={link.path}
+                                className={`flex items-center gap-2 rounded-[8px] px-[10px] py-1 text-[13.5px] cursor-pointer hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${isActive(link.path)}`}
+                                onClick={() => handleNavClick(link.path, link.title, link.icon)}
+                            >
+                                {link.icon}
+                                {link.title}
+                            </div>
+                        ))}
+                    </div>
+                </li>
+            )}
         </ul>
     );
 };

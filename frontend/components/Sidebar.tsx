@@ -84,7 +84,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <div className="flex flex-col h-full">
                     <div className="flex-1 min-h-0 overflow-y-auto px-2.5 py-4">
                         {/* Sidebar Contents */}
-                        <div className="mb-[10px]">
+                        <div className="mb-[22px]">
                             <SidebarNav
                                 handleNavClick={handleNavClick}
                                 location={location}

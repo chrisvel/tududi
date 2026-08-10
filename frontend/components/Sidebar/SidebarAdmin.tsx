@@ -1,5 +1,6 @@
 import React from 'react';
 import { Location } from 'react-router-dom';
+import { RectangleStackIcon, UsersIcon } from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
 import { useTranslation } from 'react-i18next';
 
@@ -20,17 +21,18 @@ const SidebarAdmin: React.FC<SidebarAdminProps> = ({ handleNavClick, location, c
         return `flex items-center rounded-[8px] px-[10px] py-[5px] text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] hover:text-gray-900 dark:hover:text-white ${
             isActive
                 ? 'text-gray-900 dark:text-[oklch(88%_0.004_95)]'
-                : 'text-gray-500 dark:text-[oklch(52%_0.006_95)]'
+                : 'text-gray-400 dark:text-[oklch(58%_0.006_95)]'
         }`;
     };
 
     return (
-        <ul className="flex flex-col">
+        <ul className="flex flex-col gap-1">
             {templatesEnabled && (
                 <li
                     className={linkClass('/templates')}
                     onClick={() => handleNavClick('/templates', t('navigation.templates', 'Templates'))}
                 >
+                    <RectangleStackIcon className="h-3.5 w-3.5 mr-1.5 shrink-0" />
                     {t('navigation.templates', 'Templates')}
                 </li>
             )}
@@ -39,6 +41,7 @@ const SidebarAdmin: React.FC<SidebarAdminProps> = ({ handleNavClick, location, c
                     className={linkClass('/admin')}
                     onClick={() => handleNavClick('/admin/users', t('admin.userManagement', 'User Management'))}
                 >
+                    <UsersIcon className="h-3.5 w-3.5 mr-1.5 shrink-0" />
                     {t('admin.userManagement', 'User Management')}
                 </li>
             )}

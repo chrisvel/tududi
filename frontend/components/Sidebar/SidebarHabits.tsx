@@ -18,7 +18,7 @@ const SidebarHabits: React.FC<SidebarHabitsProps> = ({
     const isActiveHabit = (path: string) => {
         return location.pathname.startsWith(path)
             ? 'bg-gray-100 dark:bg-[oklch(27%_0.02_250)] text-gray-900 dark:text-[oklch(88%_0.004_95)] font-medium'
-            : 'text-gray-500 dark:text-[oklch(52%_0.006_95)]';
+            : 'text-gray-400 dark:text-[oklch(58%_0.006_95)]';
     };
 
     return (
@@ -36,6 +36,7 @@ const SidebarHabits: React.FC<SidebarHabitsProps> = ({
                         )
                     }
                 >
+                    <FireIcon className="h-3.5 w-3.5 mr-1.5 shrink-0" />
                     {t('sidebar.habits', 'Habits')}
                 </li>
             </ul>

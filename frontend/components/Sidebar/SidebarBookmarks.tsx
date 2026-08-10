@@ -7,6 +7,7 @@ import {
     ChevronRightIcon,
     XMarkIcon,
 } from '@heroicons/react/24/outline';
+import PushPinIcon from '../Shared/Icons/PushPinIcon';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../../store/useStore';
 import { updateProject } from '../../utils/projectsService';
@@ -134,14 +135,15 @@ const SidebarBookmarks: React.FC<SidebarBookmarksProps> = ({
     return (
         <div className="flex flex-col">
             <div
-                className="flex justify-between items-center px-2.5 py-1 rounded-md cursor-pointer mb-1"
+                className="flex justify-between items-center px-2.5 py-1 rounded-md cursor-pointer"
                 onClick={() => {
                     const next = !isExpanded;
                     setIsExpanded(next);
                     localStorage.setItem('bookmarksSidebarCollapsed', String(!next));
                 }}
             >
-                <span className="flex items-center text-[10.5px] tracking-[0.01em] font-semibold uppercase text-gray-500 dark:text-[oklch(48%_0.006_95)] hover:text-gray-900 dark:hover:text-white">
+                <span className="flex items-center gap-1.5 text-[10.5px] tracking-[0.01em] font-semibold uppercase text-gray-400 dark:text-[oklch(58%_0.006_95)] hover:text-gray-900 dark:hover:text-white">
+                    <PushPinIcon className="h-3.5 w-3.5" />
                     {t('sidebar.bookmarks', 'Favorites')}
                 </span>
                 <button
@@ -156,7 +158,7 @@ const SidebarBookmarks: React.FC<SidebarBookmarksProps> = ({
             </div>
 
             {isExpanded && (
-                <div className="max-h-[168px] overflow-y-auto overscroll-y-contain flex flex-col gap-0.5">
+                <div className="max-h-[168px] overflow-y-auto overscroll-y-contain flex flex-col gap-0.5 mb-1.5">
                     {pinnedProjects.map((project) => (
                         <div
                             key={project.uid}
