@@ -3,9 +3,8 @@ const { matchesETag } = require('../utils/etag-generator');
 const taskRepository = require('../../tasks/repository');
 const vtodoSerializer = require('../icalendar/vtodo-serializer');
 const vtodoParser = require('../icalendar/vtodo-parser');
-const syncStateRepository = require('../repositories/sync-state-repository');
 const { resolveProjectIdForPut } = require('./projects');
-const { nanoid } = require('nanoid');
+const { deleteTaskFromRemotes } = require('../services/task-deletion-service');
 
 async function handleGetTask(req, res) {
     try {
@@ -158,6 +157,15 @@ async function handleDeleteTask(req, res) {
             if (!matchesETag(ifMatch, currentEtag)) {
                 return res.status(412).send('Precondition Failed');
             }
+        }
+
+        // Same reason as the REST delete route: a task removed here must also be
+        // removed from any CalDAV server Tududi pulls it from, or the next sync
+        // re-creates it (#1371).
+        try {
+            await deleteTaskFromRemotes(task);
+        } catch (error) {
+            console.error('CalDAV remote delete error:', error);
         }
 
         await taskRepository.delete(task.id, req.currentUser.id);

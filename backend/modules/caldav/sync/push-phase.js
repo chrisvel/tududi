@@ -6,6 +6,7 @@ const SyncStateRepository = require('../repositories/sync-state-repository');
 const RemoteCalendarRepository = require('../repositories/remote-calendar-repository');
 const { serializeTaskToVTODO } = require('../icalendar/vtodo-serializer');
 const encryptionService = require('../services/encryption-service');
+const { buildRemoteTaskUrl, normalizeHref } = require('../utils/href-utils');
 
 class PushPhase {
     async execute(calendar, userId, options = {}) {
@@ -148,16 +149,21 @@ class PushPhase {
             remoteCalendar.password_encrypted
         );
 
-        const baseUrl = remoteCalendar.server_url.replace(/\/$/, '');
-        const calendarPath = remoteCalendar.calendar_path.replace(/^\//, '');
-        const taskUrl = `${baseUrl}/${calendarPath}/${task.uid}.ics`;
-
-        const vtodoString = await serializeTaskToVTODO(task);
-
         const syncState = await SyncStateRepository.findByTaskAndCalendar(
             task.id,
             calendar.id
         );
+
+        // Push to the path the resource actually lives at. Re-deriving it from
+        // the uid would PUT a second copy alongside the original for any task
+        // that was created by another CalDAV client.
+        const taskUrl = buildRemoteTaskUrl(
+            remoteCalendar,
+            syncState?.remote_href,
+            task.uid
+        );
+
+        const vtodoString = await serializeTaskToVTODO(task);
 
         try {
             const headers = {
@@ -187,6 +193,7 @@ class PushPhase {
 
             await SyncStateRepository.createOrUpdate(task.id, calendar.id, {
                 etag: newEtag || syncState?.etag,
+                remote_href: normalizeHref(taskUrl),
                 last_modified: new Date(),
                 last_synced_at: new Date(),
                 sync_status: 'synced',
@@ -245,9 +252,16 @@ class PushPhase {
             remoteCalendar.password_encrypted
         );
 
-        const baseUrl = remoteCalendar.server_url.replace(/\/$/, '');
-        const calendarPath = remoteCalendar.calendar_path.replace(/^\//, '');
-        const taskUrl = `${baseUrl}/${calendarPath}/${task.uid}.ics`;
+        const syncState = await SyncStateRepository.findByTaskAndCalendar(
+            task.id,
+            calendar.id
+        );
+
+        const taskUrl = buildRemoteTaskUrl(
+            remoteCalendar,
+            syncState?.remote_href,
+            task.uid
+        );
 
         try {
             await axios({
@@ -263,7 +277,10 @@ class PushPhase {
                 ),
             });
 
-            await SyncStateRepository.deleteByTaskId(task.id);
+            await SyncStateRepository.deleteByTaskAndCalendar(
+                task.id,
+                calendar.id
+            );
 
             logger.logInfo(`Task ${task.uid} successfully deleted from remote`);
 
@@ -277,7 +294,10 @@ class PushPhase {
                 logger.logInfo(
                     `Task ${task.uid} already deleted from remote, clearing sync state`
                 );
-                await SyncStateRepository.deleteByTaskId(task.id);
+                await SyncStateRepository.deleteByTaskAndCalendar(
+                    task.id,
+                    calendar.id
+                );
                 return {
                     taskId: task.id,
                     uid: task.uid,

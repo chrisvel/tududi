@@ -1,5 +1,6 @@
 const BaseRepository = require('../../../shared/database/BaseRepository');
 const { CalDAVSyncState } = require('../../../models');
+const { normalizeHref } = require('../utils/href-utils');
 
 class SyncStateRepository extends BaseRepository {
     constructor() {
@@ -23,6 +24,16 @@ class SyncStateRepository extends BaseRepository {
 
     async findByETag(etag, options = {}) {
         return this.findOne({ etag }, options);
+    }
+
+    async findByCalendarAndHref(calendarId, remoteHref, options = {}) {
+        const href = normalizeHref(remoteHref);
+        if (!href) return null;
+
+        return this.findOne(
+            { calendar_id: calendarId, remote_href: href },
+            options
+        );
     }
 
     async findConflicts(calendarId = null, options = {}) {
@@ -170,10 +181,32 @@ class SyncStateRepository extends BaseRepository {
         const syncStates = await this.findByCalendarId(calendarId, options);
 
         await Promise.all(
-            syncStates.map((state) => this.delete(state, options))
+            syncStates.map((state) => this.destroy(state, options))
         );
 
         return syncStates.length;
+    }
+
+    async deleteByTaskId(taskId, options = {}) {
+        const syncStates = await this.findByTaskId(taskId, options);
+
+        await Promise.all(
+            syncStates.map((state) => this.destroy(state, options))
+        );
+
+        return syncStates.length;
+    }
+
+    async deleteByTaskAndCalendar(taskId, calendarId, options = {}) {
+        const syncState = await this.findByTaskAndCalendar(
+            taskId,
+            calendarId,
+            options
+        );
+        if (!syncState) return 0;
+
+        await this.destroy(syncState, options);
+        return 1;
     }
 }
 

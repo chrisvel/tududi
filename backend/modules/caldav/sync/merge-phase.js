@@ -5,6 +5,7 @@ const SyncStateRepository = require('../repositories/sync-state-repository');
 const CalendarRepository = require('../repositories/calendar-repository');
 const ConflictResolver = require('./conflict-resolver');
 const { uid: generateUid } = require('../../../utils/uid');
+const { normalizeHref, extractUidFromHref } = require('../utils/href-utils');
 
 class MergePhase {
     async execute(calendar, changedTasks, options = {}) {
@@ -58,26 +59,50 @@ class MergePhase {
     }
 
     async _handleDeletion(change, calendar, dryRun, results) {
-        const uid = this._extractUidFromHref(change.href);
-        const existingTask = await Task.findOne({
-            where: { uid, user_id: calendar.user_id },
-        });
+        // Resolve by the href we recorded when the task was pulled. Only fall
+        // back to reading a uid out of the filename for sync states written
+        // before remote_href existed - for an externally created resource that
+        // filename is not the uid, and guessing finds the wrong task or none.
+        const hrefState = await SyncStateRepository.findByCalendarAndHref(
+            calendar.id,
+            change.href
+        );
+
+        const uid = extractUidFromHref(change.href);
+
+        const existingTask = hrefState
+            ? await Task.findOne({
+                  where: { id: hrefState.task_id, user_id: calendar.user_id },
+              })
+            : await Task.findOne({
+                  where: { uid, user_id: calendar.user_id },
+              });
 
         if (!existingTask) {
             logger.logInfo(
-                `Task ${uid} already deleted or doesn't exist, skipping`
+                `Task for ${change.href} already deleted or doesn't exist, skipping`
             );
+
+            // The row is gone but its sync state may not be: the task table is
+            // written with foreign keys disabled, so the cascade never fires.
+            if (!dryRun && hrefState) {
+                await SyncStateRepository.destroy(hrefState);
+            }
             return;
         }
 
-        const syncState = await SyncStateRepository.findByTaskAndCalendar(
-            existingTask.id,
-            calendar.id
-        );
+        const taskUid = existingTask.uid;
+
+        const syncState =
+            hrefState ||
+            (await SyncStateRepository.findByTaskAndCalendar(
+                existingTask.id,
+                calendar.id
+            ));
 
         if (syncState && existingTask.updated_at > syncState.last_synced_at) {
             logger.logInfo(
-                `Task ${uid} was modified locally after remote deletion, conflict detected`
+                `Task ${taskUid} was modified locally after remote deletion, conflict detected`
             );
 
             if (!dryRun) {
@@ -90,7 +115,7 @@ class MergePhase {
             }
 
             results.conflicts.push({
-                uid,
+                uid: taskUid,
                 taskId: existingTask.id,
                 type: 'remote_deleted_local_modified',
             });
@@ -102,8 +127,8 @@ class MergePhase {
             await SyncStateRepository.deleteByTaskId(existingTask.id);
         }
 
-        results.deleted.push({ uid, taskId: existingTask.id });
-        logger.logInfo(`Task ${uid} deleted`);
+        results.deleted.push({ uid: taskUid, taskId: existingTask.id });
+        logger.logInfo(`Task ${taskUid} deleted`);
     }
 
     async _handleCreateOrUpdate(change, calendar, dryRun, results) {
@@ -144,7 +169,9 @@ class MergePhase {
                 calendar,
                 etag,
                 dryRun,
-                results
+                results,
+                null,
+                href
             );
             return;
         }
@@ -161,7 +188,8 @@ class MergePhase {
                 etag,
                 dryRun,
                 results,
-                existingTask
+                existingTask,
+                href
             );
             return;
         }
@@ -196,7 +224,8 @@ class MergePhase {
                 calendar,
                 etag,
                 dryRun,
-                results
+                results,
+                href
             );
         }
     }
@@ -274,7 +303,8 @@ class MergePhase {
         etag,
         dryRun,
         results,
-        existingTask = null
+        existingTask = null,
+        href = null
     ) {
         if (dryRun) {
             results.merged.push({
@@ -304,6 +334,11 @@ class MergePhase {
 
         await SyncStateRepository.createOrUpdate(task.id, calendar.id, {
             etag,
+            // Omitted rather than nulled when the server gave no href, so an
+            // already-recorded path is never overwritten with nothing.
+            ...(normalizeHref(href)
+                ? { remote_href: normalizeHref(href) }
+                : {}),
             last_modified: new Date(),
             last_synced_at: new Date(),
             sync_status: 'synced',
@@ -324,7 +359,8 @@ class MergePhase {
         calendar,
         etag,
         dryRun,
-        results
+        results,
+        href = null
     ) {
         if (dryRun) {
             results.merged.push({
@@ -345,6 +381,11 @@ class MergePhase {
 
         await SyncStateRepository.createOrUpdate(existingTask.id, calendar.id, {
             etag,
+            // Omitted rather than nulled when the server gave no href, so an
+            // already-recorded path is never overwritten with nothing.
+            ...(normalizeHref(href)
+                ? { remote_href: normalizeHref(href) }
+                : {}),
             last_modified: new Date(),
             last_synced_at: new Date(),
             sync_status: 'synced',
@@ -467,11 +508,6 @@ class MergePhase {
         );
 
         return task;
-    }
-
-    _extractUidFromHref(href) {
-        const match = href.match(/([^/]+)\.ics$/);
-        return match ? match[1] : href;
     }
 }
 

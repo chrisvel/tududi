@@ -373,7 +373,11 @@ END:VCALENDAR</cal:calendar-data>
                 calendar_id: calendar.id,
                 etag: 'etag-1',
                 last_modified: new Date(),
-                last_synced_at: new Date(),
+                // Backdated: the push phase only considers a task changed when
+                // updated_at is strictly greater than last_synced_at, and both
+                // stamps land in the same millisecond often enough to make this
+                // test flaky when it uses "now".
+                last_synced_at: new Date(Date.now() - 60000),
                 sync_status: 'synced',
             });
 
