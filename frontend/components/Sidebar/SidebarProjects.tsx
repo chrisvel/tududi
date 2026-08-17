@@ -3,6 +3,7 @@ import { Location } from 'react-router-dom';
 import {
     FolderIcon,
     ChevronRightIcon,
+    PlusIcon,
 } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../../store/useStore';
@@ -26,6 +27,7 @@ const getProjectPath = (project: Project) => {
 const SidebarProjects: React.FC<SidebarProjectsProps> = ({
     handleNavClick,
     location,
+    openProjectModal,
 }) => {
     const { t } = useTranslation();
     const [isExpanded, setIsExpanded] = useState(false);
@@ -68,7 +70,7 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
 
     return (
         <ul className="flex flex-col">
-            <li className="flex justify-between items-center px-2.5 py-1 rounded-md">
+            <li className="group flex justify-between items-center px-2.5 py-1 rounded-md hover:bg-gray-100 dark:hover:bg-white/5">
                 <span
                     className={`flex items-center gap-1.5 text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-black dark:hover:text-white ${
                         location.pathname === '/projects'
@@ -82,20 +84,33 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
                     <FolderIcon className="h-3.5 w-3.5" />
                     {t('sidebar.projects')}
                 </span>
-                {activeProjects.length > 0 && (
+                <div className="flex items-center gap-1">
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
-                            setIsExpanded((v) => !v);
+                            openProjectModal();
                         }}
-                        className="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
+                        className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
+                        aria-label={t('projects.addProject', 'Add Project')}
+                        title={t('projects.addProject', 'Add Project')}
                     >
-                        <ChevronRightIcon
-                            className="h-3 w-3 transition-transform duration-150"
-                            style={{ transform: isExpanded ? 'rotate(90deg)' : 'none' }}
-                        />
+                        <PlusIcon className="h-3.5 w-3.5" />
                     </button>
-                )}
+                    {activeProjects.length > 0 && (
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setIsExpanded((v) => !v);
+                            }}
+                            className="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
+                        >
+                            <ChevronRightIcon
+                                className="h-3 w-3 transition-transform duration-150"
+                                style={{ transform: isExpanded ? 'rotate(90deg)' : 'none' }}
+                            />
+                        </button>
+                    )}
+                </div>
             </li>
 
             {isExpanded && (

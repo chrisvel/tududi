@@ -1063,6 +1063,7 @@
     "placeholder": "Add a subtask..."
   },
   "projects": {
+    "addProject": "Add Project",
     "loading": "Loading projects...",
     "error": "Error loading projects",
     "searchPlaceholder": "Search projects...",
@@ -1169,6 +1170,7 @@
     "horizonYear": "Year"
   },
   "notes": {
+    "addNote": "Add Note",
     "loading": "Loading notes...",
     "error": "Error loading notes",
     "searchPlaceholder": "Search notes...",
@@ -1187,9 +1189,13 @@
     "contentPlaceholderMarkdown": "Write your content using Markdown formatting...\n\nExamples:\n# Heading\n**Bold text**\n*Italic text*\n- List item\n```code```",
     "pinToSidebar": "Pin to sidebar",
     "unpinFromSidebar": "Unpin from sidebar",
-    "save": "Save"
+    "save": "Save",
+    "tree": {
+      "folders": "Folders"
+    }
   },
   "tags": {
+    "addTag": "Add Tag",
     "loading": "Loading tags...",
     "searchPlaceholder": "Search tags...",
     "title": "Tags",

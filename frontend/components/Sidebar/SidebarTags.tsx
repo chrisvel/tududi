@@ -3,6 +3,7 @@ import { Location } from 'react-router-dom';
 import {
     TagIcon,
     ChevronRightIcon,
+    PlusIcon,
 } from '@heroicons/react/24/outline';
 import { Tag } from '../../entities/Tag';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +21,7 @@ interface SidebarTagsProps {
 const SidebarTags: React.FC<SidebarTagsProps> = ({
     handleNavClick,
     location,
+    openTagModal,
 }) => {
     const { t } = useTranslation();
     const [isExpanded, setIsExpanded] = useState(false);
@@ -56,7 +58,7 @@ const SidebarTags: React.FC<SidebarTagsProps> = ({
 
     return (
         <div className="flex flex-col">
-            <div className="flex justify-between items-center px-2.5 py-1 rounded-md">
+            <div className="group flex justify-between items-center px-2.5 py-1 rounded-md hover:bg-gray-100 dark:hover:bg-white/5">
                 <span
                     className={`flex items-center gap-1.5 text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-black dark:hover:text-white ${
                         location.pathname === '/tags'
@@ -70,20 +72,33 @@ const SidebarTags: React.FC<SidebarTagsProps> = ({
                     <TagIcon className="h-3.5 w-3.5" />
                     {t('sidebar.tags')}
                 </span>
-                {tags.length > 0 && (
+                <div className="flex items-center gap-1">
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
-                            setIsExpanded((v) => !v);
+                            openTagModal(null);
                         }}
-                        className="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
+                        className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
+                        aria-label={t('tags.addTag', 'Add Tag')}
+                        title={t('tags.addTag', 'Add Tag')}
                     >
-                        <ChevronRightIcon
-                            className="h-3 w-3 transition-transform duration-150"
-                            style={{ transform: isExpanded ? 'rotate(90deg)' : 'none' }}
-                        />
+                        <PlusIcon className="h-3.5 w-3.5" />
                     </button>
-                )}
+                    {tags.length > 0 && (
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setIsExpanded((v) => !v);
+                            }}
+                            className="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
+                        >
+                            <ChevronRightIcon
+                                className="h-3 w-3 transition-transform duration-150"
+                                style={{ transform: isExpanded ? 'rotate(90deg)' : 'none' }}
+                            />
+                        </button>
+                    )}
+                </div>
             </div>
 
             {isExpanded && (
