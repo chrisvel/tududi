@@ -26,7 +26,7 @@ interface AreasStore {
     setAreas: (areas: Area[]) => void;
     setLoading: (isLoading: boolean) => void;
     setError: (isError: boolean) => void;
-    loadAreas: () => Promise<void>;
+    loadAreas: (forceReload?: boolean) => Promise<void>;
 }
 
 interface ProjectsStore {
@@ -221,9 +221,10 @@ export const useStore = create<StoreState>((set: any) => ({
             })),
         setError: (isError) =>
             set((state) => ({ areasStore: { ...state.areasStore, isError } })),
-        loadAreas: async () => {
+        loadAreas: async (forceReload = false) => {
             const state = useStore.getState();
             if (state.areasStore.isLoading) return;
+            if (state.areasStore.hasLoaded && !forceReload) return;
 
             const { fetchAreas } = await import('../utils/areasService');
 
