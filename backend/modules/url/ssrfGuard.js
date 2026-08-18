@@ -52,6 +52,63 @@ function isPrivateIpv4(ip) {
     return PRIVATE_IPV4_RANGES.some((cidr) => isIpv4InCidr(ip, cidr));
 }
 
+// Expands a colon-separated IPv6 address (with optional "::" compression)
+// into its 8 constituent 16-bit groups, or null if malformed.
+function expandIpv6Groups(address) {
+    const parts = address.split('::');
+    if (parts.length > 2) {
+        return null;
+    }
+
+    const parseGroups = (segment) => (segment === '' ? [] : segment.split(':'));
+
+    if (parts.length === 1) {
+        const groups = parseGroups(parts[0]);
+        return groups.length === 8 ? groups.map((g) => parseInt(g, 16)) : null;
+    }
+
+    const head = parseGroups(parts[0]);
+    const tail = parseGroups(parts[1]);
+    const missing = 8 - head.length - tail.length;
+    if (missing < 0) {
+        return null;
+    }
+    return [...head, ...Array(missing).fill('0'), ...tail].map((g) =>
+        parseInt(g, 16)
+    );
+}
+
+// Pulls the embedded IPv4 address out of an IPv4-mapped IPv6 address
+// (::ffff:a.b.c.d), whichever textual form it's written in. The WHATWG URL
+// parser normalizes these to pure hex groups (::ffff:127.0.0.1 becomes
+// ::ffff:7f00:1) rather than keeping the dotted form, so both must be
+// checked or that normalized form slips past the guard undetected.
+function extractEmbeddedIpv4(normalized) {
+    const dottedMatch = normalized.match(
+        /^::ffff:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/
+    );
+    if (dottedMatch) {
+        return dottedMatch[1];
+    }
+
+    const groups = expandIpv6Groups(normalized);
+    if (!groups || groups[5] !== 0xffff) {
+        return null;
+    }
+    if ([0, 1, 2, 3, 4].some((i) => groups[i] !== 0)) {
+        return null;
+    }
+
+    const high = groups[6];
+    const low = groups[7];
+    return [
+        (high >> 8) & 0xff,
+        high & 0xff,
+        (low >> 8) & 0xff,
+        low & 0xff,
+    ].join('.');
+}
+
 function isPrivateIpv6(ip) {
     const normalized = ip.toLowerCase();
 
@@ -59,12 +116,19 @@ function isPrivateIpv6(ip) {
         return true;
     }
 
-    // IPv4-mapped addresses (::ffff:127.0.0.1) - validate the embedded IPv4
-    const mappedMatch = normalized.match(
-        /^::ffff:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/
-    );
-    if (mappedMatch) {
-        return isPrivateIpv4(mappedMatch[1]);
+    const embeddedIpv4 = extractEmbeddedIpv4(normalized);
+    if (embeddedIpv4) {
+        return isPrivateIpv4(embeddedIpv4);
+    }
+
+    // Deprecated "IPv4-compatible" addresses (the ::/96 range, written
+    // ::a.b.c.d - e.g. ::127.0.0.1 normalizes to ::7f00:1) carry no ffff
+    // marker to key off, unlike the mapped form above. The whole range is
+    // non-routable regardless of the embedded value, so block it outright
+    // rather than trying to special-case a "public-looking" embedded IPv4.
+    const groups = expandIpv6Groups(normalized);
+    if (groups && [0, 1, 2, 3, 4, 5].every((i) => groups[i] === 0)) {
+        return true;
     }
 
     // Unique local addresses fc00::/7
@@ -92,11 +156,19 @@ function isPrivateOrReservedIp(ip) {
 }
 
 async function assertPublicHostname(hostname) {
+    // URL.hostname wraps IPv6 literals in brackets (e.g. "[::1]"), which
+    // net.isIP() does not recognize - strip them before checking, otherwise
+    // the literal falls through to the DNS-lookup branch below.
+    const bareHostname =
+        hostname.startsWith('[') && hostname.endsWith(']')
+            ? hostname.slice(1, -1)
+            : hostname;
+
     // IP literal - no DNS resolution needed, and nothing to rebind.
-    if (net.isIP(hostname)) {
-        if (isPrivateOrReservedIp(hostname)) {
+    if (net.isIP(bareHostname)) {
+        if (isPrivateOrReservedIp(bareHostname)) {
             throw new UnsafeUrlError(
-                `Refusing to fetch private/reserved address: ${hostname}`
+                `Refusing to fetch private/reserved address: ${bareHostname}`
             );
         }
         return;
