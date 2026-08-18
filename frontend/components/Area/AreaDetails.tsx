@@ -189,7 +189,7 @@ const AreaDetails: React.FC = () => {
                             <div className={`mt-3 flex gap-4 text-xs ${area.color ? 'text-white/70' : 'text-gray-500 dark:text-gray-400'}`}>
                                 <span>{areaProjects.length} {t('areas.projects', 'projects')}</span>
                                 <span>{areaGoals.length} {t('areas.goals', 'goals')}</span>
-                                <span>{activeTasks.length} {t('areas.tasks', 'tasks')}</span>
+                                <span>{areaTasks.length} {t('areas.tasks', 'tasks')}</span>
                             </div>
                         </div>
                         <button

@@ -22,12 +22,7 @@ const Areas: React.FC = () => {
     const { t } = useTranslation();
 
     // Use global store for consistency
-    const {
-        areas,
-        isLoading: loading,
-        hasLoaded,
-        loadAreas,
-    } = useStore((state: any) => state.areasStore);
+    const { areas, loadAreas } = useStore((state: any) => state.areasStore);
 
     const [isAreaModalOpen, setIsAreaModalOpen] = useState<boolean>(false);
     const [selectedArea, setSelectedArea] = useState<Area | null>(null);
@@ -40,10 +35,10 @@ const Areas: React.FC = () => {
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (!hasLoaded && !loading) {
-            loadAreas();
-        }
-    }, [hasLoaded, loading, loadAreas]);
+        // Force a fresh fetch on every visit so the goal/task/project counts
+        // shown on the cards don't go stale after edits made elsewhere in the app.
+        loadAreas(true);
+    }, [loadAreas]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
