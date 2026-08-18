@@ -4,6 +4,9 @@ const https = require('https');
 const http = require('http');
 const { URL } = require('url');
 const { logError } = require('../../services/logService');
+const { assertSafeUrl } = require('./ssrfGuard');
+
+const MAX_REDIRECTS = 5;
 
 let nodeFetchInstance = null;
 try {
@@ -195,35 +198,63 @@ const finalizeMetadata = (metadata, sourceUrl) => {
 };
 
 async function fetchMetadataViaFetch(normalizedUrl) {
-    const response = await fetchWithTimeout(
-        normalizedUrl,
-        {
-            method: 'GET',
-            redirect: 'follow',
-            headers: {
-                'User-Agent':
-                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-                Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    let currentUrl = normalizedUrl;
+
+    for (
+        let redirectCount = 0;
+        redirectCount <= MAX_REDIRECTS;
+        redirectCount++
+    ) {
+        const response = await fetchWithTimeout(
+            currentUrl,
+            {
+                method: 'GET',
+                // Redirects are followed manually so each hop's target can be
+                // re-validated against the SSRF guard before being requested.
+                redirect: 'manual',
+                headers: {
+                    'User-Agent':
+                        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                    Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                },
             },
-        },
-        7000
-    );
+            7000
+        );
 
-    if (!response || !response.ok) {
-        return null;
+        if (!response) {
+            return null;
+        }
+
+        if ([301, 302, 303, 307, 308].includes(response.status)) {
+            const location = response.headers.get('location');
+            if (!location) {
+                return null;
+            }
+
+            const redirectUrl = new URL(location, currentUrl).href;
+            await assertSafeUrl(redirectUrl);
+            currentUrl = redirectUrl;
+            continue;
+        }
+
+        if (!response.ok) {
+            return null;
+        }
+
+        const contentType = response.headers.get('content-type');
+        if (contentType && !contentType.includes('text/html')) {
+            return null;
+        }
+
+        const html = await response.text();
+        if (!html) {
+            return null;
+        }
+
+        return finalizeMetadata(extractMetadataFromHtml(html), currentUrl);
     }
 
-    const contentType = response.headers.get('content-type');
-    if (contentType && !contentType.includes('text/html')) {
-        return null;
-    }
-
-    const html = await response.text();
-    if (!html) {
-        return null;
-    }
-
-    return finalizeMetadata(extractMetadataFromHtml(html), normalizedUrl);
+    return null;
 }
 
 function fetchMetadataViaHttp(normalizedUrl, maxRedirects = 5) {
@@ -249,6 +280,16 @@ function fetchMetadataViaHttp(normalizedUrl, maxRedirects = 5) {
                 return;
             }
 
+            assertSafeUrl(currentUrl)
+                .then(() => performRequest(currentUrl, redirectCount))
+                .catch((error) => {
+                    logError('Blocked unsafe URL for metadata fetch:', error);
+                    clearTimeout(globalTimeout);
+                    fallbackResolve(null);
+                });
+        }
+
+        function performRequest(currentUrl, redirectCount) {
             try {
                 const urlObj = new URL(currentUrl);
                 const isHttps = urlObj.protocol === 'https:';
@@ -414,6 +455,13 @@ async function fetchUrlMetadata(url) {
         }
     } catch (error) {
         logError('Error parsing URL for YouTube check:', error);
+    }
+
+    try {
+        await assertSafeUrl(normalizedUrl);
+    } catch (error) {
+        logError('Blocked unsafe URL for metadata fetch:', error);
+        return null;
     }
 
     try {
