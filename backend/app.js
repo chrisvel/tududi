@@ -211,15 +211,25 @@ if (serveFromDist) {
 
 // Authentication middleware
 const { requireAuth } = require('./middleware/auth');
+const { uploadsAccessControl } = require('./middleware/uploadsAccess');
 
 // Serve uploaded files - requires authentication so attachments (which may
 // include private task/project data) aren't readable by anyone who guesses
-// or obtains a URL (GHSA-x24w-9w59-wqhq).
+// or obtains a URL (GHSA-x24w-9w59-wqhq), and requires the requesting user
+// to have read access to the specific task/project the file belongs to, so
+// one authenticated user can't read another user's files by guessing a
+// filename (GHSA-49fc-pf7x-cj8x). nosniff stops the browser from ignoring
+// the declared Content-Type and guessing a different one to render.
 const registerUploadsStatic = (basePath) => {
     app.use(
         `${basePath}/uploads`,
         requireAuth,
-        express.static(config.uploadPath)
+        uploadsAccessControl,
+        express.static(config.uploadPath, {
+            setHeaders: (res) => {
+                res.setHeader('X-Content-Type-Options', 'nosniff');
+            },
+        })
     );
 };
 
