@@ -468,13 +468,14 @@ Permanently delete a project and all its tasks (notes are orphaned).
 
 #### `list_inbox`
 
-List inbox items.
+List inbox items. Only active items (not deleted, trashed, or processed) are returned by default.
 
 **Parameters:**
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
 | `limit` | number | No | 20 | Maximum items |
 | `offset` | number | No | 0 | Items to skip |
+| `status` | string | No | — | Filter by a specific status (e.g. `added`, `processed`, `deleted`, `trashed`). Omit to return only active items. |
 
 ---
 
