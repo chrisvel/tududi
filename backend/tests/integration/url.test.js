@@ -121,6 +121,37 @@ describe('URL Routes', () => {
             );
             expect(response.body.title).toBe(null);
         });
+
+        it('should block requests to the cloud metadata endpoint (SSRF)', async () => {
+            const response = await agent.get('/api/url/title').query({
+                url: 'http://169.254.169.254/latest/meta-data/iam/security-credentials/',
+            });
+
+            expect(response.status).toBe(200);
+            expect(response.body.title).toBe(null);
+            expect(response.body.error).toBe('Could not extract metadata');
+            expect(global.fetch).not.toHaveBeenCalled();
+        });
+
+        it('should block requests to private/loopback IPs (SSRF)', async () => {
+            const response = await agent
+                .get('/api/url/title')
+                .query({ url: 'http://192.168.1.1:9000' });
+
+            expect(response.status).toBe(200);
+            expect(response.body.title).toBe(null);
+            expect(global.fetch).not.toHaveBeenCalled();
+        });
+
+        it('should block requests to non-standard ports (SSRF)', async () => {
+            const response = await agent
+                .get('/api/url/title')
+                .query({ url: 'http://example.com:8080/' });
+
+            expect(response.status).toBe(200);
+            expect(response.body.title).toBe(null);
+            expect(global.fetch).not.toHaveBeenCalled();
+        });
     });
 
     describe('POST /api/url/extract-from-text', () => {
