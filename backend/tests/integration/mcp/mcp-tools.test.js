@@ -358,6 +358,52 @@ describe('MCP Tools Integration', () => {
                 const { content } = getToolContent(response);
                 expect(content.task.due_date).toBeDefined();
             });
+
+            it('should create a task with defer_until', async () => {
+                const dueDate = new Date(Date.now() + 172800000).toISOString();
+                const deferUntil = new Date(
+                    Date.now() + 86400000
+                ).toISOString();
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'create_task',
+                    {
+                        name: 'Task with Defer Until',
+                        due_date: dueDate,
+                        defer_until: deferUntil,
+                    }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.task.defer_until).toBeDefined();
+                expect(content.task.defer_until).not.toBeNull();
+            });
+
+            it('should reject a defer_until after the due date', async () => {
+                const dueDate = new Date(Date.now() + 86400000).toISOString();
+                const deferUntil = new Date(
+                    Date.now() + 172800000
+                ).toISOString();
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'create_task',
+                    {
+                        name: 'Bad Defer Until',
+                        due_date: dueDate,
+                        defer_until: deferUntil,
+                    }
+                );
+
+                expect(response.status).toBe(200);
+                const jsonRpc = parseSseResponse(response.text);
+                expect(jsonRpc.result.isError).toBe(true);
+
+                const created = await Task.findOne({
+                    where: { user_id: user.id, name: 'Bad Defer Until' },
+                });
+                expect(created).toBeNull();
+            });
         });
 
         describe('get_task', () => {
@@ -506,6 +552,87 @@ describe('MCP Tools Integration', () => {
 
                 await task.reload();
                 expect(task.status).toBe(6);
+            });
+
+            it('should update defer_until and persist it', async () => {
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Defer Me',
+                    status: 0,
+                    due_date: new Date(Date.now() + 172800000),
+                });
+                const deferUntil = new Date(
+                    Date.now() + 86400000
+                ).toISOString();
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'update_task',
+                    { id: task.id, defer_until: deferUntil }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.task.defer_until).toBeDefined();
+                expect(content.task.defer_until).not.toBeNull();
+
+                await task.reload();
+                expect(task.defer_until).not.toBeNull();
+            });
+
+            it('should reject a defer_until after the due date', async () => {
+                const dueDate = new Date(Date.now() + 86400000);
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Defer After Due',
+                    status: 0,
+                    due_date: dueDate,
+                });
+                const badDeferUntil = new Date(
+                    Date.now() + 172800000
+                ).toISOString();
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'update_task',
+                    { id: task.id, defer_until: badDeferUntil }
+                );
+
+                expect(response.status).toBe(200);
+                const jsonRpc = parseSseResponse(response.text);
+                expect(jsonRpc.result.isError).toBe(true);
+
+                await task.reload();
+                expect(task.defer_until).toBeNull();
+            });
+
+            it('should reject unsupported fields instead of silently ignoring them', async () => {
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Untouched',
+                    status: 0,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'update_task',
+                    {
+                        id: task.id,
+                        name: 'Should Not Apply',
+                        recurrence_type: 'daily',
+                        recurrence_interval: 1,
+                    }
+                );
+
+                expect(response.status).toBe(200);
+                const jsonRpc = parseSseResponse(response.text);
+                expect(jsonRpc.result.isError).toBe(true);
+                const { content } = getToolContent(response);
+                expect(content._rawError).toContain('recurrence_type');
+                expect(content._rawError).toContain('recurrence_interval');
+
+                await task.reload();
+                expect(task.name).toBe('Untouched');
             });
         });
 

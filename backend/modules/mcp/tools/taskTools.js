@@ -8,7 +8,14 @@ const {
 const { buildTaskAttributes } = require('../../tasks/core/builders');
 const { Op } = require('sequelize');
 const { Task, Project, Tag } = require('../../../models');
-const { validateProjectAccess } = require('../../tasks/utils/validation');
+const {
+    validateProjectAccess,
+    validateDeferUntilAndDueDate,
+    getRecurringParentEndDate,
+} = require('../../tasks/utils/validation');
+const {
+    processDeferUntilForStorage,
+} = require('../../../utils/timezone-utils');
 const permissionsService = require('../../../services/permissionsService');
 
 async function findTaskByIdentifier(identifier) {
@@ -220,6 +227,11 @@ function registerTaskTools(server, context, tools) {
                     type: 'string',
                     description: 'Due date (ISO 8601 format)',
                 },
+                defer_until: {
+                    type: 'string',
+                    description:
+                        'Defer until date/time (ISO 8601 format) - task is hidden from view until this point',
+                },
                 project_id: {
                     type: 'number',
                     description: 'Project ID to assign task to',
@@ -240,13 +252,22 @@ function registerTaskTools(server, context, tools) {
                 ? await validateProjectAccess(params.project_id, context.userId)
                 : null;
 
+            const dueDate = params.due_date || null;
+            const deferUntil = processDeferUntilForStorage(
+                params.defer_until,
+                context.user.timezone
+            );
+
+            validateDeferUntilAndDueDate(deferUntil, dueDate);
+
             const taskData = {
                 user_id: context.userId,
                 name: params.name,
                 note: params.description || '',
                 priority: params.priority ? priorityMap[params.priority] : 1,
                 status: 0, // pending
-                due_date: params.due_date || null,
+                due_date: dueDate,
+                defer_until: deferUntil,
                 project_id: resolvedProjectId,
             };
 
@@ -299,56 +320,72 @@ function registerTaskTools(server, context, tools) {
     });
 
     // 4. update_task - Update existing task
+    const updateTaskProperties = {
+        id: {
+            type: ['number', 'string'],
+            description: 'Task ID or UID',
+        },
+        name: { type: 'string', description: 'New task name' },
+        description: { type: 'string', description: 'New description' },
+        priority: {
+            type: 'string',
+            enum: ['low', 'medium', 'high'],
+        },
+        status: {
+            type: 'string',
+            enum: [
+                'not_started',
+                'pending',
+                'in_progress',
+                'done',
+                'completed',
+                'archived',
+                'waiting',
+                'cancelled',
+                'planned',
+            ],
+        },
+        due_date: { type: 'string', description: 'New due date' },
+        defer_until: {
+            type: 'string',
+            description:
+                'Defer until date/time (ISO 8601 format) - task is hidden from view until this point; pass null or an empty string to clear it',
+        },
+        project_id: {
+            type: 'number',
+            description:
+                'Project ID to assign task to (use null to remove project)',
+        },
+        today: {
+            type: 'boolean',
+            description: 'Add to Today list',
+        },
+        tags: {
+            type: 'array',
+            items: { type: 'string' },
+            description:
+                'Array of tag names to assign (replaces existing tags)',
+        },
+    };
+
     tools.push({
         name: 'update_task',
         description: 'Update an existing task',
         inputSchema: {
             type: 'object',
-            properties: {
-                id: {
-                    type: ['number', 'string'],
-                    description: 'Task ID or UID',
-                },
-                name: { type: 'string', description: 'New task name' },
-                description: { type: 'string', description: 'New description' },
-                priority: {
-                    type: 'string',
-                    enum: ['low', 'medium', 'high'],
-                },
-                status: {
-                    type: 'string',
-                    enum: [
-                        'not_started',
-                        'pending',
-                        'in_progress',
-                        'done',
-                        'completed',
-                        'archived',
-                        'waiting',
-                        'cancelled',
-                        'planned',
-                    ],
-                },
-                due_date: { type: 'string', description: 'New due date' },
-                project_id: {
-                    type: 'number',
-                    description:
-                        'Project ID to assign task to (use null to remove project)',
-                },
-                today: {
-                    type: 'boolean',
-                    description: 'Add to Today list',
-                },
-                tags: {
-                    type: 'array',
-                    items: { type: 'string' },
-                    description:
-                        'Array of tag names to assign (replaces existing tags)',
-                },
-            },
+            properties: updateTaskProperties,
             required: ['id'],
         },
         handler: async (params) => {
+            const unsupportedFields = Object.keys(params).filter(
+                (key) => !(key in updateTaskProperties)
+            );
+            if (unsupportedFields.length > 0) {
+                throw new Error(
+                    `Unsupported field(s) for update_task: ${unsupportedFields.join(', ')}`
+                );
+            }
+
             const task = await findTaskByIdentifier(params.id);
 
             if (!task) {
@@ -392,6 +429,12 @@ function registerTaskTools(server, context, tools) {
             }
             if (params.due_date !== undefined)
                 updates.due_date = params.due_date;
+            if (params.defer_until !== undefined) {
+                updates.defer_until = processDeferUntilForStorage(
+                    params.defer_until,
+                    context.user.timezone
+                );
+            }
             if (params.project_id !== undefined) {
                 const validProjectId = await validateProjectAccess(
                     params.project_id,
@@ -400,6 +443,29 @@ function registerTaskTools(server, context, tools) {
                 updates.project_id = validProjectId;
             }
             if (params.today !== undefined) updates.today = params.today;
+
+            if (
+                updates.due_date !== undefined ||
+                updates.defer_until !== undefined
+            ) {
+                const finalDueDate =
+                    updates.due_date !== undefined
+                        ? updates.due_date
+                        : task.due_date;
+                const finalDeferUntil =
+                    updates.defer_until !== undefined
+                        ? updates.defer_until
+                        : task.defer_until;
+                const recurringParentEndDate = await getRecurringParentEndDate(
+                    task.recurring_parent_id,
+                    context.userId
+                );
+                validateDeferUntilAndDueDate(
+                    finalDeferUntil,
+                    finalDueDate,
+                    recurringParentEndDate
+                );
+            }
 
             await task.update(updates);
 
