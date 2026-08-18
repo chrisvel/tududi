@@ -359,6 +359,30 @@ describe('MCP Tools Integration', () => {
                 expect(content.task.due_date).toBeDefined();
             });
 
+            it('should store a date-only due_date at end of day in the user timezone, not shift a day earlier (issue #1382)', async () => {
+                // America/Bogota is UTC-05:00, so a naive Date parse of
+                // "2026-08-08" (UTC midnight) would render as Aug 7 there.
+                await user.update({ timezone: 'America/Bogota' });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'create_task',
+                    {
+                        name: 'Bogota Due Date Task',
+                        due_date: '2026-08-08',
+                    }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+
+                const taskFromDb = await Task.findByPk(content.task.id);
+                expect(taskFromDb.due_date.toISOString()).toBe(
+                    '2026-08-09T04:59:59.999Z'
+                );
+                expect(content.task.due_date).toBe('2026-08-08');
+            });
+
             it('should create a task with defer_until', async () => {
                 const dueDate = new Date(Date.now() + 172800000).toISOString();
                 const deferUntil = new Date(
@@ -610,6 +634,31 @@ describe('MCP Tools Integration', () => {
                 expect(task.status).toBe(6);
             });
 
+            it('should store a date-only due_date at end of day in the user timezone, not shift a day earlier (issue #1382)', async () => {
+                await user.update({ timezone: 'America/Bogota' });
+
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Bogota Update Task',
+                    status: 0,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'update_task',
+                    { id: task.id, due_date: '2026-08-08' }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.task.due_date).toBe('2026-08-08');
+
+                await task.reload();
+                expect(task.due_date.toISOString()).toBe(
+                    '2026-08-09T04:59:59.999Z'
+                );
+            });
+
             it('should update defer_until and persist it', async () => {
                 const task = await Task.create({
                     user_id: user.id,
@@ -830,6 +879,35 @@ describe('MCP Tools Integration', () => {
                 const { content } = getToolContent(response);
                 expect(content.message).toBe('Subtask created successfully');
                 expect(content.subtask.name).toBe('Child Subtask');
+            });
+
+            it('should store a date-only due_date at end of day in the user timezone, not shift a day earlier (issue #1382)', async () => {
+                await user.update({ timezone: 'America/Bogota' });
+
+                const parent = await Task.create({
+                    user_id: user.id,
+                    name: 'Parent Task',
+                    status: 0,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'add_subtask',
+                    {
+                        parent_id: parent.id,
+                        name: 'Bogota Subtask',
+                        due_date: '2026-08-08',
+                    }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.subtask.due_date).toBe('2026-08-08');
+
+                const subtaskFromDb = await Task.findByPk(content.subtask.id);
+                expect(subtaskFromDb.due_date.toISOString()).toBe(
+                    '2026-08-09T04:59:59.999Z'
+                );
             });
         });
 
