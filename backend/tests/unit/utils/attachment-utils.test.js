@@ -396,8 +396,11 @@ describe('Attachment Utils', () => {
 
         it('should include all image types', () => {
             expect(ALLOWED_TYPES['image/gif']).toEqual(['.gif']);
-            expect(ALLOWED_TYPES['image/svg+xml']).toEqual(['.svg']);
             expect(ALLOWED_TYPES['image/webp']).toEqual(['.webp']);
+        });
+
+        it('should not include SVG (XSS risk via embedded <script>)', () => {
+            expect(ALLOWED_TYPES['image/svg+xml']).toBeUndefined();
         });
     });
 });

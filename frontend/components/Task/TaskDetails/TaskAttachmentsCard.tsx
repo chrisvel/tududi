@@ -208,7 +208,7 @@ const TaskAttachmentsCard: React.FC<TaskAttachmentsCardProps> = ({
                         className="hidden"
                         onChange={handleFileSelect}
                         disabled={uploading}
-                        accept=".pdf,.doc,.docx,.txt,.md,.png,.jpg,.jpeg,.gif,.svg,.webp,.xls,.xlsx,.csv,.zip"
+                        accept=".pdf,.doc,.docx,.txt,.md,.png,.jpg,.jpeg,.gif,.webp,.xls,.xlsx,.csv,.zip"
                     />
                     <div
                         className="bg-gray-200 dark:bg-gray-700 flex flex-col items-center justify-center rounded-t-lg border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 transition-colors"

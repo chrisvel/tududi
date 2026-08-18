@@ -9,6 +9,7 @@ const { uid } = require('../../utils/uid');
 const { logError } = require('../../services/logService');
 const {
     validateFileType,
+    getExtensionFromMimeType,
     deleteFileFromDisk,
     getFileUrl,
 } = require('../../utils/attachment-utils');
@@ -42,7 +43,12 @@ const storage = multer.diskStorage({
     },
     filename: function (req, file, cb) {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        cb(null, 'task-' + uniqueSuffix + path.extname(file.originalname));
+        // Derive the stored extension from the whitelist-validated MIME type,
+        // never from the client-supplied original filename, so an attacker
+        // can't smuggle a dangerous extension (e.g. .svg, .html) past a
+        // spoofed Content-Type (GHSA-x24w-9w59-wqhq).
+        const ext = getExtensionFromMimeType(file.mimetype);
+        cb(null, 'task-' + uniqueSuffix + ext);
     },
 });
 
