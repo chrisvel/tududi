@@ -55,10 +55,8 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
     const isActive = (path: string) => location.pathname === path;
 
     const itemClass = (path: string) =>
-        `group flex justify-between items-center rounded-[8px] px-[10px] py-1 text-[13.5px] cursor-pointer hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
-            isActive(path)
-                ? 'bg-gray-100 dark:bg-[oklch(27%_0.02_250)] text-gray-900 dark:text-[oklch(88%_0.004_95)] font-medium'
-                : 'text-gray-500 dark:text-[oklch(82%_0.006_95)]'
+        `group flex justify-between items-center rounded-[8px] pl-[30px] pr-[10px] py-[4px] text-[13.5px] cursor-pointer text-gray-500 dark:text-[oklch(82%_0.006_95)] hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
+            isActive(path) ? 'bg-gray-100 dark:bg-[oklch(24%_0.015_250)]' : ''
         }`;
 
     const navigate = (project: Project) =>
@@ -70,18 +68,25 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
 
     return (
         <ul className="flex flex-col">
-            <li className="group flex justify-between items-center px-2.5 py-1 rounded-md hover:bg-gray-100 dark:hover:bg-white/5">
+            <li
+                className={`group flex justify-between items-center px-[10px] py-[4px] rounded-md hover:bg-gray-100 dark:hover:bg-white/5 ${
+                    location.pathname === '/projects'
+                        ? 'bg-gray-100 dark:bg-white/5'
+                        : ''
+                }`}
+            >
                 <span
-                    className={`flex items-center gap-1.5 text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-black dark:hover:text-white ${
+                    className={`flex items-center gap-[6px] text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-black dark:hover:text-white ${
                         location.pathname === '/projects'
-                            ? 'text-gray-900 dark:text-white'
+                            ? 'text-black dark:text-white'
                             : 'text-gray-400 dark:text-[oklch(58%_0.006_95)]'
                     }`}
-                    onClick={() =>
-                        handleNavClick('/projects', t('sidebar.projects'), <FolderIcon className="h-4 w-4 mr-2" />)
-                    }
+                    onClick={() => {
+                        setIsExpanded(true);
+                        handleNavClick('/projects', t('sidebar.projects'), <FolderIcon className="h-4 w-4 mr-2" />);
+                    }}
                 >
-                    <FolderIcon className="h-3.5 w-3.5" />
+                    <FolderIcon className="h-[14px] w-[14px]" />
                     {t('sidebar.projects')}
                 </span>
                 <div className="flex items-center gap-1">
@@ -122,12 +127,8 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
                                 className={itemClass(getProjectPath(project))}
                                 onClick={() => navigate(project)}
                             >
-                                <span className="flex items-center gap-2 min-w-0">
-                                    <span
-                                        className="w-1.5 h-[14px] rounded-full flex-shrink-0"
-                                        style={{ backgroundColor: project.color || '#9ca3af' }}
-                                    />
-                                    <span className="truncate">{project.name}</span>
+                                <span className="truncate min-w-0">
+                                    {project.name}
                                 </span>
                             </div>
                         ))}

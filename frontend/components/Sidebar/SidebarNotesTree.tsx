@@ -19,7 +19,7 @@ interface SidebarNotesTreeProps {
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
 }
 
-const BASE_PADDING_PX = 10;
+const BASE_PADDING_PX = 30;
 const INDENT_PX = 12;
 
 const getNotePath = (note: Note) => {
@@ -66,10 +66,8 @@ const SidebarNotesTree: React.FC<SidebarNotesTreeProps> = ({
     }).filter((row) => row.type !== 'section-header');
 
     const itemClass = (isActive: boolean) =>
-        `flex justify-between items-center gap-2 rounded-[8px] py-1 pr-[10px] text-[13.5px] cursor-pointer hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
-            isActive
-                ? 'bg-gray-100 dark:bg-[oklch(27%_0.02_250)] text-gray-900 dark:text-[oklch(88%_0.004_95)] font-medium'
-                : 'text-gray-500 dark:text-[oklch(82%_0.006_95)]'
+        `flex justify-between items-center gap-2 rounded-[8px] py-[4px] pr-[10px] text-[13.5px] cursor-pointer text-gray-500 dark:text-[oklch(82%_0.006_95)] hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
+            isActive ? 'bg-gray-100 dark:bg-[oklch(24%_0.015_250)]' : ''
         }`;
 
     return (
@@ -85,15 +83,8 @@ const SidebarNotesTree: React.FC<SidebarNotesTreeProps> = ({
                             style={{ paddingLeft: indent }}
                             className={itemClass(false)}
                         >
-                            <span className="flex items-center gap-2 min-w-0">
-                                <span
-                                    className="w-1.5 h-[14px] rounded-full flex-shrink-0"
-                                    style={{
-                                        backgroundColor:
-                                            row.color || '#9ca3af',
-                                    }}
-                                />
-                                <span className="truncate">{row.label}</span>
+                            <span className="truncate min-w-0">
+                                {row.label}
                             </span>
                             <span className="flex-shrink-0 flex items-center gap-1 text-gray-400 dark:text-gray-500">
                                 <span className="text-[9px]">
@@ -119,18 +110,9 @@ const SidebarNotesTree: React.FC<SidebarNotesTreeProps> = ({
                         style={{ paddingLeft: indent }}
                         className={itemClass(location.pathname === path)}
                     >
-                        <span className="flex items-center gap-2 min-w-0">
-                            <span
-                                className="w-1.5 h-[14px] rounded-full flex-shrink-0"
-                                style={{
-                                    backgroundColor:
-                                        row.note.color || '#9ca3af',
-                                }}
-                            />
-                            <span className="truncate">
-                                {row.note.title ||
-                                    t('notes.untitled', 'Untitled Note')}
-                            </span>
+                        <span className="truncate min-w-0">
+                            {row.note.title ||
+                                t('notes.untitled', 'Untitled Note')}
                         </span>
                     </div>
                 );

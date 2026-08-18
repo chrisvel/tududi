@@ -33,10 +33,8 @@ const SidebarGoals: React.FC<SidebarGoalsProps> = ({
     const isActive = (path: string) => location.pathname === path;
 
     const itemClass = (path: string) =>
-        `group flex justify-between items-center rounded-[8px] px-[10px] py-1 text-[13.5px] cursor-pointer hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
-            isActive(path)
-                ? 'bg-gray-100 dark:bg-[oklch(27%_0.02_250)] text-gray-900 dark:text-[oklch(88%_0.004_95)] font-medium'
-                : 'text-gray-500 dark:text-[oklch(82%_0.006_95)]'
+        `group flex justify-between items-center rounded-[8px] pl-[30px] pr-[10px] py-[4px] text-[13.5px] cursor-pointer text-gray-500 dark:text-[oklch(82%_0.006_95)] hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
+            isActive(path) ? 'bg-gray-100 dark:bg-[oklch(24%_0.015_250)]' : ''
         }`;
 
     const activeGoals = goals.filter((g: Goal) => g.status === 'active');
@@ -52,18 +50,25 @@ const SidebarGoals: React.FC<SidebarGoalsProps> = ({
 
     return (
         <div className="flex flex-col">
-            <div className="group flex justify-between items-center px-2.5 py-1 rounded-md hover:bg-gray-100 dark:hover:bg-white/5">
+            <div
+                className={`group flex justify-between items-center px-[10px] py-[4px] rounded-md hover:bg-gray-100 dark:hover:bg-white/5 ${
+                    location.pathname === '/goals'
+                        ? 'bg-gray-100 dark:bg-white/5'
+                        : ''
+                }`}
+            >
                 <span
-                    className={`flex items-center gap-1.5 text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-black dark:hover:text-white ${
+                    className={`flex items-center gap-[6px] text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-black dark:hover:text-white ${
                         location.pathname === '/goals'
-                            ? 'text-gray-900 dark:text-white'
+                            ? 'text-black dark:text-white'
                             : 'text-gray-400 dark:text-[oklch(58%_0.006_95)]'
                     }`}
-                    onClick={() =>
-                        handleNavClick('/goals', t('sidebar.goals', 'Goals'), <FlagIcon className="h-4 w-4 mr-2" />)
-                    }
+                    onClick={() => {
+                        setIsExpanded(true);
+                        handleNavClick('/goals', t('sidebar.goals', 'Goals'), <FlagIcon className="h-4 w-4 mr-2" />);
+                    }}
                 >
-                    <FlagIcon className="h-3.5 w-3.5" />
+                    <FlagIcon className="h-[14px] w-[14px]" />
                     {t('sidebar.goals', 'Goals')}
                 </span>
                 <div className="flex items-center gap-1">
@@ -111,12 +116,8 @@ const SidebarGoals: React.FC<SidebarGoalsProps> = ({
                                     handleNavClick(goalPath, goal.title, <FlagIcon className="h-4 w-4 mr-2" />)
                                 }
                             >
-                                <span className="flex items-center gap-2 min-w-0">
-                                    <span
-                                        className="w-1.5 h-[14px] rounded-full flex-shrink-0"
-                                        style={{ backgroundColor: goal.color || '#9ca3af' }}
-                                    />
-                                    <span className="truncate">{goal.title}</span>
+                                <span className="truncate min-w-0">
+                                    {goal.title}
                                 </span>
                             </div>
                         );

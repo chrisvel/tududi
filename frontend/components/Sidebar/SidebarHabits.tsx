@@ -17,7 +17,7 @@ const SidebarHabits: React.FC<SidebarHabitsProps> = ({
     const { t } = useTranslation();
     const isActiveHabit = (path: string) => {
         return location.pathname.startsWith(path)
-            ? 'bg-gray-100 dark:bg-[oklch(27%_0.02_250)] text-gray-900 dark:text-[oklch(88%_0.004_95)] font-medium'
+            ? 'bg-gray-100 dark:bg-[oklch(24%_0.015_250)] text-gray-900 dark:text-white'
             : 'text-gray-400 dark:text-[oklch(58%_0.006_95)]';
     };
 
@@ -25,7 +25,7 @@ const SidebarHabits: React.FC<SidebarHabitsProps> = ({
         <>
             <ul className="flex flex-col">
                 <li
-                    className={`group flex items-center rounded-[8px] px-[10px] py-[5px] text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] hover:text-gray-900 dark:hover:text-white ${isActiveHabit(
+                    className={`group flex items-center rounded-[8px] px-[10px] py-[4px] text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] hover:text-gray-900 dark:hover:text-white ${isActiveHabit(
                         '/habits'
                     )}`}
                     onClick={() =>
@@ -36,7 +36,7 @@ const SidebarHabits: React.FC<SidebarHabitsProps> = ({
                         )
                     }
                 >
-                    <FireIcon className="h-3.5 w-3.5 mr-1.5 shrink-0" />
+                    <FireIcon className="h-[14px] w-[14px] mr-[6px] shrink-0" />
                     {t('sidebar.habits', 'Habits')}
                 </li>
             </ul>

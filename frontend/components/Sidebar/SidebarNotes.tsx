@@ -50,18 +50,25 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
 
     return (
         <div className="flex flex-col">
-            <div className="group flex justify-between items-center px-2.5 py-1 rounded-md hover:bg-gray-100 dark:hover:bg-white/5">
+            <div
+                className={`group flex justify-between items-center px-[10px] py-[4px] rounded-md hover:bg-gray-100 dark:hover:bg-white/5 ${
+                    location.pathname.startsWith('/notes')
+                        ? 'bg-gray-100 dark:bg-white/5'
+                        : ''
+                }`}
+            >
                 <span
-                    className={`flex items-center gap-1.5 text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-black dark:hover:text-white ${
+                    className={`flex items-center gap-[6px] text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-black dark:hover:text-white ${
                         location.pathname.startsWith('/notes')
-                            ? 'text-gray-900 dark:text-white'
+                            ? 'text-black dark:text-white'
                             : 'text-gray-400 dark:text-[oklch(58%_0.006_95)]'
                     }`}
-                    onClick={() =>
-                        handleNavClick('/notes', t('sidebar.notes'), <BookOpenIcon className="h-4 w-4 mr-2" />)
-                    }
+                    onClick={() => {
+                        setIsExpanded(true);
+                        handleNavClick('/notes', t('sidebar.notes'), <BookOpenIcon className="h-4 w-4 mr-2" />);
+                    }}
                 >
-                    <BookOpenIcon className="h-3.5 w-3.5" />
+                    <BookOpenIcon className="h-[14px] w-[14px]" />
                     {t('sidebar.notes')}
                 </span>
                 <div className="flex items-center gap-1">

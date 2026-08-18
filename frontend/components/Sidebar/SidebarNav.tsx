@@ -97,7 +97,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                     <button
                         onClick={() => handleNavClick(link.path, link.title, link.icon)}
                         data-testid={`sidebar-nav-${link.path.replace(/^\//, '').replace(/\?.*$/, '')}`}
-                        className={`w-full flex items-center gap-[10px] px-[10px] py-[4px] rounded-[8px] transition-colors duration-150 ${isActive(link.path, link.query)}`}
+                        className={`w-full flex items-center gap-[5px] px-[10px] py-[4px] rounded-[8px] transition-colors duration-150 ${isActive(link.path, link.query)}`}
                     >
                         <span className={`flex-shrink-0 ${isActiveLink(link.path, link.query) ? 'text-blue-600 dark:text-[oklch(68%_0.14_250)]' : 'text-gray-400 dark:text-[oklch(55%_0.006_95)]'}`}>
                             {link.icon}

@@ -6,6 +6,7 @@ import { Task } from '../entities/Task';
 import { Tag } from '../entities/Tag';
 import { InboxItem } from '../entities/InboxItem';
 import { Goal } from '../entities/Goal';
+import { Person } from '../entities/Person';
 
 interface NotesStore {
     notes: Note[];
@@ -133,6 +134,17 @@ interface GoalsStore {
     loadGoals: (forceReload?: boolean) => Promise<void>;
 }
 
+interface PeopleStore {
+    people: Person[];
+    isLoading: boolean;
+    isError: boolean;
+    hasLoaded: boolean;
+    setPeople: (people: Person[]) => void;
+    setLoading: (isLoading: boolean) => void;
+    setError: (isError: boolean) => void;
+    loadPeople: (forceReload?: boolean) => Promise<void>;
+}
+
 interface HabitsStore {
     habits: Task[];
     isLoading: boolean;
@@ -151,6 +163,7 @@ interface StoreState {
     goalsStore: GoalsStore;
     projectsStore: ProjectsStore;
     tagsStore: TagsStore;
+    peopleStore: PeopleStore;
     tasksStore: TasksStore;
     inboxStore: InboxStore;
     habitsStore: HabitsStore;
@@ -459,6 +472,61 @@ export const useStore = create<StoreState>((set: any) => ({
                         console.error('addNewTags: Failed to refresh tags:', e)
                     );
             }, 0);
+        },
+    },
+    peopleStore: {
+        people: [],
+        isLoading: false,
+        isError: false,
+        hasLoaded: false,
+        setPeople: (people) =>
+            set((state) => ({
+                peopleStore: { ...state.peopleStore, people },
+            })),
+        setLoading: (isLoading) =>
+            set((state) => ({
+                peopleStore: { ...state.peopleStore, isLoading },
+            })),
+        setError: (isError) =>
+            set((state) => ({
+                peopleStore: { ...state.peopleStore, isError },
+            })),
+        loadPeople: async (forceReload = false) => {
+            const state = useStore.getState();
+            if (state.peopleStore.isLoading) return;
+            if (state.peopleStore.hasLoaded && !forceReload) return;
+
+            const { fetchPeople } = await import('../utils/peopleService');
+
+            set((state) => ({
+                peopleStore: {
+                    ...state.peopleStore,
+                    isLoading: true,
+                    isError: false,
+                },
+            }));
+
+            try {
+                const people = await fetchPeople();
+                set((state) => ({
+                    peopleStore: {
+                        ...state.peopleStore,
+                        people,
+                        isLoading: false,
+                        hasLoaded: true,
+                    },
+                }));
+            } catch (error) {
+                console.error('loadPeople: Failed to load people:', error);
+                set((state) => ({
+                    peopleStore: {
+                        ...state.peopleStore,
+                        isError: true,
+                        isLoading: false,
+                        hasLoaded: true,
+                    },
+                }));
+            }
         },
     },
     tasksStore: {

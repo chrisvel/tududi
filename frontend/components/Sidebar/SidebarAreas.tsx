@@ -39,17 +39,13 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
         }
     }, [location.pathname, areas.length]);
 
-    const isActiveArea = (path: string) => {
-        return location.pathname === path
-            ? 'bg-gray-100 dark:bg-[oklch(27%_0.02_250)] text-gray-900 dark:text-[oklch(88%_0.004_95)] font-medium'
-            : 'text-gray-400 dark:text-[oklch(58%_0.006_95)]';
-    };
+    const isAreasPageActive = location.pathname === '/areas';
 
     const itemClass = (path: string) =>
-        `group flex justify-between items-center rounded-[8px] px-[10px] py-1 text-[13.5px] cursor-pointer hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
+        `group flex justify-between items-center rounded-[8px] pl-[30px] pr-[10px] py-[4px] text-[13.5px] cursor-pointer text-gray-500 dark:text-[oklch(82%_0.006_95)] hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
             location.pathname === path
-                ? 'bg-gray-100 dark:bg-[oklch(27%_0.02_250)] text-gray-900 dark:text-[oklch(88%_0.004_95)] font-medium'
-                : 'text-gray-500 dark:text-[oklch(82%_0.006_95)]'
+                ? 'bg-gray-100 dark:bg-[oklch(24%_0.015_250)]'
+                : ''
         }`;
 
     const navigate = (area: Area) =>
@@ -62,19 +58,26 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
     return (
         <ul className="flex flex-col">
             <li
-                className={`group flex justify-between items-center px-[10px] py-[5px] rounded-[8px] cursor-pointer hover:bg-gray-100 dark:hover:bg-white/5 ${isActiveArea(
-                    '/areas'
-                )}`}
-                onClick={() =>
+                className={`group flex justify-between items-center px-[10px] py-[4px] rounded-[8px] cursor-pointer hover:bg-gray-100 dark:hover:bg-white/5 ${
+                    isAreasPageActive ? 'bg-gray-100 dark:bg-white/5' : ''
+                }`}
+                onClick={() => {
+                    setIsExpanded(true);
                     handleNavClick(
                         '/areas',
                         'Areas',
                         <Squares2X2Icon className="h-5 w-5 mr-2" />
-                    )
-                }
+                    );
+                }}
             >
-                <span className="flex items-center text-[10.5px] tracking-[0.01em] font-semibold uppercase hover:text-gray-900 dark:hover:text-white">
-                    <Squares2X2Icon className="h-3.5 w-3.5 mr-1.5 shrink-0" />
+                <span
+                    className={`flex items-center text-[10.5px] tracking-[0.01em] font-semibold uppercase hover:text-gray-900 dark:hover:text-white ${
+                        isAreasPageActive
+                            ? 'text-gray-900 dark:text-white'
+                            : 'text-gray-400 dark:text-[oklch(58%_0.006_95)]'
+                    }`}
+                >
+                    <Squares2X2Icon className="h-[14px] w-[14px] mr-[6px] shrink-0" />
                     {t('sidebar.areas')}
                 </span>
                 <div className="flex items-center gap-1">
@@ -119,17 +122,8 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
                                 className={itemClass(getAreaPath(area))}
                                 onClick={() => navigate(area)}
                             >
-                                <span className="flex items-center gap-2 min-w-0">
-                                    <span
-                                        className="w-1.5 h-[14px] rounded-full flex-shrink-0"
-                                        style={{
-                                            backgroundColor:
-                                                area.color || '#9ca3af',
-                                        }}
-                                    />
-                                    <span className="truncate">
-                                        {area.name}
-                                    </span>
+                                <span className="truncate min-w-0">
+                                    {area.name}
                                 </span>
                             </div>
                         ))}
