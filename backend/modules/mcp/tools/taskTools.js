@@ -5,7 +5,8 @@ const {
     serializeTask,
     serializeTasks,
 } = require('../../tasks/core/serializers');
-const { buildTaskAttributes } = require('../../tasks/core/builders');
+const { calculateInitialDueDate } = require('../../tasks/core/builders');
+const { handleRecurrenceUpdate } = require('../../tasks/operations/recurring');
 const { Op } = require('sequelize');
 const { Task, Project, Tag } = require('../../../models');
 const {
@@ -17,6 +18,71 @@ const {
     processDeferUntilForStorage,
 } = require('../../../utils/timezone-utils');
 const permissionsService = require('../../../services/permissionsService');
+
+const RECURRENCE_TYPES = [
+    'none',
+    'daily',
+    'weekly',
+    'monthly',
+    'monthly_weekday',
+    'monthly_last_day',
+];
+
+const RECURRENCE_FIELDS = [
+    'recurrence_type',
+    'recurrence_interval',
+    'recurrence_end_date',
+    'recurrence_weekday',
+    'recurrence_weekdays',
+    'recurrence_month_day',
+    'recurrence_week_of_month',
+    'completion_based',
+];
+
+const recurrenceInputSchemaProperties = {
+    recurrence_type: {
+        type: 'string',
+        enum: RECURRENCE_TYPES,
+        description:
+            'Recurrence pattern for the task ("none" for a one-off task)',
+    },
+    recurrence_interval: {
+        type: 'number',
+        description:
+            'Repeat every N days/weeks/months, depending on recurrence_type (default 1)',
+    },
+    recurrence_weekday: {
+        type: 'number',
+        description:
+            'Weekday for "weekly" (single day) or "monthly_weekday" recurrence, 0=Sunday..6=Saturday',
+    },
+    recurrence_weekdays: {
+        type: 'array',
+        items: { type: 'number' },
+        description:
+            'Multiple weekdays for "weekly" recurrence (0=Sunday..6=Saturday); alternative to recurrence_weekday',
+    },
+    recurrence_month_day: {
+        type: 'number',
+        description:
+            'Day of month for "monthly" recurrence (1-31, or -1 for the last day of the month)',
+    },
+    recurrence_week_of_month: {
+        type: 'number',
+        description:
+            'Week of month for "monthly_weekday" recurrence (1-5, or -1 for the last)',
+    },
+    recurrence_end_date: {
+        type: 'string',
+        description:
+            'Optional end date for the recurrence (ISO 8601 format); omit for indefinite recurrence',
+    },
+    completion_based: {
+        type: 'boolean',
+        description:
+            'If true, the next occurrence is scheduled from the completion date instead of the fixed schedule',
+    },
+};
 
 async function findTaskByIdentifier(identifier) {
     const isNumeric = !isNaN(identifier);
@@ -241,6 +307,7 @@ function registerTaskTools(server, context, tools) {
                     items: { type: 'string' },
                     description: 'Array of tag names',
                 },
+                ...recurrenceInputSchemaProperties,
             },
             required: ['name'],
         },
@@ -252,7 +319,18 @@ function registerTaskTools(server, context, tools) {
                 ? await validateProjectAccess(params.project_id, context.userId)
                 : null;
 
-            const dueDate = params.due_date || null;
+            const recurrenceType = params.recurrence_type || 'none';
+            let dueDate = params.due_date || null;
+            if (recurrenceType !== 'none' && !dueDate) {
+                // Calculate the first occurrence based on the recurrence pattern,
+                // matching the behavior of POST /api/task
+                dueDate = calculateInitialDueDate({
+                    recurrence_type: recurrenceType,
+                    recurrence_month_day: params.recurrence_month_day,
+                    recurrence_weekday: params.recurrence_weekday,
+                    recurrence_weekdays: params.recurrence_weekdays,
+                });
+            }
             const deferUntil = processDeferUntilForStorage(
                 params.defer_until,
                 context.user.timezone
@@ -269,6 +347,26 @@ function registerTaskTools(server, context, tools) {
                 due_date: dueDate,
                 defer_until: deferUntil,
                 project_id: resolvedProjectId,
+                recurrence_type: recurrenceType,
+                recurrence_interval: params.recurrence_interval ?? null,
+                recurrence_end_date: params.recurrence_end_date || null,
+                recurrence_weekday:
+                    params.recurrence_weekday !== undefined
+                        ? params.recurrence_weekday
+                        : null,
+                recurrence_weekdays:
+                    params.recurrence_weekdays !== undefined
+                        ? params.recurrence_weekdays
+                        : null,
+                recurrence_month_day:
+                    params.recurrence_month_day !== undefined
+                        ? params.recurrence_month_day
+                        : null,
+                recurrence_week_of_month:
+                    params.recurrence_week_of_month !== undefined
+                        ? params.recurrence_week_of_month
+                        : null,
+                completion_based: params.completion_based || false,
             };
 
             const task = await taskRepository.create(taskData);
@@ -366,6 +464,7 @@ function registerTaskTools(server, context, tools) {
             description:
                 'Array of tag names to assign (replaces existing tags)',
         },
+        ...recurrenceInputSchemaProperties,
     };
 
     tools.push({
@@ -444,6 +543,53 @@ function registerTaskTools(server, context, tools) {
             }
             if (params.today !== undefined) updates.today = params.today;
 
+            if (params.recurrence_type !== undefined)
+                updates.recurrence_type = params.recurrence_type;
+            if (params.recurrence_interval !== undefined)
+                updates.recurrence_interval = params.recurrence_interval;
+            if (params.recurrence_end_date !== undefined)
+                updates.recurrence_end_date = params.recurrence_end_date;
+            if (params.recurrence_weekday !== undefined)
+                updates.recurrence_weekday = params.recurrence_weekday;
+            if (params.recurrence_weekdays !== undefined)
+                updates.recurrence_weekdays = params.recurrence_weekdays;
+            if (params.recurrence_month_day !== undefined)
+                updates.recurrence_month_day = params.recurrence_month_day;
+            if (params.recurrence_week_of_month !== undefined)
+                updates.recurrence_week_of_month =
+                    params.recurrence_week_of_month;
+            if (params.completion_based !== undefined)
+                updates.completion_based = params.completion_based;
+
+            const isAddingRecurrence =
+                params.recurrence_type !== undefined &&
+                params.recurrence_type !== 'none' &&
+                (task.recurrence_type === 'none' || !task.recurrence_type);
+
+            if (
+                updates.due_date === undefined &&
+                isAddingRecurrence &&
+                (!task.due_date || task.due_date === '')
+            ) {
+                // Calculate the first occurrence based on the recurrence pattern,
+                // matching the behavior of PATCH /api/task/:uid
+                updates.due_date = calculateInitialDueDate({
+                    recurrence_type: updates.recurrence_type,
+                    recurrence_month_day:
+                        updates.recurrence_month_day !== undefined
+                            ? updates.recurrence_month_day
+                            : task.recurrence_month_day,
+                    recurrence_weekday:
+                        updates.recurrence_weekday !== undefined
+                            ? updates.recurrence_weekday
+                            : task.recurrence_weekday,
+                    recurrence_weekdays:
+                        updates.recurrence_weekdays !== undefined
+                            ? updates.recurrence_weekdays
+                            : task.recurrence_weekdays,
+                });
+            }
+
             if (
                 updates.due_date !== undefined ||
                 updates.defer_until !== undefined
@@ -466,6 +612,10 @@ function registerTaskTools(server, context, tools) {
                     recurringParentEndDate
                 );
             }
+
+            // Detect recurrence/template changes before applying the update so
+            // future recurring instances get regenerated, matching PATCH /api/task/:uid
+            await handleRecurrenceUpdate(task, RECURRENCE_FIELDS, params);
 
             await task.update(updates);
 

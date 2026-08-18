@@ -242,6 +242,14 @@ Create a new task.
 | `defer_until` | string | No | ISO 8601 date/time; task is hidden from view until this point |
 | `project_id` | number | No | Assign to a project |
 | `tags` | string[] | No | Array of tag names to apply |
+| `recurrence_type` | string | No | `none`, `daily`, `weekly`, `monthly`, `monthly_weekday`, or `monthly_last_day` |
+| `recurrence_interval` | number | No | Repeat every N days/weeks/months (default: 1) |
+| `recurrence_weekday` | number | No | Weekday for `weekly`/`monthly_weekday` recurrence (0=Sunday..6=Saturday) |
+| `recurrence_weekdays` | number[] | No | Multiple weekdays for `weekly` recurrence, alternative to `recurrence_weekday` |
+| `recurrence_month_day` | number | No | Day of month for `monthly` recurrence (1-31, or -1 for last day) |
+| `recurrence_week_of_month` | number | No | Week of month for `monthly_weekday` recurrence (1-5, or -1 for last) |
+| `recurrence_end_date` | string | No | Optional end date for the recurrence (ISO 8601); omit for indefinite recurrence |
+| `completion_based` | boolean | No | If true, the next occurrence is scheduled from the completion date instead of the fixed schedule |
 
 **Example:**
 
@@ -252,6 +260,17 @@ Create a new task.
     "priority": "high",
     "due_date": "2026-04-27T17:00:00Z",
     "tags": ["code-review", "urgent"]
+}
+```
+
+**Recurring task example:**
+
+```json
+{
+    "name": "Take out the trash",
+    "recurrence_type": "weekly",
+    "recurrence_weekday": 2,
+    "recurrence_interval": 1
 }
 ```
 
@@ -274,6 +293,14 @@ Update an existing task.
 | `project_id` | number | No | Reassign to a project (`null` to remove) |
 | `today` | boolean | No | Add to Today list |
 | `tags` | string[] | No | Array of tag names (replaces existing tags) |
+| `recurrence_type` | string | No | `none`, `daily`, `weekly`, `monthly`, `monthly_weekday`, or `monthly_last_day` |
+| `recurrence_interval` | number | No | Repeat every N days/weeks/months |
+| `recurrence_weekday` | number | No | Weekday for `weekly`/`monthly_weekday` recurrence (0=Sunday..6=Saturday) |
+| `recurrence_weekdays` | number[] | No | Multiple weekdays for `weekly` recurrence, alternative to `recurrence_weekday` |
+| `recurrence_month_day` | number | No | Day of month for `monthly` recurrence (1-31, or -1 for last day) |
+| `recurrence_week_of_month` | number | No | Week of month for `monthly_weekday` recurrence (1-5, or -1 for last) |
+| `recurrence_end_date` | string | No | Optional end date for the recurrence (ISO 8601) |
+| `completion_based` | boolean | No | If true, the next occurrence is scheduled from the completion date instead of the fixed schedule |
 
 Any parameter not in the table above is rejected with an error rather than silently ignored.
 
@@ -286,6 +313,8 @@ Any parameter not in the table above is rejected with an error rather than silen
     "status": "in_progress"
 }
 ```
+
+Changing recurrence fields on a task that already has future recurring instances regenerates those instances, the same way `PATCH /api/task/:uid` does.
 
 ---
 
