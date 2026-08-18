@@ -239,6 +239,7 @@ Create a new task.
 | `description` | string | No | Task description/note |
 | `priority` | string | No | `low`, `medium`, or `high` (default: `medium`) |
 | `due_date` | string | No | ISO 8601 date |
+| `defer_until` | string | No | ISO 8601 date/time; task is hidden from view until this point |
 | `project_id` | number | No | Assign to a project |
 | `tags` | string[] | No | Array of tag names to apply |
 
@@ -269,7 +270,12 @@ Update an existing task.
 | `priority` | string | No | `low`, `medium`, `high` |
 | `status` | string | No | `pending`, `in_progress`, `completed`, `archived` |
 | `due_date` | string | No | New due date (ISO 8601) |
+| `defer_until` | string | No | New defer until date/time (ISO 8601); pass `null` or `""` to clear it |
+| `project_id` | number | No | Reassign to a project (`null` to remove) |
 | `today` | boolean | No | Add to Today list |
+| `tags` | string[] | No | Array of tag names (replaces existing tags) |
+
+Any parameter not in the table above is rejected with an error rather than silently ignored.
 
 **Example:**
 

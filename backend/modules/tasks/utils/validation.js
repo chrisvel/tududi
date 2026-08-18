@@ -189,6 +189,32 @@ async function validateGoalAccess(goalIdOrUid, userId) {
     return goal.id;
 }
 
+/**
+ * Fetches the recurrence end date for a recurring parent task.
+ * Used for validating defer_until dates on recurring task instances.
+ *
+ * @param {number|null|undefined} recurringParentId - The ID of the recurring parent task
+ * @param {number} userId - The user ID for access control
+ * @returns {Promise<Date|null|undefined>} The parent's recurrence_end_date, null (infinite), or undefined (no parent)
+ *          - undefined: no recurring parent (not a recurring instance)
+ *          - null: recurring parent with no end date (infinite recurrence)
+ *          - Date: recurring parent with specific end date
+ */
+async function getRecurringParentEndDate(recurringParentId, userId) {
+    // No parent ID provided - not a recurring instance
+    if (!recurringParentId) return undefined;
+
+    const parent = await Task.findOne({
+        where: { id: recurringParentId, user_id: userId },
+    });
+
+    // Parent not found or no access - treat as non-recurring (undefined)
+    if (!parent) return undefined;
+
+    // Return the end date (null for infinite, Date for specific end)
+    return parent.recurrence_end_date;
+}
+
 module.exports = {
     isValidTaskUid,
     validateProjectAccess,
@@ -196,4 +222,5 @@ module.exports = {
     validateDeferUntilAndDueDate,
     validateAreaAccess,
     validateGoalAccess,
+    getRecurringParentEndDate,
 };
