@@ -1,7 +1,10 @@
 const request = require('supertest');
 const app = require('../../app');
-const { Task, User } = require('../../models');
+const path = require('path');
+const fs = require('fs').promises;
+const { Task, User, TaskAttachment } = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
+const { getConfig } = require('../../config/config');
 
 describe('Tasks Routes', () => {
     let user, agent;
@@ -287,6 +290,39 @@ describe('Tasks Routes', () => {
             expect(response.status).toBe(401);
             expect(response.body.error).toBe('Authentication required');
         });
+
+        it('should delete attachment files and rows along with the task (GHSA-43p8-ch4p-gqg4)', async () => {
+            const config = getConfig();
+            const taskUploadDir = path.join(config.uploadPath, 'tasks');
+            const storedFilename = `task-delete-test-${task.id}.pdf`;
+            const filePath = path.join(taskUploadDir, storedFilename);
+
+            await fs.mkdir(taskUploadDir, { recursive: true });
+            await fs.writeFile(filePath, 'attachment content');
+
+            const attachment = await TaskAttachment.create({
+                task_id: task.id,
+                user_id: user.id,
+                original_filename: 'attachment.pdf',
+                stored_filename: storedFilename,
+                file_size: 1024,
+                mime_type: 'application/pdf',
+                file_path: `tasks/${storedFilename}`,
+            });
+
+            try {
+                const response = await agent.delete(`/api/task/${task.uid}`);
+
+                expect(response.status).toBe(200);
+
+                await expect(fs.access(filePath)).rejects.toThrow();
+
+                const remaining = await TaskAttachment.findByPk(attachment.id);
+                expect(remaining).toBeNull();
+            } finally {
+                await fs.rm(filePath, { force: true });
+            }
+        }, 10000);
     });
 
     describe('Task with tags', () => {

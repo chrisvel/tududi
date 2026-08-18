@@ -34,6 +34,21 @@ const ALLOWED_TYPES = {
     'application/x-zip-compressed': ['.zip'],
 };
 
+// Extensions safe to render inline in the browser (used by <img>/<iframe>
+// previews in the app). Everything else served through /api/uploads gets
+// Content-Disposition: attachment so a browser can't execute it via direct
+// navigation. This is extension-based rather than DB-mimetype-based so it
+// also neutralizes any file whose extension predates the image/svg+xml
+// removal above (GHSA-43p8-ch4p-gqg4).
+const INLINE_SAFE_EXTENSIONS = new Set([
+    '.pdf',
+    '.png',
+    '.jpg',
+    '.jpeg',
+    '.gif',
+    '.webp',
+]);
+
 /**
  * Validate if file type is allowed
  */
@@ -112,6 +127,17 @@ async function deleteFileFromDisk(filepath) {
     }
 }
 
+// Delete the on-disk files for a set of TaskAttachment rows. Best-effort -
+// deleteFileFromDisk already logs and swallows per-file errors, so one bad
+// path doesn't abort the caller's larger deletion. Does not destroy the DB
+// rows; callers own that since transaction semantics differ per call site.
+async function deleteAttachmentFiles(attachments = []) {
+    for (const attachment of attachments) {
+        const filePath = path.join(config.uploadPath, attachment.file_path);
+        await deleteFileFromDisk(filePath);
+    }
+}
+
 /**
  * Ensure upload directory exists
  */
@@ -134,6 +160,7 @@ function getFileUrl(storedFilename) {
 
 module.exports = {
     ALLOWED_TYPES,
+    INLINE_SAFE_EXTENSIONS,
     validateFileType,
     getExtensionFromMimeType,
     formatFileSize,
@@ -141,6 +168,7 @@ module.exports = {
     isPdfFile,
     isTextFile,
     deleteFileFromDisk,
+    deleteAttachmentFiles,
     ensureUploadDir,
     getFileUrl,
 };

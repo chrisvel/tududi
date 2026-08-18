@@ -125,6 +125,116 @@ describe('GET /api/uploads/:category/:filename', () => {
         });
     });
 
+    describe('Content-Disposition (GHSA-43p8-ch4p-gqg4)', () => {
+        const taskUploadDir = path.join(uploadsDir, 'tasks');
+
+        afterEach(async () => {
+            await fs.rm(taskUploadDir, { recursive: true, force: true });
+        });
+
+        const createAttachment = async (
+            storedFilename,
+            mimeType,
+            content = 'file content'
+        ) => {
+            await fs.mkdir(taskUploadDir, { recursive: true });
+            await fs.writeFile(
+                path.join(taskUploadDir, storedFilename),
+                content
+            );
+
+            return TaskAttachment.create({
+                task_id: task.id,
+                user_id: owner.id,
+                original_filename: storedFilename,
+                stored_filename: storedFilename,
+                file_size: content.length,
+                mime_type: mimeType,
+                file_path: `tasks/${storedFilename}`,
+            });
+        };
+
+        it.each([
+            [
+                'docx-test.docx',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            ],
+            ['txt-test.txt', 'text/plain'],
+            ['csv-test.csv', 'text/csv'],
+            ['zip-test.zip', 'application/zip'],
+            [
+                'xlsx-test.xlsx',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            ],
+        ])(
+            'should force Content-Disposition: attachment for %s',
+            async (storedFilename, mimeType) => {
+                const attachment = await createAttachment(
+                    storedFilename,
+                    mimeType
+                );
+
+                const response = await ownerAgent.get(
+                    `/api/uploads/tasks/${attachment.stored_filename}`
+                );
+
+                expect(response.status).toBe(200);
+                expect(response.headers['content-disposition']).toBe(
+                    'attachment'
+                );
+            }
+        );
+
+        it('should not force Content-Disposition for a pdf attachment', async () => {
+            const attachment = await createAttachment(
+                'pdf-test.pdf',
+                'application/pdf'
+            );
+
+            const response = await ownerAgent.get(
+                `/api/uploads/tasks/${attachment.stored_filename}`
+            );
+
+            expect(response.status).toBe(200);
+            expect(response.headers['content-disposition']).toBeUndefined();
+        });
+
+        it('should not force Content-Disposition for an image attachment', async () => {
+            const attachment = await createAttachment(
+                'png-test.png',
+                'image/png'
+            );
+
+            const response = await ownerAgent.get(
+                `/api/uploads/tasks/${attachment.stored_filename}`
+            );
+
+            expect(response.status).toBe(200);
+            expect(response.headers['content-disposition']).toBeUndefined();
+        });
+
+        it('should force Content-Disposition: attachment for a legacy .svg file that predates the allow-list fix', async () => {
+            // SVG uploads are blocked at upload time (GHSA-x24w-9w59-wqhq),
+            // but a file uploaded before that fix could still be sitting on
+            // disk with its original .svg extension and DB record. This
+            // simulates that: the fix must hold regardless of what the DB
+            // mime_type says, since it's derived from the extension on disk.
+            const attachment = await createAttachment(
+                'legacy-test.svg',
+                'image/svg+xml',
+                '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(document.domain)</script></svg>'
+            );
+
+            const response = await ownerAgent.get(
+                `/api/uploads/tasks/${attachment.stored_filename}`
+            );
+
+            expect(response.status).toBe(200);
+            expect(response.headers['content-disposition']).toBe('attachment');
+            expect(response.headers['x-content-type-options']).toBe('nosniff');
+        });
+    });
+
     describe('project images', () => {
         const projectUploadDir = path.join(uploadsDir, 'projects');
 
