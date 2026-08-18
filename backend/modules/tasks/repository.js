@@ -1,4 +1,5 @@
-const { Task } = require('../../models');
+const { Task, TaskAttachment } = require('../../models');
+const { deleteAttachmentFiles } = require('../../utils/attachment-utils');
 
 class TaskRepository {
     constructor() {
@@ -62,10 +63,17 @@ class TaskRepository {
     }
 
     async delete(id, userId) {
-        const task = await this.findByIdAndUser(id, userId);
+        const task = await this.findByIdAndUser(id, userId, {
+            include: [{ model: TaskAttachment, as: 'Attachments' }],
+        });
         if (!task) {
             return null;
         }
+        // Unlink attachment files from disk before destroying rows, so a
+        // dangling file never outlives the record that gated its access
+        // (GHSA-43p8-ch4p-gqg4).
+        await deleteAttachmentFiles(task.Attachments);
+        await TaskAttachment.destroy({ where: { task_id: task.id } });
         await task.destroy();
         return task;
     }

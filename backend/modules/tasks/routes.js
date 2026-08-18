@@ -8,11 +8,13 @@ const eventsRouter = require('./events');
 const {
     Task,
     TaskEvent,
+    TaskAttachment,
     RecurringCompletion,
     Project,
     sequelize,
 } = require('../../models');
 const taskRepository = require('./repository');
+const { deleteAttachmentFiles } = require('../../utils/attachment-utils');
 const {
     resetQueryCounter,
     getQueryStats,
@@ -918,7 +920,9 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
 
 router.delete('/task/:uid', requireTaskWriteAccess, async (req, res) => {
     try {
-        const task = await taskRepository.findByUid(req.params.uid);
+        const task = await taskRepository.findByUid(req.params.uid, {
+            include: [{ model: TaskAttachment, as: 'Attachments' }],
+        });
 
         if (!task) {
             return res.status(404).json({ error: 'Task not found.' });
@@ -984,6 +988,15 @@ router.delete('/task/:uid', requireTaskWriteAccess, async (req, res) => {
             });
 
             await taskRepository.clearRecurringParent(taskId);
+
+            // Unlink attachment files from disk before destroying rows, so a
+            // dangling file never outlives the record that gated its access
+            // (GHSA-43p8-ch4p-gqg4).
+            await deleteAttachmentFiles(task.Attachments);
+            await TaskAttachment.destroy({
+                where: { task_id: taskId },
+                force: true,
+            });
 
             await task.destroy({ force: true });
         } finally {

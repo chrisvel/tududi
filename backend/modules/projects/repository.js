@@ -15,7 +15,10 @@ const {
     sequelize,
 } = require('../../models');
 const { Op } = require('sequelize');
-const { deleteFileFromDisk } = require('../../utils/attachment-utils');
+const {
+    deleteFileFromDisk,
+    deleteAttachmentFiles,
+} = require('../../utils/attachment-utils');
 const path = require('path');
 const { getConfig } = require('../../config/config');
 const { logError } = require('../../services/logService');
@@ -295,12 +298,8 @@ class ProjectsRepository extends BaseRepository {
                 // Helper function to delete attachments for a task
                 const deleteTaskAttachments = async (task) => {
                     if (task.Attachments && task.Attachments.length > 0) {
+                        await deleteAttachmentFiles(task.Attachments);
                         for (const attachment of task.Attachments) {
-                            const filePath = path.join(
-                                config.uploadPath,
-                                attachment.file_path
-                            );
-                            await deleteFileFromDisk(filePath);
                             await attachment.destroy({ transaction });
                         }
                     }

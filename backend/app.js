@@ -212,6 +212,7 @@ if (serveFromDist) {
 // Authentication middleware
 const { requireAuth } = require('./middleware/auth');
 const { uploadsAccessControl } = require('./middleware/uploadsAccess');
+const { INLINE_SAFE_EXTENSIONS } = require('./utils/attachment-utils');
 
 // Serve uploaded files - requires authentication so attachments (which may
 // include private task/project data) aren't readable by anyone who guesses
@@ -220,14 +221,23 @@ const { uploadsAccessControl } = require('./middleware/uploadsAccess');
 // one authenticated user can't read another user's files by guessing a
 // filename (GHSA-49fc-pf7x-cj8x). nosniff stops the browser from ignoring
 // the declared Content-Type and guessing a different one to render.
+// Files whose extension isn't in the inline-safe allowlist are forced to
+// download rather than render, so a browser navigating directly to a file
+// can't execute it as a top-level document - this covers any file whose
+// extension predates a MIME allow-list change, regardless of what the DB
+// thinks its type is (GHSA-43p8-ch4p-gqg4).
 const registerUploadsStatic = (basePath) => {
     app.use(
         `${basePath}/uploads`,
         requireAuth,
         uploadsAccessControl,
         express.static(config.uploadPath, {
-            setHeaders: (res) => {
+            setHeaders: (res, filePath) => {
                 res.setHeader('X-Content-Type-Options', 'nosniff');
+                const ext = path.extname(filePath).toLowerCase();
+                if (!INLINE_SAFE_EXTENSIONS.has(ext)) {
+                    res.setHeader('Content-Disposition', 'attachment');
+                }
             },
         })
     );
