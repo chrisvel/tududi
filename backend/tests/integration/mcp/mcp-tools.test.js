@@ -1056,6 +1056,72 @@ describe('MCP Tools Integration', () => {
                 expect(response.status).toBe(200);
                 const { content } = getToolContent(response);
                 expect(content.count).toBeGreaterThanOrEqual(1);
+                expect(content.items[0].status).toBe('added');
+            });
+
+            it('should exclude deleted, trashed, and processed items by default', async () => {
+                await InboxItem.create({
+                    user_id: user.id,
+                    content: 'Active item',
+                    source: 'mcp',
+                    status: 'added',
+                });
+                await InboxItem.create({
+                    user_id: user.id,
+                    content: 'Deleted item',
+                    source: 'mcp',
+                    status: 'deleted',
+                });
+                await InboxItem.create({
+                    user_id: user.id,
+                    content: 'Trashed item',
+                    source: 'mcp',
+                    status: 'trashed',
+                });
+                await InboxItem.create({
+                    user_id: user.id,
+                    content: 'Processed item',
+                    source: 'mcp',
+                    status: 'processed',
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'list_inbox',
+                    {}
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.count).toBe(1);
+                expect(content.items[0].content).toBe('Active item');
+            });
+
+            it('should return items matching an explicit status filter', async () => {
+                await InboxItem.create({
+                    user_id: user.id,
+                    content: 'Active item',
+                    source: 'mcp',
+                    status: 'added',
+                });
+                await InboxItem.create({
+                    user_id: user.id,
+                    content: 'Processed item',
+                    source: 'mcp',
+                    status: 'processed',
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'list_inbox',
+                    { status: 'processed' }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.count).toBe(1);
+                expect(content.items[0].content).toBe('Processed item');
+                expect(content.items[0].status).toBe('processed');
             });
         });
 

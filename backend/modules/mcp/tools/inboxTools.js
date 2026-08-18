@@ -1,7 +1,10 @@
 'use strict';
 
+const { Op } = require('sequelize');
 const { InboxItem } = require('../../../models');
 const inboxService = require('../../inbox/service');
+
+const INACTIVE_STATUSES = ['deleted', 'trashed', 'processed'];
 
 /**
  * Register all inbox-related MCP tools
@@ -10,7 +13,8 @@ function registerInboxTools(server, context, tools) {
     // 1. list_inbox - List inbox items
     tools.push({
         name: 'list_inbox',
-        description: 'List items from inbox with pagination',
+        description:
+            'List items from inbox with pagination. Only active items (not deleted, trashed, or processed) are returned by default.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -24,14 +28,26 @@ function registerInboxTools(server, context, tools) {
                     description: 'Number of items to skip',
                     default: 0,
                 },
+                status: {
+                    type: 'string',
+                    description:
+                        'Filter by a specific status (e.g. added, processed, deleted, trashed). Omit to return only active items.',
+                },
             },
         },
         handler: async (params) => {
             const limit = params.limit || 20;
             const offset = params.offset || 0;
 
+            const where = { user_id: context.userId };
+            if (params.status) {
+                where.status = params.status;
+            } else {
+                where.status = { [Op.notIn]: INACTIVE_STATUSES };
+            }
+
             const items = await InboxItem.findAll({
-                where: { user_id: context.userId },
+                where,
                 limit: limit,
                 offset: offset,
                 order: [['created_at', 'DESC']],
@@ -42,7 +58,7 @@ function registerInboxTools(server, context, tools) {
                 uid: item.uid,
                 content: item.content,
                 source: item.source,
-                processed: item.processed,
+                status: item.status,
                 created_at: item.created_at,
                 updated_at: item.updated_at,
             }));
