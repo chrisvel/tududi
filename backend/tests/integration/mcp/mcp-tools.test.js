@@ -404,6 +404,62 @@ describe('MCP Tools Integration', () => {
                 });
                 expect(created).toBeNull();
             });
+
+            it('should create a recurring task with recurrence fields', async () => {
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'create_task',
+                    {
+                        name: 'Weekly Recurring Task',
+                        recurrence_type: 'weekly',
+                        recurrence_interval: 2,
+                        recurrence_weekday: 3,
+                        recurrence_end_date: '2030-01-01',
+                        completion_based: true,
+                    }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.task.recurrence_type).toBe('weekly');
+                expect(content.task.recurrence_interval).toBe(2);
+                expect(content.task.recurrence_weekday).toBe(3);
+                expect(content.task.recurrence_end_date).toBeDefined();
+                expect(content.task.completion_based).toBe(true);
+                // No due date was given, so one should be computed from the pattern
+                expect(content.task.due_date).toBeDefined();
+            });
+
+            it('should create a recurring task with multiple weekdays', async () => {
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'create_task',
+                    {
+                        name: 'Multi-Weekday Recurring Task',
+                        recurrence_type: 'weekly',
+                        recurrence_weekdays: [1, 3, 5],
+                    }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.task.recurrence_type).toBe('weekly');
+                expect(content.task.recurrence_weekdays).toEqual([1, 3, 5]);
+            });
+
+            it('should default recurrence_type to none when omitted', async () => {
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'create_task',
+                    {
+                        name: 'Plain Task',
+                    }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.task.recurrence_type).toBe('none');
+            });
         });
 
         describe('get_task', () => {
@@ -619,8 +675,7 @@ describe('MCP Tools Integration', () => {
                     {
                         id: task.id,
                         name: 'Should Not Apply',
-                        recurrence_type: 'daily',
-                        recurrence_interval: 1,
+                        nonexistent_field: 'bogus',
                     }
                 );
 
@@ -628,11 +683,65 @@ describe('MCP Tools Integration', () => {
                 const jsonRpc = parseSseResponse(response.text);
                 expect(jsonRpc.result.isError).toBe(true);
                 const { content } = getToolContent(response);
-                expect(content._rawError).toContain('recurrence_type');
-                expect(content._rawError).toContain('recurrence_interval');
+                expect(content._rawError).toContain('nonexistent_field');
 
                 await task.reload();
                 expect(task.name).toBe('Untouched');
+            });
+
+            it('should update recurrence fields on an existing task', async () => {
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Recurrence Update Task',
+                    status: 0,
+                    recurrence_type: 'daily',
+                    recurrence_interval: 1,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'update_task',
+                    {
+                        id: task.id,
+                        recurrence_type: 'monthly',
+                        recurrence_interval: 3,
+                        recurrence_month_day: 15,
+                    }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.task.recurrence_type).toBe('monthly');
+                expect(content.task.recurrence_interval).toBe(3);
+                expect(content.task.recurrence_month_day).toBe(15);
+
+                await task.reload();
+                expect(task.recurrence_type).toBe('monthly');
+                expect(task.recurrence_interval).toBe(3);
+                expect(task.recurrence_month_day).toBe(15);
+            });
+
+            it('should compute a due date when recurrence is newly added without one', async () => {
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'No Due Date Task',
+                    status: 0,
+                });
+                expect(task.due_date).toBeFalsy();
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'update_task',
+                    {
+                        id: task.id,
+                        recurrence_type: 'daily',
+                    }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.task.recurrence_type).toBe('daily');
+                expect(content.task.due_date).toBeDefined();
             });
         });
 
