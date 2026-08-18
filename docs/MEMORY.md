@@ -7,15 +7,16 @@ This document contains preferences, patterns, and memory items specific to worki
 ## Pull Request Preferences
 
 ### PR Template
-- **ALWAYS use** the PR template from `.github/pull_request_template.md`
+- **ALWAYS use** the PR template from `.github/pull_request_template.md` (trimmed 2026-08-18: all original sections kept, only the checkbox counts were cut down)
 - **Do NOT add** the "🤖 Generated with [Claude Code](https://claude.com/claude-code)" footer to pull requests
 - **Do NOT use emojis** in PR titles, descriptions, or comments (e.g., ✅, 🎉, 📦, ⚠️, 🚀)
-- Required sections:
+- Sections (all present, in order):
   - **Description**: What does this PR do? Why is this change needed?
   - **Type of Change**: Bug fix / New feature / Breaking change / Documentation
   - **Related Issues**: Link issues using "Fixes #123"
-  - **Testing**: Describe testing steps and commands run
-  - **Checklist**: Mark all applicable items (including "This is not AI slop crap")
+  - **Testing**: Describe testing steps, plus a single `npm run pre-push` checkbox
+  - **Screenshots**: If UI changes; delete section if not applicable
+  - **Checklist**: 3 items only (not AI slop, self-reviewed, tests/docs/migrations/translations updated if applicable)
   - **Additional Notes**: Any other context for reviewers
 
 ### PR Creation Workflow
@@ -104,5 +105,5 @@ This document contains preferences, patterns, and memory items specific to worki
 
 ---
 
-**Last Updated:** 2026-04-20
+**Last Updated:** 2026-08-18
 **Maintained by:** Claude Code sessions - update as new patterns emerge

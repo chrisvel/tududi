@@ -5,7 +5,7 @@ Before submitting:
 1. Read the Contributing Guide: https://github.com/chrisvel/tududi/blob/main/.github/CONTRIBUTING.md
 2. Run: npm run pre-push (linting, formatting, tests)
 3. Fill out the sections below and check all applicable boxes (replace [ ] with [x])
-4. Delete sections that don't apply to your PR
+4. Delete sections that don't apply
 -->
 
 ## Description
@@ -32,11 +32,7 @@ Fixes #
 
 <!-- Describe your testing steps -->
 
-**Commands run:**
-
-- [ ] `npm run pre-push` (linting + formatting + tests)
-- [ ] Tested manually in browser
-- [ ] Tested on mobile (if UI changes)
+- [ ] `npm run pre-push` passes
 
 ## Screenshots
 
@@ -46,12 +42,8 @@ Fixes #
 ## Checklist
 
 - [ ] This is not an AI slop crap, I know what I am doing
-- [ ] Code follows project style guidelines
-- [ ] Self-reviewed my own code
-- [ ] Added/updated tests (if applicable)
-- [ ] Updated documentation (if needed)
-- [ ] Database migrations included and tested (if applicable)
-- [ ] Translation keys added and synced (if applicable)
+- [ ] Self-reviewed my own code, follows project style guidelines
+- [ ] Tests, docs, migrations, and translations updated (if applicable)
 
 ## Additional Notes
 
