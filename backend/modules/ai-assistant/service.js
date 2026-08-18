@@ -89,10 +89,16 @@ function extractMessageContent(message) {
     }
 }
 
+// strict: true is required by Anthropic's OpenAI-compatible endpoint (it
+// rejects strict: false with a 400) and is also OpenAI's recommended mode
+// for schema-following output. It does mean every schema below must be
+// strict-mode compliant: every property listed in "properties" must also be
+// listed in "required", and every object level needs
+// additionalProperties: false.
 function buildResponseFormat(name, schema) {
     return {
         type: 'json_schema',
-        json_schema: { name, strict: false, schema },
+        json_schema: { name, strict: true, schema },
     };
 }
 
@@ -381,10 +387,14 @@ Rules:
                             reason: { type: 'string' },
                             suggestion: { type: 'string' },
                         },
+                        required: ['action', 'project', 'reason', 'suggestion'],
+                        additionalProperties: false,
                     },
                 },
                 watch_out: { type: 'array', items: { type: 'string' } },
             },
+            required: ['overview', 'focus', 'priority_actions', 'watch_out'],
+            additionalProperties: false,
         }),
     });
 
@@ -613,10 +623,20 @@ Rules:
                             label: { type: 'string' },
                             url: { type: 'string' },
                         },
+                        required: ['label', 'url'],
+                        additionalProperties: false,
                     },
                 },
-                watch_out: { type: 'string' },
+                watch_out: { type: ['string', 'null'] },
             },
+            required: [
+                'insight',
+                'next_step',
+                'breakdown',
+                'links',
+                'watch_out',
+            ],
+            additionalProperties: false,
         }),
     });
 
@@ -754,8 +774,10 @@ Rules:
                 insight: { type: 'string' },
                 next_action: { type: 'string' },
                 health: { type: 'string' },
-                watch_out: { type: 'string' },
+                watch_out: { type: ['string', 'null'] },
             },
+            required: ['insight', 'next_action', 'health', 'watch_out'],
+            additionalProperties: false,
         }),
     });
 
