@@ -33,6 +33,14 @@ describe('ssrfGuard', () => {
             ['fe80::1', true],
             ['::ffff:127.0.0.1', true],
             ['::ffff:169.254.169.254', true],
+            // Hex-group form the WHATWG URL parser normalizes mapped
+            // addresses to (::ffff:127.0.0.1 -> ::ffff:7f00:1), rather than
+            // keeping the dotted form.
+            ['::ffff:7f00:1', true],
+            ['::ffff:a9fe:a9fe', true],
+            // Deprecated IPv4-compatible form (::/96), e.g. ::127.0.0.1 ->
+            // ::7f00:1.
+            ['::7f00:1', true],
             ['2001:4860:4860::8888', false],
         ])('treats IPv6 %s as private=%s', (ip, expected) => {
             expect(isPrivateOrReservedIp(ip)).toBe(expected);
@@ -108,6 +116,49 @@ describe('ssrfGuard', () => {
             await expect(
                 assertSafeUrl('https://1.1.1.1/')
             ).resolves.toBeInstanceOf(URL);
+        });
+
+        // GHSA-h72v-w7gx-hq4h: decimal/hex/octal IPv4 literals resolve to
+        // loopback but aren't written in dotted-quad form, and bracketed
+        // IPv6 literals normalize in ways the guard previously didn't
+        // recognize as private.
+        describe('GHSA-h72v-w7gx-hq4h encoded-IP bypasses', () => {
+            it.each([
+                ['http://2130706433/', 'decimal-encoded loopback'],
+                ['http://0x7f000001/', 'hex-encoded loopback'],
+                ['http://017700000001/', 'octal-encoded loopback'],
+                ['http://127.1/', 'shorthand loopback'],
+                ['http://0177.0.0.1/', 'octal-first-octet loopback'],
+                ['http://2852039166/', 'decimal-encoded metadata endpoint'],
+            ])('rejects %s (%s)', async (url) => {
+                await expect(assertSafeUrl(url)).rejects.toThrow(
+                    UnsafeUrlError
+                );
+            });
+
+            it.each([
+                ['http://[::ffff:127.0.0.1]/', 'IPv4-mapped loopback'],
+                [
+                    'http://[::ffff:169.254.169.254]/',
+                    'IPv4-mapped metadata endpoint',
+                ],
+                [
+                    'http://[::127.0.0.1]/',
+                    'deprecated IPv4-compatible loopback',
+                ],
+                ['http://[fd00::1]/', 'unique-local literal'],
+                ['http://[::1]/', 'bracketed IPv6 loopback literal'],
+            ])('rejects %s (%s)', async (url) => {
+                await expect(assertSafeUrl(url)).rejects.toThrow(
+                    UnsafeUrlError
+                );
+            });
+
+            it('still allows a bracketed public IPv6 literal', async () => {
+                await expect(
+                    assertSafeUrl('http://[2001:4860:4860::8888]/')
+                ).resolves.toBeInstanceOf(URL);
+            });
         });
     });
 });
