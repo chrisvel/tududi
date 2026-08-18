@@ -7,7 +7,6 @@ import React, {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDebouncedCallback } from 'use-debounce';
-import { MagnifyingGlassIcon, PlusIcon } from '@heroicons/react/24/solid';
 import {
     PencilIcon,
     TrashIcon,
@@ -21,18 +20,17 @@ import {
 import PushPinIcon from './Shared/Icons/PushPinIcon';
 import { useToast } from './Shared/ToastContext';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { SortOption } from './Shared/SortFilterButton';
 import NoteModal from './Note/NoteModal';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import DiscardChangesDialog from './Shared/DiscardChangesDialog';
 import MarkdownRenderer from './Shared/MarkdownRenderer';
-import IconSortDropdown from './Shared/IconSortDropdown';
 import TagInput from './Tag/TagInput';
 import { Note } from '../entities/Note';
 import { createNote, updateNote } from '../utils/notesService';
 import { deleteNoteWithStoreUpdate } from '../utils/noteDeleteUtils';
 import { useStore } from '../store/useStore';
 import { createProject } from '../utils/projectsService';
+import { sortNotesByOrder } from '../utils/notesTreeUtils';
 import { ENABLE_NOTE_COLOR } from '../config/featureFlags';
 import { COLORS } from './Shared/ColorPicker';
 import NoteFocusMode from './Note/NoteFocusMode';
@@ -64,8 +62,10 @@ const Notes: React.FC = () => {
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [orderBy, setOrderBy] = useState<string>('created_at:desc');
+    // Notes are browsed via the sidebar's folder tree now, not a list on
+    // this page - this page is the editor/preview pane only. `orderBy`
+    // still picks which note auto-selects first on load.
+    const orderBy = 'updated_at:desc';
     const [showProjectDropdown, setShowProjectDropdown] = useState(false);
     const [showTagsInput, setShowTagsInput] = useState(false);
     const [showDiscardDialog, setShowDiscardDialog] = useState(false);
@@ -141,16 +141,6 @@ const Notes: React.FC = () => {
         },
         [editingNote, debouncedSave]
     );
-
-    const sortOptions: SortOption[] = [
-        { value: 'created_at:desc', label: t('sort.created_at', 'Created At') },
-        { value: 'title:asc', label: t('sort.name', 'Title') },
-        { value: 'updated_at:desc', label: t('common.updated', 'Updated') },
-    ];
-
-    const handleSortChange = (newOrderBy: string) => {
-        setOrderBy(newOrderBy);
-    };
 
     const handleSelectNote = async (note: Note | null) => {
         if (isEditing && editingNote) {
@@ -232,14 +222,6 @@ const Notes: React.FC = () => {
         });
         setIsEditing(true);
         setSaveStatus('saved');
-    };
-
-    const handleNewNote = () => {
-        setIsEditing(true);
-        setEditingNote({ title: '', content: '', tags: [] });
-        setPreviewNote(null);
-        setSaveStatus('saved');
-        navigate('/notes', { replace: true });
     };
 
     const handleSaveInlineNote = async () => {
@@ -390,51 +372,10 @@ const Notes: React.FC = () => {
         }
     };
 
-    const filteredNotes = useMemo(() => {
-        return notes.filter(
-            (note) =>
-                note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                note.content.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-    }, [notes, searchQuery]);
-
-    const sortedNotes = useMemo(() => {
-        return [...filteredNotes].sort((a, b) => {
-            const [field, direction] = orderBy.split(':');
-            const isAsc = direction === 'asc';
-
-            let valueA: string | number;
-            let valueB: string | number;
-
-            switch (field) {
-                case 'title':
-                    valueA = a.title?.toLowerCase() || '';
-                    valueB = b.title?.toLowerCase() || '';
-                    break;
-                case 'updated_at':
-                    valueA = a.updated_at
-                        ? new Date(a.updated_at).getTime()
-                        : 0;
-                    valueB = b.updated_at
-                        ? new Date(b.updated_at).getTime()
-                        : 0;
-                    break;
-                case 'created_at':
-                default:
-                    valueA = a.created_at
-                        ? new Date(a.created_at).getTime()
-                        : 0;
-                    valueB = b.created_at
-                        ? new Date(b.created_at).getTime()
-                        : 0;
-                    break;
-            }
-
-            if (valueA < valueB) return isAsc ? -1 : 1;
-            if (valueA > valueB) return isAsc ? 1 : -1;
-            return 0;
-        });
-    }, [filteredNotes, orderBy]);
+    const sortedNotes = useMemo(
+        () => sortNotesByOrder(notes, orderBy),
+        [notes, orderBy]
+    );
 
     useEffect(() => {
         hasAutoSelected.current = false;
@@ -522,108 +463,9 @@ const Notes: React.FC = () => {
     return (
         <div className="flex flex-col h-[calc(100vh-6rem)] overflow-hidden">
             <div className="flex-1 flex flex-col min-h-0 overflow-hidden pt-2">
-                <div className="flex flex-col md:flex-row flex-1 min-h-0 overflow-hidden">
+                <div className="flex flex-1 min-h-0 overflow-hidden">
                     <div
-                        className={`${previewNote || isEditing ? 'hidden md:flex' : 'flex'} flex-col md:w-80 w-full h-full md:h-auto flex-shrink-0 min-h-0`}
-                    >
-                        <div className="flex items-center justify-between mb-2 mx-3 flex-shrink-0">
-                            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                                {t('notes.title')}
-                            </h3>
-                            <div className="flex items-center gap-2">
-                                <IconSortDropdown
-                                    options={sortOptions}
-                                    value={orderBy}
-                                    onChange={handleSortChange}
-                                    ariaLabel={t(
-                                        'notes.sortNotes',
-                                        'Sort notes'
-                                    )}
-                                    title={t('notes.sortNotes', 'Sort notes')}
-                                    dropdownLabel={t('notes.sortBy', 'Sort by')}
-                                />
-                                <button
-                                    onClick={handleNewNote}
-                                    className="p-1 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none transition-colors"
-                                    aria-label={t('notes.addNote', 'Add Note')}
-                                >
-                                    <PlusIcon className="h-5 w-5" />
-                                </button>
-                            </div>
-                        </div>
-
-                        <div className="mb-2 mx-4 flex-shrink-0">
-                            <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md p-2">
-                                <MagnifyingGlassIcon className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-2" />
-                                <input
-                                    type="text"
-                                    placeholder={t('notes.searchPlaceholder')}
-                                    value={searchQuery}
-                                    onChange={(e) =>
-                                        setSearchQuery(e.target.value)
-                                    }
-                                    className="w-full bg-transparent border-none focus:ring-0 focus:outline-none dark:text-white text-sm"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="space-y-0 overflow-y-auto flex-1 min-h-0">
-                            {sortedNotes.length === 0 ? (
-                                <div className="flex items-center justify-center h-full p-4">
-                                    <p className="text-gray-500 dark:text-gray-400 text-sm text-center">
-                                        {t('notes.noNotesFound')}
-                                    </p>
-                                </div>
-                            ) : (
-                                sortedNotes.map((note, index) => (
-                                    <div
-                                        key={note.uid}
-                                        onClick={() => handleSelectNote(note)}
-                                        className={`relative p-5 cursor-pointer ${
-                                            previewNote?.uid === note.uid
-                                                ? 'bg-white dark:bg-gray-900 border-b border-transparent mx-4 rounded-lg'
-                                                : index !==
-                                                    sortedNotes.length - 1
-                                                  ? 'border-b border-gray-200/30 dark:border-gray-700/30 hover:bg-gray-50 dark:hover:bg-gray-800 mx-4'
-                                                  : 'border-b border-transparent hover:bg-gray-50 dark:hover:bg-gray-800 mx-4'
-                                        }`}
-                                    >
-                                        <div className="flex items-center gap-2 mb-1 min-w-0">
-                                            {note.color && (
-                                                <span
-                                                    className="w-2.5 h-2.5 rounded-full flex-shrink-0 ring-1 ring-black/30 dark:ring-white/30"
-                                                    style={{ backgroundColor: note.color }}
-                                                />
-                                            )}
-                                            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 truncate">
-                                                {note.title ||
-                                                    t(
-                                                        'notes.untitled',
-                                                        'Untitled Note'
-                                                    )}
-                                            </h3>
-                                        </div>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
-                                            {note.content.substring(0, 100)}
-                                            {note.content.length > 100
-                                                ? '...'
-                                                : ''}
-                                        </p>
-                                        <div className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-                                            {new Date(
-                                                note.updated_at ||
-                                                    note.created_at ||
-                                                    ''
-                                            ).toLocaleDateString()}
-                                        </div>
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    </div>
-
-                    <div
-                        className={`${previewNote || isEditing ? 'flex' : 'hidden md:flex'} flex-1 flex-col overflow-hidden h-full rounded-md md:h-auto ${activeNoteColor ? '' : 'bg-white dark:bg-gray-900'}`}
+                        className={`flex flex-1 flex-col overflow-hidden h-full rounded-md ${activeNoteColor ? '' : 'bg-white dark:bg-gray-900'}`}
                         style={{
                             backgroundColor: activeNoteColor || undefined,
                         }}
@@ -632,18 +474,6 @@ const Notes: React.FC = () => {
                             <div className="flex-1 flex flex-col overflow-hidden">
                                 <div className="flex items-start justify-between mb-3 flex-shrink-0 px-6 md:px-8 pt-5">
                                     <div className="flex-1">
-                                        <button
-                                            onClick={() => {
-                                                if (editingNote.title) {
-                                                    handleSaveInlineNote();
-                                                } else {
-                                                    setShowDiscardDialog(true);
-                                                }
-                                            }}
-                                            className="md:hidden mb-2 text-blue-600 dark:text-blue-400 hover:underline text-sm"
-                                        >
-                                            ← {t('common.back', 'Back to list')}
-                                        </button>
                                         <input
                                             type="text"
                                             value={editingNote.title || ''}
@@ -1018,14 +848,6 @@ const Notes: React.FC = () => {
                             <div className="flex-1 flex flex-col overflow-hidden">
                                 <div className="flex items-start justify-between mb-3 flex-shrink-0 px-6 md:px-8 pt-5">
                                     <div className="flex-1">
-                                        <button
-                                            onClick={() =>
-                                                handleSelectNote(null)
-                                            }
-                                            className="md:hidden mb-2 text-blue-600 dark:text-blue-400 hover:underline text-sm"
-                                        >
-                                            ← {t('common.back', 'Back to list')}
-                                        </button>
                                         <h1
                                             onClick={() =>
                                                 handleEditNote(previewNote)

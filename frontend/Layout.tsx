@@ -9,15 +9,18 @@ import ProjectModal from './components/Project/ProjectModal';
 import NoteModal from './components/Note/NoteModal';
 import AreaModal from './components/Area/AreaModal';
 import TagModal from './components/Tag/TagModal';
+import PersonModal from './components/People/PersonModal';
 import { Note } from './entities/Note';
 import { Area } from './entities/Area';
 import { Tag } from './entities/Tag';
+import { Person } from './entities/Person';
 import { Project } from './entities/Project';
 import { User } from './entities/User';
 import { useStore } from './store/useStore';
 import { createNote, updateNote } from './utils/notesService';
 import { createArea, updateArea } from './utils/areasService';
 import { createTag, updateTag } from './utils/tagsService';
+import { createPerson, updatePerson } from './utils/peopleService';
 import {
     fetchProjects,
     createProject,
@@ -56,10 +59,12 @@ const Layout: React.FC<LayoutProps> = ({
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
     const [isAreaModalOpen, setIsAreaModalOpen] = useState(false);
     const [isTagModalOpen, setIsTagModalOpen] = useState(false);
+    const [isPersonModalOpen, setIsPersonModalOpen] = useState(false);
 
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const [selectedArea, setSelectedArea] = useState<Area | null>(null);
     const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
+    const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
     const [keyboardShortcuts, setKeyboardShortcuts] = useState<KeyboardShortcutsConfig | null>(null);
 
     // Fetch keyboard shortcuts from profile
@@ -215,6 +220,16 @@ const Layout: React.FC<LayoutProps> = ({
         setSelectedTag(null);
     };
 
+    const openPersonModal = (person: Person | null = null) => {
+        setSelectedPerson(person);
+        setIsPersonModalOpen(true);
+    };
+
+    const closePersonModal = () => {
+        setIsPersonModalOpen(false);
+        setSelectedPerson(null);
+    };
+
     const handleSaveNote = async (noteData: Note) => {
         try {
             let result: Note;
@@ -346,6 +361,45 @@ const Layout: React.FC<LayoutProps> = ({
         }
     };
 
+    const handleSavePerson = async (personData: Partial<Person>) => {
+        try {
+            const currentPeople = useStore.getState().peopleStore.people;
+            if (selectedPerson?.uid) {
+                const { person: result } = await updatePerson(
+                    selectedPerson.uid,
+                    personData
+                );
+                // Update existing person in global store
+                useStore
+                    .getState()
+                    .peopleStore.setPeople(
+                        currentPeople.map((person) =>
+                            person.uid === result.uid ? result : person
+                        )
+                    );
+            } else {
+                const { person: result } = await createPerson(
+                    personData as Omit<
+                        Person,
+                        'id' | 'uid' | 'user_id' | 'created_at' | 'updated_at'
+                    >
+                );
+                // Add new person to global store
+                useStore
+                    .getState()
+                    .peopleStore.setPeople([...currentPeople, result]);
+            }
+            closePersonModal();
+        } catch (error: any) {
+            console.error('Error saving person:', error);
+            // Don't close modal if there's an auth error (user will be redirected)
+            if (isAuthError(error)) {
+                return;
+            }
+            closePersonModal();
+        }
+    };
+
     const mainContentMarginLeft = isSidebarOpen ? 'ml-sidebar' : 'ml-0';
 
     const isLoading =
@@ -383,6 +437,7 @@ const Layout: React.FC<LayoutProps> = ({
                     openNoteModal={openNoteModal}
                     openAreaModal={openAreaModal}
                     openTagModal={openTagModal}
+                    openPersonModal={openPersonModal}
                     openNewHabit={openNewHabit}
                     notes={notes}
                     areas={areas}
@@ -422,6 +477,7 @@ const Layout: React.FC<LayoutProps> = ({
                     openNoteModal={openNoteModal}
                     openAreaModal={openAreaModal}
                     openTagModal={openTagModal}
+                    openPersonModal={openPersonModal}
                     openNewHabit={openNewHabit}
                     notes={notes}
                     areas={areas}
@@ -461,6 +517,7 @@ const Layout: React.FC<LayoutProps> = ({
                     openNoteModal={openNoteModal}
                     openAreaModal={openAreaModal}
                     openTagModal={openTagModal}
+                    openPersonModal={openPersonModal}
                     openNewHabit={openNewHabit}
                     notes={notes}
                     areas={areas}
@@ -556,6 +613,14 @@ const Layout: React.FC<LayoutProps> = ({
                         onClose={closeTagModal}
                         onSave={handleSaveTag}
                         tag={selectedTag}
+                    />
+                )}
+
+                {isPersonModalOpen && (
+                    <PersonModal
+                        person={selectedPerson}
+                        onSave={handleSavePerson}
+                        onClose={closePersonModal}
                     />
                 )}
 

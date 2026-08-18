@@ -77,10 +77,8 @@ const SidebarBookmarks: React.FC<SidebarBookmarksProps> = ({
     const isActive = (path: string) => location.pathname === path;
 
     const itemClass = (path: string) =>
-        `group flex justify-between items-center rounded-[8px] px-[10px] py-1 text-[13.5px] cursor-pointer hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
-            isActive(path)
-                ? 'bg-gray-100 dark:bg-[oklch(27%_0.02_250)] text-gray-900 dark:text-[oklch(88%_0.004_95)] font-medium'
-                : 'text-gray-500 dark:text-[oklch(82%_0.006_95)]'
+        `group flex justify-between items-center rounded-[8px] pl-[30px] pr-[10px] py-[4px] text-[13.5px] cursor-pointer text-gray-500 dark:text-[oklch(82%_0.006_95)] hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
+            isActive(path) ? 'bg-gray-100 dark:bg-[oklch(24%_0.015_250)]' : ''
         }`;
 
     const unpinProject = async (project: Project, e: React.MouseEvent) => {
@@ -135,26 +133,29 @@ const SidebarBookmarks: React.FC<SidebarBookmarksProps> = ({
     return (
         <div className="flex flex-col">
             <div
-                className="flex justify-between items-center px-2.5 py-1 rounded-md cursor-pointer"
+                className="flex justify-between items-center px-[10px] py-[4px] rounded-md cursor-pointer"
                 onClick={() => {
                     const next = !isExpanded;
                     setIsExpanded(next);
                     localStorage.setItem('bookmarksSidebarCollapsed', String(!next));
                 }}
             >
-                <span className="flex items-center gap-1.5 text-[10.5px] tracking-[0.01em] font-semibold uppercase text-gray-400 dark:text-[oklch(58%_0.006_95)] hover:text-gray-900 dark:hover:text-white">
-                    <PushPinIcon className="h-3.5 w-3.5" />
+                <span className="flex items-center gap-[6px] text-[10.5px] tracking-[0.01em] font-semibold uppercase text-gray-400 dark:text-[oklch(58%_0.006_95)] hover:text-gray-900 dark:hover:text-white">
+                    <PushPinIcon className="h-[14px] w-[14px]" />
                     {t('sidebar.bookmarks', 'Favorites')}
                 </span>
-                <button
-                    className="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
-                    aria-label={isExpanded ? 'Collapse favorites' : 'Expand favorites'}
-                >
-                    <ChevronRightIcon
-                        className="h-3 w-3 transition-transform duration-150"
-                        style={{ transform: isExpanded ? 'rotate(90deg)' : 'none' }}
-                    />
-                </button>
+                <div className="flex items-center gap-1">
+                    <span className="h-3.5 w-3.5" aria-hidden="true" />
+                    <button
+                        className="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
+                        aria-label={isExpanded ? 'Collapse favorites' : 'Expand favorites'}
+                    >
+                        <ChevronRightIcon
+                            className="h-3 w-3 transition-transform duration-150"
+                            style={{ transform: isExpanded ? 'rotate(90deg)' : 'none' }}
+                        />
+                    </button>
+                </div>
             </div>
 
             {isExpanded && (
@@ -171,12 +172,8 @@ const SidebarBookmarks: React.FC<SidebarBookmarksProps> = ({
                                 )
                             }
                         >
-                            <span className="flex items-center gap-2 min-w-0">
-                                <span
-                                    className="w-1.5 h-[14px] rounded-full flex-shrink-0"
-                                    style={{ backgroundColor: project.color || '#9ca3af' }}
-                                />
-                                <span className="truncate">{project.name}</span>
+                            <span className="truncate min-w-0">
+                                {project.name}
                             </span>
                             <button
                                 onClick={(e) => unpinProject(project, e)}
@@ -201,12 +198,8 @@ const SidebarBookmarks: React.FC<SidebarBookmarksProps> = ({
                                 )
                             }
                         >
-                            <span className="flex items-center gap-2 min-w-0">
-                                <span
-                                    className="w-1.5 h-[14px] rounded-full flex-shrink-0"
-                                    style={{ backgroundColor: note.color || '#9ca3af' }}
-                                />
-                                <span className="truncate">{note.title}</span>
+                            <span className="truncate min-w-0">
+                                {note.title}
                             </span>
                             <button
                                 onClick={(e) => unpinNote(note, e)}
@@ -231,12 +224,8 @@ const SidebarBookmarks: React.FC<SidebarBookmarksProps> = ({
                                 )
                             }
                         >
-                            <span className="flex items-center gap-2 min-w-0">
-                                <span
-                                    className="w-1.5 h-[14px] rounded-full flex-shrink-0"
-                                    style={{ backgroundColor: tag.color || '#9ca3af' }}
-                                />
-                                <span className="truncate">{tag.name}</span>
+                            <span className="truncate min-w-0">
+                                {tag.name}
                             </span>
                             <button
                                 onClick={(e) => unpinTag(tag, e)}
