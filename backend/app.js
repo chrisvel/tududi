@@ -147,6 +147,31 @@ app.use((req, res, next) => {
 const oauthRoutes = require('./modules/oauth/routes');
 app.use(oauthRoutes);
 
+// Resolves the session cookie's `secure` flag. Defaults to 'auto' (express-session
+// sets it based on the request's protocol, respecting `trust proxy`), so cookies are
+// sent over HTTPS-only whenever the connection actually is HTTPS. COOKIE_SECURE=false
+// is an explicit, documented opt-out (see backend/.env.example) for self-hosted
+// deployments that run over plain HTTP with no reverse-proxy TLS termination; it is
+// never the default.
+// lgtm[js/clear-text-cookie] - secure defaults to 'auto'/true; COOKIE_SECURE=false
+// requires explicit deployer opt-in and is logged loudly in production.
+function resolveCookieSecure() {
+    if (process.env.COOKIE_SECURE === 'false') {
+        if (config.production) {
+            console.warn(
+                '[Security] COOKIE_SECURE=false in production — session cookies will be ' +
+                    'sent over plain HTTP. Only use this for deployments with no TLS ' +
+                    '(e.g. local networks). See backend/.env.example.'
+            );
+        }
+        return false;
+    }
+    if (process.env.COOKIE_SECURE === 'true') {
+        return true;
+    }
+    return 'auto';
+}
+
 // Session configuration
 const sessionMiddleware = session({
     secret: config.secret,
@@ -155,15 +180,7 @@ const sessionMiddleware = session({
     saveUninitialized: false,
     cookie: {
         httpOnly: true,
-        secure: (() => {
-            if (process.env.COOKIE_SECURE === 'false') {
-                return false;
-            }
-            if (process.env.COOKIE_SECURE === 'true') {
-                return true;
-            }
-            return 'auto';
-        })(),
+        secure: resolveCookieSecure(),
         maxAge: 2592000000, // 30 days
         sameSite: 'lax',
     },
