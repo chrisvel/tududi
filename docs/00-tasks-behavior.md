@@ -161,7 +161,7 @@ This document explains how tasks work in tududi from a user behavior perspective
     - Stored in `/uploads/tasks/` directory
 
 23. **Allowed file types:**
-    - Images: jpg, jpeg, png, gif, webp, svg
+    - Images: jpg, jpeg, png, gif, webp
     - Documents: pdf, doc, docx, xls, xlsx, ppt, pptx
     - Text: txt, md, csv
     - Archives: zip, tar, gz

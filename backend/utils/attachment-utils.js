@@ -5,7 +5,10 @@ const { getConfig } = require('../config/config');
 
 const config = getConfig();
 
-// Allowed MIME types and their extensions
+// Allowed MIME types and their extensions.
+// SVG is intentionally excluded: it's an XML format that can embed <script>,
+// and uploaded attachments are served back to the browser, so allowing it
+// would enable stored XSS (GHSA-x24w-9w59-wqhq).
 const ALLOWED_TYPES = {
     // Documents
     'application/pdf': ['.pdf'],
@@ -19,7 +22,6 @@ const ALLOWED_TYPES = {
     'image/png': ['.png'],
     'image/jpeg': ['.jpg', '.jpeg'],
     'image/gif': ['.gif'],
-    'image/svg+xml': ['.svg'],
     'image/webp': ['.webp'],
     // Spreadsheets
     'application/vnd.ms-excel': ['.xls'],

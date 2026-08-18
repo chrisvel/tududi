@@ -209,18 +209,24 @@ if (serveFromDist) {
     );
 }
 
-// Serve uploaded files
+// Authentication middleware
+const { requireAuth } = require('./middleware/auth');
+
+// Serve uploaded files - requires authentication so attachments (which may
+// include private task/project data) aren't readable by anyone who guesses
+// or obtains a URL (GHSA-x24w-9w59-wqhq).
 const registerUploadsStatic = (basePath) => {
-    app.use(`${basePath}/uploads`, express.static(config.uploadPath));
+    app.use(
+        `${basePath}/uploads`,
+        requireAuth,
+        express.static(config.uploadPath)
+    );
 };
 
 registerUploadsStatic('/api');
 if (API_VERSION && API_BASE_PATH !== '/api') {
     registerUploadsStatic(API_BASE_PATH);
 }
-
-// Authentication middleware
-const { requireAuth } = require('./middleware/auth');
 const { logError } = require('./services/logService');
 
 // Rate limiting middleware

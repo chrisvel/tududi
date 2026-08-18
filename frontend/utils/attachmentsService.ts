@@ -169,7 +169,6 @@ export async function validateFile(
         'image/png',
         'image/jpeg',
         'image/gif',
-        'image/svg+xml',
         'image/webp',
         'application/vnd.ms-excel',
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

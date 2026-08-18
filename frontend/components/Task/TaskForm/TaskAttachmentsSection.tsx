@@ -137,7 +137,7 @@ const TaskAttachmentsSection: React.FC<TaskAttachmentsSectionProps> = ({
                     className="hidden"
                     onChange={handleFileSelect}
                     disabled={disabled || uploading}
-                    accept=".pdf,.doc,.docx,.txt,.md,.png,.jpg,.jpeg,.gif,.svg,.webp,.xls,.xlsx,.csv,.zip"
+                    accept=".pdf,.doc,.docx,.txt,.md,.png,.jpg,.jpeg,.gif,.webp,.xls,.xlsx,.csv,.zip"
                 />
                 <CloudArrowUpIcon className="h-10 w-10 mx-auto mb-2 text-gray-400 dark:text-gray-500" />
                 <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
