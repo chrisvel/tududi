@@ -15,6 +15,7 @@ const {
     getRecurringParentEndDate,
 } = require('../../tasks/utils/validation');
 const {
+    processDueDateForStorage,
     processDeferUntilForStorage,
 } = require('../../../utils/timezone-utils');
 const permissionsService = require('../../../services/permissionsService');
@@ -291,7 +292,8 @@ function registerTaskTools(server, context, tools) {
                 },
                 due_date: {
                     type: 'string',
-                    description: 'Due date (ISO 8601 format)',
+                    description:
+                        "Due date (YYYY-MM-DD). Treated as the whole day in the user's timezone, matching the web UI.",
                 },
                 defer_until: {
                     type: 'string',
@@ -320,17 +322,24 @@ function registerTaskTools(server, context, tools) {
                 : null;
 
             const recurrenceType = params.recurrence_type || 'none';
-            let dueDate = params.due_date || null;
-            if (recurrenceType !== 'none' && !dueDate) {
+            let dueDateInput = params.due_date || null;
+            if (recurrenceType !== 'none' && !dueDateInput) {
                 // Calculate the first occurrence based on the recurrence pattern,
                 // matching the behavior of POST /api/task
-                dueDate = calculateInitialDueDate({
+                dueDateInput = calculateInitialDueDate({
                     recurrence_type: recurrenceType,
                     recurrence_month_day: params.recurrence_month_day,
                     recurrence_weekday: params.recurrence_weekday,
                     recurrence_weekdays: params.recurrence_weekdays,
                 });
             }
+            // Normalize to end-of-day in the user's timezone, matching
+            // POST /api/task, so a date-only due_date doesn't shift to the
+            // previous day for users behind UTC.
+            const dueDate = processDueDateForStorage(
+                dueDateInput,
+                context.user.timezone
+            );
             const deferUntil = processDeferUntilForStorage(
                 params.defer_until,
                 context.user.timezone
@@ -443,7 +452,11 @@ function registerTaskTools(server, context, tools) {
                 'planned',
             ],
         },
-        due_date: { type: 'string', description: 'New due date' },
+        due_date: {
+            type: 'string',
+            description:
+                "New due date (YYYY-MM-DD). Treated as the whole day in the user's timezone, matching the web UI.",
+        },
         defer_until: {
             type: 'string',
             description:
@@ -526,8 +539,15 @@ function registerTaskTools(server, context, tools) {
                 };
                 updates.status = statusMap[params.status];
             }
-            if (params.due_date !== undefined)
-                updates.due_date = params.due_date;
+            if (params.due_date !== undefined) {
+                // Normalize to end-of-day in the user's timezone, matching
+                // PATCH /api/task/:uid, so a date-only due_date doesn't
+                // shift to the previous day for users behind UTC.
+                updates.due_date = processDueDateForStorage(
+                    params.due_date,
+                    context.user.timezone
+                );
+            }
             if (params.defer_until !== undefined) {
                 updates.defer_until = processDeferUntilForStorage(
                     params.defer_until,
@@ -573,7 +593,7 @@ function registerTaskTools(server, context, tools) {
             ) {
                 // Calculate the first occurrence based on the recurrence pattern,
                 // matching the behavior of PATCH /api/task/:uid
-                updates.due_date = calculateInitialDueDate({
+                const dueDateString = calculateInitialDueDate({
                     recurrence_type: updates.recurrence_type,
                     recurrence_month_day:
                         updates.recurrence_month_day !== undefined
@@ -588,6 +608,10 @@ function registerTaskTools(server, context, tools) {
                             ? updates.recurrence_weekdays
                             : task.recurrence_weekdays,
                 });
+                updates.due_date = processDueDateForStorage(
+                    dueDateString,
+                    context.user.timezone
+                );
             }
 
             if (
@@ -802,7 +826,8 @@ function registerTaskTools(server, context, tools) {
                 },
                 due_date: {
                     type: 'string',
-                    description: 'Due date',
+                    description:
+                        "Due date (YYYY-MM-DD). Treated as the whole day in the user's timezone, matching the web UI.",
                 },
             },
             required: ['parent_id', 'name'],
@@ -835,7 +860,10 @@ function registerTaskTools(server, context, tools) {
                 parent_task_id: parentTask.id,
                 priority: params.priority ? priorityMap[params.priority] : 1,
                 status: 0,
-                due_date: params.due_date || null,
+                due_date: processDueDateForStorage(
+                    params.due_date,
+                    context.user.timezone
+                ),
                 project_id: parentTask.project_id,
             };
 
