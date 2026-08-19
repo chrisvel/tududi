@@ -396,7 +396,8 @@
     "tabs": {
       "notifications": "Notification Preferences",
       "oidc": "OIDC/SSO",
-      "caldav": "CalDAV Sync"
+      "caldav": "CalDAV Sync",
+      "subscribedCalendars": "Subscribed Calendars"
     },
     "caldav": {
       "title": "CalDAV Synchronization",
@@ -1687,5 +1688,21 @@
     "open": "Open",
     "streaks": "Streaks",
     "areaBreakdown": "Area Breakdown"
+  },
+  "subscribedCalendars": {
+    "title": "Subscribed Calendars",
+    "description": "Show events from an external calendar in your tududi calendar. Paste the iCalendar (.ics) address of any calendar that supports it, such as Google Calendar, Apple iCloud or Nextcloud. Events are read-only.",
+    "name": "Name",
+    "namePlaceholder": "Work calendar",
+    "url": "iCalendar URL",
+    "color": "Color",
+    "add": "Add calendar",
+    "added": "Calendar subscribed",
+    "empty": "No subscribed calendars yet.",
+    "remove": "Remove",
+    "removed": "Subscription removed",
+    "loadError": "Failed to load subscribed calendars",
+    "addError": "Failed to subscribe",
+    "deleteError": "Failed to remove calendar"
   }
 }

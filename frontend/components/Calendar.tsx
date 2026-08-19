@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Task } from '../entities/Task';
 import { Project } from '../entities/Project';
@@ -13,12 +13,16 @@ import {
     FolderIcon,
     TagIcon,
 } from '@heroicons/react/24/outline';
-import { format, addWeeks, addDays } from 'date-fns';
+import { format, addWeeks, addDays, addMonths, startOfMonth } from 'date-fns';
 import { el, enUS, es, ja, uk, de } from 'date-fns/locale';
 import CalendarMonthView from './Calendar/CalendarMonthView';
 import CalendarWeekView from './Calendar/CalendarWeekView';
 import CalendarDayView from './Calendar/CalendarDayView';
 import { getApiPath } from '../config/paths';
+import {
+    fetchSubscribedEvents,
+    SubscribedCalendarEvent,
+} from '../utils/subscribedCalendarService';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { parseDateString } from '../utils/dateUtils';
 
@@ -60,6 +64,7 @@ const Calendar: React.FC = () => {
     const [allTasks, setAllTasks] = useState<any[]>([]);
     const [, setProjects] = useState<Project[]>([]);
     const [isEventDetailModalOpen, setIsEventDetailModalOpen] = useState(false);
+    const [subscribedEvents, setSubscribedEvents] = useState<CalendarEvent[]>([]);
 
     const locale = getLocale(i18n.language);
 
@@ -67,6 +72,15 @@ const Calendar: React.FC = () => {
         loadTasks();
         loadProjects();
     }, []);
+
+    // Subscribed calendars are fetched per visible month, with a month of
+    // padding on each side so navigating does not flash empty days.
+    const monthKey = format(startOfMonth(currentDate), 'yyyy-MM');
+    useEffect(() => {
+        const from = addMonths(startOfMonth(currentDate), -1);
+        const to = addMonths(startOfMonth(currentDate), 2);
+        loadSubscribedEvents(from, to);
+    }, [monthKey]);
 
     const loadTasks = async () => {
         setIsLoadingTasks(true);
@@ -94,6 +108,59 @@ const Calendar: React.FC = () => {
         } finally {
             setIsLoadingTasks(false);
         }
+    };
+
+    const loadSubscribedEvents = async (from: Date, to: Date) => {
+        try {
+            const items = await fetchSubscribedEvents(from, to);
+            setSubscribedEvents(convertSubscribedToEvents(items));
+        } catch (error) {
+            console.error('Error loading subscribed calendars:', error);
+            setSubscribedEvents([]);
+        }
+    };
+
+    const convertSubscribedToEvents = (
+        items: SubscribedCalendarEvent[]
+    ): CalendarEvent[] => {
+        const result: CalendarEvent[] = [];
+
+        items.forEach((item) => {
+            if (!item.all_day) {
+                result.push({
+                    id: item.id,
+                    title: item.title,
+                    start: new Date(item.start),
+                    end: new Date(item.end),
+                    type: 'event',
+                    color: item.color,
+                });
+                return;
+            }
+
+            // All-day events carry an inclusive date range, so emit one entry
+            // per day to make multi-day events show on every day they cover.
+            const start = parseDateString(item.start);
+            const end = parseDateString(item.end) || start;
+            if (!start || !end) return;
+
+            for (
+                let day = new Date(start);
+                day <= end;
+                day.setDate(day.getDate() + 1)
+            ) {
+                result.push({
+                    id: `${item.id}-${format(day, 'yyyy-MM-dd')}`,
+                    title: item.title,
+                    start: new Date(day),
+                    end: new Date(day.getTime() + 60 * 60 * 1000),
+                    type: 'event',
+                    color: item.color,
+                });
+            }
+        });
+
+        return result;
     };
 
     const convertTasksToEvents = (tasks: any[]): CalendarEvent[] => {
@@ -191,6 +258,11 @@ const Calendar: React.FC = () => {
             }
         }
     };
+
+    const allEvents = useMemo(
+        () => [...events, ...subscribedEvents],
+        [events, subscribedEvents]
+    );
 
     const handleTimeSlotClick = () => {};
 
@@ -318,7 +390,7 @@ const Calendar: React.FC = () => {
                     {view === 'month' && (
                         <CalendarMonthView
                             currentDate={currentDate}
-                            events={events}
+                            events={allEvents}
                             onDateClick={handleDateClick}
                             onEventClick={handleEventClick}
                             onEventDrop={handleEventDrop}
@@ -327,7 +399,7 @@ const Calendar: React.FC = () => {
                     {view === 'week' && (
                         <CalendarWeekView
                             currentDate={currentDate}
-                            events={events}
+                            events={allEvents}
                             onDateClick={handleDateClick}
                             onEventClick={handleEventClick}
                             onTimeSlotClick={handleTimeSlotClick}
@@ -337,7 +409,7 @@ const Calendar: React.FC = () => {
                     {view === 'day' && (
                         <CalendarDayView
                             currentDate={currentDate}
-                            events={events}
+                            events={allEvents}
                             onEventClick={handleEventClick}
                             onTimeSlotClick={handleTimeSlotClick}
                             onEventDrop={handleEventDrop}
