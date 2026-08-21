@@ -53,6 +53,7 @@ import NotificationsTab from './tabs/NotificationsTab';
 import KeyboardShortcutsTab from './tabs/KeyboardShortcutsTab';
 import McpTab from './tabs/McpTab';
 import CalDAVTab from './tabs/CalDAVTab';
+import SubscribedCalendarsTab from './tabs/SubscribedCalendarsTab';
 import AIAssistantTab from './tabs/AIAssistantTab';
 import { getDefaultConfig } from '../../utils/keyboardShortcutsService';
 import {
@@ -105,6 +106,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             'telegram',
             'keyboard-shortcuts',
             'caldav',
+            'subscribed-calendars',
             'mcp',
             'ai-assistant',
             'features',
@@ -1288,6 +1290,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             featureFlag: 'caldav',
         },
         {
+            id: 'subscribed-calendars',
+            name: t('profile.tabs.subscribedCalendars', 'Subscribed Calendars'),
+            icon: <CalendarIcon className="w-5 h-5" />,
+        },
+        {
             id: 'mcp',
             name: t('profile.tabs.mcp', 'MCP Integration'),
             icon: <CpuChipIcon className="w-5 h-5" />,
@@ -1624,6 +1631,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                 <McpTab isActive={activeTab === 'mcp'} />
 
                                 <CalDAVTab isActive={activeTab === 'caldav'} />
+
+                                {activeTab === 'subscribed-calendars' && (
+                                    <SubscribedCalendarsTab isActive={true} />
+                                )}
 
                                 <div className="flex justify-end dark:border-gray-700">
                                     <button
