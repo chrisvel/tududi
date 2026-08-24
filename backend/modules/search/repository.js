@@ -21,6 +21,57 @@ class SearchRepository {
     }
 
     /**
+     * Find task IDs that carry every one of the given tag IDs.
+     */
+    async findTaskIdsWithAllTags(tagIds) {
+        const rows = await sequelize.query(
+            `SELECT task_id FROM tasks_tags
+             WHERE tag_id IN (:tagIds)
+             GROUP BY task_id
+             HAVING COUNT(DISTINCT tag_id) = :tagCount`,
+            {
+                replacements: { tagIds, tagCount: tagIds.length },
+                type: sequelize.QueryTypes.SELECT,
+            }
+        );
+        return rows.map((row) => row.task_id);
+    }
+
+    /**
+     * Find project IDs that carry every one of the given tag IDs.
+     */
+    async findProjectIdsWithAllTags(tagIds) {
+        const rows = await sequelize.query(
+            `SELECT project_id FROM projects_tags
+             WHERE tag_id IN (:tagIds)
+             GROUP BY project_id
+             HAVING COUNT(DISTINCT tag_id) = :tagCount`,
+            {
+                replacements: { tagIds, tagCount: tagIds.length },
+                type: sequelize.QueryTypes.SELECT,
+            }
+        );
+        return rows.map((row) => row.project_id);
+    }
+
+    /**
+     * Find note IDs that carry every one of the given tag IDs.
+     */
+    async findNoteIdsWithAllTags(tagIds) {
+        const rows = await sequelize.query(
+            `SELECT note_id FROM notes_tags
+             WHERE tag_id IN (:tagIds)
+             GROUP BY note_id
+             HAVING COUNT(DISTINCT tag_id) = :tagCount`,
+            {
+                replacements: { tagIds, tagCount: tagIds.length },
+                type: sequelize.QueryTypes.SELECT,
+            }
+        );
+        return rows.map((row) => row.note_id);
+    }
+
+    /**
      * Count tasks matching conditions.
      */
     async countTasks(conditions, include) {

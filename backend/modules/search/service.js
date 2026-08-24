@@ -213,6 +213,16 @@ class SearchService {
             deferDateCondition,
             nowDate
         );
+
+        if (tagIds.length > 1) {
+            const matchingIds =
+                await searchRepository.findTaskIdsWithAllTags(tagIds);
+            if (matchingIds.length === 0) {
+                return { count: 0, results: [] };
+            }
+            conditions.id = { [Op.in]: matchingIds };
+        }
+
         const { include, tagInclude } = this.buildTaskInclude(
             tagIds,
             params.extras
@@ -280,6 +290,15 @@ class SearchService {
 
         if (dueDateCondition) {
             conditions.due_date_at = dueDateCondition.due_date;
+        }
+
+        if (tagIds.length > 1) {
+            const matchingIds =
+                await searchRepository.findProjectIdsWithAllTags(tagIds);
+            if (matchingIds.length === 0) {
+                return { count: 0, results: [] };
+            }
+            conditions.id = { [Op.in]: matchingIds };
         }
 
         const requireTags = tagIds.length > 0 || extras.has('has_tags');
@@ -397,6 +416,15 @@ class SearchService {
                     }
                 ),
             ];
+        }
+
+        if (tagIds.length > 1) {
+            const matchingIds =
+                await searchRepository.findNoteIdsWithAllTags(tagIds);
+            if (matchingIds.length === 0) {
+                return { count: 0, results: [] };
+            }
+            conditions.id = { [Op.in]: matchingIds };
         }
 
         const include = [];
