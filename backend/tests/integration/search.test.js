@@ -512,7 +512,7 @@ describe('Universal Search Routes', () => {
                 expect(tasks.length).toBe(2); // Work task and Urgent work task
             });
 
-            it('should filter by multiple tags', async () => {
+            it('should filter tasks that have ALL requested tags (AND, not OR)', async () => {
                 const response = await agent.get('/api/search').query({
                     tags: 'work,urgent',
                     filters: 'Task',
@@ -522,8 +522,69 @@ describe('Universal Search Routes', () => {
                 const tasks = response.body.results.filter(
                     (r) => r.type === 'Task'
                 );
-                // Should return tasks that have either work OR urgent tag
-                expect(tasks.length).toBeGreaterThanOrEqual(1);
+                // Only "Urgent work task" has both the work and urgent tags.
+                // "Work task" (work only) must NOT be included.
+                expect(tasks.length).toBe(1);
+                expect(tasks[0].name).toBe('Urgent work task');
+            });
+
+            it('should return no tasks when no task has every requested tag', async () => {
+                const response = await agent.get('/api/search').query({
+                    tags: 'personal,urgent',
+                    filters: 'Task',
+                });
+
+                expect(response.status).toBe(200);
+                const tasks = response.body.results.filter(
+                    (r) => r.type === 'Task'
+                );
+                expect(tasks.length).toBe(0);
+            });
+
+            it('should filter projects that have ALL requested tags (AND, not OR)', async () => {
+                const project2 = await Project.create({
+                    user_id: user.id,
+                    name: 'Urgent work project',
+                    state: 'active',
+                });
+                await project2.addTag(workTag);
+                await project2.addTag(urgentTag);
+
+                const response = await agent.get('/api/search').query({
+                    tags: 'work,urgent',
+                    filters: 'Project',
+                });
+
+                expect(response.status).toBe(200);
+                const projects = response.body.results.filter(
+                    (r) => r.type === 'Project'
+                );
+                // "Work project" only has the work tag and must be excluded.
+                expect(projects.length).toBe(1);
+                expect(projects[0].name).toBe('Urgent work project');
+            });
+
+            it('should filter notes that have ALL requested tags (AND, not OR)', async () => {
+                const note2 = await Note.create({
+                    user_id: user.id,
+                    title: 'Urgent personal note',
+                    content: 'Some content',
+                });
+                await note2.addTag(personalTag);
+                await note2.addTag(urgentTag);
+
+                const response = await agent.get('/api/search').query({
+                    tags: 'personal,urgent',
+                    filters: 'Note',
+                });
+
+                expect(response.status).toBe(200);
+                const notes = response.body.results.filter(
+                    (r) => r.type === 'Note'
+                );
+                // "Personal note" only has the personal tag and must be excluded.
+                expect(notes.length).toBe(1);
+                expect(notes[0].title).toBe('Urgent personal note');
             });
 
             it('should filter projects by tag', async () => {
