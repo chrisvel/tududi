@@ -206,6 +206,14 @@ class SearchService {
         nowDate,
         timezone
     ) {
+        let matchingIds = null;
+        if (tagIds.length > 0) {
+            matchingIds = await searchRepository.findTaskIdsWithAllTags(tagIds);
+            if (matchingIds.length === 0) {
+                return { count: 0, results: [] };
+            }
+        }
+
         const conditions = this.buildTaskConditions(
             userId,
             params,
@@ -213,6 +221,9 @@ class SearchService {
             deferDateCondition,
             nowDate
         );
+        if (matchingIds) {
+            conditions.id = { [Op.in]: matchingIds };
+        }
         const { include, tagInclude } = this.buildTaskInclude(
             tagIds,
             params.extras
@@ -254,7 +265,19 @@ class SearchService {
         const { searchQuery, priority, extras, hasPagination, limit, offset } =
             params;
 
+        let matchingIds = null;
+        if (tagIds.length > 0) {
+            matchingIds =
+                await searchRepository.findProjectIdsWithAllTags(tagIds);
+            if (matchingIds.length === 0) {
+                return { count: 0, results: [] };
+            }
+        }
+
         const conditions = { user_id: userId };
+        if (matchingIds) {
+            conditions.id = { [Op.in]: matchingIds };
+        }
 
         if (searchQuery) {
             const lowerQuery = searchQuery.toLowerCase();
@@ -379,7 +402,18 @@ class SearchService {
     async searchNotes(userId, params, tagIds) {
         const { searchQuery, hasPagination, limit, offset } = params;
 
+        let matchingIds = null;
+        if (tagIds.length > 0) {
+            matchingIds = await searchRepository.findNoteIdsWithAllTags(tagIds);
+            if (matchingIds.length === 0) {
+                return { count: 0, results: [] };
+            }
+        }
+
         const conditions = { user_id: userId };
+        if (matchingIds) {
+            conditions.id = { [Op.in]: matchingIds };
+        }
 
         if (searchQuery) {
             const lowerQuery = searchQuery.toLowerCase();

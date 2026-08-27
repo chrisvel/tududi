@@ -422,8 +422,9 @@ describe('Views Routes', () => {
             const tasks = searchResponse.body.results.filter(
                 (r) => r.type === 'Task'
             );
-            // Should find tasks with either work OR urgent tag
-            expect(tasks.length).toBeGreaterThanOrEqual(1);
+            // Should only find tasks that have BOTH work AND urgent
+            expect(tasks.length).toBe(1);
+            expect(tasks[0].name).toBe('Urgent work task');
         });
 
         it('should persist tags correctly after update', async () => {
