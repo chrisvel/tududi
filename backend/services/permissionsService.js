@@ -45,16 +45,32 @@ async function getAccess(userId, resourceType, resourceUid) {
     } else if (resourceType === 'task') {
         const t = await Task.findOne({
             where: { uid: resourceUid },
-            attributes: ['user_id', 'project_id'],
+            attributes: ['user_id', 'project_id', 'parent_task_id'],
             raw: true,
         });
         if (!t) return ACCESS.NONE;
         if (t.user_id === userId) return ACCESS.RW;
 
+        // Subtasks don't always carry their own project_id, so walk up the
+        // parent chain to find the project (or an owning ancestor) they
+        // belong to (#1425).
+        let projectId = t.project_id;
+        let current = t;
+        while (!projectId && current.parent_task_id) {
+            current = await Task.findOne({
+                where: { id: current.parent_task_id },
+                attributes: ['user_id', 'project_id', 'parent_task_id'],
+                raw: true,
+            });
+            if (!current) break;
+            if (current.user_id === userId) return ACCESS.RW;
+            projectId = current.project_id;
+        }
+
         // Check if user has access through the parent project
-        if (t.project_id) {
+        if (projectId) {
             const project = await Project.findOne({
-                where: { id: t.project_id },
+                where: { id: projectId },
                 attributes: ['uid'],
                 raw: true,
             });
