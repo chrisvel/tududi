@@ -1,4 +1,4 @@
-const { AppError } = require('../../../shared/errors/AppError');
+const { AppError } = require('../../../shared/errors');
 const logger = require('../../../services/logService');
 const PullPhase = require('./pull-phase');
 const MergePhase = require('./merge-phase');

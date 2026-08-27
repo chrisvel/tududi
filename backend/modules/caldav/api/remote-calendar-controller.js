@@ -1,6 +1,6 @@
 const axios = require('axios');
 const { URL } = require('url');
-const { AppError } = require('../../../shared/errors/AppError');
+const { AppError } = require('../../../shared/errors');
 const RemoteCalendarRepository = require('../repositories/remote-calendar-repository');
 const CalendarRepository = require('../repositories/calendar-repository');
 const encryptionService = require('../services/encryption-service');
