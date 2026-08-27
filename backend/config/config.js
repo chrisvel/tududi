@@ -78,7 +78,13 @@ const config = {
 
     frontendUrl: process.env.FRONTEND_URL || 'http://localhost:8080',
 
-    backendUrl: process.env.BACKEND_URL || 'http://localhost:3002',
+    // BACKEND_URL is the primary variable; BASE_URL (documented for OIDC
+    // callbacks) is accepted as a fallback since it's the publicly-facing
+    // URL of the deployment and users commonly set only that one.
+    backendUrl:
+        process.env.BACKEND_URL ||
+        process.env.BASE_URL ||
+        'http://localhost:3002',
 
     // Some CI/sandbox environments disallow binding to 0.0.0.0, so force
     // loopback for tests unless HOST is explicitly provided.
