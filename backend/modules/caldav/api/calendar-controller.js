@@ -1,4 +1,4 @@
-const { AppError } = require('../../../shared/errors/AppError');
+const { AppError } = require('../../../shared/errors');
 const CalendarRepository = require('../repositories/calendar-repository');
 const SyncStateRepository = require('../repositories/sync-state-repository');
 const { uid } = require('../../../utils/uid');

@@ -1,6 +1,6 @@
 const axios = require('axios');
 const { parseStringPromise } = require('xml2js');
-const { AppError } = require('../../../shared/errors/AppError');
+const { AppError } = require('../../../shared/errors');
 const logger = require('../../../services/logService');
 const RemoteCalendarRepository = require('../repositories/remote-calendar-repository');
 const { parseVTODOToTask } = require('../icalendar/vtodo-parser');

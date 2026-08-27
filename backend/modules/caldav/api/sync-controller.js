@@ -1,4 +1,4 @@
-const { AppError } = require('../../../shared/errors/AppError');
+const { AppError } = require('../../../shared/errors');
 const syncScheduler = require('../services/sync-scheduler');
 const syncEngine = require('../sync/sync-engine');
 const MergePhase = require('../sync/merge-phase');
