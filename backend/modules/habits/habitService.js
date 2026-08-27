@@ -9,22 +9,21 @@ class HabitService {
             throw new Error('Task is not a habit');
         }
 
-        const period = task.habit_frequency_period || 'daily';
-        const { start: periodStart, end: periodEnd } = this.getPeriodWindow(
-            period,
-            completedAt
-        );
+        const dayStart = new Date(completedAt);
+        dayStart.setHours(0, 0, 0, 0);
+        const dayEnd = new Date(completedAt);
+        dayEnd.setHours(23, 59, 59, 999);
 
-        const existingInPeriod = await RecurringCompletion.findOne({
+        const existingOnDay = await RecurringCompletion.findOne({
             where: {
                 task_id: task.id,
                 skipped: false,
-                completed_at: { [Op.between]: [periodStart, periodEnd] },
+                completed_at: { [Op.between]: [dayStart, dayEnd] },
             },
         });
 
-        if (existingInPeriod) {
-            return { completion: existingInPeriod, task };
+        if (existingOnDay) {
+            return { completion: existingOnDay, task };
         }
 
         const completion = await RecurringCompletion.create({
@@ -147,14 +146,8 @@ class HabitService {
 
         const period = task.habit_frequency_period || 'daily';
 
-        const distinctPeriods = new Set(
-            completions.map((c) =>
-                this.getPeriodStart(period, new Date(c.completed_at)).getTime()
-            )
-        ).size;
-
         const updates = {
-            habit_total_completions: distinctPeriods,
+            habit_total_completions: completions.length,
             habit_last_completion_at:
                 completions.length > 0 ? completions[0].completed_at : null,
         };
