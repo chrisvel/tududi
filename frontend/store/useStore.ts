@@ -61,6 +61,7 @@ interface TasksStore {
     tasks: Task[];
     isLoading: boolean;
     isError: boolean;
+    hasLoaded: boolean;
     setTasks: (tasks: Task[]) => void;
     setLoading: (isLoading: boolean) => void;
     setError: (isError: boolean) => void;
@@ -534,6 +535,7 @@ export const useStore = create<StoreState>((set: any) => ({
         tasks: [],
         isLoading: false,
         isError: false,
+        hasLoaded: false,
         setTasks: (tasks) =>
             set((state) => ({ tasksStore: { ...state.tasksStore, tasks } })),
         setLoading: (isLoading) =>
@@ -558,6 +560,7 @@ export const useStore = create<StoreState>((set: any) => ({
                         ...state.tasksStore,
                         tasks,
                         isLoading: false,
+                        hasLoaded: true,
                     },
                 }));
             } catch (error) {
@@ -567,6 +570,7 @@ export const useStore = create<StoreState>((set: any) => ({
                         ...state.tasksStore,
                         isError: true,
                         isLoading: false,
+                        hasLoaded: true,
                     },
                 }));
             }

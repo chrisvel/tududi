@@ -101,6 +101,7 @@ const Layout: React.FC<LayoutProps> = ({
         tasksStore: {
             isLoading: isTasksLoading,
             isError: isTasksError,
+            hasLoaded: hasTasksLoaded,
             createTask: createTaskInStore,
         },
         projectsStore: {
@@ -426,7 +427,7 @@ const Layout: React.FC<LayoutProps> = ({
     const isLoading =
         (isNotesLoading && !hasNotesLoaded) ||
         (isAreasLoading && !hasAreasLoaded) ||
-        isTasksLoading ||
+        (isTasksLoading && !hasTasksLoaded) ||
         (isProjectsLoading && !hasProjectsLoaded) ||
         (isTagsLoading && !hasTagsLoaded);
     const isError =

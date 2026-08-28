@@ -5,11 +5,16 @@ import { fetchProjects } from '../../utils/projectsService';
 import ProductivityAssistant from '../Productivity/ProductivityAssistant';
 const ProductivityPage: React.FC = () => {
     const { t } = useTranslation();
-    const { tasks, isLoading: tasksLoading, loadTasks } = useStore((state) => state.tasksStore);
+    const {
+        tasks,
+        isLoading: tasksLoading,
+        hasLoaded: tasksHasLoaded,
+        loadTasks,
+    } = useStore((state) => state.tasksStore);
     const [projects, setProjects] = useState<any[]>([]);
 
     useEffect(() => {
-        if (tasks.length === 0) {
+        if (!tasksHasLoaded && !tasksLoading) {
             loadTasks();
         }
         fetchProjects()

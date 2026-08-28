@@ -74,6 +74,7 @@ const baseStoreState: any = {
         tasks: [],
         isLoading: false,
         isError: false,
+        hasLoaded: true,
         createTask: jest.fn(),
     },
     projectsStore: {
@@ -165,5 +166,26 @@ describe('Layout loading gate', () => {
         renderLayout();
 
         expect(screen.queryByTestId('routed-page')).not.toBeInTheDocument();
+    });
+
+    it('does not swap the routed page out when tasksStore refetches after it has already loaded', () => {
+        // Mirrors ProductivityPage.tsx calling loadTasks() on mount: tasksStore
+        // goes back into isLoading even though hasLoaded is already true.
+        storeState = {
+            ...baseStoreState,
+            tasksStore: {
+                ...baseStoreState.tasksStore,
+                isLoading: true,
+                hasLoaded: true,
+            },
+        };
+
+        renderLayout();
+
+        // Regression guard for #1410: if Layout unmounted the routed page
+        // here, ProductivityPage's mount effect would refire loadTasks(),
+        // looping forever when the user has zero tasks.
+        expect(screen.getByTestId('routed-page')).toBeInTheDocument();
+        expect(screen.queryByText('common.loading')).not.toBeInTheDocument();
     });
 });
