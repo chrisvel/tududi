@@ -59,11 +59,19 @@ async function createSubtasks(parentTaskId, subtasks, userId) {
     );
     const maxOrder = existingSubtasks[0]?.order ?? 0;
 
+    // Inherit the parent's project so a subtask stays reachable through the
+    // same project-sharing checks as its parent task, instead of only being
+    // accessible to whoever happened to create it (#1425).
+    const parent = await taskRepository.findById(parentTaskId, {
+        attributes: ['id', 'project_id'],
+    });
+
     const subtasksData = subtasks
         .filter((subtask) => subtask.name && subtask.name.trim())
         .map((subtask, index) => ({
             name: subtask.name.trim(),
             parent_task_id: parentTaskId,
+            project_id: parent ? parent.project_id : null,
             user_id: userId,
             priority: parsePriority(subtask.priority) || Task.PRIORITY.LOW,
             status: parseStatus(subtask.status),
