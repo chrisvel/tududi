@@ -1,7 +1,7 @@
 'use strict';
 
 const { Task, Tag, Project, Area, Note, sequelize } = require('../../models');
-const { Op } = require('sequelize');
+const { Op, QueryTypes } = require('sequelize');
 
 class SearchRepository {
     /**
@@ -18,6 +18,34 @@ class SearchRepository {
             attributes: ['id'],
         });
         return tags.map((tag) => tag.id);
+    }
+
+    // Find ids of owner rows in a tag join table that carry every tag in
+    // tagIds (AND semantics), not just any one of them.
+    async findIdsWithAllTags(joinTable, ownerColumn, tagIds) {
+        const rows = await sequelize.query(
+            `SELECT ${ownerColumn} AS owner_id FROM ${joinTable}
+             WHERE tag_id IN (:tagIds)
+             GROUP BY ${ownerColumn}
+             HAVING COUNT(DISTINCT tag_id) = :tagCount`,
+            {
+                replacements: { tagIds, tagCount: tagIds.length },
+                type: QueryTypes.SELECT,
+            }
+        );
+        return rows.map((row) => row.owner_id);
+    }
+
+    async findTaskIdsWithAllTags(tagIds) {
+        return this.findIdsWithAllTags('tasks_tags', 'task_id', tagIds);
+    }
+
+    async findProjectIdsWithAllTags(tagIds) {
+        return this.findIdsWithAllTags('projects_tags', 'project_id', tagIds);
+    }
+
+    async findNoteIdsWithAllTags(tagIds) {
+        return this.findIdsWithAllTags('notes_tags', 'note_id', tagIds);
     }
 
     /**

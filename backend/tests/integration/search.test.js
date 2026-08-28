@@ -512,7 +512,7 @@ describe('Universal Search Routes', () => {
                 expect(tasks.length).toBe(2); // Work task and Urgent work task
             });
 
-            it('should filter by multiple tags', async () => {
+            it('should filter by multiple tags using AND semantics', async () => {
                 const response = await agent.get('/api/search').query({
                     tags: 'work,urgent',
                     filters: 'Task',
@@ -522,8 +522,23 @@ describe('Universal Search Routes', () => {
                 const tasks = response.body.results.filter(
                     (r) => r.type === 'Task'
                 );
-                // Should return tasks that have either work OR urgent tag
-                expect(tasks.length).toBeGreaterThanOrEqual(1);
+                // Only tasks that have BOTH work AND urgent should be returned
+                expect(tasks.length).toBe(1);
+                expect(tasks[0].name).toBe('Urgent work task');
+            });
+
+            it('should exclude tasks that only have some of the requested tags', async () => {
+                const response = await agent.get('/api/search').query({
+                    tags: 'work,personal',
+                    filters: 'Task',
+                });
+
+                expect(response.status).toBe(200);
+                const tasks = response.body.results.filter(
+                    (r) => r.type === 'Task'
+                );
+                // No task in the fixture has both work AND personal
+                expect(tasks.length).toBe(0);
             });
 
             it('should filter projects by tag', async () => {
@@ -552,6 +567,64 @@ describe('Universal Search Routes', () => {
                 );
                 expect(notes.length).toBe(1);
                 expect(notes[0].title).toBe('Personal note');
+            });
+
+            it('should filter projects by multiple tags using AND semantics', async () => {
+                const soloProject = await Project.create({
+                    user_id: user.id,
+                    name: 'Personal only project',
+                    state: 'active',
+                });
+                await soloProject.addTag(personalTag);
+
+                const bothProject = await Project.create({
+                    user_id: user.id,
+                    name: 'Work and personal project',
+                    state: 'active',
+                });
+                await bothProject.addTag(workTag);
+                await bothProject.addTag(personalTag);
+
+                const response = await agent.get('/api/search').query({
+                    tags: 'work,personal',
+                    filters: 'Project',
+                });
+
+                expect(response.status).toBe(200);
+                const projects = response.body.results.filter(
+                    (r) => r.type === 'Project'
+                );
+                expect(projects.length).toBe(1);
+                expect(projects[0].name).toBe('Work and personal project');
+            });
+
+            it('should filter notes by multiple tags using AND semantics', async () => {
+                const soloNote = await Note.create({
+                    user_id: user.id,
+                    title: 'Urgent only note',
+                    content: 'Content',
+                });
+                await soloNote.addTag(urgentTag);
+
+                const bothNote = await Note.create({
+                    user_id: user.id,
+                    title: 'Personal and urgent note',
+                    content: 'Content',
+                });
+                await bothNote.addTag(personalTag);
+                await bothNote.addTag(urgentTag);
+
+                const response = await agent.get('/api/search').query({
+                    tags: 'personal,urgent',
+                    filters: 'Note',
+                });
+
+                expect(response.status).toBe(200);
+                const notes = response.body.results.filter(
+                    (r) => r.type === 'Note'
+                );
+                expect(notes.length).toBe(1);
+                expect(notes[0].title).toBe('Personal and urgent note');
             });
 
             it('should return empty results for non-existent tag', async () => {
