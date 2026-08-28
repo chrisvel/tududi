@@ -175,6 +175,21 @@ function processDeferUntilForResponse(utcDeferUntil, userTimezone) {
 }
 
 /**
+ * Get the day of week (0=Sunday..6=Saturday) for a UTC instant, as observed
+ * in the user's timezone. Use this instead of `date.getUTCDay()` whenever
+ * `date` may represent "local midnight" converted to a UTC instant, since
+ * for positive-UTC-offset timezones that instant's UTC calendar day is the
+ * previous local day, and `getUTCDay()` would return the wrong weekday.
+ * @param {Date} date - UTC Date instant
+ * @param {string} userTimezone - User's timezone
+ * @returns {number|null} Day of week local to userTimezone, or null
+ */
+function getWeekdayInTimezone(date, userTimezone) {
+    if (!date) return null;
+    return moment.tz(date, userTimezone || 'UTC').day();
+}
+
+/**
  * Validate timezone string
  * @param {string} timezone - Timezone to validate
  * @returns {boolean} True if timezone is valid
@@ -216,4 +231,5 @@ module.exports = {
     processDeferUntilForResponse,
     isValidTimezone,
     getSafeTimezone,
+    getWeekdayInTimezone,
 };

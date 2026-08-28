@@ -136,7 +136,7 @@ function expandRecurringTasks(
                 task.completion_based && task.completed_at
                     ? new Date(task.completed_at)
                     : new Date(task.due_date || now);
-            const nextDate = calculateNextDueDate(task, baseDate);
+            const nextDate = calculateNextDueDate(task, baseDate, userTimezone);
             startFrom = nextDate || now;
             console.log(
                 '[DEBUG] Task is completed, starting from next occurrence:',
@@ -148,7 +148,7 @@ function expandRecurringTasks(
             const MAX_ITERATIONS = 100;
 
             while (nextDate && nextDate < now && iterations < MAX_ITERATIONS) {
-                nextDate = calculateNextDueDate(task, nextDate);
+                nextDate = calculateNextDueDate(task, nextDate, userTimezone);
                 iterations++;
             }
 
@@ -788,7 +788,8 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
                 : new Date(originalDueDate);
             const nextDueDate = calculateNextDueDate(
                 recurrenceContext,
-                baseDate
+                baseDate,
+                timezone
             );
 
             recurringCompletionPayload = {

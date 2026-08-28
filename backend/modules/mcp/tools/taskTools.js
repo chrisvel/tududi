@@ -326,12 +326,15 @@ function registerTaskTools(server, context, tools) {
             if (recurrenceType !== 'none' && !dueDateInput) {
                 // Calculate the first occurrence based on the recurrence pattern,
                 // matching the behavior of POST /api/task
-                dueDateInput = calculateInitialDueDate({
-                    recurrence_type: recurrenceType,
-                    recurrence_month_day: params.recurrence_month_day,
-                    recurrence_weekday: params.recurrence_weekday,
-                    recurrence_weekdays: params.recurrence_weekdays,
-                });
+                dueDateInput = calculateInitialDueDate(
+                    {
+                        recurrence_type: recurrenceType,
+                        recurrence_month_day: params.recurrence_month_day,
+                        recurrence_weekday: params.recurrence_weekday,
+                        recurrence_weekdays: params.recurrence_weekdays,
+                    },
+                    context.user.timezone
+                );
             }
             // Normalize to end-of-day in the user's timezone, matching
             // POST /api/task, so a date-only due_date doesn't shift to the
@@ -593,21 +596,24 @@ function registerTaskTools(server, context, tools) {
             ) {
                 // Calculate the first occurrence based on the recurrence pattern,
                 // matching the behavior of PATCH /api/task/:uid
-                const dueDateString = calculateInitialDueDate({
-                    recurrence_type: updates.recurrence_type,
-                    recurrence_month_day:
-                        updates.recurrence_month_day !== undefined
-                            ? updates.recurrence_month_day
-                            : task.recurrence_month_day,
-                    recurrence_weekday:
-                        updates.recurrence_weekday !== undefined
-                            ? updates.recurrence_weekday
-                            : task.recurrence_weekday,
-                    recurrence_weekdays:
-                        updates.recurrence_weekdays !== undefined
-                            ? updates.recurrence_weekdays
-                            : task.recurrence_weekdays,
-                });
+                const dueDateString = calculateInitialDueDate(
+                    {
+                        recurrence_type: updates.recurrence_type,
+                        recurrence_month_day:
+                            updates.recurrence_month_day !== undefined
+                                ? updates.recurrence_month_day
+                                : task.recurrence_month_day,
+                        recurrence_weekday:
+                            updates.recurrence_weekday !== undefined
+                                ? updates.recurrence_weekday
+                                : task.recurrence_weekday,
+                        recurrence_weekdays:
+                            updates.recurrence_weekdays !== undefined
+                                ? updates.recurrence_weekdays
+                                : task.recurrence_weekdays,
+                    },
+                    context.user.timezone
+                );
                 updates.due_date = processDueDateForStorage(
                     dueDateString,
                     context.user.timezone
