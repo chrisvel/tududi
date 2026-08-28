@@ -178,10 +178,7 @@ async function calculateNextIterations(task, startFromDate, userTimezone) {
                     ? task.recurrence_weekdays
                     : JSON.parse(task.recurrence_weekdays);
                 const sorted = [...weekdays].sort((a, b) => a - b);
-                const currentDay = getWeekdayInTimezone(
-                    nextDate,
-                    safeTimezone
-                );
+                const currentDay = getWeekdayInTimezone(nextDate, safeTimezone);
                 const laterInWeek = sorted.filter((d) => d > currentDay);
                 if (laterInWeek.length > 0) {
                     nextDate.setUTCDate(
@@ -274,10 +271,7 @@ async function calculateNextIterations(task, startFromDate, userTimezone) {
                     : JSON.parse(task.recurrence_weekdays);
                 const interval = task.recurrence_interval || 1;
                 const sorted = [...weekdays].sort((a, b) => a - b);
-                const currentDay = getWeekdayInTimezone(
-                    nextDate,
-                    safeTimezone
-                );
+                const currentDay = getWeekdayInTimezone(nextDate, safeTimezone);
                 const laterInWeek = sorted.filter((d) => d > currentDay);
 
                 if (laterInWeek.length > 0) {

@@ -29,9 +29,7 @@ describe('RecurringTaskService - Weekly Recurrence Timezone Awareness (issue #14
 
             expect(occurrences).toHaveLength(10);
             occurrences.forEach((occurrence) => {
-                const localWeekday = moment
-                    .tz(occurrence.due_date, tz)
-                    .day();
+                const localWeekday = moment.tz(occurrence.due_date, tz).day();
                 expect(localWeekday).toBeGreaterThanOrEqual(1);
                 expect(localWeekday).toBeLessThanOrEqual(5);
             });
