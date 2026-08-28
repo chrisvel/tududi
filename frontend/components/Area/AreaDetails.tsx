@@ -187,7 +187,12 @@ const AreaDetails: React.FC = () => {
                                 </p>
                             )}
                             <div className={`mt-3 flex gap-4 text-xs ${area.color ? 'text-white/70' : 'text-gray-500 dark:text-gray-400'}`}>
-                                <span>{areaProjects.length} {t('areas.projects', 'projects')}</span>
+                                <Link
+                                    to={`/projects?area=${area.uid}`}
+                                    className={`hover:underline ${area.color ? 'hover:text-white' : 'hover:text-gray-700 dark:hover:text-gray-200'}`}
+                                >
+                                    {areaProjects.length} {t('areas.projects', 'projects')}
+                                </Link>
                                 <span>{areaGoals.length} {t('areas.goals', 'goals')}</span>
                                 <span>{areaTasks.length} {t('areas.tasks', 'tasks')}</span>
                             </div>

@@ -29,6 +29,10 @@ const tasks = [
     { uid: 'task-3', name: 'Archived task', status: 'archived' },
 ];
 
+const projects = [
+    { uid: 'project-1', name: 'Project one', area: { uid: 'areauid1' } },
+];
+
 jest.mock('../../../utils/tasksService', () => ({
     fetchTasks: jest.fn(() => Promise.resolve({ tasks })),
 }));
@@ -52,7 +56,7 @@ jest.mock('../../../store/useStore', () => ({
                 loadAreas: jest.fn(),
             },
             projectsStore: {
-                projects: [],
+                projects,
                 hasLoaded: true,
                 isLoading: false,
                 loadProjects: jest.fn(),
@@ -89,5 +93,15 @@ describe('AreaDetails header stats', () => {
         });
 
         expect(screen.getByText('2 goals')).toBeInTheDocument();
+    });
+
+    it('links the projects stat to the projects list filtered by this area', async () => {
+        renderPage();
+
+        const projectsLink = await screen.findByText('1 projects');
+        expect(projectsLink.closest('a')).toHaveAttribute(
+            'href',
+            '/projects?area=areauid1'
+        );
     });
 });
