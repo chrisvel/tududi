@@ -25,12 +25,32 @@ export const getPostHeadersWithCsrf = async (): Promise<
     };
 };
 
+// Thrown when a mutation was queued for background sync instead of
+// reaching the server - see handleApiMutation in public/sw.js. Callers
+// that care about the real created/updated resource should catch this
+// separately rather than treating the queued placeholder body as the
+// resource itself.
+export class OfflineQueuedError extends Error {
+    constructor(
+        message = 'This action was saved offline and will sync automatically.'
+    ) {
+        super(message);
+        this.name = 'OfflineQueuedError';
+    }
+}
+
+export const isQueuedOfflineResponse = (response: Response): boolean =>
+    response.headers.get('X-Tududi-Queued') === '1';
+
 let isRedirecting = false;
 
 export const handleAuthResponse = async (
     response: Response,
     errorMessage: string
 ): Promise<Response> => {
+    if (isQueuedOfflineResponse(response)) {
+        throw new OfflineQueuedError();
+    }
     if (!response.ok) {
         if (response.status === 401) {
             if (window.location.pathname !== '/login' && !isRedirecting) {

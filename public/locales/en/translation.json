@@ -808,6 +808,7 @@
     "captureThought": "Capture a thought…",
     "saveToInbox": "Save to Inbox",
     "itemAdded": "Item added to inbox",
+    "itemQueuedOffline": "Saved offline. It'll sync automatically once you're back online.",
     "itemProcessed": "Item processed",
     "itemDeleted": "Item deleted",
     "itemUpdated": "Item updated",

@@ -2,6 +2,11 @@ const CACHE_VERSION = 'tududi-v1';
 const API_CACHE = 'tududi-api-v1';
 const SYNC_QUEUE = 'tududi-sync-queue';
 
+// Non-GET endpoints with nothing worth replaying later (stateless reads
+// that happen to use a POST body). Queuing these would waste storage and
+// hand callers a stale/synthetic result instead of a real one.
+const NO_QUEUE_PATHS = ['/api/inbox/analyze-text'];
+
 // Set via SESSION_UPDATE message from the client after login.
 // Used to tag queued mutations and detect cross-principal replays.
 let sessionUserId = null;
@@ -84,6 +89,8 @@ self.addEventListener('fetch', (event) => {
     if (url.pathname.startsWith('/api/')) {
         if (request.method === 'GET') {
             event.respondWith(handleApiGet(request));
+        } else if (NO_QUEUE_PATHS.some((p) => url.pathname.startsWith(p))) {
+            event.respondWith(handleApiNoQueue(request));
         } else {
             event.respondWith(handleApiMutation(request));
         }
@@ -153,6 +160,22 @@ async function handleApiGet(request) {
     }
 }
 
+// ─── API calls that are never queued (stateless, nothing to replay) ──────────
+
+async function handleApiNoQueue(request) {
+    try {
+        return await fetch(request);
+    } catch {
+        return new Response(
+            JSON.stringify({ error: 'Offline', offline: true }),
+            {
+                status: 503,
+                headers: { 'Content-Type': 'application/json' },
+            }
+        );
+    }
+}
+
 // ─── API Mutations: queue when offline, replay on sync ───────────────────────
 
 async function handleApiMutation(request) {
@@ -164,7 +187,10 @@ async function handleApiMutation(request) {
             JSON.stringify({ queued: true, offline: true }),
             {
                 status: 202,
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Tududi-Queued': '1',
+                },
             }
         );
     }
@@ -215,6 +241,32 @@ self.addEventListener('sync', (event) => {
     }
 });
 
+// Entries may have been queued with no CSRF token (getCsrfToken()
+// degrades to '' offline - see frontend/utils/csrfService.ts) or with one
+// that's gone stale by the time we're back online. The Background Sync
+// event firing implies connectivity, so fetch a fresh one and overwrite
+// whatever the entry captured before replaying. Falls back to the
+// entry's original headers if the refresh itself fails, so a flaky
+// reconnect doesn't drop the whole batch - the per-entry try/catch below
+// leaves it queued for the next sync either way.
+async function refreshCsrfHeader(headers) {
+    const csrfKey = Object.keys(headers).find(
+        (key) => key.toLowerCase() === 'x-csrf-token'
+    );
+    if (!csrfKey) return headers;
+
+    try {
+        const response = await fetch('/api/csrf-token', {
+            credentials: 'include',
+        });
+        if (!response.ok) return headers;
+        const { csrfToken } = await response.json();
+        return { ...headers, [csrfKey]: csrfToken };
+    } catch {
+        return headers;
+    }
+}
+
 async function replayQueuedRequests() {
     const db = await openQueueDb();
     const tx = db.transaction(SYNC_QUEUE, 'readonly');
@@ -234,9 +286,10 @@ async function replayQueuedRequests() {
         }
 
         try {
+            const headers = await refreshCsrfHeader(entry.headers);
             const response = await fetch(entry.url, {
                 method: entry.method,
-                headers: entry.headers,
+                headers,
                 body: entry.body || undefined,
             });
             if (response.ok) {
