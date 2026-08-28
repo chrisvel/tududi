@@ -2,6 +2,7 @@
 
 const peopleService = require('./service');
 const { getAuthenticatedUserId } = require('../../utils/request-utils');
+const { extractUidFromSlug } = require('../../utils/slug-utils');
 const { UnauthorizedError } = require('../../shared/errors');
 
 function requireUserId(req) {
@@ -21,6 +22,22 @@ const peopleController = {
                 relationship_type,
                 unlinked,
             });
+            res.json({ people });
+        } catch (err) {
+            next(err);
+        }
+    },
+
+    async listAssignable(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const projectUid = extractUidFromSlug(req.params.uidSlug);
+            const { archived, sort, relationship_type, unlinked } = req.query;
+            const people = await peopleService.getAssignableForProject(
+                userId,
+                projectUid,
+                { archived, sort, relationship_type, unlinked }
+            );
             res.json({ people });
         } catch (err) {
             next(err);

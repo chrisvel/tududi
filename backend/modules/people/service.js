@@ -14,6 +14,37 @@ class PeopleService {
         return peopleRepository.findAllByUser(userId, filters);
     }
 
+    // Own people plus the self-person of the project owner and any
+    // collaborators the project is shared with, so a task in a shared
+    // project can be assigned to anyone who actually has access to it.
+    async getAssignableForProject(userId, projectUid, filters = {}) {
+        const people = await peopleRepository.findAllByUser(userId, filters);
+
+        const ownerUserId =
+            await peopleRepository.findProjectOwnerUserId(projectUid);
+        if (!ownerUserId) return people;
+
+        const collaboratorUserIds =
+            await peopleRepository.findProjectCollaboratorUserIds(projectUid);
+        const otherUserIds = Array.from(
+            new Set([ownerUserId, ...collaboratorUserIds])
+        ).filter((id) => id !== userId);
+
+        if (!otherUserIds.length) return people;
+
+        const selfPeople =
+            await peopleRepository.findSelfPeopleByUserIds(otherUserIds);
+        const existingUids = new Set(people.map((p) => p.uid));
+        const merged = [...people];
+        for (const person of selfPeople) {
+            if (!existingUids.has(person.uid)) {
+                merged.push(person);
+                existingUids.add(person.uid);
+            }
+        }
+        return merged;
+    }
+
     async getUnlinked(userId) {
         return peopleRepository.findAllByUser(userId, {
             archived: false,

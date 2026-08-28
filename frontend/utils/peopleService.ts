@@ -25,6 +25,32 @@ export const fetchPeople = async (params: {
     return data.people;
 };
 
+export const fetchAssignablePeopleForProject = async (
+    projectUid: string,
+    params: {
+        archived?: boolean;
+        sort?: string;
+        relationship_type?: string;
+        unlinked?: boolean;
+    } = {}
+): Promise<Person[]> => {
+    const query = new URLSearchParams();
+    if (params.archived !== undefined) query.set('archived', String(params.archived));
+    if (params.sort) query.set('sort', params.sort);
+    if (params.relationship_type) query.set('relationship_type', params.relationship_type);
+    if (params.unlinked) query.set('unlinked', 'true');
+
+    const path = `projects/${projectUid}/assignable-people`;
+    const url = query.toString() ? `${path}?${query.toString()}` : path;
+    const response = await fetch(getApiPath(url), {
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
+    });
+    await handleAuthResponse(response, 'Failed to fetch assignable people.');
+    const data = await response.json();
+    return data.people;
+};
+
 export const fetchPersonByUid = async (uid: string): Promise<Person> => {
     const response = await fetch(getApiPath(`people/${uid}`), {
         credentials: 'include',
