@@ -1,4 +1,6 @@
-const calculateNextDueDate = (task, fromDate) => {
+const { getWeekdayInTimezone } = require('../../utils/timezone-utils');
+
+const calculateNextDueDate = (task, fromDate, timezone = 'UTC') => {
     if (
         !task ||
         !task.recurrence_type ||
@@ -22,7 +24,8 @@ const calculateNextDueDate = (task, fromDate) => {
                 startDate,
                 task.recurrence_interval || 1,
                 task.recurrence_weekday,
-                task.recurrence_weekdays
+                task.recurrence_weekdays,
+                timezone
             );
 
         case 'monthly':
@@ -57,7 +60,13 @@ const calculateDailyRecurrence = (fromDate, interval) => {
     return nextDate;
 };
 
-const calculateWeeklyRecurrence = (fromDate, interval, weekday, weekdays) => {
+const calculateWeeklyRecurrence = (
+    fromDate,
+    interval,
+    weekday,
+    weekdays,
+    timezone = 'UTC'
+) => {
     const nextDate = new Date(fromDate);
 
     // Handle multiple weekdays (e.g. Tuesday AND Thursday)
@@ -69,7 +78,10 @@ const calculateWeeklyRecurrence = (fromDate, interval, weekday, weekdays) => {
 
     if (parsedWeekdays && parsedWeekdays.length > 0) {
         const sorted = [...parsedWeekdays].sort((a, b) => a - b);
-        const currentDay = nextDate.getUTCDay();
+        // Read the weekday in the user's timezone, not getUTCDay(): fromDate
+        // may represent "local midnight" as a UTC instant, whose UTC calendar
+        // day is the previous day for positive-UTC-offset timezones.
+        const currentDay = getWeekdayInTimezone(nextDate, timezone);
 
         // Find next weekday in calendar order (accounting for week wrap)
         let nextWeekday = null;
@@ -119,7 +131,7 @@ const calculateWeeklyRecurrence = (fromDate, interval, weekday, weekdays) => {
 
         nextDate.setUTCDate(nextDate.getUTCDate() + daysToNext);
     } else if (weekday !== null && weekday !== undefined) {
-        const currentWeekday = nextDate.getUTCDay();
+        const currentWeekday = getWeekdayInTimezone(nextDate, timezone);
         let daysUntilTarget = (weekday - currentWeekday + 7) % 7;
 
         if (daysUntilTarget === 0) {
@@ -306,7 +318,7 @@ const calculateVirtualOccurrences = (
             is_virtual: true,
         });
 
-        currentDate = calculateNextDueDate(task, currentDate);
+        currentDate = calculateNextDueDate(task, currentDate, userTimezone);
         if (!currentDate) break;
 
         iterationCount++;

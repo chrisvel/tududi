@@ -216,6 +216,48 @@ describe('calculateInitialDueDate', () => {
         });
     });
 
+    describe('Weekly recurrence with non-UTC timezone (issue #1415)', () => {
+        it('uses the user local weekday, not the server UTC weekday, to find the next occurrence', () => {
+            // This instant is Thursday in UTC but already Friday in Asia/Tokyo
+            // (UTC+9) - the exact divergence that used to corrupt the "next
+            // weekday in pattern" calculation for positive-UTC-offset users.
+            const instant = new Date(Date.UTC(2026, 7, 27, 16, 0, 0, 0));
+            expect(instant.getUTCDay()).toBe(4); // Thursday in UTC
+
+            const RealDate = Date;
+            global.Date = class extends RealDate {
+                constructor(...args) {
+                    if (args.length === 0) {
+                        super(instant);
+                    } else {
+                        super(...args);
+                    }
+                }
+                static [Symbol.hasInstance](i) {
+                    return i instanceof RealDate;
+                }
+            };
+            global.Date.UTC = RealDate.UTC;
+            global.Date.parse = RealDate.parse;
+            global.Date.now = () => instant.getTime();
+
+            const result = calculateInitialDueDate(
+                {
+                    recurrence_type: 'weekly',
+                    recurrence_weekdays: [1, 2, 3, 4, 5],
+                },
+                'Asia/Tokyo'
+            );
+
+            // Local "today" is Friday (already in the pattern); the next
+            // occurrence strictly after today is Monday 2026-08-31, not
+            // 2026-08-28 (which is what the server-UTC-only calculation
+            // would incorrectly produce).
+            expect(result).toBe('2026-08-31');
+            global.Date = RealDate;
+        });
+    });
+
     describe('Weekly recurrence with single weekday (backward compatibility)', () => {
         it('should calculate correct due date for single weekday', () => {
             const monday = new Date(Date.UTC(2026, 2, 23, 0, 0, 0, 0));
