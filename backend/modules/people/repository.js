@@ -1,6 +1,6 @@
 'use strict';
 
-const { Person, Task } = require('../../models');
+const { Person, Task, Project, Permission } = require('../../models');
 const { Op } = require('sequelize');
 
 class PeopleRepository {
@@ -59,6 +59,36 @@ class PeopleRepository {
     async findByLinkedUserId(ownerUserId, linkedUserId) {
         return Person.findOne({
             where: { user_id: ownerUserId, linked_user_id: linkedUserId },
+        });
+    }
+
+    async findProjectOwnerUserId(projectUid) {
+        const project = await Project.findOne({
+            where: { uid: projectUid },
+            attributes: ['user_id'],
+            raw: true,
+        });
+        return project ? project.user_id : null;
+    }
+
+    async findProjectCollaboratorUserIds(projectUid) {
+        const rows = await Permission.findAll({
+            where: {
+                resource_type: 'project',
+                resource_uid: projectUid,
+                propagation: 'direct',
+            },
+            attributes: ['user_id'],
+            raw: true,
+        });
+        return Array.from(new Set(rows.map((r) => r.user_id)));
+    }
+
+    async findSelfPeopleByUserIds(userIds) {
+        if (!userIds.length) return [];
+        return Person.findAll({
+            where: { linked_user_id: userIds },
+            order: [['name', 'ASC']],
         });
     }
 }

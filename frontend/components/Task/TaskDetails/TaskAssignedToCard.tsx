@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { UserIcon } from '@heroicons/react/24/outline';
 import { Task } from '../../../entities/Task';
 import { Person } from '../../../entities/Person';
-import { fetchPeople } from '../../../utils/peopleService';
+import { fetchPeople, fetchAssignablePeopleForProject } from '../../../utils/peopleService';
 import PersonDropdown from '../../Shared/PersonDropdown';
 
 interface TaskAssignedToCardProps {
@@ -14,10 +14,13 @@ const TaskAssignedToCard: React.FC<TaskAssignedToCardProps> = ({ task, onAssign 
     const [people, setPeople] = useState<Person[]>([]);
 
     useEffect(() => {
-        fetchPeople().catch(console.error).then((p) => {
+        const load = task.project_uid
+            ? fetchAssignablePeopleForProject(task.project_uid)
+            : fetchPeople();
+        load.catch(console.error).then((p) => {
             if (p) setPeople(p);
         });
-    }, []);
+    }, [task.project_uid]);
 
     // Merge the embedded AssignedTo person (from shared tasks) with the user's own people
     // so assignees from other users' person records are visible
