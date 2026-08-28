@@ -720,15 +720,37 @@ const TaskDetails: React.FC = () => {
     }, [task?.parent_task?.uid]);
 
     const handleSubtaskUpdate = async (updatedSubtask: Task) => {
-        const taskIndex = tasksStore.tasks.findIndex((t: Task) => t.uid === uid);
-        if (taskIndex >= 0) {
-            const storeTask = tasksStore.tasks[taskIndex];
-            const updatedSubtasks = (storeTask.subtasks || []).map((s: Task) =>
-                s.id === updatedSubtask.id ? updatedSubtask : s
+        if (!updatedSubtask.uid) return;
+
+        try {
+            const savedSubtask = await updateTask(
+                updatedSubtask.uid,
+                updatedSubtask
             );
-            const updatedTasks = [...tasksStore.tasks];
-            updatedTasks[taskIndex] = { ...storeTask, subtasks: updatedSubtasks };
-            tasksStore.setTasks(updatedTasks);
+
+            const taskIndex = tasksStore.tasks.findIndex(
+                (t: Task) => t.uid === uid
+            );
+            if (taskIndex >= 0) {
+                const storeTask = tasksStore.tasks[taskIndex];
+                const updatedSubtasks = (storeTask.subtasks || []).map(
+                    (s: Task) =>
+                        s.id === savedSubtask.id
+                            ? { ...s, ...savedSubtask }
+                            : s
+                );
+                const updatedTasks = [...tasksStore.tasks];
+                updatedTasks[taskIndex] = {
+                    ...storeTask,
+                    subtasks: updatedSubtasks,
+                };
+                tasksStore.setTasks(updatedTasks);
+            }
+        } catch (error) {
+            console.error('Error updating subtask:', error);
+            showErrorToast(
+                t('task.statusUpdateError', 'Failed to update status')
+            );
         }
     };
 
