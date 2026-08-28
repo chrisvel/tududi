@@ -89,7 +89,8 @@ sync      → replay queued mutations (Background Sync API)
 |---|---|---|
 | Static assets (same-origin, non-API) | cache-first | Serve from `tududi-v1` cache; populate on first network hit |
 | API `GET` `/api/*` | `handleApiGet` | Network-first; on success write to `tududi-api-v1`; on network failure serve stale cache; if no cache return `503 { offline: true }` |
-| API mutations `/api/*` | `handleApiMutation` | Attempt network; if offline queue to IndexedDB, return `202 { queued: true }`; register Background Sync tag `tududi-sync` |
+| API mutations `/api/*` | `handleApiMutation` | Attempt network; if offline queue to IndexedDB, return `202 { queued: true }` with an `X-Tududi-Queued: 1` header; register Background Sync tag `tududi-sync` |
+| Stateless POST endpoints (e.g. `/api/inbox/analyze-text`) | `handleApiNoQueue` | Network-only; on failure return `503 { offline: true }` — never queued, since there's nothing meaningful to replay |
 | Navigation (`mode: navigate`) | inline | Network-first; fall back to cached `/` shell for SPA routing |
 
 ### Cache names
@@ -107,7 +108,9 @@ Mutations that fail due to network error are stored in an IndexedDB database nam
 { id, url, method, headers (auth headers stripped), body, sessionId, timestamp }
 ```
 
-The Background Sync API fires the `tududi-sync` event when connectivity returns. The SW replays each entry in order, deleting successfully-replayed entries from the store. After all replays it sends `{ type: 'SYNC_COMPLETE' }` to all open windows; `frontend/index.tsx` handles this by calling SWR's global `mutate(() => true)` to revalidate all cached data.
+The Background Sync API fires the `tududi-sync` event when connectivity returns. Before replaying each entry the SW re-fetches a fresh CSRF token (`GET /api/csrf-token`) and overwrites whatever `x-csrf-token`/`X-CSRF-Token` header was captured at queue time — a token fetched while offline (see below) may be missing or stale by replay time, and the session-scoped CSRF secret backing it doesn't rotate, so a freshly-issued token is always valid. If the refresh itself fails, the entry replays with its original header and is left queued for the next sync attempt. The SW replays entries in order, deleting successfully-replayed entries from the store. After all replays it sends `{ type: 'SYNC_COMPLETE' }` to all open windows; `frontend/index.tsx` handles this by calling SWR's global `mutate(() => true)` to revalidate all cached data.
+
+**CSRF tokens while offline:** every mutating request needs a CSRF token, normally fetched via `getCsrfToken()` (`frontend/utils/csrfService.ts`) — itself a `GET`, so it's never queued by the SW. If that fetch fails (e.g. offline), `getCsrfToken()` resolves `''` instead of throwing, so the caller's actual mutating `fetch()` still fires and reaches `handleApiMutation` to be queued, rather than aborting before the request is ever made. Frontend code that receives the synthetic `202` response must check for it (`isQueuedOfflineResponse()` / `handleAuthResponse()` throwing `OfflineQueuedError`, both in `frontend/utils/authUtils.ts`) rather than treating the `{ queued: true }` placeholder body as the real resource.
 
 **Limitation:** Creating tasks offline generates a server-assigned numeric ID on replay. If the queue contains multiple dependent mutations (e.g. create task then update it) the second mutation may reference an ID that didn't exist at queue time. This edge case is tracked alongside the broader id/uid consistency work.
 

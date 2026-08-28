@@ -21,6 +21,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { getApiPath } from '../config/paths';
 import { getCsrfToken } from '../utils/csrfService';
+import { isQueuedOfflineResponse } from '../utils/authUtils';
 import { isTaskActive } from '../constants/taskStatus';
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
@@ -395,6 +396,13 @@ const Tasks: React.FC = () => {
                     body: JSON.stringify(updatedTask),
                 }
             );
+
+            if (isQueuedOfflineResponse(response)) {
+                // Queued for background sync (see public/sw.js) - the body
+                // is a placeholder, not the updated task, so leave local
+                // state as-is rather than merging it in.
+                return;
+            }
 
             if (response.ok) {
                 const updatedTaskFromServer = await response.json();

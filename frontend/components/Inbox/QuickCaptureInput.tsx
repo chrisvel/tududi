@@ -13,7 +13,7 @@ import { Note } from '../../entities/Note';
 import { useToast } from '../Shared/ToastContext';
 import { useTranslation } from 'react-i18next';
 import { createInboxItemWithStore } from '../../utils/inboxService';
-import { isAuthError } from '../../utils/authUtils';
+import { isAuthError, OfflineQueuedError } from '../../utils/authUtils';
 import { createTag } from '../../utils/tagsService';
 import { createProject } from '../../utils/projectsService';
 import {
@@ -1091,6 +1091,20 @@ const QuickCaptureInput = React.forwardRef<
                             }
                             return;
                         } catch (error: any) {
+                            if (error instanceof OfflineQueuedError) {
+                                showSuccessToast(
+                                    t(
+                                        'inbox.itemQueuedOffline',
+                                        "Saved offline. It'll sync automatically once you're back online."
+                                    )
+                                );
+                                setInputText('');
+                                setAnalysisResult(null);
+                                if (inputRef.current) {
+                                    inputRef.current.focus();
+                                }
+                                return;
+                            }
                             if (isAuthError(error)) {
                                 return;
                             }
@@ -1171,6 +1185,20 @@ const QuickCaptureInput = React.forwardRef<
                             }
                             return;
                         } catch (error: any) {
+                            if (error instanceof OfflineQueuedError) {
+                                showSuccessToast(
+                                    t(
+                                        'inbox.itemQueuedOffline',
+                                        "Saved offline. It'll sync automatically once you're back online."
+                                    )
+                                );
+                                setInputText('');
+                                setAnalysisResult(null);
+                                if (inputRef.current) {
+                                    inputRef.current.focus();
+                                }
+                                return;
+                            }
                             console.error(
                                 'Error in note creation flow:',
                                 error
@@ -1193,10 +1221,38 @@ const QuickCaptureInput = React.forwardRef<
                             inputRef.current.focus();
                         }
                     } catch (error) {
+                        if (error instanceof OfflineQueuedError) {
+                            showSuccessToast(
+                                t(
+                                    'inbox.itemQueuedOffline',
+                                    "Saved offline. It'll sync automatically once you're back online."
+                                )
+                            );
+                            setInputText('');
+                            setAnalysisResult(null);
+                            if (inputRef.current) {
+                                inputRef.current.focus();
+                            }
+                            return;
+                        }
                         console.error('Failed to create inbox item:', error);
                         showErrorToast(t('inbox.addError'));
                     }
                 } catch (error) {
+                    if (error instanceof OfflineQueuedError) {
+                        showSuccessToast(
+                            t(
+                                'inbox.itemQueuedOffline',
+                                "Saved offline. It'll sync automatically once you're back online."
+                            )
+                        );
+                        setInputText('');
+                        setAnalysisResult(null);
+                        if (inputRef.current) {
+                            inputRef.current.focus();
+                        }
+                        return;
+                    }
                     console.error('Failed to save:', error);
                     showErrorToast(t('inbox.addError'));
                 } finally {

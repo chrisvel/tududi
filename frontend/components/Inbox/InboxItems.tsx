@@ -23,6 +23,7 @@ import QuickCaptureInput from './QuickCaptureInput';
 import { createTask } from '../../utils/tasksService';
 import { createProject } from '../../utils/projectsService';
 import { createNote } from '../../utils/notesService';
+import { OfflineQueuedError } from '../../utils/authUtils';
 import { isUrl } from '../../utils/urlService';
 import { fetchAreas } from '../../utils/areasService';
 import { fetchProjects } from '../../utils/projectsService';
@@ -432,8 +433,10 @@ const InboxItems: React.FC = () => {
 
             return createdTask;
         } catch (error) {
-            console.error('Failed to create task:', error);
-            showErrorToast(t('task.createError'));
+            if (!(error instanceof OfflineQueuedError)) {
+                console.error('Failed to create task:', error);
+                showErrorToast(t('task.createError'));
+            }
             throw error;
         } finally {
             if (options.inboxItemUid) {
@@ -455,8 +458,16 @@ const InboxItems: React.FC = () => {
                 inboxItemUid,
                 navigateAfterCreate: false,
             });
-        } catch {
-            // Errors are already reported via toast notifications
+        } catch (error) {
+            if (error instanceof OfflineQueuedError) {
+                showSuccessToast(
+                    t(
+                        'inbox.itemQueuedOffline',
+                        "Saved offline. It'll sync automatically once you're back online."
+                    )
+                );
+            }
+            // Other errors are already reported via toast notifications
         }
     };
 
@@ -529,6 +540,15 @@ const InboxItems: React.FC = () => {
                 }
             }
         } catch (error) {
+            if (error instanceof OfflineQueuedError) {
+                showSuccessToast(
+                    t(
+                        'inbox.itemQueuedOffline',
+                        "Saved offline. It'll sync automatically once you're back online."
+                    )
+                );
+                return;
+            }
             console.error('Failed to create project:', error);
             showErrorToast(t('project.createError'));
         }
@@ -565,6 +585,9 @@ const InboxItems: React.FC = () => {
 
             setIsNoteModalOpen(false);
         } catch (error) {
+            if (error instanceof OfflineQueuedError) {
+                throw error;
+            }
             console.error('Failed to create note:', error);
             showErrorToast(t('note.createError', 'Failed to create note'));
         }

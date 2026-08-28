@@ -8,6 +8,7 @@ import { Project } from '../../entities/Project';
 import { Tag } from '../../entities/Tag';
 import TaskItem from '../Task/TaskItem';
 import { getCsrfToken } from '../../utils/csrfService';
+import { isQueuedOfflineResponse } from '../../utils/authUtils';
 
 const COLUMN_STATUS: Record<string, number> = {
     not_started: 0,
@@ -208,6 +209,12 @@ const KanbanBoard: React.FC = () => {
                 },
                 body: JSON.stringify(updatedTask),
             });
+            if (isQueuedOfflineResponse(res)) {
+                // Queued for background sync (see public/sw.js) - the body
+                // is a placeholder, not the updated task, so leave local
+                // state as-is rather than merging it in.
+                return;
+            }
             if (res.ok) {
                 const saved = await res.json();
                 setTasks((prev) =>
