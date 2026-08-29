@@ -10,8 +10,13 @@ import './styles/markdown.css'; // Import markdown styles
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n'; // Import the i18n instance with its configuration
 import { getBasePath } from './config/paths';
+import { captureSharedPayload } from './utils/shareTargetService';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
+
+// Stash anything handed over by the OS share sheet and clean the URL before
+// the router reads it (see share_target in public/manifest.json)
+captureSharedPayload();
 
 if (!isDevelopment && 'serviceWorker' in navigator) {
     window.addEventListener('load', () => {
