@@ -50,6 +50,11 @@ Tududi is an installable Progressive Web App (PWA). Users can add it to their ho
   "background_color": "#ffffff",
   "lang": "en",
   "orientation": "portrait-primary",
+  "share_target": {
+    "action": "/inbox",
+    "method": "GET",
+    "params": { "title": "title", "text": "text", "url": "url" }
+  },
   "icons": [
     { "src": "/icon-logo.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
     { "src": "/icon-logo.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
@@ -66,6 +71,38 @@ Tududi is an installable Progressive Web App (PWA). Users can add it to their ho
 - Two separate entries are required; `"purpose": "any maskable"` in a single entry is a spec violation
 
 **Sub-path deployments (e.g. Home Assistant ingress):** The static `start_url: "/"` and `scope: "/"` will not match the ingress path, so the install prompt will not appear. A dynamic manifest served from the backend is needed for those deployments — this is a known limitation and a future enhancement.
+
+---
+
+## Share Target (Android / desktop share sheet)
+
+Once installed, tududi appears in the OS share sheet. Sharing a link or text from another app (Chrome, YouTube, a mail client, …) hands the content to the Inbox composer.
+
+### How it works
+
+1. `share_target` in the manifest registers tududi as a share handler. `method: "GET"` means the OS performs a plain navigation — no service worker interception needed:
+   ```
+   GET /inbox?title=<page title>&text=<selected text>&url=<link>
+   ```
+2. `captureSharedPayload()` (`frontend/utils/shareTargetService.ts`) runs in `frontend/index.tsx` **before React renders**. It:
+   - composes one string from `title`/`text`/`url`, dropping empty and duplicate values (Chrome on Android sends the same URL as both `text` and `url`)
+   - stores it in `sessionStorage` under `tududi_pending_share` with a timestamp
+   - rewrites the URL with `history.replaceState()` to strip the share params, so a reload doesn't replay the same share (other params such as `?loaded=` are preserved)
+3. `InboxItems` calls `takeSharedText()` on mount and passes the result as `initialValue` to `QuickCaptureInput`. The first call moves the payload out of `sessionStorage` and holds it in module scope for the rest of the page load, so every call returns the same text; `App.tsx` releases it with `clearSharedText()` on the first navigation away from `/inbox`.
+
+   The claim has to survive remounts: `Layout` swaps the routed page out for a full-screen spinner while its stores run their **first** fetch, so `InboxItems` mounts, unmounts and mounts again on every cold start — which is exactly what a launch from the share sheet is. A read that emptied `sessionStorage` on the first, discarded mount left the surviving composer blank every time.
+
+The shared content is **prefilled, not auto-saved** — the user can edit it and still choose Task / Note / Project, and the existing smart parsing (URL preview, `#tag`, `+Project`, task/note suggestion) applies as if they had typed it.
+
+### Why sessionStorage instead of reading the URL directly
+
+If the session has expired, `/inbox` is redirected to `/login` by `App.tsx` and the query params are lost. Stashing the payload first means the share survives the login round-trip: after authentication `App.tsx` sees `hasPendingSharedText()` and navigates to `/inbox`. Pending shares older than 10 minutes are discarded so a stale payload can't hijack a later navigation.
+
+### Limitations
+
+- **Text and links only.** Sharing *files* (images, PDFs) requires `method: "POST"` with a `multipart/form-data` enctype and a service worker `fetch` handler that intercepts the POST to `/inbox` — not implemented.
+- **iOS does not support Web Share Target**, so tududi will not appear in the iOS share sheet. iOS users can still use Shortcuts against the REST API.
+- Sub-path deployments have the same `action: "/inbox"` problem as `start_url` (see above).
 
 ---
 
@@ -87,7 +124,7 @@ sync      → replay queued mutations (Background Sync API)
 
 | Request type | Handler | Behaviour |
 |---|---|---|
-| Static assets (same-origin, non-API) | cache-first | Serve from `tududi-v1` cache; populate on first network hit |
+| Static assets (same-origin, non-API) | cache-first | Serve from `tududi-v2` cache; populate on first network hit |
 | API `GET` `/api/*` | `handleApiGet` | Network-first; on success write to `tududi-api-v1`; on network failure serve stale cache; if no cache return `503 { offline: true }` |
 | API mutations `/api/*` | `handleApiMutation` | Attempt network; if offline queue to IndexedDB, return `202 { queued: true }` with an `X-Tududi-Queued: 1` header; register Background Sync tag `tududi-sync` |
 | Stateless POST endpoints (e.g. `/api/inbox/analyze-text`) | `handleApiNoQueue` | Network-only; on failure return `503 { offline: true }` — never queued, since there's nothing meaningful to replay |
@@ -97,7 +134,7 @@ sync      → replay queued mutations (Background Sync API)
 
 | Name | Contents | Cleared when |
 |------|----------|-------------|
-| `tududi-v1` | Static assets (JS, CSS, fonts, icons, manifest) | SW activate removes old versions |
+| `tududi-v2` | Static assets (JS, CSS, fonts, icons, manifest) | SW activate removes old versions |
 | `tududi-api-v1` | API GET responses | 401/403 from any live fetch; CLEAR_CACHE message; manual SW update |
 
 ### Offline mutation queue
@@ -201,10 +238,10 @@ async function handleApiGet(request) {
 
 ## Updating the Cache Version
 
-When making a breaking change to the static asset structure (e.g. removing or renaming a cached file), bump `CACHE_VERSION` at the top of `public/sw.js`:
+When making a breaking change to the static asset structure — removing or renaming a cached file, or editing a pre-cached one such as `manifest.json`, since cache-first would otherwise serve the stale copy forever — bump `CACHE_VERSION` at the top of `public/sw.js`:
 
 ```javascript
-const CACHE_VERSION = 'tududi-v2'; // was tududi-v1
+const CACHE_VERSION = 'tududi-v3'; // was tududi-v2
 ```
 
 The `activate` event deletes all caches that don't match the current `CACHE_VERSION` or `API_CACHE`. If the API response format changes significantly, also bump `API_CACHE`:
@@ -223,6 +260,7 @@ const API_CACHE = 'tududi-api-v2'; // was tududi-api-v1
 | Offline task creation | Creating a task offline queues a POST; the server-assigned `id` is unknown at queue time, so dependent mutations in the same offline session may fail on replay |
 | No conflict resolution | If the server state changed while offline, replayed mutations apply on top of the new state without merging — last writer wins |
 | iOS Safari background sync | iOS does not support the Background Sync API; queued mutations are replayed the next time the app is opened while online |
+| Share target scope | Text and links only (`method: "GET"`); sharing files would need a POST share target intercepted by the service worker. Not available on iOS, which has no Web Share Target support |
 
 ---
 
