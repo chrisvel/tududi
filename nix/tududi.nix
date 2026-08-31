@@ -7,7 +7,7 @@ pkgs.buildNpmPackage {
 
   npmDeps = pkgs.fetchNpmDeps {
     inherit src;
-    hash = "sha256-juSxkwCVtk+T0wURX2Gd7OnLkX2iO2Y50ohrTnv2UeA=";
+    hash = "sha256-AQ9ZD68tjJSloUsqLIDJ+Yxzaeuj2NDMB/OYxCrI9j8=";
   };
 
   nativeBuildInputs = [
