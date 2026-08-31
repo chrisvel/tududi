@@ -99,18 +99,23 @@ const SidebarPeople: React.FC<SidebarPeopleProps> = ({
                         <PlusIcon className="h-3.5 w-3.5" />
                     </button>
                     {sortedPeople.length > 0 && (
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setIsExpanded((v) => !v);
-                            }}
-                            className="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
-                        >
-                            <ChevronRightIcon
-                                className="h-3 w-3 transition-transform duration-150"
-                                style={{ transform: isExpanded ? 'rotate(90deg)' : 'none' }}
-                            />
-                        </button>
+                        <>
+                            <span className="text-[10.5px] text-gray-400 dark:text-gray-500 tabular-nums">
+                                {sortedPeople.length}
+                            </span>
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setIsExpanded((v) => !v);
+                                }}
+                                className="text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
+                            >
+                                <ChevronRightIcon
+                                    className="h-3 w-3 transition-transform duration-150"
+                                    style={{ transform: isExpanded ? 'rotate(90deg)' : 'none' }}
+                                />
+                            </button>
+                        </>
                     )}
                 </div>
             </li>

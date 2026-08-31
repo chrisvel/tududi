@@ -67,6 +67,20 @@ export const sortNotesByOrder = (notes: Note[], orderBy: string): Note[] => {
 };
 
 /**
+ * Filters notes by title for the sidebar's search box. Matching is
+ * substring/case-insensitive against the title only - the tree is a quick
+ * browse/peek list, not a full-text search.
+ */
+export const filterNotesByQuery = (notes: Note[], query: string): Note[] => {
+    const trimmed = query.trim().toLowerCase();
+    if (!trimmed) return notes;
+
+    return notes.filter((note) =>
+        (note.title || '').toLowerCase().includes(trimmed)
+    );
+};
+
+/**
  * Builds the flat Project-folder / rootless-note structure for the notes
  * tree from data already available in the frontend stores. Projects are a
  * flat top level (no Area grouping) - a project only appears if it has at

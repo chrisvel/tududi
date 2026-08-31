@@ -1,13 +1,17 @@
 import React, { useMemo } from 'react';
 import { Location } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { BookOpenIcon } from '@heroicons/react/24/outline';
+import {
+    BookOpenIcon,
+    ChevronRightIcon,
+} from '@heroicons/react/24/outline';
 import { Note } from '../../entities/Note';
 import { Project } from '../../entities/Project';
 import { createNoteUrl } from '../../utils/slugUtils';
 import { useNotesTreeExpansion } from '../../hooks/useNotesTreeExpansion';
 import {
     buildNotesTree,
+    filterNotesByQuery,
     flattenVisibleRows,
     getActiveFolderKeys,
 } from '../../utils/notesTreeUtils';
@@ -17,6 +21,7 @@ interface SidebarNotesTreeProps {
     projects: Project[];
     location: Location;
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
+    searchQuery: string;
 }
 
 const BASE_PADDING_PX = 30;
@@ -35,12 +40,18 @@ const SidebarNotesTree: React.FC<SidebarNotesTreeProps> = ({
     projects,
     location,
     handleNavClick,
+    searchQuery,
 }) => {
     const { t } = useTranslation();
 
+    const filteredNotes = useMemo(
+        () => filterNotesByQuery(notes, searchQuery),
+        [notes, searchQuery]
+    );
+
     const tree = useMemo(
-        () => buildNotesTree(notes, projects, 'updated_at:desc'),
-        [notes, projects]
+        () => buildNotesTree(filteredNotes, projects, 'updated_at:desc'),
+        [filteredNotes, projects]
     );
 
     const activeNote = useMemo(
@@ -55,13 +66,15 @@ const SidebarNotesTree: React.FC<SidebarNotesTreeProps> = ({
 
     const { expanded, toggle } = useNotesTreeExpansion(initialActiveKeys);
 
+    const isSearching = searchQuery.trim().length > 0;
+
     // The "NOTES" header directly above already labels this section, so the
     // tree's own "Folders" section-header row would just be redundant noise
     // in this small peek box.
     const rows = flattenVisibleRows({
         tree,
         expanded,
-        forceExpandAll: false,
+        forceExpandAll: isSearching,
         labels: { folders: '' },
     }).filter((row) => row.type !== 'section-header');
 
@@ -69,6 +82,19 @@ const SidebarNotesTree: React.FC<SidebarNotesTreeProps> = ({
         `flex justify-between items-center gap-2 rounded-[8px] py-[4px] pr-[10px] text-[13.5px] cursor-pointer text-gray-500 dark:text-[oklch(82%_0.006_95)] hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
             isActive ? 'bg-gray-100 dark:bg-[oklch(24%_0.015_250)]' : ''
         }`;
+
+    if (isSearching && rows.length === 0) {
+        return (
+            <div className="flex flex-col mb-1.5">
+                <span
+                    style={{ paddingLeft: BASE_PADDING_PX }}
+                    className="text-[13.5px] text-gray-400 dark:text-gray-500"
+                >
+                    {t('notes.noNotesFound', 'No notes found')}
+                </span>
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col gap-0.5 mb-1.5">
@@ -87,10 +113,15 @@ const SidebarNotesTree: React.FC<SidebarNotesTreeProps> = ({
                                 {row.label}
                             </span>
                             <span className="flex-shrink-0 flex items-center gap-1 text-gray-400 dark:text-gray-500">
-                                <span className="text-[9px]">
-                                    {row.expanded ? '▾' : '▸'}
-                                </span>
                                 {row.count}
+                                <ChevronRightIcon
+                                    className="h-3 w-3 transition-transform duration-150"
+                                    style={{
+                                        transform: row.expanded
+                                            ? 'rotate(90deg)'
+                                            : 'none',
+                                    }}
+                                />
                             </span>
                         </div>
                     );

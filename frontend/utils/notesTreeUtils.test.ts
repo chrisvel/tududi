@@ -1,5 +1,6 @@
 import {
     buildNotesTree,
+    filterNotesByQuery,
     flattenVisibleRows,
     getActiveFolderKeys,
     sortNotesByOrder,
@@ -35,6 +36,38 @@ describe('sortNotesByOrder', () => {
     it('sorts by created_at descending (default)', () => {
         const sorted = sortNotesByOrder(notes, 'created_at:desc');
         expect(sorted.map((n) => n.uid)).toEqual(['a', 'b', 'c']);
+    });
+});
+
+describe('filterNotesByQuery', () => {
+    const notes = [
+        makeNote({ uid: 'a', title: 'Grocery List' }),
+        makeNote({ uid: 'b', title: 'Meeting Notes' }),
+        makeNote({ uid: 'c', title: 'Recipe Ideas' }),
+    ];
+
+    it('returns all notes when the query is empty', () => {
+        expect(filterNotesByQuery(notes, '')).toEqual(notes);
+        expect(filterNotesByQuery(notes, '   ')).toEqual(notes);
+    });
+
+    it('matches titles case-insensitively as a substring', () => {
+        const result = filterNotesByQuery(notes, 'grocery');
+        expect(result.map((n) => n.uid)).toEqual(['a']);
+    });
+
+    it('matches multiple notes sharing a substring', () => {
+        const result = filterNotesByQuery(notes, 'e');
+        expect(result.map((n) => n.uid)).toEqual(['a', 'b', 'c']);
+    });
+
+    it('returns an empty array when nothing matches', () => {
+        expect(filterNotesByQuery(notes, 'zzz')).toEqual([]);
+    });
+
+    it('treats a missing title as unmatched', () => {
+        const untitled = [makeNote({ uid: 'd', title: '' })];
+        expect(filterNotesByQuery(untitled, 'grocery')).toEqual([]);
     });
 });
 
