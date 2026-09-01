@@ -252,7 +252,7 @@ async function computeTaskMetrics(
     ] = await Promise.all([
         countTotalOpenTasks(visibleTasksWhere),
         countTasksPendingOverMonth(visibleTasksWhere),
-        fetchTasksInProgress(visibleTasksWhere),
+        fetchTasksInProgress(visibleTasksWhere, somedayExcludedIds),
         fetchTodayPlanTasks(visibleTasksWhere, somedayExcludedIds),
         fetchTasksDueToday(
             visibleTasksWhere,

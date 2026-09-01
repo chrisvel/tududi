@@ -58,19 +58,27 @@ async function countTasksPendingOverMonth(visibleTasksWhere) {
     });
 }
 
-async function fetchTasksInProgress(visibleTasksWhere) {
+async function fetchTasksInProgress(
+    visibleTasksWhere,
+    somedayExcludedIds = []
+) {
     const now = new Date();
+    const statusFilter = {
+        status: {
+            [Op.in]: [Task.STATUS.IN_PROGRESS, 'in_progress'],
+        },
+        parent_task_id: null,
+        recurring_parent_id: null,
+    };
+    if (somedayExcludedIds.length > 0) {
+        statusFilter.id = { [Op.notIn]: somedayExcludedIds };
+    }
+
     return await Task.findAll({
         where: {
             [Op.and]: [
                 visibleTasksWhere,
-                {
-                    status: {
-                        [Op.in]: [Task.STATUS.IN_PROGRESS, 'in_progress'],
-                    },
-                    parent_task_id: null,
-                    recurring_parent_id: null,
-                },
+                statusFilter,
                 // Exclude tasks deferred to the future
                 {
                     [Op.or]: [
