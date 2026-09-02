@@ -571,9 +571,6 @@ const InboxItems: React.FC = () => {
             }
 
             await createNote(note);
-            showSuccessToast(
-                t('note.createSuccess', 'Note created successfully')
-            );
 
             if (currentConversionItemUid !== null) {
                 await handleProcessItem(currentConversionItemUid, false);
