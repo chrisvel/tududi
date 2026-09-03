@@ -4,6 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { getPresetBanners, PresetBanner } from '../../utils/bannersService';
 import { getApiPath, getAssetPath } from '../../config/paths';
 import { getCsrfToken } from '../../utils/csrfService';
+import {
+    getServerConfig,
+    getFileUploadLimitMB,
+} from '../../utils/configService';
 
 interface BannerEditModalProps {
     isOpen: boolean;
@@ -25,6 +29,7 @@ const BannerEditModal: React.FC<BannerEditModalProps> = ({
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [presetBanners] = useState<PresetBanner[]>(getPresetBanners());
+    const [maxSizeMB, setMaxSizeMB] = useState(getFileUploadLimitMB());
     const fileInputRef = useRef<HTMLInputElement>(null);
     const modalRef = useRef<HTMLDivElement>(null);
     const [isClosing, setIsClosing] = useState(false);
@@ -32,6 +37,15 @@ const BannerEditModal: React.FC<BannerEditModalProps> = ({
     useEffect(() => {
         setImagePreview(currentImageUrl);
     }, [currentImageUrl, isOpen]);
+
+    // Fetch the actual server-configured upload limit
+    useEffect(() => {
+        getServerConfig()
+            .then((config) => setMaxSizeMB(config.fileUploadLimitMB))
+            .catch(() => {
+                // Keep the fallback default if the config can't be fetched
+            });
+    }, []);
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
@@ -59,12 +73,13 @@ const BannerEditModal: React.FC<BannerEditModalProps> = ({
         const file = e.target.files?.[0];
         if (!file) return;
 
-        const maxSizeBytes = 10 * 1024 * 1024;
+        const maxSizeBytes = maxSizeMB * 1024 * 1024;
         if (file.size > maxSizeBytes) {
             setError(
                 t(
                     'errors.projectImageTooLarge',
-                    'Image is too large. Please choose a file under 10MB.'
+                    'Image is too large. Please choose a file under {{size}}MB.',
+                    { size: maxSizeMB }
                 )
             );
             if (fileInputRef.current) {
@@ -333,7 +348,8 @@ const BannerEditModal: React.FC<BannerEditModalProps> = ({
                                         <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                                             {t(
                                                 'project.uploadImageHint',
-                                                'Upload an image for your project (max 10MB)'
+                                                'Upload an image for your project (max {{size}}MB)',
+                                                { size: maxSizeMB }
                                             )}
                                         </p>
                                     </div>

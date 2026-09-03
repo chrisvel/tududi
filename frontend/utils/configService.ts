@@ -5,23 +5,36 @@ interface ServerConfig {
 }
 
 let cachedConfig: ServerConfig | null = null;
+let pendingRequest: Promise<ServerConfig> | null = null;
 
 export async function getServerConfig(): Promise<ServerConfig> {
     if (cachedConfig) {
         return cachedConfig;
     }
 
-    const response = await fetch(getApiPath('config'), {
-        method: 'GET',
-        credentials: 'include',
-    });
-
-    if (!response.ok) {
-        throw new Error('Failed to fetch server configuration');
+    if (pendingRequest) {
+        return pendingRequest;
     }
 
-    cachedConfig = await response.json();
-    return cachedConfig;
+    pendingRequest = (async () => {
+        const response = await fetch(getApiPath('config'), {
+            method: 'GET',
+            credentials: 'include',
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch server configuration');
+        }
+
+        cachedConfig = await response.json();
+        return cachedConfig;
+    })();
+
+    try {
+        return await pendingRequest;
+    } finally {
+        pendingRequest = null;
+    }
 }
 
 export function getFileUploadLimitMB(): number {

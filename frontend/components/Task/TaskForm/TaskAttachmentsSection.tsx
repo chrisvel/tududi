@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CloudArrowUpIcon } from '@heroicons/react/24/outline';
 import { Attachment } from '../../../entities/Attachment';
@@ -8,6 +8,10 @@ import {
     downloadAttachment,
     validateFile,
 } from '../../../utils/attachmentsService';
+import {
+    getServerConfig,
+    getFileUploadLimitMB,
+} from '../../../utils/configService';
 import { useToast } from '../../Shared/ToastContext';
 import AttachmentListItem from '../../Shared/AttachmentListItem';
 import AttachmentPreview from '../../Shared/AttachmentPreview';
@@ -30,7 +34,17 @@ const TaskAttachmentsSection: React.FC<TaskAttachmentsSectionProps> = ({
     const [uploading, setUploading] = useState(false);
     const [previewAttachment, setPreviewAttachment] =
         useState<Attachment | null>(null);
+    const [maxSizeMB, setMaxSizeMB] = useState(getFileUploadLimitMB());
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Fetch the actual server-configured upload limit
+    useEffect(() => {
+        getServerConfig()
+            .then((config) => setMaxSizeMB(config.fileUploadLimitMB))
+            .catch(() => {
+                // Keep the fallback default if the config can't be fetched
+            });
+    }, []);
 
     const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -151,7 +165,8 @@ const TaskAttachmentsSection: React.FC<TaskAttachmentsSectionProps> = ({
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                     {t(
                         'task.attachments.allowedTypes',
-                        'PDF, DOC, DOCX, TXT, MD, Images, XLS, XLSX, CSV, ZIP (max 10MB)'
+                        'PDF, DOC, DOCX, TXT, MD, Images, XLS, XLSX, CSV, ZIP (max {{size}}MB)',
+                        { size: maxSizeMB }
                     )}
                 </p>
             </div>

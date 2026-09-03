@@ -10,6 +10,10 @@ import {
     validateFile,
     getAttachmentType,
 } from '../../../utils/attachmentsService';
+import {
+    getServerConfig,
+    getFileUploadLimitMB,
+} from '../../../utils/configService';
 import { useToast } from '../../Shared/ToastContext';
 import ConfirmDialog from '../../Shared/ConfirmDialog';
 import AttachmentCard from '../../Shared/AttachmentCard';
@@ -34,12 +38,22 @@ const TaskAttachmentsCard: React.FC<TaskAttachmentsCardProps> = ({
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [attachmentToDelete, setAttachmentToDelete] =
         useState<Attachment | null>(null);
+    const [maxSizeMB, setMaxSizeMB] = useState(getFileUploadLimitMB());
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Load attachments on mount
     useEffect(() => {
         loadAttachments();
     }, [taskUid]);
+
+    // Fetch the actual server-configured upload limit
+    useEffect(() => {
+        getServerConfig()
+            .then((config) => setMaxSizeMB(config.fileUploadLimitMB))
+            .catch(() => {
+                // Keep the fallback default if the config can't be fetched
+            });
+    }, []);
 
     // Handle Escape key to close preview modal
     useEffect(() => {
@@ -229,7 +243,9 @@ const TaskAttachmentsCard: React.FC<TaskAttachmentsCardProps> = ({
                     </div>
                     <div className="p-4 flex-1 flex flex-col justify-center">
                         <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
-                            {t('task.attachments.maxSize', 'Max 10MB')}
+                            {t('task.attachments.maxSize', 'Max {{size}}MB', {
+                                size: maxSizeMB,
+                            })}
                         </p>
                         <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-1">
                             {t(
