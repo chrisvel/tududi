@@ -24,6 +24,10 @@ import {
     TrashIcon,
 } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
+import {
+    getFirstDayOfWeek,
+    getLocaleFirstDayOfWeek,
+} from '../../utils/profileService';
 
 const mapHabitToEditableValues = (task: Task) => ({
     name: task.name || '',
@@ -57,6 +61,7 @@ const HabitDetails: React.FC = () => {
         null
     );
     const [savingField, setSavingField] = useState<EditableField | null>(null);
+    const [firstDayOfWeek, setFirstDayOfWeek] = useState(0);
     const HISTORY_DAYS = 90;
     const DAYS_PER_CALENDAR = 30;
     const editingFieldRef = useRef<EditableField | null>(null);
@@ -165,6 +170,18 @@ const HabitDetails: React.FC = () => {
             setEditingField('name');
         }
     }, [uid]);
+
+    useEffect(() => {
+        const loadFirstDayOfWeek = async () => {
+            try {
+                const firstDay = await getFirstDayOfWeek();
+                setFirstDayOfWeek(firstDay);
+            } catch {
+                setFirstDayOfWeek(getLocaleFirstDayOfWeek(navigator.language));
+            }
+        };
+        loadFirstDayOfWeek();
+    }, []);
 
     useEffect(() => {
         editingFieldRef.current = editingField;
@@ -598,11 +615,20 @@ const HabitDetails: React.FC = () => {
         const normalizedEnd = new Date(rangeEnd);
         normalizedEnd.setHours(23, 59, 59, 999);
         const firstDay = new Date(normalizedStart);
-        firstDay.setDate(firstDay.getDate() - firstDay.getDay());
+        firstDay.setDate(
+            firstDay.getDate() - ((firstDay.getDay() - firstDayOfWeek + 7) % 7)
+        );
         const lastDay = new Date(normalizedEnd);
-        lastDay.setDate(lastDay.getDate() + (6 - lastDay.getDay()));
+        lastDay.setDate(
+            lastDay.getDate() +
+                (6 - ((lastDay.getDay() - firstDayOfWeek + 7) % 7))
+        );
 
-        const dayLabels = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+        const allDayLabels = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+        const dayLabels = [
+            ...allDayLabels.slice(firstDayOfWeek),
+            ...allDayLabels.slice(0, firstDayOfWeek),
+        ];
         const calendarDays = [];
         const currentDate = new Date(firstDay);
 
