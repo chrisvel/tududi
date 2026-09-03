@@ -62,8 +62,7 @@ const HabitDetails: React.FC = () => {
     );
     const [savingField, setSavingField] = useState<EditableField | null>(null);
     const [firstDayOfWeek, setFirstDayOfWeek] = useState(0);
-    const HISTORY_DAYS = 90;
-    const DAYS_PER_CALENDAR = 30;
+    const CALENDAR_MONTHS = 3;
     const editingFieldRef = useRef<EditableField | null>(null);
     const titleInputRef = useRef<HTMLInputElement | null>(null);
     const targetFrequencyContainerRef = useRef<HTMLDivElement | null>(null);
@@ -249,8 +248,9 @@ const HabitDetails: React.FC = () => {
         if (!uid || isNewHabit) return [];
         try {
             const startDate = new Date();
+            startDate.setDate(1);
+            startDate.setMonth(startDate.getMonth() - (CALENDAR_MONTHS - 1));
             startDate.setHours(0, 0, 0, 0);
-            startDate.setDate(startDate.getDate() - (HISTORY_DAYS - 1));
 
             const endDate = new Date();
             endDate.setHours(23, 59, 59, 999);
@@ -594,20 +594,23 @@ const HabitDetails: React.FC = () => {
     };
 
     const today = new Date();
-    const calendarRanges = Array.from(
-        { length: Math.ceil(HISTORY_DAYS / DAYS_PER_CALENDAR) },
-        (_, idx) => {
-            const rangeEnd = new Date(today);
-            rangeEnd.setDate(rangeEnd.getDate() - idx * DAYS_PER_CALENDAR);
-            const rangeStart = new Date(rangeEnd);
-            rangeStart.setDate(rangeEnd.getDate() - (DAYS_PER_CALENDAR - 1));
-            const monthLabel = rangeEnd.toLocaleString(undefined, {
-                month: 'long',
-                year: 'numeric',
-            });
-            return { rangeStart, rangeEnd, monthLabel };
-        }
-    );
+    const calendarRanges = Array.from({ length: CALENDAR_MONTHS }, (_, idx) => {
+        const rangeStart = new Date(
+            today.getFullYear(),
+            today.getMonth() - idx,
+            1
+        );
+        const rangeEnd = new Date(
+            today.getFullYear(),
+            today.getMonth() - idx + 1,
+            0
+        );
+        const monthLabel = rangeStart.toLocaleString(undefined, {
+            month: 'long',
+            year: 'numeric',
+        });
+        return { rangeStart, rangeEnd, monthLabel };
+    });
 
     const renderCalendar = (rangeStart: Date, rangeEnd: Date) => {
         const normalizedStart = new Date(rangeStart);
@@ -1096,7 +1099,7 @@ const HabitDetails: React.FC = () => {
                 {!isNewHabit && (
                     <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-6 mb-8">
                         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-                            {t('habits.history', 'Last 90 Days')}
+                            {t('habits.history', 'Last 3 Months')}
                         </h2>
                         <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                             {t(
