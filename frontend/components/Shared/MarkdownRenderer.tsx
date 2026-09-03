@@ -4,7 +4,8 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import hljs from 'highlight.js';
-import CalloutBlock, { CalloutType } from './CalloutBlock';
+import CalloutBlock from './CalloutBlock';
+import { detectCallout } from '../../utils/calloutParser';
 import { useStore } from '../../store/useStore';
 
 const WIKILINK_PREFIX = '/__wikilink__/';
@@ -17,10 +18,16 @@ function preprocessWikilinks(content: string): string {
 }
 
 function slugify(text: string): string {
-    return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    return text
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '');
 }
 
-const CodeBlock: React.FC<React.HTMLAttributes<HTMLPreElement>> = ({ children, ...props }) => {
+const CodeBlock: React.FC<React.HTMLAttributes<HTMLPreElement>> = ({
+    children,
+    ...props
+}) => {
     const preRef = useRef<HTMLPreElement>(null);
     const [copied, setCopied] = useState(false);
 
@@ -326,8 +333,12 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                     // Customize link styles — wikilinks get a note-chip style
                     a: ({ href, children, ...props }) => {
                         if (href?.startsWith(WIKILINK_PREFIX)) {
-                            const title = decodeURIComponent(href.slice(WIKILINK_PREFIX.length));
-                            const slug = noteTitleToSlug.get(title.toLowerCase());
+                            const title = decodeURIComponent(
+                                href.slice(WIKILINK_PREFIX.length)
+                            );
+                            const slug = noteTitleToSlug.get(
+                                title.toLowerCase()
+                            );
                             const to = slug ? `/note/${slug}` : null;
                             const badge = (
                                 <span className="inline-flex items-stretch rounded overflow-hidden align-middle border border-blue-200 dark:border-blue-700/70 mt-2">
@@ -344,7 +355,10 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                                     {badge}
                                 </Link>
                             ) : (
-                                <span className="cursor-default" title="Note not found">
+                                <span
+                                    className="cursor-default"
+                                    title="Note not found"
+                                >
                                     {badge}
                                 </span>
                             );
@@ -404,24 +418,49 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
 
                     // Customize blockquote styles — detect Obsidian-style callouts
                     blockquote: ({ node, children, ...props }) => {
-                        const firstHastChild = (node as any)?.children?.[0];
-                        if (firstHastChild?.type === 'element' && firstHastChild?.tagName === 'p') {
-                            const firstText = firstHastChild?.children?.[0];
-                            if (firstText?.type === 'text') {
-                                const match = (firstText.value as string)?.match(
-                                    /^\[!(NOTE|WARNING|TIP|IMPORTANT|DANGER)\](?:\s+(.*))?$/i
-                                );
-                                if (match) {
-                                    const calloutType = match[1].toUpperCase() as CalloutType;
-                                    const title = match[2]?.trim();
-                                    const contentChildren = React.Children.toArray(children).slice(1);
-                                    return (
-                                        <CalloutBlock type={calloutType} title={title}>
-                                            {contentChildren.length > 0 ? contentChildren : null}
-                                        </CalloutBlock>
+                        const callout = detectCallout(node);
+                        if (callout) {
+                            const blockChildren =
+                                React.Children.toArray(children);
+                            const markerIndex = blockChildren.findIndex((c) =>
+                                React.isValidElement(c)
+                            );
+                            const contentChildren = blockChildren.slice(
+                                markerIndex + 1
+                            );
+                            const markerParagraph = blockChildren[markerIndex];
+                            if (React.isValidElement(markerParagraph)) {
+                                // Keep soft-wrapped body text that shares the marker's
+                                // paragraph (e.g. "> [!NOTE]\n> body" with no blank line)
+                                const inlineRest = React.Children.toArray(
+                                    (markerParagraph.props as any).children
+                                ).slice(1);
+                                const leadChildren = [
+                                    ...(callout.remainderText
+                                        ? [callout.remainderText]
+                                        : []),
+                                    ...inlineRest,
+                                ];
+                                if (leadChildren.length > 0) {
+                                    contentChildren.unshift(
+                                        React.cloneElement(
+                                            markerParagraph,
+                                            undefined,
+                                            ...leadChildren
+                                        )
                                     );
                                 }
                             }
+                            return (
+                                <CalloutBlock
+                                    type={callout.type}
+                                    title={callout.title}
+                                >
+                                    {contentChildren.length > 0
+                                        ? contentChildren
+                                        : null}
+                                </CalloutBlock>
+                            );
                         }
                         return (
                             <blockquote
