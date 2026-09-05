@@ -74,6 +74,12 @@ npm run test:coverage
 
 # Watch mode (re-run on file changes)
 npm run test:watch
+
+# Upgrade suite: real migrations against legacy SQLite databases + schema parity
+npm run backend:test:upgrade
+
+# Upgrade with the real Docker images (slow; needs Docker, curl, sqlite3)
+npm run test:upgrade:docker
 ```
 
 ### Frontend Tests
@@ -437,6 +443,17 @@ DATABASE_URL=postgres://tududi:tududi@localhost:5432/tududi_test npm run backend
 ```
 
 CI runs both: `test-sqlite` and `test-postgres` in `.github/workflows/ci.yml`. When a test encodes engine-specific behaviour, branch on `isPostgres()` from `utils/db-dialect.js` rather than skipping the file.
+
+### Upgrade suite
+
+`npm run backend:test:upgrade` runs `backend/tests/upgrade` with its own Jest config (`backend/jest.upgrade.config.js`), because these tests must not use the sync-based setup above:
+
+- `legacy-sqlite-upgrade.test.js` copies every database in `backend/tests/fixtures/legacy` (real files produced by older releases, see the README there), runs `scripts/db-prepare.js` and `sequelize-cli db:migrate` against the copy exactly as `cmd/start.sh` does, and checks: only the pending migrations ran, `SequelizeMeta` lists every migration file, `PRAGMA integrity_check` is ok, no rows were lost, a second run is a no-op, and a fresh process booting the app on the file can log in, read every list endpoint and write through the model hooks (`helpers/smoke-runner.js`).
+- `schema-parity.test.js` snapshots the schema `sequelize.sync()` produces from the models and compares it with a fresh SQLite install, each upgraded legacy fixture and, when `DATABASE_URL` is set, a freshly bootstrapped PostgreSQL database. A model table, column or unique index that a migration never created fails the run. Accepted differences are listed in `known-schema-drift.json` with a reason; `SCHEMA_PARITY_REPORT=1` prints every difference without failing.
+
+Point `LEGACY_FIXTURE_DIR` at a directory with extra `.sqlite3` files (a copy of a real database, for example) to include them in a run without committing them.
+
+`npm run test:upgrade:docker` (`scripts/test-upgrade-docker.sh`) goes one level further: it starts the previous release image on a temporary volume, upgrades that volume with an image built from the current checkout and checks logins, data, the pre-migration backup and a restart. It runs from `.github/workflows/upgrade-docker.yml` on release tags, weekly and on demand.
 
 **Example cleanup:**
 ```javascript

@@ -1,0 +1,11 @@
+{
+    "_comment": "Schema differences between the models (sequelize.sync) and databases produced by the migration chain that are known and accepted. Keys are <table>.<column>:<attribute> or <table>:unique(<fields>). 'targets' is an optional list of regexes over the target snapshot name (fresh, legacy-<tag>, postgres); omit it to allow everywhere. Remove an entry once a migration fixes the drift.",
+    "users.features:type": {
+        "reason": "Migration 20260616000002 added the column as TEXT while the model declares JSON. SQLite stores both as text and the application parses strings (see modules/users/service.js), so behaviour is identical.",
+        "targets": ["^fresh$", "^legacy-"]
+    },
+    "user_project_areas:unique(project_id,user_id)": {
+        "reason": "The model declares a unique index on (user_id, project_id) that migration 20260714000001-create-user-project-areas never created, so databases upgraded from v1.3.x or earlier lack the constraint. Candidate for a follow-up migration that deduplicates and adds the index.",
+        "targets": ["^legacy-"]
+    }
+}
