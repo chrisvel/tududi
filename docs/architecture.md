@@ -50,13 +50,13 @@ graph TD
     Browser["Browser<br>http://localhost:8080"] --> WebpackDev["Webpack Dev Server<br>Port: 8080<br>- Hot reload<br>- Proxy /api/*<br>- Proxy /locales/*"]
     WebpackDev -->|Proxies requests| Express["Express Server<br>Port: 3002<br>- API endpoints<br>- Session auth<br>- Rate limiting"]
     Express --> Sequelize["Sequelize ORM<br>- Model layer<br>- Relationships<br>- Migrations"]
-    Sequelize --> SQLite["SQLite Database<br>database.sqlite<br>- WAL mode<br>- Optimized I/O"]
+    Sequelize --> Database["Database<br>SQLite file (default, WAL mode)<br>or PostgreSQL via DATABASE_URL"]
 
     style Browser fill:#1e3a5f,stroke:#4a9eff,color:#fff
     style WebpackDev fill:#5f4a1e,stroke:#ffa94a,color:#fff
     style Express fill:#5f1e4a,stroke:#ff4a9e,color:#fff
     style Sequelize fill:#1e5f1e,stroke:#4aff4a,color:#fff
-    style SQLite fill:#4a1e5f,stroke:#9e4aff,color:#fff
+    style Database fill:#4a1e5f,stroke:#9e4aff,color:#fff
 ```
 
 ### Production Mode
@@ -67,15 +67,17 @@ graph LR
     Express -->|Static files| Dist["/dist<br>compiled React app"]
     Express -->|/api routes| API["API Layer"]
     API --> Sequelize["Sequelize"]
-    Sequelize --> SQLite["SQLite"]
+    Sequelize --> Database["SQLite or PostgreSQL"]
 
     style Browser fill:#1e3a5f,stroke:#4a9eff,color:#fff
     style Express fill:#5f1e4a,stroke:#ff4a9e,color:#fff
     style Dist fill:#5f4a1e,stroke:#ffa94a,color:#fff
     style API fill:#1e5f1e,stroke:#4aff4a,color:#fff
     style Sequelize fill:#1e5f1e,stroke:#4aff4a,color:#fff
-    style SQLite fill:#4a1e5f,stroke:#9e4aff,color:#fff
+    style Database fill:#4a1e5f,stroke:#9e4aff,color:#fff
 ```
+
+The engine is chosen at startup from environment variables (`DATABASE_URL` or `DB_DIALECT`); see [PostgreSQL Deployment](16-postgresql.md) and [database.md](database.md). Application code stays engine-agnostic except for the few helpers in `backend/utils/db-dialect.js`.
 
 ---
 

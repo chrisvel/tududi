@@ -111,6 +111,8 @@ TUDUDI_USER_PASSWORD=your-secure-password
 # Optional - Server config
 NODE_ENV=development
 DB_FILE=db/development.sqlite3
+# Or develop against PostgreSQL instead of the SQLite file (see docs/16-postgresql.md):
+# DATABASE_URL=postgres://tududi:tududi@localhost:5432/tududi_dev
 FRONTEND_URL=http://localhost:8080
 BACKEND_URL=http://localhost:3002
 PORT=3002
@@ -397,7 +399,13 @@ git commit -m "Add estimated_time field to tasks
 
 ## Database Management
 
+All commands honour `DB_FILE` (SQLite) or `DATABASE_URL` (PostgreSQL) from `backend/.env`.
+
 ```bash
+# Verify the connection and create the schema if the database is empty
+# (what cmd/start.sh runs before migrations)
+npm run db:prepare
+
 # Reset database (WIPES ALL DATA!)
 npm run db:reset
 
@@ -556,7 +564,7 @@ kill -9 $(lsof -ti:3002)
 PORT=3003 npm run backend:dev
 ```
 
-### Database Locked
+### Database Locked (SQLite only)
 
 ```bash
 # Stop all servers
@@ -566,6 +574,8 @@ rm backend/db/development.sqlite3
 # Reinitialize
 npm run db:init
 ```
+
+PostgreSQL has no equivalent lock problem. To start over there, drop and recreate the database (`dropdb`/`createdb`) and run `npm run db:prepare`.
 
 ### Module Not Found
 

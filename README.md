@@ -213,7 +213,7 @@ Connect Tududi to external CalDAV servers like Nextcloud, Baikal, or other CalDA
 
 ### Database: SQLite or PostgreSQL
 
-Tududi stores everything in a single SQLite file by default, which is all a personal instance needs. For larger or multi-user deployments you can point it at PostgreSQL instead by setting `DATABASE_URL` (for example `postgres://tududi:secret@db:5432/tududi`). The database may be empty; the schema is created on first start. A complete compose setup with a bundled PostgreSQL service is in [docs/examples/docker-compose.postgres.yml](docs/examples/docker-compose.postgres.yml) (copy it next to your `.env` as `docker-compose.yml`), and the configuration details are in [docs/database.md](docs/database.md).
+Tududi stores everything in a single SQLite file by default, which is all a personal instance needs. For larger or multi-user deployments you can point it at PostgreSQL instead by setting `DATABASE_URL` (for example `postgres://tududi:secret@db:5432/tududi`). The database may be empty; the schema is created on first start. A complete compose setup with a bundled PostgreSQL service is in [docs/examples/docker-compose.postgres.yml](docs/examples/docker-compose.postgres.yml) (copy it next to your `.env` as `docker-compose.yml`), and the deployment guide is [docs/16-postgresql.md](docs/16-postgresql.md).
 
 ### Upgrading
 

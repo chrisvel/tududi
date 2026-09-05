@@ -571,7 +571,7 @@ Tududi runs on **SQLite** (default, zero configuration) or **PostgreSQL**. The e
 | `DB_SSL_REJECT_UNAUTHORIZED` | `false` to accept self-signed server certificates (default `true`, verified) |
 | `DB_POOL_MAX` | PostgreSQL connections per app process (default 10) |
 
-A ready-made compose setup lives in `docs/examples/docker-compose.postgres.yml`.
+A ready-made compose setup lives in `docs/examples/docker-compose.postgres.yml`; deployment, backup and tuning notes are in [16-postgresql.md](16-postgresql.md).
 
 ### How the schema is created
 

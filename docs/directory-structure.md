@@ -200,13 +200,16 @@
 │   ├── slug-utils.js   # URL slug handling, UID extraction
 │   ├── timezone-utils.js # Timezone conversions, date calculations
 │   ├── attachment-utils.js # File handling and validation
-│   ├── migration-utils.js  # Database migration helpers
+│   ├── migration-utils.js  # Database migration helpers (dialect-aware)
+│   ├── db-dialect.js       # The only place app code branches on SQLite vs PostgreSQL
 │   ├── request-utils.js    # Request utilities
 │   └── notificationPreferences.js
 │
 ├── config/              # Configuration
-│   ├── config.js       # Environment-based config
-│   ├── database.js     # Sequelize database config
+│   ├── config.js       # Environment-based config (includes config.db)
+│   ├── database-settings.js # Resolves the database engine from env vars (side-effect free)
+│   ├── db.js           # buildSequelizeOptions() shared by app, sequelize-cli and scripts
+│   ├── database.js     # sequelize-cli config (wraps db.js)
 │   └── swagger.js      # Swagger API schema (30KB)
 │
 ├── docs/                # API documentation
@@ -214,9 +217,19 @@
 │       └── (swagger doc files)
 │
 ├── scripts/             # Utility scripts
-│   └── (database management scripts)
+│   ├── db-prepare.js   # Runs on every start: connect, create schema on empty DB, baseline on PostgreSQL
+│   ├── db-migrate.js   # Umzug-based migration runner (npm run db:migrate)
+│   ├── db-status.js    # Connection and table statistics
+│   ├── db-init.js / db-reset.js / db-sync.js / reset-and-seed.js
+│   ├── user-create.js  # Create or update a user (used by cmd/start.sh)
+│   └── migration-create.js # Scaffold a dialect-safe migration
 │
 └── tests/               # Backend tests
+    ├── helpers/
+    │   ├── setup.js        # Per-file database isolation (SQLite file or per-worker PostgreSQL DB)
+    │   ├── globalSetup.js  # Creates the per-worker PostgreSQL databases
+    │   ├── test-db.js      # Test database naming
+    │   └── testUtils.js    # createTestUser, authenticateUser
     ├── unit/           # Unit tests
     │   ├── models/
     │   │   ├── task.test.js
@@ -229,10 +242,13 @@
     │   ├── services/
     │   │   ├── permissionsService.test.js
     │   │   └── applyPerms.test.js
+    │   ├── config/
+    │   │   └── database-settings.test.js
     │   └── utils/
     │       ├── timezone-utils.test.js
     │       ├── slug-utils.test.js
     │       ├── attachment-utils.test.js
+    │       ├── db-dialect.test.js
     │       └── migration-utils.test.js
     │
     └── integration/    # Integration tests (47+ test directories)

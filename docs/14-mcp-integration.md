@@ -1353,7 +1353,7 @@ FF_ENABLE_MCP=true
                                             │
                                     ┌───────┴───────┐
                                     │   Tududi DB    │
-                                    │  (SQLite)      │
+                                    │ (SQLite/PG)    │
                                     └───────────────┘
 ```
 
