@@ -42,8 +42,9 @@ const {
     ValidationError,
     ForbiddenError,
 } = require('../../shared/errors');
-const { User } = require('../../models');
+const { User, Role } = require('../../models');
 const { isAdmin } = require('../../services/rolesService');
+const { eraseUserAccount } = require('../../services/accountErasureService');
 const {
     createApiToken,
     revokeApiToken,
@@ -315,6 +316,50 @@ class UsersService {
     /**
      * Change password.
      */
+    async deleteAccount(userId, { password, confirmEmail } = {}) {
+        const user = await usersRepository.findByIdWithPassword(userId);
+        if (!user) {
+            throw new NotFoundError('User not found');
+        }
+
+        if (user.password_digest) {
+            if (!password) {
+                throw new ValidationError(
+                    'Current password is required',
+                    'password'
+                );
+            }
+            const ok = await User.checkPassword(password, user.password_digest);
+            if (!ok) {
+                throw new ValidationError(
+                    'Current password is incorrect',
+                    'password'
+                );
+            }
+        } else if (
+            !confirmEmail ||
+            String(confirmEmail).trim().toLowerCase() !== user.email
+        ) {
+            throw new ValidationError(
+                'Type your email address to confirm',
+                'confirm_email'
+            );
+        }
+
+        const role = await Role.findOne({ where: { user_id: userId } });
+        if (role?.is_admin) {
+            const admins = await Role.count({ where: { is_admin: true } });
+            if (admins <= 1) {
+                throw new ValidationError(
+                    'The last administrator cannot delete their own account. Promote another user first.'
+                );
+            }
+        }
+
+        await eraseUserAccount(userId);
+        return { success: true };
+    }
+
     async changePassword(userId, currentPassword, newPassword) {
         if (!newPassword) {
             throw new ValidationError('New password is required');

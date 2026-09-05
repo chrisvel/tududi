@@ -52,11 +52,9 @@ const authController = {
             if (error.statusCode === 403) {
                 return res.status(403).json({ error: error.message });
             }
-            if (
-                error.message ===
-                'Failed to send verification email. Please try again later.'
-            ) {
-                return res.status(500).json({ error: error.message });
+            if (error.statusCode === 503) {
+                logError('Registration email failure:', error);
+                return res.status(503).json({ error: error.message });
             }
             logError('Registration error:', error);
             res.status(500).json({
@@ -123,6 +121,15 @@ const authController = {
             }
             logError('Login error:', error);
             res.status(500).json({ error: 'Internal server error' });
+        }
+    },
+
+    async resendVerification(req, res, next) {
+        try {
+            const result = await authService.resendVerification(req.body.email);
+            res.json(result);
+        } catch (error) {
+            next(error);
         }
     },
 

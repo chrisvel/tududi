@@ -11,6 +11,8 @@ const Login: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [registrationEnabled, setRegistrationEnabled] = useState(false);
+    const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
+    const [resendState, setResendState] = useState<'idle' | 'sent'>('idle');
     const [passwordAuthEnabled, setPasswordAuthEnabled] = useState(true);
     const [oidcProviders, setOidcProviders] = useState<
         Array<{ slug: string; name: string }>
@@ -130,8 +132,25 @@ const Login: React.FC = () => {
         checkPasswordAuth();
     }, []);
 
+    const handleResendVerification = async () => {
+        if (!unverifiedEmail) return;
+        try {
+            await fetch(getApiPath('resend-verification'), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: unverifiedEmail }),
+                credentials: 'include',
+            });
+        } catch (err) {
+            console.error('Error resending verification email:', err);
+        }
+        setResendState('sent');
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setUnverifiedEmail(null);
+        setResendState('idle');
 
         try {
             const response = await fetch(getApiPath('login'), {
@@ -157,6 +176,7 @@ const Login: React.FC = () => {
                 navigate('/today');
             } else {
                 if (data.email_not_verified) {
+                    setUnverifiedEmail(email);
                     setError(
                         t(
                             'auth.email_not_verified',
@@ -211,6 +231,30 @@ const Login: React.FC = () => {
                             {error && (
                                 <div className="mb-4 text-center text-red-500">
                                     {error}
+                                </div>
+                            )}
+                            {unverifiedEmail && (
+                                <div className="mb-4 text-center text-sm">
+                                    {resendState === 'sent' ? (
+                                        <span className="text-gray-600 dark:text-gray-400">
+                                            {t(
+                                                'auth.verification_resent',
+                                                'If that address belongs to an unverified account, a new verification email is on its way.'
+                                            )}
+                                        </span>
+                                    ) : (
+                                        <button
+                                            type="button"
+                                            onClick={handleResendVerification}
+                                            className="text-blue-500 hover:text-blue-600"
+                                            data-testid="login-resend-verification"
+                                        >
+                                            {t(
+                                                'auth.resend_verification',
+                                                'Resend verification email'
+                                            )}
+                                        </button>
+                                    )}
                                 </div>
                             )}
 
@@ -294,6 +338,87 @@ const Login: React.FC = () => {
                                             )}
                                         </Link>
                                     </div>
+                                </form>
+                            )}
+
+                            {!passwordAuthEnabled &&
+                                oidcProviders.length === 0 && (
+                                    <div className="text-center text-gray-600 dark:text-gray-400">
+                                        {t(
+                                            'auth.no_auth_methods',
+                                            'No authentication methods available. Please contact your administrator.'
+                                        )}
+                                    </div>
+                                )}
+
+                            <OIDCProviderButtons providers={oidcProviders} />
+
+                            {oidcProviders.length > 0 &&
+                                passwordAuthEnabled && (
+                                    <div className="relative mb-6">
+                                        <div className="absolute inset-0 flex items-center">
+                                            <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+                                        </div>
+                                        <div className="relative flex justify-center text-sm">
+                                            <span className="px-2 bg-gray-100 dark:bg-gray-900 text-gray-500 dark:text-gray-400">
+                                                {t(
+                                                    'auth.or_continue_with_email',
+                                                    'Or continue with email'
+                                                )}
+                                            </span>
+                                        </div>
+                                    </div>
+                                )}
+
+                            {passwordAuthEnabled && (
+                                <form onSubmit={handleSubmit}>
+                                    <div className="mb-4">
+                                        <label
+                                            htmlFor="email"
+                                            className="block text-gray-600 dark:text-gray-300 mb-1"
+                                        >
+                                            {t('auth.email', 'Email')}
+                                        </label>
+                                        <input
+                                            type="email"
+                                            id="email"
+                                            name="email"
+                                            value={email}
+                                            onChange={(e) =>
+                                                setEmail(e.target.value)
+                                            }
+                                            className="w-full px-4 py-2 border dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                            data-testid="login-email"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="mb-4">
+                                        <label
+                                            htmlFor="password"
+                                            className="block text-gray-600 dark:text-gray-300 mb-1"
+                                        >
+                                            {t('auth.password', 'Password')}
+                                        </label>
+                                        <input
+                                            type="password"
+                                            id="password"
+                                            name="password"
+                                            value={password}
+                                            onChange={(e) =>
+                                                setPassword(e.target.value)
+                                            }
+                                            className="w-full px-4 py-2 border dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                            data-testid="login-password"
+                                            required
+                                        />
+                                    </div>
+                                    <button
+                                        type="submit"
+                                        className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors"
+                                        data-testid="login-submit"
+                                    >
+                                        {t('auth.login', 'Login')}
+                                    </button>
                                 </form>
                             )}
 

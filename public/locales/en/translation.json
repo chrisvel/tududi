@@ -1,5 +1,6 @@
 {
   "common": {
+    "deleting": "Deleting...",
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
@@ -509,6 +510,11 @@
       "prevConflict": "Previous"
     },
     "security": "Security Settings",
+    "deleteAccount": "Delete account",
+    "deleteAccountInfo": "This permanently removes your account and everything in it: tasks, projects, notes, attachments, backups, and integrations. It cannot be undone.",
+    "deleteAccountConfirmPassword": "Enter your password to confirm",
+    "deleteAccountConfirmEmail": "Type your email address to confirm",
+    "deleteAccountConfirm": "Permanently delete my account",
     "changePassword": "Change Password",
     "currentPassword": "Current Password",
     "newPassword": "New Password",
@@ -716,6 +722,8 @@
     "reset_link_missing": "This reset link is incomplete. Request a new one.",
     "request_new_link": "Request a new link",
     "password_too_short": "Password must be at least {{count}} characters long",
+    "resend_verification": "Resend verification email",
+    "verification_resent": "If that address belongs to an unverified account, a new verification email is on its way.",
     "newPassword": "New Password",
     "rememberMe": "Remember Me",
     "loginSuccess": "Login Successful",

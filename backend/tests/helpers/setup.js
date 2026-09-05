@@ -8,6 +8,12 @@
 
 const { testDatabaseName } = require('./test-db');
 
+// CalDAV routes 404 unless the flag is on; the CalDAV suites expect it on
+// unless a test turns it off deliberately.
+if (process.env.FF_ENABLE_CALDAV === undefined) {
+    process.env.FF_ENABLE_CALDAV = 'true';
+}
+
 if (process.env.DATABASE_URL || process.env.DB_DIALECT) {
     const workerDb = testDatabaseName(process.env.JEST_WORKER_ID || '1');
     if (process.env.DATABASE_URL) {

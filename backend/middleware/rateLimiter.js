@@ -175,7 +175,31 @@ const apiKeyManagementLimiter = rateLimit({
     },
 });
 
+// CalDAV clients authenticate with Basic auth on every request, outside the
+// /api limiters. Keyed by IP plus the attempted username so a password
+// guess against one account is throttled without blocking a whole office.
+const caldavAuthLimiter = rateLimit({
+    windowMs: rateLimitConfig.auth.windowMs,
+    max: rateLimitConfig.caldavAuth.max,
+    standardHeaders: true,
+    legacyHeaders: false,
+    skip: skipInTest,
+    keyGenerator: (req) => {
+        const username = (req.caldavUsername || '').trim().toLowerCase();
+        return `${ipKeyGenerator(req.ip)}|${username}`;
+    },
+    handler: (req, res) => {
+        res.status(429)
+            .set('WWW-Authenticate', 'Basic realm="Tududi CalDAV"')
+            .json({
+                error: 'Too many authentication attempts',
+                retryAfter: Math.ceil(req.rateLimit.resetTime / 1000),
+            });
+    },
+});
+
 module.exports = {
+    caldavAuthLimiter,
     authLimiter,
     authEmailLimiter,
     authEmailKey,

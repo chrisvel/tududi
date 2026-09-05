@@ -34,14 +34,12 @@ jobs:
       env:
         FF_ENABLE_BACKUPS: 'true'
         FF_ENABLE_CALDAV: 'true'
-        FF_ENABLE_CALENDAR: 'true'
 
     - name: Upgrade legacy SQLite databases and check schema parity
       run: npm run backend:test:upgrade
       env:
         FF_ENABLE_BACKUPS: 'true'
         FF_ENABLE_CALDAV: 'true'
-        FF_ENABLE_CALENDAR: 'true'
 
     - name: Build frontend
       run: npm run build
@@ -94,7 +92,6 @@ jobs:
       env:
         FF_ENABLE_BACKUPS: 'true'
         FF_ENABLE_CALDAV: 'true'
-        FF_ENABLE_CALENDAR: 'true'
 
     # Legacy fixtures are always SQLite; with DATABASE_URL set the parity test
     # also compares the PostgreSQL schema produced by db-prepare.
@@ -103,4 +100,3 @@ jobs:
       env:
         FF_ENABLE_BACKUPS: 'true'
         FF_ENABLE_CALDAV: 'true'
-        FF_ENABLE_CALENDAR: 'true'

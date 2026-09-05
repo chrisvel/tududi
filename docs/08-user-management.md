@@ -17,7 +17,13 @@ This document explains how user management works in tududi from a user behavior 
     - When a user registers, they receive a verification email
     - The email contains a unique link that expires in 24 hours (configurable)
     - Users cannot log in until they verify their email address
-    - If email service is disabled, users must be verified manually by an admin
+    - If the verification email cannot be sent (email service disabled or
+      failing), registration answers `503` and no account is kept, so the
+      user can simply try again later; admins can still create accounts
+      directly
+    - An unverified user can ask for a new link from the login page
+      (`POST /api/resend-verification`); the response is the same whether or
+      not the address belongs to an unverified account
 
 3. **The first user becomes an admin automatically**
     - When no admin users exist in the system, the first user to register becomes an admin
@@ -275,13 +281,20 @@ to an account, so it cannot be used to discover who has signed up - Declining re
 
 33. **Admins can delete users**
     - Cannot delete their own account (prevents lockout)
-    - Deleting a user also deletes their data:
-        - Tasks are deleted (cascades to subtasks, attachments, etc.)
-        - Projects are deleted (cascades to tasks within)
-        - Notes are deleted
-        - Permissions granted by/to the user are removed
-        - API tokens are deleted
-        - Shared resources are unshared
+    - Deletion is a full erasure (`services/accountErasureService.js`):
+      tasks, subtasks, attachments and their files, notes, projects, areas,
+      goals, tags, inbox items, views, notifications, API tokens, backups
+      and their files, OIDC identities, CalDAV calendars and sync state,
+      calendar tokens, contacts, the avatar file, permissions granted to
+      or by the user, the auth audit log, sessions, and the role row
+    - Other users' contact cards that were linked to the account keep
+      their data but lose the link
+
+33a. **Users can delete their own account** (`DELETE /api/profile`, Profile > Security)
+    - Requires the current password, or the typed email address for accounts
+      that have no password (SSO)
+    - Runs the same erasure as admin deletion and ends the session
+    - The last remaining administrator cannot delete their own account
 
 34. **Admin bootstrapping:**
     - Every user gets a role row on creation, and the first user created on

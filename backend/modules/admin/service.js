@@ -263,10 +263,7 @@ class AdminService {
             throw new ValidationError('Cannot delete your own account');
         }
 
-        const result = await adminRepository.deleteUserWithData(
-            id,
-            requesterId
-        );
+        const result = await adminRepository.deleteUserWithData(id);
 
         if (!result.success) {
             if (result.status === 404) {

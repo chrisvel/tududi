@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     ShieldCheckIcon,
@@ -6,8 +6,11 @@ import {
     EyeIcon,
     EyeSlashIcon,
     InformationCircleIcon,
+    TrashIcon,
 } from '@heroicons/react/24/outline';
 import type { ProfileFormData } from '../types';
+import { deleteAccount } from '../../../utils/profileService';
+import { getCurrentUser } from '../../../utils/userUtils';
 
 interface SecurityTabProps {
     isActive: boolean;
@@ -35,6 +38,26 @@ const SecurityTab: React.FC<SecurityTabProps> = ({
     onToggleConfirmPassword,
 }) => {
     const { t } = useTranslation();
+    const [confirmingDelete, setConfirmingDelete] = useState(false);
+    const [deleteSecret, setDeleteSecret] = useState('');
+    const [deleting, setDeleting] = useState(false);
+    const [deleteError, setDeleteError] = useState<string | null>(null);
+
+    const handleDeleteAccount = async () => {
+        setDeleteError(null);
+        setDeleting(true);
+        try {
+            await deleteAccount(
+                hasPassword
+                    ? { password: deleteSecret }
+                    : { confirm_email: deleteSecret }
+            );
+            window.location.href = '/login';
+        } catch (err: any) {
+            setDeleteError(err.message || 'Failed to delete account');
+            setDeleting(false);
+        }
+    };
 
     if (!isActive) return null;
 
@@ -80,7 +103,9 @@ const SecurityTab: React.FC<SecurityTabProps> = ({
                             <div className="relative">
                                 <input
                                     type={
-                                        showCurrentPassword ? 'text' : 'password'
+                                        showCurrentPassword
+                                            ? 'text'
+                                            : 'password'
                                     }
                                     name="currentPassword"
                                     value={formData.currentPassword || ''}
@@ -176,6 +201,85 @@ const SecurityTab: React.FC<SecurityTabProps> = ({
                         )}
                     </div>
                 </div>
+            </div>
+
+            <div className="mt-6 p-4 border border-red-200 dark:border-red-800 rounded-lg">
+                <h4 className="text-lg font-medium text-red-700 dark:text-red-400 mb-2 flex items-center">
+                    <TrashIcon className="w-5 h-5 mr-2" />
+                    {t('profile.deleteAccount', 'Delete account')}
+                </h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    {t(
+                        'profile.deleteAccountInfo',
+                        'This permanently removes your account and everything in it: tasks, projects, notes, attachments, backups, and integrations. It cannot be undone.'
+                    )}
+                </p>
+                {!confirmingDelete ? (
+                    <button
+                        type="button"
+                        onClick={() => setConfirmingDelete(true)}
+                        className="px-4 py-2 rounded border border-red-300 text-red-700 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/30"
+                        data-testid="delete-account-start"
+                    >
+                        {t('profile.deleteAccount', 'Delete account')}
+                    </button>
+                ) : (
+                    <div className="space-y-3">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            {hasPassword
+                                ? t(
+                                      'profile.deleteAccountConfirmPassword',
+                                      'Enter your password to confirm'
+                                  )
+                                : t(
+                                      'profile.deleteAccountConfirmEmail',
+                                      'Type your email address to confirm'
+                                  )}
+                        </label>
+                        <input
+                            type={hasPassword ? 'password' : 'email'}
+                            value={deleteSecret}
+                            onChange={(e) => setDeleteSecret(e.target.value)}
+                            placeholder={
+                                hasPassword ? '' : getCurrentUser()?.email || ''
+                            }
+                            className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                            data-testid="delete-account-secret"
+                        />
+                        {deleteError && (
+                            <div className="text-sm text-red-500">
+                                {deleteError}
+                            </div>
+                        )}
+                        <div className="flex space-x-2">
+                            <button
+                                type="button"
+                                onClick={handleDeleteAccount}
+                                disabled={deleting || !deleteSecret}
+                                className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700 disabled:opacity-60"
+                                data-testid="delete-account-confirm"
+                            >
+                                {deleting
+                                    ? t('common.deleting', 'Deleting...')
+                                    : t(
+                                          'profile.deleteAccountConfirm',
+                                          'Permanently delete my account'
+                                      )}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setConfirmingDelete(false);
+                                    setDeleteSecret('');
+                                    setDeleteError(null);
+                                }}
+                                className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+                            >
+                                {t('common.cancel', 'Cancel')}
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

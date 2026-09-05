@@ -115,6 +115,26 @@ const usersController = {
      * POST /api/profile/change-password
      * Change password.
      */
+    // DELETE /api/profile
+    // Erase the caller's own account. Requires the current password, or the
+    // typed email for accounts that have no password.
+    async deleteAccount(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const { password, confirm_email } = req.body || {};
+            await usersService.deleteAccount(userId, {
+                password,
+                confirmEmail: confirm_email,
+            });
+            if (req.session) {
+                req.session.destroy(() => {});
+            }
+            res.status(204).end();
+        } catch (error) {
+            next(error);
+        }
+    },
+
     async changePassword(req, res, next) {
         try {
             const userId = requireUserId(req);

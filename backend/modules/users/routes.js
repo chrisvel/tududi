@@ -60,6 +60,7 @@ router.get('/users', usersController.list);
 // Profile routes
 router.get('/profile', usersController.getProfile);
 router.patch('/profile', usersController.updateProfile);
+router.delete('/profile', usersController.deleteAccount);
 
 // Avatar routes
 router.post(

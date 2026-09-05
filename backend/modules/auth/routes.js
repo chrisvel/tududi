@@ -21,6 +21,12 @@ router.get(
 router.get('/csrf-token', csrfMiddleware, authController.getCsrfToken);
 router.post('/register', authLimiter, authController.register);
 router.get('/verify-email', authLimiter, authController.verifyEmail);
+router.post(
+    '/resend-verification',
+    authLimiter,
+    authEmailLimiter,
+    authController.resendVerification
+);
 router.get('/current_user', authController.getCurrentUser);
 router.post('/login', authLimiter, authEmailLimiter, authController.login);
 router.post(
