@@ -69,7 +69,7 @@ function validateEmail(email) {
  * @returns {boolean} True if valid
  */
 const PASSWORD_MIN_LENGTH = 8;
-const PASSWORD_POLICY_MESSAGE = `Password must be at least ${PASSWORD_MIN_LENGTH} characters long`;
+const MIN_LENGTH_POLICY_MESSAGE = `Password must be at least ${PASSWORD_MIN_LENGTH} characters long`;
 
 function validatePassword(password) {
     if (typeof password !== 'string' || _.trim(password) === '') return false;
@@ -78,7 +78,7 @@ function validatePassword(password) {
 
 module.exports = {
     PASSWORD_MIN_LENGTH,
-    PASSWORD_POLICY_MESSAGE,
+    MIN_LENGTH_POLICY_MESSAGE,
     createOrUpdateUser,
     validateEmail,
     validatePassword,

@@ -15,7 +15,7 @@ const {
     requestPasswordReset,
     resetPasswordWithToken,
 } = require('./passwordResetService');
-const { PASSWORD_POLICY_MESSAGE } = require('../users/userService');
+const { MIN_LENGTH_POLICY_MESSAGE } = require('../users/userService');
 const peopleService = require('../people/service');
 const packageJson = require('../../../package.json');
 const {
@@ -99,7 +99,7 @@ class AuthService {
             }
             if (
                 error.message === 'Invalid email format' ||
-                error.message === PASSWORD_POLICY_MESSAGE
+                error.message === MIN_LENGTH_POLICY_MESSAGE
             ) {
                 throw new ValidationError(error.message);
             }

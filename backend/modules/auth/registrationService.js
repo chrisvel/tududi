@@ -6,7 +6,7 @@ const { sendEmail } = require('../../services/emailService');
 const {
     validateEmail,
     validatePassword,
-    PASSWORD_POLICY_MESSAGE,
+    MIN_LENGTH_POLICY_MESSAGE,
 } = require('../users/userService');
 const {
     getDefaultNotificationPreferences,
@@ -46,7 +46,7 @@ const createUnverifiedUser = async (email, password, transaction = null) => {
     }
 
     if (!validatePassword(password)) {
-        throw new Error(PASSWORD_POLICY_MESSAGE);
+        throw new Error(MIN_LENGTH_POLICY_MESSAGE);
     }
 
     const existingUser = await User.findOne({

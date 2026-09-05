@@ -9,7 +9,7 @@ const { sendEmail, isEmailEnabled } = require('../../services/emailService');
 const { destroyUserSessions } = require('../../services/sessionService');
 const {
     validatePassword,
-    PASSWORD_POLICY_MESSAGE,
+    MIN_LENGTH_POLICY_MESSAGE,
 } = require('../users/userService');
 const { ValidationError } = require('../../shared/errors');
 
@@ -95,7 +95,7 @@ async function requestPasswordReset(email) {
 
 async function resetPasswordWithToken(token, password) {
     if (!validatePassword(password)) {
-        throw new ValidationError(PASSWORD_POLICY_MESSAGE);
+        throw new ValidationError(MIN_LENGTH_POLICY_MESSAGE);
     }
 
     const user = await User.findOne({
