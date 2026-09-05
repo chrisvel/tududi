@@ -194,7 +194,10 @@ class AuthService {
             throw new ValidationError('Invalid login parameters.');
         }
 
-        const user = await User.findOne({ where: { email } });
+        // Emails are stored lowercased (see the User beforeValidate hook)
+        const user = await User.findOne({
+            where: { email: String(email).trim().toLowerCase() },
+        });
         if (!user) {
             throw new UnauthorizedError('Invalid credentials');
         }

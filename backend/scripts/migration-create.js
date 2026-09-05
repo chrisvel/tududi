@@ -36,6 +36,13 @@ function createMigration() {
     // Migration template
     const template = `'use strict';
 
+// Migrations run on SQLite and PostgreSQL. Keep them dialect-safe:
+//   - prefer the safe* helpers in ../utils/migration-utils.js
+//   - no PRAGMA, sqlite_master, AUTOINCREMENT or backtick identifiers
+//   - compare booleans with true/false, never 0/1
+//   - branch on queryInterface.sequelize.getDialect() only when unavoidable
+// See docs/database.md, "Writing dialect-safe migrations".
+
 module.exports = {
   async up(queryInterface, Sequelize) {
     // Add your migration logic here

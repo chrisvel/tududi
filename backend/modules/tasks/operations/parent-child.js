@@ -99,9 +99,6 @@ async function cancelAllSubtasks(parentTaskId, userId) {
                         Task.STATUS.DONE,
                         Task.STATUS.ARCHIVED,
                         Task.STATUS.CANCELLED,
-                        'done',
-                        'archived',
-                        'cancelled',
                     ],
                 },
             }
@@ -123,7 +120,7 @@ async function uncancelAllSubtasks(parentTaskId, userId) {
             },
             {
                 status: {
-                    [Op.in]: [Task.STATUS.CANCELLED, 'cancelled'],
+                    [Op.in]: [Task.STATUS.CANCELLED],
                 },
             }
         );
@@ -145,7 +142,7 @@ async function undoneAllSubtasks(parentTaskId, userId) {
             },
             {
                 status: {
-                    [Op.in]: [Task.STATUS.DONE, 'done'],
+                    [Op.in]: [Task.STATUS.DONE],
                 },
             }
         );

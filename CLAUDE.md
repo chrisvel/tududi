@@ -12,7 +12,7 @@ This documentation is designed for AI assistants and developers working with the
 
 Tududi is a self-hosted task management system with hierarchical organization (Areas > Goals > Projects > Tasks), smart recurring tasks, and multi-channel integration.
 
-**Tech Stack:** React 18 + TypeScript, Express + Sequelize, SQLite
+**Tech Stack:** React 18 + TypeScript, Express + Sequelize, SQLite (default) or PostgreSQL
 
 **Get Started:**
 ```bash
@@ -117,7 +117,7 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
    - Common migration operations
 
 5. **[Backups & Restoration](docs/backups.md)**
-   - Automatic SQLite file backups before migrations
+   - Automatic SQLite file backups before migrations (PostgreSQL: pg_dump)
    - Backup retention policies (4 per day, 1 per day for 7 days)
    - Restoration procedures for development, Docker, and production
    - Emergency restore after failed migrations
@@ -317,7 +317,7 @@ Tududi is a self-hosted task management system designed around hierarchical orga
 
 **Backend:**
 - Express 4.21 + Sequelize 6.37 (ORM)
-- SQLite 5.1 (WAL mode, optimized)
+- SQLite (default, WAL mode, optimized) or PostgreSQL via `DATABASE_URL`
 - bcrypt + express-session (auth)
 - Swagger (API docs), Multer (uploads)
 - node-cron (scheduling), Nodemailer (email)

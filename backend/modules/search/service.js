@@ -298,7 +298,11 @@ class SearchService {
         }
 
         if (priority) {
-            conditions.priority = priority;
+            // priority is an INTEGER column; map the label the same way tasks do
+            const priorityInt = priorityToInt(priority);
+            if (priorityInt !== null) {
+                conditions.priority = priorityInt;
+            }
         }
 
         if (dueDateCondition) {

@@ -31,7 +31,7 @@ npm install
 npm run db:init
 
 # This command:
-# 1. Creates /backend/database.sqlite
+# 1. Creates backend/db/development.sqlite3 (or uses DATABASE_URL for PostgreSQL)
 # 2. Runs all migrations from /backend/migrations/
 # 3. Sets up tables and relationships
 ```
@@ -110,7 +110,7 @@ TUDUDI_USER_PASSWORD=your-secure-password
 
 # Optional - Server config
 NODE_ENV=development
-DB_FILE=database.sqlite
+DB_FILE=db/development.sqlite3
 FRONTEND_URL=http://localhost:8080
 BACKEND_URL=http://localhost:3002
 PORT=3002
@@ -561,7 +561,7 @@ PORT=3003 npm run backend:dev
 ```bash
 # Stop all servers
 # Delete database file
-rm backend/database.sqlite
+rm backend/db/development.sqlite3
 
 # Reinitialize
 npm run db:init

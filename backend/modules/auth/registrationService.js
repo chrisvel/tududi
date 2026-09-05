@@ -46,7 +46,7 @@ const createUnverifiedUser = async (email, password, transaction = null) => {
     }
 
     const existingUser = await User.findOne({
-        where: { email },
+        where: { email: email.trim().toLowerCase() },
         transaction,
     });
     if (existingUser) {

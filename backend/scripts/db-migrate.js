@@ -9,15 +9,9 @@ require('dotenv').config();
 const path = require('path');
 const { Sequelize } = require('sequelize');
 const Umzug = require('umzug');
-const { getConfig } = require('../config/config');
+const { buildSequelizeOptions } = require('../config/db');
 
-const config = getConfig();
-
-const sequelize = new Sequelize({
-    dialect: 'sqlite',
-    storage: config.dbFile,
-    logging: false,
-});
+const sequelize = new Sequelize(buildSequelizeOptions({ logging: false }));
 
 const umzug = new Umzug({
     migrations: {

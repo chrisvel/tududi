@@ -1,0 +1,55 @@
+# Tududi with PostgreSQL
+#
+# SQLite is the default and needs no database service. Use this file when you
+# want tududi to store its data in PostgreSQL instead, for example on a shared
+# host serving many users.
+#
+#   mkdir tududi && cd tududi
+#   cp /path/to/tududi/docs/examples/docker-compose.postgres.yml docker-compose.yml
+#   cp /path/to/tududi/.env.example .env   # fill in TUDUDI_* values and DB_PASSWORD
+#   docker compose up -d
+#
+# The database starts empty; tududi creates the schema on first boot.
+# Back up with: docker compose exec db pg_dump -U tududi tududi > backup.sql
+
+services:
+    db:
+        image: postgres:16-alpine
+        container_name: tududi-db
+        environment:
+            POSTGRES_DB: ${DB_NAME:-tududi}
+            POSTGRES_USER: ${DB_USER:-tududi}
+            POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
+        volumes:
+            - tududi_pgdata:/var/lib/postgresql/data
+        healthcheck:
+            test:
+                [
+                    'CMD-SHELL',
+                    'pg_isready -U ${DB_USER:-tududi} -d ${DB_NAME:-tududi}',
+                ]
+            interval: 5s
+            timeout: 3s
+            retries: 10
+        restart: unless-stopped
+
+    tududi:
+        image: chrisvel/tududi:latest
+        container_name: tududi
+        env_file:
+            - .env
+        environment:
+            DATABASE_URL: postgres://${DB_USER:-tududi}:${DB_PASSWORD}@db:5432/${DB_NAME:-tududi}
+            # Tune for your host; each app process keeps up to this many connections.
+            DB_POOL_MAX: ${DB_POOL_MAX:-10}
+        volumes:
+            - ./uploads:/app/uploads
+        ports:
+            - '3002:3002'
+        depends_on:
+            db:
+                condition: service_healthy
+        restart: unless-stopped
+
+volumes:
+    tududi_pgdata:

@@ -31,7 +31,9 @@ async function resourceExists(resourceType, resourceUid) {
 }
 
 async function getAccess(userId, resourceType, resourceUid) {
-    if (await isAdmin(userId)) return ACCESS.ADMIN;
+    // Admins get no blanket access to other users' resources: they are scoped
+    // like regular users and use the dedicated admin endpoints instead (same
+    // rule as ownershipOrPermissionWhere below).
 
     // ownership via model
     if (resourceType === 'project') {

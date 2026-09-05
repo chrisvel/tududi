@@ -6,7 +6,7 @@ describe('Task Model - Subtasks', () => {
 
     beforeEach(async () => {
         // Clean up tasks first
-        await Task.destroy({ where: {}, truncate: true });
+        await Task.destroy({ where: {}, truncate: true, cascade: true });
         // Create test user for each test since setup.js deletes all users
         testUser = await createTestUser();
     });
@@ -68,7 +68,8 @@ describe('Task Model - Subtasks', () => {
                 priority: Task.PRIORITY.MEDIUM,
             });
 
-            expect(task.parent_task_id).toBeUndefined();
+            // SQLite leaves the unset column undefined, PostgreSQL returns null
+            expect(task.parent_task_id ?? null).toBeNull();
         });
     });
 

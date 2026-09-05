@@ -557,9 +557,47 @@ await queryInterface.addConstraint('Tasks', {
 
 ## Database Configuration
 
+### Choosing a database
+
+Tududi runs on **SQLite** (default, zero configuration) or **PostgreSQL**. The engine is picked from environment variables in `/backend/config/database-settings.js` and every consumer (the app in `models/index.js`, sequelize-cli via `config/database.js`, and the scripts) builds its connection from the same `buildSequelizeOptions()` in `/backend/config/db.js`.
+
+| Variable | Purpose |
+|----------|---------|
+| `DB_FILE` | SQLite file path (default `backend/db/{NODE_ENV}.sqlite3`) |
+| `DATABASE_URL` | `postgres://user:pass@host:5432/dbname`; setting it selects PostgreSQL |
+| `DB_DIALECT` | `sqlite` (default) or `postgres`, for use with the discrete variables below |
+| `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` | PostgreSQL connection parts; each overrides the matching part of `DATABASE_URL` |
+| `DB_SSL` | `true` to connect over TLS (`?sslmode=require` in the URL also enables it) |
+| `DB_SSL_REJECT_UNAUTHORIZED` | `false` to accept self-signed server certificates (default `true`, verified) |
+| `DB_POOL_MAX` | PostgreSQL connections per app process (default 10) |
+
+A ready-made compose setup lives in `docs/examples/docker-compose.postgres.yml`.
+
+### How the schema is created
+
+`backend/scripts/db-prepare.js` runs on every start (from `cmd/start.sh`), before migrations:
+
+- **Existing database:** nothing to do; pending migrations run afterwards as usual.
+- **Empty SQLite database:** `sequelize.sync()` creates the tables from the models, then all migrations run (they are written to be idempotent over a synced schema).
+- **Empty PostgreSQL database:** `sequelize.sync()` creates the tables, then every existing migration file is recorded in `SequelizeMeta` as already applied (a *baseline*). The historical migrations contain SQLite-only SQL and never replay on PostgreSQL. Only migrations added after the baseline run there, so they must be dialect-safe (next section).
+
+There is no SQLite-to-PostgreSQL data transfer tooling; PostgreSQL deployments start empty.
+
+### Writing dialect-safe migrations
+
+Every new migration runs on both engines. Checklist:
+
+- Use the `safe*` helpers from `backend/utils/migration-utils.js` (`safeAddColumns`, `safeCreateTable`, `safeAddIndex`, `safeRemoveColumn`, `safeChangeColumn`); they already branch on dialect where needed.
+- Never use `PRAGMA`, `sqlite_master`, `AUTOINCREMENT`, backtick identifiers, or hand-rolled table rebuilds.
+- Compare and write booleans as `true`/`false`, never `0`/`1`.
+- JSON columns return strings on SQLite and objects on PostgreSQL: guard reads with `typeof value === 'string'`, and on PostgreSQL bind objects (or cast `::json`) rather than pre-stringified text.
+- Quote table aliases in raw SQL (`"Task"."id"`), as PostgreSQL lowercases unquoted identifiers.
+- Branch with `queryInterface.sequelize.getDialect()` only when unavoidable; `20251228000001-update-project-state-enum.js` shows the pattern.
+- Application code that must differ per engine goes through `backend/utils/db-dialect.js` (`isPostgres()`, `ciLike()`, `withForeignKeyChecksDisabled()`), nowhere else.
+
 ### Location
 
-`/backend/config/database.js`
+`/backend/config/database.js` (sequelize-cli), `/backend/config/db.js` (shared options)
 
 ### SQLite Performance Optimizations
 
@@ -579,11 +617,11 @@ await sequelize.query('PRAGMA temp_store=MEMORY'); // Memory-based temp storage
 - Memory-mapped I/O: Faster random access
 - Memory temp storage: Faster temp operations
 
-### Database File Location
+### Database File Location (SQLite)
 
-- **Development:** `/backend/database.sqlite`
-- **Docker:** Mounted volume at `/app/db/`
-- **Test:** Separate test database (auto-created)
+- **Development:** `/backend/db/development.sqlite3`
+- **Docker:** Mounted volume at `/app/db/production.sqlite3`
+- **Test:** One temporary file per test file under `/tmp` (see [Testing](testing.md))
 
 ---
 

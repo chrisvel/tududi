@@ -2,6 +2,7 @@ const request = require('supertest');
 const app = require('../../app');
 const { Task, Project, Area, Note, Tag, User } = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
+const { isPostgres } = require('../../utils/db-dialect');
 const moment = require('moment-timezone');
 
 describe('Universal Search Routes', () => {
@@ -272,8 +273,7 @@ describe('Universal Search Routes', () => {
                 await Project.create({
                     user_id: user.id,
                     name: 'High priority project',
-                    priority: 'high',
-                    state: 'active',
+                    priority: 2,
                 });
             });
 
@@ -330,7 +330,7 @@ describe('Universal Search Routes', () => {
                     (r) => r.type === 'Project'
                 );
                 expect(projects.length).toBeGreaterThanOrEqual(1);
-                expect(projects.every((p) => p.priority === 'high')).toBe(true);
+                expect(projects.every((p) => p.priority === 2)).toBe(true);
             });
         });
 
@@ -1008,8 +1008,7 @@ describe('Universal Search Routes', () => {
                     user_id: user.id,
                     name: 'Test project',
                     description: 'Project description',
-                    state: 'active',
-                    priority: 'medium',
+                    priority: 1,
                 });
 
                 await Note.create({
@@ -1055,7 +1054,7 @@ describe('Universal Search Routes', () => {
                 expect(project.uid).toBeDefined();
                 expect(project.name).toBe('Test project');
                 expect(project.description).toBe('Project description');
-                expect(project.priority).toBe('medium');
+                expect(project.priority).toBe(1);
                 expect(project.status).toBe('not_started');
             });
 
@@ -1283,7 +1282,8 @@ describe('Universal Search Routes', () => {
                     status: 0,
                 });
 
-                // Lowercase search will NOT find uppercase Cyrillic (limitation)
+                // Lowercase search will NOT find uppercase Cyrillic on SQLite
+                // (limitation); PostgreSQL's LOWER() is Unicode-aware and does.
                 const response4 = await agent.get('/api/search').query({
                     q: 'тест uppercase',
                     filters: 'Task',
@@ -1292,9 +1292,8 @@ describe('Universal Search Routes', () => {
                 const tasks4 = response4.body.results.filter(
                     (r) => r.type === 'Task'
                 );
-                // Won't find it because JavaScript lowercased query doesn't match uppercase Cyrillic in DB
                 expect(tasks4.some((t) => t.name.includes('UPPERCASE'))).toBe(
-                    false
+                    isPostgres()
                 );
             });
         });

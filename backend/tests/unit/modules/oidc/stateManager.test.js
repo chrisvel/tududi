@@ -12,7 +12,11 @@ describe('OIDC State Manager', () => {
     });
 
     beforeEach(async () => {
-        await OIDCStateNonce.destroy({ where: {}, truncate: true });
+        await OIDCStateNonce.destroy({
+            where: {},
+            truncate: true,
+            cascade: true,
+        });
     });
 
     describe('createState', () => {

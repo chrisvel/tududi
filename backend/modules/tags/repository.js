@@ -22,32 +22,34 @@ class TagsRepository extends BaseRepository {
                 'tag_type',
                 'pinned',
                 'color',
+                // CAST keeps the counts numeric on PostgreSQL, where COUNT(*)
+                // is a bigint that the driver would otherwise return as a string.
                 [
                     sequelize.literal(
-                        `(SELECT COUNT(*) FROM tasks_tags WHERE tasks_tags.tag_id = "Tag"."id")`
+                        `CAST((SELECT COUNT(*) FROM tasks_tags WHERE tasks_tags.tag_id = "Tag"."id") AS INTEGER)`
                     ),
                     'tasks_count',
                 ],
                 [
                     sequelize.literal(
-                        `(SELECT COUNT(*) FROM notes_tags WHERE notes_tags.tag_id = "Tag"."id")`
+                        `CAST((SELECT COUNT(*) FROM notes_tags WHERE notes_tags.tag_id = "Tag"."id") AS INTEGER)`
                     ),
                     'notes_count',
                 ],
                 [
                     sequelize.literal(
-                        `(SELECT COUNT(*) FROM projects_tags WHERE projects_tags.tag_id = "Tag"."id")`
+                        `CAST((SELECT COUNT(*) FROM projects_tags WHERE projects_tags.tag_id = "Tag"."id") AS INTEGER)`
                     ),
                     'projects_count',
                 ],
                 [
-                    sequelize.literal(`(
+                    sequelize.literal(`CAST((
                         SELECT COUNT(*) FROM tasks_tags WHERE tasks_tags.tag_id = "Tag"."id"
                     ) + (
                         SELECT COUNT(*) FROM notes_tags WHERE notes_tags.tag_id = "Tag"."id"
                     ) + (
                         SELECT COUNT(*) FROM projects_tags WHERE projects_tags.tag_id = "Tag"."id"
-                    )`),
+                    ) AS INTEGER)`),
                     'usage_count',
                 ],
             ],
@@ -123,24 +125,23 @@ class TagsRepository extends BaseRepository {
         const transaction = await sequelize.transaction();
 
         try {
-            // Remove associations from junction tables
-            await Promise.all([
-                sequelize.query('DELETE FROM tasks_tags WHERE tag_id = ?', {
-                    replacements: [tag.id],
-                    type: sequelize.QueryTypes.DELETE,
-                    transaction,
-                }),
-                sequelize.query('DELETE FROM notes_tags WHERE tag_id = ?', {
-                    replacements: [tag.id],
-                    type: sequelize.QueryTypes.DELETE,
-                    transaction,
-                }),
-                sequelize.query('DELETE FROM projects_tags WHERE tag_id = ?', {
-                    replacements: [tag.id],
-                    type: sequelize.QueryTypes.DELETE,
-                    transaction,
-                }),
-            ]);
+            // Remove associations from junction tables. Sequential on purpose:
+            // a transaction owns a single connection, so statements on it
+            // must not be issued concurrently.
+            for (const joinTable of [
+                'tasks_tags',
+                'notes_tags',
+                'projects_tags',
+            ]) {
+                await sequelize.query(
+                    `DELETE FROM ${joinTable} WHERE tag_id = ?`,
+                    {
+                        replacements: [tag.id],
+                        type: sequelize.QueryTypes.DELETE,
+                        transaction,
+                    }
+                );
+            }
 
             await tag.destroy({ transaction });
             await transaction.commit();

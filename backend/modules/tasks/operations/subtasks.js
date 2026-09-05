@@ -36,7 +36,7 @@ async function getSubtasks(parentTaskId, userId, timezone) {
                 },
             ],
             order: [
-                ['order', 'ASC'],
+                ['order', 'ASC NULLS FIRST'],
                 ['created_at', 'ASC'],
             ], // Order by order field, fallback to created_at
         }
@@ -55,7 +55,11 @@ async function createSubtasks(parentTaskId, subtasks, userId) {
     // Get the highest order value for existing subtasks
     const existingSubtasks = await taskRepository.findAll(
         { parent_task_id: parentTaskId },
-        { attributes: ['order'], order: [['order', 'DESC']], limit: 1 }
+        {
+            attributes: ['order'],
+            order: [['order', 'DESC NULLS LAST']],
+            limit: 1,
+        }
     );
     const maxOrder = existingSubtasks[0]?.order ?? 0;
 

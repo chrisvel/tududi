@@ -15,6 +15,7 @@ const {
 } = require('../../models');
 const taskRepository = require('./repository');
 const { deleteAttachmentFiles } = require('../../utils/attachment-utils');
+const { withForeignKeyChecksDisabled } = require('../../utils/db-dialect');
 const {
     resetQueryCounter,
     getQueryStats,
@@ -220,10 +221,10 @@ router.get('/tasks', async (req, res) => {
                         [Op.between]: [upcomingRange.start, upcomingRange.end],
                     },
                     status: {
-                        [Op.notIn]: ['completed', 'archived'],
+                        [Op.notIn]: ['done', 'cancelled'],
                     },
                 },
-                order: [['due_date_at', 'ASC']],
+                order: [['due_date_at', 'ASC NULLS FIRST']],
             });
         }
 
@@ -976,9 +977,10 @@ router.delete('/task/:uid', requireTaskWriteAccess, async (req, res) => {
             logError('Error removing task from CalDAV remotes:', error);
         }
 
-        await sequelize.query('PRAGMA foreign_keys = OFF');
-
-        try {
+        // Dependent rows are removed in dependency order below, which is
+        // what PostgreSQL relies on; older SQLite databases additionally get
+        // constraint checks switched off for the duration.
+        await withForeignKeyChecksDisabled(sequelize, async () => {
             await TaskEvent.destroy({
                 where: { task_id: taskId },
                 force: true,
@@ -1000,9 +1002,7 @@ router.delete('/task/:uid', requireTaskWriteAccess, async (req, res) => {
             });
 
             await task.destroy({ force: true });
-        } finally {
-            await sequelize.query('PRAGMA foreign_keys = ON');
-        }
+        });
 
         res.json({ message: 'Task successfully deleted' });
     } catch (error) {

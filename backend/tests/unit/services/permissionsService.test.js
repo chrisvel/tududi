@@ -61,17 +61,17 @@ describe('permissionsService', () => {
             expect(access).toBe('none');
         });
 
-        it('should return admin for admin user', async () => {
+        it('should not grant admins access to other users projects', async () => {
             const project = await Project.create({
                 name: 'P1',
                 user_id: owner.id,
             });
             const access = await getAccess(
-                adminUser.uid,
+                adminUser.id,
                 'project',
                 project.uid
             );
-            expect(access).toBe('admin');
+            expect(access).toBe('none');
         });
 
         it('should return none for non-existent project', async () => {

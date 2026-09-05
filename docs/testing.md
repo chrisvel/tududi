@@ -422,12 +422,21 @@ async function createTask(page, name: string, priority: number) {
 
 ## Test Database
 
-Backend tests use a separate test database:
+Backend tests never touch the development database. `backend/tests/helpers/setup.js` runs once per test file and:
 
-- Automatically created in test environment
-- Migrations run before tests
-- Database cleared between tests (in `afterEach`)
-- Configured in `/backend/config/database.js`
+- **SQLite (default):** points `DB_FILE` at a fresh `/tmp/test-<id>.sqlite3` for that file
+- **PostgreSQL** (`DATABASE_URL` set): uses one database per Jest worker, named `<db>_w<workerId>`, created by `tests/helpers/globalSetup.js`
+- Creates the schema with `sequelize.sync({ force: true })` in `beforeAll` (migrations are not run in tests)
+- Empties all tables between tests in `beforeEach` (`truncateTables` from `utils/db-dialect.js`)
+
+Run the suite against PostgreSQL locally with:
+
+```bash
+docker run -d -p 5432:5432 -e POSTGRES_USER=tududi -e POSTGRES_PASSWORD=tududi -e POSTGRES_DB=tududi_test postgres:16-alpine
+DATABASE_URL=postgres://tududi:tududi@localhost:5432/tududi_test npm run backend:test:pg
+```
+
+CI runs both: `test-sqlite` and `test-postgres` in `.github/workflows/ci.yml`. When a test encodes engine-specific behaviour, branch on `isPostgres()` from `utils/db-dialect.js` rather than skipping the file.
 
 **Example cleanup:**
 ```javascript

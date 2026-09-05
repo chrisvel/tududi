@@ -25,8 +25,16 @@ echo "Runtime UID/GID Configuration"
 echo "Current: $CURRENT_UID:$CURRENT_GID"
 echo "Target:  $PUID:$PGID"
 
-# Function to set database file permissions if it exists
+# Function to set database file permissions if it exists (SQLite only)
 set_db_file_permissions() {
+    if [ -n "${DATABASE_URL:-}" ] || [ "${DB_DIALECT:-}" = "postgres" ] || [ "${DB_DIALECT:-}" = "postgresql" ]; then
+        echo "Using PostgreSQL, no database file to manage"
+        return
+    fi
+    if [ -z "${DB_FILE:-}" ]; then
+        echo "DB_FILE not set, skipping database file permissions"
+        return
+    fi
     if [ -f "$DB_FILE" ]; then
         chmod 660 "$DB_FILE"
         echo "Set database file permissions: $DB_FILE"

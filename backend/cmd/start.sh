@@ -6,6 +6,16 @@ set -eu
 : "${NODE_ENV:=production}"
 : "${DB_FILE:=db/${NODE_ENV}.sqlite3}"
 
+# PostgreSQL is selected with DATABASE_URL or DB_DIALECT=postgres
+# (see config/config.js). Everything file-related below is SQLite only.
+USE_POSTGRES=false
+case "$(printf '%s' "${DB_DIALECT:-}" | tr '[:upper:]' '[:lower:]')" in
+  postgres|postgresql) USE_POSTGRES=true ;;
+esac
+if [ -n "${DATABASE_URL:-}" ]; then
+  USE_POSTGRES=true
+fi
+
 backup_db() {
   db_dir=$(dirname "$DB_FILE")
   today=$(date +"%Y%m%d")
@@ -82,7 +92,7 @@ backup_db() {
 # writes stay on the persistent (user-mounted) volume rather than being copied
 # to an anonymous Docker volume that is discarded on container recreation.
 OLD_DB_PATH="/app/backend/db/${NODE_ENV}.sqlite3"
-if [ ! -f "$DB_FILE" ] && [ -f "$OLD_DB_PATH" ]; then
+if [ "$USE_POSTGRES" = false ] && [ ! -f "$DB_FILE" ] && [ -f "$OLD_DB_PATH" ]; then
   echo ""
   echo "⚠️  =============================================================="
   echo "⚠️  ACTION REQUIRED: Volume mount path changed in v1.2.0"
@@ -102,14 +112,16 @@ if [ ! -f "$DB_FILE" ] && [ -f "$OLD_DB_PATH" ]; then
   export DB_FILE="$OLD_DB_PATH"
 fi
 
-# Check if database exists and create/authenticate
-if [ ! -f "$DB_FILE" ]; then
-  echo "Creating new database..."
-  node scripts/db-init.js
-else
+# Back up the SQLite file (if any) before touching the schema
+if [ "$USE_POSTGRES" = false ] && [ -f "$DB_FILE" ]; then
   backup_db
-  echo "Checking database connection..."
-  node scripts/db-status.js
+fi
+
+# Verify the connection and create the schema when the database is empty
+echo "Preparing database..."
+if ! node scripts/db-prepare.js; then
+  echo "❌ Database preparation failed. Check the connection settings above."
+  exit 1
 fi
 
 # Run database migrations automatically

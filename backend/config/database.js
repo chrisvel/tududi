@@ -1,40 +1,10 @@
 require('dotenv').config();
-const path = require('path');
-const { setConfig, getConfig } = require('../config/config');
-const config = getConfig();
+const { buildSequelizeOptions } = require('./db');
 
+// Consumed by sequelize-cli (see .sequelizerc). The application itself builds
+// its connection in models/index.js from the same buildSequelizeOptions().
 module.exports = {
-    development: {
-        dialect: 'sqlite',
-        storage: config.dbFile,
-        logging: console.log,
-        define: {
-            timestamps: true,
-            underscored: true,
-            createdAt: 'created_at',
-            updatedAt: 'updated_at',
-        },
-    },
-    test: {
-        dialect: 'sqlite',
-        storage: config.dbFile,
-        logging: false,
-        define: {
-            timestamps: true,
-            underscored: true,
-            createdAt: 'created_at',
-            updatedAt: 'updated_at',
-        },
-    },
-    production: {
-        dialect: 'sqlite',
-        storage: config.dbFile,
-        logging: false,
-        define: {
-            timestamps: true,
-            underscored: true,
-            createdAt: 'created_at',
-            updatedAt: 'updated_at',
-        },
-    },
+    development: buildSequelizeOptions({ logging: console.log }),
+    test: buildSequelizeOptions({ logging: false }),
+    production: buildSequelizeOptions({ logging: false }),
 };

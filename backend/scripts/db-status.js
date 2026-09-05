@@ -19,30 +19,35 @@ const {
     InboxItem,
 } = require('../models');
 const fs = require('fs');
-const path = require('path');
 
 async function checkDatabaseStatus() {
     try {
         console.log('🔍 Checking database status...\n');
 
-        // Check database file
-        const dbConfig = sequelize.config || sequelize.options;
-        const dbPath = dbConfig.storage || sequelize.options.storage;
+        const dialect = sequelize.getDialect();
 
         console.log('📂 Database Configuration:');
-        console.log(`   Storage: ${dbPath}`);
-        console.log(
-            `   Dialect: ${dbConfig.dialect || sequelize.options.dialect || 'sqlite'}`
-        );
+        console.log(`   Dialect: ${dialect}`);
         console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
 
-        // Check if database file exists
-        if (fs.existsSync(dbPath)) {
-            const stats = fs.statSync(dbPath);
-            console.log(`   File size: ${(stats.size / 1024).toFixed(2)} KB`);
-            console.log(`   Last modified: ${stats.mtime.toISOString()}`);
+        if (dialect === 'sqlite') {
+            const dbPath = sequelize.options.storage;
+            console.log(`   Storage: ${dbPath}`);
+
+            // Check if database file exists
+            if (fs.existsSync(dbPath)) {
+                const stats = fs.statSync(dbPath);
+                console.log(
+                    `   File size: ${(stats.size / 1024).toFixed(2)} KB`
+                );
+                console.log(`   Last modified: ${stats.mtime.toISOString()}`);
+            } else {
+                console.log('   ⚠️  Database file does not exist');
+            }
         } else {
-            console.log('   ⚠️  Database file does not exist');
+            const { host, port, database } = sequelize.config;
+            console.log(`   Host: ${host}:${port}`);
+            console.log(`   Database: ${database}`);
         }
 
         console.log('\n🔌 Testing database connection...');

@@ -23,7 +23,7 @@
 
 - **Framework:** Express.js 4.21.2
 - **ORM:** Sequelize 6.37.7
-- **Database:** SQLite 5.1.7 (WAL mode, memory-mapped I/O for performance)
+- **Database:** SQLite (default; WAL mode, memory-mapped I/O) or PostgreSQL 14+ (opt-in via `DATABASE_URL`, see [database.md](database.md))
 - **Authentication:** bcrypt + express-session + connect-session-sequelize
 - **Security:** Helmet, CORS, express-rate-limit
 - **API Documentation:** Swagger (swagger-jsdoc + swagger-ui-express)

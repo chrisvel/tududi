@@ -73,7 +73,7 @@ async function provisionUser(providerSlug, claims, req) {
         }
 
         let user = await User.findOne({
-            where: { email: claims.email },
+            where: { email: String(claims.email).trim().toLowerCase() },
             transaction,
         });
 
