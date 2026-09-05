@@ -293,14 +293,20 @@ describe('API Token Authentication', () => {
                 .get('/api/tasks')
                 .set('Authorization', `Bearer ${rawToken}`);
 
-            // Check that last_used_at was updated
-            const tokensAfter = await agent.get('/api/profile/api-keys');
-            const tokenAfter = tokensAfter.body.find(
-                (t) => t.name === 'Test Token'
-            );
+            // last_used_at is written after the response is sent (see
+            // middleware/auth.js), so poll briefly instead of racing it.
+            let tokenAfter;
+            for (let attempt = 0; attempt < 30; attempt++) {
+                const tokensAfter = await agent.get('/api/profile/api-keys');
+                tokenAfter = tokensAfter.body.find(
+                    (t) => t.name === 'Test Token'
+                );
+                if (tokenAfter?.last_used_at) break;
+                await new Promise((resolve) => setTimeout(resolve, 100));
+            }
 
             // Verify last_used_at is set and is a recent timestamp
-            expect(tokenAfter.last_used_at).toBeDefined();
+            expect(tokenAfter.last_used_at).toBeTruthy();
             const lastUsedDate = new Date(tokenAfter.last_used_at);
             const now = new Date();
             expect(lastUsedDate.getTime()).toBeLessThanOrEqual(now.getTime());
