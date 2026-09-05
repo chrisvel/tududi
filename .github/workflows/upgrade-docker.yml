@@ -1,0 +1,54 @@
+name: Docker upgrade test
+
+# Upgrades a volume produced by the previous release image to an image built
+# from the current checkout and checks data, logins and backups survive.
+# Too slow for every pull request; runs on demand, on release tags and weekly.
+
+on:
+  workflow_dispatch:
+    inputs:
+      old_image:
+        description: Previous release image to upgrade from
+        required: false
+        default: chrisvel/tududi:1.4.2
+  push:
+    tags:
+      - 'v*'
+  schedule:
+    - cron: '0 6 * * 1'
+
+jobs:
+  upgrade:
+    runs-on: ubuntu-latest
+
+    env:
+      OLD_IMAGE: ${{ github.event.inputs.old_image || 'chrisvel/tududi:1.4.2' }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+
+    - name: Install sqlite3 CLI
+      run: sudo apt-get update && sudo apt-get install -y sqlite3
+
+    - name: Pull previous release image
+      run: docker pull "$OLD_IMAGE"
+
+    - name: Run upgrade test from the v1.4.2 fixture
+      run: bash scripts/test-upgrade-docker.sh
+
+    - name: Run upgrade test from the v1.2.4 fixture
+      run: bash scripts/test-upgrade-docker.sh
+      env:
+        FIXTURE: backend/tests/fixtures/legacy/v1.2.4.sqlite3
+        SKIP_BUILD: '1'
+
+    - name: Run upgrade test seeding through the old API
+      run: bash scripts/test-upgrade-docker.sh --seed-api
+      env:
+        SKIP_BUILD: '1'

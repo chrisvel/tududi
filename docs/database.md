@@ -583,6 +583,15 @@ A ready-made compose setup lives in `docs/examples/docker-compose.postgres.yml`;
 
 There is no SQLite-to-PostgreSQL data transfer tooling; PostgreSQL deployments start empty.
 
+### Upgrade safety tests
+
+Because a fresh install gets its schema from the models while existing installs only ever see migrations, the two can drift apart without any unit test noticing. Two suites guard against that (details in [testing.md](testing.md#upgrade-suite)):
+
+- `npm run backend:test:upgrade` runs the real bootstrap against databases produced by older releases (`backend/tests/fixtures/legacy`) and compares the resulting schema with the models (`backend/tests/upgrade/schema-parity.test.js`). Run it after adding a migration; if it reports a column or unique index the models define but no migration creates, add the migration. Known, accepted differences are listed in `backend/tests/upgrade/known-schema-drift.json`.
+- `npm run test:upgrade:docker` upgrades a volume from the previous release image with the current Docker build.
+
+`backend/scripts/schema-snapshot.js` prints the normalised schema of whatever database the environment points at and can be used to compare deployments by hand.
+
 ### Writing dialect-safe migrations
 
 Every new migration runs on both engines. Checklist:

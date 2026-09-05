@@ -58,3 +58,4 @@ backend/tests/test-files/
 # Temporary files
 tmp/
 *.bak
+!backend/tests/fixtures/legacy/*.sqlite3

@@ -3,6 +3,9 @@ module.exports = {
     globalSetup: '<rootDir>/tests/helpers/globalSetup.js',
     setupFilesAfterEnv: ['<rootDir>/tests/helpers/setup.js'],
     testMatch: ['<rootDir>/tests/**/*.test.js', '<rootDir>/tests/**/*.spec.js'],
+    // The upgrade suite has its own config (jest.upgrade.config.js) because it
+    // must not use the sync-based setup.js.
+    testPathIgnorePatterns: ['/node_modules/', '<rootDir>/tests/upgrade/'],
     collectCoverageFrom: [
         'routes/**/*.js',
         'models/**/*.js',
