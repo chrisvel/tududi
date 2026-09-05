@@ -108,24 +108,10 @@ function expandRecurringTasks(
             return;
         }
 
-        console.log('[DEBUG] Processing recurring task:', {
-            id: task.id,
-            name: task.name,
-            recurrence_type: task.recurrence_type,
-            due_date: task.due_date,
-            status: task.status,
-            completed_at: task.completed_at,
-            has_due_date: !!task.due_date,
-            statusFilter: statusFilter,
-        });
-
         if (
             (statusFilter === 'completed' || statusFilter === 'done') &&
             (task.status === 2 || task.status === 'done')
         ) {
-            console.log(
-                '[DEBUG] Task is completed and filter is completed, showing actual task'
-            );
             expandedTasks.push(task);
             return;
         }
@@ -139,10 +125,6 @@ function expandRecurringTasks(
                     : new Date(task.due_date || now);
             const nextDate = calculateNextDueDate(task, baseDate, userTimezone);
             startFrom = nextDate || now;
-            console.log(
-                '[DEBUG] Task is completed, starting from next occurrence:',
-                startFrom
-            );
         } else if (startFrom < now) {
             let nextDate = startFrom;
             let iterations = 0;
@@ -156,14 +138,12 @@ function expandRecurringTasks(
             startFrom = nextDate || now;
         }
 
-        console.log('[DEBUG] Starting from date:', startFrom);
         const occurrences = calculateVirtualOccurrences(
             task,
             maxDays,
             startFrom,
             userTimezone
         );
-        console.log('[DEBUG] Generated occurrences:', occurrences.length);
 
         occurrences.forEach((occurrence, index) => {
             const virtualTask = {
@@ -229,22 +209,6 @@ router.get('/tasks', async (req, res) => {
         }
 
         if (type === 'upcoming' && groupBy === 'day') {
-            console.log('[DEBUG] Expanding recurring tasks for /upcoming');
-            console.log('[DEBUG] Total tasks before expansion:', tasks.length);
-            console.log(
-                '[DEBUG] Recurring tasks:',
-                tasks
-                    .filter(
-                        (t) => t.recurrence_type && t.recurrence_type !== 'none'
-                    )
-                    .map((t) => ({
-                        id: t.id,
-                        name: t.name,
-                        recurrence_type: t.recurrence_type,
-                        due_date: t.due_date,
-                        recurring_parent_id: t.recurring_parent_id,
-                    }))
-            );
             const days = maxDays ? parseInt(maxDays, 10) : 7;
             const safeTimezone = getSafeTimezone(timezone);
             tasks = expandRecurringTasks(
@@ -253,7 +217,6 @@ router.get('/tasks', async (req, res) => {
                 req.query.status,
                 safeTimezone
             );
-            console.log('[DEBUG] Total tasks after expansion:', tasks.length);
         }
 
         if (type === 'today') {

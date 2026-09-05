@@ -5,7 +5,7 @@ const fs = require('fs');
 const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
-const morgan = require('morgan');
+const pinoHttp = require('pino-http');
 const session = require('express-session');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const { sequelize } = require('./models');
@@ -82,7 +82,31 @@ app.use(
         },
     })
 );
-app.use(morgan('combined'));
+// Structured request log. Health probes are skipped so a 60-second
+// container healthcheck does not write a line forever.
+const { logger } = require('./services/logService');
+app.use(
+    pinoHttp({
+        logger,
+        autoLogging: {
+            ignore: (req) => /\/api(\/v\d+)?\/health(\/|$)/.test(req.url),
+        },
+        customLogLevel: (req, res, err) => {
+            if (err || res.statusCode >= 500) return 'error';
+            if (res.statusCode >= 400) return 'warn';
+            return 'info';
+        },
+        serializers: {
+            req: (req) => ({
+                id: req.id,
+                method: req.method,
+                url: req.url,
+                remoteAddress: req.remoteAddress,
+            }),
+            res: (res) => ({ statusCode: res.statusCode }),
+        },
+    })
+);
 
 // CORS configuration
 app.use(
@@ -330,6 +354,41 @@ if (config.swagger.enabled) {
     );
 }
 
+// Health checks come before auth and before the rate limiters, so an uptime
+// monitor never eats into the unauthenticated request budget.
+// /health is liveness (process is up); /health/ready also checks the
+// database and the migration state and is what a load balancer should use.
+const { readiness } = require('./services/healthService');
+const registerHealthCheck = (basePath) => {
+    app.get(`${basePath}/health`, (req, res) => {
+        const body = {
+            status: 'ok',
+            timestamp: new Date().toISOString(),
+            uptime: process.uptime(),
+        };
+        // Deployment details stay internal on a public instance
+        if (!config.hosted?.enabled) {
+            body.environment = config.environment;
+            body.trustProxy = config.trustProxy;
+        }
+        res.status(200).json(body);
+    });
+
+    app.get(`${basePath}/health/ready`, async (req, res) => {
+        const report = await readiness();
+        res.status(report.status === 'error' ? 503 : 200).json({
+            ...report,
+            timestamp: new Date().toISOString(),
+        });
+    });
+};
+
+const healthPaths = new Set(['/api']);
+if (API_VERSION && API_BASE_PATH !== '/api') {
+    healthPaths.add(API_BASE_PATH);
+}
+healthPaths.forEach(registerHealthCheck);
+
 // Apply rate limiting to API routes
 // Use both limiters: apiLimiter for unauthenticated, authenticatedApiLimiter for authenticated
 // Each has skip logic to handle their specific use case
@@ -341,25 +400,6 @@ const registerRateLimiting = (basePath) => {
 const rateLimitPath =
     API_VERSION && API_BASE_PATH !== '/api' ? API_BASE_PATH : '/api';
 registerRateLimiting(rateLimitPath);
-
-// Health check (before auth middleware) - ensure it's completely bypassed
-const registerHealthCheck = (basePath) => {
-    app.get(`${basePath}/health`, (req, res) => {
-        res.status(200).json({
-            status: 'ok',
-            timestamp: new Date().toISOString(),
-            uptime: process.uptime(),
-            environment: config.environment,
-            trustProxy: config.trustProxy,
-        });
-    });
-};
-
-const healthPaths = new Set(['/api']);
-if (API_VERSION && API_BASE_PATH !== '/api') {
-    healthPaths.add(API_BASE_PATH);
-}
-healthPaths.forEach(registerHealthCheck);
 
 const registerApiRoutes = (basePath) => {
     app.use(basePath, authModule.routes);
