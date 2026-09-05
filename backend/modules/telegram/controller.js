@@ -44,7 +44,13 @@ const telegramController = {
 
     async getPollingStatus(req, res, next) {
         try {
-            const result = telegramService.getPollingStatus();
+            const userId = getAuthenticatedUserId(req);
+            if (!userId) {
+                return res
+                    .status(401)
+                    .json({ error: 'Authentication required' });
+            }
+            const result = telegramService.getPollingStatus(userId);
             res.json(result);
         } catch (error) {
             logError('Error getting Telegram polling status:', error);

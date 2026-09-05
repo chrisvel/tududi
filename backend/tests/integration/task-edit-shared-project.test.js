@@ -1,7 +1,10 @@
 const request = require('supertest');
 const app = require('../../app');
 const { Project, Task, sequelize } = require('../../models');
-const { createTestUser } = require('../helpers/testUtils');
+const {
+    createTestUser,
+    acceptAllInvitations,
+} = require('../helpers/testUtils');
 
 describe('Task Editing in Shared Projects', () => {
     let ownerUser, sharedUser, ownerAgent, sharedUserAgent, project;
@@ -48,6 +51,7 @@ describe('Task Editing in Shared Projects', () => {
             target_user_email: sharedUser.email,
             access_level: 'rw',
         });
+        await acceptAllInvitations(sharedUserAgent);
     });
 
     afterAll(async () => {

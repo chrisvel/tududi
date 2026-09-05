@@ -77,6 +77,7 @@ class PeopleRepository {
                 resource_type: 'project',
                 resource_uid: projectUid,
                 propagation: 'direct',
+                status: 'accepted',
             },
             attributes: ['user_id'],
             raw: true,

@@ -40,6 +40,7 @@ module.exports = (sequelize) => {
                             'system',
                             'project_due_soon',
                             'project_overdue',
+                            'share_invitation',
                         ],
                     ],
                 },

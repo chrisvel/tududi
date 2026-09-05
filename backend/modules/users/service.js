@@ -37,8 +37,13 @@ const {
     validateExpiresAt,
     validateSidebarSettings,
 } = require('./validation');
-const { NotFoundError, ValidationError } = require('../../shared/errors');
+const {
+    NotFoundError,
+    ValidationError,
+    ForbiddenError,
+} = require('../../shared/errors');
 const { User } = require('../../models');
+const { isAdmin } = require('../../services/rolesService');
 const {
     createApiToken,
     revokeApiToken,
@@ -69,10 +74,13 @@ async function safeDeleteFile(filePath) {
 }
 
 class UsersService {
-    /**
-     * List all users with roles.
-     */
-    async listUsers() {
+    // The user directory is an admin view. Regular users share by typing an
+    // exact email, so they never need (and must not get) the full list.
+    async listUsers(requesterId) {
+        if (!(await isAdmin(requesterId))) {
+            throw new ForbiddenError('Forbidden');
+        }
+
         const users = await usersRepository.findAllBasic();
         const roles = await usersRepository.findAllRoles();
         const userIdToRole = new Map(roles.map((r) => [r.user_id, r.is_admin]));

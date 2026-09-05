@@ -40,6 +40,12 @@ const CLEANUP_TABLES = [
     'calendar_tokens',
     'notifications',
     'permissions',
+    // actions and the audit/identity tables reference users; on PostgreSQL
+    // the FK blocks DELETE FROM users when they are left out, and the
+    // cleanup loop stops at the first failure.
+    'actions',
+    'auth_audit_log',
+    'oidc_identities',
     'views',
     'api_tokens',
     'backups',

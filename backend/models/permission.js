@@ -38,6 +38,14 @@ module.exports = (sequelize) => {
                 type: DataTypes.INTEGER,
                 allowNull: true,
             },
+            status: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                defaultValue: 'accepted',
+                validate: {
+                    isIn: [['pending', 'accepted']],
+                },
+            },
         },
         {
             tableName: 'permissions',

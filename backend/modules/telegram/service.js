@@ -96,10 +96,12 @@ class TelegramService {
         };
     }
 
-    getPollingStatus() {
+    // Only the caller's own poller entry is reported. The poller tracks
+    // every user on the instance, and that map is not this user's business.
+    getPollingStatus(userId) {
         return {
             success: true,
-            status: telegramPoller.getStatus(),
+            status: telegramPoller.getStatusForUser(userId),
         };
     }
 

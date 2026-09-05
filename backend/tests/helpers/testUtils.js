@@ -21,7 +21,19 @@ const authenticateUser = async (request, user) => {
     return response.headers['set-cookie'];
 };
 
+// Shares are invitations: the recipient's agent must accept before the
+// resource becomes visible to them.
+const acceptAllInvitations = async (agent) => {
+    const list = await agent.get('/api/shares/invitations');
+    const invitations = (list.body && list.body.invitations) || [];
+    for (const invitation of invitations) {
+        await agent.post(`/api/shares/invitations/${invitation.id}/accept`);
+    }
+    return invitations.length;
+};
+
 module.exports = {
     createTestUser,
     authenticateUser,
+    acceptAllInvitations,
 };

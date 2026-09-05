@@ -665,6 +665,19 @@ const getStatus = () => ({
     userStatus: pollerState.userStatus,
 });
 
+// Status as seen by one user: whether their own bot is being polled, plus
+// only their own entry of the per-user status map.
+const getStatusForUser = (userId) => {
+    const polled = userExistsInList(pollerState.usersToPool, userId);
+    const ownStatus = pollerState.userStatus[userId];
+    return {
+        running: pollerState.running && polled,
+        usersCount: polled ? 1 : 0,
+        pollInterval: pollerState.pollInterval,
+        userStatus: ownStatus ? { [userId]: ownStatus } : {},
+    };
+};
+
 // Export functional interface
 module.exports = {
     addUser,
@@ -672,6 +685,7 @@ module.exports = {
     startPolling,
     stopPolling,
     getStatus,
+    getStatusForUser,
     sendTelegramMessage,
     // For testing
     _createPollerState: createPollerState,

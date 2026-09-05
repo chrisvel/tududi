@@ -9,7 +9,10 @@ const {
     TaskAttachment,
     sequelize,
 } = require('../../models');
-const { createTestUser } = require('../helpers/testUtils');
+const {
+    createTestUser,
+    acceptAllInvitations,
+} = require('../helpers/testUtils');
 
 describe('Project Sharing Integration Tests', () => {
     let ownerUser, sharedUser, ownerAgent, sharedUserAgent, project;
@@ -56,6 +59,7 @@ describe('Project Sharing Integration Tests', () => {
             target_user_email: sharedUser.email,
             access_level: 'rw',
         });
+        await acceptAllInvitations(sharedUserAgent);
     });
 
     afterAll(async () => {

@@ -6,7 +6,11 @@ const ACCESS = { NONE: 'none', RO: 'ro', RW: 'rw', ADMIN: 'admin' };
 
 async function getSharedUidsForUser(resourceType, userId) {
     const rows = await Permission.findAll({
-        where: { user_id: userId, resource_type: resourceType },
+        where: {
+            user_id: userId,
+            resource_type: resourceType,
+            status: 'accepted',
+        },
         attributes: ['resource_uid'],
         raw: true,
     });
@@ -122,6 +126,7 @@ async function getAccess(userId, resourceType, resourceUid) {
             user_id: userId,
             resource_type: resourceType,
             resource_uid: resourceUid,
+            status: 'accepted',
         },
         attributes: ['access_level'],
         raw: true,

@@ -95,6 +95,7 @@ class ProjectsRepository extends BaseRepository {
             where: {
                 resource_type: 'project',
                 resource_uid: { [Op.in]: projectUids },
+                status: 'accepted',
             },
             group: ['resource_uid'],
             raw: true,
@@ -244,6 +245,7 @@ class ProjectsRepository extends BaseRepository {
             where: {
                 resource_type: 'project',
                 resource_uid: projectUid,
+                status: 'accepted',
             },
         });
     }
