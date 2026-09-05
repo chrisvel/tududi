@@ -1,6 +1,6 @@
 const { execSync, spawn } = require('child_process');
 const path = require('path');
-const { User } = require('../../models');
+const { User, Role } = require('../../models');
 
 describe('User Create Script', () => {
     const scriptPath = path.join(__dirname, '../../scripts/user-create.js');
@@ -165,17 +165,36 @@ describe('User Create Script', () => {
                 password_digest: await require('bcrypt').hash(password, 10),
             });
 
-            // Try to create same user again (should update password)
-            const result = await runUserCreateScript([email, newPassword]);
+            // Without the flag the existing password must survive: the Docker
+            // entrypoint runs this script on every boot.
+            const untouched = await runUserCreateScript([
+                email,
+                newPassword,
+                'true',
+            ]);
+            expect(untouched.code).toBe(0);
+
+            const bcrypt = require('bcrypt');
+            const unchangedUser = await User.findOne({ where: { email } });
+            expect(
+                await bcrypt.compare(password, unchangedUser.password_digest)
+            ).toBe(true);
+            const role = await Role.findOne({
+                where: { user_id: unchangedUser.id },
+            });
+            expect(role.is_admin).toBe(true);
+
+            // With --update-password the password is replaced
+            const result = await runUserCreateScript([
+                email,
+                newPassword,
+                '--update-password',
+            ]);
 
             expect(result.code).toBe(0);
 
-            // Verify user still exists and password was updated
             const updatedUser = await User.findOne({ where: { email } });
             expect(updatedUser).toBeTruthy();
-
-            // Verify the password was updated
-            const bcrypt = require('bcrypt');
             const isValid = await bcrypt.compare(
                 newPassword,
                 updatedUser.password_digest

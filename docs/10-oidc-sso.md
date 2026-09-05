@@ -114,6 +114,13 @@ OIDC_AUTO_PROVISION=true
 OIDC_ADMIN_EMAIL_DOMAINS=example.com,mycompany.com
 ```
 
+Auto-provisioning creates an account for anyone the provider authenticates,
+regardless of the admin "registration enabled" toggle. That is the intent on
+a self-hosted instance where the IdP is the company directory. On a hosted
+instance (`TUDUDI_HOSTED_MODE=true`) the provider may be a public one such as
+Google, so new accounts are only provisioned while registration is enabled;
+existing users keep signing in either way.
+
 **Required Variables:**
 - `OIDC_PROVIDER_NAME`: Display name shown to users (e.g., "Google", "Company SSO")
 - `OIDC_PROVIDER_SLUG`: URL-safe identifier (e.g., "google", "okta")

@@ -229,6 +229,19 @@ to an account, so it cannot be used to discover who has signed up - Declining re
 
 ## **Admin User Management**
 
+### Who becomes admin
+
+29a. **Self-hosted (default):** the first user created on the instance is
+    the owner and gets the admin role automatically.
+
+29b. **Hosted (`TUDUDI_HOSTED_MODE=true`):** no user is made admin
+    implicitly, and the bootstrap fallback of `POST /api/admin/set-admin-role`
+    is disabled. The admin account comes from `TUDUDI_USER_EMAIL` and
+    `TUDUDI_USER_PASSWORD`, which the entrypoint creates if missing and
+    grants the admin role. An existing account's password is left unchanged;
+    run `node scripts/user-create.js <email> <password> true --update-password`
+    to reset it.
+
 ### User CRUD Operations
 
 30. **Admins can create new users directly**

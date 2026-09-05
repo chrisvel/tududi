@@ -1,6 +1,13 @@
-const { sequelize, User, OIDCIdentity, Role } = require('../../../../models');
+const {
+    sequelize,
+    User,
+    OIDCIdentity,
+    Role,
+    Setting,
+} = require('../../../../models');
 const provisioningService = require('../../../../modules/oidc/provisioningService');
 const providerConfig = require('../../../../modules/oidc/providerConfig');
+const { getConfig } = require('../../../../config/config');
 
 jest.mock('../../../../modules/oidc/providerConfig');
 
@@ -139,6 +146,83 @@ describe('OIDC Provisioning Service', () => {
             await expect(
                 provisioningService.provisionUser('test-provider', claims, {})
             ).rejects.toThrow('Auto-provisioning is disabled');
+        });
+
+        describe('hosted mode', () => {
+            const config = getConfig();
+
+            beforeEach(async () => {
+                config.hosted.enabled = true;
+                await Setting.destroy({ where: {}, force: true });
+            });
+
+            afterEach(() => {
+                config.hosted.enabled = false;
+            });
+
+            it('refuses to provision a new user while registration is disabled', async () => {
+                await Setting.upsert({
+                    key: 'registration_enabled',
+                    value: 'false',
+                });
+
+                await expect(
+                    provisioningService.provisionUser(
+                        'test-provider',
+                        { sub: 'sub-hosted-1', email: 'closed@example.com' },
+                        {}
+                    )
+                ).rejects.toThrow('Registration is not enabled');
+
+                const user = await User.findOne({
+                    where: { email: 'closed@example.com' },
+                });
+                expect(user).toBeNull();
+            });
+
+            it('provisions a new user once registration is enabled', async () => {
+                await Setting.upsert({
+                    key: 'registration_enabled',
+                    value: 'true',
+                });
+
+                const result = await provisioningService.provisionUser(
+                    'test-provider',
+                    { sub: 'sub-hosted-2', email: 'open@example.com' },
+                    {}
+                );
+
+                expect(result.isNewUser).toBe(true);
+                expect(result.user.email_verified).toBe(true);
+            });
+
+            it('still signs in an existing identity while registration is disabled', async () => {
+                await Setting.upsert({
+                    key: 'registration_enabled',
+                    value: 'false',
+                });
+                const existing = await User.create({
+                    email: 'member@example.com',
+                    password_digest: null,
+                });
+                await OIDCIdentity.create({
+                    user_id: existing.id,
+                    provider_slug: 'test-provider',
+                    subject: 'sub-hosted-3',
+                    email: 'member@example.com',
+                    first_login_at: new Date(),
+                    last_login_at: new Date(),
+                });
+
+                const result = await provisioningService.provisionUser(
+                    'test-provider',
+                    { sub: 'sub-hosted-3', email: 'member@example.com' },
+                    {}
+                );
+
+                expect(result.isNewUser).toBe(false);
+                expect(result.user.id).toBe(existing.id);
+            });
         });
 
         it('should throw error when email claim is missing', async () => {

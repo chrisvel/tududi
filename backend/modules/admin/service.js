@@ -21,6 +21,7 @@ const {
     getDefaultNotificationPreferences,
 } = require('../../utils/notificationPreferences');
 const { logError } = require('../../services/logService');
+const { getConfig } = require('../../config/config');
 
 class AdminService {
     /**
@@ -37,9 +38,18 @@ class AdminService {
         }
 
         const requesterIsAdmin = await isAdmin(requester.uid);
+        if (requesterIsAdmin) {
+            return true;
+        }
+
+        // Bootstrap fallback: an instance with no roles at all lets any user
+        // claim admin so it cannot lock itself out. Never on a hosted
+        // instance, where the roles table being empty would hand the whole
+        // instance to whoever asks first.
+        const hosted = getConfig().hosted?.enabled === true;
         const existingRolesCount = await adminRepository.countRoles();
 
-        if (!requesterIsAdmin && existingRolesCount > 0) {
+        if (hosted || existingRolesCount > 0) {
             throw new ForbiddenError('Forbidden');
         }
 

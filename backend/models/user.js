@@ -262,6 +262,7 @@ module.exports = (sequelize) => {
                 afterCreate: async (user, options) => {
                     // Automatically create a role for every new user
                     const { Role } = require('./index');
+                    const { getConfig } = require('../config/config');
 
                     // Check if any admin users exist
                     const adminCount = await Role.count({
@@ -269,8 +270,12 @@ module.exports = (sequelize) => {
                         transaction: options.transaction,
                     });
 
-                    // First user becomes admin
-                    const isFirstUser = adminCount === 0;
+                    // On a self-hosted instance the first user is the owner
+                    // and becomes admin. On a hosted instance the first user
+                    // is just the first customer; the admin is created
+                    // explicitly by the bootstrap script.
+                    const hosted = getConfig().hosted?.enabled === true;
+                    const isFirstUser = adminCount === 0 && !hosted;
 
                     await Role.create(
                         {
