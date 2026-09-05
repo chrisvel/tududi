@@ -85,6 +85,14 @@ const Goal = require('./goal')(sequelize);
 const Person = require('./person')(sequelize);
 const UserProjectArea = require('./user_project_area')(sequelize);
 const RateLimit = require('./rate_limit')(sequelize);
+const BillingAccount = require('./billing_account')(sequelize);
+const BillingEvent = require('./billing_event')(sequelize);
+const UsageCounter = require('./usage_counter')(sequelize);
+
+User.hasOne(BillingAccount, { foreignKey: 'user_id', as: 'BillingAccount' });
+BillingAccount.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+User.hasMany(UsageCounter, { foreignKey: 'user_id', as: 'UsageCounters' });
+UsageCounter.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 
 User.hasMany(Area, { foreignKey: 'user_id' });
 Area.belongsTo(User, { foreignKey: 'user_id' });
@@ -477,4 +485,7 @@ module.exports = {
     Person,
     UserProjectArea,
     RateLimit,
+    BillingAccount,
+    BillingEvent,
+    UsageCounter,
 };

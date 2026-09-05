@@ -52,6 +52,8 @@ const Navbar: React.FC<NavbarProps> = ({
         backups: false,
         caldav: false,
         mcp: false,
+        hosted: false,
+        billing: false,
     });
     const dropdownRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();

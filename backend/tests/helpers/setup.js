@@ -45,6 +45,9 @@ const CLEANUP_TABLES = [
     'caldav_calendars',
     'calendar_tokens',
     'rate_limits',
+    'usage_counters',
+    'billing_events',
+    'billing_accounts',
     'notifications',
     'permissions',
     // actions and the audit/identity tables reference users; on PostgreSQL

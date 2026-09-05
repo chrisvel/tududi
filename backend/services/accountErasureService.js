@@ -30,6 +30,8 @@ const {
     CalendarToken,
     Person,
     UserProjectArea,
+    BillingAccount,
+    UsageCounter,
 } = require('../models');
 const { getConfig } = require('../config/config');
 const { getBackupsDirectory } = require('./backupService');
@@ -151,6 +153,8 @@ async function eraseUserAccount(userId) {
         await Backup.destroy(byUser);
         await OIDCIdentity.destroy(byUser);
         await AuthAuditLog.destroy(byUser);
+        await UsageCounter.destroy(byUser);
+        await BillingAccount.destroy(byUser);
 
         // Other people's contact cards that pointed at this account keep
         // their own data but lose the link.

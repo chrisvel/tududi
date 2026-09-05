@@ -86,6 +86,22 @@ const config = {
     // registration) are switched off. Off by default for self-hosters.
     hosted: {
         enabled: process.env.TUDUDI_HOSTED_MODE === 'true',
+        trialDays: process.env.TUDUDI_TRIAL_DAYS
+            ? parseInt(process.env.TUDUDI_TRIAL_DAYS, 10)
+            : 14,
+        graceDays: process.env.TUDUDI_PAST_DUE_GRACE_DAYS
+            ? parseInt(process.env.TUDUDI_PAST_DUE_GRACE_DAYS, 10)
+            : 14,
+        exemptAdmins: process.env.TUDUDI_HOSTED_EXEMPT_ADMINS !== 'false',
+        stripe: {
+            secretKey: process.env.STRIPE_SECRET_KEY,
+            webhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+            apiVersion: process.env.STRIPE_API_VERSION || undefined,
+            prices: {
+                proMonthly: process.env.STRIPE_PRICE_PRO_MONTHLY,
+                proAnnual: process.env.STRIPE_PRICE_PRO_ANNUAL,
+            },
+        },
     },
 
     email: process.env.TUDUDI_USER_EMAIL,
