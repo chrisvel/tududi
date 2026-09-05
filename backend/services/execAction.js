@@ -19,24 +19,26 @@ async function assertActorCanShare(actorUserId, resourceType, resourceOwnerId) {
 }
 
 async function execAction(action) {
-    // action: { verb, actorUserId, targetUserId, resourceType, resourceUid, accessLevel? }
+    // action: { verb, actorUserId, targetUserId, resourceType, resourceUid, accessLevel?, status? }
     return await sequelize.transaction(async (tx) => {
-        // Resolve owner id for authorization (basic impl for projects; extend later)
+        const { Project, Task, Note } = require('../models');
+        const ownerModels = { project: Project, task: Task, note: Note };
+        const ownerModel = ownerModels[action.resourceType];
+
         let ownerUserId = null;
-        if (action.resourceType === 'project') {
-            const { Project } = require('../models');
-            const proj = await Project.findOne({
+        if (ownerModel) {
+            const resource = await ownerModel.findOne({
                 where: { uid: action.resourceUid },
                 attributes: ['user_id'],
                 transaction: tx,
                 lock: tx.LOCK.UPDATE,
             });
-            if (!proj) {
+            if (!resource) {
                 const err = new Error('Resource not found');
                 err.status = 404;
                 throw err;
             }
-            ownerUserId = proj.user_id;
+            ownerUserId = resource.user_id;
         }
 
         await assertActorCanShare(
@@ -73,10 +75,11 @@ async function execAction(action) {
             changes = await calculateTagPerms(ctx, action);
         }
 
-        // Attach source_action_id
+        // Attach source_action_id and the consent status of the grant
         changes.upserts = changes.upserts.map((u) => ({
             ...u,
-            source_action_id: actionRow.id,
+            sourceActionId: actionRow.id,
+            status: action.status || 'accepted',
         }));
 
         await applyPerms(tx, changes);

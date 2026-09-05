@@ -25,6 +25,13 @@ async function applyPerms(tx, changes) {
         });
         if (existing) {
             const nextLevel = maxAccess(existing.access_level, u.accessLevel);
+            // An already accepted share never drops back to pending because
+            // the owner re-shared it; a pending one stays pending until the
+            // recipient answers.
+            const nextStatus =
+                existing.status === 'accepted'
+                    ? 'accepted'
+                    : u.status || 'accepted';
             await existing.update(
                 {
                     access_level: nextLevel,
@@ -32,6 +39,7 @@ async function applyPerms(tx, changes) {
                     granted_by_user_id: u.grantedByUserId,
                     source_action_id:
                         u.sourceActionId || existing.source_action_id || null,
+                    status: nextStatus,
                 },
                 { transaction: tx }
             );
@@ -45,6 +53,7 @@ async function applyPerms(tx, changes) {
                     propagation: u.propagation || 'direct',
                     granted_by_user_id: u.grantedByUserId,
                     source_action_id: u.sourceActionId || null,
+                    status: u.status || 'accepted',
                 },
                 { transaction: tx }
             );

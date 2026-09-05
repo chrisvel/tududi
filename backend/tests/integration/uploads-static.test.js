@@ -3,7 +3,10 @@ const app = require('../../app');
 const path = require('path');
 const fs = require('fs').promises;
 const { Task, TaskAttachment, Project } = require('../../models');
-const { createTestUser } = require('../helpers/testUtils');
+const {
+    createTestUser,
+    acceptAllInvitations,
+} = require('../helpers/testUtils');
 
 describe('GET /api/uploads/:category/:filename', () => {
     const uploadsDir = path.join(__dirname, '../../uploads');
@@ -92,6 +95,7 @@ describe('GET /api/uploads/:category/:filename', () => {
                 target_user_email: sharedUser.email,
                 access_level: 'ro',
             });
+            await acceptAllInvitations(sharedAgent);
 
             const response = await sharedAgent.get(
                 `/api/uploads/tasks/${attachment.stored_filename}`
@@ -296,7 +300,53 @@ describe('GET /api/uploads/:category/:filename', () => {
             await fs.rm(avatarUploadDir, { recursive: true, force: true });
         });
 
-        it('should allow any authenticated user to fetch an avatar', async () => {
+        const avatarOwnerWithFile = async () => {
+            await owner.update({
+                avatar_image: '/uploads/avatars/avatar-static-test.png',
+            });
+        };
+
+        it('should allow the owner to fetch their own avatar', async () => {
+            await avatarOwnerWithFile();
+
+            const response = await ownerAgent.get(
+                '/api/uploads/avatars/avatar-static-test.png'
+            );
+
+            expect(response.status).toBe(200);
+        });
+
+        it('should allow a collaborator to fetch the avatar', async () => {
+            await avatarOwnerWithFile();
+            const collaborator = await createTestUser({
+                email: `uploads-collab-avatar_${Date.now()}@test.com`,
+            });
+            const collabAgent = request.agent(app);
+            await collabAgent
+                .post('/api/login')
+                .send({ email: collaborator.email, password: 'password123' });
+
+            const project = await Project.create({
+                name: 'Avatar project',
+                user_id: owner.id,
+            });
+            await ownerAgent.post('/api/shares').send({
+                resource_type: 'project',
+                resource_uid: project.uid,
+                target_user_email: collaborator.email,
+                access_level: 'ro',
+            });
+            await acceptAllInvitations(collabAgent);
+
+            const response = await collabAgent.get(
+                '/api/uploads/avatars/avatar-static-test.png'
+            );
+
+            expect(response.status).toBe(200);
+        });
+
+        it('should reject a user who shares nothing with the avatar owner', async () => {
+            await avatarOwnerWithFile();
             const otherUser = await createTestUser({
                 email: `uploads-other-avatar_${Date.now()}@test.com`,
             });
@@ -309,7 +359,7 @@ describe('GET /api/uploads/:category/:filename', () => {
                 '/api/uploads/avatars/avatar-static-test.png'
             );
 
-            expect(response.status).toBe(200);
+            expect(response.status).toBe(403);
         });
     });
 

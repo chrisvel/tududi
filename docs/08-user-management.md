@@ -9,25 +9,25 @@ This document explains how user management works in tududi from a user behavior 
 ### Registration Flow
 
 1. **Registration is controlled by admins**
-   - By default, registration is disabled
-   - Admins can toggle registration on/off via the Admin panel
-   - When disabled, only admins can create new user accounts
+    - By default, registration is disabled
+    - Admins can toggle registration on/off via the Admin panel
+    - When disabled, only admins can create new user accounts
 
 2. **Email verification is required**
-   - When a user registers, they receive a verification email
-   - The email contains a unique link that expires in 24 hours (configurable)
-   - Users cannot log in until they verify their email address
-   - If email service is disabled, users must be verified manually by an admin
+    - When a user registers, they receive a verification email
+    - The email contains a unique link that expires in 24 hours (configurable)
+    - Users cannot log in until they verify their email address
+    - If email service is disabled, users must be verified manually by an admin
 
 3. **The first user becomes an admin automatically**
-   - When no admin users exist in the system, the first user to register becomes an admin
-   - This ensures someone can manage the system after initial setup
-   - All subsequent users are created as regular users by default
+    - When no admin users exist in the system, the first user to register becomes an admin
+    - This ensures someone can manage the system after initial setup
+    - All subsequent users are created as regular users by default
 
 4. **Registration validation rules:**
-   - Email must be valid format and unique
-   - Password must be at least 6 characters long
-   - Email is automatically normalized (trimmed and lowercased)
+    - Email must be valid format and unique
+    - Password must be at least 6 characters long
+    - Email is automatically normalized (trimmed and lowercased)
 
 ---
 
@@ -36,27 +36,27 @@ This document explains how user management works in tududi from a user behavior 
 ### Login
 
 5. **Users log in with email and password**
-   - Email verification must be completed before login
-   - Attempting to log in with an unverified email returns a specific error
-   - Invalid credentials return a generic "Invalid credentials" error (security best practice)
+    - Email verification must be completed before login
+    - Attempting to log in with an unverified email returns a specific error
+    - Invalid credentials return a generic "Invalid credentials" error (security best practice)
 
 6. **Session-based authentication**
-   - After successful login, a session is created and stored in a cookie
-   - Sessions persist until logout or session expiry
-   - Users can be logged in across multiple devices/browsers simultaneously
+    - After successful login, a session is created and stored in a cookie
+    - Sessions persist until logout or session expiry
+    - Users can be logged in across multiple devices/browsers simultaneously
 
 7. **API token authentication**
-   - Users can create personal API tokens for programmatic access
-   - Tokens are prefixed with `tt_` and are 64 characters long
-   - Tokens can have optional expiration dates
-   - Multiple tokens can be active simultaneously
-   - Tokens can be revoked or deleted at any time
+    - Users can create personal API tokens for programmatic access
+    - Tokens are prefixed with `tt_` and are 64 characters long
+    - Tokens can have optional expiration dates
+    - Multiple tokens can be active simultaneously
+    - Tokens can be revoked or deleted at any time
 
 ### Logout
 
 8. **Logout destroys the session**
-   - The session is removed from the server
-   - The user must log in again to access the system
+    - The session is removed from the server
+    - The user must log in again to access the system
 
 ---
 
@@ -65,8 +65,8 @@ This document explains how user management works in tududi from a user behavior 
 ### Role System
 
 9. **Two role types exist: Admin and User**
-   - **Admin:** Full system access, can manage users, toggle registration, access admin panel
-   - **User:** Standard access to their own data and shared resources
+    - **Admin:** Full system access, can manage users, toggle registration, access admin panel
+    - **User:** Standard access to their own data and shared resources
 
 10. **Role assignment:**
     - First user is automatically assigned admin role
@@ -102,9 +102,14 @@ This document explains how user management works in tududi from a user behavior 
     - Notes inherit permissions from their parent project
     - If a user has access to a project, they have the same access to its tasks and notes
 
-15. **Admins bypass permission checks**
-    - Users with admin role have admin-level access to all resources
-    - This enables admins to help users with issues or perform system maintenance
+15. **Admins do not bypass permission checks**
+    - Admins see only their own and shared resources, like any other user
+    - System maintenance goes through the dedicated `/api/admin/*` endpoints
+    - Only admins can list the user directory (`GET /api/users`)
+
+15a. **Sharing requires the recipient's consent** - Sharing creates a pending invitation; the resource stays invisible to the
+recipient until they accept (in-app notification or `GET /api/shares/invitations`) - `POST /api/shares` responds the same way whether or not the email belongs
+to an account, so it cannot be used to discover who has signed up - Declining removes the invitation; the owner can re-invite later
 
 ---
 
@@ -244,16 +249,18 @@ This document explains how user management works in tududi from a user behavior 
 33. **Admins can delete users**
     - Cannot delete their own account (prevents lockout)
     - Deleting a user also deletes their data:
-      - Tasks are deleted (cascades to subtasks, attachments, etc.)
-      - Projects are deleted (cascades to tasks within)
-      - Notes are deleted
-      - Permissions granted by/to the user are removed
-      - API tokens are deleted
-      - Shared resources are unshared
+        - Tasks are deleted (cascades to subtasks, attachments, etc.)
+        - Projects are deleted (cascades to tasks within)
+        - Notes are deleted
+        - Permissions granted by/to the user are removed
+        - API tokens are deleted
+        - Shared resources are unshared
 
 34. **Admin bootstrapping:**
-    - When no admin roles exist, the system is in "bootstrap mode"
-    - In bootstrap mode, any authenticated user can set admin roles
+    - Every user gets a role row on creation, and the first user created on
+      an instance becomes admin, so "no roles exist" is not a normal state
+    - `POST /api/admin/set-admin-role` only falls back to bootstrap mode
+      (any authenticated user may set roles) when the roles table is empty
     - After at least one admin exists, only admins can manage roles
 
 ---
@@ -299,15 +306,18 @@ This document explains how user management works in tududi from a user behavior 
 ### Account Creation to Deletion
 
 39. **User creation flow:**
+
     ```
     Registration → Email Verification → First Login → Profile Setup → Active User
     ```
+
     - Or: Admin creates user → Active user (no verification needed)
 
 40. **User deletion flow:**
     ```
     Admin deletes user → Cascade delete resources → Remove permissions → Remove sessions
     ```
+
     - User cannot log in after deletion
     - All owned data is removed
     - Shared access is revoked
@@ -350,6 +360,7 @@ This document explains how user management works in tududi from a user behavior 
 ### User Identity
 
 A user account is identified by:
+
 - **ID:** Internal database ID (integer)
 - **UID:** External unique identifier (string, used in URLs)
 - **Email:** Unique, normalized email address
@@ -368,7 +379,10 @@ A personal access token that enables programmatic API access. Tokens are long-li
 
 ### Bootstrap Mode
 
-Special state when no admin users exist. Allows the first authenticated user to set admin roles, preventing system lockout after initial setup.
+Fallback for an instance whose `roles` table is empty (for example after a
+manual data repair). While it is empty, any authenticated user may set admin
+roles so the instance cannot lock itself out. Under normal operation the first
+created user is already admin and this mode is never reachable.
 
 ---
 
@@ -380,6 +394,7 @@ Special state when no admin users exist. Allows the first authenticated user to 
 - [Projects](06-projects.md) - Project sharing and permissions
 
 **Technical Implementation Files:**
+
 - User model: `/backend/models/user.js`
 - Role model: `/backend/models/role.js`
 - Permission model: `/backend/models/permission.js`

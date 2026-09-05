@@ -81,6 +81,60 @@ const sharesController = {
             res.status(400).json({ error: 'Unable to list shares' });
         }
     },
+
+    async listInvitations(req, res, next) {
+        try {
+            const userId = getAuthenticatedUserId(req);
+            if (!userId) {
+                return res
+                    .status(401)
+                    .json({ error: 'Authentication required' });
+            }
+
+            const result = await sharesService.listInvitations(userId);
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    async acceptInvitation(req, res, next) {
+        try {
+            const userId = getAuthenticatedUserId(req);
+            if (!userId) {
+                return res
+                    .status(401)
+                    .json({ error: 'Authentication required' });
+            }
+
+            const result = await sharesService.acceptInvitation(
+                userId,
+                Number(req.params.id)
+            );
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    async declineInvitation(req, res, next) {
+        try {
+            const userId = getAuthenticatedUserId(req);
+            if (!userId) {
+                return res
+                    .status(401)
+                    .json({ error: 'Authentication required' });
+            }
+
+            await sharesService.declineInvitation(
+                userId,
+                Number(req.params.id)
+            );
+            res.status(204).end();
+        } catch (error) {
+            next(error);
+        }
+    },
 };
 
 module.exports = sharesController;

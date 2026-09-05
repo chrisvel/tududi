@@ -19,7 +19,7 @@ module.exports = {
 
         // Check if any admin users exist
         const [adminCountResult] = await queryInterface.sequelize.query(
-            'SELECT COUNT(*) as count FROM roles WHERE is_admin = 1'
+            'SELECT COUNT(*) as count FROM roles WHERE is_admin'
         );
         const hasAdmins = adminCountResult[0].count > 0;
 

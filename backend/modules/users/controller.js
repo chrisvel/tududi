@@ -43,7 +43,9 @@ const usersController = {
      */
     async list(req, res, next) {
         try {
-            const users = await usersService.listUsers();
+            const users = await usersService.listUsers(
+                getAuthenticatedUserId(req)
+            );
             res.json(users);
         } catch (error) {
             next(error);
