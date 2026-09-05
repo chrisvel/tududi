@@ -6,6 +6,7 @@ const {
 } = require('../../utils/notificationPreferences');
 const peopleService = require('../people/service');
 const { logError } = require('../../services/logService');
+const { getConfig } = require('../../config/config');
 
 function shouldBeAdmin(config, email) {
     if (!config.adminEmailDomains || config.adminEmailDomains.length === 0) {
@@ -80,10 +81,24 @@ async function provisionUser(providerSlug, claims, req) {
         let isNewUser = false;
 
         if (!user) {
+            // A self-hosted operator who turns on auto-provisioning wants
+            // everyone their IdP vouches for to get an account. On a hosted
+            // instance the IdP may be a public one (Google, GitHub), so the
+            // registration toggle still decides whether new accounts open.
+            if (getConfig().hosted?.enabled === true) {
+                const {
+                    isRegistrationEnabled,
+                } = require('../auth/registrationService');
+                if (!(await isRegistrationEnabled())) {
+                    await transaction.rollback();
+                    throw new Error('Registration is not enabled');
+                }
+            }
+
             user = await User.create(
                 {
                     email: claims.email,
-                    verified_email: true,
+                    email_verified: true,
                     password_digest: null,
                     notification_preferences:
                         getDefaultNotificationPreferences(),

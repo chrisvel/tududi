@@ -107,6 +107,8 @@ Create `/backend/.env` file (not tracked in git):
 TUDUDI_SESSION_SECRET=your-random-secret-here-use-openssl-rand-hex-64
 TUDUDI_USER_EMAIL=admin@example.com
 TUDUDI_USER_PASSWORD=your-secure-password
+# The admin user is created on startup if missing. An existing user's
+# password is not overwritten (see scripts/user-create.js --update-password).
 
 # Optional - Server config
 NODE_ENV=development

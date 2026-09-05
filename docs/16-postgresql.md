@@ -37,7 +37,7 @@ Passwords with special characters must be URL-encoded inside `DATABASE_URL` (`@`
 1. Connects and authenticates.
 2. If the `users` table is missing, the database is treated as new: `sequelize.sync()` creates every table, index and foreign key from the models, and all existing migration files are recorded in `SequelizeMeta` as already applied (the *baseline*). The default `registration_enabled=false` setting is seeded.
 3. `sequelize-cli db:migrate` then runs whatever migrations were added after the baseline. On a brand-new install this prints "No migrations were executed".
-4. If `TUDUDI_USER_EMAIL` and `TUDUDI_USER_PASSWORD` are set, that user is created or updated.
+4. If `TUDUDI_USER_EMAIL` and `TUDUDI_USER_PASSWORD` are set, that user is created (if missing) and made admin. An existing user's password is left unchanged.
 
 The historical migrations contain SQLite-only SQL and are never replayed on PostgreSQL; the models are the source of truth for a fresh PostgreSQL schema. On an existing database, step 2 is skipped and only pending migrations run, so restarts and upgrades behave exactly as with SQLite.
 

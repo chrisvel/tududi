@@ -74,6 +74,14 @@ const config = {
 
     disableTelegram: process.env.DISABLE_TELEGRAM === 'true',
 
+    // Hosted mode: this instance serves unrelated members of the public, so
+    // conveniences that assume a single owner (first user becomes admin,
+    // bootstrap role assignment, SSO auto-provisioning past a closed
+    // registration) are switched off. Off by default for self-hosters.
+    hosted: {
+        enabled: process.env.TUDUDI_HOSTED_MODE === 'true',
+    },
+
     email: process.env.TUDUDI_USER_EMAIL,
 
     environment,

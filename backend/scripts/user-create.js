@@ -1,11 +1,9 @@
 #!/usr/bin/env node
 
-/**
- * User Creation Script
- * Creates a new user with email and password.
- * If user exists, updated password.
- * Usage: node user-create.js <email> <password> [is_admin]
- */
+// User creation script.
+// Creates a user with email and password. An existing user is left as is
+// (the admin flag is still applied) unless --update-password is given.
+// Usage: node user-create.js <email> <password> [is_admin] [--update-password]
 
 try {
     require('dotenv').config();
@@ -18,11 +16,15 @@ const {
 const { Role } = require('../models');
 
 async function createUser() {
-    const [email, password, isAdminArg] = process.argv.slice(2);
+    const args = process.argv.slice(2);
+    const updatePassword = args.includes('--update-password');
+    const [email, password, isAdminArg] = args.filter(
+        (arg) => !arg.startsWith('--')
+    );
 
     if (!email || password === undefined) {
         console.error(
-            'Usage: npm run user:create <email> <password> [is_admin]'
+            'Usage: npm run user:create <email> <password> [is_admin] [--update-password]'
         );
         console.error(
             'Example: npm run user:create admin@example.com mypassword123 true'
@@ -50,7 +52,11 @@ async function createUser() {
 
         console.log(`Creating user with email: ${email}`);
 
-        const { user, created } = await createOrUpdateUser(email, password);
+        const { user, created, passwordUpdated } = await createOrUpdateUser(
+            email,
+            password,
+            { updatePassword }
+        );
 
         // Optionally grant admin role
         const shouldBeAdmin = String(isAdminArg).toLowerCase() === 'true';
@@ -68,10 +74,14 @@ async function createUser() {
             }
         }
 
-        if (!created) {
+        if (created) {
+            console.log('User created successfully');
+        } else if (passwordUpdated) {
             console.log('User exists, password updated');
         } else {
-            console.log('User created successfully');
+            console.log(
+                'User exists, password left unchanged (pass --update-password to replace it)'
+            );
         }
 
         console.log(`Email: ${user.email}`);
