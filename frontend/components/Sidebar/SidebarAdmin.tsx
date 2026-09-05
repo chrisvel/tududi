@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Location } from 'react-router-dom';
-import { RectangleStackIcon, UsersIcon } from '@heroicons/react/24/outline';
+import {
+    RectangleStackIcon,
+    UsersIcon,
+    CreditCardIcon,
+} from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
 import { useTranslation } from 'react-i18next';
+import { getFeatureFlags } from '../../utils/featureFlags';
 
 interface SidebarAdminProps {
     handleNavClick: (path: string, title: string) => void;
@@ -10,9 +15,23 @@ interface SidebarAdminProps {
     currentUser: { is_admin?: boolean };
 }
 
-const SidebarAdmin: React.FC<SidebarAdminProps> = ({ handleNavClick, location, currentUser }) => {
+const SidebarAdmin: React.FC<SidebarAdminProps> = ({
+    handleNavClick,
+    location,
+    currentUser,
+}) => {
     const { t } = useTranslation();
-    const templatesEnabled = useStore((state) => state.userSettingsStore.templatesEnabled);
+    const templatesEnabled = useStore(
+        (state) => state.userSettingsStore.templatesEnabled
+    );
+    const [hosted, setHosted] = useState(false);
+
+    useEffect(() => {
+        if (!currentUser?.is_admin) return;
+        getFeatureFlags()
+            .then((flags) => setHosted(!!flags.hosted))
+            .catch(() => setHosted(false));
+    }, [currentUser?.is_admin]);
 
     if (!templatesEnabled && !currentUser?.is_admin) return null;
 
@@ -30,7 +49,12 @@ const SidebarAdmin: React.FC<SidebarAdminProps> = ({ handleNavClick, location, c
             {templatesEnabled && (
                 <li
                     className={linkClass('/templates')}
-                    onClick={() => handleNavClick('/templates', t('navigation.templates', 'Templates'))}
+                    onClick={() =>
+                        handleNavClick(
+                            '/templates',
+                            t('navigation.templates', 'Templates')
+                        )
+                    }
                 >
                     <RectangleStackIcon className="h-[14px] w-[14px] mr-[6px] shrink-0" />
                     {t('navigation.templates', 'Templates')}
@@ -38,11 +62,30 @@ const SidebarAdmin: React.FC<SidebarAdminProps> = ({ handleNavClick, location, c
             )}
             {currentUser?.is_admin === true && (
                 <li
-                    className={linkClass('/admin')}
-                    onClick={() => handleNavClick('/admin/users', t('admin.userManagement', 'User Management'))}
+                    className={linkClass('/admin/users')}
+                    onClick={() =>
+                        handleNavClick(
+                            '/admin/users',
+                            t('admin.userManagement', 'User Management')
+                        )
+                    }
                 >
                     <UsersIcon className="h-[14px] w-[14px] mr-[6px] shrink-0" />
                     {t('admin.userManagement', 'User Management')}
+                </li>
+            )}
+            {currentUser?.is_admin === true && hosted && (
+                <li
+                    className={linkClass('/admin/billing')}
+                    onClick={() =>
+                        handleNavClick(
+                            '/admin/billing',
+                            t('admin.billing.title', 'Billing')
+                        )
+                    }
+                >
+                    <CreditCardIcon className="h-[14px] w-[14px] mr-[6px] shrink-0" />
+                    {t('admin.billing.title', 'Billing')}
                 </li>
             )}
         </ul>
