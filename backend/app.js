@@ -139,6 +139,13 @@ app.use(
     })
 );
 
+// Stripe webhook: raw body, before JSON parsing, sessions, CSRF and rate
+// limiting. The signature is the authentication.
+const billingModule = require('./modules/billing');
+['/api', API_BASE_PATH].forEach((base) => {
+    app.post(`${base}/billing/webhook`, billingModule.webhookHandler());
+});
+
 // Body parsing (skip for CalDAV routes which need raw body access)
 app.use((req, res, next) => {
     const isCalDAVPath =
@@ -422,6 +429,7 @@ const registerApiRoutes = (basePath) => {
     app.use(basePath, telegramModule.routes);
     app.use(basePath, quotesModule.routes);
     app.use(basePath, backupModule.routes);
+    app.use(basePath, billingModule.routes);
     app.use(basePath, searchModule.routes);
     app.use(basePath, viewsModule.routes);
     app.use(basePath, notificationsModule.routes);
@@ -488,6 +496,7 @@ async function startServer() {
         // A hosted instance must not come up half-configured
         const { assertHostedConfig } = require('./config/hostedConfig');
         assertHostedConfig();
+        billingModule.billingService.validateConfig();
 
         const server = app.listen(config.port, config.host, () => {
             console.log(`Server running on port ${config.port}`);

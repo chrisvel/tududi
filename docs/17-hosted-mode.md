@@ -71,3 +71,46 @@ budgets (AI requests) use the `usage_counters` table.
 - `usage_counters`: `(user, metric, day)` counters.
 
 All three are removed with the account by `services/accountErasureService.js`.
+
+## Stripe
+
+Billing is Stripe Checkout plus the Customer Portal; tududi never sees card
+details. Set:
+
+| Variable | Meaning |
+|---|---|
+| `STRIPE_SECRET_KEY` | secret API key (`sk_live_...`) |
+| `STRIPE_WEBHOOK_SECRET` | signing secret of the webhook endpoint below |
+| `STRIPE_PRICE_PRO_MONTHLY` | price id of the monthly Pro price |
+| `STRIPE_PRICE_PRO_ANNUAL` | price id of the annual Pro price |
+
+Point a Stripe webhook at `https://your-host/api/billing/webhook` with the
+events `checkout.session.completed`, `customer.subscription.created`,
+`customer.subscription.updated`, `customer.subscription.deleted`,
+`invoice.paid` and `invoice.payment_failed`. The endpoint reads the raw
+body, verifies the signature, records every event id in `billing_events`
+(a redelivered event is acknowledged and not applied twice), and answers
+500 on an internal fault so Stripe retries.
+
+Endpoints (all 404 on a self-hosted instance):
+
+| Route | Purpose |
+|---|---|
+| `GET /api/billing` | plan, status, usage, and what the UI may offer |
+| `GET /api/billing/plans` | the catalog, without price ids |
+| `POST /api/billing/checkout` `{ interval: "month" \| "year" }` | Checkout session URL |
+| `POST /api/billing/portal` | Customer Portal URL |
+| `POST /api/billing/sync` `{ session_id? }` | re-read the subscription from Stripe (the checkout redirect can beat the webhook) |
+| `GET /api/admin/billing` | overview and account list (admin) |
+| `PUT /api/admin/billing/:userId/override` `{ plan, expires_at?, reason? }` | comp or restrict an account (admin) |
+| `DELETE /api/admin/billing/:userId/override` | remove the override (admin) |
+| `POST /api/admin/billing/:userId/sync` | force a re-read from Stripe (admin) |
+
+After a failed payment the account is `past_due`: Pro continues for
+`TUDUDI_PAST_DUE_GRACE_DAYS` past the period end while Stripe retries, and
+the user gets an in-app warning. A cancelled subscription drops to Free at
+once but nothing is deleted or hidden. Deleting an account cancels its
+subscription and removes the Stripe customer.
+
+Local testing: `stripe listen --forward-to localhost:3002/api/billing/webhook`
+and `stripe trigger checkout.session.completed`.
