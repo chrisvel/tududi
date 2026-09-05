@@ -31,6 +31,35 @@ const authLimiter = rateLimit({
     },
 });
 
+// Keys login and password-reset attempts by the submitted email address.
+// Complements authLimiter (per IP): a distributed attack on one account is
+// throttled, and users behind one shared IP do not exhaust each other's
+// attempts. Requests without an email fall back to the IP key.
+const authEmailKey = (req) => {
+    const email = req.body && req.body.email;
+    if (typeof email === 'string' && email.trim()) {
+        return `email:${email.trim().toLowerCase()}`;
+    }
+    return ipKeyGenerator(req.ip);
+};
+
+const authEmailLimiter = rateLimit({
+    windowMs: rateLimitConfig.authEmail.windowMs,
+    max: rateLimitConfig.authEmail.max,
+    standardHeaders: true,
+    legacyHeaders: false,
+    skip: skipInTest,
+    keyGenerator: authEmailKey,
+    handler: (req, res) => {
+        res.status(429).json({
+            error: 'Too many authentication attempts',
+            message:
+                'Too many attempts for this account. Please try again after 15 minutes.',
+            retryAfter: Math.ceil(req.rateLimit.resetTime / 1000),
+        });
+    },
+});
+
 /**
  * General API rate limiting for unauthenticated requests
  */
@@ -73,7 +102,7 @@ const authenticatedApiLimiter = rateLimit({
             req.session?.userId?.toString() || req.user?.id?.toString();
         if (userId) return userId;
         // Use proper IPv6-compatible IP key generator as fallback
-        return ipKeyGenerator(req);
+        return ipKeyGenerator(req.ip);
     },
     // Only apply to authenticated requests or if disabled
     skip: (req) => {
@@ -107,7 +136,7 @@ const createResourceLimiter = rateLimit({
             req.session?.userId?.toString() || req.user?.id?.toString();
         if (userId) return userId;
         // Use proper IPv6-compatible IP key generator as fallback
-        return ipKeyGenerator(req);
+        return ipKeyGenerator(req.ip);
     },
     handler: (req, res) => {
         res.status(429).json({
@@ -134,7 +163,7 @@ const apiKeyManagementLimiter = rateLimit({
             req.session?.userId?.toString() || req.user?.id?.toString();
         if (userId) return userId;
         // Use proper IPv6-compatible IP key generator as fallback
-        return ipKeyGenerator(req);
+        return ipKeyGenerator(req.ip);
     },
     handler: (req, res) => {
         res.status(429).json({
@@ -148,6 +177,8 @@ const apiKeyManagementLimiter = rateLimit({
 
 module.exports = {
     authLimiter,
+    authEmailLimiter,
+    authEmailKey,
     apiLimiter,
     authenticatedApiLimiter,
     createResourceLimiter,

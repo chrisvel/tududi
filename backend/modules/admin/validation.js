@@ -1,5 +1,7 @@
 'use strict';
 
+const { PASSWORD_MIN_LENGTH } = require('../users/userService');
+
 const { ValidationError } = require('../../shared/errors');
 
 /**
@@ -27,8 +29,10 @@ function validateEmail(email) {
  * Validate password.
  */
 function validatePassword(password) {
-    if (typeof password !== 'string' || password.length < 6) {
-        throw new ValidationError('Password must be at least 6 characters');
+    if (typeof password !== 'string' || password.length < PASSWORD_MIN_LENGTH) {
+        throw new ValidationError(
+            `Password must be at least ${PASSWORD_MIN_LENGTH} characters`
+        );
     }
     return password;
 }

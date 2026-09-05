@@ -71,7 +71,7 @@ describe('User Create Script', () => {
 
         it('should create user with minimum password length', async () => {
             const email = 'testuser2@example.com';
-            const password = '123456'; // Exactly 6 characters
+            const password = '12345678'; // Exactly 8 characters
 
             const result = await runUserCreateScript([email, password]);
 
@@ -141,8 +141,8 @@ describe('User Create Script', () => {
             }
         });
 
-        it('should reject password shorter than 6 characters', async () => {
-            const shortPasswords = ['', '1', '12', '123', '1234', '12345'];
+        it('should reject password shorter than 8 characters', async () => {
+            const shortPasswords = ['', '1', '123', '12345', '1234567'];
 
             for (const password of shortPasswords) {
                 const result = await runUserCreateScript([

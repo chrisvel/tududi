@@ -244,6 +244,14 @@ module.exports = (sequelize) => {
                 type: DataTypes.DATE,
                 allowNull: true,
             },
+            password_reset_token_hash: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
+            password_reset_token_expires_at: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
         },
         {
             tableName: 'users',

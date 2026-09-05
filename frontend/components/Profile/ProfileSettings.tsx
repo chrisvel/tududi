@@ -55,10 +55,8 @@ import McpTab from './tabs/McpTab';
 import CalDAVTab from './tabs/CalDAVTab';
 import AIAssistantTab from './tabs/AIAssistantTab';
 import { getDefaultConfig } from '../../utils/keyboardShortcutsService';
-import {
-    getFeatureFlags,
-    type FeatureFlags,
-} from '../../utils/featureFlags';
+import { PASSWORD_MIN_LENGTH } from '../../utils/passwordPolicy';
+import { getFeatureFlags, type FeatureFlags } from '../../utils/featureFlags';
 import type {
     ProfileSettingsProps,
     Profile,
@@ -287,11 +285,12 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     'profile.newPasswordRequired',
                     'New password is required'
                 );
-            } else if (formData.newPassword.length < 6) {
-                errors.newPassword = t(
-                    'profile.passwordTooShort',
-                    'Password must be at least 6 characters'
-                );
+            } else if (formData.newPassword.length < PASSWORD_MIN_LENGTH) {
+                errors.newPassword = t('profile.passwordTooShort', {
+                    defaultValue:
+                        'Password must be at least {{count}} characters',
+                    count: PASSWORD_MIN_LENGTH,
+                });
             }
 
             if (formData.newPassword !== formData.confirmPassword) {
@@ -526,7 +525,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     surname: data.surname || '',
                     appearance: (data.ui_settings?.appearance?.theme ??
                         data.appearance ??
-                        (isDarkMode ? 'dark' : 'light')) as 'light' | 'dark' | 'system',
+                        (isDarkMode ? 'dark' : 'light')) as
+                        | 'light'
+                        | 'dark'
+                        | 'system',
                     language: data.language || 'en',
                     timezone: data.timezone || 'UTC',
                     first_day_of_week:
@@ -544,19 +546,24 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                         data.task_summary_frequency || 'daily',
                     features: {
                         task_intelligence_enabled:
-                            data.features?.task_intelligence_enabled !== undefined
+                            data.features?.task_intelligence_enabled !==
+                            undefined
                                 ? data.features.task_intelligence_enabled
                                 : true,
                         auto_suggest_next_actions_enabled:
-                            data.features?.auto_suggest_next_actions_enabled !== undefined
-                                ? data.features.auto_suggest_next_actions_enabled
+                            data.features?.auto_suggest_next_actions_enabled !==
+                            undefined
+                                ? data.features
+                                      .auto_suggest_next_actions_enabled
                                 : true,
                         productivity_assistant_enabled:
-                            data.features?.productivity_assistant_enabled !== undefined
+                            data.features?.productivity_assistant_enabled !==
+                            undefined
                                 ? data.features.productivity_assistant_enabled
                                 : true,
                         next_task_suggestion_enabled:
-                            data.features?.next_task_suggestion_enabled !== undefined
+                            data.features?.next_task_suggestion_enabled !==
+                            undefined
                                 ? data.features.next_task_suggestion_enabled
                                 : true,
                         ai_assistant_enabled:
@@ -591,8 +598,15 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     ui_settings: {
                         ...(data.ui_settings || {}),
                         appearance: {
-                            theme: (data.ui_settings?.appearance?.theme ?? data.appearance ?? (isDarkMode ? 'dark' : 'light')) as 'light' | 'dark' | 'system',
-                            showTaskContextMenu: data.ui_settings?.appearance?.showTaskContextMenu ?? false,
+                            theme: (data.ui_settings?.appearance?.theme ??
+                                data.appearance ??
+                                (isDarkMode ? 'dark' : 'light')) as
+                                | 'light'
+                                | 'dark'
+                                | 'system',
+                            showTaskContextMenu:
+                                data.ui_settings?.appearance
+                                    ?.showTaskContextMenu ?? false,
                         },
                     },
                     notification_preferences:
@@ -1064,18 +1078,21 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             // Save ui_settings via the dedicated endpoint which does a guaranteed
             // deep-merge (bypasses any Sequelize JSON change-detection issues).
             if (formData.ui_settings?.appearance !== undefined) {
-                const uiResponse = await fetch(getApiPath('profile/ui-settings'), {
-                    method: 'PUT',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-csrf-token': await getCsrfToken(),
-                        Accept: 'application/json',
-                    },
-                    body: JSON.stringify({
-                        appearance: formData.ui_settings.appearance,
-                    }),
-                });
+                const uiResponse = await fetch(
+                    getApiPath('profile/ui-settings'),
+                    {
+                        method: 'PUT',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-csrf-token': await getCsrfToken(),
+                            Accept: 'application/json',
+                        },
+                        body: JSON.stringify({
+                            appearance: formData.ui_settings.appearance,
+                        }),
+                    }
+                );
                 if (uiResponse.ok) {
                     const uiData = await uiResponse.json();
                     updatedProfile.ui_settings = uiData.ui_settings;
@@ -1156,51 +1173,73 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             if (updatedProfile.features?.pomodoro_enabled !== undefined) {
                 window.dispatchEvent(
                     new CustomEvent('pomodoroSettingChanged', {
-                        detail: { enabled: updatedProfile.features.pomodoro_enabled },
+                        detail: {
+                            enabled: updatedProfile.features.pomodoro_enabled,
+                        },
                     })
                 );
             }
 
             if (updatedProfile.features?.eisenhower_enabled !== undefined) {
-                useStore.getState().userSettingsStore.setEisenhowerEnabled(
-                    updatedProfile.features.eisenhower_enabled
-                );
+                useStore
+                    .getState()
+                    .userSettingsStore.setEisenhowerEnabled(
+                        updatedProfile.features.eisenhower_enabled
+                    );
             }
 
             if (updatedProfile.features?.kanban_enabled !== undefined) {
-                useStore.getState().userSettingsStore.setKanbanEnabled(
-                    updatedProfile.features.kanban_enabled
-                );
+                useStore
+                    .getState()
+                    .userSettingsStore.setKanbanEnabled(
+                        updatedProfile.features.kanban_enabled
+                    );
             }
 
             if (updatedProfile.features?.habits_enabled !== undefined) {
-                useStore.getState().userSettingsStore.setHabitsEnabled(
-                    updatedProfile.features.habits_enabled
-                );
+                useStore
+                    .getState()
+                    .userSettingsStore.setHabitsEnabled(
+                        updatedProfile.features.habits_enabled
+                    );
             }
 
             if (updatedProfile.features?.calendar_enabled !== undefined) {
-                useStore.getState().userSettingsStore.setCalendarEnabled(
-                    updatedProfile.features.calendar_enabled
-                );
+                useStore
+                    .getState()
+                    .userSettingsStore.setCalendarEnabled(
+                        updatedProfile.features.calendar_enabled
+                    );
             }
 
             if (updatedProfile.features?.templates_enabled !== undefined) {
-                useStore.getState().userSettingsStore.setTemplatesEnabled(
-                    updatedProfile.features.templates_enabled
-                );
+                useStore
+                    .getState()
+                    .userSettingsStore.setTemplatesEnabled(
+                        updatedProfile.features.templates_enabled
+                    );
             }
 
             if (updatedProfile.features?.ai_assistant_enabled !== undefined) {
-                useStore.getState().userSettingsStore.setAiAssistantEnabled(
-                    updatedProfile.features.ai_assistant_enabled
-                );
+                useStore
+                    .getState()
+                    .userSettingsStore.setAiAssistantEnabled(
+                        updatedProfile.features.ai_assistant_enabled
+                    );
             }
 
-            if (updatedProfile.ui_settings?.appearance?.showTaskContextMenu !== undefined) {
-                useStore.getState().userSettingsStore.setShowTaskContextMenu(
-                    Boolean(updatedProfile.ui_settings.appearance.showTaskContextMenu)
-                );
+            if (
+                updatedProfile.ui_settings?.appearance?.showTaskContextMenu !==
+                undefined
+            ) {
+                useStore
+                    .getState()
+                    .userSettingsStore.setShowTaskContextMenu(
+                        Boolean(
+                            updatedProfile.ui_settings.appearance
+                                .showTaskContextMenu
+                        )
+                    );
             }
 
             if (isPasswordChange) {
@@ -1381,14 +1420,16 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                             ui_settings: {
                                                 ...(prev.ui_settings || {}),
                                                 appearance: {
-                                                    ...(prev.ui_settings?.appearance || {}),
+                                                    ...(prev.ui_settings
+                                                        ?.appearance || {}),
                                                     theme: appearance,
                                                 },
                                             },
                                         }))
                                     }
                                     showTaskContextMenu={Boolean(
-                                        formData.ui_settings?.appearance?.showTaskContextMenu
+                                        formData.ui_settings?.appearance
+                                            ?.showTaskContextMenu
                                     )}
                                     onToggleTaskContextMenu={() =>
                                         setFormData((prev) => ({
@@ -1396,9 +1437,12 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                             ui_settings: {
                                                 ...(prev.ui_settings || {}),
                                                 appearance: {
-                                                    ...(prev.ui_settings?.appearance || {}),
+                                                    ...(prev.ui_settings
+                                                        ?.appearance || {}),
                                                     showTaskContextMenu:
-                                                        !prev.ui_settings?.appearance?.showTaskContextMenu,
+                                                        !prev.ui_settings
+                                                            ?.appearance
+                                                            ?.showTaskContextMenu,
                                                 },
                                             },
                                         }))
@@ -1467,7 +1511,8 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                             features: {
                                                 ...prev.features,
                                                 eisenhower_enabled:
-                                                    !prev.features?.eisenhower_enabled,
+                                                    !prev.features
+                                                        ?.eisenhower_enabled,
                                             },
                                         }))
                                     }
@@ -1480,12 +1525,14 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                             features: {
                                                 ...prev.features,
                                                 kanban_enabled:
-                                                    !prev.features?.kanban_enabled,
+                                                    !prev.features
+                                                        ?.kanban_enabled,
                                             },
                                         }))
                                     }
                                     habitsEnabled={Boolean(
-                                        formData.features?.habits_enabled ?? true
+                                        formData.features?.habits_enabled ??
+                                            true
                                     )}
                                     onToggleHabits={() =>
                                         setFormData((prev) => ({
@@ -1493,7 +1540,8 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                             features: {
                                                 ...prev.features,
                                                 habits_enabled:
-                                                    !prev.features?.habits_enabled,
+                                                    !prev.features
+                                                        ?.habits_enabled,
                                             },
                                         }))
                                     }
@@ -1506,20 +1554,25 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                             features: {
                                                 ...prev.features,
                                                 calendar_enabled:
-                                                    !prev.features?.calendar_enabled,
+                                                    !prev.features
+                                                        ?.calendar_enabled,
                                             },
                                         }))
                                     }
                                     templatesEnabled={Boolean(
-                                        formData.features?.templates_enabled ?? true
+                                        formData.features?.templates_enabled ??
+                                            true
                                     )}
                                     onToggleTemplates={() =>
                                         setFormData((prev) => ({
                                             ...prev,
                                             features: {
                                                 ...prev.features,
-                                                templates_enabled:
-                                                    !(prev.features?.templates_enabled ?? true),
+                                                templates_enabled: !(
+                                                    prev.features
+                                                        ?.templates_enabled ??
+                                                    true
+                                                ),
                                             },
                                         }))
                                     }
@@ -1532,7 +1585,8 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                             features: {
                                                 ...prev.features,
                                                 pomodoro_enabled:
-                                                    !prev.features?.pomodoro_enabled,
+                                                    !prev.features
+                                                        ?.pomodoro_enabled,
                                             },
                                         }))
                                     }
@@ -1542,7 +1596,8 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                             ...prev,
                                             features: {
                                                 ...prev.features,
-                                                [field]: !prev.features?.[field],
+                                                [field]:
+                                                    !prev.features?.[field],
                                             },
                                         }))
                                     }
@@ -1556,7 +1611,8 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                             ...prev,
                                             features: {
                                                 ...prev.features,
-                                                [field]: !prev.features?.[field],
+                                                [field]:
+                                                    !prev.features?.[field],
                                             },
                                         }))
                                     }
@@ -1611,7 +1667,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                 />
 
                                 <KeyboardShortcutsTab
-                                    isActive={activeTab === 'keyboard-shortcuts'}
+                                    isActive={
+                                        activeTab === 'keyboard-shortcuts'
+                                    }
                                     config={formData.keyboard_shortcuts}
                                     onChange={(config) =>
                                         setFormData((prev) => ({

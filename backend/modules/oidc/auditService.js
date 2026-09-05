@@ -7,6 +7,7 @@ const EVENT_TYPES = {
     OIDC_LINKED: 'oidc_linked',
     OIDC_UNLINKED: 'oidc_unlinked',
     OIDC_PROVISION: 'oidc_provision',
+    PASSWORD_RESET: 'password_reset',
 };
 
 const AUTH_METHODS = {
