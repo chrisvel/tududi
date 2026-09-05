@@ -27,6 +27,8 @@ const credentials = {
 
 const defaultHost = environment === 'test' ? '127.0.0.1' : '0.0.0.0';
 
+const { resolveDatabaseSettings } = require('./database-settings');
+
 const emailConfig = {
     enabled: process.env.ENABLE_EMAIL === 'true',
     smtp: {
@@ -213,11 +215,22 @@ const config = {
     },
 };
 
-console.log(`Using database file '${config.dbFile}'`);
+config.db = resolveDatabaseSettings(process.env, config.dbFile);
+
+if (config.db.dialect === 'sqlite') {
+    console.log(`Using database file '${config.dbFile}'`);
+} else {
+    console.log(
+        `Using PostgreSQL database '${config.db.database}' at ${config.db.host}:${config.db.port}`
+    );
+}
 
 function setConfig({ dbFile } = {}) {
     if (dbFile != null) {
         config.dbFile = dbFile;
+        if (config.db.dialect === 'sqlite') {
+            config.db.storage = dbFile;
+        }
     }
 }
 

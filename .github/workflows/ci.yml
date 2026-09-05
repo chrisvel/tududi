@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  test-sqlite:
     runs-on: ubuntu-latest
 
     steps:
@@ -38,3 +38,53 @@ jobs:
 
     - name: Build frontend
       run: npm run build
+
+  test-postgres:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: tududi
+          POSTGRES_PASSWORD: tududi
+          POSTGRES_DB: tududi_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U tududi"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgres://tududi:tududi@localhost:5432/tududi_test
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Bootstrap an empty database and run pending migrations
+      working-directory: backend
+      run: |
+        node scripts/db-prepare.js
+        npx sequelize-cli db:migrate --config config/database.js
+        node scripts/db-prepare.js
+      env:
+        NODE_ENV: production
+
+    - name: Run backend tests against PostgreSQL
+      run: npm run backend:test:pg
+      env:
+        FF_ENABLE_BACKUPS: 'true'
+        FF_ENABLE_CALDAV: 'true'
+        FF_ENABLE_CALENDAR: 'true'

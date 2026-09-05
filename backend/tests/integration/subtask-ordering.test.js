@@ -8,7 +8,7 @@ describe('Subtask Ordering', () => {
     let testUser;
 
     beforeEach(async () => {
-        await Task.destroy({ where: {}, truncate: true });
+        await Task.destroy({ where: {}, truncate: true, cascade: true });
 
         testUser = await createTestUser();
 

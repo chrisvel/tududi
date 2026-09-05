@@ -10,6 +10,7 @@ const taskRepository = require('../../tasks/repository');
 const { CALDAV_TASK_INCLUDES } = require('../task-includes');
 const vtodoSerializer = require('../icalendar/vtodo-serializer');
 const { Op } = require('sequelize');
+const { ciLike } = require('../../../utils/db-dialect');
 
 async function handleReport(req, res) {
     try {
@@ -136,7 +137,7 @@ async function handleReport(req, res) {
 
             if (property === 'SUMMARY') {
                 where.name = caseless
-                    ? { [Op.like]: `%${value}%` }
+                    ? ciLike(`%${value}%`)
                     : { [Op.substring]: value };
             }
         }

@@ -8,6 +8,14 @@
 
 Tududi automatically creates SQLite database file backups before migrations and on startup to protect your data. These backups ensure you have a recovery point if a migration fails or if you need to restore to a previous state.
 
+> **PostgreSQL deployments:** the file backups below apply to SQLite only. When tududi runs against PostgreSQL (`DATABASE_URL` set), `start.sh` skips them and you are expected to back up the server with `pg_dump`, for example from cron:
+>
+> ```bash
+> 0 3 * * * pg_dump "$DATABASE_URL" | gzip > /var/backups/tududi/tududi-$(date +\%F).sql.gz
+> ```
+>
+> Restore with `psql "$DATABASE_URL" < backup.sql`. The per-user JSON export/import in the app works the same on both engines.
+
 ---
 
 ## Automatic SQLite File Backups

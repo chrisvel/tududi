@@ -12,7 +12,7 @@ This documentation is designed for AI assistants and developers working with the
 
 Tududi is a self-hosted task management system with hierarchical organization (Areas > Goals > Projects > Tasks), smart recurring tasks, and multi-channel integration.
 
-**Tech Stack:** React 18 + TypeScript, Express + Sequelize, SQLite
+**Tech Stack:** React 18 + TypeScript, Express + Sequelize, SQLite (default) or PostgreSQL
 
 **Get Started:**
 ```bash
@@ -112,12 +112,12 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
 
 4. **[Database & Migrations](docs/database.md)**
    - Key models and relationships
-   - Migration workflow
-   - Migration best practices
+   - Choosing SQLite (default) or PostgreSQL, and how a fresh schema is created
+   - Migration workflow and writing dialect-safe migrations
    - Common migration operations
 
 5. **[Backups & Restoration](docs/backups.md)**
-   - Automatic SQLite file backups before migrations
+   - Automatic SQLite file backups before migrations (PostgreSQL: pg_dump)
    - Backup retention policies (4 per day, 1 per day for 7 days)
    - Restoration procedures for development, Docker, and production
    - Emergency restore after failed migrations
@@ -274,7 +274,13 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - Session-scoped cache security (cleared on logout / 401)
     - Known limitations (sub-path deployments, iOS background sync, offline task creation)
 
-25. **[Claude Memory & Preferences](docs/MEMORY.md)**
+25. **[PostgreSQL Deployment](docs/16-postgresql.md)**
+    - Environment variables (`DATABASE_URL`, `DB_*`) and TLS
+    - First-start bootstrap and migration baseline
+    - Docker Compose example, upgrades, `pg_dump` backups
+    - Sizing, tuning and troubleshooting
+
+26. **[Claude Memory & Preferences](docs/MEMORY.md)**
     - PR and commit message preferences
     - Testing preferences
     - Common patterns to remember
@@ -317,7 +323,7 @@ Tududi is a self-hosted task management system designed around hierarchical orga
 
 **Backend:**
 - Express 4.21 + Sequelize 6.37 (ORM)
-- SQLite 5.1 (WAL mode, optimized)
+- SQLite (default, WAL mode, optimized) or PostgreSQL via `DATABASE_URL`
 - bcrypt + express-session (auth)
 - Swagger (API docs), Multer (uploads)
 - node-cron (scheduling), Nodemailer (email)
@@ -367,5 +373,5 @@ Tududi is a self-hosted task management system designed around hierarchical orga
 ---
 
 **Document Version:** 1.0.0
-**Last Updated:** 2026-03-14
+**Last Updated:** 2026-09-05
 **Maintainer:** Update when architecture changes or patterns evolve

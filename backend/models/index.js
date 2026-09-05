@@ -1,28 +1,9 @@
 const { Sequelize } = require('sequelize');
-const path = require('path');
 const { getConfig } = require('../config/config');
+const { buildSequelizeOptions } = require('../config/db');
 const config = getConfig();
 
-let dbConfig;
-
-dbConfig = {
-    dialect: 'sqlite',
-    storage: config.dbFile,
-    logging: config.environment === 'development' ? console.log : false,
-    // Allow concurrent reads under WAL mode; SQLite serializes writes internally
-    pool: {
-        max: 5,
-        min: 1,
-        idle: 10000,
-        acquire: 60000,
-    },
-    define: {
-        timestamps: true,
-        underscored: true,
-        createdAt: 'created_at',
-        updatedAt: 'updated_at',
-    },
-};
+const dbConfig = buildSequelizeOptions();
 
 const sequelize = new Sequelize(dbConfig);
 
@@ -327,42 +308,59 @@ Person.hasMany(Task, {
 User.hasOne(Person, { foreignKey: 'linked_user_id', as: 'SelfPerson' });
 Person.belongsTo(User, { foreignKey: 'linked_user_id', as: 'LinkedUser' });
 
-// Auto-create a self-person for every new user
-User.addHook('afterCreate', async (user, options) => {
+// Runs a non-fatal hook body inside a savepoint on the caller's transaction
+// (or a fresh transaction when there is none). A failure inside is logged and
+// swallowed without poisoning the outer transaction: PostgreSQL refuses every
+// later statement in a transaction that hit an error, unlike SQLite.
+async function runNonFatalHook(parentTransaction, description, body) {
     try {
-        const existing = await Person.findOne({
-            where: { user_id: user.id, linked_user_id: user.id },
-            transaction: options.transaction,
-        });
-        if (existing) return;
-
-        const nameParts = [user.name, user.surname].filter(Boolean);
-        let personName =
-            nameParts.length > 0
-                ? nameParts.join(' ').trim()
-                : user.email.split('@')[0];
-
-        const nameConflict = await Person.findOne({
-            where: { user_id: user.id, name: personName },
-            transaction: options.transaction,
-        });
-        if (nameConflict) personName = personName + ' (me)';
-
-        await Person.create(
-            {
-                user_id: user.id,
-                linked_user_id: user.id,
-                name: personName,
-                email: user.email || null,
-                relationship_type: 'other',
-                archived: false,
-            },
-            { transaction: options.transaction }
+        await sequelize.transaction(
+            parentTransaction ? { transaction: parentTransaction } : {},
+            body
         );
     } catch (err) {
         const { logError } = require('../services/logService');
-        logError(err, `Failed to create self-person for user ${user.id}`);
+        logError(err, description);
     }
+}
+
+// Auto-create a self-person for every new user
+User.addHook('afterCreate', async (user, options) => {
+    await runNonFatalHook(
+        options.transaction,
+        `Failed to create self-person for user ${user.id}`,
+        async (transaction) => {
+            const existing = await Person.findOne({
+                where: { user_id: user.id, linked_user_id: user.id },
+                transaction,
+            });
+            if (existing) return;
+
+            const nameParts = [user.name, user.surname].filter(Boolean);
+            let personName =
+                nameParts.length > 0
+                    ? nameParts.join(' ').trim()
+                    : user.email.split('@')[0];
+
+            const nameConflict = await Person.findOne({
+                where: { user_id: user.id, name: personName },
+                transaction,
+            });
+            if (nameConflict) personName = personName + ' (me)';
+
+            await Person.create(
+                {
+                    user_id: user.id,
+                    linked_user_id: user.id,
+                    name: personName,
+                    email: user.email || null,
+                    relationship_type: 'other',
+                    archived: false,
+                },
+                { transaction }
+            );
+        }
+    );
 });
 
 // Sync name/email changes to the self-person
@@ -373,28 +371,29 @@ User.addHook('afterUpdate', async (user, options) => {
         !user.changed('email')
     )
         return;
-    try {
-        const selfPerson = await Person.findOne({
-            where: { user_id: user.id, linked_user_id: user.id },
-            transaction: options.transaction,
-        });
-        if (!selfPerson) return;
+    await runNonFatalHook(
+        options.transaction,
+        `Failed to sync self-person for user ${user.id}`,
+        async (transaction) => {
+            const selfPerson = await Person.findOne({
+                where: { user_id: user.id, linked_user_id: user.id },
+                transaction,
+            });
+            if (!selfPerson) return;
 
-        const updates = {};
-        if (user.changed('name') || user.changed('surname')) {
-            const nameParts = [user.name, user.surname].filter(Boolean);
-            updates.name =
-                nameParts.length > 0
-                    ? nameParts.join(' ').trim()
-                    : user.email.split('@')[0];
+            const updates = {};
+            if (user.changed('name') || user.changed('surname')) {
+                const nameParts = [user.name, user.surname].filter(Boolean);
+                updates.name =
+                    nameParts.length > 0
+                        ? nameParts.join(' ').trim()
+                        : user.email.split('@')[0];
+            }
+            if (user.changed('email')) updates.email = user.email || null;
+
+            await selfPerson.update(updates, { transaction });
         }
-        if (user.changed('email')) updates.email = user.email || null;
-
-        await selfPerson.update(updates, { transaction: options.transaction });
-    } catch (err) {
-        const { logError } = require('../services/logService');
-        logError(err, `Failed to sync self-person for user ${user.id}`);
-    }
+    );
 });
 
 // Sync self-person name changes back to the linked User
@@ -407,38 +406,42 @@ Person.addHook('afterUpdate', async (person, options) => {
         person.linked_user_id !== person.user_id
     )
         return;
-    try {
-        const linkedUser = await User.findByPk(person.linked_user_id, {
-            transaction: options.transaction,
-        });
-        if (!linkedUser) return;
+    await runNonFatalHook(
+        options.transaction,
+        `Failed to sync user from self-person ${person.id}`,
+        async (transaction) => {
+            const linkedUser = await User.findByPk(person.linked_user_id, {
+                transaction,
+            });
+            if (!linkedUser) return;
 
-        const [firstName, ...rest] = person.name.trim().split(' ');
-        const surname = rest.length > 0 ? rest.join(' ') : null;
+            const [firstName, ...rest] = person.name.trim().split(' ');
+            const surname = rest.length > 0 ? rest.join(' ') : null;
 
-        await linkedUser.update(
-            { name: firstName || null, surname },
-            { transaction: options.transaction }
-        );
-    } catch (err) {
-        const { logError } = require('../services/logService');
-        logError(err, `Failed to sync user from self-person ${person.id}`);
-    }
+            await linkedUser.update(
+                { name: firstName || null, surname },
+                { transaction }
+            );
+        }
+    );
 });
 
 // Seed system tags for every new user
 User.addHook('afterCreate', async (user, options) => {
-    try {
-        const { seedSystemTagsForUser } = require('../modules/tags/systemTags');
-        // Pass the parent transaction so Tag.findOrCreate doesn't open a nested
-        // transaction while User.findOrCreate's transaction is still active,
-        // which causes SQLITE_BUSY on first-time database initialization.
-        await seedSystemTagsForUser(user.id, options.transaction);
-    } catch (err) {
-        // Non-fatal: system tags can be seeded via migration if this fails
-        const { logError } = require('../services/logService');
-        logError(err, `Failed to seed system tags for user ${user.id}`);
-    }
+    // Non-fatal: system tags can be seeded via migration if this fails.
+    // The parent transaction is reused so Tag.findOrCreate doesn't open a
+    // nested transaction while User.findOrCreate's transaction is still
+    // active, which causes SQLITE_BUSY on first-time database initialization.
+    await runNonFatalHook(
+        options.transaction,
+        `Failed to seed system tags for user ${user.id}`,
+        async (transaction) => {
+            const {
+                seedSystemTagsForUser,
+            } = require('../modules/tags/systemTags');
+            await seedSystemTagsForUser(user.id, transaction);
+        }
+    );
 });
 
 module.exports = {

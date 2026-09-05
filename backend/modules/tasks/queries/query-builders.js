@@ -116,7 +116,7 @@ async function filterTasksByParams(
             required: false,
             separate: true, // Required for order to work with associations
             order: [
-                ['order', 'ASC'],
+                ['order', 'ASC NULLS FIRST'],
                 ['created_at', 'ASC'],
             ],
         },
@@ -139,9 +139,6 @@ async function filterTasksByParams(
                 Task.STATUS.IN_PROGRESS,
                 Task.STATUS.WAITING,
                 Task.STATUS.PLANNED,
-                'in_progress',
-                'waiting',
-                'planned',
             ];
 
             // Exclude tasks deferred to the future
@@ -257,12 +254,7 @@ async function filterTasksByParams(
 
             if (params.status === 'done' || params.status === 'completed') {
                 whereClause.status = {
-                    [Op.in]: [
-                        Task.STATUS.DONE,
-                        Task.STATUS.ARCHIVED,
-                        'done',
-                        'archived',
-                    ],
+                    [Op.in]: [Task.STATUS.DONE, Task.STATUS.ARCHIVED],
                 };
             } else if (params.status === 'active') {
                 whereClause.status = {
@@ -270,29 +262,26 @@ async function filterTasksByParams(
                         Task.STATUS.DONE,
                         Task.STATUS.ARCHIVED,
                         Task.STATUS.CANCELLED,
-                        'done',
-                        'archived',
-                        'cancelled',
                     ],
                 };
             } else if (!params.client_side_filtering) {
-                whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
+                whereClause.status = { [Op.notIn]: [Task.STATUS.DONE] };
             }
             break;
         }
         case 'next':
             whereClause.due_date = null;
             whereClause.project_id = null;
-            whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
+            whereClause.status = { [Op.notIn]: [Task.STATUS.DONE] };
             break;
         case 'inbox':
             whereClause[Op.or] = [{ due_date: null }, { project_id: null }];
-            whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
+            whereClause.status = { [Op.notIn]: [Task.STATUS.DONE] };
             break;
         case 'someday':
             whereClause.recurring_parent_id = null;
             whereClause.due_date = null;
-            whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
+            whereClause.status = { [Op.notIn]: [Task.STATUS.DONE] };
             break;
         case 'waiting':
             whereClause.status = Task.STATUS.WAITING;
@@ -300,12 +289,7 @@ async function filterTasksByParams(
         case 'all':
             if (params.status === 'done' || params.status === 'completed') {
                 whereClause.status = {
-                    [Op.in]: [
-                        Task.STATUS.DONE,
-                        Task.STATUS.ARCHIVED,
-                        'done',
-                        'archived',
-                    ],
+                    [Op.in]: [Task.STATUS.DONE, Task.STATUS.ARCHIVED],
                 };
             } else if (params.status === 'active') {
                 whereClause.status = {
@@ -313,15 +297,12 @@ async function filterTasksByParams(
                         Task.STATUS.DONE,
                         Task.STATUS.ARCHIVED,
                         Task.STATUS.CANCELLED,
-                        'done',
-                        'archived',
-                        'cancelled',
                     ],
                 };
             } else if (params.status === 'all') {
                 // No status filter - return tasks of all statuses
             } else if (!params.client_side_filtering) {
-                whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
+                whereClause.status = { [Op.notIn]: [Task.STATUS.DONE] };
             }
             break;
         default:
@@ -330,12 +311,7 @@ async function filterTasksByParams(
             }
             if (params.status === 'done' || params.status === 'completed') {
                 whereClause.status = {
-                    [Op.in]: [
-                        Task.STATUS.DONE,
-                        Task.STATUS.ARCHIVED,
-                        'done',
-                        'archived',
-                    ],
+                    [Op.in]: [Task.STATUS.DONE, Task.STATUS.ARCHIVED],
                 };
             } else if (params.status === 'active') {
                 whereClause.status = {
@@ -343,15 +319,12 @@ async function filterTasksByParams(
                         Task.STATUS.DONE,
                         Task.STATUS.ARCHIVED,
                         Task.STATUS.CANCELLED,
-                        'done',
-                        'archived',
-                        'cancelled',
                     ],
                 };
             } else if (params.status === 'all') {
                 // No status filter - return tasks of all statuses
             } else if (!params.client_side_filtering) {
-                whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
+                whereClause.status = { [Op.notIn]: [Task.STATUS.DONE] };
             }
     }
 
@@ -385,14 +358,9 @@ async function filterTasksByParams(
         }
 
         if (orderColumn === 'due_date') {
+            // Undated tasks always sort after dated ones, whichever direction
             orderClause = [
-                [
-                    sequelize.literal(
-                        'CASE WHEN Task.due_date IS NULL THEN 1 ELSE 0 END'
-                    ),
-                    'ASC',
-                ],
-                ['due_date', orderDirection.toUpperCase()],
+                ['due_date', `${orderDirection.toUpperCase()} NULLS LAST`],
             ];
         } else {
             orderClause = [[orderColumn, orderDirection.toUpperCase()]];
@@ -493,7 +461,7 @@ function getTaskIncludeConfig() {
             required: false,
             separate: true, // Required for order to work with associations
             order: [
-                ['order', 'ASC'],
+                ['order', 'ASC NULLS FIRST'],
                 ['created_at', 'ASC'],
             ],
         },

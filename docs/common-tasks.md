@@ -175,26 +175,31 @@ npm run lint:fix
 2. **Edit migration file**
    `/backend/migrations/YYYYMMDDHHMMSS-add-index-to-tasks-due-date.js`
    ```javascript
+   const { safeAddIndex } = require('../utils/migration-utils');
+
    async up(queryInterface, Sequelize) {
-     await queryInterface.addIndex('Tasks', ['due_date'], {
+     await safeAddIndex(queryInterface, 'tasks', ['due_date'], {
        name: 'tasks_due_date_index'
      });
    }
 
    async down(queryInterface, Sequelize) {
-     await queryInterface.removeIndex('Tasks', 'tasks_due_date_index');
+     await queryInterface.removeIndex('tasks', 'tasks_due_date_index');
    }
    ```
+   Migrations run on both SQLite and PostgreSQL, and fresh installs create the schema from the models before migrations run, so every migration must be idempotent and dialect-safe. Use the `safe*` helpers, lowercase table names, `true`/`false` for booleans, and no `PRAGMA` or hand-rolled table rebuilds. Full checklist: [database.md](database.md#writing-dialect-safe-migrations).
 
 3. **Test migration**
    ```bash
    npm run migration:run
    npm run migration:undo  # Test rollback
    npm run migration:run   # Re-apply
+   # Same against PostgreSQL (needs a local server, see docs/16-postgresql.md)
+   DATABASE_URL=postgres://tududi:tududi@localhost:5432/tududi_dev npm run migration:run
    ```
 
-4. **Update model (optional)**
-   - Index definition can be in migration only, or also in model
+4. **Update model**
+   - Add the index to the model's `indexes` option as well: new databases get their schema from the models, and only the model definition applies there
 
 ### Commands
 

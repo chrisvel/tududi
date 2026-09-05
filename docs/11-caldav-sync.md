@@ -81,7 +81,7 @@ CalDAV extends WebDAV to provide a standard way of accessing and managing calend
          │
          ▼
 ┌─────────────────┐
-│ SQLite Database │  Tasks stored with CalDAV metadata
+│    Database     │  Tasks stored with CalDAV metadata
 │  (tasks table)  │  (ETags, CTags, sync state)
 └─────────────────┘
 ```

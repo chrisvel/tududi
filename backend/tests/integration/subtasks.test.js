@@ -20,7 +20,7 @@ describe('Subtasks API', () => {
     };
 
     beforeEach(async () => {
-        await Task.destroy({ where: {}, truncate: true });
+        await Task.destroy({ where: {}, truncate: true, cascade: true });
 
         testUser = await createTestUser();
 

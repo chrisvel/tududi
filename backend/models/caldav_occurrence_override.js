@@ -75,6 +75,9 @@ module.exports = (sequelize) => {
                     fields: ['recurrence_id'],
                 },
                 {
+                    // Explicit name: the auto-generated one exceeds Postgres'
+                    // 63-character identifier limit and breaks repeat syncs.
+                    name: 'caldav_occ_overrides_task_calendar_recurrence_unique',
                     fields: ['parent_task_id', 'calendar_id', 'recurrence_id'],
                     unique: true,
                 },

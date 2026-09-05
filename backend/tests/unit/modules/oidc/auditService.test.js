@@ -3,6 +3,10 @@ const { AuthAuditLog, User } = require('../../../../models');
 const { sequelize } = require('../../../../models');
 const bcrypt = require('bcrypt');
 
+// JSON columns come back as strings from SQLite and as objects from PostgreSQL
+const parseMetadata = (value) =>
+    typeof value === 'string' ? JSON.parse(value) : value;
+
 describe('OIDC Audit Service', () => {
     let mockReq;
     let testUser;
@@ -16,8 +20,12 @@ describe('OIDC Audit Service', () => {
     });
 
     beforeEach(async () => {
-        await AuthAuditLog.destroy({ where: {}, truncate: true });
-        await User.destroy({ where: {}, truncate: true });
+        await AuthAuditLog.destroy({
+            where: {},
+            truncate: true,
+            cascade: true,
+        });
+        await User.destroy({ where: {}, truncate: true, cascade: true });
 
         testUser = await User.create({
             email: 'test@example.com',
@@ -158,7 +166,7 @@ describe('OIDC Audit Service', () => {
             expect(log.event_type).toBe('login_failed');
             expect(log.auth_method).toBe('email_password');
 
-            const metadata = JSON.parse(log.metadata);
+            const metadata = parseMetadata(log.metadata);
             expect(metadata.email).toBe('test@example.com');
             expect(metadata.reason).toBe('invalid_password');
         });
@@ -226,7 +234,7 @@ describe('OIDC Audit Service', () => {
             expect(log.event_type).toBe('oidc_provision');
             expect(log.provider_slug).toBe('google');
 
-            const metadata = JSON.parse(log.metadata);
+            const metadata = parseMetadata(log.metadata);
             expect(metadata.isNewUser).toBe(true);
         });
 
@@ -239,7 +247,7 @@ describe('OIDC Audit Service', () => {
             );
 
             const log = await AuthAuditLog.findOne();
-            const metadata = JSON.parse(log.metadata);
+            const metadata = parseMetadata(log.metadata);
             expect(metadata.isNewUser).toBe(false);
         });
     });

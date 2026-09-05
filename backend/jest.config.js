@@ -1,5 +1,6 @@
 module.exports = {
     testEnvironment: 'node',
+    globalSetup: '<rootDir>/tests/helpers/globalSetup.js',
     setupFilesAfterEnv: ['<rootDir>/tests/helpers/setup.js'],
     testMatch: ['<rootDir>/tests/**/*.test.js', '<rootDir>/tests/**/*.spec.js'],
     collectCoverageFrom: [

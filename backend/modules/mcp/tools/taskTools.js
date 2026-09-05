@@ -104,7 +104,7 @@ async function findTaskByIdentifier(identifier) {
             ],
             separate: true,
             order: [
-                ['order', 'ASC'],
+                ['order', 'ASC NULLS FIRST'],
                 ['created_at', 'ASC'],
             ],
         },

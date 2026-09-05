@@ -2,6 +2,7 @@ const request = require('supertest');
 const app = require('../../app');
 const { Task, sequelize } = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
+const { isPostgres } = require('../../utils/db-dialect');
 
 describe('Subtasks Completion Logic Integration', () => {
     let testUser;
@@ -20,7 +21,7 @@ describe('Subtasks Completion Logic Integration', () => {
     };
 
     beforeEach(async () => {
-        await Task.destroy({ where: {}, truncate: true });
+        await Task.destroy({ where: {}, truncate: true, cascade: true });
 
         testUser = await createTestUser();
 
@@ -432,10 +433,14 @@ describe('Subtasks Completion Logic Integration', () => {
 
                 .expect(200);
 
-            // Verify subtask remains (orphaned) since FK constraints are disabled in tests
+            // Verify subtask remains (orphaned). With FK constraints disabled
+            // (SQLite tests) it still points at the deleted parent; PostgreSQL
+            // enforces ON DELETE SET NULL on parent_task_id.
             const remainingSubtask = await Task.findByPk(subtask.id);
             expect(remainingSubtask).not.toBeNull();
-            expect(remainingSubtask.parent_task_id).toBe(parentTask.id); // Points to deleted parent
+            expect(remainingSubtask.parent_task_id).toBe(
+                isPostgres() ? null : parentTask.id
+            );
         });
     });
 
@@ -597,14 +602,38 @@ describe('Subtasks Completion Logic Integration', () => {
 
             const subtasks = await Promise.all(subtaskPromises);
 
-            // Complete all subtasks
-            const completionPromises = subtasks.map((subtask) =>
-                toggleTaskCompletion(subtask.id)
-            );
+            // Complete all subtasks concurrently. A supertest agent shares one
+            // server and closes it when the first response lands, which resets
+            // requests it has not read yet, so each request gets its own
+            // server here and carries the session cookie explicitly.
+            const loginResponse = await request(app).post('/api/login').send({
+                email: testUser.email,
+                password: 'password123',
+            });
+            const sessionCookie = loginResponse.headers['set-cookie'];
+            // Batches of 10 keep the load realistic: 50 simultaneous writers
+            // starve each other on SQLite's single write lock when the suite
+            // runs in parallel.
+            const batchSize = 10;
+            const responses = [];
 
             const startTime = Date.now();
-            await Promise.all(completionPromises);
+            for (let i = 0; i < subtasks.length; i += batchSize) {
+                const batch = subtasks.slice(i, i + batchSize);
+                responses.push(
+                    ...(await Promise.all(
+                        batch.map((subtask) =>
+                            request(app)
+                                .patch(`/api/task/${subtask.uid}`)
+                                .set('Cookie', sessionCookie)
+                                .send({ status: Task.STATUS.DONE })
+                        )
+                    ))
+                );
+            }
             const endTime = Date.now();
+
+            expect(responses.every((res) => res.status === 200)).toBe(true);
 
             // Should complete within reasonable time (adjust threshold as needed)
             expect(endTime - startTime).toBeLessThan(10000); // 10 seconds

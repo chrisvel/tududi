@@ -118,11 +118,11 @@ class NotesRepository extends BaseRepository {
      * Find notes that contain [[noteTitle]] in their content (backlinks).
      */
     async findBacklinks(userId, noteTitle) {
-        const { Op } = require('sequelize');
+        const { ciLike } = require('../../utils/db-dialect');
         return this.model.findAll({
             where: {
                 user_id: userId,
-                content: { [Op.like]: `%[[${noteTitle}]]%` },
+                content: ciLike(`%[[${noteTitle}]]%`),
             },
             attributes: ['uid', 'title'],
             order: [['title', 'ASC']],

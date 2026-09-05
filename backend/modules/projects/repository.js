@@ -22,6 +22,7 @@ const {
 const path = require('path');
 const { getConfig } = require('../../config/config');
 const { logError } = require('../../services/logService');
+const { withForeignKeyChecksDisabled } = require('../../utils/db-dialect');
 
 const config = getConfig();
 
@@ -263,104 +264,114 @@ class ProjectsRepository extends BaseRepository {
      */
     async deleteWithOrphaning(project, userId) {
         await sequelize.transaction(async (transaction) => {
-            await sequelize.query('PRAGMA foreign_keys = OFF', { transaction });
+            await withForeignKeyChecksDisabled(
+                sequelize,
+                async () => {
+                    try {
+                        await this.deleteProjectContents(
+                            project,
+                            userId,
+                            transaction
+                        );
+                    } catch (error) {
+                        logError('Error deleting project:', error);
+                        throw error;
+                    }
+                },
+                { transaction }
+            );
+        });
+    }
 
-            try {
-                // Find all tasks belonging to this project (parent tasks only)
-                const tasks = await Task.findAll({
-                    where: {
-                        project_id: project.id,
-                        user_id: userId,
-                        parent_task_id: null, // Only get parent tasks
-                    },
+    // Removes a project's tasks, attachments and cover image, orphans its
+    // notes and finally deletes the project row, inside the given transaction.
+    async deleteProjectContents(project, userId, transaction) {
+        // Find all tasks belonging to this project (parent tasks only)
+        const tasks = await Task.findAll({
+            where: {
+                project_id: project.id,
+                user_id: userId,
+                parent_task_id: null, // Only get parent tasks
+            },
+            include: [
+                {
+                    model: TaskAttachment,
+                    as: 'Attachments',
+                    required: false,
+                },
+                {
+                    model: Task,
+                    as: 'Subtasks',
                     include: [
                         {
                             model: TaskAttachment,
                             as: 'Attachments',
                             required: false,
                         },
-                        {
-                            model: Task,
-                            as: 'Subtasks',
-                            include: [
-                                {
-                                    model: TaskAttachment,
-                                    as: 'Attachments',
-                                    required: false,
-                                },
-                            ],
-                            required: false,
-                        },
                     ],
-                    transaction,
-                });
-
-                // Helper function to delete attachments for a task
-                const deleteTaskAttachments = async (task) => {
-                    if (task.Attachments && task.Attachments.length > 0) {
-                        await deleteAttachmentFiles(task.Attachments);
-                        for (const attachment of task.Attachments) {
-                            await attachment.destroy({ transaction });
-                        }
-                    }
-                };
-
-                // Delete attachments for tasks and subtasks
-                for (const task of tasks) {
-                    // Delete parent task attachments
-                    await deleteTaskAttachments(task);
-
-                    // Delete subtask attachments
-                    if (task.Subtasks && task.Subtasks.length > 0) {
-                        for (const subtask of task.Subtasks) {
-                            await deleteTaskAttachments(subtask);
-                        }
-                    }
-                }
-
-                // Delete tasks (including subtasks)
-                await Task.destroy({
-                    where: { project_id: project.id, user_id: userId },
-                    transaction,
-                });
-
-                // Orphan notes (they are reference material and may be useful without the project)
-                await Note.update(
-                    { project_id: null },
-                    {
-                        where: { project_id: project.id, user_id: userId },
-                        transaction,
-                    }
-                );
-
-                // Delete project cover image if it exists
-                if (project.image_url) {
-                    // Extract filename from URL like /api/uploads/projects/filename.jpg
-                    const urlMatch = project.image_url.match(
-                        /\/api\/uploads\/projects\/(.+)$/
-                    );
-                    if (urlMatch) {
-                        const filename = urlMatch[1];
-                        const imagePath = path.join(
-                            config.uploadPath,
-                            'projects',
-                            filename
-                        );
-                        await deleteFileFromDisk(imagePath);
-                    }
-                }
-
-                // Delete the project
-                await project.destroy({ transaction });
-            } catch (error) {
-                logError('Error deleting project:', error);
-                throw error;
-            } finally {
-                await sequelize.query('PRAGMA foreign_keys = ON', {
-                    transaction,
-                });
-            }
+                    required: false,
+                },
+            ],
+            transaction,
         });
+
+        // Helper function to delete attachments for a task
+        const deleteTaskAttachments = async (task) => {
+            if (task.Attachments && task.Attachments.length > 0) {
+                await deleteAttachmentFiles(task.Attachments);
+                for (const attachment of task.Attachments) {
+                    await attachment.destroy({ transaction });
+                }
+            }
+        };
+
+        // Delete attachments for tasks and subtasks
+        for (const task of tasks) {
+            // Delete parent task attachments
+            await deleteTaskAttachments(task);
+
+            // Delete subtask attachments
+            if (task.Subtasks && task.Subtasks.length > 0) {
+                for (const subtask of task.Subtasks) {
+                    await deleteTaskAttachments(subtask);
+                }
+            }
+        }
+
+        // Delete tasks (including subtasks)
+        await Task.destroy({
+            where: { project_id: project.id, user_id: userId },
+            transaction,
+        });
+
+        // Orphan notes (they are reference material and may be useful without the project)
+        await Note.update(
+            { project_id: null },
+            {
+                where: { project_id: project.id, user_id: userId },
+                transaction,
+            }
+        );
+
+        // Delete project cover image if it exists
+        if (project.image_url) {
+            // Extract filename from URL like /api/uploads/projects/filename.jpg
+            const urlMatch = project.image_url.match(
+                /\/api\/uploads\/projects\/(.+)$/
+            );
+            if (urlMatch) {
+                const filename = urlMatch[1];
+                const imagePath = path.join(
+                    config.uploadPath,
+                    'projects',
+                    filename
+                );
+                await deleteFileFromDisk(imagePath);
+            }
+        }
+
+        // Delete the project
+        await project.destroy({ transaction });
     }
 
     /**

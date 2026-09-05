@@ -14,9 +14,6 @@ const TODAY_PLAN_STATUSES = [
     Task.STATUS.IN_PROGRESS,
     Task.STATUS.WAITING,
     Task.STATUS.PLANNED,
-    'in_progress',
-    'waiting',
-    'planned',
 ];
 
 // Helper to check if a task is in the today plan based on status
@@ -65,7 +62,7 @@ async function fetchTasksInProgress(
     const now = new Date();
     const statusFilter = {
         status: {
-            [Op.in]: [Task.STATUS.IN_PROGRESS, 'in_progress'],
+            [Op.in]: [Task.STATUS.IN_PROGRESS],
         },
         parent_task_id: null,
         recurring_parent_id: null,
@@ -90,33 +87,22 @@ async function fetchTasksInProgress(
         },
         include: getTaskIncludeConfigLight(),
         order: [
-            ['priority', 'DESC'],
-            ['due_date', 'ASC'],
-            ['project_id', 'ASC'],
+            ['priority', 'DESC NULLS LAST'],
+            ['due_date', 'ASC NULLS FIRST'],
+            ['project_id', 'ASC NULLS FIRST'],
         ],
     });
 }
 
 async function fetchTodayPlanTasks(visibleTasksWhere, somedayExcludedIds = []) {
     const now = new Date();
-    const todayPlanStatuses = [
-        Task.STATUS.IN_PROGRESS,
-        Task.STATUS.WAITING,
-        Task.STATUS.PLANNED,
-        'in_progress',
-        'waiting',
-        'planned',
-    ];
+    const todayPlanStatuses = TODAY_PLAN_STATUSES;
 
     const excludedStatuses = [
         Task.STATUS.NOT_STARTED,
         Task.STATUS.DONE,
         Task.STATUS.ARCHIVED,
         Task.STATUS.CANCELLED,
-        'not_started',
-        'done',
-        'archived',
-        'cancelled',
     ];
 
     const statusFilter = {
@@ -177,9 +163,9 @@ async function fetchTodayPlanTasks(visibleTasksWhere, somedayExcludedIds = []) {
         },
         include: getTaskIncludeConfigLight(),
         order: [
-            ['priority', 'DESC'],
-            ['due_date', 'ASC'],
-            ['project_id', 'ASC'],
+            ['priority', 'DESC NULLS LAST'],
+            ['due_date', 'ASC NULLS FIRST'],
+            ['project_id', 'ASC NULLS FIRST'],
         ],
     });
 
@@ -241,9 +227,6 @@ async function fetchTasksDueToday(
                 Task.STATUS.DONE,
                 Task.STATUS.ARCHIVED,
                 Task.STATUS.CANCELLED,
-                'done',
-                'archived',
-                'cancelled',
                 ...TODAY_PLAN_STATUSES,
             ],
         },
@@ -260,9 +243,9 @@ async function fetchTasksDueToday(
             },
             sequelize.literal(`EXISTS (
           SELECT 1 FROM projects
-          WHERE projects.id = Task.project_id
-          AND projects.due_date_at >= '${todayBounds.start.toISOString()}'
-          AND projects.due_date_at <= '${todayBounds.end.toISOString()}'${projectAccessSQL}
+          WHERE projects.id = "Task"."project_id"
+          AND projects.due_date_at >= ${sequelize.escape(todayBounds.start)}
+          AND projects.due_date_at <= ${sequelize.escape(todayBounds.end)}${projectAccessSQL}
         )`),
         ],
     };
@@ -276,9 +259,9 @@ async function fetchTasksDueToday(
         },
         include: getTaskIncludeConfigLight(),
         order: [
-            ['priority', 'DESC'],
-            ['due_date', 'ASC'],
-            ['project_id', 'ASC'],
+            ['priority', 'DESC NULLS LAST'],
+            ['due_date', 'ASC NULLS FIRST'],
+            ['project_id', 'ASC NULLS FIRST'],
         ],
     });
 }
@@ -328,9 +311,6 @@ async function fetchOverdueTasks(
                 Task.STATUS.DONE,
                 Task.STATUS.ARCHIVED,
                 Task.STATUS.CANCELLED,
-                'done',
-                'archived',
-                'cancelled',
                 ...TODAY_PLAN_STATUSES,
             ],
         },
@@ -340,8 +320,8 @@ async function fetchOverdueTasks(
             { due_date: { [Op.lt]: todayBounds.start } },
             sequelize.literal(`EXISTS (
           SELECT 1 FROM projects
-          WHERE projects.id = Task.project_id
-          AND projects.due_date_at < '${todayBounds.start.toISOString()}'${projectAccessSQL}
+          WHERE projects.id = "Task"."project_id"
+          AND projects.due_date_at < ${sequelize.escape(todayBounds.start)}${projectAccessSQL}
         )`),
         ],
     };
@@ -355,9 +335,9 @@ async function fetchOverdueTasks(
         },
         include: getTaskIncludeConfigLight(),
         order: [
-            ['priority', 'DESC'],
-            ['due_date', 'ASC'],
-            ['project_id', 'ASC'],
+            ['priority', 'DESC NULLS LAST'],
+            ['due_date', 'ASC NULLS FIRST'],
+            ['project_id', 'ASC NULLS FIRST'],
         ],
     });
 }
@@ -412,7 +392,7 @@ async function fetchNonProjectTasks(
         status: {
             [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.WAITING],
         },
-        [Op.or]: [{ project_id: null }, { project_id: '' }],
+        project_id: null,
         parent_task_id: null,
         recurring_parent_id: null,
     };
@@ -427,9 +407,9 @@ async function fetchNonProjectTasks(
         },
         include: getTaskIncludeConfigLight(),
         order: [
-            ['priority', 'DESC'],
-            ['due_date', 'ASC'],
-            ['project_id', 'ASC'],
+            ['priority', 'DESC NULLS LAST'],
+            ['due_date', 'ASC NULLS FIRST'],
+            ['project_id', 'ASC NULLS FIRST'],
         ],
     };
 
@@ -451,7 +431,7 @@ async function fetchProjectTasks(
         status: {
             [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.WAITING],
         },
-        project_id: { [Op.not]: null, [Op.ne]: '' },
+        project_id: { [Op.not]: null },
         parent_task_id: null,
         recurring_parent_id: null,
     };
@@ -466,9 +446,9 @@ async function fetchProjectTasks(
         },
         include: getTaskIncludeConfigLight(),
         order: [
-            ['priority', 'DESC'],
-            ['due_date', 'ASC'],
-            ['project_id', 'ASC'],
+            ['priority', 'DESC NULLS LAST'],
+            ['due_date', 'ASC NULLS FIRST'],
+            ['project_id', 'ASC NULLS FIRST'],
         ],
     };
 
@@ -500,9 +480,9 @@ async function fetchSomedayFallbackTasks(
         },
         include: getTaskIncludeConfigLight(),
         order: [
-            ['priority', 'DESC'],
-            ['due_date', 'ASC'],
-            ['project_id', 'ASC'],
+            ['priority', 'DESC NULLS LAST'],
+            ['due_date', 'ASC NULLS FIRST'],
+            ['project_id', 'ASC NULLS FIRST'],
         ],
     };
 

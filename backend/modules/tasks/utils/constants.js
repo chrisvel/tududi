@@ -45,7 +45,7 @@ const TASK_INCLUDES_WITH_SUBTASKS = [
         ],
         separate: true, // Required for order to work with associations
         order: [
-            ['order', 'ASC'],
+            ['order', 'ASC NULLS FIRST'],
             ['created_at', 'ASC'],
         ],
     },

@@ -14,6 +14,9 @@ const {
 const { uid: generateUid } = require('../../utils/uid');
 const { extractUidFromSlug } = require('../../utils/slug-utils');
 const { logError } = require('../../services/logService');
+const { Project } = require('../../models');
+
+const PROJECT_STATUSES = Project.rawAttributes.status.values;
 
 /**
  * Update project tags.
@@ -111,11 +114,22 @@ class ProjectsService {
         );
 
         if (statusFilter && statusFilter !== 'all') {
-            if (Array.isArray(statusFilter)) {
-                whereClause.status = { [Op.in]: statusFilter };
-            } else {
-                whereClause.status = statusFilter;
+            // status is an ENUM column: PostgreSQL rejects unknown labels
+            // outright, so validate before they reach the query.
+            const statuses = Array.isArray(statusFilter)
+                ? statusFilter
+                : [statusFilter];
+            const invalid = statuses.filter(
+                (status) => !PROJECT_STATUSES.includes(status)
+            );
+            if (invalid.length > 0) {
+                throw new ValidationError(
+                    `Invalid project status filter: ${invalid.join(', ')}`
+                );
             }
+            whereClause.status = Array.isArray(statusFilter)
+                ? { [Op.in]: statusFilter }
+                : statusFilter;
         }
 
         if (active === 'true') {

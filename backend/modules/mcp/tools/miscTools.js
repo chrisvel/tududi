@@ -2,6 +2,7 @@
 
 const { Task, Project, Note } = require('../../../models');
 const { Op } = require('sequelize');
+const { ciLike } = require('../../../utils/db-dialect');
 
 /**
  * Register miscellaneous MCP tools
@@ -38,21 +39,14 @@ function registerMiscTools(server, context, tools) {
             const limit = params.limit || 10;
             const results = {};
 
-            const searchCondition = {
-                [Op.or]: [
-                    { name: { [Op.like]: `%${query}%` } },
-                    { note: { [Op.like]: `%${query}%` } },
-                ],
-            };
-
             // Search tasks
             if (type === 'task' || type === 'all') {
                 const tasks = await Task.findAll({
                     where: {
                         user_id: context.userId,
                         [Op.or]: [
-                            { name: { [Op.like]: `%${query}%` } },
-                            { note: { [Op.like]: `%${query}%` } },
+                            { name: ciLike(`%${query}%`) },
+                            { note: ciLike(`%${query}%`) },
                         ],
                     },
                     limit: limit,
@@ -74,8 +68,8 @@ function registerMiscTools(server, context, tools) {
                     where: {
                         user_id: context.userId,
                         [Op.or]: [
-                            { name: { [Op.like]: `%${query}%` } },
-                            { description: { [Op.like]: `%${query}%` } },
+                            { name: ciLike(`%${query}%`) },
+                            { description: ciLike(`%${query}%`) },
                         ],
                     },
                     limit: limit,
@@ -96,8 +90,8 @@ function registerMiscTools(server, context, tools) {
                     where: {
                         user_id: context.userId,
                         [Op.or]: [
-                            { title: { [Op.like]: `%${query}%` } },
-                            { content: { [Op.like]: `%${query}%` } },
+                            { title: ciLike(`%${query}%`) },
+                            { content: ciLike(`%${query}%`) },
                         ],
                     },
                     limit: limit,
