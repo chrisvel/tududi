@@ -502,17 +502,29 @@ const processUpdates = async (user, updates) => {
     }
 };
 
+// How many bots are polled at the same time. The old loop polled every
+// user one after another, so a few hundred users turned a 5-second tick
+// into a minutes-long serial crawl.
+const POLL_CONCURRENCY = Math.max(
+    1,
+    parseInt(process.env.TELEGRAM_POLL_CONCURRENCY || '10', 10) || 10
+);
+
 // Function to poll updates for all users (contains side effects)
 const pollUpdates = async () => {
-    for (const user of pollerState.usersToPool) {
-        const token = user.telegram_bot_token;
-        if (!token) continue;
+    const dueUsers = pollerState.usersToPool.filter(
+        (user) => user.telegram_bot_token && shouldPollUser(user.id)
+    );
 
-        // Check if we should poll this user based on backoff state
-        if (!shouldPollUser(user.id)) {
-            continue;
-        }
+    for (let i = 0; i < dueUsers.length; i += POLL_CONCURRENCY) {
+        const batch = dueUsers.slice(i, i + POLL_CONCURRENCY);
+        await Promise.all(batch.map((user) => pollUser(user)));
+    }
+};
 
+const pollUser = async (user) => {
+    const token = user.telegram_bot_token;
+    {
         try {
             const lastUpdateId =
                 pollerState.userStatus[user.id]?.lastUpdateId || 0;

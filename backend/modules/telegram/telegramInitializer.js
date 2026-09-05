@@ -11,8 +11,18 @@ async function initializeTelegramPolling() {
     // Add a delay before starting Telegram polling to allow the system to settle
     // and prevent immediate error floods if Telegram is temporarily unreachable
     const startupDelay = 10000; // 10 seconds
+    const leaderRetryDelay = 60000; // 1 minute
 
-    setTimeout(async () => {
+    // Telegram's getUpdates confirms updates by offset, and the offsets live
+    // in this process's memory, so exactly one process may poll. Whoever
+    // holds the leader lock polls; the others retry in case it goes away.
+    const { tryBecomeLeader } = require('../../services/jobLock');
+
+    const startWhenLeader = async () => {
+        if (!(await tryBecomeLeader('telegram-poller'))) {
+            setTimeout(startWhenLeader, leaderRetryDelay);
+            return;
+        }
         try {
             // Find users with configured Telegram tokens
             const usersWithTelegram = await User.findAll({
@@ -38,7 +48,9 @@ async function initializeTelegramPolling() {
                 error.message
             );
         }
-    }, startupDelay);
+    };
+
+    setTimeout(startWhenLeader, startupDelay);
 }
 
 module.exports = { initializeTelegramPolling };

@@ -113,6 +113,37 @@ Uploads live on disk (`TUDUDI_UPLOAD_PATH`) and need their own backup.
 
 ---
 
+## Running More Than One Process
+
+PostgreSQL is what makes a second app process possible. tududi coordinates
+through the database so that several containers can share it safely:
+
+- **Schema and migrations.** The entrypoint runs `db-prepare` and
+  `sequelize-cli db:migrate` under a PostgreSQL advisory lock
+  (`scripts/with-db-lock.js`), so containers booting together wait for each
+  other instead of both creating the schema.
+- **Scheduled jobs.** Every tick of the task scheduler (summaries, due and
+  deferred task notifications) and of the CalDAV sync takes a per-job
+  advisory lock; whichever process gets it runs that tick, the others skip
+  it. Duplicate notifications cannot happen.
+- **Telegram polling.** Bot update offsets live in memory, so one process
+  holds a long-lived leader lock and polls; the others retry every minute
+  and take over if it goes away. Bots are polled in parallel batches
+  (`TELEGRAM_POLL_CONCURRENCY`, default 10).
+- **Rate limits.** Hit counters are kept in the `rate_limits` table instead
+  of per-process memory, so limits are the same however many processes
+  serve requests and survive restarts. Expired rows are swept nightly.
+
+Nothing needs configuring for this; it is automatic whenever the dialect is
+PostgreSQL. You can still pin the background work to one container with
+`DISABLE_SCHEDULER=true` and `DISABLE_TELEGRAM=true` on the others, which
+keeps a scheduler crash from ever affecting HTTP traffic.
+
+With `TUDUDI_HOSTED_MODE=true` the server refuses to start unless
+`TUDUDI_SESSION_SECRET`, `TUDUDI_TRUST_PROXY`, `TUDUDI_ALLOWED_ORIGINS`,
+public `FRONTEND_URL`/`BACKEND_URL`, `ENABLE_EMAIL` with an SMTP host, and a
+PostgreSQL `DATABASE_URL` are all set, and prints exactly what is missing.
+
 ## Troubleshooting
 
 | Symptom | Cause and fix |

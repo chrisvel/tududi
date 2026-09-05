@@ -84,6 +84,7 @@ const CalendarToken = require('./calendar_token')(sequelize);
 const Goal = require('./goal')(sequelize);
 const Person = require('./person')(sequelize);
 const UserProjectArea = require('./user_project_area')(sequelize);
+const RateLimit = require('./rate_limit')(sequelize);
 
 User.hasMany(Area, { foreignKey: 'user_id' });
 Area.belongsTo(User, { foreignKey: 'user_id' });
@@ -475,4 +476,5 @@ module.exports = {
     CalendarToken,
     Person,
     UserProjectArea,
+    RateLimit,
 };
