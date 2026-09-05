@@ -1,5 +1,6 @@
 'use strict';
 
+const entitlements = require('../../../services/entitlementsService');
 const taskRepository = require('../../tasks/repository');
 const {
     serializeTask,
@@ -381,6 +382,7 @@ function registerTaskTools(server, context, tools) {
                 completion_based: params.completion_based || false,
             };
 
+            await entitlements.assertCanCreate(context.userId, 'task');
             const task = await taskRepository.create(taskData);
 
             if (params.tags && params.tags.length > 0) {
@@ -873,6 +875,7 @@ function registerTaskTools(server, context, tools) {
                 project_id: parentTask.project_id,
             };
 
+            await entitlements.assertCanCreate(context.userId, 'task');
             const subtask = await taskRepository.create(subtaskData);
 
             const reloadedSubtask = await taskRepository.findByIdAndUser(

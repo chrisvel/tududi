@@ -2,12 +2,22 @@ const bcrypt = require('bcrypt');
 const { User } = require('../../../models');
 const { findValidTokenByValue } = require('../../users/apiTokenService');
 const { caldavAuthLimiter } = require('../../../middleware/rateLimiter');
+const { hasFeature } = require('../../../services/entitlementsService');
+
+// CalDAV is a plan feature on hosted instances. Checked once the account
+// is known, whichever way it authenticated.
+async function planAllows(user, res) {
+    if (await hasFeature(user.id, 'caldav')) return true;
+    res.status(403).json({ error: 'CalDAV is not included in your plan' });
+    return false;
+}
 
 async function caldavAuth(req, res, next) {
     try {
         if (req.session?.userId) {
             const user = await User.findByPk(req.session.userId);
             if (user) {
+                if (!(await planAllows(user, res))) return;
                 req.currentUser = user;
                 return next();
             }
@@ -19,6 +29,7 @@ async function caldavAuth(req, res, next) {
             if (tokenRecord) {
                 const user = await User.findByPk(tokenRecord.user_id);
                 if (user) {
+                    if (!(await planAllows(user, res))) return;
                     req.currentUser = user;
                     return next();
                 }
@@ -77,6 +88,7 @@ async function caldavAuth(req, res, next) {
                 .json({ error: 'Invalid credentials' });
         }
 
+        if (!(await planAllows(user, res))) return;
         req.currentUser = user;
 
         if (req.params.username && req.params.username !== user.email) {

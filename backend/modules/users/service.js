@@ -44,6 +44,7 @@ const {
 } = require('../../shared/errors');
 const { User, Role } = require('../../models');
 const { isAdmin } = require('../../services/rolesService');
+const entitlements = require('../../services/entitlementsService');
 const { eraseUserAccount } = require('../../services/accountErasureService');
 const {
     createApiToken,
@@ -178,8 +179,12 @@ class UsersService {
         }
         if (avatar_image !== undefined)
             allowedUpdates.avatar_image = avatar_image;
-        if (telegram_bot_token !== undefined)
+        if (telegram_bot_token !== undefined) {
+            if (telegram_bot_token) {
+                await entitlements.assertFeature(userId, 'telegram');
+            }
             allowedUpdates.telegram_bot_token = telegram_bot_token;
+        }
         if (telegram_allowed_users !== undefined)
             allowedUpdates.telegram_allowed_users = telegram_allowed_users;
         if (features !== undefined) {

@@ -22,6 +22,7 @@ const {
 } = require('./webdav/projects');
 const apiRoutes = require('./api/routes');
 const { requireAuth } = require('../../middleware/auth');
+const { requireFeature } = require('../../middleware/entitlements');
 const taskRepository = require('../tasks/repository');
 const vtodoSerializer = require('./icalendar/vtodo-serializer');
 const { generateCTag } = require('./utils/ctag-generator');
@@ -286,6 +287,6 @@ router.delete(
     handleDeleteTask
 );
 
-router.use('/api/caldav', requireAuth, apiRoutes);
+router.use('/api/caldav', requireAuth, requireFeature('caldav'), apiRoutes);
 
 module.exports = router;

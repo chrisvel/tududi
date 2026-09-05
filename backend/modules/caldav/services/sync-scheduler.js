@@ -77,6 +77,12 @@ class SyncScheduler {
 
     async _syncCalendar(calendar) {
         try {
+            const {
+                hasFeature,
+            } = require('../../../services/entitlementsService');
+            if (!(await hasFeature(calendar.user_id, 'caldav'))) {
+                return;
+            }
             logger.logInfo(
                 `Syncing calendar ${calendar.id} for user ${calendar.user_id}`
             );

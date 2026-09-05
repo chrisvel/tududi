@@ -2,11 +2,17 @@
 
 const express = require('express');
 const router = express.Router();
+const { requireQuota } = require('../../middleware/entitlements');
 const habitsController = require('./controller');
 const { requireAuth } = require('../../middleware/auth');
 
 router.get('/habits', requireAuth, habitsController.getAll);
-router.post('/habits', requireAuth, habitsController.create);
+router.post(
+    '/habits',
+    requireAuth,
+    requireQuota('task'),
+    habitsController.create
+);
 router.post(
     '/habits/:uid/complete',
     requireAuth,

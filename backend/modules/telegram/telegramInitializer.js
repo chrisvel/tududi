@@ -38,7 +38,11 @@ async function initializeTelegramPolling() {
                     `Initializing Telegram polling for ${usersWithTelegram.length} user(s)...`
                 );
                 // Add each user to the polling list
+                const {
+                    hasFeature,
+                } = require('../../services/entitlementsService');
                 for (const user of usersWithTelegram) {
+                    if (!(await hasFeature(user.id, 'telegram'))) continue;
                     await telegramPoller.addUser(user);
                 }
             }

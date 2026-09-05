@@ -1483,6 +1483,28 @@
     "deleteUser": "Delete User",
     "confirmDeleteUser": "Are you sure you want to delete {{email}}? This action cannot be undone."
   },
+  "billing": {
+    "upgradeTitle": "Upgrade to keep going",
+    "upgradeHint": "Everything you already have stays exactly as it is. Upgrading lifts the limit right away.",
+    "seePlans": "See plans",
+    "limitReached": "Your {{plan}} plan allows {{limit}} {{resource}}. You are at {{current}}.",
+    "featureNotInPlan": "Your {{plan}} plan does not include {{feature}}.",
+    "resource": {
+      "task": "active tasks",
+      "project": "projects",
+      "note": "notes",
+      "storage": "attachment storage",
+      "ai": "AI requests today"
+    },
+    "feature": {
+      "ai": "the AI assistant",
+      "mcp": "MCP integration",
+      "caldav": "CalDAV sync",
+      "telegram": "the Telegram bot",
+      "backups_import": "backup import",
+      "attachments": "attachments"
+    }
+  },
   "shares": {
     "shareProject": "Share project",
     "targetUser": "Invite by email",

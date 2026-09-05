@@ -1,5 +1,6 @@
 'use strict';
 
+const entitlements = require('../../../services/entitlementsService');
 const { Project, Area, Tag } = require('../../../models');
 const { Op } = require('sequelize');
 const projectsRepository = require('../../projects/repository');
@@ -225,6 +226,7 @@ function registerProjectTools(server, context, tools) {
                 image_url: params.image_url || null,
             };
 
+            await entitlements.assertCanCreate(context.userId, 'project');
             const project = await Project.create(projectData);
 
             if (params.tags && params.tags.length > 0) {

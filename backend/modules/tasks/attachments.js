@@ -21,6 +21,8 @@ const {
 } = require('../../middleware/rateLimiter');
 
 const router = express.Router();
+const { requireFeature } = require('../../middleware/entitlements');
+const entitlements = require('../../services/entitlementsService');
 
 // Ensure authenticated
 router.use((req, res, next) => {
@@ -70,6 +72,7 @@ const upload = multer({
 router.post(
     '/upload/task-attachment',
     createResourceLimiter,
+    requireFeature('attachments'),
     upload.single('file'),
     async (req, res) => {
         try {
@@ -128,6 +131,16 @@ router.post(
 
             if (!req.file) {
                 return res.status(400).json({ error: 'No file uploaded' });
+            }
+
+            try {
+                await entitlements.assertStorage(userId, req.file.size);
+            } catch (limitError) {
+                await deleteFileFromDisk(req.file.path);
+                if (limitError.statusCode === 402) {
+                    return res.status(402).json(limitError.toJSON());
+                }
+                throw limitError;
             }
 
             // Create attachment record

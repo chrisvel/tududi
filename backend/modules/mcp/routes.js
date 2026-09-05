@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 const controller = require('./controller');
 const { authenticateMcpRequest } = require('./middleware');
+const { requireFeature } = require('../../middleware/entitlements');
 
 /**
  * Middleware to check if MCP feature is enabled
@@ -25,10 +26,20 @@ const checkMcpEnabled = (req, res, next) => {
 router.get('/mcp/status', controller.getMcpStatus);
 
 // Get MCP configuration for Claude Desktop (requires feature flag)
-router.get('/mcp/config', checkMcpEnabled, controller.getMcpConfig);
+router.get(
+    '/mcp/config',
+    checkMcpEnabled,
+    requireFeature('mcp'),
+    controller.getMcpConfig
+);
 
 // List available MCP tools (requires feature flag)
-router.get('/mcp/tools', checkMcpEnabled, controller.listMcpTools);
+router.get(
+    '/mcp/tools',
+    checkMcpEnabled,
+    requireFeature('mcp'),
+    controller.listMcpTools
+);
 
 // MCP protocol endpoint - uses Bearer token auth, not session auth
 // This endpoint handles actual MCP protocol messages from remote clients
@@ -36,6 +47,7 @@ router.post(
     '/mcp',
     checkMcpEnabled,
     authenticateMcpRequest,
+    requireFeature('mcp'),
     controller.handleMcpMessage
 );
 

@@ -1,4 +1,5 @@
 const { generateETag } = require('../utils/etag-generator');
+const entitlements = require('../../../services/entitlementsService');
 const { matchesETag } = require('../utils/etag-generator');
 const taskRepository = require('../../tasks/repository');
 const { CALDAV_TASK_INCLUDES } = require('../task-includes');
@@ -120,6 +121,7 @@ async function handlePutTask(req, res) {
             await existingTask.update(taskData);
             task = existingTask;
         } else {
+            await entitlements.assertCanCreate(userId, 'task');
             task = await taskRepository.create(taskData);
         }
 

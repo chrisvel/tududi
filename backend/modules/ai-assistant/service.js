@@ -1,4 +1,5 @@
 'use strict';
+const entitlements = require('../../services/entitlementsService');
 
 const OpenAI = require('openai');
 const moment = require('moment-timezone');
@@ -335,6 +336,7 @@ function buildEntityMaps({ metrics, projects }) {
 
 async function generateDailyBrief(userId) {
     const client = getOpenAIClient();
+    await entitlements.consumeUsage(userId, 'ai_requests');
 
     const context = await fetchUserContext(userId);
     const contextSummary = buildContextSummary(context);
@@ -502,6 +504,7 @@ async function updateTaskInsightsDismissed(taskUid, userId, dismissed) {
 
 async function generateTaskInsights(taskContext, userId) {
     const client = getOpenAIClient();
+    await entitlements.consumeUsage(userId, 'ai_requests');
 
     const {
         taskUid,
@@ -708,6 +711,7 @@ async function updateProjectInsightsDismissed(projectUid, userId, dismissed) {
 
 async function generateProjectInsights(projectContext, userId) {
     const client = getOpenAIClient();
+    await entitlements.consumeUsage(userId, 'ai_requests');
 
     const {
         projectUid,
