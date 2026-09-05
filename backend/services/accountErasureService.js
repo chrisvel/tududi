@@ -59,6 +59,10 @@ async function unlinkWithin(baseDir, relativeOrAbsolute) {
 // Rows go inside one transaction; files are removed only after it commits,
 // so a rollback never leaves rows pointing at missing files.
 async function eraseUserAccount(userId) {
+    // Stop charging before removing the rows that point at Stripe
+    const { billingService } = require('../modules/billing');
+    await billingService.cancelForDeletedUser(userId);
+
     const filesToDelete = [];
     const transaction = await sequelize.transaction();
 
