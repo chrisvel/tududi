@@ -144,6 +144,14 @@ With `TUDUDI_HOSTED_MODE=true` the server refuses to start unless
 public `FRONTEND_URL`/`BACKEND_URL`, `ENABLE_EMAIL` with an SMTP host, and a
 PostgreSQL `DATABASE_URL` are all set, and prints exactly what is missing.
 
+## Search Indexes
+
+Search runs `LOWER(column) LIKE '%term%'`. On PostgreSQL, tududi creates
+trigram GIN indexes (`pg_trgm`) over those expressions on tasks, notes and
+projects, plus an index on session expiry, both for fresh databases
+(`db-prepare`) and existing ones (migration `20260907000007`). Nothing to
+configure; `pg_trgm` ships with PostgreSQL.
+
 ## Health Checks and Logs
 
 - `GET /api/health` answers 200 as soon as the process is up. The Docker

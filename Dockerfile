@@ -107,11 +107,12 @@ COPY --from=builder --chown=app:app /app/public/manifest.json ./backend/dist/
 COPY --from=builder --chown=app:app /app/public/locales ./backend/dist/locales
 
 # Create necessary directories
-RUN mkdir -p /app/db /app/backend/certs /app/uploads && \
-    chown -R app:app /app/db /app/backend/certs /app/uploads
+RUN mkdir -p /app/db /app/backend/certs /app/uploads /app/backups && \
+    chown -R app:app /app/db /app/backend/certs /app/uploads /app/backups
 
 VOLUME ["/app/db"]
 VOLUME ["/app/uploads"]
+VOLUME ["/app/backups"]
 
 EXPOSE 3002
 
@@ -126,6 +127,7 @@ ENV NODE_ENV=production \
     DISABLE_TELEGRAM=false \
     DISABLE_SCHEDULER=false \
     TUDUDI_UPLOAD_PATH="/app/uploads" \
+    TUDUDI_BACKUP_PATH="/app/backups" \
     SWAGGER_ENABLED=false \
     FF_ENABLE_BACKUPS=false \
     FF_ENABLE_CALDAV=false

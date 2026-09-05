@@ -142,6 +142,8 @@ async function prepareDatabase() {
     if (dialect === 'postgres') {
         const recorded = await recordBaseline(queryInterface);
         await seedReferenceData();
+        const { ensureSearchIndexes } = require('../utils/searchIndexes');
+        await ensureSearchIndexes(sequelize);
         console.log(
             `✅ Schema created and ${recorded} migration(s) recorded as baseline`
         );

@@ -77,9 +77,9 @@ else
 fi
 
 echo "Setting ownership of application directories to $TARGET_USER:$TARGET_GROUP"
-mkdir -p /app/db /app/backend/certs /app/uploads
+mkdir -p /app/db /app/backend/certs /app/uploads /app/backups
 chown -R "$TARGET_USER":"$TARGET_GROUP" /app/backend /app/scripts
-chown -R "$TARGET_USER":"$TARGET_GROUP" /app/db /app/uploads
+chown -R "$TARGET_USER":"$TARGET_GROUP" /app/db /app/uploads /app/backups
 chmod 770 /app/db /app/backend/certs /app/uploads
 set_db_file_permissions
 

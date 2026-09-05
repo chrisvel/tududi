@@ -143,6 +143,11 @@ const config = {
     uploadPath:
         process.env.TUDUDI_UPLOAD_PATH || path.join(projectRootPath, 'uploads'),
 
+    // Per-user backup exports (Profile > Backup). A separate volume in Docker
+    // so they survive a container recreate like uploads do.
+    backupPath:
+        process.env.TUDUDI_BACKUP_PATH || path.join(projectRootPath, 'backups'),
+
     // File upload limit in MB (default 10MB)
     fileUploadLimitMB: process.env.FILE_UPLOAD_LIMIT_MB
         ? parseInt(process.env.FILE_UPLOAD_LIMIT_MB, 10)
