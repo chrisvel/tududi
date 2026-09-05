@@ -1,6 +1,7 @@
 const rateLimit = require('express-rate-limit');
 const { ipKeyGenerator } = require('express-rate-limit');
 const { getConfig } = require('../config/config');
+const { createRateLimitStore } = require('./rateLimitStore');
 
 const config = getConfig();
 const rateLimitConfig = config.rateLimiting;
@@ -13,6 +14,7 @@ const skipInTest = (req) => !rateLimitConfig.enabled;
  * Prevents brute force attacks on login/register
  */
 const authLimiter = rateLimit({
+    store: createRateLimitStore('auth'),
     windowMs: rateLimitConfig.auth.windowMs,
     max: rateLimitConfig.auth.max,
     message: {
@@ -44,6 +46,7 @@ const authEmailKey = (req) => {
 };
 
 const authEmailLimiter = rateLimit({
+    store: createRateLimitStore('auth-email'),
     windowMs: rateLimitConfig.authEmail.windowMs,
     max: rateLimitConfig.authEmail.max,
     standardHeaders: true,
@@ -64,6 +67,7 @@ const authEmailLimiter = rateLimit({
  * General API rate limiting for unauthenticated requests
  */
 const apiLimiter = rateLimit({
+    store: createRateLimitStore('api'),
     windowMs: rateLimitConfig.api.windowMs,
     max: rateLimitConfig.api.max,
     message: {
@@ -92,6 +96,7 @@ const apiLimiter = rateLimit({
  * More lenient limits for authenticated users
  */
 const authenticatedApiLimiter = rateLimit({
+    store: createRateLimitStore('api-auth'),
     windowMs: rateLimitConfig.authenticatedApi.windowMs,
     max: rateLimitConfig.authenticatedApi.max,
     standardHeaders: true,
@@ -126,6 +131,7 @@ const authenticatedApiLimiter = rateLimit({
  * Prevents spam and abuse
  */
 const createResourceLimiter = rateLimit({
+    store: createRateLimitStore('create'),
     windowMs: rateLimitConfig.createResource.windowMs,
     max: rateLimitConfig.createResource.max,
     standardHeaders: true,
@@ -153,6 +159,7 @@ const createResourceLimiter = rateLimit({
  * Very strict to prevent abuse
  */
 const apiKeyManagementLimiter = rateLimit({
+    store: createRateLimitStore('api-keys'),
     windowMs: rateLimitConfig.apiKeyManagement.windowMs,
     max: rateLimitConfig.apiKeyManagement.max,
     standardHeaders: true,
@@ -179,6 +186,7 @@ const apiKeyManagementLimiter = rateLimit({
 // /api limiters. Keyed by IP plus the attempted username so a password
 // guess against one account is throttled without blocking a whole office.
 const caldavAuthLimiter = rateLimit({
+    store: createRateLimitStore('caldav-auth'),
     windowMs: rateLimitConfig.auth.windowMs,
     max: rateLimitConfig.caldavAuth.max,
     standardHeaders: true,

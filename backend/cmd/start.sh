@@ -119,14 +119,16 @@ fi
 
 # Verify the connection and create the schema when the database is empty
 echo "Preparing database..."
-if ! node scripts/db-prepare.js; then
+# Both steps run under a PostgreSQL advisory lock so that several app
+# containers booting together cannot create the schema or migrate twice.
+if ! node scripts/with-db-lock.js node scripts/db-prepare.js; then
   echo "❌ Database preparation failed. Check the connection settings above."
   exit 1
 fi
 
 # Run database migrations automatically
 echo "Running database migrations..."
-if ! npx sequelize-cli db:migrate --config config/database.js; then
+if ! node scripts/with-db-lock.js npx sequelize-cli db:migrate --config config/database.js; then
   echo "❌ Migration failed. Container cannot start with an incomplete schema."
   echo "   Check the migration error above and restore from backup if needed."
   exit 1

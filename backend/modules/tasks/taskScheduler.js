@@ -37,7 +37,7 @@ const getCronExpression = (frequency) => {
     return expressions[frequency];
 };
 
-const createJobHandler = (frequency) => async () => {
+const runJob = async (frequency) => {
     if (frequency === 'cleanup_tokens') {
         await cleanupExpiredTokens();
     } else if (frequency === 'deferred_tasks') {
@@ -49,6 +49,13 @@ const createJobHandler = (frequency) => async () => {
     } else {
         await processSummariesForFrequency(frequency);
     }
+};
+
+// Each tick takes a per-job lock so that with several app processes only
+// one of them sends the summaries or notifications for that tick.
+const createJobHandler = (frequency) => async () => {
+    const { withJobLock } = require('../../services/jobLock');
+    await withJobLock(`task-scheduler:${frequency}`, () => runJob(frequency));
 };
 
 const createJobEntries = () => {
@@ -124,15 +131,17 @@ const processSummariesForFrequency = async (frequency) => {
 };
 
 const cleanupExpiredTokens = async () => {
-    try {
-        const {
-            cleanupExpiredTokens: cleanup,
-        } = require('./registrationService');
-        const count = await cleanup();
-        return count;
-    } catch (error) {
-        throw error;
-    }
+    const {
+        cleanupExpiredTokens: cleanup,
+    } = require('../auth/registrationService');
+    const count = await cleanup();
+
+    const {
+        cleanupExpiredRateLimits,
+    } = require('../../middleware/rateLimitStore');
+    await cleanupExpiredRateLimits();
+
+    return count;
 };
 
 const processDeferredTasks = async () => {

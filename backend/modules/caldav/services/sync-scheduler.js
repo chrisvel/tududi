@@ -35,7 +35,8 @@ class SyncScheduler {
         const cronExpression = this._getCronExpression(syncIntervalMinutes);
 
         this.globalJob = cron.schedule(cronExpression, async () => {
-            await this.syncAllDueCalendars();
+            const { withJobLock } = require('../../../services/jobLock');
+            await withJobLock('caldav-sync', () => this.syncAllDueCalendars());
         });
 
         this.isInitialized = true;

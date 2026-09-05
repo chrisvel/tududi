@@ -445,6 +445,10 @@ async function startServer() {
         const { validateAuthConfiguration } = require('./config/authConfig');
         validateAuthConfiguration();
 
+        // A hosted instance must not come up half-configured
+        const { assertHostedConfig } = require('./config/hostedConfig');
+        assertHostedConfig();
+
         const server = app.listen(config.port, config.host, () => {
             console.log(`Server running on port ${config.port}`);
             console.log(`Server listening on http://localhost:${config.port}`);
