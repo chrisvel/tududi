@@ -217,6 +217,12 @@ Tududi stores everything in a single SQLite file by default, which is all a pers
 
 ### Upgrading
 
+Every start backs up the SQLite file next to it (`db-backup-<timestamp>.sqlite3`), then runs pending migrations; the container refuses to start if a migration fails, so the backup is always the state before the upgrade.
+
+#### Upgrading to a release with PostgreSQL support
+
+SQLite stays the default and existing databases are used as they are. Make sure your `.env` does **not** contain a `DATABASE_URL` or `DB_DIALECT` left over from another application: either one switches tududi to PostgreSQL. As a safety net, the container refuses to start when PostgreSQL is selected but a populated SQLite database is present at `DB_FILE`; unset the variable to keep your data, or set `TUDUDI_ALLOW_DIALECT_SWITCH=true` if you really want an empty PostgreSQL database.
+
 #### v1.1.x to v1.2.x: Volume path change
 
 The Docker volume mount path changed in v1.2.0 from `/app/backend/db` to `/app/db`. If you are upgrading from v1.1.x and your `docker-compose.yml` still uses the old path, **new data will be lost on container recreation** because writes go to an anonymous Docker volume that is discarded when the container is recreated.
