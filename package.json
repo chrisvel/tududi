@@ -187,6 +187,7 @@
     "sequelize-cli": "~6.6.2",
     "slugify": "^1.6.6",
     "sqlite3": "^6.0.1",
+    "stripe": "^18.5.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "umzug": "^2.3.0",
