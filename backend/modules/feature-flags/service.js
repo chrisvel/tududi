@@ -11,10 +11,14 @@ class FeatureFlagsService {
      * Get all feature flags.
      */
     getAll() {
+        const { getConfig } = require('../../config/config');
+        const hosted = getConfig().hosted || {};
         return {
             backups: process.env.FF_ENABLE_BACKUPS === 'true',
             caldav: isCalDAVEnabled(),
             mcp: process.env.FF_ENABLE_MCP === 'true',
+            hosted: hosted.enabled === true,
+            billing: hosted.enabled === true && !!hosted.stripe?.secretKey,
         };
     }
 }

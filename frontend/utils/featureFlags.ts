@@ -4,6 +4,8 @@ export interface FeatureFlags {
     backups: boolean;
     caldav: boolean;
     mcp: boolean;
+    hosted: boolean;
+    billing: boolean;
 }
 
 let cachedFeatureFlags: FeatureFlags | null = null;
@@ -24,6 +26,8 @@ export const getFeatureFlags = async (): Promise<FeatureFlags> => {
                 backups: false,
                 caldav: false,
                 mcp: false,
+                hosted: false,
+                billing: false,
             };
         }
 
@@ -32,6 +36,8 @@ export const getFeatureFlags = async (): Promise<FeatureFlags> => {
             backups: false,
             caldav: false,
             mcp: false,
+            hosted: false,
+            billing: false,
         };
         cachedFeatureFlags = {
             ...defaultFlags,
@@ -44,6 +50,8 @@ export const getFeatureFlags = async (): Promise<FeatureFlags> => {
             backups: false,
             caldav: false,
             mcp: false,
+            hosted: false,
+            billing: false,
         };
     }
 };
