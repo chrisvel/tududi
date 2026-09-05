@@ -10,7 +10,8 @@
 #      backup exists and matches the file that was there before, logins work,
 #      the data is still there, and a restart is idempotent.
 #   4. Starts the new image once more with a stray DATABASE_URL and checks it
-#      refuses to run and leaves the SQLite file untouched.
+#      refuses to run with the dialect-switch banner, before touching any
+#      database, and leaves the SQLite file untouched.
 #
 # Usage: npm run test:upgrade:docker            (or bash scripts/test-upgrade-docker.sh)
 # Env:   OLD_IMAGE   previous release image      (default chrisvel/tududi:1.4.2)
@@ -276,10 +277,11 @@ STRAY_EXIT="$(docker wait "$STRAY_NAME" 2>/dev/null || echo timeout)"
 STRAY_LOGS="$(docker logs "$STRAY_NAME" 2>&1)"
 check "$([ "$STRAY_EXIT" != "0" ]; echo $?)" "stray DATABASE_URL: container refused to start (exit $STRAY_EXIT)"
 check "$([ "$(sha "$VOL/production.sqlite3")" = "$POST_SHA" ]; echo $?)" "stray DATABASE_URL: sqlite file untouched"
-if printf '%s' "$STRAY_LOGS" | grep -qi 'existing SQLite database'; then
-    green "  ok   stray DATABASE_URL: guard banner shown"
+check "$(printf '%s' "$STRAY_LOGS" | grep -qi 'existing SQLite database was found'; echo $?)" "stray DATABASE_URL: dialect-switch guard banner shown"
+if printf '%s' "$STRAY_LOGS" | grep -qi 'Preparing postgres database'; then
+    check 1 "stray DATABASE_URL: stopped before any connection attempt"
 else
-    yellow "  note stray DATABASE_URL: failed at the connection step, no guard banner yet (added by the dialect-switch guard fix)"
+    check 0 "stray DATABASE_URL: stopped before any connection attempt"
 fi
 
 echo

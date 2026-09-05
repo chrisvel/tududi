@@ -124,6 +124,7 @@ Uploads live on disk (`TUDUDI_UPLOAD_PATH`) and need their own backup.
 | `Existing database detected` but the app reports missing tables | The database has a `users` table from another application. Point tududi at its own database. |
 | Migration failed on start | The container exits with the failing migration in the log. Restore the last dump, keep the previous image, report the migration. |
 | Container starts but `/api/health` never responds | Check `docker compose logs tududi`; a database that is not reachable shows a connection error from `db-prepare.js` before anything else. |
+| `PostgreSQL is selected ... but an existing SQLite database was found` | `DATABASE_URL` or `DB_DIALECT` is set while the SQLite file at `DB_FILE` (in Docker `/app/db/production.sqlite3`) still holds data, usually a variable left over in `.env`. Unset it to stay on SQLite, or set `TUDUDI_ALLOW_DIALECT_SWITCH=true` to start on PostgreSQL anyway (the SQLite data is not transferred). |
 
 ---
 
