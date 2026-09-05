@@ -17,9 +17,11 @@ class SyncScheduler {
             return;
         }
 
-        const enabled = process.env.CALDAV_ENABLED !== 'false';
-        if (!enabled) {
-            logger.logInfo('CalDAV sync scheduler disabled via CALDAV_ENABLED');
+        const { isCalDAVEnabled } = require('../../feature-flags/service');
+        if (!isCalDAVEnabled()) {
+            logger.logInfo(
+                'CalDAV sync scheduler not started: set FF_ENABLE_CALDAV=true to enable CalDAV'
+            );
             return;
         }
 

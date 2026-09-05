@@ -10,6 +10,7 @@ const {
     createUnverifiedUser,
     sendVerificationEmail,
     verifyUserEmail,
+    resendVerificationEmail,
 } = require('./registrationService');
 const {
     requestPasswordReset,
@@ -23,6 +24,7 @@ const {
     NotFoundError,
     UnauthorizedError,
     ForbiddenError,
+    ServiceUnavailableError,
 } = require('../../shared/errors');
 
 class AuthService {
@@ -66,14 +68,17 @@ class AuthService {
                 verificationToken
             );
 
+            // Without a verification email the account could never be
+            // used, so the user row is not kept. Say why, and say it as a
+            // temporary condition: the address itself is fine.
             if (!emailResult.success) {
                 await transaction.rollback();
                 logError(
                     new Error(emailResult.reason),
                     'Email sending failed during registration, rolling back user creation'
                 );
-                throw new Error(
-                    'Failed to send verification email. Please try again later.'
+                throw new ServiceUnavailableError(
+                    'Registration is temporarily unavailable because verification emails cannot be sent. Please try again later.'
                 );
             }
 
@@ -105,6 +110,26 @@ class AuthService {
             }
             throw error;
         }
+    }
+
+    // Same response whether the address is unknown, already verified, or
+    // just got a new link.
+    async resendVerification(email) {
+        if (!isPasswordAuthEnabled()) {
+            throw new ForbiddenError(
+                'Password registration is disabled. Please use SSO to sign in.'
+            );
+        }
+        if (!email || typeof email !== 'string') {
+            throw new ValidationError('Email is required');
+        }
+
+        await resendVerificationEmail(email);
+
+        return {
+            message:
+                'If that address belongs to an unverified account, a new verification email has been sent.',
+        };
     }
 
     async verifyEmail(token) {

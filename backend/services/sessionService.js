@@ -4,7 +4,7 @@ const { logError } = require('./logService');
 
 // connect-session-sequelize stores each session's JSON in a `data` column,
 // so a user's sessions are the rows whose JSON carries their id. Used to
-// sign a user out everywhere after a password reset.
+// sign a user out everywhere after a password reset or account deletion.
 async function destroyUserSessions(userId, { exceptSid = null } = {}) {
     const Session = sequelize.models.Session;
     if (!Session) return 0;

@@ -89,6 +89,27 @@ const isVerificationTokenValid = (token, expiresAt) => {
     return now <= expiration;
 };
 
+// Issues a fresh verification token for an unverified account and emails
+// it. Verified or unknown addresses are ignored so the caller's response can
+// stay identical in every case.
+const resendVerificationEmail = async (email) => {
+    const user = await User.findOne({
+        where: { email: String(email).trim().toLowerCase() },
+    });
+    if (!user || user.email_verified) {
+        return { sent: false };
+    }
+
+    const verificationToken = generateVerificationToken();
+    await user.update({
+        email_verification_token: verificationToken,
+        email_verification_token_expires_at: getTokenExpirationDate(),
+    });
+
+    const result = await sendVerificationEmail(user, verificationToken);
+    return { sent: !!result.success };
+};
+
 const verifyUserEmail = async (token) => {
     if (!token) {
         throw new Error('Verification token is required');
@@ -241,6 +262,7 @@ module.exports = {
     createUnverifiedUser,
     verifyUserEmail,
     sendVerificationEmail,
+    resendVerificationEmail,
     isVerificationTokenValid,
     cleanupExpiredTokens,
 };

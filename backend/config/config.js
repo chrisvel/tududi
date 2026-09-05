@@ -207,6 +207,11 @@ const config = {
             max: parseInt(process.env.RATE_LIMIT_AUTH_EMAIL_MAX) || 10,
         },
 
+        // CalDAV Basic-auth attempts, per IP + username, per auth window
+        caldavAuth: {
+            max: parseInt(process.env.RATE_LIMIT_CALDAV_AUTH_MAX) || 20,
+        },
+
         // General API for unauthenticated requests
         api: {
             windowMs:

@@ -94,7 +94,10 @@ export const updateProfile = async (
     profileCache = updatedProfile;
     profileCacheExpiry = Date.now() + PROFILE_CACHE_TTL_MS;
 
-    if (profileData.features && 'task_intelligence_enabled' in profileData.features) {
+    if (
+        profileData.features &&
+        'task_intelligence_enabled' in profileData.features
+    ) {
         localStorage.removeItem('taskIntelligenceEnabled');
     }
 
@@ -341,4 +344,27 @@ export const getLocaleFirstDayOfWeek = (locale: string): number => {
     } else {
         return 0; // Sunday (default for US, CA, JP, etc.)
     }
+};
+
+export const deleteAccount = async (payload: {
+    password?: string;
+    confirm_email?: string;
+}): Promise<void> => {
+    const response = await fetch(getApiPath('profile'), {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: await getPostHeadersWithCsrf(),
+        body: JSON.stringify(payload),
+    });
+    if (!response.ok) {
+        let message = 'Failed to delete account';
+        try {
+            const body = await response.json();
+            if (body?.error) message = body.error;
+        } catch {
+            // ignore non-JSON error bodies
+        }
+        throw new Error(message);
+    }
+    invalidateProfileCache();
 };

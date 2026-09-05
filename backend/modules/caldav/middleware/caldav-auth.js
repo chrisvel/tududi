@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const { User } = require('../../../models');
 const { findValidTokenByValue } = require('../../users/apiTokenService');
+const { caldavAuthLimiter } = require('../../../middleware/rateLimiter');
 
 async function caldavAuth(req, res, next) {
     try {
@@ -52,19 +53,24 @@ async function caldavAuth(req, res, next) {
         const username = credentials.substring(0, colonIndex);
         const password = credentials.substring(colonIndex + 1);
 
-        const user = await User.findOne({ where: { email: username } });
-        if (!user) {
-            return res
-                .status(401)
-                .set('WWW-Authenticate', 'Basic realm="Tududi CalDAV"')
-                .json({ error: 'Invalid credentials' });
-        }
-
-        const isValidPassword = await bcrypt.compare(
-            password,
-            user.password_digest
+        // Basic auth is a password login outside the /api limiters, so it
+        // gets its own throttle keyed by IP and the attempted username.
+        req.caldavUsername = username;
+        const limited = await new Promise((resolve) =>
+            caldavAuthLimiter(req, res, (err) => resolve(err || null))
         );
-        if (!isValidPassword) {
+        if (res.headersSent) return;
+        if (limited) throw limited;
+
+        const user = await User.findOne({
+            where: { email: String(username).trim().toLowerCase() },
+        });
+        // Accounts created through SSO have no password; bcrypt.compare
+        // against null would throw and turn a bad login into a 500.
+        const isValidPassword = user?.password_digest
+            ? await bcrypt.compare(password, user.password_digest)
+            : false;
+        if (!user || !isValidPassword) {
             return res
                 .status(401)
                 .set('WWW-Authenticate', 'Basic realm="Tududi CalDAV"')

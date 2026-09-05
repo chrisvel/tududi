@@ -28,6 +28,23 @@ const { generateCTag } = require('./utils/ctag-generator');
 
 const router = express.Router();
 
+// The whole protocol surface is off unless the operator turned CalDAV on;
+// otherwise a hidden feature would still expose a Basic-auth login endpoint.
+router.use((req, res, next) => {
+    const { isCalDAVEnabled } = require('../feature-flags/service');
+    if (isCalDAVEnabled()) return next();
+
+    const caldavPath =
+        req.path.startsWith('/caldav/') ||
+        req.path.startsWith('/.well-known/caldav') ||
+        req.path.startsWith('/api/caldav') ||
+        (req.method === 'PROPFIND' &&
+            (req.path === '/' || req.path === '/principals/'));
+    if (!caldavPath) return next();
+
+    return res.status(404).json({ error: 'CalDAV is not enabled' });
+});
+
 // GET redirects to /caldav/ per RFC 6764; PROPFIND returns root discovery for iOS accountsd
 router.all('/.well-known/caldav', (req, res, next) => {
     if (req.method === 'GET') return handleWellKnown(req, res, next);
