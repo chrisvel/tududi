@@ -1,0 +1,86 @@
+name: Publish Docker image
+
+# Builds the release image from the tagged commit and pushes it to Docker Hub
+# as chrisvel/tududi:<version> and :latest. Until now the image was built and
+# pushed by hand, so a tag and an image could disagree.
+#
+# Requires the DOCKERHUB_USERNAME and DOCKERHUB_TOKEN repository secrets.
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Version to publish (e.g. 1.4.3), without the v
+        required: true
+      latest:
+        description: Also move the latest tag
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Resolve version
+        id: version
+        env:
+          INPUT_TAG: ${{ github.event.inputs.tag }}
+          INPUT_LATEST: ${{ github.event.inputs.latest }}
+        run: |
+          if [ -n "$INPUT_TAG" ]; then
+            VERSION="$INPUT_TAG"
+            LATEST="$INPUT_LATEST"
+          else
+            VERSION="${GITHUB_REF_NAME#v}"
+            LATEST="true"
+          fi
+          # Only a plain version ever becomes an image tag
+          if ! printf '%s' "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$'; then
+            echo "Refusing to publish: '$VERSION' is not a version" >&2
+            exit 1
+          fi
+          case "$VERSION" in
+            *-*) LATEST="false" ;;   # pre-releases never move latest
+          esac
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "latest=$LATEST" >> "$GITHUB_OUTPUT"
+          echo "Publishing $VERSION (latest: $LATEST)"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            chrisvel/tududi:${{ steps.version.outputs.version }}
+            ${{ steps.version.outputs.latest == 'true' && 'chrisvel/tududi:latest' || '' }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Print digest
+        run: |
+          echo "chrisvel/tududi:${{ steps.version.outputs.version }}@${{ steps.build.outputs.digest }}" | tee -a "$GITHUB_STEP_SUMMARY"

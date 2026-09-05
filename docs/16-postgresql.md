@@ -144,6 +144,19 @@ With `TUDUDI_HOSTED_MODE=true` the server refuses to start unless
 public `FRONTEND_URL`/`BACKEND_URL`, `ENABLE_EMAIL` with an SMTP host, and a
 PostgreSQL `DATABASE_URL` are all set, and prints exactly what is missing.
 
+## Health Checks and Logs
+
+- `GET /api/health` answers 200 as soon as the process is up. The Docker
+  `HEALTHCHECK` uses it.
+- `GET /api/health/ready` also runs a query and lists migration files that
+  are not recorded in `SequelizeMeta`. It answers 200 with `status: ok`,
+  200 with `status: degraded` when migrations are pending, and 503 when
+  the database does not answer. Point load balancers and uptime monitors
+  at this one. Both are exempt from rate limiting and are not logged.
+- Logs are JSON lines on stdout (one object per request with method, URL,
+  status and duration; errors carry the stack). `LOG_LEVEL` and
+  `LOG_FORMAT=pretty` adjust them; see `backend/.env.example`.
+
 ## Troubleshooting
 
 | Symptom | Cause and fix |
