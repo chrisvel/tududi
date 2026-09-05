@@ -1,5 +1,13 @@
 import React, { useEffect, useState, Suspense, lazy } from 'react';
-import { Routes, Route, Navigate, Outlet, useParams } from 'react-router-dom';
+import {
+    Routes,
+    Route,
+    Navigate,
+    Outlet,
+    useParams,
+    useNavigate,
+    useLocation,
+} from 'react-router-dom';
 
 const NoteRedirect: React.FC = () => {
     const { uidSlug } = useParams<{ uidSlug: string }>();
@@ -47,11 +55,17 @@ import { getApiPath, getLocalesPath } from './config/paths';
 import { useStore } from './store/useStore';
 import { invalidateProfileCache } from './utils/profileService';
 import { notifySwSession, notifySwClearCache } from './utils/swUtils';
+import {
+    clearSharedText,
+    hasPendingSharedText,
+} from './utils/shareTargetService';
 // Lazy load Tasks component to prevent issues with tags loading
 const Tasks = lazy(() => import('./components/Tasks'));
 
 const App: React.FC = () => {
     const { i18n } = useTranslation();
+    const navigate = useNavigate();
+    const location = useLocation();
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -136,6 +150,25 @@ const App: React.FC = () => {
                 handleUserLoggedIn as EventListener
             );
     }, []);
+
+    // A share handed over while the session was expired lands on /login, so
+    // send the user to the Inbox composer once they're authenticated again
+    useEffect(() => {
+        if (!currentUser) return;
+        if (location.pathname === '/inbox') return;
+        if (!hasPendingSharedText()) return;
+
+        navigate('/inbox', { replace: true });
+    }, [currentUser, location.pathname, navigate]);
+
+    // The Inbox keeps offering a claimed share while the user stays on it (the
+    // page remounts whenever Layout shows its first-load spinner), so the claim
+    // is released on the first navigation away from it instead.
+    useEffect(() => {
+        if (location.pathname !== '/inbox') {
+            clearSharedText();
+        }
+    }, [location.pathname]);
 
     useEffect(() => {
         if (i18n.isInitialized) {
