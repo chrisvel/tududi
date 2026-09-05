@@ -237,19 +237,17 @@ fi
 
 NEW_JAR="$WORK/new.jar"
 check "$([ "$(api_login "$NEW_PORT" "$BOB_EMAIL" "$NEW_JAR")" = "200" ]; echo $?)" "new image: login as $BOB_EMAIL"
-# TUDUDI_USER_EMAIL names the legacy admin in its lowercase form. Until the
-# lowercase-emails migration lands, user-create.js cannot find the mixed-case
-# row and creates a second, empty admin account instead; the user count tells
-# the two outcomes apart.
+# TUDUDI_USER_EMAIL names the legacy admin in its lowercase form. The
+# lowercase-emails migration must have normalised the stored row so
+# user-create.js updates it instead of creating a second, empty admin.
 USERS_AFTER="$(count_users)"
 ALICE_LOWER="$(api_login "$NEW_PORT" "$ADMIN_EMAIL" "$WORK/a1.jar")"
 ALICE_MIXED="$(api_login "$NEW_PORT" "$ADMIN_EMAIL_MIXED" "$WORK/a2.jar")"
+check "$([ "$ALICE_LOWER" = "200" ] && [ "$ALICE_MIXED" = "200" ]; echo $?)" "new image: legacy mixed-case admin can log in ($ALICE_LOWER / $ALICE_MIXED)"
 if [ "$USERS_BEFORE" = "?" ]; then
     yellow "  note new image: sqlite3 CLI missing, cannot verify the admin account was reused"
-elif [ "$USERS_AFTER" = "$USERS_BEFORE" ] && [ "$ALICE_LOWER" = "200" ] && [ "$ALICE_MIXED" = "200" ]; then
-    green "  ok   new image: legacy mixed-case admin reused and can log in"
 else
-    yellow "  note new image: users $USERS_BEFORE -> $USERS_AFTER, legacy admin login $ALICE_LOWER / $ALICE_MIXED (a duplicate admin means TUDUDI_USER_EMAIL did not match the mixed-case row; fixed by the lowercase-emails migration)"
+    check "$([ "$USERS_AFTER" = "$USERS_BEFORE" ]; echo $?)" "new image: no duplicate admin created (users $USERS_BEFORE -> $USERS_AFTER)"
 fi
 
 NEW_COUNT="$(api_task_count "$NEW_PORT" "" "$NEW_JAR")"

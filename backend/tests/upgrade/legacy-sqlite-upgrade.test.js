@@ -169,19 +169,14 @@ describe.each(fixtures)('upgrade from $name', (fixture) => {
                 expect(smoke.login.bob).toBe(200);
             });
 
-            // Accounts created before the lowercasing hook (Feb 2026) still carry
-            // mixed-case emails, which the current login lookup cannot find. Fixed
-            // by the follow-up data migration ("lowercase legacy emails"); flip to
-            // a plain `it` once it lands.
-            it.failing(
-                'logs in a legacy user with a mixed-case stored email',
-                () => {
-                    expect([
-                        smoke.login.aliceLower,
-                        smoke.login.aliceMixed,
-                    ]).toEqual([200, 200]);
-                }
-            );
+            // Accounts created before the lowercasing hook (Feb 2026) carry
+            // mixed-case emails; 20260906000001-lowercase-user-emails fixes them.
+            it('logs in a legacy user with a mixed-case stored email', () => {
+                expect([
+                    smoke.login.aliceLower,
+                    smoke.login.aliceMixed,
+                ]).toEqual([200, 200]);
+            });
 
             it('serves every list and metrics endpoint', () => {
                 expect(smoke.login.aliceAfterNormalise).toBe(200);
