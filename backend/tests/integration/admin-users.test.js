@@ -94,7 +94,7 @@ describe('Admin Users Management API', () => {
                 .send({ email: 'shortpass@example.com', password: '123' });
             expect(res.status).toBe(400);
             expect(res.body.error).toMatch(
-                /Password must be at least 6 characters/i
+                /Password must be at least 8 characters/i
             );
         });
 

@@ -1,5 +1,7 @@
 'use strict';
 
+const { PASSWORD_MIN_LENGTH } = require('./userService');
+
 const { ValidationError } = require('../../shared/errors');
 
 const VALID_FREQUENCIES = [
@@ -30,9 +32,9 @@ function validateFirstDayOfWeek(value) {
  * Validate password.
  */
 function validatePassword(password, field = 'password') {
-    if (password && password.length < 6) {
+    if (password && password.length < PASSWORD_MIN_LENGTH) {
         throw new ValidationError(
-            'Password must be at least 6 characters',
+            `Password must be at least ${PASSWORD_MIN_LENGTH} characters`,
             field
         );
     }

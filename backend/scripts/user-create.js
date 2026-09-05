@@ -12,6 +12,7 @@ const {
     createOrUpdateUser,
     validateEmail,
     validatePassword,
+    MIN_LENGTH_POLICY_MESSAGE,
 } = require('../modules/users/userService');
 const { Role } = require('../models');
 
@@ -46,7 +47,7 @@ async function createUser() {
 
         // Only validate password for new users
         if (!existingUser && !validatePassword(password)) {
-            console.error('Password must be at least 6 characters long');
+            console.error(MIN_LENGTH_POLICY_MESSAGE);
             process.exit(1);
         }
 

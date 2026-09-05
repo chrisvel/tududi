@@ -54,6 +54,12 @@ const registrationConfig = {
         : 24,
 };
 
+const passwordResetConfig = {
+    tokenExpiryMinutes: process.env.PASSWORD_RESET_TOKEN_EXPIRY_MINUTES
+        ? parseInt(process.env.PASSWORD_RESET_TOKEN_EXPIRY_MINUTES, 10)
+        : 60,
+};
+
 const config = {
     allowedOrigins: process.env.TUDUDI_ALLOWED_ORIGINS
         ? process.env.TUDUDI_ALLOWED_ORIGINS.split(',').map((origin) =>
@@ -115,6 +121,8 @@ const config = {
     emailConfig,
 
     registrationConfig,
+
+    passwordResetConfig,
 
     uploadPath:
         process.env.TUDUDI_UPLOAD_PATH || path.join(projectRootPath, 'uploads'),
@@ -187,6 +195,16 @@ const config = {
                 parseInt(process.env.RATE_LIMIT_AUTH_WINDOW_MS) ||
                 15 * 60 * 1000, // 15 minutes
             max: parseInt(process.env.RATE_LIMIT_AUTH_MAX) || 5, // 5 requests per window
+        },
+
+        // Login and password reset attempts per email address, on top of
+        // the per-IP limit above, so one address cannot be hammered from
+        // many IPs and one shared IP does not lock everyone else out.
+        authEmail: {
+            windowMs:
+                parseInt(process.env.RATE_LIMIT_AUTH_EMAIL_WINDOW_MS) ||
+                15 * 60 * 1000, // 15 minutes
+            max: parseInt(process.env.RATE_LIMIT_AUTH_EMAIL_MAX) || 10,
         },
 
         // General API for unauthenticated requests

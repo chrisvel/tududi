@@ -3,7 +3,11 @@ const { User, Setting } = require('../../models');
 const { getConfig } = require('../../config/config');
 const { logError, logInfo } = require('../../services/logService');
 const { sendEmail } = require('../../services/emailService');
-const { validateEmail, validatePassword } = require('../users/userService');
+const {
+    validateEmail,
+    validatePassword,
+    MIN_LENGTH_POLICY_MESSAGE,
+} = require('../users/userService');
 const {
     getDefaultNotificationPreferences,
 } = require('../../utils/notificationPreferences');
@@ -42,7 +46,7 @@ const createUnverifiedUser = async (email, password, transaction = null) => {
     }
 
     if (!validatePassword(password)) {
-        throw new Error('Password must be at least 6 characters long');
+        throw new Error(MIN_LENGTH_POLICY_MESSAGE);
     }
 
     const existingUser = await User.findOne({

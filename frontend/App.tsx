@@ -9,6 +9,8 @@ const NoteRedirect: React.FC = () => {
 import { useTranslation } from 'react-i18next';
 import Login from './components/Login';
 import Register from './components/Register';
+import ForgotPassword from './components/Auth/ForgotPassword';
+import ResetPassword from './components/Auth/ResetPassword';
 import OIDCCallback from './components/Auth/OIDCCallback';
 import NotFound from './components/Shared/NotFound';
 import ProjectDetails from './components/Project/ProjectDetails';
@@ -83,24 +85,37 @@ const App: React.FC = () => {
                 setCurrentUser(data.user);
                 setUserInStorage(data.user);
                 notifySwSession(data.user.id);
-                useStore.getState().userSettingsStore.setEisenhowerEnabled(
-                    data.user.features?.eisenhower_enabled === true
-                );
-                useStore.getState().userSettingsStore.setKanbanEnabled(
-                    data.user.features?.kanban_enabled === true
-                );
-                useStore.getState().userSettingsStore.setHabitsEnabled(
-                    data.user.features?.habits_enabled !== false
-                );
-                useStore.getState().userSettingsStore.setCalendarEnabled(
-                    data.user.features?.calendar_enabled === true
-                );
-                useStore.getState().userSettingsStore.setAiAssistantEnabled(
-                    data.user.features?.ai_assistant_enabled === true
-                );
-                useStore.getState().userSettingsStore.setShowTaskContextMenu(
-                    data.user.ui_settings?.appearance?.showTaskContextMenu === true
-                );
+                useStore
+                    .getState()
+                    .userSettingsStore.setEisenhowerEnabled(
+                        data.user.features?.eisenhower_enabled === true
+                    );
+                useStore
+                    .getState()
+                    .userSettingsStore.setKanbanEnabled(
+                        data.user.features?.kanban_enabled === true
+                    );
+                useStore
+                    .getState()
+                    .userSettingsStore.setHabitsEnabled(
+                        data.user.features?.habits_enabled !== false
+                    );
+                useStore
+                    .getState()
+                    .userSettingsStore.setCalendarEnabled(
+                        data.user.features?.calendar_enabled === true
+                    );
+                useStore
+                    .getState()
+                    .userSettingsStore.setAiAssistantEnabled(
+                        data.user.features?.ai_assistant_enabled === true
+                    );
+                useStore
+                    .getState()
+                    .userSettingsStore.setShowTaskContextMenu(
+                        data.user.ui_settings?.appearance
+                            ?.showTaskContextMenu === true
+                    );
             } else {
                 setCurrentUser(null);
                 setUserInStorage(null);
@@ -177,7 +192,9 @@ const App: React.FC = () => {
     const setAppearance = (theme: 'light' | 'dark' | 'system') => {
         if (theme === 'system') {
             localStorage.removeItem('isDarkMode');
-            setIsDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
+            setIsDarkMode(
+                window.matchMedia('(prefers-color-scheme: dark)').matches
+            );
         } else {
             const isDark = theme === 'dark';
             setIsDarkMode(isDark);
@@ -276,13 +293,38 @@ const App: React.FC = () => {
                                     </Suspense>
                                 }
                             />
-                            <Route path="/eisenhower" element={<Navigate to="/boards/eisenhower" replace />} />
-                            <Route path="/kanban" element={<Navigate to="/boards/kanban" replace />} />
-                            <Route path="/boards/eisenhower" element={<EisenhowerMatrix />} />
-                            <Route path="/boards/kanban" element={<KanbanBoard />} />
-                            <Route path="/insights/daily-brief" element={<DailyBriefPage />} />
-                            <Route path="/insights/productivity" element={<ProductivityPage />} />
-                            <Route path="/insights/reports" element={<ReportsPage />} />
+                            <Route
+                                path="/eisenhower"
+                                element={
+                                    <Navigate to="/boards/eisenhower" replace />
+                                }
+                            />
+                            <Route
+                                path="/kanban"
+                                element={
+                                    <Navigate to="/boards/kanban" replace />
+                                }
+                            />
+                            <Route
+                                path="/boards/eisenhower"
+                                element={<EisenhowerMatrix />}
+                            />
+                            <Route
+                                path="/boards/kanban"
+                                element={<KanbanBoard />}
+                            />
+                            <Route
+                                path="/insights/daily-brief"
+                                element={<DailyBriefPage />}
+                            />
+                            <Route
+                                path="/insights/productivity"
+                                element={<ProductivityPage />}
+                            />
+                            <Route
+                                path="/insights/reports"
+                                element={<ReportsPage />}
+                            />
                             <Route path="/inbox" element={<InboxItems />} />
                             <Route path="/habits" element={<Habits />} />
                             <Route
@@ -296,7 +338,10 @@ const App: React.FC = () => {
                                 element={<ProjectDetails />}
                             />
                             <Route path="/areas" element={<Areas />} />
-                            <Route path="/area/:uidSlug" element={<AreaDetails />} />
+                            <Route
+                                path="/area/:uidSlug"
+                                element={<AreaDetails />}
+                            />
                             <Route path="/tags" element={<Tags />} />
                             <Route
                                 path="/tag/:uidSlug"
@@ -336,7 +381,10 @@ const App: React.FC = () => {
                             />
                             <Route path="/backup" element={<BackupRestore />} />
                             <Route path="/people" element={<PeopleList />} />
-                            <Route path="/person/:uid" element={<PersonDetails />} />
+                            <Route
+                                path="/person/:uid"
+                                element={<PersonDetails />}
+                            />
                             <Route
                                 path="/admin/users"
                                 element={
@@ -369,6 +417,14 @@ const App: React.FC = () => {
                     <>
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
+                        <Route
+                            path="/forgot-password"
+                            element={<ForgotPassword />}
+                        />
+                        <Route
+                            path="/reset-password"
+                            element={<ResetPassword />}
+                        />
                         <Route
                             path="/auth/callback/:provider"
                             element={<OIDCCallback />}

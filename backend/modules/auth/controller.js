@@ -5,6 +5,7 @@ const { logError } = require('../../services/logService');
 const { generateToken } = require('../../middleware/csrf');
 const { isPasswordAuthEnabled } = require('../../config/authConfig');
 const { getConfig } = require('../../config/config');
+const auditService = require('../oidc/auditService');
 
 const authController = {
     getVersion(req, res) {
@@ -85,12 +86,17 @@ const authController = {
     },
 
     async login(req, res, next) {
+        const { email, password } = req.body;
         try {
-            const { email, password } = req.body;
             const result = await authService.login(
                 email,
                 password,
                 req.session
+            );
+            await auditService.logLoginSuccess(
+                req.session.userId,
+                auditService.AUTH_METHODS.EMAIL_PASSWORD,
+                req
             );
             res.json(result);
         } catch (error) {
@@ -98,6 +104,15 @@ const authController = {
                 return res.status(400).json({ error: error.message });
             }
             if (error.statusCode === 401) {
+                await auditService.logLoginFailed(
+                    typeof email === 'string'
+                        ? email.trim().toLowerCase()
+                        : null,
+                    auditService.AUTH_METHODS.EMAIL_PASSWORD,
+                    req,
+                    null,
+                    'invalid_credentials'
+                );
                 return res.status(401).json({ errors: [error.message] });
             }
             if (error.statusCode === 403) {
@@ -108,6 +123,33 @@ const authController = {
             }
             logError('Login error:', error);
             res.status(500).json({ error: 'Internal server error' });
+        }
+    },
+
+    async forgotPassword(req, res, next) {
+        try {
+            const result = await authService.forgotPassword(req.body.email);
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    async resetPassword(req, res, next) {
+        try {
+            const { token, password } = req.body;
+            const result = await authService.resetPassword(token, password);
+            await auditService.logEvent({
+                userId: null,
+                eventType: auditService.EVENT_TYPES.PASSWORD_RESET,
+                authMethod: auditService.AUTH_METHODS.EMAIL_PASSWORD,
+                ipAddress: req.ip,
+                userAgent: req.get('user-agent'),
+                metadata: { email: result.email },
+            });
+            res.json({ message: result.message });
+        } catch (error) {
+            next(error);
         }
     },
 

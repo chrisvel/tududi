@@ -33,15 +33,16 @@ describe('userService validation functions', () => {
 
     describe('validatePassword', () => {
         it('should return true for valid passwords', () => {
-            expect(validatePassword('123456')).toBe(true);
+            expect(validatePassword('12345678')).toBe(true);
             expect(validatePassword('password123')).toBe(true);
             expect(
                 validatePassword('very-long-password-with-special-chars!')
             ).toBe(true);
         });
 
-        it('should return false for passwords shorter than 6 characters', () => {
+        it('should return false for passwords shorter than 8 characters', () => {
             expect(validatePassword('12345')).toBe(false);
+            expect(validatePassword('1234567')).toBe(false);
             expect(validatePassword('abc')).toBe(false);
             expect(validatePassword('1')).toBe(false);
         });

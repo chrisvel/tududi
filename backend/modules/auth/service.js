@@ -11,6 +11,11 @@ const {
     sendVerificationEmail,
     verifyUserEmail,
 } = require('./registrationService');
+const {
+    requestPasswordReset,
+    resetPasswordWithToken,
+} = require('./passwordResetService');
+const { MIN_LENGTH_POLICY_MESSAGE } = require('../users/userService');
 const peopleService = require('../people/service');
 const packageJson = require('../../../package.json');
 const {
@@ -94,7 +99,7 @@ class AuthService {
             }
             if (
                 error.message === 'Invalid email format' ||
-                error.message === 'Password must be at least 6 characters long'
+                error.message === MIN_LENGTH_POLICY_MESSAGE
             ) {
                 throw new ValidationError(error.message);
             }
@@ -211,7 +216,7 @@ class AuthService {
                 );
             }
             throw new UnauthorizedError(
-                'This account has no password set. Please contact an administrator to reset your password.'
+                'This account has no password set. Use "Forgot password" to create one.'
             );
         }
 
@@ -254,6 +259,40 @@ class AuthService {
                 is_admin: admin,
             },
         };
+    }
+
+    // Always answers the same way: whether an address has an account is not
+    // something an unauthenticated caller gets to learn here.
+    async forgotPassword(email) {
+        if (!isPasswordAuthEnabled()) {
+            throw new ForbiddenError(
+                'Password login is disabled. Please use SSO to sign in.'
+            );
+        }
+        if (!email || typeof email !== 'string') {
+            throw new ValidationError('Email is required');
+        }
+
+        await requestPasswordReset(email);
+
+        return {
+            message:
+                'If an account exists for that email, a password reset link has been sent.',
+        };
+    }
+
+    async resetPassword(token, password) {
+        if (!isPasswordAuthEnabled()) {
+            throw new ForbiddenError(
+                'Password login is disabled. Please use SSO to sign in.'
+            );
+        }
+        if (!token || typeof token !== 'string') {
+            throw new ValidationError('Reset token is required');
+        }
+
+        const user = await resetPasswordWithToken(token, password);
+        return { message: 'Password updated', email: user.email };
     }
 
     logout(session) {

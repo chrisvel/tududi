@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getAssetPath } from '../config/paths';
+import { PASSWORD_MIN_LENGTH } from '../utils/passwordPolicy';
 
 const Register: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -51,12 +52,13 @@ const Register: React.FC = () => {
             return;
         }
 
-        if (password.length < 6) {
+        if (password.length < PASSWORD_MIN_LENGTH) {
             setError(
-                t(
-                    'auth.password_too_short',
-                    'Password must be at least 6 characters long'
-                )
+                t('auth.password_too_short', {
+                    defaultValue:
+                        'Password must be at least {{count}} characters long',
+                    count: PASSWORD_MIN_LENGTH,
+                })
             );
             return;
         }

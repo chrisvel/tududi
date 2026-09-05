@@ -26,7 +26,7 @@ This document explains how user management works in tududi from a user behavior 
 
 4. **Registration validation rules:**
     - Email must be valid format and unique
-    - Password must be at least 6 characters long
+    - Password must be at least 8 characters long
     - Email is automatically normalized (trimmed and lowercased)
 
 ---
@@ -162,8 +162,22 @@ to an account, so it cannot be used to discover who has signed up - Declining re
 
 22. **Password change requires current password**
     - User must provide their current password
-    - New password must be at least 6 characters
+    - New password must be at least 8 characters
     - Prevents unauthorized password changes if session is compromised
+
+22a. **Forgotten passwords are reset by email**
+    - `POST /api/forgot-password` always answers the same way, so it cannot
+      be used to find out whether an address has an account
+    - The link (`/reset-password?token=...`) is emailed; only a SHA-256 hash
+      of the token is stored, and it expires after
+      `PASSWORD_RESET_TOKEN_EXPIRY_MINUTES` (default 60)
+    - `POST /api/reset-password` sets the new password, clears the token,
+      marks the email verified, and signs the user out of every other session
+    - Accounts created through SSO with no password can use the same flow to
+      set one
+    - Login and reset requests are rate limited per email address as well as
+      per IP (`RATE_LIMIT_AUTH_EMAIL_MAX`, default 10 per 15 minutes), and
+      password logins (success and failure) are written to `auth_audit_log`
 
 23. **Password storage is secure**
     - Passwords are hashed using bcrypt (10 rounds)
