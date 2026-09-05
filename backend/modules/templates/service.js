@@ -1,5 +1,6 @@
 'use strict';
 
+const entitlements = require('../../services/entitlementsService');
 const https = require('https');
 const http = require('http');
 const { URL } = require('url');
@@ -242,6 +243,15 @@ class TemplatesService {
         }
 
         const templateJson = template.toJSON();
+        await entitlements.assertCanCreate(userId, 'project');
+        const templateTaskCount = (templateJson.Tasks || []).length;
+        if (templateTaskCount > 0) {
+            await entitlements.assertCanCreate(
+                userId,
+                'task',
+                templateTaskCount
+            );
+        }
         const newName = options.name || `${template.name} (Copy)`;
         const projectUid = generateUid();
 

@@ -54,6 +54,7 @@ const {
     buildUpdateAttributes,
 } = require('./core/builders');
 const { createSubtasks, updateSubtasks } = require('./operations/subtasks');
+const { requireQuota } = require('../../middleware/entitlements');
 const { handleCompletionStatus } = require('./operations/completion');
 const { captureOldValues, logTaskChanges } = require('./utils/logging');
 const {
@@ -346,146 +347,163 @@ router.get('/tasks/metrics', async (req, res) => {
     }
 });
 
-router.post('/task', async (req, res) => {
-    try {
-        const {
-            name,
-            project_id,
-            project_uid,
-            area_id,
-            area_uid,
-            goal_id,
-            parent_task_id,
-            tags,
-            Tags,
-            subtasks,
-        } = req.body;
-        const tagsData = tags || Tags;
-
-        if (!name || name.trim() === '') {
-            return res.status(400).json({ error: 'Task name is required.' });
-        }
-
-        const timezone = getSafeTimezone(req.currentUser.timezone);
-        const taskAttributes = buildTaskAttributes(
-            req.body,
-            req.currentUser.id,
-            timezone
-        );
-
+router.post(
+    '/task',
+    requireQuota(
+        'task',
+        (req) =>
+            1 +
+            (Array.isArray(req.body?.subtasks) ? req.body.subtasks.length : 0)
+    ),
+    async (req, res) => {
         try {
-            // Fetch parent end date if this is a recurring instance
-            const recurringParentEndDate = await getRecurringParentEndDate(
-                req.body.recurring_parent_id,
-                req.currentUser.id
-            );
-
-            validateDeferUntilAndDueDate(
-                taskAttributes.defer_until,
-                taskAttributes.due_date,
-                recurringParentEndDate
-            );
-        } catch (error) {
-            return res.status(400).json({ error: error.message });
-        }
-
-        try {
-            const validProjectId = await validateProjectAccess(
-                project_uid || project_id,
-                req.currentUser.id
-            );
-            if (validProjectId) taskAttributes.project_id = validProjectId;
-        } catch (error) {
-            return res
-                .status(error.message === 'Forbidden' ? 403 : 400)
-                .json({ error: error.message });
-        }
-
-        try {
-            const validAreaId = await validateAreaAccess(
-                area_uid || area_id,
-                req.currentUser.id
-            );
-            if (validAreaId) taskAttributes.area_id = validAreaId;
-        } catch (error) {
-            return res.status(400).json({ error: error.message });
-        }
-
-        try {
-            const validParentId = await validateParentTaskAccess(
-                parent_task_id,
-                req.currentUser.id
-            );
-            if (validParentId) taskAttributes.parent_task_id = validParentId;
-        } catch (error) {
-            return res.status(400).json({ error: error.message });
-        }
-
-        try {
-            const validGoalId = await validateGoalAccess(
+            const {
+                name,
+                project_id,
+                project_uid,
+                area_id,
+                area_uid,
                 goal_id,
-                req.currentUser.id
+                parent_task_id,
+                tags,
+                Tags,
+                subtasks,
+            } = req.body;
+            const tagsData = tags || Tags;
+
+            if (!name || name.trim() === '') {
+                return res
+                    .status(400)
+                    .json({ error: 'Task name is required.' });
+            }
+
+            const timezone = getSafeTimezone(req.currentUser.timezone);
+            const taskAttributes = buildTaskAttributes(
+                req.body,
+                req.currentUser.id,
+                timezone
             );
-            if (validGoalId) taskAttributes.goal_id = validGoalId;
+
+            try {
+                // Fetch parent end date if this is a recurring instance
+                const recurringParentEndDate = await getRecurringParentEndDate(
+                    req.body.recurring_parent_id,
+                    req.currentUser.id
+                );
+
+                validateDeferUntilAndDueDate(
+                    taskAttributes.defer_until,
+                    taskAttributes.due_date,
+                    recurringParentEndDate
+                );
+            } catch (error) {
+                return res.status(400).json({ error: error.message });
+            }
+
+            try {
+                const validProjectId = await validateProjectAccess(
+                    project_uid || project_id,
+                    req.currentUser.id
+                );
+                if (validProjectId) taskAttributes.project_id = validProjectId;
+            } catch (error) {
+                return res
+                    .status(error.message === 'Forbidden' ? 403 : 400)
+                    .json({ error: error.message });
+            }
+
+            try {
+                const validAreaId = await validateAreaAccess(
+                    area_uid || area_id,
+                    req.currentUser.id
+                );
+                if (validAreaId) taskAttributes.area_id = validAreaId;
+            } catch (error) {
+                return res.status(400).json({ error: error.message });
+            }
+
+            try {
+                const validParentId = await validateParentTaskAccess(
+                    parent_task_id,
+                    req.currentUser.id
+                );
+                if (validParentId)
+                    taskAttributes.parent_task_id = validParentId;
+            } catch (error) {
+                return res.status(400).json({ error: error.message });
+            }
+
+            try {
+                const validGoalId = await validateGoalAccess(
+                    goal_id,
+                    req.currentUser.id
+                );
+                if (validGoalId) taskAttributes.goal_id = validGoalId;
+            } catch (error) {
+                return res.status(400).json({ error: error.message });
+            }
+
+            const task = await taskRepository.create(taskAttributes);
+            await updateTaskTags(task, tagsData, req.currentUser.id);
+            await createSubtasks(task.id, subtasks, req.currentUser.id);
+
+            const taskWithAssociations = await taskRepository.findById(
+                task.id,
+                {
+                    include: TASK_INCLUDES_WITH_SUBTASKS,
+                }
+            );
+
+            if (!taskWithAssociations) {
+                logError('Failed to reload created task:', task.id);
+                const fallbackTask = {
+                    ...task.toJSON(),
+                    tags: [],
+                    Project: null,
+                    subtasks: [],
+                    today_move_count: 0,
+                    due_date: task.due_date
+                        ? task.due_date instanceof Date
+                            ? task.due_date.toISOString().split('T')[0]
+                            : new Date(task.due_date)
+                                  .toISOString()
+                                  .split('T')[0]
+                        : null,
+                    completed_at: task.completed_at
+                        ? task.completed_at instanceof Date
+                            ? task.completed_at.toISOString()
+                            : new Date(task.completed_at).toISOString()
+                        : null,
+                };
+                return res.status(201).json(fallbackTask);
+            }
+
+            const serializedTask = await serializeTask(
+                taskWithAssociations,
+                req.currentUser.timezone,
+                { skipDisplayNameTransform: true }
+            );
+
+            res.set({
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                Pragma: 'no-cache',
+                Expires: '0',
+            });
+
+            res.status(201).json(serializedTask);
         } catch (error) {
-            return res.status(400).json({ error: error.message });
+            logError('Error creating task:', error);
+            logError('Error stack:', error.stack);
+            logError('Error name:', error.name);
+            res.status(400).json({
+                error: 'There was a problem creating the task.',
+                details: error.errors
+                    ? error.errors.map((e) => e.message)
+                    : [error.message],
+            });
         }
-
-        const task = await taskRepository.create(taskAttributes);
-        await updateTaskTags(task, tagsData, req.currentUser.id);
-        await createSubtasks(task.id, subtasks, req.currentUser.id);
-
-        const taskWithAssociations = await taskRepository.findById(task.id, {
-            include: TASK_INCLUDES_WITH_SUBTASKS,
-        });
-
-        if (!taskWithAssociations) {
-            logError('Failed to reload created task:', task.id);
-            const fallbackTask = {
-                ...task.toJSON(),
-                tags: [],
-                Project: null,
-                subtasks: [],
-                today_move_count: 0,
-                due_date: task.due_date
-                    ? task.due_date instanceof Date
-                        ? task.due_date.toISOString().split('T')[0]
-                        : new Date(task.due_date).toISOString().split('T')[0]
-                    : null,
-                completed_at: task.completed_at
-                    ? task.completed_at instanceof Date
-                        ? task.completed_at.toISOString()
-                        : new Date(task.completed_at).toISOString()
-                    : null,
-            };
-            return res.status(201).json(fallbackTask);
-        }
-
-        const serializedTask = await serializeTask(
-            taskWithAssociations,
-            req.currentUser.timezone,
-            { skipDisplayNameTransform: true }
-        );
-
-        res.set({
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            Pragma: 'no-cache',
-            Expires: '0',
-        });
-
-        res.status(201).json(serializedTask);
-    } catch (error) {
-        logError('Error creating task:', error);
-        logError('Error stack:', error.stack);
-        logError('Error name:', error.name);
-        res.status(400).json({
-            error: 'There was a problem creating the task.',
-            details: error.errors
-                ? error.errors.map((e) => e.message)
-                : [error.message],
-        });
     }
-});
+);
 
 router.get('/task/:uid', requireTaskReadAccess, async (req, res) => {
     try {

@@ -1,5 +1,6 @@
 'use strict';
 
+const entitlements = require('../../services/entitlementsService');
 const _ = require('lodash');
 const notesRepository = require('./repository');
 const { validateUid } = require('./validation');
@@ -173,6 +174,7 @@ class NotesService {
         userId,
         { title, content, project_uid, project_id, tags, color }
     ) {
+        await entitlements.assertCanCreate(userId, 'note');
         const noteAttributes = { title, content };
 
         if (color !== undefined) {

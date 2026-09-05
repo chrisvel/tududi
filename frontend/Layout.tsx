@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useToast } from './components/Shared/ToastContext';
+import UpgradeModal from './components/Billing/UpgradeModal';
 import { SidebarProvider } from './contexts/SidebarContext';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
@@ -65,7 +66,8 @@ const Layout: React.FC<LayoutProps> = ({
     const [selectedArea, setSelectedArea] = useState<Area | null>(null);
     const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
     const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-    const [keyboardShortcuts, setKeyboardShortcuts] = useState<KeyboardShortcutsConfig | null>(null);
+    const [keyboardShortcuts, setKeyboardShortcuts] =
+        useState<KeyboardShortcutsConfig | null>(null);
 
     // Fetch keyboard shortcuts from profile
     useEffect(() => {
@@ -131,7 +133,12 @@ const Layout: React.FC<LayoutProps> = ({
                 if (window.innerWidth < 1024) {
                     setIsSidebarOpen(false);
                 }
-                navigate(`/task/${newTask.uid}`, { state: { isNew: true, from: location.pathname + location.search } });
+                navigate(`/task/${newTask.uid}`, {
+                    state: {
+                        isNew: true,
+                        from: location.pathname + location.search,
+                    },
+                });
             } else {
                 throw new Error('New task missing UID');
             }
@@ -520,6 +527,7 @@ const Layout: React.FC<LayoutProps> = ({
     return (
         <SidebarProvider isSidebarOpen={isSidebarOpen}>
             <div className={`min-h-screen ${isDarkMode ? 'dark' : ''}`}>
+                <UpgradeModal />
                 <Navbar
                     isDarkMode={isDarkMode}
                     toggleDarkMode={toggleDarkMode}
@@ -645,7 +653,6 @@ const Layout: React.FC<LayoutProps> = ({
                         onClose={closePersonModal}
                     />
                 )}
-
             </div>
         </SidebarProvider>
     );

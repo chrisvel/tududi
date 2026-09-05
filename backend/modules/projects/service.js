@@ -1,5 +1,6 @@
 'use strict';
 
+const entitlements = require('../../services/entitlementsService');
 const { Op } = require('sequelize');
 const projectsRepository = require('./repository');
 const { validateUid, validateName, formatDate } = require('./validation');
@@ -293,6 +294,7 @@ class ProjectsService {
      * Create a new project.
      */
     async create(userId, data) {
+        await entitlements.assertCanCreate(userId, 'project');
         const {
             name,
             description,

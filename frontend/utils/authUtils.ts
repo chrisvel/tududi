@@ -1,3 +1,8 @@
+import {
+    PlanLimitDetail,
+    PlanLimitError,
+    broadcastPlanLimit,
+} from './planLimits';
 import { getCsrfToken } from './csrfService';
 
 export const getDefaultHeaders = (): Record<string, string> => {
@@ -60,6 +65,19 @@ export const handleAuthResponse = async (
                 }, 100);
             }
             throw new Error('Authentication required');
+        }
+        if (response.status === 402) {
+            let detail: PlanLimitDetail = {
+                code: 'PLAN_LIMIT_REACHED',
+                error: errorMessage,
+            };
+            try {
+                detail = await response.json();
+            } catch {
+                // keep the generic detail
+            }
+            broadcastPlanLimit(detail);
+            throw new PlanLimitError(detail);
         }
         let details: string[] | undefined;
         try {
