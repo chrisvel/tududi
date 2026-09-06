@@ -74,6 +74,9 @@ For an external database (managed PostgreSQL, another host) drop the `db` servic
 
 ---
 
+For a public multi-user instance see `docs/examples/docker-compose.hosted.yml`
+and [docs/17-hosted-mode.md](17-hosted-mode.md).
+
 ## Upgrading
 
 1. Take a backup (`pg_dump`, see below).
