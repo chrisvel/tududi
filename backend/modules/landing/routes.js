@@ -174,10 +174,6 @@ function createLandingRouter(landing) {
         '/landing-assets',
         express.static(PUBLIC_DIR, { maxAge: '1d', index: false })
     );
-    router.get('/favicon.ico', (req, res) =>
-        res.sendFile(path.join(PUBLIC_DIR, 'favicon.ico'), { maxAge: '1d' })
-    );
-
     return router;
 }
 
@@ -198,13 +194,23 @@ function hostSwitch(landing) {
         if (req.path.startsWith('/api/')) return next();
 
         if (!router) router = createLandingRouter(landing);
-        const appUrl = landing.appUrl.replace(/\/$/, '');
         router(req, res, (err) => {
             if (err) return next(err);
             if (req.method !== 'GET' && req.method !== 'HEAD') {
                 return res.status(404).end();
             }
-            res.redirect(301, `${appUrl}${req.originalUrl}`);
+            // Same path on the app host. Resolved against the app origin and
+            // checked, so a request line like "GET //evil.example" can never
+            // turn this into a redirect off-site.
+            const appOrigin = new URL(landing.appUrl).origin;
+            let target;
+            try {
+                target = new URL(req.originalUrl, appOrigin);
+            } catch {
+                return res.status(404).end();
+            }
+            if (target.origin !== appOrigin) return res.status(404).end();
+            res.redirect(301, target.toString());
         });
     };
 }

@@ -104,6 +104,11 @@ describe('Landing page', () => {
             .post('/api-keys')
             .set('Host', 'tududi.com');
         expect(post.status).toBe(404);
+        // A protocol-relative request line must not become an off-site redirect
+        const offsite = await request(app)
+            .get('//evil.example/x')
+            .set('Host', 'tududi.com');
+        expect(offsite.status).toBe(404);
     });
 
     it('keeps the API reachable on a landing host', async () => {
@@ -121,7 +126,7 @@ describe('Landing page', () => {
         expect(logo.status).toBe(200);
         expect(logo.headers['content-type']).toMatch(/png/);
         const icon = await request(app)
-            .get('/favicon.ico')
+            .get('/landing-assets/favicon.ico')
             .set('Host', 'tududi.com');
         expect(icon.status).toBe(200);
     });
