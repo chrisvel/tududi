@@ -12,8 +12,14 @@ const VERIFY_CACHE_TTL_MS = 5 * 60 * 1000;
 const VERIFY_CACHE_MAX = 5000;
 const verifiedTokens = new Map();
 
+// Keyed with a secret that exists only for this process's lifetime, so the
+// cache keys are useless to anyone who does not also hold the process.
+const cacheKeySecret = crypto.randomBytes(32);
 const cacheKeyFor = (tokenValue) =>
-    crypto.createHash('sha256').update(tokenValue).digest('hex');
+    crypto
+        .createHmac('sha256', cacheKeySecret)
+        .update(tokenValue)
+        .digest('hex');
 
 function rememberVerified(tokenValue, tokenId) {
     if (verifiedTokens.size >= VERIFY_CACHE_MAX) {
