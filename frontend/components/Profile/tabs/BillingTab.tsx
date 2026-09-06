@@ -85,7 +85,7 @@ const BillingTab: React.FC<BillingTabProps> = ({ isActive }) => {
         }
     }, [showErrorToast]);
 
-    // Coming back from Stripe: confirm the subscription right away instead
+    // Coming back from the provider's checkout: confirm the subscription right away instead
     // of waiting for the webhook, then clean the URL.
     useEffect(() => {
         if (!isActive) return;
@@ -384,10 +384,11 @@ const BillingTab: React.FC<BillingTabProps> = ({ isActive }) => {
                                     : t('billing.upgradeNow', 'Upgrade now')}
                             </button>
                             <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                {t(
-                                    'billing.stripeNote',
-                                    'Payments are handled by Stripe. Cancel any time from "Manage subscription".'
-                                )}
+                                {t('billing.paymentsNote', {
+                                    provider: status.provider?.display_name,
+                                    defaultValue:
+                                        'Payments are handled by {{provider}}. Cancel any time from "Manage subscription".',
+                                })}
                             </p>
                         </div>
                     )}

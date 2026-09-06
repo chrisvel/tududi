@@ -11,7 +11,7 @@ import {
     fetchAdminBilling,
     setPlanOverride,
     clearPlanOverride,
-    syncAccountFromStripe,
+    syncAccountFromProvider,
     AdminBillingAccount,
     AdminBillingSummaryRow,
 } from '../../utils/adminBillingService';
@@ -104,8 +104,10 @@ const AdminBillingPage: React.FC = () => {
     const sync = async (account: AdminBillingAccount) => {
         setBusyUser(account.user_id);
         try {
-            await syncAccountFromStripe(account.user_id);
-            showSuccessToast(t('admin.billing.synced', 'Synced from Stripe'));
+            await syncAccountFromProvider(account.user_id);
+            showSuccessToast(
+                t('admin.billing.synced', 'Synced from the payment provider')
+            );
             await load();
         } catch (err: any) {
             showErrorToast(err.message || 'Sync failed');
@@ -319,12 +321,13 @@ const AdminBillingPage: React.FC = () => {
                                                 <XMarkIcon className="w-5 h-5 text-red-500" />
                                             </button>
                                         )}
-                                        {a.stripe_customer_id && (
+                                        {(a.provider_customer_id ||
+                                            a.provider_subscription_id) && (
                                             <button
                                                 type="button"
                                                 title={t(
                                                     'admin.billing.sync',
-                                                    'Sync from Stripe'
+                                                    'Sync from the payment provider'
                                                 )}
                                                 onClick={() => sync(a)}
                                                 disabled={

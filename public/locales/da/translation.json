@@ -1460,13 +1460,13 @@
       "cancelling": "opsiges",
       "setOverride": "Angiv undtagelse",
       "clearOverride": "Fjern undtagelse",
-      "sync": "Synkroniser fra Stripe",
+      "sync": "Synkroniser fra betalingsudbyderen",
       "overrideFor": "Abonnementsundtagelse for {{email}}",
       "expires": "Udløber (valgfrit)",
       "reason": "Årsag (valgfrit)",
       "overrideSaved": "Undtagelse gemt",
       "overrideCleared": "Undtagelse fjernet",
-      "synced": "Synkroniseret fra Stripe"
+      "synced": "Synkroniseret fra betalingsudbyderen"
     }
   },
   "shares": {
@@ -1751,7 +1751,7 @@
     "monthly": "Månedligt",
     "annual": "Årligt",
     "upgradeNow": "Opgrader nu",
-    "stripeNote": "Betalinger håndteres af Stripe. Opsig når som helst under \"Administrer abonnement\".",
+    "paymentsNote": "Betalinger håndteres af {{provider}}. Opsig når som helst under \"Administrer abonnement\".",
     "notConfigured": "Opgraderinger er endnu ikke tilgængelige på denne instans.",
     "pastDue": "Din seneste betaling gik ikke igennem. Opdater dit kort for at beholde dit abonnement.",
     "graceUntil": "Pro forbliver aktiv indtil {{date}}.",

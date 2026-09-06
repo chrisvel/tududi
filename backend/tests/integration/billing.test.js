@@ -215,7 +215,7 @@ describe('Billing with hosted mode on', () => {
             const account = await BillingAccount.findOne({
                 where: { user_id: user.id },
             });
-            expect(account.stripe_customer_id).toBe('cus_1');
+            expect(account.provider_customer_id).toBe('cus_1');
         });
 
         it('refuses checkout while a subscription is active', async () => {
@@ -223,7 +223,7 @@ describe('Billing with hosted mode on', () => {
                 user_id: user.id,
                 status: 'active',
                 plan: 'pro',
-                stripe_customer_id: 'cus_9',
+                provider_customer_id: 'cus_9',
             });
             const res = await agent
                 .post('/api/billing/checkout')
@@ -237,7 +237,7 @@ describe('Billing with hosted mode on', () => {
 
             await BillingAccount.create({
                 user_id: user.id,
-                stripe_customer_id: 'cus_2',
+                provider_customer_id: 'cus_2',
             });
             const after = await agent.post('/api/billing/portal');
             expect(after.status).toBe(200);
@@ -259,7 +259,7 @@ describe('Billing with hosted mode on', () => {
         it('reads the subscription from the checkout session and refuses other users sessions', async () => {
             await BillingAccount.create({
                 user_id: user.id,
-                stripe_customer_id: 'cus_1',
+                provider_customer_id: 'cus_1',
             });
             mockStripe.sessions.cs_1 = {
                 id: 'cs_1',
@@ -327,7 +327,7 @@ describe('Billing with hosted mode on', () => {
 
             expect(
                 await BillingEvent.count({
-                    where: { stripe_event_id: 'evt_1' },
+                    where: { provider_event_id: 'evt_1' },
                 })
             ).toBe(1);
             const account = await BillingAccount.findOne({
@@ -336,7 +336,7 @@ describe('Billing with hosted mode on', () => {
             expect(account.status).toBe('active');
             expect(account.plan).toBe('pro');
             expect(account.billing_interval).toBe('month');
-            expect(account.stripe_subscription_id).toBe('sub_1');
+            expect(account.provider_subscription_id).toBe('sub_1');
             expect(new Date(account.current_period_end).getTime()).toBe(
                 1_802_592_000 * 1000
             );
@@ -349,8 +349,8 @@ describe('Billing with hosted mode on', () => {
         it('maps subscription updates, ignores stale ones, and handles deletion', async () => {
             await BillingAccount.create({
                 user_id: user.id,
-                stripe_customer_id: 'cus_1',
-                stripe_subscription_id: 'sub_1',
+                provider_customer_id: 'cus_1',
+                provider_subscription_id: 'sub_1',
                 status: 'active',
                 plan: 'pro',
             });
@@ -414,8 +414,8 @@ describe('Billing with hosted mode on', () => {
         it('marks payment failures past_due, notifies, and recovers on payment', async () => {
             await BillingAccount.create({
                 user_id: user.id,
-                stripe_customer_id: 'cus_1',
-                stripe_subscription_id: 'sub_1',
+                provider_customer_id: 'cus_1',
+                provider_subscription_id: 'sub_1',
                 status: 'active',
                 plan: 'pro',
                 current_period_end: new Date(Date.now() + 86_400_000),
@@ -497,7 +497,7 @@ describe('Billing with hosted mode on', () => {
             expect(ignored.status).toBe(200);
             expect(ignored.body.reason).toBe('ignored_type');
             const row = await BillingEvent.findOne({
-                where: { stripe_event_id: 'evt_x2' },
+                where: { provider_event_id: 'evt_x2' },
             });
             expect(row.status).toBe('skipped');
         });
@@ -569,8 +569,8 @@ describe('Billing with hosted mode on', () => {
         it('cancels the Stripe subscription before erasing the account', async () => {
             await BillingAccount.create({
                 user_id: user.id,
-                stripe_customer_id: 'cus_1',
-                stripe_subscription_id: 'sub_1',
+                provider_customer_id: 'cus_1',
+                provider_subscription_id: 'sub_1',
                 status: 'active',
                 plan: 'pro',
             });

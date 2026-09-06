@@ -2,7 +2,8 @@ const { DataTypes } = require('sequelize');
 
 // One row per user in hosted mode, created lazily on first entitlement
 // lookup. Everything Stripe tells us about the subscription lands here;
-// override_* is the admin's way to comp or restrict an account.
+// override_* is the admin's way to comp or restrict an account. The
+// provider_* columns hold whichever payment provider's ids apply.
 const STATUSES = [
     'none',
     'trialing',
@@ -31,12 +32,16 @@ module.exports = (sequelize) => {
                 references: { model: 'users', key: 'id' },
                 onDelete: 'CASCADE',
             },
-            stripe_customer_id: {
+            provider: {
+                type: DataTypes.STRING(32),
+                allowNull: true,
+            },
+            provider_customer_id: {
                 type: DataTypes.STRING(64),
                 allowNull: true,
                 unique: true,
             },
-            stripe_subscription_id: {
+            provider_subscription_id: {
                 type: DataTypes.STRING(64),
                 allowNull: true,
                 unique: true,
@@ -101,7 +106,7 @@ module.exports = (sequelize) => {
                 type: DataTypes.INTEGER,
                 allowNull: true,
             },
-            last_stripe_event_created: {
+            last_provider_event_at: {
                 type: DataTypes.INTEGER,
                 allowNull: true,
             },

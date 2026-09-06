@@ -11,6 +11,8 @@ const Register: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
     const [passwordAuthEnabled, setPasswordAuthEnabled] = useState(true);
+    const [registrationEnabled, setRegistrationEnabled] = useState(true);
+    const [notifyUrl, setNotifyUrl] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const { t } = useTranslation();
     const [isDarkMode] = useState<boolean>(() => {
@@ -25,22 +27,32 @@ const Register: React.FC = () => {
     }, [isDarkMode]);
 
     useEffect(() => {
-        const checkPasswordAuth = async () => {
+        const checkStatus = async () => {
             try {
-                const response = await fetch('/api/password-auth-status', {
-                    credentials: 'include',
-                });
-                if (response.ok) {
-                    const data = await response.json();
+                const [passwordAuthRes, registrationRes] = await Promise.all([
+                    fetch('/api/password-auth-status', {
+                        credentials: 'include',
+                    }),
+                    fetch('/api/registration-status', {
+                        credentials: 'include',
+                    }),
+                ]);
+                if (passwordAuthRes.ok) {
+                    const data = await passwordAuthRes.json();
                     setPasswordAuthEnabled(data.enabled);
                 }
+                if (registrationRes.ok) {
+                    const data = await registrationRes.json();
+                    setRegistrationEnabled(data.enabled);
+                    setNotifyUrl(data.notifyUrl || null);
+                }
             } catch (err) {
-                console.error('Error checking password auth status:', err);
+                console.error('Error checking registration status:', err);
             } finally {
                 setLoading(false);
             }
         };
-        checkPasswordAuth();
+        checkStatus();
     }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -136,6 +148,103 @@ const Register: React.FC = () => {
                                 'Password-based registration is not available. Please use SSO to sign in.'
                             )}
                         </p>
+                        <Link
+                            to="/login"
+                            className="text-blue-500 hover:text-blue-600"
+                        >
+                            {t('auth.back_to_login', 'Back to Login')}
+                        </Link>
+                    </div>
+                </div>
+            </>
+        );
+    }
+
+    if (!registrationEnabled) {
+        return (
+            <>
+                {/* Navbar */}
+                <nav className="fixed top-0 left-0 right-0 z-50 text-gray-900 dark:text-white">
+                    <div className="h-16 flex items-center px-4 sm:px-6 lg:px-8">
+                        <img
+                            src={getAssetPath(
+                                isDarkMode
+                                    ? 'wide-logo-light.png'
+                                    : 'wide-logo-dark.png'
+                            )}
+                            alt="tududi"
+                            className="h-9 w-auto"
+                        />
+                    </div>
+                </nav>
+
+                <div className="bg-gray-100 dark:bg-gray-900 min-h-screen px-4 pt-16 flex items-center justify-center">
+                    <div className="w-full max-w-md text-center">
+                        {notifyUrl ? (
+                            <>
+                                <h2 className="text-2xl font-semibold text-gray-700 dark:text-gray-200 mb-4">
+                                    {t(
+                                        'auth.registration_opening_soon_title',
+                                        'Opening in a Few Days'
+                                    )}
+                                </h2>
+                                <p className="text-gray-600 dark:text-gray-400 mb-6">
+                                    {t(
+                                        'auth.registration_opening_soon_message',
+                                        "We're putting the finishing touches on tududi Cloud. Leave your email and we'll let you know the moment it's ready."
+                                    )}
+                                </p>
+                                <form
+                                    action={notifyUrl}
+                                    method="post"
+                                    target="_blank"
+                                    className="flex flex-col sm:flex-row gap-2 mb-6"
+                                >
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        placeholder={t(
+                                            'auth.notify_email_placeholder',
+                                            'you@email.com'
+                                        )}
+                                        aria-label={t(
+                                            'auth.email',
+                                            'Email'
+                                        )}
+                                        required
+                                        className="flex-1 px-4 py-2 border dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        data-testid="register-notify-email"
+                                    />
+                                    <input
+                                        type="hidden"
+                                        name="tag"
+                                        value="app-waitlist"
+                                    />
+                                    <button
+                                        type="submit"
+                                        className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors whitespace-nowrap"
+                                        data-testid="register-notify-submit"
+                                    >
+                                        {t('auth.notify_me', 'Notify me')}
+                                    </button>
+                                </form>
+                            </>
+                        ) : (
+                            <>
+                                <h2 className="text-2xl font-semibold text-gray-700 dark:text-gray-200 mb-4">
+                                    {t(
+                                        'auth.registration_closed_title',
+                                        'Registration Closed'
+                                    )}
+                                </h2>
+                                <p className="text-gray-600 dark:text-gray-400 mb-6">
+                                    {t(
+                                        'auth.registration_closed_message',
+                                        'New account registration is currently disabled. Contact your administrator for access.'
+                                    )}
+                                </p>
+                            </>
+                        )}
                         <Link
                             to="/login"
                             className="text-blue-500 hover:text-blue-600"

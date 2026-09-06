@@ -1460,13 +1460,13 @@
       "cancelling": "đang hủy",
       "setOverride": "Đặt ngoại lệ",
       "clearOverride": "Gỡ ngoại lệ",
-      "sync": "Đồng bộ từ Stripe",
+      "sync": "Đồng bộ từ nhà cung cấp thanh toán",
       "overrideFor": "Ngoại lệ gói cho {{email}}",
       "expires": "Hết hạn (tùy chọn)",
       "reason": "Lý do (tùy chọn)",
       "overrideSaved": "Đã lưu ngoại lệ",
       "overrideCleared": "Đã gỡ ngoại lệ",
-      "synced": "Đã đồng bộ từ Stripe"
+      "synced": "Đã đồng bộ từ nhà cung cấp thanh toán"
     }
   },
   "shares": {
@@ -1751,7 +1751,7 @@
     "monthly": "Hàng tháng",
     "annual": "Hàng năm",
     "upgradeNow": "Nâng cấp ngay",
-    "stripeNote": "Thanh toán được xử lý bởi Stripe. Hủy bất cứ lúc nào tại \"Quản lý gói đăng ký\".",
+    "paymentsNote": "Thanh toán được xử lý bởi {{provider}}. Hủy bất cứ lúc nào tại \"Quản lý gói đăng ký\".",
     "notConfigured": "Nâng cấp chưa khả dụng trên phiên bản này.",
     "pastDue": "Lần thanh toán gần nhất không thành công. Hãy cập nhật thẻ để giữ gói của bạn.",
     "graceUntil": "Pro vẫn hoạt động đến {{date}}.",

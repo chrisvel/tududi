@@ -18,7 +18,7 @@ class FeatureFlagsService {
             caldav: isCalDAVEnabled(),
             mcp: process.env.FF_ENABLE_MCP === 'true',
             hosted: hosted.enabled === true,
-            billing: hosted.enabled === true && !!hosted.stripe?.secretKey,
+            billing: require('../billing/providers').isBillingConfigured(),
         };
     }
 }

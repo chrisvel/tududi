@@ -1461,13 +1461,13 @@
       "cancelling": "sies opp",
       "setOverride": "Sett unntak",
       "clearOverride": "Fjern unntak",
-      "sync": "Synkroniser fra Stripe",
+      "sync": "Synkroniser fra betalingsleverandøren",
       "overrideFor": "Abonnementsunntak for {{email}}",
       "expires": "Utløper (valgfritt)",
       "reason": "Årsak (valgfritt)",
       "overrideSaved": "Unntak lagret",
       "overrideCleared": "Unntak fjernet",
-      "synced": "Synkronisert fra Stripe"
+      "synced": "Synkronisert fra betalingsleverandøren"
     }
   },
   "shares": {
@@ -1756,7 +1756,7 @@
     "monthly": "Månedlig",
     "annual": "Årlig",
     "upgradeNow": "Oppgrader nå",
-    "stripeNote": "Betalinger håndteres av Stripe. Si opp når som helst under «Administrer abonnement».",
+    "paymentsNote": "Betalinger håndteres av {{provider}}. Si opp når som helst under «Administrer abonnement».",
     "notConfigured": "Oppgraderinger er ikke tilgjengelige på denne instansen ennå.",
     "pastDue": "Den siste betalingen din gikk ikke gjennom. Oppdater kortet ditt for å beholde abonnementet.",
     "graceUntil": "Pro forblir aktivt til {{date}}.",

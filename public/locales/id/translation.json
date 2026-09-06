@@ -1460,13 +1460,13 @@
       "cancelling": "membatalkan",
       "setOverride": "Atur pengecualian",
       "clearOverride": "Hapus pengecualian",
-      "sync": "Sinkronkan dari Stripe",
+      "sync": "Sinkronkan dari penyedia pembayaran",
       "overrideFor": "Pengecualian paket untuk {{email}}",
       "expires": "Kedaluwarsa (opsional)",
       "reason": "Alasan (opsional)",
       "overrideSaved": "Pengecualian disimpan",
       "overrideCleared": "Pengecualian dihapus",
-      "synced": "Disinkronkan dari Stripe"
+      "synced": "Disinkronkan dari penyedia pembayaran"
     }
   },
   "shares": {
@@ -1751,7 +1751,7 @@
     "monthly": "Bulanan",
     "annual": "Tahunan",
     "upgradeNow": "Tingkatkan sekarang",
-    "stripeNote": "Pembayaran ditangani oleh Stripe. Batalkan kapan saja dari \"Kelola langganan\".",
+    "paymentsNote": "Pembayaran ditangani oleh {{provider}}. Batalkan kapan saja dari \"Kelola langganan\".",
     "notConfigured": "Peningkatan belum tersedia di instans ini.",
     "pastDue": "Pembayaran terakhir Anda gagal. Perbarui kartu Anda untuk mempertahankan paket.",
     "graceUntil": "Pro tetap aktif hingga {{date}}.",

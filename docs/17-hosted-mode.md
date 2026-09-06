@@ -72,10 +72,38 @@ budgets (AI requests) use the `usage_counters` table.
 
 All three are removed with the account by `services/accountErasureService.js`.
 
-## Stripe
+## Payments
 
-Billing is Stripe Checkout plus the Customer Portal; tududi never sees card
-details. Set:
+Pro is sold through one of two providers, chosen by `BILLING_PROVIDER`
+(`stripe` or `lemonsqueezy`; when unset, Lemon Squeezy is used if only its
+key is present, Stripe otherwise). tududi never sees card details with
+either. The billing tab, the webhook endpoint and the admin page are the
+same for both; only the credentials differ.
+
+**Lemon Squeezy** is a merchant of record: it charges VAT and issues the
+invoices itself, which is why it is the provider of the hosted tududi.
+
+| Variable | Meaning |
+|---|---|
+| `LEMONSQUEEZY_API_KEY` | API key from Settings > API |
+| `LEMONSQUEEZY_STORE_ID` | numeric store id |
+| `LEMONSQUEEZY_WEBHOOK_SECRET` | signing secret of the webhook below |
+| `LEMONSQUEEZY_VARIANT_PRO_MONTHLY` | variant id of the monthly Pro subscription |
+| `LEMONSQUEEZY_VARIANT_PRO_ANNUAL` | variant id of the annual Pro subscription |
+
+Create one product ("tududi Pro") with a subscription variant per
+interval, then a webhook at `https://your-host/api/billing/webhook` with the
+events `subscription_created`, `subscription_updated`,
+`subscription_cancelled`, `subscription_resumed`, `subscription_expired`,
+`subscription_paused`, `subscription_unpaused`,
+`subscription_payment_success`, `subscription_payment_failed` and
+`subscription_payment_recovered`. A cancelled subscription keeps Pro until
+its `ends_at`; `expired` drops to Free. "Manage subscription" opens the
+Lemon Squeezy customer portal. The success redirect carries no reference,
+so the app re-reads the newest subscription for the account's email when
+the billing tab reloads.
+
+**Stripe** is Checkout plus the Customer Portal:
 
 | Variable | Meaning |
 |---|---|
@@ -87,33 +115,34 @@ details. Set:
 Point a Stripe webhook at `https://your-host/api/billing/webhook` with the
 events `checkout.session.completed`, `customer.subscription.created`,
 `customer.subscription.updated`, `customer.subscription.deleted`,
-`invoice.paid` and `invoice.payment_failed`. The endpoint reads the raw
-body, verifies the signature, records every event id in `billing_events`
-(a redelivered event is acknowledged and not applied twice), and answers
-500 on an internal fault so Stripe retries.
+`invoice.paid` and `invoice.payment_failed`. Local testing:
+`stripe listen --forward-to localhost:3002/api/billing/webhook` and
+`stripe trigger checkout.session.completed`.
+
+For both, the endpoint reads the raw body, verifies the signature, records
+every event id in `billing_events` (a redelivered event is acknowledged and
+not applied twice; Lemon Squeezy sends no event id, so the resource id plus
+its `updated_at` stands in), drops an update older than the last one
+applied, and answers 500 on an internal fault so the provider retries.
 
 Endpoints (all 404 on a self-hosted instance):
 
 | Route | Purpose |
 |---|---|
-| `GET /api/billing` | plan, status, usage, and what the UI may offer |
+| `GET /api/billing` | plan, status, usage, the provider, and what the UI may offer |
 | `GET /api/billing/plans` | the catalog, without price ids |
-| `POST /api/billing/checkout` `{ interval: "month" \| "year" }` | Checkout session URL |
-| `POST /api/billing/portal` | Customer Portal URL |
-| `POST /api/billing/sync` `{ session_id? }` | re-read the subscription from Stripe (the checkout redirect can beat the webhook) |
+| `POST /api/billing/checkout` `{ interval: "month" \| "year" }` | checkout URL |
+| `POST /api/billing/portal` | customer portal URL |
+| `POST /api/billing/sync` `{ session_id? }` | re-read the subscription from the provider (the checkout redirect can beat the webhook) |
 | `GET /api/admin/billing` | overview and account list (admin) |
 | `PUT /api/admin/billing/:userId/override` `{ plan, expires_at?, reason? }` | comp or restrict an account (admin) |
 | `DELETE /api/admin/billing/:userId/override` | remove the override (admin) |
-| `POST /api/admin/billing/:userId/sync` | force a re-read from Stripe (admin) |
+| `POST /api/admin/billing/:userId/sync` | force a re-read from the provider (admin) |
 
 After a failed payment the account is `past_due`: Pro continues for
-`TUDUDI_PAST_DUE_GRACE_DAYS` past the period end while Stripe retries, and
-the user gets an in-app warning. A cancelled subscription drops to Free at
-once but nothing is deleted or hidden. Deleting an account cancels its
-subscription and removes the Stripe customer.
-
-Local testing: `stripe listen --forward-to localhost:3002/api/billing/webhook`
-and `stripe trigger checkout.session.completed`.
+`TUDUDI_PAST_DUE_GRACE_DAYS` past the period end while the provider
+retries, and the user gets an in-app warning. Nothing is deleted or hidden
+on a downgrade. Deleting an account cancels its subscription.
 
 ## Marketing page
 

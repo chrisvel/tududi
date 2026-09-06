@@ -271,7 +271,10 @@
           "Updates and daily backups handled for you",
           "Export everything any time, delete your account yourself"
         ],
-        "action": "Create free account →"
+        "action": "Create free account →",
+        "comingSoon": "Opening in a few days",
+        "comingSoonNote": "We're moving Cloud to new infrastructure. Leave your email below and we'll let you know the moment it's back.",
+        "notifySubmit": "Notify me"
       },
       "business": {
         "name": "Business Licence",

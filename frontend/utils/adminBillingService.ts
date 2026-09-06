@@ -13,7 +13,9 @@ export interface AdminBillingAccount {
     cancel_at_period_end: boolean;
     override_plan: string | null;
     override_expires_at: string | null;
-    stripe_customer_id: string | null;
+    provider: string | null;
+    provider_customer_id: string | null;
+    provider_subscription_id: string | null;
 }
 
 export interface AdminBillingSummaryRow {
@@ -80,7 +82,7 @@ export const clearPlanOverride = async (
     return response.json();
 };
 
-export const syncAccountFromStripe = async (
+export const syncAccountFromProvider = async (
     userId: number
 ): Promise<AdminBillingDetail> => {
     const response = await fetch(getApiPath(`admin/billing/${userId}/sync`), {
@@ -88,6 +90,9 @@ export const syncAccountFromStripe = async (
         credentials: 'include',
         headers: await getPostHeadersWithCsrf(),
     });
-    await handleAuthResponse(response, 'Failed to sync from Stripe.');
+    await handleAuthResponse(
+        response,
+        'Failed to sync from the payment provider.'
+    );
     return response.json();
 };
