@@ -20,7 +20,7 @@ const cacheKeySecret = crypto.randomBytes(32);
 const cacheKeyFor = (tokenValue) =>
     crypto
         .createHmac('sha256', cacheKeySecret)
-        .update(tokenValue) // codeql[js/insufficient-password-hash]
+        .update(tokenValue)
         .digest('hex');
 
 function rememberVerified(tokenValue, tokenId) {
