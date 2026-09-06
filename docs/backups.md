@@ -137,6 +137,23 @@ npm start
 
 ---
 
+## Per-User Export Format
+
+Exports (Profile > Backup, `FF_ENABLE_BACKUPS=true`) are JSON (`format: 2`)
+with every relation expressed by uid (`area_uid`, `project_uid`,
+`parent_task_uid`, ...), attachment files embedded as base64, and goals and
+people included alongside areas, projects, tasks, tags, notes, inbox items
+and views. Because references are by uid, a backup restores cleanly on a
+different instance and can never point at another user's rows. If a uid is
+already taken by another account on the same instance, the imported row
+gets a fresh uid and its references follow. The exporting user's own
+contact card maps onto the importing user's own card instead of becoming a
+duplicate. Format 1 backups (numeric ids only) still import; their
+references resolve only among the importing user's rows.
+
+Not exported: API tokens, shares and permissions, sessions, and the
+password.
+
 ## Best Practices
 
 ### 1. Before Major Changes
