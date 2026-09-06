@@ -1,0 +1,350 @@
+{
+  "meta": {
+    "title": "tududi：自托管任务管理器与生活管理系统，为 AI 智能体提供 MCP",
+    "description": "一套自托管的任务管理器与生活管理系统。领域、目标、项目和任务，加上笔记与习惯，还有一个提供 {{tools}} 个工具的 MCP 服务器，让 AI 智能体直接处理你的清单。基于 MIT 协议开源。",
+    "langSwitcherLabel": "切换语言",
+    "langSwitcherCurrent": "语言：{{name}}"
+  },
+  "nav": {
+    "demo": "在线演示",
+    "features": "功能",
+    "ai": "AI 与 MCP",
+    "pricing": "价格",
+    "selfHost": "自托管",
+    "faq": "常见问题",
+    "docs": "文档",
+    "changelog": "更新日志",
+    "signIn": "登录",
+    "toggle": "打开菜单"
+  },
+  "hero": {
+    "badgeStars": "GitHub 星标",
+    "badgeMcp": "内置 MCP 服务器",
+    "starsLoading": "正在加载星标数",
+    "titleLine1": "自托管的生活管理系统，",
+    "titleLine2": "你的 AI 真正用得上",
+    "lede": "领域、目标、项目和任务，加上笔记与习惯，全都在一个系统里。可以跑在自己的硬件上，也可以把运维交给我们。",
+    "ctaPrimary": "2 分钟完成自托管",
+    "ctaDemo": "试用在线演示",
+    "ctaSecondary": "在 GitHub 上查看",
+    "altLinkPrefix": "或者",
+    "altLink": "在 tududi Cloud 创建免费账户",
+    "note": "MIT 许可证 · 永远开源",
+    "demoNote": "一个真实的托管实例，内含示例数据，共享使用并定期重置",
+    "screenshotAlt": "tududi 的界面，显示「今天」视图和已规划的任务"
+  },
+  "proof": {
+    "stars": "GitHub 星标",
+    "mcp": "MCP 服务器，{{tools}} 个工具",
+    "languages": "{{count}} 种语言",
+    "dockerPulls": "次 Docker 拉取",
+    "discord": "位 Discord 成员",
+    "discordAlt": "Discord：{{count}} 位成员"
+  },
+  "press": {
+    "featuredIn": "媒体报道",
+    "eyebrow": "媒体",
+    "title": "不要只听我们说",
+    "sub": "评测者亲自运行 tududi 后写下的评价。",
+    "readLink": "阅读评测"
+  },
+  "ai": {
+    "kicker": "AI 与 MCP",
+    "titleLine1": "自托管的系统，",
+    "titleLine2": "你的 AI 智能体真正用得上",
+    "ledeHtml": "tududi 自带一个 MCP 服务器，开放 <strong>{{tools}} 个工具</strong>，覆盖任务、项目、领域、目标、习惯、笔记、人员、标签、视图、收件箱、搜索和指标。把 Claude 或任何兼容 MCP 的智能体直接接到你的系统上。因为 tududi 跑在你自己的服务器上，连接和数据都不必离开它。这是 Todoist 和 Notion 在结构上给不了的东西，无论它们怎么承诺。",
+    "cards": {
+      "capture": {
+        "title": "在对话里记录和搜索",
+        "body": "不用离开对话，就能添加、查找和完成任务。"
+      },
+      "dataStays": {
+        "title": "数据留在你自己的服务器",
+        "body": "MCP 连接只和你自己的实例通信，不经过任何第三方。"
+      },
+      "openProtocol": {
+        "title": "开放协议，不被锁定",
+        "body": "基于开放的 Model Context Protocol 构建，可配合 Claude 及其他 MCP 客户端使用。"
+      }
+    },
+    "configTitle": "接入 Claude Desktop",
+    "footnoteClients": "Cursor、Windsurf、Cline 以及其他任何 MCP 客户端都同样适用。",
+    "footnoteDocsLink": "阅读 MCP 文档 →",
+    "footnoteIncluded": "所有档位都包含，自托管和托管版一样。",
+    "assistantTitle": "AI 助手",
+    "assistantLede": "一层独立且可选的能力，读取你的数据并用平实的语言写回摘要。支持任何兼容 OpenAI 的服务商，也包括 Ollama 这类自托管方案。",
+    "assistantCards": {
+      "daily": {
+        "title": "每日简报",
+        "body": "早晨的一份摘要，列出你的重点任务和值得留意的风险提示。"
+      },
+      "task": {
+        "title": "任务洞察",
+        "body": "针对某个具体任务，按需生成建议的下一步。"
+      },
+      "project": {
+        "title": "项目洞察",
+        "body": "快速判断项目的健康状况：哪些在推进，哪些卡住了。"
+      }
+    }
+  },
+  "features": {
+    "eyebrow": "功能",
+    "title": "让生活井然有序的完整系统",
+    "sub": "tududi 把目标、项目、任务、笔记和智能视图整合成一个安静、专注的系统。为重视隐私与清晰的个人和小团队而设计。",
+    "showAll": "显示全部 {{count}} 项功能",
+    "groups": {
+      "planFocus": "规划与专注",
+      "tasksProjects": "任务与项目",
+      "accessAnywhere": "随处可用",
+      "privacyCollab": "隐私与协作"
+    },
+    "cards": {
+      "goals": {
+        "title": "目标",
+        "body": "为一个季度或一年设定成果，看清哪些领域和项目真正在推动它们前进。"
+      },
+      "hierarchy": {
+        "title": "分层组织",
+        "body": "目标和领域并列在最上层：一个是长期成果，一个是持续存在的生活面向。两者都包含项目，项目再包含任务。"
+      },
+      "lifeAreas": {
+        "title": "生活领域管理",
+        "body": "按生活领域组织项目——工作、个人、健康、学习。"
+      },
+      "views": {
+        "title": "视图",
+        "body": "「今天」「已逾期」「将来某天」这类智能保存搜索。一次点击，不必每回都重新搭一遍筛选条件。"
+      },
+      "matrixKanban": {
+        "title": "艾森豪威尔矩阵与看板",
+        "body": "当问题只剩下「现在该做什么」时，切换到艾森豪威尔矩阵或看板视图。"
+      },
+      "dueDates": {
+        "title": "智能到期日",
+        "body": "自动归类：今天的优先事项、临近的截止日期，以及留到将来的任务。"
+      },
+      "insights": {
+        "title": "效率洞察",
+        "body": "查看跨项目的完成趋势和工作量，弄清时间到底花在了哪里。"
+      },
+      "people": {
+        "title": "人员",
+        "body": "把任务指派给具体的人，一眼看清谁参与了这个项目。"
+      },
+      "habits": {
+        "title": "习惯追踪",
+        "body": "在任务和项目之外追踪重复性习惯，附带简洁的连续记录和历史。"
+      },
+      "recurring": {
+        "title": "智能重复任务",
+        "body": "支持每日、每周、每月的模式，可按完成时间重复，并支持父子任务关系。"
+      },
+      "richTasks": {
+        "title": "丰富的任务组织",
+        "body": "优先级、到期日、标签和智能排序。强大的筛选，帮你找到真正重要的事。"
+      },
+      "subtasks": {
+        "title": "子任务与拆解",
+        "body": "把复杂任务拆成可执行的子任务，并跟踪完成进度。"
+      },
+      "notes": {
+        "title": "项目文档",
+        "body": "为项目准备的富文本笔记，具备完整的搜索和整理能力。"
+      },
+      "tags": {
+        "title": "灵活的标签体系",
+        "body": "为任务和笔记设置自定义标签，即时筛选，并可跨项目整理。"
+      },
+      "search": {
+        "title": "智能筛选与搜索",
+        "body": "全文搜索，外加按项目、标签、优先级或到期日筛选。几秒钟找到任何一条任务。"
+      },
+      "pwa": {
+        "title": "作为应用安装",
+        "body": "把 tududi 以 PWA 形式添加到主屏幕或桌面。可离线使用，恢复联网后自动同步。"
+      },
+      "oidc": {
+        "title": "OIDC / SSO 登录",
+        "body": "用你现有的身份提供方登录：Authentik、Keycloak、Google Workspace，或任何兼容 OIDC 的提供方。"
+      },
+      "i18n": {
+        "title": "多语言支持",
+        "body": "提供 {{count}} 种语言，本地化完整。"
+      },
+      "telegram": {
+        "title": "Telegram 集成",
+        "body": "发一条消息即可即时记录任务，接收每日摘要，随时随地打理你的清单。"
+      },
+      "caldav": {
+        "title": "CalDAV 同步",
+        "body": "与 Apple 提醒事项、tasks.org、Thunderbird 以及任何兼容 CalDAV 的应用双向同步任务。"
+      },
+      "api": {
+        "title": "API 访问与 Swagger",
+        "body": "带版本的 Swagger 文档，以及用于自定义集成的个人访问令牌。"
+      },
+      "responsive": {
+        "title": "响应式设计",
+        "body": "从宽屏桌面到口袋里的手机，布局都能干净地适配。"
+      },
+      "privacy": {
+        "title": "隐私与掌控",
+        "body": "让数据保持私密。想要完全掌控就自托管，也可以选择带加密备份的托管实例。"
+      },
+      "collab": {
+        "title": "项目协作",
+        "body": "以细粒度权限共享项目——只读，或可读可写。"
+      }
+    }
+  },
+  "selfHost": {
+    "eyebrow": "自托管",
+    "title": "跑在你自己的服务器上",
+    "sub": "免费、开源、开箱即用支持 Docker。数据完完全全属于你。",
+    "cardTitle": "Docker 部署",
+    "cardSub": "用 Docker 几分钟就能上线",
+    "step1": "拉取 Docker 镜像",
+    "step2": "运行容器",
+    "step3Prefix": "访问地址：",
+    "linkGithub": "在 GitHub 上查看",
+    "linkDocs": "文档"
+  },
+  "pricing": {
+    "eyebrow": "价格",
+    "title": "选择你使用 tududi 的方式",
+    "sub": "一套系统，三种运行方式",
+    "mostPopular": "最多人选",
+    "earlyBird": "早鸟价",
+    "perYear": "/年",
+    "forever": "/永久",
+    "plans": {
+      "selfHosted": {
+        "name": "自托管",
+        "priceNote": "免费开源，永远如此",
+        "features": [
+          "开源，采用 MIT 许可证",
+          "跑在你自己的服务器上",
+          "完全掌控，没有厂商锁定",
+          "所有功能开放，没有付费墙",
+          "包含 MCP 与 AI 助手"
+        ],
+        "action": "自托管 tududi →"
+      },
+      "cloud": {
+        "name": "Cloud",
+        "toStart": "起步",
+        "proLabel": "Pro",
+        "or": "或",
+        "launchNote": "早鸟年付价格，只要保持订阅就一直有效。",
+        "priceNote": "一分钟创建账户，免费版不够用时再升级到 Pro。",
+        "features": [
+          "免费版：{{freeTasks}} 个活跃任务、{{freeProjects}} 个项目、{{freeNotes}} 条笔记、{{freeStorageMb}} MB 附件",
+          "Pro：任务、项目和笔记无限制，{{proStorageGb}} GB 附件",
+          "Pro：AI 助手、MCP、CalDAV 同步、Telegram 机器人、备份导入",
+          "更新和每日备份由我们负责",
+          "随时导出全部数据，自行删除账户"
+        ],
+        "action": "创建免费账户 →"
+      },
+      "business": {
+        "name": "商业许可证",
+        "priceNote": "在工作中使用 tududi",
+        "features": [
+          "商业使用许可",
+          "优先支持，并承诺响应时限",
+          "可供公司报销的发票，含增值税",
+          "tududi Cloud 上的 Pro，或完全运行在您自己的服务器上",
+          "与维护者的直接联系渠道"
+        ],
+        "licenceNote": "tududi 基于 MIT 协议开源，商业使用本来就免费。这里买的是优先支持、响应时效承诺和一张发票。",
+        "action": "发邮件至 licensing@tududi.com →"
+      }
+    },
+    "fineprint": "随时取消并导出全部数据。如果 tududi Cloud 有一天关闭，您会拿到自己的数据和自托管迁移指南。存储和 API 用量遵循合理使用原则。30 天退款保证，不问原因。",
+    "perMonth": "/月"
+  },
+  "compare": {
+    "title": "快速对比",
+    "sub": "三种方式都能给你完整的 tududi 系统",
+    "colSelf": "自托管",
+    "colHosted": "Cloud",
+    "colBusiness": "商业许可证",
+    "rows": {
+      "openSource": "开源内核",
+      "commercialUse": "商业使用",
+      "infraControl": "完全掌控基础设施",
+      "dataOnHardware": "数据留在你自己的硬件上",
+      "noRecurring": "无持续费用",
+      "noSetup": "无需搭建服务器",
+      "managedUpdates": "托管式更新",
+      "autoBackups": "自动备份",
+      "isolated": "独立的容器和数据库",
+      "prioritySupport": "优先支持",
+      "responseTime": "响应时限承诺",
+      "invoice": "可报销的发票",
+      "pricing": "价格"
+    },
+    "values": {
+      "optional": "可选",
+      "yourServer": "你的服务器",
+      "community": "社区",
+      "email": "邮件",
+      "sameBusinessDay": "当个工作日内",
+      "freeForever": "永久免费",
+      "pricePerYear": "{{price}} 美元/年",
+      "sharedInstance": "共享实例，随时导出",
+      "freeOrPro": "免费，或 Pro ${{price}}/年"
+    },
+    "closing": "准备好运行属于自己的系统了吗？",
+    "closingCta": "自托管 tududi"
+  },
+  "waitlist": {
+    "title": "还没想好？",
+    "sub": "留下邮箱，接收版本说明和偶尔的动态。没有垃圾邮件，一键退订。",
+    "placeholder": "you@email.com",
+    "inputLabel": "电子邮箱地址",
+    "submit": "通知我",
+    "note": "我们只保存你的邮箱地址和提交日期，用来给你发送版本更新说明，别无他用。我们从不将它分享给任何人。"
+  },
+  "langs": {
+    "heading": "在全球提供 {{count}} 种语言"
+  },
+  "community": {
+    "title": "加入 tududi 社区",
+    "sub": "与其他 tududi 用户交流，获取支持，随时了解最新动态"
+  },
+  "footer": {
+    "tagline": "一套用来整理生活与工作的开放系统。你的服务器，或者我们的。",
+    "colProduct": "产品",
+    "colResources": "资源",
+    "colCommunity": "社区与支持",
+    "colSupport": "支持我们",
+    "linkRoadmap": "路线图",
+    "linkIssues": "问题反馈",
+    "linkBusinessLicence": "商业许可证",
+    "linkEmail": "邮件",
+    "linkCoffee": "请我们喝杯咖啡",
+    "subTitle": "邮件版本说明",
+    "subBody": "偶尔发送版本说明。没有营销，随时退订。",
+    "subSubmit": "订阅",
+    "rights": "保留所有权利。"
+  },
+  "js": {
+    "showFewer": "收起",
+    "copy": "复制",
+    "copied": "已复制"
+  },
+  "faq": {
+    "items": {
+      "freePlan": {
+        "q": "免费的 Cloud 版包含什么？",
+        "a": "最多 {{freeTasks}} 个活跃任务、{{freeProjects}} 个项目、{{freeNotes}} 条笔记和 {{freeStorageMb}} MB 附件，没有时间限制。已完成的任务不计入。达到上限后，所有内容都会保留，仍可查看、编辑、完成和删除；只有新增会等到回到上限以下或升级到 Pro。"
+      },
+      "leaving": {
+        "q": "我可以离开吗？我的数据会怎样？",
+        "a": "可以，随时都行。在个人资料中把全部数据导出为一个文件，再导入到读取同一格式的自托管 tududi 即可。删除账户会从我们的服务器移除您的数据、附件和备份，并取消所有订阅。"
+      }
+    }
+  }
+}

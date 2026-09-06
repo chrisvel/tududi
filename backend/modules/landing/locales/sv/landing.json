@@ -1,0 +1,350 @@
+{
+  "meta": {
+    "title": "tududi: egenhostad uppgiftshanterare och system för livsorganisation, med MCP för AI-agenter",
+    "description": "En egenhostad uppgiftshanterare och system för livsorganisation. Områden, mål, projekt och uppgifter, plus anteckningar och vanor, med en MCP-server som erbjuder {{tools}} verktyg så att AI-agenter kan arbeta med din lista. Öppen källkod under MIT.",
+    "langSwitcherLabel": "Byt språk",
+    "langSwitcherCurrent": "Språk: {{name}}"
+  },
+  "nav": {
+    "demo": "Livedemo",
+    "features": "Funktioner",
+    "ai": "AI & MCP",
+    "pricing": "Priser",
+    "selfHost": "Hosta själv",
+    "faq": "FAQ",
+    "docs": "Dokumentation",
+    "changelog": "Ändringar",
+    "signIn": "Logga in",
+    "toggle": "Öppna menyn"
+  },
+  "hero": {
+    "badgeStars": "stjärnor på GitHub",
+    "badgeMcp": "MCP-server inbyggd",
+    "starsLoading": "Laddar antalet stjärnor",
+    "titleLine1": "Egenhostad livsorganisation",
+    "titleLine2": "som din AI faktiskt kan använda",
+    "lede": "Områden, mål, projekt och uppgifter, plus anteckningar och vanor, i ett system. Kör det på din egen hårdvara, eller lämna driften till oss.",
+    "ctaPrimary": "Hosta själv på 2 minuter",
+    "ctaDemo": "Prova livedemon",
+    "ctaSecondary": "Se på GitHub",
+    "altLinkPrefix": "Eller",
+    "altLink": "skapa ett gratis konto på tududi Cloud",
+    "note": "MIT-licens · öppen källkod för alltid",
+    "demoNote": "En riktig hostad instans med exempeldata, delad och återställs regelbundet",
+    "screenshotAlt": "tududis gränssnitt med vyn Idag och de planerade uppgifterna"
+  },
+  "proof": {
+    "stars": "stjärnor på GitHub",
+    "mcp": "MCP-server, {{tools}} verktyg",
+    "languages": "{{count}} språk",
+    "dockerPulls": "Docker-nedladdningar",
+    "discord": "Discord-medlemmar",
+    "discordAlt": "Discord: {{count}} medlemmar"
+  },
+  "press": {
+    "featuredIn": "Omnämnda i",
+    "eyebrow": "Press",
+    "title": "Ta inte bara vårt ord för det",
+    "sub": "Vad recensenter skrev efter att själva ha kört tududi.",
+    "readLink": "Läs recensionen"
+  },
+  "ai": {
+    "kicker": "AI & MCP",
+    "titleLine1": "Det egenhostade systemet",
+    "titleLine2": "som din AI-agent faktiskt kan använda",
+    "ledeHtml": "tududi levereras med en MCP-server som exponerar <strong>{{tools}} verktyg</strong> för uppgifter, projekt, områden, mål, vanor, anteckningar, personer, taggar, vyer, inkorg, sökning och mätvärden. Koppla Claude eller någon annan MCP-kompatibel agent direkt till ditt system. Eftersom tududi körs på din egen server behöver varken anslutningen eller dina data någonsin lämna den. Det är en strukturell skillnad som Todoist och Notion inte kan erbjuda, vad de än lovar.",
+    "cards": {
+      "capture": {
+        "title": "Fånga upp och sök från chatten",
+        "body": "Lägg till, hitta och slutför uppgifter utan att lämna samtalet."
+      },
+      "dataStays": {
+        "title": "Dina data stannar på din server",
+        "body": "MCP-anslutningen pratar med din egen instans. Inget går via tredje part."
+      },
+      "openProtocol": {
+        "title": "Öppet protokoll, ingen inlåsning",
+        "body": "Byggt på det öppna Model Context Protocol. Fungerar med Claude och andra MCP-klienter."
+      }
+    },
+    "configTitle": "Koppla det till Claude Desktop",
+    "footnoteClients": "Samma sak fungerar med Cursor, Windsurf, Cline och alla andra MCP-klienter.",
+    "footnoteDocsLink": "Läs MCP-dokumentationen →",
+    "footnoteIncluded": "Ingår i alla nivåer, både egenhostat och Managed.",
+    "assistantTitle": "AI-assistent",
+    "assistantLede": "Ett separat, valfritt lager som läser dina data och skriver tillbaka sammanfattningar på vanlig svenska. Fungerar med alla OpenAI-kompatibla leverantörer, även egenhostade som Ollama.",
+    "assistantCards": {
+      "daily": {
+        "title": "Morgonbrief",
+        "body": "En sammanfattning på morgonen med din viktigaste uppgift och de riskflaggor som är värda att känna till."
+      },
+      "task": {
+        "title": "Uppgiftsinsikter",
+        "body": "Föreslagna nästa steg för en specifik uppgift, framtagna när du ber om dem."
+      },
+      "project": {
+        "title": "Projektinsikter",
+        "body": "En snabb bedömning av ett projekts hälsa: vad som rör sig och vad som står stilla."
+      }
+    }
+  },
+  "features": {
+    "eyebrow": "Funktioner",
+    "title": "Ett komplett system för ett organiserat liv",
+    "sub": "tududi samlar mål, projekt, uppgifter, anteckningar och smarta vyer i ett lugnt och fokuserat system. Gjort för enskilda och små team som värdesätter integritet och tydlighet.",
+    "showAll": "Visa alla {{count}} funktioner",
+    "groups": {
+      "planFocus": "Planera & fokusera",
+      "tasksProjects": "Uppgifter & projekt",
+      "accessAnywhere": "Åtkomst överallt",
+      "privacyCollab": "Integritet & samarbete"
+    },
+    "cards": {
+      "goals": {
+        "title": "Mål",
+        "body": "Sätt resultat för en säsong eller ett år, och se vilka Områden och Projekt som faktiskt för dem framåt."
+      },
+      "hierarchy": {
+        "title": "Hierarkisk struktur",
+        "body": "Mål och Områden ligger sida vid sida i toppen: långsiktiga resultat och pågående delar av livet. Båda innehåller Projekt, som innehåller Uppgifter."
+      },
+      "lifeAreas": {
+        "title": "Hantera livsområden",
+        "body": "Ordna projekt efter livsområde - Arbete, Privat, Hälsa, Lärande."
+      },
+      "views": {
+        "title": "Vyer",
+        "body": "Smarta sparade sökningar som ”Idag”, ”Försenat” eller ”Någon gång”. Ett klick, utan att bygga om ett filter varje gång."
+      },
+      "matrixKanban": {
+        "title": "Eisenhower-matris & Kanban",
+        "body": "Växla till en Eisenhower-matris eller en Kanban-tavla när frågan helt enkelt är: vad gör jag just nu."
+      },
+      "dueDates": {
+        "title": "Smarta förfallodatum",
+        "body": "Automatisk indelning: dagens prioriteringar, kommande deadlines och uppgifter för någon gång."
+      },
+      "insights": {
+        "title": "Produktivitetsinsikter",
+        "body": "Se trender för slutförande och belastning per projekt, så att du vet vart din tid faktiskt tar vägen."
+      },
+      "people": {
+        "title": "Personer",
+        "body": "Tilldela uppgifter till personer och se med en blick vilka som är med i ett projekt."
+      },
+      "habits": {
+        "title": "Vaneuppföljning",
+        "body": "Följ återkommande vanor vid sidan av uppgifter och projekt, med enkla serier och historik."
+      },
+      "recurring": {
+        "title": "Smarta återkommande uppgifter",
+        "body": "Dagliga, veckovisa och månatliga mönster, med upprepning baserad på slutförande och förälder-barn-relationer."
+      },
+      "richTasks": {
+        "title": "Rik uppgiftsstruktur",
+        "body": "Prioriteringar, förfallodatum, taggar och smart sortering. Kraftfull filtrering för att hitta det som betyder något."
+      },
+      "subtasks": {
+        "title": "Deluppgifter & nedbrytning",
+        "body": "Bryt ner komplexa uppgifter i hanterbara deluppgifter, med uppföljning av framsteg."
+      },
+      "notes": {
+        "title": "Projektdokumentation",
+        "body": "Formaterade anteckningar för projekt, med fullständig sökning och ordning."
+      },
+      "tags": {
+        "title": "Flexibelt taggsystem",
+        "body": "Egna taggar för uppgifter och anteckningar, med omedelbar filtrering och ordning över projektgränser."
+      },
+      "search": {
+        "title": "Smart filtrering & sökning",
+        "body": "Fritextsökning plus filter på projekt, tagg, prioritet eller förfallodatum. Hitta vilken uppgift som helst på några sekunder."
+      },
+      "pwa": {
+        "title": "Installera som app",
+        "body": "Lägg till tududi på hemskärmen eller skrivbordet som en PWA. Fungerar offline och synkar när du är uppkopplad igen."
+      },
+      "oidc": {
+        "title": "OIDC- / SSO-inloggning",
+        "body": "Logga in med din befintliga identitetsleverantör: Authentik, Keycloak, Google Workspace eller vilken OIDC-kompatibel leverantör som helst."
+      },
+      "i18n": {
+        "title": "Stöd för flera språk",
+        "body": "Tillgänglig på {{count}} språk med fullständig lokalisering."
+      },
+      "telegram": {
+        "title": "Telegram-integration",
+        "body": "Skicka ett meddelande för att fånga uppgifter direkt, få dagliga sammanfattningar och sköt din lista på språng."
+      },
+      "caldav": {
+        "title": "CalDAV-synkronisering",
+        "body": "Tvåvägssynk av uppgifter med Apple Påminnelser, tasks.org, Thunderbird och alla CalDAV-kompatibla appar."
+      },
+      "api": {
+        "title": "API-åtkomst & Swagger",
+        "body": "Versionerad Swagger-dokumentation och personliga åtkomsttoken för egna integrationer."
+      },
+      "responsive": {
+        "title": "Responsiv design",
+        "body": "En layout som anpassar sig snyggt från bred skrivbordsskärm till telefonen i fickan."
+      },
+      "privacy": {
+        "title": "Integritet och kontroll",
+        "body": "Håll dina data privata. Hosta själv för full kontroll, eller välj en Managed-instans med krypterade säkerhetskopior."
+      },
+      "collab": {
+        "title": "Samarbete i projekt",
+        "body": "Dela projekt med detaljerade behörigheter - endast läsa eller läsa och skriva."
+      }
+    }
+  },
+  "selfHost": {
+    "eyebrow": "Hosta själv",
+    "title": "Kör det på din egen server",
+    "sub": "Gratis, öppen källkod och redo för Docker. Dina data är helt och hållet dina.",
+    "cardTitle": "Docker-installation",
+    "cardSub": "Sätt igång på några minuter med Docker",
+    "step1": "Hämta Docker-avbildningen",
+    "step2": "Starta containern",
+    "step3Prefix": "Nå den på",
+    "linkGithub": "Se på GitHub",
+    "linkDocs": "Dokumentation"
+  },
+  "pricing": {
+    "eyebrow": "Priser",
+    "title": "Välj hur du använder tududi",
+    "sub": "Ett system, tre sätt att köra det",
+    "mostPopular": "POPULÄRAST",
+    "earlyBird": "LANSERINGSPRIS",
+    "perYear": "/år",
+    "forever": "/för alltid",
+    "plans": {
+      "selfHosted": {
+        "name": "Egenhostad",
+        "priceNote": "Gratis och öppen källkod, för alltid",
+        "features": [
+          "Öppen källkod, MIT-licensierad",
+          "Kör det på din egen server",
+          "Full kontroll, ingen inlåsning",
+          "Alla funktioner, inget bakom betalvägg",
+          "MCP och AI-assistent ingår"
+        ],
+        "action": "Hosta tududi själv →"
+      },
+      "cloud": {
+        "name": "Cloud",
+        "toStart": "till att börja med",
+        "proLabel": "Pro",
+        "or": "eller",
+        "launchNote": "Early bird-årspris, ditt så länge du är prenumerant.",
+        "priceNote": "Skapa ett konto på en minut, uppgradera när gratisplanen blir för liten.",
+        "features": [
+          "Gratisplan: {{freeTasks}} aktiva uppgifter, {{freeProjects}} projekt, {{freeNotes}} anteckningar, {{freeStorageMb}} MB bilagor",
+          "Pro: obegränsat med uppgifter, projekt och anteckningar, {{proStorageGb}} GB bilagor",
+          "Pro: AI-assistent, MCP, CalDAV-synkronisering, Telegram-bot, import av säkerhetskopior",
+          "Uppdateringar och dagliga säkerhetskopior sköter vi",
+          "Exportera allt när som helst, ta bort kontot själv"
+        ],
+        "action": "Skapa gratis konto →"
+      },
+      "business": {
+        "name": "Företagslicens",
+        "priceNote": "Använda tududi på jobbet",
+        "features": [
+          "Licens för kommersiell användning",
+          "Prioriterad support med utlovad svarstid",
+          "En faktura som företaget kan bokföra, moms inkluderad",
+          "Pro på tududi Cloud, eller helt på din egen server",
+          "Direktkontakt med den som underhåller projektet"
+        ],
+        "licenceNote": "tududi är MIT-licensierat och kommersiell användning är redan gratis. Det här köper prioriterad support, ett svarstidslöfte och en faktura.",
+        "action": "Mejla licensing@tududi.com →"
+      }
+    },
+    "fineprint": "Avsluta när som helst och exportera allt. Om tududi Cloud någonsin stänger får du dina data och en guide för att hosta själv. Skälig användning gäller för lagring och API-volym. 30 dagars pengarna-tillbaka-garanti, inga frågor.",
+    "perMonth": "/månad"
+  },
+  "compare": {
+    "title": "Snabb jämförelse",
+    "sub": "Alla tre ger dig hela tududi-systemet",
+    "colSelf": "Egenhostad",
+    "colHosted": "Cloud",
+    "colBusiness": "Företagslicens",
+    "rows": {
+      "openSource": "Öppen kärna",
+      "commercialUse": "Kommersiell användning",
+      "infraControl": "Full kontroll över infrastrukturen",
+      "dataOnHardware": "Data stannar på din hårdvara",
+      "noRecurring": "Ingen löpande kostnad",
+      "noSetup": "Ingen serveruppsättning krävs",
+      "managedUpdates": "Hanterade uppdateringar",
+      "autoBackups": "Automatiska säkerhetskopior",
+      "isolated": "Isolerad container och databas",
+      "prioritySupport": "Prioriterad support",
+      "responseTime": "Utlovad svarstid",
+      "invoice": "Faktura för utlägg",
+      "pricing": "Pris"
+    },
+    "values": {
+      "optional": "Valfritt",
+      "yourServer": "Din server",
+      "community": "Community",
+      "email": "E-post",
+      "sameBusinessDay": "Samma arbetsdag",
+      "freeForever": "Gratis för alltid",
+      "pricePerYear": "{{price}} $/år",
+      "sharedInstance": "Delad instans, export när som helst",
+      "freeOrPro": "Gratis, eller Pro för ${{price}}/år"
+    },
+    "closing": "Redo att köra ditt eget system?",
+    "closingCta": "Hosta tududi själv"
+  },
+  "waitlist": {
+    "title": "Inte redo än?",
+    "sub": "Lämna din e-post för versionsnoteringar och en uppdatering då och då. Ingen skräppost, avsluta med ett klick.",
+    "placeholder": "du@email.com",
+    "inputLabel": "E-postadress",
+    "submit": "Meddela mig",
+    "note": "Vi sparar din adress och datumet du gav oss den, för att skicka releasenoteringar och inget annat. Vi delar den aldrig."
+  },
+  "langs": {
+    "heading": "Tillgänglig på {{count}} språk världen över"
+  },
+  "community": {
+    "title": "Gå med i tududi-gemenskapen",
+    "sub": "Prata med andra tududi-användare, få hjälp och håll dig uppdaterad"
+  },
+  "footer": {
+    "tagline": "Ett öppet system för att organisera liv och arbete. Din server, eller vår.",
+    "colProduct": "Produkt",
+    "colResources": "Resurser",
+    "colCommunity": "Community & support",
+    "colSupport": "Stötta",
+    "linkRoadmap": "Roadmap",
+    "linkIssues": "Ärenden",
+    "linkBusinessLicence": "Företagslicens",
+    "linkEmail": "E-post",
+    "linkCoffee": "Bjud på en kaffe",
+    "subTitle": "Versionsnoteringar via e-post",
+    "subBody": "Versionsnoteringar då och då. Ingen marknadsföring, avsluta när som helst.",
+    "subSubmit": "Anmäl mig",
+    "rights": "Alla rättigheter förbehållna."
+  },
+  "js": {
+    "showFewer": "Visa färre",
+    "copy": "Kopiera",
+    "copied": "Kopierat"
+  },
+  "faq": {
+    "items": {
+      "freePlan": {
+        "q": "Vad ingår i gratisplanen för Cloud?",
+        "a": "Upp till {{freeTasks}} aktiva uppgifter, {{freeProjects}} projekt, {{freeNotes}} anteckningar och {{freeStorageMb}} MB bilagor, utan tidsgräns. Avklarade uppgifter räknas inte. Når du en gräns behåller du allt och kan fortfarande läsa, redigera, slutföra och ta bort; bara att lägga till väntar tills du är under gränsen igen eller uppgraderar till Pro."
+      },
+      "leaving": {
+        "q": "Kan jag lämna, och vad händer med mina data?",
+        "a": "Ja, när som helst. Exportera allt som en enda fil från din profil och importera den i en självhostad tududi, som läser samma format. Att ta bort kontot raderar dina data, bilagor och säkerhetskopior från våra servrar och avslutar alla prenumerationer."
+      }
+    }
+  }
+}

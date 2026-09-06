@@ -240,6 +240,13 @@ app.use((req, res, next) => {
     return next();
 });
 
+// Marketing page for the hostnames in TUDUDI_LANDING_HOSTS. A no-op unless
+// that variable is set, so a self-hosted instance never sees it. It sits
+// before the static handlers because the landing hosts must not serve the
+// app shell at '/'.
+const landingModule = require('./modules/landing');
+app.use(landingModule.hostSwitch(config.landing));
+
 // Static files. Webpack output is content-hashed, so the bundles can be
 // cached for a year; the shell (index.html) and the service worker must
 // always be revalidated or a deploy would never reach returning visitors.

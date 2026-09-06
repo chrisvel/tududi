@@ -1,0 +1,350 @@
+{
+  "meta": {
+    "title": "tududi : gestionnaire de tâches auto-hébergé et système d'organisation de vie, avec MCP pour les agents IA",
+    "description": "Un gestionnaire de tâches auto-hébergé et système d'organisation de vie. Domaines, objectifs, projets et tâches, plus les notes et les habitudes, avec un serveur MCP exposant {{tools}} outils pour que les agents IA travaillent votre liste. Open source sous licence MIT.",
+    "langSwitcherLabel": "Changer de langue",
+    "langSwitcherCurrent": "Langue : {{name}}"
+  },
+  "nav": {
+    "demo": "Démo en direct",
+    "features": "Fonctionnalités",
+    "ai": "IA & MCP",
+    "pricing": "Tarifs",
+    "selfHost": "Auto-hébergement",
+    "faq": "FAQ",
+    "docs": "Docs",
+    "changelog": "Nouveautés",
+    "signIn": "Se connecter",
+    "toggle": "Afficher le menu"
+  },
+  "hero": {
+    "badgeStars": "étoiles sur GitHub",
+    "badgeMcp": "Serveur MCP intégré",
+    "starsLoading": "Chargement du nombre d'étoiles",
+    "titleLine1": "Organisez votre vie, auto-hébergée",
+    "titleLine2": "et vraiment exploitable par votre IA",
+    "lede": "Domaines, objectifs, projets et tâches, plus les notes et les habitudes, dans un seul système. Installez-le sur votre propre matériel, ou confiez-nous l'exploitation.",
+    "ctaPrimary": "Auto-hébergez en 2 minutes",
+    "ctaDemo": "Essayer la démo en direct",
+    "ctaSecondary": "Voir sur GitHub",
+    "altLinkPrefix": "Ou",
+    "altLink": "créez un compte gratuit sur tududi Cloud",
+    "note": "Sous licence MIT · open source pour toujours",
+    "demoNote": "Une véritable instance hébergée, remplie de données d'exemple, partagée et réinitialisée régulièrement",
+    "screenshotAlt": "L'interface de tududi, affichant la vue Aujourd'hui et ses tâches planifiées"
+  },
+  "proof": {
+    "stars": "étoiles sur GitHub",
+    "mcp": "Serveur MCP, {{tools}} outils",
+    "languages": "{{count}} langues",
+    "dockerPulls": "téléchargements Docker",
+    "discord": "membres sur Discord",
+    "discordAlt": "Discord : {{count}} membres"
+  },
+  "press": {
+    "featuredIn": "Ils en parlent",
+    "eyebrow": "Presse",
+    "title": "Ne nous croyez pas sur parole",
+    "sub": "Ce que les testeurs ont écrit après avoir utilisé tududi eux-mêmes.",
+    "readLink": "Lire l'article"
+  },
+  "ai": {
+    "kicker": "IA & MCP",
+    "titleLine1": "Le système auto-hébergé",
+    "titleLine2": "que votre agent IA peut vraiment utiliser",
+    "ledeHtml": "tududi embarque un serveur MCP qui expose <strong>{{tools}} outils</strong>, couvrant les tâches, projets, domaines, objectifs, habitudes, notes, personnes, étiquettes, vues, boîte de réception, recherche et statistiques. Connectez Claude ou n'importe quel agent compatible MCP directement à votre système. Comme tududi tourne sur votre propre serveur, ni la connexion ni vos données n'ont à le quitter. C'est une différence structurelle que Todoist et Notion ne peuvent pas offrir, quoi qu'ils promettent.",
+    "cards": {
+      "capture": {
+        "title": "Capturez et cherchez depuis la conversation",
+        "body": "Ajoutez, retrouvez et terminez des tâches sans quitter la conversation."
+      },
+      "dataStays": {
+        "title": "Vos données restent sur votre serveur",
+        "body": "La connexion MCP parle à votre propre instance. Rien ne transite par un tiers."
+      },
+      "openProtocol": {
+        "title": "Protocole ouvert, aucune dépendance",
+        "body": "Construit sur le Model Context Protocol ouvert. Fonctionne avec Claude et les autres clients MCP."
+      }
+    },
+    "configTitle": "Connectez-le à Claude Desktop",
+    "footnoteClients": "Cela fonctionne pareil avec Cursor, Windsurf, Cline et tout autre client MCP.",
+    "footnoteDocsLink": "Lire la documentation MCP →",
+    "footnoteIncluded": "Inclus dans toutes les formules, en auto-hébergé comme en Infogéré.",
+    "assistantTitle": "Assistant IA",
+    "assistantLede": "Une couche séparée et optionnelle qui lit vos données et vous renvoie des résumés en langage clair. Compatible avec tout fournisseur compatible OpenAI, y compris auto-hébergé comme Ollama.",
+    "assistantCards": {
+      "daily": {
+        "title": "Point du matin",
+        "body": "Un résumé matinal avec votre tâche prioritaire et les points de vigilance à connaître."
+      },
+      "task": {
+        "title": "Analyse de tâche",
+        "body": "Des prochaines étapes suggérées pour une tâche précise, générées à la demande."
+      },
+      "project": {
+        "title": "Analyse de projet",
+        "body": "Un diagnostic rapide de l'état d'un projet : ce qui avance, ce qui bloque."
+      }
+    }
+  },
+  "features": {
+    "eyebrow": "Fonctionnalités",
+    "title": "Un système complet pour une vie organisée",
+    "sub": "tududi réunit objectifs, projets, tâches, notes et vues intelligentes dans un système unique, calme et concentré. Conçu pour les individus et les petites équipes attachés à la confidentialité et à la clarté.",
+    "showAll": "Afficher les {{count}} fonctionnalités",
+    "groups": {
+      "planFocus": "Planifier & se concentrer",
+      "tasksProjects": "Tâches & projets",
+      "accessAnywhere": "Accès partout",
+      "privacyCollab": "Confidentialité & collaboration"
+    },
+    "cards": {
+      "goals": {
+        "title": "Objectifs",
+        "body": "Définissez des résultats pour une saison ou une année, et voyez quels Domaines et Projets les font réellement avancer."
+      },
+      "hierarchy": {
+        "title": "Organisation hiérarchique",
+        "body": "Objectifs et Domaines cohabitent au sommet : les résultats à long terme et les pans permanents de votre vie. Les deux contiennent des Projets, qui contiennent des Tâches."
+      },
+      "lifeAreas": {
+        "title": "Gestion par domaine de vie",
+        "body": "Organisez vos projets par domaine de vie - Travail, Personnel, Santé, Apprentissage."
+      },
+      "views": {
+        "title": "Vues",
+        "body": "Des recherches enregistrées intelligentes comme « Aujourd'hui », « En retard » ou « Un jour ». Un clic, sans reconstruire un filtre à chaque fois."
+      },
+      "matrixKanban": {
+        "title": "Matrice d'Eisenhower & Kanban",
+        "body": "Basculez vers une matrice d'Eisenhower ou un tableau Kanban quand la question est simplement : que fais-je maintenant."
+      },
+      "dueDates": {
+        "title": "Échéances intelligentes",
+        "body": "Classement automatique : les priorités du jour, les échéances à venir et les tâches pour plus tard."
+      },
+      "insights": {
+        "title": "Analyses de productivité",
+        "body": "Suivez vos tendances d'achèvement et votre charge par projet, pour savoir où passe réellement votre temps."
+      },
+      "people": {
+        "title": "Personnes",
+        "body": "Attribuez des tâches à des personnes et voyez d'un coup d'œil qui participe à un projet."
+      },
+      "habits": {
+        "title": "Suivi des habitudes",
+        "body": "Suivez vos habitudes récurrentes aux côtés des tâches et des projets, avec des séries et un historique simples."
+      },
+      "recurring": {
+        "title": "Tâches récurrentes intelligentes",
+        "body": "Des schémas quotidiens, hebdomadaires ou mensuels, avec récurrence basée sur l'achèvement et relations parent-enfant."
+      },
+      "richTasks": {
+        "title": "Organisation riche des tâches",
+        "body": "Priorités, échéances, étiquettes et tri intelligent. Un filtrage puissant pour trouver ce qui compte."
+      },
+      "subtasks": {
+        "title": "Sous-tâches & découpage",
+        "body": "Découpez les tâches complexes en sous-tâches gérables, avec suivi de l'avancement."
+      },
+      "notes": {
+        "title": "Documentation de projet",
+        "body": "Des notes en texte enrichi pour vos projets, avec recherche complète et organisation."
+      },
+      "tags": {
+        "title": "Système d'étiquettes flexible",
+        "body": "Des étiquettes personnalisées pour les tâches et les notes, avec filtrage instantané et organisation transversale."
+      },
+      "search": {
+        "title": "Filtrage & recherche intelligents",
+        "body": "Recherche plein texte et filtres par projet, étiquette, priorité ou échéance. Retrouvez n'importe quelle tâche en quelques secondes."
+      },
+      "pwa": {
+        "title": "Installez-le comme une application",
+        "body": "Ajoutez tududi à votre écran d'accueil ou à votre bureau en PWA. Fonctionne hors ligne et se synchronise à votre retour."
+      },
+      "oidc": {
+        "title": "Connexion OIDC / SSO",
+        "body": "Connectez-vous avec votre fournisseur d'identité existant : Authentik, Keycloak, Google Workspace ou tout fournisseur compatible OIDC."
+      },
+      "i18n": {
+        "title": "Support multilingue",
+        "body": "Disponible en {{count}} langues avec une localisation complète."
+      },
+      "telegram": {
+        "title": "Intégration Telegram",
+        "body": "Envoyez un message pour capturer une tâche instantanément, recevez un résumé quotidien et gérez votre liste en déplacement."
+      },
+      "caldav": {
+        "title": "Synchronisation CalDAV",
+        "body": "Synchronisation bidirectionnelle avec Apple Rappels, tasks.org, Thunderbird et toute application compatible CalDAV."
+      },
+      "api": {
+        "title": "Accès API & Swagger",
+        "body": "Une documentation Swagger versionnée et des jetons d'accès personnels pour vos intégrations sur mesure."
+      },
+      "responsive": {
+        "title": "Design adaptatif",
+        "body": "Une mise en page qui s'adapte proprement d'un grand écran de bureau au téléphone dans votre poche."
+      },
+      "privacy": {
+        "title": "Confidentialité et contrôle",
+        "body": "Gardez vos données privées. Auto-hébergez pour un contrôle total, ou choisissez une instance Infogérée avec sauvegardes chiffrées."
+      },
+      "collab": {
+        "title": "Collaboration sur les projets",
+        "body": "Partagez vos projets avec des droits d'accès fins - lecture seule ou lecture-écriture."
+      }
+    }
+  },
+  "selfHost": {
+    "eyebrow": "Auto-hébergement",
+    "title": "Installez-le sur votre propre serveur",
+    "sub": "Gratuit, open source et prêt pour Docker. Vos données vous appartiennent entièrement.",
+    "cardTitle": "Installation Docker",
+    "cardSub": "Déployez en quelques minutes avec Docker",
+    "step1": "Récupérez l'image Docker",
+    "step2": "Lancez le conteneur",
+    "step3Prefix": "Accédez-y sur",
+    "linkGithub": "Voir sur GitHub",
+    "linkDocs": "Documentation"
+  },
+  "pricing": {
+    "eyebrow": "Tarifs",
+    "title": "Choisissez comment utiliser tududi",
+    "sub": "Un système, trois façons de le faire tourner",
+    "mostPopular": "LE PLUS CHOISI",
+    "earlyBird": "LANCEMENT",
+    "perYear": "/an",
+    "forever": "/pour toujours",
+    "plans": {
+      "selfHosted": {
+        "name": "Auto-hébergé",
+        "priceNote": "Gratuit et open source, pour toujours",
+        "features": [
+          "Open source, sous licence MIT",
+          "Installez-le sur votre propre serveur",
+          "Contrôle total, aucune dépendance à un fournisseur",
+          "Toutes les fonctionnalités, rien derrière un paywall",
+          "MCP et Assistant IA inclus"
+        ],
+        "action": "Auto-héberger tududi →"
+      },
+      "cloud": {
+        "name": "Cloud",
+        "toStart": "pour commencer",
+        "proLabel": "Pro",
+        "or": "ou",
+        "launchNote": "Tarif annuel early bird, conservé tant que vous restez abonné.",
+        "priceNote": "Créez un compte en une minute, passez à Pro quand le plan gratuit ne suffit plus.",
+        "features": [
+          "Plan gratuit : {{freeTasks}} tâches actives, {{freeProjects}} projets, {{freeNotes}} notes, {{freeStorageMb}} Mo de pièces jointes",
+          "Pro : tâches, projets et notes illimités, {{proStorageGb}} Go de pièces jointes",
+          "Pro : assistant IA, MCP, synchronisation CalDAV, bot Telegram, import de sauvegardes",
+          "Mises à jour et sauvegardes quotidiennes gérées pour vous",
+          "Exportez tout à tout moment, supprimez votre compte vous-même"
+        ],
+        "action": "Créer un compte gratuit →"
+      },
+      "business": {
+        "name": "Licence Entreprise",
+        "priceNote": "Utiliser tududi au travail",
+        "features": [
+          "Licence d'utilisation commerciale",
+          "Support prioritaire avec engagement de délai de réponse",
+          "Une facture que votre entreprise peut passer en frais, TVA incluse",
+          "Pro sur tududi Cloud, ou entièrement sur votre propre serveur",
+          "Une ligne directe avec le mainteneur"
+        ],
+        "licenceNote": "tududi est sous licence MIT et l'usage commercial est déjà gratuit. Ceci vous apporte un support prioritaire, un engagement de délai de réponse et une facture.",
+        "action": "Écrire à licensing@tududi.com →"
+      }
+    },
+    "fineprint": "Annulez à tout moment et exportez tout. Si tududi Cloud devait fermer, vous recevez vos données et un guide de migration vers l'auto-hébergement. Usage raisonnable pour le stockage et le volume d'API. Garantie satisfait ou remboursé 30 jours, sans question.",
+    "perMonth": "/mois"
+  },
+  "compare": {
+    "title": "Comparatif rapide",
+    "sub": "Les trois formules vous donnent le système tududi complet",
+    "colSelf": "Auto-hébergé",
+    "colHosted": "Cloud",
+    "colBusiness": "Licence Entreprise",
+    "rows": {
+      "openSource": "Cœur open source",
+      "commercialUse": "Usage commercial",
+      "infraControl": "Contrôle total de l'infrastructure",
+      "dataOnHardware": "Données sur votre propre matériel",
+      "noRecurring": "Aucun coût récurrent",
+      "noSetup": "Aucune installation de serveur",
+      "managedUpdates": "Mises à jour gérées",
+      "autoBackups": "Sauvegardes automatiques",
+      "isolated": "Conteneur et base de données isolés",
+      "prioritySupport": "Support prioritaire",
+      "responseTime": "Engagement de réponse",
+      "invoice": "Facture pour note de frais",
+      "pricing": "Tarif"
+    },
+    "values": {
+      "optional": "En option",
+      "yourServer": "Votre serveur",
+      "community": "Communauté",
+      "email": "E-mail",
+      "sameBusinessDay": "Sous 1 jour ouvré",
+      "freeForever": "Gratuit pour toujours",
+      "pricePerYear": "{{price}} $/an",
+      "sharedInstance": "Instance partagée, export à tout moment",
+      "freeOrPro": "Gratuit, ou Pro à ${{price}}/an"
+    },
+    "closing": "Prêt à faire tourner votre propre système ?",
+    "closingCta": "Auto-héberger tududi"
+  },
+  "waitlist": {
+    "title": "Pas encore prêt ?",
+    "sub": "Laissez votre e-mail pour recevoir les notes de version et une nouvelle de temps en temps. Pas de spam, désinscription en un clic.",
+    "placeholder": "vous@email.com",
+    "inputLabel": "Adresse e-mail",
+    "submit": "Prévenez-moi",
+    "note": "Nous conservons votre adresse et la date à laquelle vous nous l'avez donnée, uniquement pour vous envoyer les notes de version. Nous ne la partageons jamais."
+  },
+  "langs": {
+    "heading": "L'application tududi est disponible en {{count}} langues dans le monde"
+  },
+  "community": {
+    "title": "Rejoignez la communauté tududi",
+    "sub": "Échangez avec les autres utilisateurs de tududi, obtenez de l'aide et suivez les nouveautés"
+  },
+  "footer": {
+    "tagline": "Un système ouvert pour organiser sa vie et son travail. Votre serveur ou le nôtre.",
+    "colProduct": "Produit",
+    "colResources": "Ressources",
+    "colCommunity": "Communauté & support",
+    "colSupport": "Soutenir",
+    "linkRoadmap": "Feuille de route",
+    "linkIssues": "Tickets",
+    "linkBusinessLicence": "Licence entreprise",
+    "linkEmail": "E-mail",
+    "linkCoffee": "Offrir un café",
+    "subTitle": "Notes de version par e-mail",
+    "subBody": "Des notes de version occasionnelles. Pas de marketing, désinscription à tout moment.",
+    "subSubmit": "Je m'inscris",
+    "rights": "Tous droits réservés."
+  },
+  "js": {
+    "showFewer": "Afficher moins",
+    "copy": "Copier",
+    "copied": "Copié"
+  },
+  "faq": {
+    "items": {
+      "freePlan": {
+        "q": "Que comprend le plan Cloud gratuit ?",
+        "a": "Jusqu'à {{freeTasks}} tâches actives, {{freeProjects}} projets, {{freeNotes}} notes et {{freeStorageMb}} Mo de pièces jointes, sans limite de durée. Les tâches terminées ne comptent pas. Si vous atteignez une limite, vous gardez tout et pouvez toujours lire, modifier, terminer et supprimer ; seul l'ajout attend que vous repassiez sous la limite ou que vous passiez à Pro."
+      },
+      "leaving": {
+        "q": "Puis-je partir, et que deviennent mes données ?",
+        "a": "Oui, à tout moment. Exportez tout en un seul fichier depuis votre profil et importez-le dans un tududi auto-hébergé, qui lit le même format. Supprimer votre compte efface vos données, pièces jointes et sauvegardes de nos serveurs et annule tout abonnement."
+      }
+    }
+  }
+}
