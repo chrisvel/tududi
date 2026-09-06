@@ -386,6 +386,31 @@ const App: React.FC = () => {
                                 element={<PersonDetails />}
                             />
                             <Route
+                                path="/admin/billing"
+                                element={
+                                    currentUser?.is_admin === true ? (
+                                        <React.Suspense
+                                            fallback={
+                                                <div className="p-4">
+                                                    Loading...
+                                                </div>
+                                            }
+                                        >
+                                            {React.createElement(
+                                                React.lazy(
+                                                    () =>
+                                                        import(
+                                                            './components/Admin/AdminBillingPage'
+                                                        )
+                                                )
+                                            )}
+                                        </React.Suspense>
+                                    ) : (
+                                        <Navigate to="/today" replace />
+                                    )
+                                }
+                            />
+                            <Route
                                 path="/admin/users"
                                 element={
                                     currentUser?.is_admin === true ? (
