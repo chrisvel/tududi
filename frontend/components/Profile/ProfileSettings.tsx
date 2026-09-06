@@ -22,6 +22,7 @@ import {
     CalendarIcon,
     SparklesIcon,
     SwatchIcon,
+    CreditCardIcon,
 } from '@heroicons/react/24/outline';
 import { Squares2X2Icon } from '@heroicons/react/24/solid';
 import TelegramIcon from '../Shared/Icons/TelegramIcon';
@@ -54,6 +55,7 @@ import KeyboardShortcutsTab from './tabs/KeyboardShortcutsTab';
 import McpTab from './tabs/McpTab';
 import CalDAVTab from './tabs/CalDAVTab';
 import AIAssistantTab from './tabs/AIAssistantTab';
+import BillingTab from './tabs/BillingTab';
 import { getDefaultConfig } from '../../utils/keyboardShortcutsService';
 import { PASSWORD_MIN_LENGTH } from '../../utils/passwordPolicy';
 import { getFeatureFlags, type FeatureFlags } from '../../utils/featureFlags';
@@ -106,6 +108,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             'mcp',
             'ai-assistant',
             'features',
+            'billing',
         ];
         return section && validTabs.includes(section) ? section : 'general';
     }, [location.search]);
@@ -1340,6 +1343,12 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             icon: <SparklesIcon className="w-5 h-5" />,
         },
         {
+            id: 'billing',
+            name: t('profile.tabs.billing', 'Plan & Billing'),
+            icon: <CreditCardIcon className="w-5 h-5" />,
+            featureFlag: 'hosted',
+        },
+        {
             id: 'features',
             name: t('profile.tabs.features', 'Features & Add-ons'),
             icon: <Squares2X2Icon className="w-5 h-5" />,
@@ -1684,6 +1693,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                 <McpTab isActive={activeTab === 'mcp'} />
 
                                 <CalDAVTab isActive={activeTab === 'caldav'} />
+
+                                <BillingTab
+                                    isActive={activeTab === 'billing'}
+                                />
 
                                 <div className="flex justify-end dark:border-gray-700">
                                     <button

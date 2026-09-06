@@ -20,8 +20,12 @@ import UniversalSearch from './UniversalSearch/UniversalSearch';
 import NotificationsDropdown from './Notifications/NotificationsDropdown';
 import { getApiPath, getAssetPath } from '../config/paths';
 import { getFeatureFlags, FeatureFlags } from '../utils/featureFlags';
+import PlanBadge from './Billing/PlanBadge';
 import { setUserTimezone } from '../utils/dateUtils';
-import { fetchProfile as fetchProfileFromService, invalidateProfileCache } from '../utils/profileService';
+import {
+    fetchProfile as fetchProfileFromService,
+    invalidateProfileCache,
+} from '../utils/profileService';
 import { notifySwClearCache } from '../utils/swUtils';
 
 interface NavbarProps {
@@ -262,6 +266,7 @@ const Navbar: React.FC<NavbarProps> = ({
                                         {currentUser.email}
                                     </div>
                                 )}
+                                {featureFlags.hosted && <PlanBadge />}
                                 <Link
                                     to="/profile"
                                     className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
