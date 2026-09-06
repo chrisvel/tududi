@@ -240,9 +240,24 @@ app.use((req, res, next) => {
     return next();
 });
 
-// Static files
+// Static files. Webpack output is content-hashed, so the bundles can be
+// cached for a year; the shell (index.html) and the service worker must
+// always be revalidated or a deploy would never reach returning visitors.
+const NEVER_CACHE = new Set(['/index.html', '/sw.js', '/manifest.json']);
 if (serveFromDist) {
-    app.use(express.static(path.join(__dirname, 'dist')));
+    app.use(
+        express.static(path.join(__dirname, 'dist'), {
+            index: false,
+            maxAge: '1y',
+            immutable: true,
+            setHeaders: (res, filePath) => {
+                const rel = filePath.slice(path.join(__dirname, 'dist').length);
+                if (NEVER_CACHE.has(rel.replace(/\\/g, '/'))) {
+                    res.setHeader('Cache-Control', 'no-cache');
+                }
+            },
+        })
+    );
 } else {
     app.use(express.static('public'));
 }
@@ -455,6 +470,7 @@ app.get('*', (req, res) => {
         !req.path.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg)$/)
     ) {
         if (serveFromDist) {
+            res.setHeader('Cache-Control', 'no-cache');
             res.sendFile(path.join(__dirname, 'dist', 'index.html'));
         } else {
             res.sendFile(path.join(__dirname, '../public', 'index.html'));

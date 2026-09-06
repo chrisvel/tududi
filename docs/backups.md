@@ -137,6 +137,21 @@ npm start
 
 ---
 
+## Per-User Backup Exports
+
+The in-app export (Profile > Backup, `FF_ENABLE_BACKUPS=true`) writes each
+user's `.json.gz` under `TUDUDI_BACKUP_PATH` (default `backend/backups`,
+`/app/backups` in the Docker image, declared as a volume). Mount it like
+`uploads`, or those exports disappear when the container is recreated.
+
+## PostgreSQL Dumps
+
+`scripts/pg-backup.sh <dir>` runs `pg_dump --no-owner --no-acl` against
+`DATABASE_URL`, gzips it to `<dir>/tududi-<timestamp>.sql.gz`, and prunes
+dumps older than `BACKUP_KEEP_DAYS` (default 14). Run it from cron on the
+host and copy the directory off the machine (restic, rclone, object
+storage). Restore with `gunzip -c <file> | psql "$DATABASE_URL"`.
+
 ## Per-User Export Format
 
 Exports (Profile > Backup, `FF_ENABLE_BACKUPS=true`) are JSON (`format: 2`)
