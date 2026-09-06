@@ -114,3 +114,20 @@ subscription and removes the Stripe customer.
 
 Local testing: `stripe listen --forward-to localhost:3002/api/billing/webhook`
 and `stripe trigger checkout.session.completed`.
+
+## Deploying on one machine
+
+`docs/examples/docker-compose.hosted.yml` and `docs/examples/Caddyfile` are
+a complete single-VPS layout: Caddy (automatic TLS) in front of a `web`
+container that serves HTTP with the background jobs off, a `worker`
+container from the same image that runs the schedulers and the Telegram
+poller, and PostgreSQL 16. Both app containers share `uploads/` and
+`backups/`; secrets live in `.env` on the server. The comments at the end
+of the compose file list the variables hosted mode requires; the server
+refuses to start until they are set.
+
+Point uptime monitoring at `/api/health/ready`, run `scripts/pg-backup.sh`
+from cron and copy its output off the machine, and deploy by pinning
+`TUDUDI_VERSION` to a release tag and running `docker compose pull && docker
+compose up -d`. Migrations run in the container entrypoint under a database
+lock, so `web` and `worker` can start together.

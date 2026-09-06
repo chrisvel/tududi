@@ -14,11 +14,15 @@ const {
     getTodayBoundsInUTC,
 } = require('../../../utils/timezone-utils');
 
+// `page` ({ limit, offset }) switches to database pagination: the result is
+// then { rows, count } instead of an array. Callers that post-process the
+// list in memory (today, upcoming by day) must not pass it.
 async function filterTasksByParams(
     params,
     userId,
     userTimezone,
-    permissionCache = null
+    permissionCache = null,
+    page = null
 ) {
     const ownedOrShared = await permissionsService.ownershipOrPermissionWhere(
         'task',
@@ -420,6 +424,19 @@ async function filterTasksByParams(
     const finalWhereClause = {
         [Op.and]: [ownedOrShared, whereClause],
     };
+
+    if (page) {
+        const { rows, count } = await Task.findAndCountAll({
+            where: finalWhereClause,
+            include: includeClause,
+            order: orderClause,
+            distinct: true,
+            col: 'id',
+            limit: page.limit,
+            offset: page.offset,
+        });
+        return { rows, count };
+    }
 
     return await Task.findAll({
         where: finalWhereClause,

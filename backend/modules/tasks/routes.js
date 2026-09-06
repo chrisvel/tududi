@@ -179,7 +179,32 @@ router.get('/tasks', async (req, res) => {
 
         await handleRecurringTasks(userId, type);
 
-        let tasks = await filterTasksByParams(req.query, userId, timezone);
+        const hasPagination =
+            limitParam !== undefined || offsetParam !== undefined;
+        const limit = parseInt(limitParam, 10) || 20;
+        const offset = parseInt(offsetParam, 10) || 0;
+        // Today and upcoming-by-day expand or filter the list in memory, so
+        // they page after that; everything else pages in the database.
+        const sqlPagination =
+            hasPagination &&
+            type !== 'today' &&
+            !(type === 'upcoming' && groupBy === 'day');
+
+        let tasks;
+        let totalCount;
+        if (sqlPagination) {
+            const paged = await filterTasksByParams(
+                req.query,
+                userId,
+                timezone,
+                null,
+                { limit, offset }
+            );
+            tasks = paged.rows;
+            totalCount = paged.count;
+        } else {
+            tasks = await filterTasksByParams(req.query, userId, timezone);
+        }
 
         // Fetch projects with upcoming due dates for the upcoming view
         let upcomingProjects = [];
@@ -245,14 +270,10 @@ router.get('/tasks', async (req, res) => {
             );
         }
 
-        const hasPagination =
-            limitParam !== undefined || offsetParam !== undefined;
-        const totalCount = tasks.length;
+        if (totalCount === undefined) totalCount = tasks.length;
         let paginatedTasks = tasks;
 
-        if (hasPagination) {
-            const limit = parseInt(limitParam, 10) || 20;
-            const offset = parseInt(offsetParam, 10) || 0;
+        if (hasPagination && !sqlPagination) {
             paginatedTasks = tasks.slice(offset, offset + limit);
         }
 
@@ -311,8 +332,6 @@ router.get('/tasks', async (req, res) => {
         );
 
         if (hasPagination) {
-            const limit = parseInt(limitParam, 10) || 20;
-            const offset = parseInt(offsetParam, 10) || 0;
             response.pagination = {
                 total: totalCount,
                 limit: limit,

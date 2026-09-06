@@ -1,0 +1,23 @@
+# Reverse proxy for docs/examples/docker-compose.hosted.yml.
+# Caddy obtains and renews the certificate for APP_DOMAIN by itself.
+
+{$APP_DOMAIN} {
+    encode zstd gzip
+
+    # Let the app see the real client address and scheme
+    reverse_proxy tududi-web:3002 {
+        header_up X-Forwarded-Proto {scheme}
+        header_up X-Forwarded-For {remote_host}
+    }
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        -Server
+    }
+
+    # Uptime monitors should watch /api/health/ready
+    log {
+        output stdout
+        format json
+    }
+}

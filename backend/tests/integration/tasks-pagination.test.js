@@ -131,3 +131,85 @@ describe('Tasks Pagination', () => {
         });
     });
 });
+
+describe('GET /api/tasks database pagination', () => {
+    const request = require('supertest');
+    const app = require('../../app');
+    const { Task, Tag } = require('../../models');
+    const { createTestUser } = require('../helpers/testUtils');
+
+    let user, agent;
+
+    beforeEach(async () => {
+        user = await createTestUser({
+            email: `dbpage_${Date.now()}@example.com`,
+        });
+        agent = request.agent(app);
+        await agent
+            .post('/api/login')
+            .send({ email: user.email, password: 'password123' });
+    });
+
+    it('pages a filtered list without loading every row', async () => {
+        const tag = await Tag.create({ name: 'paged', user_id: user.id });
+        for (let i = 1; i <= 12; i++) {
+            const task = await Task.create({
+                user_id: user.id,
+                name: `Tagged ${String(i).padStart(2, '0')}`,
+                status: 0,
+            });
+            if (i % 2 === 0) await task.setTags([tag.id]);
+        }
+        const spy = jest.spyOn(Task, 'findAll');
+
+        const page1 = await agent
+            .get('/api/tasks')
+            .query({ tag: 'paged', limit: 4, offset: 0, order_by: 'name:asc' });
+        expect(page1.status).toBe(200);
+        expect(page1.body.tasks).toHaveLength(4);
+        expect(page1.body.pagination).toEqual({
+            total: 6,
+            limit: 4,
+            offset: 0,
+            hasMore: true,
+        });
+        expect(page1.body.tasks.every((t) => t.name.startsWith('Tagged'))).toBe(
+            true
+        );
+
+        const page2 = await agent
+            .get('/api/tasks')
+            .query({ tag: 'paged', limit: 4, offset: 4, order_by: 'name:asc' });
+        expect(page2.body.tasks).toHaveLength(2);
+        expect(page2.body.pagination.hasMore).toBe(false);
+
+        // The main list query was not a full findAll for the paged calls
+        expect(spy).not.toHaveBeenCalledWith(
+            expect.objectContaining({ distinct: true, limit: undefined })
+        );
+        spy.mockRestore();
+
+        const names = [...page1.body.tasks, ...page2.body.tasks].map(
+            (t) => t.name
+        );
+        expect(new Set(names).size).toBe(6);
+    });
+
+    it('still pages today and upcoming-by-day in memory', async () => {
+        for (let i = 1; i <= 5; i++) {
+            await Task.create({
+                user_id: user.id,
+                name: `Due ${i}`,
+                status: 0,
+                due_date: new Date(),
+            });
+        }
+        const today = await agent
+            .get('/api/tasks')
+            .query({ type: 'today', limit: 2, offset: 0 });
+        expect(today.status).toBe(200);
+        expect(today.body.pagination).toMatchObject({ limit: 2, offset: 0 });
+        expect(typeof today.body.pagination.total).toBe('number');
+        expect(today.body.tasks.length).toBeLessThanOrEqual(2);
+    });
+});

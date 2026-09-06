@@ -1,0 +1,112 @@
+# tududi as a hosted, multi-user service on one machine.
+#
+# Two app containers from the same image: "web" serves HTTP with the
+# background jobs switched off, "worker" runs the schedulers and the
+# Telegram poller and serves no traffic. Both share one PostgreSQL. Caddy
+# terminates TLS and obtains certificates on its own.
+#
+#   cp docs/examples/docker-compose.hosted.yml docker-compose.yml
+#   cp docs/examples/Caddyfile Caddyfile
+#   cp backend/.env.example .env   # then fill in the values listed at the bottom
+#   docker compose up -d
+#
+# Secrets live in .env on the server, never in this file.
+
+services:
+    caddy:
+        image: caddy:2-alpine
+        container_name: tududi-caddy
+        ports:
+            - '80:80'
+            - '443:443'
+        volumes:
+            - ./Caddyfile:/etc/caddy/Caddyfile:ro
+            - caddy_data:/data
+            - caddy_config:/config
+        environment:
+            APP_DOMAIN: ${APP_DOMAIN:?set APP_DOMAIN in .env}
+        depends_on:
+            - web
+        restart: unless-stopped
+
+    db:
+        image: postgres:16-alpine
+        container_name: tududi-db
+        environment:
+            POSTGRES_DB: ${DB_NAME:-tududi}
+            POSTGRES_USER: ${DB_USER:-tududi}
+            POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
+        # Keep max_connections above DB_POOL_MAX times the number of app
+        # containers, plus a margin for pg_dump and psql.
+        command: ['postgres', '-c', 'max_connections=60', '-c', 'shared_buffers=256MB']
+        shm_size: 256m
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+        healthcheck:
+            test: ['CMD-SHELL', 'pg_isready -U ${DB_USER:-tududi} -d ${DB_NAME:-tududi}']
+            interval: 5s
+            timeout: 3s
+            retries: 10
+        restart: unless-stopped
+
+    web:
+        image: chrisvel/tududi:${TUDUDI_VERSION:-latest}
+        container_name: tududi-web
+        env_file: .env
+        environment:
+            DATABASE_URL: postgres://${DB_USER:-tududi}:${DB_PASSWORD}@db:5432/${DB_NAME:-tududi}
+            DB_POOL_MAX: ${DB_POOL_MAX:-10}
+            TUDUDI_HOSTED_MODE: 'true'
+            TUDUDI_TRUST_PROXY: '1'
+            # Background work belongs to the worker container
+            DISABLE_SCHEDULER: 'true'
+            DISABLE_TELEGRAM: 'true'
+        volumes:
+            - ./uploads:/app/uploads
+            - ./backups:/app/backups
+        expose:
+            - '3002'
+        depends_on:
+            db:
+                condition: service_healthy
+        restart: unless-stopped
+
+    worker:
+        image: chrisvel/tududi:${TUDUDI_VERSION:-latest}
+        container_name: tududi-worker
+        env_file: .env
+        environment:
+            DATABASE_URL: postgres://${DB_USER:-tududi}:${DB_PASSWORD}@db:5432/${DB_NAME:-tududi}
+            DB_POOL_MAX: ${DB_POOL_MAX:-5}
+            TUDUDI_HOSTED_MODE: 'true'
+            TUDUDI_TRUST_PROXY: '1'
+            DISABLE_SCHEDULER: 'false'
+            DISABLE_TELEGRAM: 'false'
+        volumes:
+            - ./uploads:/app/uploads
+            - ./backups:/app/backups
+        depends_on:
+            db:
+                condition: service_healthy
+            web:
+                condition: service_started
+        restart: unless-stopped
+
+volumes:
+    pgdata:
+    caddy_data:
+    caddy_config:
+
+# .env must set at least:
+#   APP_DOMAIN=app.example.com
+#   DB_PASSWORD=...                         (long random)
+#   TUDUDI_SESSION_SECRET=...               (openssl rand -hex 64)
+#   TUDUDI_ALLOWED_ORIGINS=https://app.example.com
+#   FRONTEND_URL=https://app.example.com
+#   BACKEND_URL=https://app.example.com
+#   TUDUDI_USER_EMAIL=... TUDUDI_USER_PASSWORD=...   (the admin account)
+#   ENABLE_EMAIL=true EMAIL_SMTP_HOST=... EMAIL_SMTP_PORT=587 EMAIL_SMTP_USERNAME=... EMAIL_SMTP_PASSWORD=... EMAIL_FROM_ADDRESS=...
+#   STRIPE_SECRET_KEY=... STRIPE_WEBHOOK_SECRET=... STRIPE_PRICE_PRO_MONTHLY=... STRIPE_PRICE_PRO_ANNUAL=...
+#   FF_ENABLE_BACKUPS=true FF_ENABLE_CALDAV=true FF_ENABLE_MCP=true
+# Optional: LLM_API_KEY, TUDUDI_PLANS_JSON, TUDUDI_TRIAL_DAYS, LOG_LEVEL.
+# The server refuses to start in hosted mode until the required ones are set.
