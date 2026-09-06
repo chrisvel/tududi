@@ -42,6 +42,9 @@ Notable changes to tududi. Versions match the git tags and the
   health probes are not logged.
 - Docker images are published by CI on release tags
   (`.github/workflows/docker-publish.yml`).
+- The marketing page can be served by the same image: hostnames listed in
+  `TUDUDI_LANDING_HOSTS` get it, in 25 languages, and product paths on those
+  hosts redirect to `FRONTEND_URL`. Off unless the variable is set.
 
 ### Fixed
 

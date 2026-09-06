@@ -115,6 +115,33 @@ subscription and removes the Stripe customer.
 Local testing: `stripe listen --forward-to localhost:3002/api/billing/webhook`
 and `stripe trigger checkout.session.completed`.
 
+## Marketing page
+
+The same image can serve the public marketing page, so a hosted deployment
+needs no second application for `example.com` beside `app.example.com`.
+The page lives in `backend/modules/landing/` (an EJS template, its own
+`locales/<code>/landing.json` catalogs in 25 languages, and a few assets)
+and is switched on per hostname:
+
+| Variable | Meaning |
+|---|---|
+| `TUDUDI_LANDING_HOSTS` | comma-separated hostnames that get the marketing page, e.g. `tududi.com,www.tududi.com`. Empty (default) means it is never served |
+| `TUDUDI_LANDING_URL` | canonical origin used in `hreflang` and canonical tags; defaults to `https://` plus the first host |
+| `TUDUDI_LANDING_NEWSLETTER_URL` | form action for the release-notes signup (a Buttondown or similar embed endpoint). Unset hides the forms |
+| `TUDUDI_LANDING_PRICING_JSON` | overrides for the prices printed on the page: `{"monthly":5,"annual":49,"standard":99,"business":499,"launchActive":true}` |
+
+On a landing host, `/` and `/<locale>` render the page, `/landing-assets/*`
+serves its images, `/api/*` still works (so health checks do), and every
+other path answers `301` to the same path on `FRONTEND_URL`, so product
+pages exist on exactly one hostname. On any other host the middleware is a
+no-op. The Free plan limits printed on the page come from the plan catalog,
+so `TUDUDI_PLANS_JSON` changes the copy too.
+
+The page carries its own `Content-Security-Policy` (Google Fonts, Font
+Awesome from cdnjs, Google Analytics, the GitHub API for the star count).
+`node backend/scripts/landing-i18n-check.js` reports locale keys that are
+missing or whose `{{placeholders}}` differ from English.
+
 ## Deploying on one machine
 
 `docs/examples/docker-compose.hosted.yml` and `docs/examples/Caddyfile` are

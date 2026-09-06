@@ -1,0 +1,350 @@
+{
+  "meta": {
+    "title": "tududi: trình quản lý công việc tự vận hành và hệ thống quản lý cuộc sống, có MCP cho tác nhân AI",
+    "description": "Trình quản lý công việc tự vận hành và hệ thống quản lý cuộc sống. Lĩnh vực, mục tiêu, dự án và công việc, cùng với ghi chú và thói quen, kèm máy chủ MCP cung cấp {{tools}} công cụ để các tác nhân AI xử lý danh sách của bạn. Mã nguồn mở theo giấy phép MIT.",
+    "langSwitcherLabel": "Đổi ngôn ngữ",
+    "langSwitcherCurrent": "Ngôn ngữ: {{name}}"
+  },
+  "nav": {
+    "demo": "Bản demo trực tiếp",
+    "features": "Tính năng",
+    "ai": "AI và MCP",
+    "pricing": "Giá",
+    "selfHost": "Tự vận hành",
+    "faq": "Câu hỏi thường gặp",
+    "docs": "Tài liệu",
+    "changelog": "Thay đổi",
+    "signIn": "Đăng nhập",
+    "toggle": "Mở menu"
+  },
+  "hero": {
+    "badgeStars": "sao trên GitHub",
+    "badgeMcp": "Tích hợp sẵn máy chủ MCP",
+    "starsLoading": "Đang tải số sao",
+    "titleLine1": "Quản lý cuộc sống trên máy chủ của bạn,",
+    "titleLine2": "với hệ thống mà AI thực sự dùng được",
+    "lede": "Lĩnh vực, mục tiêu, dự án và công việc, cùng với ghi chú và thói quen, trong một hệ thống. Chạy trên phần cứng của riêng bạn, hoặc giao phần vận hành cho chúng tôi.",
+    "ctaPrimary": "Tự cài đặt trong 2 phút",
+    "ctaDemo": "Dùng thử bản demo trực tiếp",
+    "ctaSecondary": "Xem trên GitHub",
+    "altLinkPrefix": "Hoặc",
+    "altLink": "tạo tài khoản miễn phí trên tududi Cloud",
+    "note": "Giấy phép MIT · mã nguồn mở mãi mãi",
+    "demoNote": "Một phiên bản lưu trữ thật với dữ liệu mẫu, dùng chung và được đặt lại thường xuyên",
+    "screenshotAlt": "Giao diện tududi với chế độ xem Hôm nay và các công việc đã lên kế hoạch"
+  },
+  "proof": {
+    "stars": "sao trên GitHub",
+    "mcp": "Máy chủ MCP, {{tools}} công cụ",
+    "languages": "{{count}} ngôn ngữ",
+    "dockerPulls": "lượt tải Docker",
+    "discord": "thành viên Discord",
+    "discordAlt": "Discord: {{count}} thành viên"
+  },
+  "press": {
+    "featuredIn": "Được nhắc đến trên",
+    "eyebrow": "Báo chí",
+    "title": "Đừng chỉ tin lời chúng tôi",
+    "sub": "Những gì người đánh giá viết sau khi tự chạy tududi.",
+    "readLink": "Đọc bài đánh giá"
+  },
+  "ai": {
+    "kicker": "AI và MCP",
+    "titleLine1": "Hệ thống trên máy chủ của bạn,",
+    "titleLine2": "mà tác nhân AI thực sự dùng được",
+    "ledeHtml": "tududi đi kèm một máy chủ MCP cung cấp <strong>{{tools}} công cụ</strong>, bao trùm công việc, dự án, lĩnh vực, mục tiêu, thói quen, ghi chú, con người, thẻ, chế độ xem, hộp thư đến, tìm kiếm và số liệu. Kết nối Claude hay bất kỳ tác nhân tương thích MCP nào thẳng vào hệ thống của bạn. Vì tududi chạy trên máy chủ của chính bạn, cả kết nối lẫn dữ liệu đều không cần rời khỏi đó. Đây là khác biệt về cấu trúc mà Todoist và Notion không thể mang lại, dù họ hứa hẹn điều gì.",
+    "cards": {
+      "capture": {
+        "title": "Ghi nhận và tìm kiếm ngay trong đoạn chat",
+        "body": "Thêm, tìm và hoàn tất công việc mà không cần rời khỏi cuộc trò chuyện."
+      },
+      "dataStays": {
+        "title": "Dữ liệu ở lại máy chủ của bạn",
+        "body": "Kết nối MCP chỉ trao đổi với bản cài đặt của bạn. Không gì đi qua bên thứ ba."
+      },
+      "openProtocol": {
+        "title": "Giao thức mở, không lệ thuộc",
+        "body": "Xây trên Model Context Protocol mở. Hoạt động với Claude và các máy khách MCP khác."
+      }
+    },
+    "configTitle": "Kết nối với Claude Desktop",
+    "footnoteClients": "Cách làm tương tự áp dụng cho Cursor, Windsurf, Cline và mọi máy khách MCP khác.",
+    "footnoteDocsLink": "Đọc tài liệu MCP →",
+    "footnoteIncluded": "Có ở mọi gói, dù bạn tự vận hành hay dùng bản Được quản lý.",
+    "assistantTitle": "Trợ lý AI",
+    "assistantLede": "Một lớp riêng biệt và tùy chọn, đọc dữ liệu của bạn rồi trả lại các bản tóm tắt bằng ngôn ngữ dễ hiểu. Hoạt động với mọi nhà cung cấp tương thích OpenAI, kể cả loại bạn tự vận hành như Ollama.",
+    "assistantCards": {
+      "daily": {
+        "title": "Bản tin buổi sáng",
+        "body": "Bản tóm tắt buổi sáng với công việc trọng tâm và những dấu hiệu rủi ro đáng lưu ý."
+      },
+      "task": {
+        "title": "Phân tích công việc",
+        "body": "Gợi ý các bước tiếp theo cho một công việc cụ thể, tạo ra khi bạn cần."
+      },
+      "project": {
+        "title": "Phân tích dự án",
+        "body": "Đánh giá nhanh tình trạng một dự án: điều gì đang tiến triển, điều gì đang tắc."
+      }
+    }
+  },
+  "features": {
+    "eyebrow": "Tính năng",
+    "title": "Một hệ thống trọn vẹn cho cuộc sống ngăn nắp",
+    "sub": "tududi gộp mục tiêu, dự án, công việc, ghi chú và các chế độ xem thông minh vào một hệ thống điềm tĩnh, tập trung. Dành cho cá nhân và nhóm nhỏ coi trọng quyền riêng tư và sự rõ ràng.",
+    "showAll": "Xem tất cả {{count}} tính năng",
+    "groups": {
+      "planFocus": "Lập kế hoạch và tập trung",
+      "tasksProjects": "Công việc và dự án",
+      "accessAnywhere": "Truy cập mọi nơi",
+      "privacyCollab": "Riêng tư và cộng tác"
+    },
+    "cards": {
+      "goals": {
+        "title": "Mục tiêu",
+        "body": "Đặt kết quả cho một mùa hay một năm, rồi xem Lĩnh vực và Dự án nào thực sự đang đẩy chúng tiến lên."
+      },
+      "hierarchy": {
+        "title": "Tổ chức theo tầng",
+        "body": "Mục tiêu và Lĩnh vực đứng cạnh nhau ở trên cùng: kết quả dài hạn và những mảng đời sống diễn ra liên tục. Cả hai đều chứa Dự án, và Dự án chứa Công việc."
+      },
+      "lifeAreas": {
+        "title": "Quản lý lĩnh vực đời sống",
+        "body": "Sắp xếp dự án theo lĩnh vực đời sống - Công việc, Cá nhân, Sức khỏe, Học tập."
+      },
+      "views": {
+        "title": "Chế độ xem",
+        "body": "Các tìm kiếm đã lưu thông minh như «Hôm nay», «Quá hạn» hay «Một ngày nào đó». Một cú nhấp, không phải dựng lại bộ lọc mỗi lần."
+      },
+      "matrixKanban": {
+        "title": "Ma trận Eisenhower và Kanban",
+        "body": "Chuyển sang ma trận Eisenhower hoặc bảng Kanban khi câu hỏi chỉ đơn giản là: giờ tôi làm gì."
+      },
+      "dueDates": {
+        "title": "Hạn chót thông minh",
+        "body": "Tự động phân loại: ưu tiên hôm nay, hạn chót sắp tới và những việc để dành sau."
+      },
+      "insights": {
+        "title": "Thống kê năng suất",
+        "body": "Xem xu hướng hoàn thành và khối lượng công việc trên các dự án, để biết thời gian của bạn thực sự đi đâu."
+      },
+      "people": {
+        "title": "Con người",
+        "body": "Giao việc cho từng người và nhìn thoáng qua là biết ai đang tham gia dự án."
+      },
+      "habits": {
+        "title": "Theo dõi thói quen",
+        "body": "Theo dõi thói quen lặp lại song song với công việc và dự án, kèm chuỗi ngày và lịch sử đơn giản."
+      },
+      "recurring": {
+        "title": "Công việc lặp lại thông minh",
+        "body": "Các mẫu theo ngày, tuần, tháng, với việc lặp lại tính từ lúc hoàn tất cùng quan hệ cha - con."
+      },
+      "richTasks": {
+        "title": "Tổ chức công việc phong phú",
+        "body": "Mức ưu tiên, hạn chót, thẻ và sắp xếp thông minh. Bộ lọc mạnh để tìm ra thứ đáng quan tâm."
+      },
+      "subtasks": {
+        "title": "Công việc con và chia nhỏ",
+        "body": "Chia công việc phức tạp thành các phần vừa sức, có theo dõi tiến độ."
+      },
+      "notes": {
+        "title": "Tài liệu dự án",
+        "body": "Ghi chú định dạng phong phú cho dự án, với tìm kiếm đầy đủ và khả năng sắp xếp."
+      },
+      "tags": {
+        "title": "Hệ thống thẻ linh hoạt",
+        "body": "Thẻ tùy chỉnh cho công việc và ghi chú, lọc tức thì và sắp xếp xuyên suốt các dự án."
+      },
+      "search": {
+        "title": "Lọc và tìm kiếm thông minh",
+        "body": "Tìm kiếm toàn văn cùng bộ lọc theo dự án, thẻ, mức ưu tiên hay hạn chót. Tìm ra bất kỳ công việc nào trong vài giây."
+      },
+      "pwa": {
+        "title": "Cài như một ứng dụng",
+        "body": "Thêm tududi vào màn hình chính hoặc màn hình nền dưới dạng PWA. Dùng được ngoại tuyến và đồng bộ khi bạn trực tuyến trở lại."
+      },
+      "oidc": {
+        "title": "Đăng nhập OIDC / SSO",
+        "body": "Đăng nhập bằng nhà cung cấp danh tính sẵn có: Authentik, Keycloak, Google Workspace, hay bất kỳ nhà cung cấp nào hỗ trợ OIDC."
+      },
+      "i18n": {
+        "title": "Hỗ trợ đa ngôn ngữ",
+        "body": "Có sẵn bằng {{count}} ngôn ngữ với bản địa hóa đầy đủ."
+      },
+      "telegram": {
+        "title": "Tích hợp Telegram",
+        "body": "Gửi một tin nhắn để ghi việc ngay lập tức, nhận bản tóm tắt hằng ngày và quản lý danh sách khi đang di chuyển."
+      },
+      "caldav": {
+        "title": "Đồng bộ CalDAV",
+        "body": "Đồng bộ công việc hai chiều với Apple Lời nhắc, tasks.org, Thunderbird và mọi ứng dụng hỗ trợ CalDAV."
+      },
+      "api": {
+        "title": "Truy cập API và Swagger",
+        "body": "Tài liệu Swagger có phiên bản và mã truy cập cá nhân cho các tích hợp riêng."
+      },
+      "responsive": {
+        "title": "Thiết kế đáp ứng",
+        "body": "Bố cục thích ứng gọn gàng từ màn hình rộng cho tới chiếc điện thoại trong túi bạn."
+      },
+      "privacy": {
+        "title": "Riêng tư và quyền kiểm soát",
+        "body": "Giữ dữ liệu là của riêng bạn. Tự vận hành để toàn quyền kiểm soát, hoặc dùng bản Được quản lý với sao lưu mã hóa."
+      },
+      "collab": {
+        "title": "Cộng tác trong dự án",
+        "body": "Chia sẻ dự án với quyền truy cập chi tiết - chỉ đọc hoặc đọc và ghi."
+      }
+    }
+  },
+  "selfHost": {
+    "eyebrow": "Tự vận hành",
+    "title": "Chạy trên máy chủ của chính bạn",
+    "sub": "Miễn phí, mã nguồn mở và sẵn sàng cho Docker. Dữ liệu hoàn toàn thuộc về bạn.",
+    "cardTitle": "Cài đặt bằng Docker",
+    "cardSub": "Triển khai trong vài phút với Docker",
+    "step1": "Tải image Docker",
+    "step2": "Chạy container",
+    "step3Prefix": "Truy cập tại",
+    "linkGithub": "Xem trên GitHub",
+    "linkDocs": "Tài liệu"
+  },
+  "pricing": {
+    "eyebrow": "Giá",
+    "title": "Chọn cách bạn dùng tududi",
+    "sub": "Một hệ thống, ba cách vận hành",
+    "mostPopular": "ĐƯỢC CHỌN NHẤT",
+    "earlyBird": "ƯU ĐÃI SỚM",
+    "perYear": "/năm",
+    "forever": "/mãi mãi",
+    "plans": {
+      "selfHosted": {
+        "name": "Tự vận hành",
+        "priceNote": "Miễn phí và mã nguồn mở, mãi mãi",
+        "features": [
+          "Mã nguồn mở, giấy phép MIT",
+          "Chạy trên máy chủ của chính bạn",
+          "Toàn quyền kiểm soát, không lệ thuộc nhà cung cấp",
+          "Đầy đủ tính năng, không có gì thu phí riêng",
+          "Đã bao gồm MCP và Trợ lý AI"
+        ],
+        "action": "Tự cài tududi →"
+      },
+      "cloud": {
+        "name": "Cloud",
+        "toStart": "để bắt đầu",
+        "proLabel": "Pro",
+        "or": "hoặc",
+        "launchNote": "Giá năm ưu đãi sớm, giữ nguyên chừng nào bạn còn đăng ký.",
+        "priceNote": "Tạo tài khoản trong một phút, nâng cấp lên Pro khi gói miễn phí không còn đủ.",
+        "features": [
+          "Gói miễn phí: {{freeTasks}} công việc đang hoạt động, {{freeProjects}} dự án, {{freeNotes}} ghi chú, {{freeStorageMb}} MB tệp đính kèm",
+          "Pro: không giới hạn công việc, dự án và ghi chú, {{proStorageGb}} GB tệp đính kèm",
+          "Pro: Trợ lý AI, MCP, đồng bộ CalDAV, bot Telegram, nhập bản sao lưu",
+          "Cập nhật và sao lưu hằng ngày do chúng tôi lo",
+          "Xuất mọi thứ bất cứ lúc nào, tự xóa tài khoản"
+        ],
+        "action": "Tạo tài khoản miễn phí →"
+      },
+      "business": {
+        "name": "Giấy phép Doanh nghiệp",
+        "priceNote": "Dùng tududi trong công việc",
+        "features": [
+          "Giấy phép sử dụng thương mại",
+          "Hỗ trợ ưu tiên với cam kết thời gian phản hồi",
+          "Hóa đơn để công ty bạn hạch toán chi phí, đã gồm thuế",
+          "Pro trên tududi Cloud, hoặc hoàn toàn trên máy chủ của riêng bạn",
+          "Kênh liên hệ trực tiếp với người duy trì dự án"
+        ],
+        "licenceNote": "tududi dùng giấy phép MIT và việc sử dụng thương mại vốn đã miễn phí. Khoản này mua hỗ trợ ưu tiên, cam kết thời gian phản hồi và hóa đơn.",
+        "action": "Gửi email tới licensing@tududi.com →"
+      }
+    },
+    "fineprint": "Hủy bất cứ lúc nào và xuất mọi thứ. Nếu tududi Cloud có ngày đóng cửa, bạn nhận được dữ liệu của mình cùng hướng dẫn chuyển sang tự lưu trữ. Áp dụng sử dụng hợp lý cho dung lượng và lưu lượng API. Hoàn tiền trong 30 ngày, không cần lý do.",
+    "perMonth": "/tháng"
+  },
+  "compare": {
+    "title": "So sánh nhanh",
+    "sub": "Cả ba đều cho bạn trọn bộ hệ thống tududi",
+    "colSelf": "Tự vận hành",
+    "colHosted": "Cloud",
+    "colBusiness": "Giấy phép Doanh nghiệp",
+    "rows": {
+      "openSource": "Lõi mã nguồn mở",
+      "commercialUse": "Sử dụng thương mại",
+      "infraControl": "Toàn quyền kiểm soát hạ tầng",
+      "dataOnHardware": "Dữ liệu nằm trên phần cứng của bạn",
+      "noRecurring": "Không có chi phí định kỳ",
+      "noSetup": "Không cần dựng máy chủ",
+      "managedUpdates": "Cập nhật được quản lý",
+      "autoBackups": "Sao lưu tự động",
+      "isolated": "Container và cơ sở dữ liệu tách biệt",
+      "prioritySupport": "Hỗ trợ ưu tiên",
+      "responseTime": "Cam kết thời gian phản hồi",
+      "invoice": "Hóa đơn để hạch toán",
+      "pricing": "Giá"
+    },
+    "values": {
+      "optional": "Tùy chọn",
+      "yourServer": "Máy chủ của bạn",
+      "community": "Cộng đồng",
+      "email": "Email",
+      "sameBusinessDay": "Trong cùng ngày làm việc",
+      "freeForever": "Miễn phí mãi mãi",
+      "pricePerYear": "{{price}} $/năm",
+      "sharedInstance": "Máy chủ dùng chung, xuất dữ liệu bất cứ lúc nào",
+      "freeOrPro": "Miễn phí, hoặc Pro ${{price}}/năm"
+    },
+    "closing": "Sẵn sàng vận hành hệ thống của riêng bạn chưa?",
+    "closingCta": "Tự cài tududi"
+  },
+  "waitlist": {
+    "title": "Chưa sẵn sàng?",
+    "sub": "Để lại email để nhận ghi chú phát hành và thỉnh thoảng một tin mới. Không spam, hủy đăng ký chỉ một cú nhấp.",
+    "placeholder": "ban@email.com",
+    "inputLabel": "Địa chỉ email",
+    "submit": "Báo cho tôi",
+    "note": "Chúng tôi lưu địa chỉ của bạn và ngày bạn gửi, chỉ để gửi ghi chú phát hành chứ không gì khác. Chúng tôi không bao giờ chia sẻ nó."
+  },
+  "langs": {
+    "heading": "Có sẵn bằng {{count}} ngôn ngữ trên toàn thế giới"
+  },
+  "community": {
+    "title": "Tham gia cộng đồng tududi",
+    "sub": "Kết nối với người dùng tududi khác, nhận hỗ trợ và cập nhật tin mới"
+  },
+  "footer": {
+    "tagline": "Một hệ thống mở để sắp xếp cuộc sống và công việc. Máy chủ của bạn, hoặc của chúng tôi.",
+    "colProduct": "Sản phẩm",
+    "colResources": "Tài nguyên",
+    "colCommunity": "Cộng đồng và hỗ trợ",
+    "colSupport": "Ủng hộ",
+    "linkRoadmap": "Lộ trình",
+    "linkIssues": "Báo lỗi",
+    "linkBusinessLicence": "Giấy phép doanh nghiệp",
+    "linkEmail": "Email",
+    "linkCoffee": "Mời một ly cà phê",
+    "subTitle": "Ghi chú phát hành qua email",
+    "subBody": "Thỉnh thoảng có ghi chú phát hành. Không tiếp thị, hủy đăng ký bất cứ lúc nào.",
+    "subSubmit": "Đăng ký",
+    "rights": "Bảo lưu mọi quyền."
+  },
+  "js": {
+    "showFewer": "Thu gọn",
+    "copy": "Sao chép",
+    "copied": "Đã sao chép"
+  },
+  "faq": {
+    "items": {
+      "freePlan": {
+        "q": "Gói Cloud miễn phí gồm những gì?",
+        "a": "Tối đa {{freeTasks}} công việc đang hoạt động, {{freeProjects}} dự án, {{freeNotes}} ghi chú và {{freeStorageMb}} MB tệp đính kèm, không giới hạn thời gian. Công việc đã hoàn thành không tính. Khi chạm giới hạn, bạn vẫn giữ mọi thứ và vẫn có thể xem, sửa, hoàn thành và xóa; chỉ việc thêm mới phải chờ đến khi bạn xuống dưới giới hạn hoặc nâng cấp lên Pro."
+      },
+      "leaving": {
+        "q": "Tôi có thể rời đi không, và dữ liệu của tôi sẽ ra sao?",
+        "a": "Có, bất cứ lúc nào. Xuất mọi thứ thành một tệp duy nhất từ hồ sơ của bạn và nhập vào tududi tự lưu trữ, vốn đọc cùng định dạng. Xóa tài khoản sẽ xóa dữ liệu, tệp đính kèm và bản sao lưu của bạn khỏi máy chủ của chúng tôi và hủy mọi gói đăng ký."
+      }
+    }
+  }
+}

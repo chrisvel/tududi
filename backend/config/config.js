@@ -27,6 +27,19 @@ const credentials = {
 
 const defaultHost = environment === 'test' ? '127.0.0.1' : '0.0.0.0';
 
+// A JSON object from an environment variable, or {} when unset or invalid.
+function parseJsonEnv(value) {
+    if (!value) return {};
+    try {
+        const parsed = JSON.parse(value);
+        return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+            ? parsed
+            : {};
+    } catch {
+        return {};
+    }
+}
+
 const { resolveDatabaseSettings } = require('./database-settings');
 
 const emailConfig = {
@@ -101,6 +114,32 @@ const config = {
                 proMonthly: process.env.STRIPE_PRICE_PRO_MONTHLY,
                 proAnnual: process.env.STRIPE_PRICE_PRO_ANNUAL,
             },
+        },
+    },
+
+    // Marketing page. When TUDUDI_LANDING_HOSTS names one or more hostnames,
+    // requests for those hosts get the marketing page instead of the app,
+    // and product paths on them redirect to FRONTEND_URL. Empty (the
+    // default) means the page is never served.
+    landing: {
+        hosts: (process.env.TUDUDI_LANDING_HOSTS || '')
+            .split(',')
+            .map((h) => h.trim().toLowerCase())
+            .filter(Boolean),
+        siteUrl:
+            process.env.TUDUDI_LANDING_URL ||
+            (process.env.TUDUDI_LANDING_HOSTS
+                ? `https://${process.env.TUDUDI_LANDING_HOSTS.split(',')[0].trim()}`
+                : 'https://tududi.com'),
+        appUrl: process.env.FRONTEND_URL || 'http://localhost:8080',
+        newsletterAction: process.env.TUDUDI_LANDING_NEWSLETTER_URL || '',
+        pricing: {
+            monthly: 5,
+            annual: 49,
+            standard: 99,
+            business: 499,
+            launchActive: true,
+            ...parseJsonEnv(process.env.TUDUDI_LANDING_PRICING_JSON),
         },
     },
 

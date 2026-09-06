@@ -1,0 +1,350 @@
+{
+  "meta": {
+    "title": "tududi: gestore di attività self-hosted e sistema di organizzazione della vita, con MCP per gli agenti IA",
+    "description": "Un gestore di attività self-hosted e sistema di organizzazione della vita. Aree, obiettivi, progetti e attività, più note e abitudini, con un server MCP che espone {{tools}} strumenti perché gli agenti IA lavorino sulla tua lista. Open source con licenza MIT.",
+    "langSwitcherLabel": "Cambia lingua",
+    "langSwitcherCurrent": "Lingua: {{name}}"
+  },
+  "nav": {
+    "demo": "Demo dal vivo",
+    "features": "Funzionalità",
+    "ai": "IA & MCP",
+    "pricing": "Prezzi",
+    "selfHost": "Self-hosting",
+    "faq": "FAQ",
+    "docs": "Documentazione",
+    "changelog": "Novità",
+    "signIn": "Accedi",
+    "toggle": "Apri il menu"
+  },
+  "hero": {
+    "badgeStars": "stelle su GitHub",
+    "badgeMcp": "Server MCP integrato",
+    "starsLoading": "Caricamento del numero di stelle",
+    "titleLine1": "Organizza la tua vita in self-hosting,",
+    "titleLine2": "con un sistema che la tua IA può davvero usare",
+    "lede": "Aree, obiettivi, progetti e attività, più note e abitudini, in un unico sistema. Installalo sul tuo hardware, oppure lascia a noi la gestione.",
+    "ctaPrimary": "Self-hosting in 2 minuti",
+    "ctaDemo": "Prova la demo dal vivo",
+    "ctaSecondary": "Guarda su GitHub",
+    "altLinkPrefix": "Oppure",
+    "altLink": "crea un account gratuito su tududi Cloud",
+    "note": "Licenza MIT · open source per sempre",
+    "demoNote": "Un'istanza ospitata reale, con dati di esempio, condivisa e reimpostata regolarmente",
+    "screenshotAlt": "L'interfaccia di tududi, con la vista Oggi e le attività pianificate"
+  },
+  "proof": {
+    "stars": "stelle su GitHub",
+    "mcp": "Server MCP, {{tools}} strumenti",
+    "languages": "{{count}} lingue",
+    "dockerPulls": "download Docker",
+    "discord": "membri su Discord",
+    "discordAlt": "Discord: {{count}} membri"
+  },
+  "press": {
+    "featuredIn": "Ne hanno parlato",
+    "eyebrow": "Stampa",
+    "title": "Non fidarti solo di noi",
+    "sub": "Cosa hanno scritto i recensori dopo aver provato tududi di persona.",
+    "readLink": "Leggi la recensione"
+  },
+  "ai": {
+    "kicker": "IA & MCP",
+    "titleLine1": "Il sistema self-hosted",
+    "titleLine2": "che il tuo agente IA può davvero usare",
+    "ledeHtml": "tududi include un server MCP che espone <strong>{{tools}} strumenti</strong>, per attività, progetti, aree, obiettivi, abitudini, note, persone, tag, viste, posta in arrivo, ricerca e metriche. Collega Claude o qualsiasi agente compatibile con MCP direttamente al tuo sistema. Poiché tududi gira sul tuo server, né la connessione né i tuoi dati devono mai lasciarlo. È una differenza strutturale che Todoist e Notion non possono offrire, qualunque cosa promettano.",
+    "cards": {
+      "capture": {
+        "title": "Raccogli e cerca dalla chat",
+        "body": "Aggiungi, trova e completa le attività senza uscire dalla conversazione."
+      },
+      "dataStays": {
+        "title": "I dati restano sul tuo server",
+        "body": "La connessione MCP parla con la tua istanza. Niente passa da terze parti."
+      },
+      "openProtocol": {
+        "title": "Protocollo aperto, nessun vincolo",
+        "body": "Costruito sul Model Context Protocol aperto. Funziona con Claude e con gli altri client MCP."
+      }
+    },
+    "configTitle": "Collegalo a Claude Desktop",
+    "footnoteClients": "Funziona allo stesso modo con Cursor, Windsurf, Cline e qualsiasi altro client MCP.",
+    "footnoteDocsLink": "Leggi la documentazione MCP →",
+    "footnoteIncluded": "Incluso in ogni piano, sia in self-hosting sia con il servizio Gestito.",
+    "assistantTitle": "Assistente IA",
+    "assistantLede": "Uno strato separato e facoltativo che legge i tuoi dati e ti restituisce riepiloghi in linguaggio naturale. Funziona con qualsiasi provider compatibile con OpenAI, anche self-hosted come Ollama.",
+    "assistantCards": {
+      "daily": {
+        "title": "Riepilogo del mattino",
+        "body": "Un riepilogo mattutino con l'attività su cui concentrarti e gli eventuali segnali di rischio da tenere d'occhio."
+      },
+      "task": {
+        "title": "Analisi delle attività",
+        "body": "Prossimi passi suggeriti per una specifica attività, generati su richiesta."
+      },
+      "project": {
+        "title": "Analisi dei progetti",
+        "body": "Una valutazione rapida dello stato di un progetto: cosa avanza e cosa è fermo."
+      }
+    }
+  },
+  "features": {
+    "eyebrow": "Funzionalità",
+    "title": "Un sistema completo per una vita organizzata",
+    "sub": "tududi unisce obiettivi, progetti, attività, note e viste intelligenti in un unico sistema calmo e concentrato. Pensato per singoli e piccoli team che tengono alla privacy e alla chiarezza.",
+    "showAll": "Mostra tutte le {{count}} funzionalità",
+    "groups": {
+      "planFocus": "Pianifica e concentrati",
+      "tasksProjects": "Attività e progetti",
+      "accessAnywhere": "Accesso ovunque",
+      "privacyCollab": "Privacy e collaborazione"
+    },
+    "cards": {
+      "goals": {
+        "title": "Obiettivi",
+        "body": "Definisci i risultati per una stagione o per un anno, e scopri quali Aree e Progetti li stanno davvero facendo avanzare."
+      },
+      "hierarchy": {
+        "title": "Organizzazione gerarchica",
+        "body": "Obiettivi e Aree stanno affiancati in cima: i risultati di lungo periodo e gli ambiti costanti della vita. Entrambi contengono Progetti, che contengono Attività."
+      },
+      "lifeAreas": {
+        "title": "Gestione delle aree di vita",
+        "body": "Organizza i progetti per area di vita - Lavoro, Personale, Salute, Formazione."
+      },
+      "views": {
+        "title": "Viste",
+        "body": "Ricerche salvate intelligenti come «Oggi», «In ritardo» o «Prima o poi». Un clic, senza ricostruire un filtro ogni volta."
+      },
+      "matrixKanban": {
+        "title": "Matrice di Eisenhower e Kanban",
+        "body": "Passa a una matrice di Eisenhower o a una bacheca Kanban quando la domanda è semplicemente: cosa faccio adesso."
+      },
+      "dueDates": {
+        "title": "Scadenze intelligenti",
+        "body": "Classificazione automatica: le priorità di oggi, le scadenze imminenti e le attività per prima o poi."
+      },
+      "insights": {
+        "title": "Analisi della produttività",
+        "body": "Osserva l'andamento dei completamenti e il carico sui progetti, per sapere dove finisce davvero il tuo tempo."
+      },
+      "people": {
+        "title": "Persone",
+        "body": "Assegna le attività alle persone e vedi a colpo d'occhio chi è coinvolto in un progetto."
+      },
+      "habits": {
+        "title": "Monitoraggio delle abitudini",
+        "body": "Segui le abitudini ricorrenti insieme ad attività e progetti, con serie e cronologia essenziali."
+      },
+      "recurring": {
+        "title": "Attività ricorrenti intelligenti",
+        "body": "Schemi giornalieri, settimanali e mensili, con ricorrenza basata sul completamento e relazioni padre-figlio."
+      },
+      "richTasks": {
+        "title": "Organizzazione ricca delle attività",
+        "body": "Priorità, scadenze, tag e ordinamento intelligente. Filtri potenti per trovare ciò che conta."
+      },
+      "subtasks": {
+        "title": "Sottoattività e scomposizione",
+        "body": "Scomponi le attività complesse in sottoattività gestibili, con monitoraggio dell'avanzamento."
+      },
+      "notes": {
+        "title": "Documentazione di progetto",
+        "body": "Note in testo formattato per i progetti, con ricerca completa e organizzazione."
+      },
+      "tags": {
+        "title": "Sistema di tag flessibile",
+        "body": "Tag personalizzati per attività e note, con filtri immediati e organizzazione trasversale ai progetti."
+      },
+      "search": {
+        "title": "Filtri e ricerca intelligenti",
+        "body": "Ricerca full-text più filtri per progetto, tag, priorità o scadenza. Trova qualsiasi attività in pochi secondi."
+      },
+      "pwa": {
+        "title": "Installalo come app",
+        "body": "Aggiungi tududi alla schermata home o al desktop come PWA. Funziona offline e si sincronizza appena torni online."
+      },
+      "oidc": {
+        "title": "Accesso OIDC / SSO",
+        "body": "Accedi con il tuo provider di identità: Authentik, Keycloak, Google Workspace o qualsiasi provider compatibile con OIDC."
+      },
+      "i18n": {
+        "title": "Supporto multilingua",
+        "body": "Disponibile in {{count}} lingue con localizzazione completa."
+      },
+      "telegram": {
+        "title": "Integrazione con Telegram",
+        "body": "Manda un messaggio per registrare subito un'attività, ricevi riepiloghi giornalieri e gestisci la lista ovunque tu sia."
+      },
+      "caldav": {
+        "title": "Sincronizzazione CalDAV",
+        "body": "Sincronizzazione bidirezionale delle attività con Apple Promemoria, tasks.org, Thunderbird e qualsiasi app compatibile con CalDAV."
+      },
+      "api": {
+        "title": "Accesso API e Swagger",
+        "body": "Documentazione Swagger versionata e token di accesso personali per integrazioni su misura."
+      },
+      "responsive": {
+        "title": "Design responsive",
+        "body": "Un layout che si adatta con eleganza dal desktop widescreen al telefono in tasca."
+      },
+      "privacy": {
+        "title": "Privacy e controllo",
+        "body": "Tieni privati i tuoi dati. Fai self-hosting per il controllo totale, oppure scegli un'istanza Gestita con backup cifrati."
+      },
+      "collab": {
+        "title": "Collaborazione sui progetti",
+        "body": "Condividi i progetti con permessi granulari - sola lettura oppure lettura e scrittura."
+      }
+    }
+  },
+  "selfHost": {
+    "eyebrow": "Self-hosting",
+    "title": "Installalo sul tuo server",
+    "sub": "Gratuito, open source e pronto per Docker. I tuoi dati sono interamente tuoi.",
+    "cardTitle": "Installazione con Docker",
+    "cardSub": "Pubblicalo in pochi minuti con Docker",
+    "step1": "Scarica l'immagine Docker",
+    "step2": "Avvia il container",
+    "step3Prefix": "Raggiungilo su",
+    "linkGithub": "Guarda su GitHub",
+    "linkDocs": "Documentazione"
+  },
+  "pricing": {
+    "eyebrow": "Prezzi",
+    "title": "Scegli come usare tududi",
+    "sub": "Un sistema, tre modi per farlo girare",
+    "mostPopular": "PIÙ SCELTO",
+    "earlyBird": "OFFERTA LANCIO",
+    "perYear": "/anno",
+    "forever": "/per sempre",
+    "plans": {
+      "selfHosted": {
+        "name": "Self-hosted",
+        "priceNote": "Gratuito e open source, per sempre",
+        "features": [
+          "Open source, con licenza MIT",
+          "Installalo sul tuo server",
+          "Controllo totale, nessun vincolo con il fornitore",
+          "Tutte le funzionalità, nulla a pagamento",
+          "MCP e Assistente IA inclusi"
+        ],
+        "action": "Installa tududi da te →"
+      },
+      "cloud": {
+        "name": "Cloud",
+        "toStart": "per iniziare",
+        "proLabel": "Pro",
+        "or": "oppure",
+        "launchNote": "Prezzo annuale early bird, tuo finché resti abbonato.",
+        "priceNote": "Crea un account in un minuto, passa a Pro quando il piano gratuito ti sta stretto.",
+        "features": [
+          "Piano gratuito: {{freeTasks}} attività attive, {{freeProjects}} progetti, {{freeNotes}} note, {{freeStorageMb}} MB di allegati",
+          "Pro: attività, progetti e note illimitati, {{proStorageGb}} GB di allegati",
+          "Pro: assistente IA, MCP, sincronizzazione CalDAV, bot Telegram, importazione backup",
+          "Aggiornamenti e backup giornalieri gestiti da noi",
+          "Esporta tutto quando vuoi, elimina l'account da solo"
+        ],
+        "action": "Crea un account gratuito →"
+      },
+      "business": {
+        "name": "Licenza Business",
+        "priceNote": "Usare tududi al lavoro",
+        "features": [
+          "Licenza per uso commerciale",
+          "Supporto prioritario con tempi di risposta garantiti",
+          "Una fattura che la tua azienda può scaricare, IVA inclusa",
+          "Pro su tududi Cloud, oppure interamente sul tuo server",
+          "Linea diretta con il manutentore"
+        ],
+        "licenceNote": "tududi ha licenza MIT e l'uso commerciale è già gratuito. Qui paghi supporto prioritario, un impegno sui tempi di risposta e una fattura.",
+        "action": "Scrivi a licensing@tududi.com →"
+      }
+    },
+    "fineprint": "Annulla quando vuoi ed esporta tutto. Se tududi Cloud dovesse mai chiudere, ricevi i tuoi dati e una guida alla migrazione self-hosted. Per spazio e volume API vale il fair use. Garanzia soddisfatti o rimborsati di 30 giorni, senza domande.",
+    "perMonth": "/mese"
+  },
+  "compare": {
+    "title": "Confronto rapido",
+    "sub": "Tutte e tre le opzioni ti danno il sistema tududi completo",
+    "colSelf": "Self-hosted",
+    "colHosted": "Cloud",
+    "colBusiness": "Licenza Business",
+    "rows": {
+      "openSource": "Nucleo open source",
+      "commercialUse": "Uso commerciale",
+      "infraControl": "Controllo totale dell'infrastruttura",
+      "dataOnHardware": "I dati restano sul tuo hardware",
+      "noRecurring": "Nessun costo ricorrente",
+      "noSetup": "Nessuna configurazione del server",
+      "managedUpdates": "Aggiornamenti gestiti",
+      "autoBackups": "Backup automatici",
+      "isolated": "Container e database isolati",
+      "prioritySupport": "Supporto prioritario",
+      "responseTime": "Tempi di risposta garantiti",
+      "invoice": "Fattura per le spese",
+      "pricing": "Prezzo"
+    },
+    "values": {
+      "optional": "Opzionale",
+      "yourServer": "Il tuo server",
+      "community": "Community",
+      "email": "Email",
+      "sameBusinessDay": "Entro la giornata lavorativa",
+      "freeForever": "Gratis per sempre",
+      "pricePerYear": "{{price}} $/anno",
+      "sharedInstance": "Istanza condivisa, esportazione in qualsiasi momento",
+      "freeOrPro": "Gratis, oppure Pro a ${{price}}/anno"
+    },
+    "closing": "Pronto a far girare il tuo sistema?",
+    "closingCta": "Installa tududi da te"
+  },
+  "waitlist": {
+    "title": "Non sei ancora pronto?",
+    "sub": "Lascia la tua email per le note di rilascio e qualche aggiornamento occasionale. Niente spam, disiscrizione con un clic.",
+    "placeholder": "tu@email.com",
+    "inputLabel": "Indirizzo email",
+    "submit": "Avvisami",
+    "note": "Conserviamo il tuo indirizzo e la data in cui ce l'hai lasciato, solo per inviarti le note di rilascio. Non lo condividiamo mai."
+  },
+  "langs": {
+    "heading": "L'app tududi è disponibile in {{count}} lingue in tutto il mondo"
+  },
+  "community": {
+    "title": "Entra nella community di tududi",
+    "sub": "Confrontati con altri utenti di tududi, ricevi supporto e resta aggiornato"
+  },
+  "footer": {
+    "tagline": "Un sistema aperto per organizzare vita e lavoro. Il tuo server, o il nostro.",
+    "colProduct": "Prodotto",
+    "colResources": "Risorse",
+    "colCommunity": "Community e supporto",
+    "colSupport": "Sostieni",
+    "linkRoadmap": "Roadmap",
+    "linkIssues": "Segnalazioni",
+    "linkBusinessLicence": "Licenza business",
+    "linkEmail": "Email",
+    "linkCoffee": "Offrici un caffè",
+    "subTitle": "Note di rilascio via email",
+    "subBody": "Note di rilascio occasionali. Niente marketing, disiscriviti quando vuoi.",
+    "subSubmit": "Iscriviti",
+    "rights": "Tutti i diritti riservati."
+  },
+  "js": {
+    "showFewer": "Mostra meno",
+    "copy": "Copia",
+    "copied": "Copiato"
+  },
+  "faq": {
+    "items": {
+      "freePlan": {
+        "q": "Cosa include il piano Cloud gratuito?",
+        "a": "Fino a {{freeTasks}} attività attive, {{freeProjects}} progetti, {{freeNotes}} note e {{freeStorageMb}} MB di allegati, senza limiti di tempo. Le attività completate non contano. Se raggiungi un limite conservi tutto e puoi continuare a leggere, modificare, completare ed eliminare; solo l'aggiunta di nuovi elementi aspetta finché non torni sotto il limite o passi a Pro."
+      },
+      "leaving": {
+        "q": "Posso andarmene, e che fine fanno i miei dati?",
+        "a": "Sì, in qualsiasi momento. Esporta tutto in un unico file dal tuo profilo e importalo in un tududi self-hosted, che legge lo stesso formato. Eliminare l'account rimuove dati, allegati e backup dai nostri server e annulla qualsiasi abbonamento."
+      }
+    }
+  }
+}

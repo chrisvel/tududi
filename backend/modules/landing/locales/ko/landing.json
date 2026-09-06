@@ -1,0 +1,350 @@
+{
+  "meta": {
+    "title": "tududi: 셀프호스팅 할 일 관리자이자 인생 관리 시스템, AI 에이전트를 위한 MCP 제공",
+    "description": "셀프호스팅 할 일 관리자이자 인생 관리 시스템. 영역, 목표, 프로젝트, 작업에 노트와 습관까지. {{tools}}개의 도구를 제공하는 MCP 서버로 AI 에이전트가 내 목록을 직접 다룰 수 있습니다. MIT 라이선스 오픈소스.",
+    "langSwitcherLabel": "언어 변경",
+    "langSwitcherCurrent": "언어: {{name}}"
+  },
+  "nav": {
+    "demo": "라이브 데모",
+    "features": "기능",
+    "ai": "AI 및 MCP",
+    "pricing": "요금",
+    "selfHost": "셀프호스팅",
+    "faq": "자주 묻는 질문",
+    "docs": "문서",
+    "changelog": "변경 내역",
+    "signIn": "로그인",
+    "toggle": "메뉴 열기"
+  },
+  "hero": {
+    "badgeStars": "GitHub 스타",
+    "badgeMcp": "MCP 서버 내장",
+    "starsLoading": "스타 수를 불러오는 중",
+    "titleLine1": "AI가 실제로 활용할 수 있는",
+    "titleLine2": "셀프호스팅 인생 관리 시스템",
+    "lede": "영역, 목표, 프로젝트, 작업에 노트와 습관까지 하나의 시스템에. 직접 장비에서 운영하거나, 운영은 저희에게 맡기세요.",
+    "ctaPrimary": "2분 만에 셀프호스팅",
+    "ctaDemo": "라이브 데모 사용해보기",
+    "ctaSecondary": "GitHub에서 보기",
+    "altLinkPrefix": "또는",
+    "altLink": "tududi Cloud에서 무료 계정을 만드세요",
+    "note": "MIT 라이선스 · 영원히 오픈소스",
+    "demoNote": "샘플 데이터가 들어 있는 실제 호스팅 인스턴스입니다. 공유되며 주기적으로 초기화됩니다",
+    "screenshotAlt": "오늘 보기와 계획된 작업이 표시된 tududi 화면"
+  },
+  "proof": {
+    "stars": "GitHub 스타",
+    "mcp": "MCP 서버, 도구 {{tools}}개",
+    "languages": "{{count}}개 언어",
+    "dockerPulls": "Docker 내려받기",
+    "discord": "Discord 멤버",
+    "discordAlt": "Discord: {{count}}명의 멤버"
+  },
+  "press": {
+    "featuredIn": "소개된 매체",
+    "eyebrow": "프레스",
+    "title": "저희 말만 믿지 마세요",
+    "sub": "직접 tududi를 사용해 본 리뷰어들이 남긴 이야기입니다.",
+    "readLink": "리뷰 읽기"
+  },
+  "ai": {
+    "kicker": "AI 및 MCP",
+    "titleLine1": "AI 에이전트가 실제로 활용할 수 있는",
+    "titleLine2": "셀프호스팅 시스템",
+    "ledeHtml": "tududi에는 <strong>도구 {{tools}}개</strong>를 제공하는 MCP 서버가 함께 들어 있습니다. 작업, 프로젝트, 영역, 목표, 습관, 노트, 사람, 태그, 보기, 받은 편지함, 검색, 지표까지 다룹니다. Claude를 비롯해 MCP를 지원하는 어떤 에이전트든 시스템에 바로 연결하세요. tududi는 내 서버에서 돌아가므로 연결도 데이터도 그 서버를 떠날 필요가 없습니다. Todoist나 Notion이 무엇을 약속하든 구조적으로 제공할 수 없는 차이입니다.",
+    "cards": {
+      "capture": {
+        "title": "대화 안에서 기록하고 검색",
+        "body": "대화를 벗어나지 않고 작업을 추가하고 찾고 완료할 수 있습니다."
+      },
+      "dataStays": {
+        "title": "데이터는 내 서버에",
+        "body": "MCP 연결은 내 인스턴스와만 통신합니다. 제3자를 거치는 것은 없습니다."
+      },
+      "openProtocol": {
+        "title": "개방형 프로토콜, 종속 없음",
+        "body": "개방형 Model Context Protocol 위에 만들었습니다. Claude와 다른 MCP 클라이언트에서 작동합니다."
+      }
+    },
+    "configTitle": "Claude Desktop에 연결하기",
+    "footnoteClients": "Cursor, Windsurf, Cline을 비롯한 어떤 MCP 클라이언트에서도 똑같이 작동합니다.",
+    "footnoteDocsLink": "MCP 문서 읽기 →",
+    "footnoteIncluded": "셀프호스팅이든 매니지드든 모든 요금제에 포함됩니다.",
+    "assistantTitle": "AI 어시스턴트",
+    "assistantLede": "데이터를 읽고 쉬운 말로 요약을 돌려주는, 분리된 선택형 계층입니다. Ollama 같은 셀프호스팅 방식을 포함해 OpenAI 호환 제공자라면 무엇이든 사용할 수 있습니다.",
+    "assistantCards": {
+      "daily": {
+        "title": "데일리 브리핑",
+        "body": "오늘 집중할 작업과 알아둘 만한 위험 신호를 담은 아침 요약."
+      },
+      "task": {
+        "title": "작업 인사이트",
+        "body": "특정 작업에 대해 필요할 때 다음 단계를 제안합니다."
+      },
+      "project": {
+        "title": "프로젝트 인사이트",
+        "body": "프로젝트 상태를 빠르게 진단합니다. 무엇이 나아가고 무엇이 멈춰 있는지."
+      }
+    }
+  },
+  "features": {
+    "eyebrow": "기능",
+    "title": "정돈된 삶을 위한 완결된 시스템",
+    "sub": "tududi는 목표, 프로젝트, 작업, 노트, 스마트 보기를 하나의 차분하고 집중된 시스템으로 모읍니다. 프라이버시와 명료함을 중시하는 개인과 작은 팀을 위해 만들었습니다.",
+    "showAll": "{{count}}개 기능 모두 보기",
+    "groups": {
+      "planFocus": "계획과 집중",
+      "tasksProjects": "작업과 프로젝트",
+      "accessAnywhere": "어디서나 접근",
+      "privacyCollab": "프라이버시와 협업"
+    },
+    "cards": {
+      "goals": {
+        "title": "목표",
+        "body": "한 시즌이나 한 해의 성과를 정하고, 어떤 영역과 프로젝트가 실제로 그것을 밀고 나가는지 확인하세요."
+      },
+      "hierarchy": {
+        "title": "계층적 구성",
+        "body": "목표와 영역이 최상단에 나란히 놓입니다. 하나는 장기 성과, 다른 하나는 계속되는 삶의 영역입니다. 둘 다 프로젝트를 담고, 프로젝트는 작업을 담습니다."
+      },
+      "lifeAreas": {
+        "title": "생활 영역 관리",
+        "body": "일, 개인, 건강, 배움 같은 생활 영역별로 프로젝트를 정리하세요."
+      },
+      "views": {
+        "title": "보기",
+        "body": "‘오늘’, ‘기한 초과’, ‘언젠가’ 같은 스마트 저장 검색. 매번 필터를 새로 만들 필요 없이 클릭 한 번이면 됩니다."
+      },
+      "matrixKanban": {
+        "title": "아이젠하워 매트릭스와 칸반",
+        "body": "‘지금 무엇을 할까’만이 문제일 때는 아이젠하워 매트릭스나 칸반 보드로 전환하세요."
+      },
+      "dueDates": {
+        "title": "똑똑한 마감일",
+        "body": "자동 분류: 오늘의 우선순위, 다가오는 마감, 그리고 언젠가 할 작업."
+      },
+      "insights": {
+        "title": "생산성 인사이트",
+        "body": "프로젝트 전반의 완료 추세와 업무량을 보고, 시간이 실제로 어디에 쓰이는지 파악하세요."
+      },
+      "people": {
+        "title": "사람",
+        "body": "작업을 사람에게 배정하고, 누가 프로젝트에 참여하는지 한눈에 확인하세요."
+      },
+      "habits": {
+        "title": "습관 추적",
+        "body": "작업·프로젝트와 나란히 반복 습관을 추적합니다. 간결한 연속 기록과 이력을 제공합니다."
+      },
+      "recurring": {
+        "title": "똑똑한 반복 작업",
+        "body": "매일, 매주, 매월 패턴을 지원하며 완료 시점 기준 반복과 상위·하위 관계도 다룹니다."
+      },
+      "richTasks": {
+        "title": "풍부한 작업 정리",
+        "body": "우선순위, 마감일, 태그, 스마트 정렬. 중요한 것을 찾아내는 강력한 필터."
+      },
+      "subtasks": {
+        "title": "하위 작업과 쪼개기",
+        "body": "복잡한 작업을 감당할 만한 하위 작업으로 나누고 진행 상황을 추적하세요."
+      },
+      "notes": {
+        "title": "프로젝트 문서",
+        "body": "프로젝트를 위한 서식 있는 노트. 전체 검색과 정리 기능을 갖췄습니다."
+      },
+      "tags": {
+        "title": "유연한 태그 체계",
+        "body": "작업과 노트에 원하는 태그를 붙여 즉시 필터링하고, 프로젝트를 넘나들며 정리하세요."
+      },
+      "search": {
+        "title": "똑똑한 필터와 검색",
+        "body": "전문 검색에 더해 프로젝트, 태그, 우선순위, 마감일별 필터. 어떤 작업이든 몇 초 만에 찾습니다."
+      },
+      "pwa": {
+        "title": "앱으로 설치",
+        "body": "tududi를 PWA로 홈 화면이나 바탕화면에 추가하세요. 오프라인에서도 작동하고 다시 연결되면 동기화합니다."
+      },
+      "oidc": {
+        "title": "OIDC / SSO 로그인",
+        "body": "쓰던 아이디 공급자로 로그인하세요. Authentik, Keycloak, Google Workspace 등 OIDC를 지원하는 어떤 공급자든 가능합니다."
+      },
+      "i18n": {
+        "title": "다국어 지원",
+        "body": "{{count}}개 언어로 완전히 현지화되어 제공됩니다."
+      },
+      "telegram": {
+        "title": "Telegram 연동",
+        "body": "메시지 한 통으로 작업을 즉시 기록하고, 매일 요약을 받고, 이동 중에도 목록을 관리하세요."
+      },
+      "caldav": {
+        "title": "CalDAV 동기화",
+        "body": "Apple 미리 알림, tasks.org, Thunderbird 등 CalDAV를 지원하는 앱과 양방향으로 작업을 동기화합니다."
+      },
+      "api": {
+        "title": "API 접근과 Swagger",
+        "body": "버전이 관리되는 Swagger 문서와, 맞춤 연동을 위한 개인 액세스 토큰."
+      },
+      "responsive": {
+        "title": "반응형 디자인",
+        "body": "넓은 데스크톱 화면부터 주머니 속 휴대폰까지 깔끔하게 맞춰지는 레이아웃."
+      },
+      "privacy": {
+        "title": "프라이버시와 통제권",
+        "body": "데이터를 내 손에 두세요. 완전한 통제를 원하면 셀프호스팅을, 아니면 암호화 백업이 포함된 매니지드 인스턴스를 선택하세요."
+      },
+      "collab": {
+        "title": "프로젝트 협업",
+        "body": "세밀한 접근 권한으로 프로젝트를 공유하세요. 읽기 전용 또는 읽기·쓰기."
+      }
+    }
+  },
+  "selfHost": {
+    "eyebrow": "셀프호스팅",
+    "title": "내 서버에서 직접 운영하기",
+    "sub": "무료, 오픈소스, Docker 준비 완료. 데이터는 온전히 내 것입니다.",
+    "cardTitle": "Docker 설치",
+    "cardSub": "Docker로 몇 분 만에 배포",
+    "step1": "Docker 이미지 받기",
+    "step2": "컨테이너 실행",
+    "step3Prefix": "접속 주소:",
+    "linkGithub": "GitHub에서 보기",
+    "linkDocs": "문서"
+  },
+  "pricing": {
+    "eyebrow": "요금",
+    "title": "tududi를 어떻게 쓸지 고르세요",
+    "sub": "하나의 시스템, 세 가지 운영 방식",
+    "mostPopular": "가장 인기",
+    "earlyBird": "얼리버드",
+    "perYear": "/년",
+    "forever": "/평생",
+    "plans": {
+      "selfHosted": {
+        "name": "셀프호스팅",
+        "priceNote": "무료 오픈소스, 언제까지나",
+        "features": [
+          "오픈소스, MIT 라이선스",
+          "내 서버에서 직접 운영",
+          "완전한 통제권, 벤더 종속 없음",
+          "모든 기능 개방, 유료 장벽 없음",
+          "MCP와 AI 어시스턴트 포함"
+        ],
+        "action": "tududi 셀프호스팅하기 →"
+      },
+      "cloud": {
+        "name": "Cloud",
+        "toStart": "시작 시",
+        "proLabel": "Pro",
+        "or": "또는",
+        "launchNote": "얼리버드 연간 가격은 구독을 유지하는 동안 그대로 적용됩니다.",
+        "priceNote": "1분이면 계정을 만들 수 있고, 무료 플랜이 부족해지면 Pro로 업그레이드하세요.",
+        "features": [
+          "무료 플랜: 활성 할 일 {{freeTasks}}개, 프로젝트 {{freeProjects}}개, 노트 {{freeNotes}}개, 첨부 파일 {{freeStorageMb}}MB",
+          "Pro: 할 일, 프로젝트, 노트 무제한, 첨부 파일 {{proStorageGb}}GB",
+          "Pro: AI 어시스턴트, MCP, CalDAV 동기화, Telegram 봇, 백업 가져오기",
+          "업데이트와 일일 백업은 저희가 처리합니다",
+          "언제든 모든 데이터 내보내기, 계정 직접 삭제"
+        ],
+        "action": "무료 계정 만들기 →"
+      },
+      "business": {
+        "name": "비즈니스 라이선스",
+        "priceNote": "업무에서 tududi 사용하기",
+        "features": [
+          "상업적 이용 라이선스",
+          "응답 시간을 약속하는 우선 지원",
+          "회사에서 경비 처리할 수 있는 세금계산서, 부가세 포함",
+          "tududi Cloud의 Pro, 또는 전부 자체 서버에서",
+          "메인테이너와의 직통 연락"
+        ],
+        "licenceNote": "tududi는 MIT 라이선스이며 상업적 이용은 이미 무료입니다. 이 요금은 우선 지원, 응답 시간 약속, 그리고 세금계산서를 위한 것입니다.",
+        "action": "licensing@tududi.com 으로 메일 →"
+      }
+    },
+    "fineprint": "언제든 취소하고 모든 데이터를 내보낼 수 있습니다. tududi Cloud가 종료되더라도 데이터와 자체 호스팅 이전 안내를 드립니다. 저장 공간과 API 사용량에는 공정 이용 원칙이 적용됩니다. 30일 환불 보장, 이유는 묻지 않습니다.",
+    "perMonth": "/월"
+  },
+  "compare": {
+    "title": "간단 비교",
+    "sub": "세 가지 모두 tududi의 모든 기능을 제공합니다",
+    "colSelf": "셀프호스팅",
+    "colHosted": "Cloud",
+    "colBusiness": "비즈니스 라이선스",
+    "rows": {
+      "openSource": "오픈소스 코어",
+      "commercialUse": "상업적 이용",
+      "infraControl": "인프라 완전 통제",
+      "dataOnHardware": "데이터가 내 하드웨어에 유지",
+      "noRecurring": "반복 비용 없음",
+      "noSetup": "서버 구축 불필요",
+      "managedUpdates": "관리형 업데이트",
+      "autoBackups": "자동 백업",
+      "isolated": "격리된 컨테이너와 데이터베이스",
+      "prioritySupport": "우선 지원",
+      "responseTime": "응답 시간 약속",
+      "invoice": "경비 처리용 세금계산서",
+      "pricing": "가격"
+    },
+    "values": {
+      "optional": "선택 가능",
+      "yourServer": "내 서버",
+      "community": "커뮤니티",
+      "email": "이메일",
+      "sameBusinessDay": "당일 영업일 내",
+      "freeForever": "평생 무료",
+      "pricePerYear": "{{price}}달러/년",
+      "sharedInstance": "공유 인스턴스, 언제든 내보내기",
+      "freeOrPro": "무료, 또는 Pro 연 ${{price}}"
+    },
+    "closing": "나만의 시스템을 운영할 준비가 되셨나요?",
+    "closingCta": "tududi 셀프호스팅하기"
+  },
+  "waitlist": {
+    "title": "아직 결정하지 못하셨나요?",
+    "sub": "이메일을 남기시면 릴리스 노트와 가끔 소식을 보내드립니다. 스팸 없음, 클릭 한 번으로 구독 해지.",
+    "placeholder": "you@email.com",
+    "inputLabel": "이메일 주소",
+    "submit": "알려 주세요",
+    "note": "릴리스 노트를 보내 드리기 위해서만 주소와 남겨 주신 날짜를 보관합니다. 그 외 용도로는 쓰지 않으며 결코 공유하지 않습니다."
+  },
+  "langs": {
+    "heading": "전 세계 {{count}}개 언어로 제공됩니다"
+  },
+  "community": {
+    "title": "tududi 커뮤니티에 참여하세요",
+    "sub": "다른 tududi 사용자와 이야기하고, 도움을 받고, 소식을 놓치지 마세요"
+  },
+  "footer": {
+    "tagline": "삶과 일을 정리하기 위한 열린 시스템. 내 서버, 또는 저희 서버.",
+    "colProduct": "제품",
+    "colResources": "자료",
+    "colCommunity": "커뮤니티 및 지원",
+    "colSupport": "후원",
+    "linkRoadmap": "로드맵",
+    "linkIssues": "이슈",
+    "linkBusinessLicence": "비즈니스 라이선스",
+    "linkEmail": "이메일",
+    "linkCoffee": "커피 한 잔 사주기",
+    "subTitle": "이메일로 받는 릴리스 노트",
+    "subBody": "가끔 보내는 릴리스 노트. 마케팅 없음, 언제든 구독 해지.",
+    "subSubmit": "구독",
+    "rights": "All rights reserved."
+  },
+  "js": {
+    "showFewer": "간략히 보기",
+    "copy": "복사",
+    "copied": "복사됨"
+  },
+  "faq": {
+    "items": {
+      "freePlan": {
+        "q": "무료 Cloud 플랜에는 무엇이 포함되나요?",
+        "a": "활성 할 일 {{freeTasks}}개, 프로젝트 {{freeProjects}}개, 노트 {{freeNotes}}개, 첨부 파일 {{freeStorageMb}}MB까지, 기간 제한 없이 사용할 수 있습니다. 완료한 할 일은 포함되지 않습니다. 한도에 도달해도 모든 데이터는 그대로 유지되며 보기, 수정, 완료, 삭제는 계속 가능합니다. 새로 추가하는 것만 한도 아래로 내려가거나 Pro로 업그레이드할 때까지 기다립니다."
+      },
+      "leaving": {
+        "q": "떠날 수 있나요? 제 데이터는 어떻게 되나요?",
+        "a": "네, 언제든지요. 프로필에서 모든 데이터를 파일 하나로 내보내고, 같은 형식을 읽는 자체 호스팅 tududi에 가져오면 됩니다. 계정을 삭제하면 데이터, 첨부 파일, 백업이 저희 서버에서 제거되고 구독도 취소됩니다."
+      }
+    }
+  }
+}
