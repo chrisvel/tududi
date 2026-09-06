@@ -15,6 +15,9 @@ const verifiedTokens = new Map();
 // Keyed with a secret that exists only for this process's lifetime, so the
 // cache keys are useless to anyone who does not also hold the process.
 const cacheKeySecret = crypto.randomBytes(32);
+// This is a lookup key for a short-lived in-memory cache, not password
+// storage: the token itself is still verified with bcrypt on a miss.
+// codeql[js/insufficient-password-hash]
 const cacheKeyFor = (tokenValue) =>
     crypto
         .createHmac('sha256', cacheKeySecret)
