@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 
-// Every Stripe webhook event we have seen, keyed by Stripe's event id, so
-// a redelivered event is recognised and applied once.
+// Every payment-provider webhook event we have seen, keyed by the
+// provider's event id, so a redelivered event is recognised and applied once.
 module.exports = (sequelize) => {
     const BillingEvent = sequelize.define(
         'BillingEvent',
@@ -11,7 +11,7 @@ module.exports = (sequelize) => {
                 primaryKey: true,
                 autoIncrement: true,
             },
-            stripe_event_id: {
+            provider_event_id: {
                 type: DataTypes.STRING(64),
                 allowNull: false,
                 unique: true,

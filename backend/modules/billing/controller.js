@@ -4,6 +4,7 @@ const billingService = require('./service');
 const { logError } = require('../../services/logService');
 const { getAuthenticatedUserId } = require('../../utils/request-utils');
 const { UnauthorizedError, ValidationError } = require('../../shared/errors');
+const providers = require('./providers');
 
 function requireUserId(req) {
     const userId = getAuthenticatedUserId(req);
@@ -59,8 +60,8 @@ const billingController = {
                 throw new ValidationError('session_id must be a string');
             }
             res.json(
-                await billingService.syncFromStripe(requireUserId(req), {
-                    sessionId,
+                await billingService.syncFromProvider(requireUserId(req), {
+                    checkoutRef: sessionId,
                 })
             );
         } catch (error) {
@@ -68,29 +69,29 @@ const billingController = {
         }
     },
 
-    // Raw body, no session, no CSRF: Stripe signs the payload instead.
+    // Raw body, no session, no CSRF: the provider signs the payload instead.
     async webhook(req, res) {
-        const signature = req.headers['stripe-signature'];
-        if (!signature) {
-            return res.status(400).json({ error: 'Missing Stripe signature' });
+        const provider = providers.getProvider();
+        if (!req.headers[provider.signatureHeader]) {
+            return res.status(400).json({ error: 'Missing webhook signature' });
         }
         try {
             const result = await billingService.handleWebhook(
                 req.body,
-                signature
+                req.headers
             );
             res.json({ received: true, ...result });
         } catch (error) {
-            if (error.type === 'StripeSignatureVerificationError') {
+            if (error.name === 'WebhookSignatureError') {
                 return res
                     .status(400)
-                    .json({ error: 'Invalid Stripe signature' });
+                    .json({ error: 'Invalid webhook signature' });
             }
             if (error.statusCode === 503) {
                 return res.status(503).json({ error: error.message });
             }
-            logError('Stripe webhook failed:', error);
-            // 500 makes Stripe retry, which is what we want for our own faults
+            logError('Billing webhook failed:', error);
+            // 500 makes the provider retry, which is what we want for our own faults
             res.status(500).json({ error: 'Webhook processing failed' });
         }
     },

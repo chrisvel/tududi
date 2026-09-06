@@ -6,15 +6,7 @@ const entitlements = require('../../services/entitlementsService');
 const { logError, logInfo } = require('../../services/logService');
 const { isAdmin } = require('../../services/rolesService');
 const repository = require('./repository');
-const {
-    getStripe,
-    isBillingConfigured,
-    configuredPrices,
-} = require('./stripeClient');
-const {
-    subscriptionToAccountFields,
-    deletedSubscriptionFields,
-} = require('./subscriptionMapper');
+const providers = require('./providers');
 const {
     ValidationError,
     NotFoundError,
@@ -34,22 +26,31 @@ class BillingService {
         return entitlements.isHostedMode();
     }
 
+    provider() {
+        return providers.getProvider();
+    }
+
     // What the billing tab shows.
     async getStatus(userId) {
         const ent = await entitlements.getEntitlements(userId, {
             includeUsage: true,
         });
         const account = await repository.findAccountByUserId(userId);
-        const prices = configuredPrices();
+        const provider = this.provider();
+        const configured = providers.isBillingConfigured();
+        const prices = provider.configuredPrices();
         return {
             ...ent,
-            billing_configured: isBillingConfigured(),
+            billing_configured: configured,
+            provider: {
+                name: provider.name,
+                display_name: provider.displayName,
+            },
             checkout_available:
-                isBillingConfigured() &&
+                configured &&
                 !!(prices.month || prices.year) &&
                 !ACTIVE_STATUSES.has(account?.status),
-            portal_available:
-                isBillingConfigured() && !!account?.stripe_customer_id,
+            portal_available: configured && provider.canOpenPortal(account),
             intervals: {
                 month: !!prices.month,
                 year: !!prices.year,
@@ -68,7 +69,7 @@ class BillingService {
 
     // Public catalog: names, limits and features, never price ids.
     getCatalog() {
-        const prices = configuredPrices();
+        const prices = this.provider().configuredPrices();
         return {
             plans: Object.values(getPlans()).map((plan) => ({
                 key: plan.key,
@@ -81,23 +82,11 @@ class BillingService {
         };
     }
 
-    async ensureCustomer(user, account) {
-        if (account.stripe_customer_id) return account.stripe_customer_id;
-        const stripe = getStripe();
-        const customer = await stripe.customers.create({
-            email: user.email,
-            name: user.name || undefined,
-            metadata: { user_id: String(user.id), user_uid: user.uid },
-        });
-        await account.update({ stripe_customer_id: customer.id });
-        return customer.id;
-    }
-
     async createCheckoutSession(userId, interval) {
-        if (!isBillingConfigured()) throw new BillingNotConfiguredError();
-        const prices = configuredPrices();
-        const priceId = prices[interval];
-        if (!priceId) {
+        if (!providers.isBillingConfigured())
+            throw new BillingNotConfiguredError();
+        const provider = this.provider();
+        if (!provider.configuredPrices()[interval]) {
             throw new ValidationError(
                 `No ${interval === 'year' ? 'annual' : 'monthly'} price is configured`
             );
@@ -112,133 +101,86 @@ class BillingService {
             );
         }
 
-        const customerId = await this.ensureCustomer(user, account);
-        const stripe = getStripe();
-        const session = await stripe.checkout.sessions.create({
-            mode: 'subscription',
-            customer: customerId,
-            client_reference_id: user.uid,
-            line_items: [{ price: priceId, quantity: 1 }],
-            allow_promotion_codes: true,
-            subscription_data: {
-                metadata: { user_id: String(user.id), user_uid: user.uid },
-            },
-            success_url: billingTabUrl(
-                '&checkout=success&session_id={CHECKOUT_SESSION_ID}'
-            ),
-            cancel_url: billingTabUrl('&checkout=cancel'),
+        const checkout = await provider.createCheckout({
+            user,
+            account,
+            interval,
+            successUrl: billingTabUrl('&checkout=success'),
+            cancelUrl: billingTabUrl('&checkout=cancel'),
         });
-
-        return { url: session.url, id: session.id };
+        if (
+            checkout.customerId &&
+            checkout.customerId !== account.provider_customer_id
+        ) {
+            await account.update({
+                provider: provider.name,
+                provider_customer_id: checkout.customerId,
+            });
+        }
+        return { url: checkout.url, id: checkout.id };
     }
 
     async createPortalSession(userId) {
-        if (!isBillingConfigured()) throw new BillingNotConfiguredError();
+        if (!providers.isBillingConfigured())
+            throw new BillingNotConfiguredError();
         const account = await repository.findAccountByUserId(userId);
-        if (!account?.stripe_customer_id) {
+        const provider = this.provider();
+        if (!provider.canOpenPortal(account)) {
             throw new ValidationError('No billing account to manage yet');
         }
-        const stripe = getStripe();
-        const session = await stripe.billingPortal.sessions.create({
-            customer: account.stripe_customer_id,
-            return_url: billingTabUrl(),
-        });
-        return { url: session.url };
+        return provider.createPortal({ account, returnUrl: billingTabUrl() });
     }
 
-    // Re-reads the subscription from Stripe. Used right after checkout (the
-    // redirect can beat the webhook) and by admins.
-    async syncFromStripe(userId, { sessionId } = {}) {
-        if (!isBillingConfigured()) throw new BillingNotConfiguredError();
-        const stripe = getStripe();
+    // Re-reads the subscription from the provider. Used right after
+    // checkout (the redirect can beat the webhook) and by admins.
+    async syncFromProvider(userId, { checkoutRef } = {}) {
+        if (!providers.isBillingConfigured())
+            throw new BillingNotConfiguredError();
         const account = await entitlements.ensureAccount(userId);
         if (!account) throw new NotFoundError('User not found');
+        const user = await repository.findUserById(userId);
+        if (!user) throw new NotFoundError('User not found');
 
-        let subscriptionId = account.stripe_subscription_id;
-        if (sessionId) {
-            const session = await stripe.checkout.sessions.retrieve(sessionId);
-            const sessionUserUid = session.client_reference_id;
-            const user = await repository.findUserById(userId);
-            if (!user || sessionUserUid !== user.uid) {
-                throw new ForbiddenError(
-                    'That checkout belongs to someone else'
-                );
-            }
-            if (session.subscription) {
-                subscriptionId =
-                    typeof session.subscription === 'string'
-                        ? session.subscription
-                        : session.subscription.id;
-            }
-            if (session.customer && !account.stripe_customer_id) {
-                await account.update({
-                    stripe_customer_id:
-                        typeof session.customer === 'string'
-                            ? session.customer
-                            : session.customer.id,
-                });
-            }
-        }
-
-        if (subscriptionId) {
-            const sub = await stripe.subscriptions.retrieve(subscriptionId);
-            await account.update(subscriptionToAccountFields(sub));
+        const provider = this.provider();
+        const fields = await provider.sync({ user, account, checkoutRef });
+        if (fields) {
+            await account.update({ provider: provider.name, ...fields });
         }
         entitlements.invalidate(userId);
         return this.getStatus(userId);
     }
 
-    async resolveAccountForEvent(object) {
-        const uid =
-            object.client_reference_id ||
-            object.metadata?.user_uid ||
-            object.subscription_details?.metadata?.user_uid;
-        if (uid) {
-            const user = await repository.findUserByUid(uid);
+    async resolveAccount(ref) {
+        if (!ref) return null;
+        if (ref.userUid) {
+            const user = await repository.findUserByUid(ref.userUid);
             if (user) return entitlements.ensureAccount(user.id);
         }
-        const userIdMeta =
-            object.metadata?.user_id ||
-            object.subscription_details?.metadata?.user_id;
-        if (userIdMeta && /^\d+$/.test(String(userIdMeta))) {
-            const user = await repository.findUserById(Number(userIdMeta));
+        if (ref.userId && /^\d+$/.test(String(ref.userId))) {
+            const user = await repository.findUserById(Number(ref.userId));
             if (user) return entitlements.ensureAccount(user.id);
         }
-        const customerId =
-            typeof object.customer === 'string'
-                ? object.customer
-                : object.customer?.id;
-        if (customerId) {
-            const byCustomer =
-                await repository.findAccountByCustomerId(customerId);
+        if (ref.customerId) {
+            const byCustomer = await repository.findAccountByCustomerId(
+                ref.customerId
+            );
             if (byCustomer) return byCustomer;
         }
-        if (object.object === 'subscription' && object.id) {
-            return repository.findAccountBySubscriptionId(object.id);
+        if (ref.subscriptionId) {
+            return repository.findAccountBySubscriptionId(ref.subscriptionId);
         }
-        const subId =
-            typeof object.subscription === 'string'
-                ? object.subscription
-                : object.subscription?.id;
-        if (subId) return repository.findAccountBySubscriptionId(subId);
         return null;
     }
 
-    async handleWebhook(rawBody, signature) {
-        if (!isBillingConfigured()) throw new BillingNotConfiguredError();
-        const { webhookSecret } = getConfig().hosted.stripe;
-        if (!webhookSecret) throw new BillingNotConfiguredError();
+    async handleWebhook(rawBody, headers) {
+        if (!providers.isBillingConfigured())
+            throw new BillingNotConfiguredError();
+        const provider = this.provider();
+        const event = await provider.parseWebhook(rawBody, headers);
 
-        const stripe = getStripe();
-        const event = stripe.webhooks.constructEvent(
-            rawBody,
-            signature,
-            webhookSecret
-        );
-
-        const record = await repository.recordEvent(event.id, event.type);
+        const record = await repository.recordEvent(event.id, event.rawType);
         if (!record) {
-            return { duplicate: true, type: event.type };
+            return { duplicate: true, type: event.rawType };
         }
 
         try {
@@ -248,7 +190,7 @@ class BillingService {
                 user_id: outcome.userId || null,
                 processed_at: new Date(),
             });
-            return { ...outcome, type: event.type };
+            return { ...outcome, type: event.rawType };
         } catch (error) {
             await record.update({
                 status: 'failed',
@@ -260,106 +202,63 @@ class BillingService {
     }
 
     async applyEvent(event) {
-        const object = event.data.object;
-        const stripe = getStripe();
+        if (event.type === 'ignored') {
+            return { handled: false, reason: 'ignored_type' };
+        }
+        const account = await this.resolveAccount(event.ref);
+        if (!account) return { handled: false, reason: 'unknown_user' };
+        const providerName = this.provider().name;
+        const stamp = {
+            provider: providerName,
+            last_provider_event_at: event.createdAt,
+        };
 
         switch (event.type) {
-            case 'checkout.session.completed': {
-                const account = await this.resolveAccountForEvent(object);
-                if (!account) return { handled: false, reason: 'unknown_user' };
-                const fields = {};
-                if (object.customer) {
-                    fields.stripe_customer_id =
-                        typeof object.customer === 'string'
-                            ? object.customer
-                            : object.customer.id;
-                }
-                if (object.subscription) {
-                    const subId =
-                        typeof object.subscription === 'string'
-                            ? object.subscription
-                            : object.subscription.id;
-                    const sub = await stripe.subscriptions.retrieve(subId);
-                    Object.assign(fields, subscriptionToAccountFields(sub));
-                }
-                await account.update({
-                    ...fields,
-                    last_stripe_event_created: event.created,
-                });
-                entitlements.invalidate(account.user_id);
-                return { handled: true, userId: account.user_id };
-            }
+            case 'checkout.completed':
+                await account.update({ ...event.fields, ...stamp });
+                break;
 
-            case 'customer.subscription.created':
-            case 'customer.subscription.updated': {
-                const account = await this.resolveAccountForEvent(object);
-                if (!account) return { handled: false, reason: 'unknown_user' };
+            case 'subscription.updated':
                 if (
-                    account.last_stripe_event_created &&
-                    event.created < account.last_stripe_event_created
+                    account.last_provider_event_at &&
+                    event.createdAt < account.last_provider_event_at
                 ) {
                     return { handled: false, reason: 'stale_event' };
                 }
-                await account.update({
-                    ...subscriptionToAccountFields(object),
-                    last_stripe_event_created: event.created,
-                });
-                entitlements.invalidate(account.user_id);
-                return { handled: true, userId: account.user_id };
-            }
+                await account.update({ ...event.fields, ...stamp });
+                break;
 
-            case 'customer.subscription.deleted': {
-                const account = await this.resolveAccountForEvent(object);
-                if (!account) return { handled: false, reason: 'unknown_user' };
-                await account.update({
-                    ...deletedSubscriptionFields(object),
-                    last_stripe_event_created: event.created,
-                });
-                entitlements.invalidate(account.user_id);
-                return { handled: true, userId: account.user_id };
-            }
+            case 'subscription.deleted':
+                await account.update({ ...event.fields, ...stamp });
+                break;
 
-            case 'invoice.payment_failed': {
-                const account = await this.resolveAccountForEvent(object);
-                if (!account) return { handled: false, reason: 'unknown_user' };
+            case 'payment.failed':
                 await account.update({
+                    ...event.fields,
                     status: 'past_due',
                     last_payment_failed_at: new Date(),
+                    provider: providerName,
                 });
                 entitlements.invalidate(account.user_id);
                 await this.notifyPaymentFailed(account.user_id);
                 return { handled: true, userId: account.user_id };
-            }
 
-            case 'invoice.paid':
-            case 'invoice.payment_succeeded': {
-                const account = await this.resolveAccountForEvent(object);
-                if (!account) return { handled: false, reason: 'unknown_user' };
-                const fields = { last_payment_failed_at: null };
+            case 'payment.succeeded': {
+                const fields = {
+                    last_payment_failed_at: null,
+                    provider: providerName,
+                };
                 if (account.status === 'past_due') fields.status = 'active';
-                const subId =
-                    typeof object.subscription === 'string'
-                        ? object.subscription
-                        : object.subscription?.id;
-                if (subId) {
-                    try {
-                        const sub = await stripe.subscriptions.retrieve(subId);
-                        Object.assign(fields, subscriptionToAccountFields(sub));
-                    } catch (error) {
-                        logError(
-                            'Could not refresh subscription after payment:',
-                            error
-                        );
-                    }
-                }
-                await account.update(fields);
-                entitlements.invalidate(account.user_id);
-                return { handled: true, userId: account.user_id };
+                await account.update({ ...fields, ...event.fields });
+                break;
             }
 
             default:
                 return { handled: false, reason: 'ignored_type' };
         }
+
+        entitlements.invalidate(account.user_id);
+        return { handled: true, userId: account.user_id };
     }
 
     async notifyPaymentFailed(userId) {
@@ -371,7 +270,7 @@ class BillingService {
                 level: 'warning',
                 title: 'Payment failed',
                 message:
-                    'Your last payment did not go through. Update your card under Profile > Billing to keep your plan.',
+                    'Your last payment did not go through. Update your payment method under Profile > Billing to keep your plan.',
                 data: { section: 'billing' },
             });
         } catch (error) {
@@ -405,7 +304,9 @@ class BillingService {
                 cancel_at_period_end: a.cancel_at_period_end,
                 override_plan: a.override_plan,
                 override_expires_at: a.override_expires_at,
-                stripe_customer_id: a.stripe_customer_id,
+                provider: a.provider,
+                provider_customer_id: a.provider_customer_id,
+                provider_subscription_id: a.provider_subscription_id,
             })),
         };
     }
@@ -464,7 +365,7 @@ class BillingService {
 
     async adminSync(requesterId, userId) {
         await this.assertAdmin(requesterId);
-        await this.syncFromStripe(userId);
+        await this.syncFromProvider(userId);
         return this.adminGetAccount(requesterId, userId);
     }
 
@@ -476,23 +377,26 @@ class BillingService {
 
     // Best effort: a deleted account must not keep being charged.
     async cancelForDeletedUser(userId) {
-        if (!isBillingConfigured()) return;
+        if (!providers.isBillingConfigured()) return;
         try {
             const account = await repository.findAccountByUserId(userId);
+            if (!account) return;
+            const provider = this.provider();
             if (
-                account?.stripe_subscription_id &&
-                ACTIVE_STATUSES.has(account.status)
+                account.provider_subscription_id &&
+                !ACTIVE_STATUSES.has(account.status)
             ) {
-                await getStripe().subscriptions.cancel(
-                    account.stripe_subscription_id
-                );
+                // Nothing to cancel, but a Stripe customer may still exist
+                await provider.cancelForDeletedUser({
+                    ...account.get({ plain: true }),
+                    provider_subscription_id: null,
+                });
+                return;
             }
-            if (account?.stripe_customer_id) {
-                await getStripe().customers.del(account.stripe_customer_id);
-            }
+            await provider.cancelForDeletedUser(account.get({ plain: true }));
         } catch (error) {
             logError(
-                `Failed to cancel Stripe subscription for user ${userId}:`,
+                `Failed to cancel the subscription for user ${userId}:`,
                 error
             );
         }
@@ -500,21 +404,7 @@ class BillingService {
 
     validateConfig() {
         if (!this.isHosted()) return [];
-        const problems = [];
-        const { secretKey, webhookSecret } = getConfig().hosted.stripe || {};
-        const prices = configuredPrices();
-        if (!secretKey)
-            problems.push(
-                'STRIPE_SECRET_KEY is not set: checkout is unavailable'
-            );
-        if (secretKey && !webhookSecret)
-            problems.push(
-                'STRIPE_WEBHOOK_SECRET is not set: subscription changes will not be applied'
-            );
-        if (secretKey && !prices.month && !prices.year)
-            problems.push(
-                'No STRIPE_PRICE_PRO_MONTHLY or STRIPE_PRICE_PRO_ANNUAL configured: nothing to sell'
-            );
+        const problems = this.provider().validateConfig();
         for (const p of problems) logError(`Billing: ${p}`);
         return problems;
     }

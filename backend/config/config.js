@@ -115,6 +115,26 @@ const config = {
                 proAnnual: process.env.STRIPE_PRICE_PRO_ANNUAL,
             },
         },
+        lemonsqueezy: {
+            apiKey: process.env.LEMONSQUEEZY_API_KEY,
+            storeId: process.env.LEMONSQUEEZY_STORE_ID,
+            webhookSecret: process.env.LEMONSQUEEZY_WEBHOOK_SECRET,
+            apiBase: process.env.LEMONSQUEEZY_API_BASE || undefined,
+            variants: {
+                proMonthly: process.env.LEMONSQUEEZY_VARIANT_PRO_MONTHLY,
+                proAnnual: process.env.LEMONSQUEEZY_VARIANT_PRO_ANNUAL,
+            },
+        },
+        // Which provider sells Pro. Explicit BILLING_PROVIDER wins; otherwise
+        // whichever one has credentials, Stripe when both or neither do.
+        billing: {
+            provider:
+                process.env.BILLING_PROVIDER ||
+                (process.env.LEMONSQUEEZY_API_KEY &&
+                !process.env.STRIPE_SECRET_KEY
+                    ? 'lemonsqueezy'
+                    : 'stripe'),
+        },
     },
 
     // Marketing page. When TUDUDI_LANDING_HOSTS names one or more hostnames,
@@ -139,6 +159,10 @@ const config = {
             standard: 99,
             business: 499,
             launchActive: true,
+            // Flip to false while Cloud is being stood up on new
+            // infrastructure: the pricing card swaps to a "opening soon"
+            // notice with an email capture instead of the register link.
+            cloudOpen: true,
             ...parseJsonEnv(process.env.TUDUDI_LANDING_PRICING_JSON),
         },
     },

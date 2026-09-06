@@ -1460,13 +1460,13 @@
       "cancelling": "se anulează",
       "setOverride": "Setează excepție",
       "clearOverride": "Elimină excepția",
-      "sync": "Sincronizează din Stripe",
+      "sync": "Sincronizează de la furnizorul de plăți",
       "overrideFor": "Excepție de plan pentru {{email}}",
       "expires": "Expiră (opțional)",
       "reason": "Motiv (opțional)",
       "overrideSaved": "Excepție salvată",
       "overrideCleared": "Excepție eliminată",
-      "synced": "Sincronizat din Stripe"
+      "synced": "Sincronizat de la furnizorul de plăți"
     }
   },
   "shares": {
@@ -1751,7 +1751,7 @@
     "monthly": "Lunar",
     "annual": "Anual",
     "upgradeNow": "Treci acum",
-    "stripeNote": "Plățile sunt gestionate de Stripe. Poți anula oricând din „Gestionează abonamentul”.",
+    "paymentsNote": "Plățile sunt gestionate de {{provider}}. Poți anula oricând din „Gestionează abonamentul”.",
     "notConfigured": "Trecerea la alt plan nu este încă disponibilă pe această instanță.",
     "pastDue": "Ultima ta plată nu a reușit. Actualizează cardul pentru a-ți păstra planul.",
     "graceUntil": "Pro rămâne activ până pe {{date}}.",

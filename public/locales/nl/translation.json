@@ -1460,13 +1460,13 @@
       "cancelling": "wordt opgezegd",
       "setOverride": "Uitzondering instellen",
       "clearOverride": "Uitzondering verwijderen",
-      "sync": "Synchroniseren vanuit Stripe",
+      "sync": "Synchroniseren vanuit de betaalprovider",
       "overrideFor": "Abonnementsuitzondering voor {{email}}",
       "expires": "Verloopt (optioneel)",
       "reason": "Reden (optioneel)",
       "overrideSaved": "Uitzondering opgeslagen",
       "overrideCleared": "Uitzondering verwijderd",
-      "synced": "Gesynchroniseerd vanuit Stripe"
+      "synced": "Gesynchroniseerd vanuit de betaalprovider"
     }
   },
   "shares": {
@@ -1751,7 +1751,7 @@
     "monthly": "Maandelijks",
     "annual": "Jaarlijks",
     "upgradeNow": "Nu upgraden",
-    "stripeNote": "Betalingen worden afgehandeld door Stripe. Zeg op elk moment op via 'Abonnement beheren'.",
+    "paymentsNote": "Betalingen worden afgehandeld door {{provider}}. Zeg op elk moment op via 'Abonnement beheren'.",
     "notConfigured": "Upgrades zijn op deze instantie nog niet beschikbaar.",
     "pastDue": "Je laatste betaling is mislukt. Werk je kaart bij om je abonnement te behouden.",
     "graceUntil": "Pro blijft actief tot {{date}}.",

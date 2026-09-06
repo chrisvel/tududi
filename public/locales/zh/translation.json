@@ -1460,13 +1460,13 @@
       "cancelling": "取消中",
       "setOverride": "设置例外",
       "clearOverride": "移除例外",
-      "sync": "从 Stripe 同步",
+      "sync": "从支付服务商同步",
       "overrideFor": "{{email}} 的套餐例外",
       "expires": "到期时间（可选）",
       "reason": "原因（可选）",
       "overrideSaved": "例外已保存",
       "overrideCleared": "例外已移除",
-      "synced": "已从 Stripe 同步"
+      "synced": "已从支付服务商同步"
     }
   },
   "shares": {
@@ -1751,7 +1751,7 @@
     "monthly": "按月",
     "annual": "按年",
     "upgradeNow": "立即升级",
-    "stripeNote": "付款由 Stripe 处理。可随时在“管理订阅”中取消。",
+    "paymentsNote": "付款由 {{provider}} 处理。可随时在“管理订阅”中取消。",
     "notConfigured": "此实例暂不支持升级。",
     "pastDue": "您最近一次付款未成功。请更新银行卡以保留套餐。",
     "graceUntil": "Pro 将保持有效至 {{date}}。",

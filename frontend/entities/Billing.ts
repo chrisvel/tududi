@@ -44,6 +44,7 @@ export interface BillingStatus {
         reason: string | null;
     } | null;
     billing_configured: boolean;
+    provider: { name: string; display_name: string };
     checkout_available: boolean;
     portal_available: boolean;
     intervals: { month: boolean; year: boolean };

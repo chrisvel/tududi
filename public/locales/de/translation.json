@@ -1469,13 +1469,13 @@
       "cancelling": "wird gekündigt",
       "setOverride": "Ausnahme setzen",
       "clearOverride": "Ausnahme entfernen",
-      "sync": "Von Stripe synchronisieren",
+      "sync": "Vom Zahlungsanbieter synchronisieren",
       "overrideFor": "Tarif-Ausnahme für {{email}}",
       "expires": "Läuft ab (optional)",
       "reason": "Grund (optional)",
       "overrideSaved": "Ausnahme gespeichert",
       "overrideCleared": "Ausnahme entfernt",
-      "synced": "Von Stripe synchronisiert"
+      "synced": "Vom Zahlungsanbieter synchronisiert"
     }
   },
   "shares": {
@@ -1760,7 +1760,7 @@
     "monthly": "Monatlich",
     "annual": "Jährlich",
     "upgradeNow": "Jetzt upgraden",
-    "stripeNote": "Die Zahlung wird über Stripe abgewickelt. Kündige jederzeit unter „Abo verwalten“.",
+    "paymentsNote": "Die Zahlung wird über {{provider}} abgewickelt. Kündige jederzeit unter „Abo verwalten“.",
     "notConfigured": "Upgrades sind auf dieser Instanz noch nicht verfügbar.",
     "pastDue": "Deine letzte Zahlung ist fehlgeschlagen. Aktualisiere deine Karte, um deinen Tarif zu behalten.",
     "graceUntil": "Pro bleibt bis {{date}} aktiv.",

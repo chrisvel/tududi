@@ -1460,13 +1460,13 @@
       "cancelling": "résiliation en cours",
       "setOverride": "Définir une dérogation",
       "clearOverride": "Supprimer la dérogation",
-      "sync": "Synchroniser depuis Stripe",
+      "sync": "Synchroniser depuis le prestataire de paiement",
       "overrideFor": "Dérogation de forfait pour {{email}}",
       "expires": "Expire le (facultatif)",
       "reason": "Motif (facultatif)",
       "overrideSaved": "Dérogation enregistrée",
       "overrideCleared": "Dérogation supprimée",
-      "synced": "Synchronisé depuis Stripe"
+      "synced": "Synchronisé depuis le prestataire de paiement"
     }
   },
   "shares": {
@@ -1751,7 +1751,7 @@
     "monthly": "Mensuel",
     "annual": "Annuel",
     "upgradeNow": "Passer au niveau supérieur",
-    "stripeNote": "Les paiements sont gérés par Stripe. Résiliez à tout moment depuis « Gérer l'abonnement ».",
+    "paymentsNote": "Les paiements sont gérés par {{provider}}. Résiliez à tout moment depuis « Gérer l'abonnement ».",
     "notConfigured": "Les mises à niveau ne sont pas encore disponibles sur cette instance.",
     "pastDue": "Votre dernier paiement a échoué. Mettez à jour votre carte pour conserver votre forfait.",
     "graceUntil": "Pro reste actif jusqu'au {{date}}.",

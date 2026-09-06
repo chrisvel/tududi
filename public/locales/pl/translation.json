@@ -1460,13 +1460,13 @@
       "cancelling": "anulowanie",
       "setOverride": "Ustaw wyjątek",
       "clearOverride": "Usuń wyjątek",
-      "sync": "Synchronizuj ze Stripe",
+      "sync": "Synchronizuj z dostawcą płatności",
       "overrideFor": "Wyjątek planu dla {{email}}",
       "expires": "Wygasa (opcjonalnie)",
       "reason": "Powód (opcjonalnie)",
       "overrideSaved": "Wyjątek zapisany",
       "overrideCleared": "Wyjątek usunięty",
-      "synced": "Zsynchronizowano ze Stripe"
+      "synced": "Zsynchronizowano z dostawcą płatności"
     }
   },
   "shares": {
@@ -1751,7 +1751,7 @@
     "monthly": "Miesięcznie",
     "annual": "Rocznie",
     "upgradeNow": "Przejdź teraz",
-    "stripeNote": "Płatności obsługuje Stripe. Możesz zrezygnować w każdej chwili w „Zarządzaj subskrypcją”.",
+    "paymentsNote": "Płatności obsługuje {{provider}}. Możesz zrezygnować w każdej chwili w „Zarządzaj subskrypcją”.",
     "notConfigured": "Zmiana planu nie jest jeszcze dostępna w tej instancji.",
     "pastDue": "Ostatnia płatność nie powiodła się. Zaktualizuj kartę, aby zachować plan.",
     "graceUntil": "Pro pozostaje aktywny do {{date}}.",

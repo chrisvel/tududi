@@ -1460,13 +1460,13 @@
       "cancelling": "iptal ediliyor",
       "setOverride": "İstisna ayarla",
       "clearOverride": "İstisnayı kaldır",
-      "sync": "Stripe'tan eşitle",
+      "sync": "Ödeme sağlayıcısından eşitle",
       "overrideFor": "{{email}} için plan istisnası",
       "expires": "Bitiş tarihi (isteğe bağlı)",
       "reason": "Neden (isteğe bağlı)",
       "overrideSaved": "İstisna kaydedildi",
       "overrideCleared": "İstisna kaldırıldı",
-      "synced": "Stripe'tan eşitlendi"
+      "synced": "Ödeme sağlayıcısından eşitlendi"
     }
   },
   "shares": {
@@ -1751,7 +1751,7 @@
     "monthly": "Aylık",
     "annual": "Yıllık",
     "upgradeNow": "Şimdi yükselt",
-    "stripeNote": "Ödemeler Stripe tarafından işlenir. \"Aboneliği yönet\" bölümünden istediğiniz zaman iptal edebilirsiniz.",
+    "paymentsNote": "Ödemeler {{provider}} tarafından işlenir. \"Aboneliği yönet\" bölümünden istediğiniz zaman iptal edebilirsiniz.",
     "notConfigured": "Bu örnekte plan yükseltme henüz kullanılamıyor.",
     "pastDue": "Son ödemeniz gerçekleşmedi. Planınızı korumak için kartınızı güncelleyin.",
     "graceUntil": "Pro, {{date}} tarihine kadar etkin kalır.",

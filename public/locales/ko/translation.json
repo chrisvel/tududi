@@ -1460,13 +1460,13 @@
       "cancelling": "해지 예정",
       "setOverride": "예외 설정",
       "clearOverride": "예외 제거",
-      "sync": "Stripe에서 동기화",
+      "sync": "결제 제공업체에서 동기화",
       "overrideFor": "{{email}}의 요금제 예외",
       "expires": "만료일 (선택)",
       "reason": "사유 (선택)",
       "overrideSaved": "예외가 저장되었습니다",
       "overrideCleared": "예외가 제거되었습니다",
-      "synced": "Stripe에서 동기화되었습니다"
+      "synced": "결제 제공업체에서 동기화되었습니다"
     }
   },
   "shares": {
@@ -1751,7 +1751,7 @@
     "monthly": "월간",
     "annual": "연간",
     "upgradeNow": "지금 업그레이드",
-    "stripeNote": "결제는 Stripe에서 처리됩니다. \"구독 관리\"에서 언제든 해지할 수 있습니다.",
+    "paymentsNote": "결제는 {{provider}}에서 처리됩니다. \"구독 관리\"에서 언제든 해지할 수 있습니다.",
     "notConfigured": "이 인스턴스에서는 아직 업그레이드를 이용할 수 없습니다.",
     "pastDue": "최근 결제가 실패했습니다. 요금제를 유지하려면 카드를 업데이트하세요.",
     "graceUntil": "Pro는 {{date}}까지 유지됩니다.",

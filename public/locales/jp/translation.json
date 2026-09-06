@@ -1460,13 +1460,13 @@
       "cancelling": "解約予定",
       "setOverride": "特例を設定",
       "clearOverride": "特例を解除",
-      "sync": "Stripeから同期",
+      "sync": "決済プロバイダーから同期",
       "overrideFor": "{{email}}のプラン特例",
       "expires": "有効期限（任意）",
       "reason": "理由（任意）",
       "overrideSaved": "特例を保存しました",
       "overrideCleared": "特例を解除しました",
-      "synced": "Stripeから同期しました"
+      "synced": "決済プロバイダーから同期しました"
     }
   },
   "shares": {
@@ -1751,7 +1751,7 @@
     "monthly": "月払い",
     "annual": "年払い",
     "upgradeNow": "今すぐアップグレード",
-    "stripeNote": "お支払いはStripeが処理します。「サブスクリプションを管理」からいつでも解約できます。",
+    "paymentsNote": "お支払いは{{provider}}が処理します。「サブスクリプションを管理」からいつでも解約できます。",
     "notConfigured": "このインスタンスではまだアップグレードを利用できません。",
     "pastDue": "前回のお支払いが完了しませんでした。プランを維持するにはカード情報を更新してください。",
     "graceUntil": "Proは{{date}}まで有効です。",

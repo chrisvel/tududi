@@ -1460,13 +1460,13 @@
       "cancelling": "irtisanotaan",
       "setOverride": "Aseta poikkeus",
       "clearOverride": "Poista poikkeus",
-      "sync": "Synkronoi Stripestä",
+      "sync": "Synkronoi maksupalvelusta",
       "overrideFor": "Tilauspoikkeus käyttäjälle {{email}}",
       "expires": "Vanhenee (valinnainen)",
       "reason": "Syy (valinnainen)",
       "overrideSaved": "Poikkeus tallennettu",
       "overrideCleared": "Poikkeus poistettu",
-      "synced": "Synkronoitu Stripestä"
+      "synced": "Synkronoitu maksupalvelusta"
     }
   },
   "shares": {
@@ -1751,7 +1751,7 @@
     "monthly": "Kuukausittain",
     "annual": "Vuosittain",
     "upgradeNow": "Päivitä nyt",
-    "stripeNote": "Maksut hoitaa Stripe. Voit perua milloin tahansa kohdasta ”Hallitse tilausta”.",
+    "paymentsNote": "Maksut hoitaa {{provider}}. Voit perua milloin tahansa kohdasta ”Hallitse tilausta”.",
     "notConfigured": "Päivitykset eivät ole vielä saatavilla tässä instanssissa.",
     "pastDue": "Viimeisin maksusi ei onnistunut. Päivitä korttisi säilyttääksesi tilauksesi.",
     "graceUntil": "Pro pysyy aktiivisena {{date}} asti.",

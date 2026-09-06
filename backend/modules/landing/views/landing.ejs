@@ -2418,6 +2418,7 @@
                         <div class="plan-icon"><i class="fas fa-cloud"></i></div>
                         <h3><%= t('pricing.plans.cloud.name') %></h3>
                     </div>
+                    <% if (pricing.cloudOpen) { %>
                     <div class="plan-price">
                         <div class="plan-amount"><span>$0</span><span><%= t('pricing.plans.cloud.toStart') %></span></div>
                         <%# Pro is the paid step up on the same account. The early
@@ -2445,6 +2446,28 @@
                         <% }); %>
                     </ul>
                     <a href="<%= appUrl %>/register" class="plan-action"><%= t('pricing.plans.cloud.action') %></a>
+                    <% } else { %>
+                    <%# Cloud is being moved to new infrastructure: no register
+                        link, just the notice and the same email capture the
+                        waitlist section below posts to, tagged separately so
+                        the two lists don't mix. %>
+                    <div class="plan-price">
+                        <div class="plan-amount"><span><%= t('pricing.plans.cloud.comingSoon') %></span></div>
+                        <div class="plan-price-note"><%= t('pricing.plans.cloud.comingSoonNote') %></div>
+                    </div>
+                    <ul class="plan-features">
+                        <% i18n.tList('pricing.plans.cloud.features', faqVars).forEach(function (feature) { %>
+                        <li><i class="fas fa-check"></i><%= feature %></li>
+                        <% }); %>
+                    </ul>
+                    <% if (newsletterAction) { %>
+                    <form class="waitlist-form" action="<%= newsletterAction %>" method="post" target="_blank" style="margin-top:28px;">
+                        <input type="email" name="email" placeholder="<%= t('waitlist.placeholder') %>" aria-label="<%= t('waitlist.inputLabel') %>" required>
+                        <input type="hidden" name="tag" value="cloud-open">
+                        <button type="submit"><%= t('pricing.plans.cloud.notifySubmit') %></button>
+                    </form>
+                    <% } %>
+                    <% } %>
                 </div>
 
                 <div class="plan">

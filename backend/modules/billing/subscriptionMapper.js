@@ -24,8 +24,9 @@ function subscriptionToAccountFields(sub) {
     const plan = planForPrice(priceId);
 
     return {
-        stripe_subscription_id: sub.id,
-        stripe_customer_id:
+        provider: 'stripe',
+        provider_subscription_id: sub.id,
+        provider_customer_id:
             typeof sub.customer === 'string' ? sub.customer : sub.customer?.id,
         status: sub.status,
         plan: plan || 'pro',

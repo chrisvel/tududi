@@ -1460,13 +1460,13 @@
       "cancelling": "a cancelar",
       "setOverride": "Definir exceção",
       "clearOverride": "Remover exceção",
-      "sync": "Sincronizar a partir do Stripe",
+      "sync": "Sincronizar a partir do fornecedor de pagamentos",
       "overrideFor": "Exceção de plano para {{email}}",
       "expires": "Expira (opcional)",
       "reason": "Motivo (opcional)",
       "overrideSaved": "Exceção guardada",
       "overrideCleared": "Exceção removida",
-      "synced": "Sincronizado a partir do Stripe"
+      "synced": "Sincronizado a partir do fornecedor de pagamentos"
     }
   },
   "shares": {
@@ -1751,7 +1751,7 @@
     "monthly": "Mensal",
     "annual": "Anual",
     "upgradeNow": "Mudar agora",
-    "stripeNote": "Os pagamentos são geridos pelo Stripe. Cancele a qualquer momento em «Gerir subscrição».",
+    "paymentsNote": "Os pagamentos são geridos por {{provider}}. Cancele a qualquer momento em «Gerir subscrição».",
     "notConfigured": "As atualizações de plano ainda não estão disponíveis nesta instância.",
     "pastDue": "O seu último pagamento não foi concluído. Atualize o seu cartão para manter o plano.",
     "graceUntil": "O Pro mantém-se ativo até {{date}}.",

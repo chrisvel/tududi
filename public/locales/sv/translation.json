@@ -1460,13 +1460,13 @@
       "cancelling": "avslutas",
       "setOverride": "Ange undantag",
       "clearOverride": "Ta bort undantag",
-      "sync": "Synkronisera från Stripe",
+      "sync": "Synkronisera från betalleverantören",
       "overrideFor": "Prenumerationsundantag för {{email}}",
       "expires": "Går ut (valfritt)",
       "reason": "Anledning (valfritt)",
       "overrideSaved": "Undantag sparat",
       "overrideCleared": "Undantag borttaget",
-      "synced": "Synkroniserat från Stripe"
+      "synced": "Synkroniserat från betalleverantören"
     }
   },
   "shares": {
@@ -1751,7 +1751,7 @@
     "monthly": "Månadsvis",
     "annual": "Årsvis",
     "upgradeNow": "Uppgradera nu",
-    "stripeNote": "Betalningar hanteras av Stripe. Avsluta när som helst under \"Hantera prenumeration\".",
+    "paymentsNote": "Betalningar hanteras av {{provider}}. Avsluta när som helst under \"Hantera prenumeration\".",
     "notConfigured": "Uppgraderingar är inte tillgängliga på den här instansen ännu.",
     "pastDue": "Din senaste betalning gick inte igenom. Uppdatera ditt kort för att behålla din prenumeration.",
     "graceUntil": "Pro förblir aktivt till {{date}}.",

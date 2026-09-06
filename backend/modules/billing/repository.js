@@ -15,13 +15,13 @@ class BillingRepository {
 
     findAccountByCustomerId(customerId) {
         return BillingAccount.findOne({
-            where: { stripe_customer_id: customerId },
+            where: { provider_customer_id: customerId },
         });
     }
 
     findAccountBySubscriptionId(subscriptionId) {
         return BillingAccount.findOne({
-            where: { stripe_subscription_id: subscriptionId },
+            where: { provider_subscription_id: subscriptionId },
         });
     }
 
@@ -36,10 +36,10 @@ class BillingRepository {
     }
 
     // Returns null when the event was seen before (unique violation).
-    async recordEvent(stripeEventId, type) {
+    async recordEvent(providerEventId, type) {
         try {
             return await BillingEvent.create({
-                stripe_event_id: stripeEventId,
+                provider_event_id: providerEventId,
                 type,
                 status: 'received',
             });

@@ -1460,13 +1460,13 @@
       "cancelling": "v preklicu",
       "setOverride": "Nastavi izjemo",
       "clearOverride": "Odstrani izjemo",
-      "sync": "Sinhroniziraj iz Stripe",
+      "sync": "Sinhroniziraj od ponudnika plačil",
       "overrideFor": "Izjema paketa za {{email}}",
       "expires": "Poteče (neobvezno)",
       "reason": "Razlog (neobvezno)",
       "overrideSaved": "Izjema shranjena",
       "overrideCleared": "Izjema odstranjena",
-      "synced": "Sinhronizirano iz Stripe"
+      "synced": "Sinhronizirano od ponudnika plačil"
     }
   },
   "shares": {
@@ -1751,7 +1751,7 @@
     "monthly": "Mesečno",
     "annual": "Letno",
     "upgradeNow": "Nadgradi zdaj",
-    "stripeNote": "Plačila obdeluje Stripe. Prekličete lahko kadar koli v »Upravljaj naročnino«.",
+    "paymentsNote": "Plačila obdeluje {{provider}}. Prekličete lahko kadar koli v »Upravljaj naročnino«.",
     "notConfigured": "Nadgradnje na tej instanci še niso na voljo.",
     "pastDue": "Vaše zadnje plačilo ni uspelo. Posodobite kartico, da obdržite paket.",
     "graceUntil": "Pro ostane aktiven do {{date}}.",
