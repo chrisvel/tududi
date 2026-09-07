@@ -57,7 +57,10 @@ app.use(
                 fontSrc: ["'self'"],
                 objectSrc: ["'none'"],
                 mediaSrc: ["'self'"],
-                frameSrc: ['https://challenges.cloudflare.com'],
+                // 'self' is needed for AttachmentPreview, which renders PDF
+                // attachments in a same-origin <iframe>; without it the
+                // browser refuses the frame ("This content is blocked").
+                frameSrc: ["'self'", 'https://challenges.cloudflare.com'],
                 upgradeInsecureRequests:
                     process.env.UPGRADE_INSECURE_REQUESTS === 'true'
                         ? []
