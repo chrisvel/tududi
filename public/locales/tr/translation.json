@@ -742,7 +742,8 @@
     "oidc": {
       "completing_signin": "Oturum açma işlemi tamamlanıyor...",
       "authenticating_with_provider": "Sağlayıcı ile kimlik doğrulama yapılıyor. Lütfen bekleyin..."
-    }
+    },
+    "captcha_required": "Lütfen doğrulamayı tamamlayıp tekrar deneyin."
   },
   "dropdown": {
     "createNew": "Yeni Oluştur",

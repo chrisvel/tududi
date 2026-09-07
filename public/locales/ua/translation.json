@@ -1163,7 +1163,8 @@
     "oidc": {
       "completing_signin": "Завершення входу...",
       "authenticating_with_provider": "Аутентифікація з постачальником. Будь ласка, зачекайте..."
-    }
+    },
+    "captcha_required": "Пройдіть перевірку та спробуйте ще раз."
   },
   "dropdown": {
     "createNew": "Створити новий",

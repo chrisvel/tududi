@@ -742,7 +742,8 @@
     "oidc": {
       "completing_signin": "Kirjautumisen viimeistely...",
       "authenticating_with_provider": "Todennetaan palveluntarjoajalla. Ole hyvä ja odota..."
-    }
+    },
+    "captcha_required": "Suorita vahvistus loppuun ja yritä uudelleen."
   },
   "dropdown": {
     "createNew": "Luo uusi",

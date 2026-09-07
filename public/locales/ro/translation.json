@@ -742,7 +742,8 @@
     "oidc": {
       "completing_signin": "Finalizând conectarea...",
       "authenticating_with_provider": "Autentificare cu furnizorul. Te rugăm să aștepți..."
-    }
+    },
+    "captcha_required": "Finalizează verificarea și încearcă din nou."
   },
   "dropdown": {
     "createNew": "Creează Nou",

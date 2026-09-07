@@ -1087,7 +1087,8 @@
     "oidc": {
       "completing_signin": "Anmeldung wird abgeschlossen...",
       "authenticating_with_provider": "Authentifizierung beim Anbieter. Bitte warten..."
-    }
+    },
+    "captcha_required": "Bitte schließe die Überprüfung ab und versuche es erneut."
   },
   "dropdown": {
     "createNew": "Neu erstellen",

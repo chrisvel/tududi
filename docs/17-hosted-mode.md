@@ -144,6 +144,24 @@ After a failed payment the account is `past_due`: Pro continues for
 retries, and the user gets an in-app warning. Nothing is deleted or hidden
 on a downgrade. Deleting an account cancels its subscription.
 
+## Captcha
+
+Registration, password reset and verification resend are the three forms
+anyone on the internet can submit. With Cloudflare Turnstile configured they
+carry a challenge that is invisible for most visitors:
+
+| Variable | Meaning |
+|---|---|
+| `TURNSTILE_SITE_KEY` | public key, rendered in the forms |
+| `TURNSTILE_SECRET_KEY` | server key used to verify tokens |
+
+Create the widget at dash.cloudflare.com under Turnstile (the domain does
+not need to be on Cloudflare DNS). The forms send the token as
+`captcha_token`; a missing or invalid token answers `400` with
+`code: CAPTCHA_FAILED`. If Cloudflare itself is unreachable the request is
+let through and logged, so an outage there never locks people out; the
+rate limiters still apply. Unset (the default) means no captcha anywhere.
+
 ## Marketing page
 
 The same image can serve the public marketing page, so a hosted deployment

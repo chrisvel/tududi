@@ -742,7 +742,8 @@
     "oidc": {
       "completing_signin": "Inloggen voltooien...",
       "authenticating_with_provider": "Authenticeren met provider. Even geduld..."
-    }
+    },
+    "captcha_required": "Voltooi de verificatie en probeer het opnieuw."
   },
   "dropdown": {
     "createNew": "Nieuw Aanmaken",

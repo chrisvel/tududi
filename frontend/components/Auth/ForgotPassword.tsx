@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getApiPath } from '../../config/paths';
 import AuthPageShell from './AuthPageShell';
+import CaptchaWidget from './CaptchaWidget';
+import { fetchCaptchaConfig, CaptchaConfig } from '../../utils/captcha';
 
 const ForgotPassword: React.FC = () => {
     const { t } = useTranslation();
@@ -10,21 +12,41 @@ const ForgotPassword: React.FC = () => {
     const [submitting, setSubmitting] = useState(false);
     const [sent, setSent] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [captcha, setCaptcha] = useState<CaptchaConfig | null>(null);
+    const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+    const [captchaReset, setCaptchaReset] = useState(0);
+
+    useEffect(() => {
+        fetchCaptchaConfig().then(setCaptcha);
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
+        if (captcha && !captchaToken) {
+            setError(
+                t(
+                    'auth.captcha_required',
+                    'Please complete the verification and try again.'
+                )
+            );
+            return;
+        }
         setSubmitting(true);
         try {
             const response = await fetch(getApiPath('forgot-password'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email }),
+                body: JSON.stringify({
+                    email,
+                    ...(captchaToken ? { captcha_token: captchaToken } : {}),
+                }),
                 credentials: 'include',
             });
             if (response.ok) {
                 setSent(true);
             } else {
+                setCaptchaReset((k) => k + 1);
                 const data = await response.json().catch(() => ({}));
                 setError(
                     data.error ||
@@ -97,9 +119,16 @@ const ForgotPassword: React.FC = () => {
                             required
                         />
                     </div>
+                    {captcha && (
+                        <CaptchaWidget
+                            siteKey={captcha.site_key}
+                            onToken={setCaptchaToken}
+                            resetKey={captchaReset}
+                        />
+                    )}
                     <button
                         type="submit"
-                        disabled={submitting}
+                        disabled={submitting || (!!captcha && !captchaToken)}
                         className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-60"
                         data-testid="forgot-submit"
                     >

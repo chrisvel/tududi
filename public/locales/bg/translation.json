@@ -742,7 +742,8 @@
     "oidc": {
       "completing_signin": "Завършване на входа...",
       "authenticating_with_provider": "Удостоверяване с доставчика. Моля, изчакайте..."
-    }
+    },
+    "captcha_required": "Завършете проверката и опитайте отново."
   },
   "dropdown": {
     "createNew": "Създай ново",

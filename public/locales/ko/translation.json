@@ -742,7 +742,8 @@
     "oidc": {
       "completing_signin": "로그인 완료 중...",
       "authenticating_with_provider": "제공자와 인증 중입니다. 잠시 기다려 주세요..."
-    }
+    },
+    "captcha_required": "인증을 완료한 뒤 다시 시도해 주세요."
   },
   "dropdown": {
     "createNew": "새로 만들기",

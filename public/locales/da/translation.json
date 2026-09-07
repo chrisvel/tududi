@@ -742,7 +742,8 @@
     "oidc": {
       "completing_signin": "Afslutter log ind...",
       "authenticating_with_provider": "Autentificerer med udbyder. Vent venligst..."
-    }
+    },
+    "captcha_required": "Fuldfør verificeringen, og prøv igen."
   },
   "dropdown": {
     "createNew": "Opret Ny",

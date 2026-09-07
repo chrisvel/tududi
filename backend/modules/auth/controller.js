@@ -14,8 +14,10 @@ const authController = {
 
     getPublicConfig(req, res) {
         const config = getConfig();
+        const { publicCaptchaConfig } = require('../../middleware/captcha');
         res.json({
             fileUploadLimitMB: config.fileUploadLimitMB,
+            captcha: publicCaptchaConfig(),
         });
     },
 
