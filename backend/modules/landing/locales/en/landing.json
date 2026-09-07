@@ -31,7 +31,9 @@
     "altLink": "create a free account on tududi Cloud",
     "note": "MIT licensed · open source forever",
     "demoNote": "A real hosted instance, seeded with sample data, shared and reset regularly",
-    "screenshotAlt": "The tududi interface, showing the Today view with planned tasks"
+    "screenshotAlt": "The tududi interface, showing the Today view with planned tasks",
+    "ctaCloud": "tududi Cloud",
+    "ctaSelfHosted": "Self-hosted"
   },
   "proof": {
     "stars": "stars on GitHub",
@@ -259,19 +261,17 @@
       },
       "cloud": {
         "name": "Cloud",
-        "toStart": "to start",
-        "proLabel": "Pro",
         "or": "or",
         "launchNote": "Early bird annual price, yours for as long as you stay subscribed.",
-        "priceNote": "Create an account in a minute, upgrade when you outgrow the free plan.",
+        "priceNote": "Everything included. Cancel any time.",
         "features": [
-          "Free plan: {{freeTasks}} active tasks, {{freeProjects}} projects, {{freeNotes}} notes, {{freeStorageMb}} MB of attachments",
-          "Pro: unlimited tasks, projects and notes, {{proStorageGb}} GB of attachments",
-          "Pro: AI Assistant, MCP, CalDAV sync, Telegram bot, backup import",
+          "Unlimited tasks, projects and notes",
+          "Attachments and file uploads",
+          "AI assistant, MCP, CalDAV sync and the Telegram bot",
           "Updates and daily backups handled for you",
           "Export everything any time, delete your account yourself"
         ],
-        "action": "Create free account →",
+        "action": "Get started →",
         "comingSoon": "Opening in a few days",
         "comingSoonNote": "We're moving Cloud to new infrastructure. Leave your email below and we'll let you know the moment it's back.",
         "notifySubmit": "Notify me"
@@ -323,7 +323,7 @@
       "freeForever": "Free forever",
       "pricePerYear": "${{price}}/year",
       "sharedInstance": "Shared instance, export any time",
-      "freeOrPro": "Free, or Pro ${{price}}/year"
+      "freeOrPro": "${{price}}/year"
     },
     "closing": "Ready to run your own system?",
     "closingCta": "Self-host tududi"
@@ -394,8 +394,8 @@
         "a": "You are paying to not run it. tududi Cloud gives you the same system with updates and backups handled for you, and Pro adds the AI Assistant, MCP, CalDAV sync, the Telegram bot and unlimited items. If you already run Docker and a reverse proxy, self-hosting is genuinely the better deal and we would rather you did that. Cloud exists for people who want the system without becoming its sysadmin."
       },
       "freePlan": {
-        "q": "What does the free Cloud plan include?",
-        "a": "Up to {{freeTasks}} active tasks, {{freeProjects}} projects, {{freeNotes}} notes and {{freeStorageMb}} MB of attachments, with no time limit. Completed tasks do not count. If you reach a limit you keep everything and can still read, edit, complete and delete; only adding more waits until you are back under the limit or upgrade to Pro."
+        "q": "Is there a free plan on tududi Cloud?",
+        "a": "No. Cloud is ${{monthly}} a month or ${{price}} a year, and that is the whole price list. The free option is self-hosting, which is the same application with every feature, run on your own machine. Paying for Cloud buys the operating work, not the software."
       },
       "leaving": {
         "q": "Can I leave, and what happens to my data?",
@@ -438,5 +438,56 @@
     "showFewer": "Show fewer",
     "copy": "Copy",
     "copied": "Copied"
+  },
+  "cloud": {
+    "metaTitle": "tududi Cloud: the hosted tududi, run for you",
+    "metaDescription": "tududi Cloud is the same open source system, running on our servers with updates, backups and email handled for you. $5 a month or $49 a year.",
+    "title": "Why use tududi Cloud?",
+    "lede": "The same system either way. The difference is who keeps it running, patched and backed up at three in the morning.",
+    "ctaPrimary": "Get started",
+    "ctaPricing": "See the price",
+    "note": "Same MIT licensed app. Export everything, any time.",
+    "whyEyebrow": "Cloud",
+    "whyTitle": "What you are actually paying for",
+    "whySub": "Not features. Every feature is in the self-hosted build too.",
+    "reasons": {
+      "noOps": {
+        "title": "No server to run",
+        "body": "No VPS to rent, no Docker to update, no reverse proxy or certificate to renew. You sign in and it is there."
+      },
+      "updates": {
+        "title": "Updates applied for you",
+        "body": "New releases reach your account without a pull, a restart or a migration you have to watch."
+      },
+      "backups": {
+        "title": "Backups you do not have to remember",
+        "body": "The database is dumped nightly and kept off the machine that serves you. You can also export the lot yourself whenever you like."
+      },
+      "email": {
+        "title": "Email that arrives",
+        "body": "Verification, password resets and reminders go out through a warmed sending domain, which is fiddly and dull to set up on your own box."
+      },
+      "support": {
+        "title": "Somebody to email",
+        "body": "A person who knows the code answers. With self-hosting you get the community, which is good, but nobody is on the hook."
+      },
+      "sameApp": {
+        "title": "Exactly the same app",
+        "body": "No cloud-only features and no crippled self-hosted build. If we ever shut the service down you get your data and a migration guide."
+      }
+    },
+    "pricingTitle": "One plan, two ways to pay",
+    "pricingSub": "Everything included. Cancel whenever you like.",
+    "orAnnual": "or",
+    "priceNote": "Billed by our payment provider. Prices exclude applicable taxes.",
+    "includes": [
+      "Unlimited tasks, projects and notes",
+      "Attachments and file uploads",
+      "AI assistant, MCP, CalDAV sync and the Telegram bot",
+      "Daily backups and managed updates",
+      "Support by email",
+      "Export everything at any time"
+    ],
+    "selfHostLine": "Rather run it yourself? That is free, forever, and always will be."
   }
 }

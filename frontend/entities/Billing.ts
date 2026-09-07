@@ -43,6 +43,11 @@ export interface BillingStatus {
         expires_at: string | null;
         reason: string | null;
     } | null;
+    // Instances that sell access rather than upgrades set this; `active`
+    // is false only when nothing (subscription, trial, override, admin)
+    // entitles the account to the app.
+    subscription_required: boolean;
+    active: boolean;
     billing_configured: boolean;
     provider: { name: string; display_name: string };
     checkout_available: boolean;

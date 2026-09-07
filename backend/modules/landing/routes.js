@@ -71,6 +71,58 @@ function createLandingRouter(landing) {
     const rendered = new Map();
     const secureCookie = /^https:/.test(siteOrigin);
 
+    // Absolute URL of one page in one locale: '/', '/fr', '/cloud',
+    // '/fr/cloud'. localeUrl alone cannot build the sub-pages, since it
+    // returns a bare origin for English and no trailing slash for the rest.
+    const pageUrl = (locale, suffix = '') =>
+        `${siteOrigin.replace(/\/$/, '')}${localePath(locale, suffix)}`;
+
+    async function renderPage(req, res, locale, template, extra = {}) {
+        res.cookie(LANG_COOKIE, locale, {
+            maxAge: LANG_COOKIE_MAX_AGE,
+            httpOnly: true,
+            sameSite: 'lax',
+            secure: secureCookie,
+            path: '/',
+        });
+        res.setHeader('Content-Security-Policy', csp);
+        res.setHeader('Cache-Control', 'public, max-age=300');
+
+        const stats = getStats();
+        const i18n = createI18n(locale);
+        const plans = getPlans();
+        const html = await ejs.renderFile(
+            path.join(__dirname, 'views', template),
+            {
+                i18n,
+                locales: LOCALES,
+                pricing: landing.pricing,
+                plans: {
+                    freeTasks: plans.free.limits.max_tasks,
+                    freeProjects: plans.free.limits.max_projects,
+                    freeNotes: plans.free.limits.max_notes,
+                    freeStorageMb: plans.free.limits.storage_mb,
+                    proStorageGb: Math.round(
+                        plans.pro.limits.storage_mb / 1000
+                    ),
+                },
+                appUrl,
+                newsletterAction,
+                dockerPulls: stats.dockerPulls,
+                discordMembers: stats.discordMembers,
+                demo: null,
+                mcpToolCount: MCP_TOOL_COUNT,
+                localePath,
+                localeUrl,
+                pageUrl,
+                jsonForScript,
+                ...extra,
+            },
+            { cache: cacheRenders, rmWhitespace: false }
+        );
+        res.type('html').send(html);
+    }
+
     async function renderLanding(req, res, locale) {
         // Remember the choice so a later bare '/' lands where the visitor
         // left off. Set on English too, otherwise switching back never sticks.
@@ -169,6 +221,23 @@ function createLandingRouter(landing) {
 
     // The base language lives at the root, so /en is not a real URL.
     router.get('/en', (req, res) => res.redirect(301, '/'));
+
+    // Why the hosted option exists, and what it costs. Literal paths for
+    // the same reason the landing ones are literal.
+    const cloudPaths = [
+        '/cloud',
+        ...LOCALE_CODES.filter((c) => c !== DEFAULT_LOCALE).map(
+            (c) => `/${c}/cloud`
+        ),
+    ];
+    router.get(cloudPaths, (req, res, next) => {
+        const segments = req.path.split('/').filter(Boolean);
+        const locale = segments.length > 1 ? segments[0] : DEFAULT_LOCALE;
+        renderPage(req, res, locale, 'cloud.ejs', {
+            canonicalUrl: pageUrl(locale, '/cloud'),
+        }).catch(next);
+    });
+    router.get('/en/cloud', (req, res) => res.redirect(301, '/cloud'));
 
     router.use(
         '/landing-assets',

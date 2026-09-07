@@ -233,8 +233,6 @@
       },
       "cloud": {
         "name": "Cloud",
-        "toStart": "zum Start",
-        "proLabel": "Pro",
         "or": "oder",
         "launchNote": "Frühbucher-Jahrespreis, deiner, solange du abonniert bleibst.",
         "priceNote": "Konto in einer Minute anlegen, Upgrade, wenn dir der kostenlose Tarif zu klein wird.",

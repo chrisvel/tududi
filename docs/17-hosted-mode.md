@@ -43,6 +43,27 @@ Other knobs:
 | `TUDUDI_TRIAL_DAYS` | `14` | new accounts get Pro for this long, counted from the account creation date |
 | `TUDUDI_PAST_DUE_GRACE_DAYS` | `14` | after a failed payment, Pro continues this long past the period end |
 | `TUDUDI_HOSTED_EXEMPT_ADMINS` | `true` | admins are treated as Pro |
+| `TUDUDI_REQUIRE_SUBSCRIPTION` | `false` | sell access rather than upgrades: see below |
+
+## Selling access rather than upgrades
+
+With `TUDUDI_REQUIRE_SUBSCRIPTION=true` the Free plan stops being a place to
+live. An account with no subscription, no trial, no admin override and no
+admin exemption cannot use the app at all: every API route answers `402`
+with `code: SUBSCRIPTION_REQUIRED`, and the browser is sent to
+`/subscription/new`, which lists the plans and starts a checkout.
+
+Four things stay open, because locking someone out of their own data would
+make it theirs in name only:
+
+- `GET/PATCH/DELETE /api/profile` and the password change, so an account can
+  be corrected or deleted
+- `POST /api/backup/export`, `GET /api/backup/list` and the download route
+- every `/api/billing` route, so a plan can actually be bought
+- the auth routes, which sit before this check
+
+The flag is meaningless when hosted mode is off, so a self-hosted instance
+is never gated. Leave it unset for the usual free-tier-plus-Pro shape.
 
 ## How limits are enforced
 

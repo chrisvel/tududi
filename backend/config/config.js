@@ -106,6 +106,11 @@ const config = {
             ? parseInt(process.env.TUDUDI_PAST_DUE_GRACE_DAYS, 10)
             : 14,
         exemptAdmins: process.env.TUDUDI_HOSTED_EXEMPT_ADMINS !== 'false',
+        // Sell access rather than upgrades: without an active subscription
+        // the app is closed, and only billing, the profile and data export
+        // stay reachable. Off by default, and meaningless when hosted mode
+        // is off, so a self-hosted instance is never gated.
+        requireSubscription: process.env.TUDUDI_REQUIRE_SUBSCRIPTION === 'true',
         stripe: {
             secretKey: process.env.STRIPE_SECRET_KEY,
             webhookSecret: process.env.STRIPE_WEBHOOK_SECRET,

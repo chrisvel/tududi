@@ -743,7 +743,9 @@
       "completing_signin": "Concluindo login...",
       "authenticating_with_provider": "Autenticando com o provedor. Por favor, aguarde..."
     },
-    "captcha_required": "Conclua a verificação e tente novamente."
+    "captcha_required": "Conclua a verificação e tente novamente.",
+    "registration_successful": "Verifique o seu endereço de e-mail",
+    "registration_email_sent": "Verifique o seu endereço de e-mail para ativar a sua conta. Enviámos-lhe uma ligação, verifique a sua caixa de entrada."
   },
   "dropdown": {
     "createNew": "Criar Novo",

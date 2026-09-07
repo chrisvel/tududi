@@ -233,8 +233,6 @@
       },
       "cloud": {
         "name": "Cloud",
-        "toStart": "起步",
-        "proLabel": "Pro",
         "or": "或",
         "launchNote": "早鸟年付价格，只要保持订阅就一直有效。",
         "priceNote": "一分钟创建账户，免费版不够用时再升级到 Pro。",

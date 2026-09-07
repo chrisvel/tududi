@@ -744,7 +744,9 @@
       "completing_signin": "Fullfører pålogging...",
       "authenticating_with_provider": "Autentiserer med leverandør. Vennligst vent..."
     },
-    "captcha_required": "Fullfør verifiseringen og prøv igjen."
+    "captcha_required": "Fullfør verifiseringen og prøv igjen.",
+    "registration_successful": "Bekreft e-postadressen din",
+    "registration_email_sent": "Bekreft e-postadressen din for å aktivere kontoen. Vi har sendt deg en lenke, sjekk innboksen din."
   },
   "dropdown": {
     "createNew": "Opprett ny",

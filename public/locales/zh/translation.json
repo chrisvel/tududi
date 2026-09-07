@@ -743,7 +743,9 @@
       "completing_signin": "正在完成登录...",
       "authenticating_with_provider": "正在与提供商进行身份验证。请稍候..."
     },
-    "captcha_required": "请完成验证后重试。"
+    "captcha_required": "请完成验证后重试。",
+    "registration_successful": "请验证您的邮箱地址",
+    "registration_email_sent": "请验证您的邮箱地址以激活账户。我们已发送链接，请查看收件箱。"
   },
   "dropdown": {
     "createNew": "创建新项",

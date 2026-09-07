@@ -1,0 +1,68 @@
+<%# `t` is declared in the page that includes this; an include compiles
+    into its own function, so it is re-bound here from the shared locals. %>
+<% const t = i18n.t; %>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <img src="/landing-assets/wide-logo-dark.png" alt="tududi">
+                    <p><%= t('footer.tagline') %></p>
+                    <a href="https://github.com/chrisvel/tududi"><i class="fab fa-github" style="font-size:19px;"></i></a>
+                </div>
+                <div>
+                    <h3><%= t('footer.colProduct') %></h3>
+                    <div class="footer-col">
+                        <a href="#features"><%= t('nav.features') %></a>
+                        <a href="#ai"><%= t('nav.ai') %></a>
+                        <a href="#self-host"><%= t('nav.selfHost') %></a>
+                        <a href="#pricing"><%= t('nav.pricing') %></a>
+                    </div>
+                </div>
+                <div>
+                    <h3><%= t('footer.colResources') %></h3>
+                    <div class="footer-col">
+                        <a href="https://docs.tududi.com"><%= t('nav.docs') %></a>
+                        <a href="https://github.com/chrisvel/tududi">GitHub</a>
+                        <a href="https://github.com/users/chrisvel/projects/2"><%= t('footer.linkRoadmap') %></a>
+                        <a href="https://github.com/chrisvel/tududi/issues"><%= t('footer.linkIssues') %></a>
+                    </div>
+                </div>
+                <div>
+                    <h3><%= t('footer.colCommunity') %></h3>
+                    <div class="footer-col">
+                        <a href="https://discord.gg/fkbeJ9CmcH"><i class="fab fa-discord"></i> Discord</a>
+                        <a href="https://www.reddit.com/r/tududi/"><i class="fab fa-reddit"></i> Reddit</a>
+                        <a href="mailto:info@tududi.com"><i class="fas fa-envelope"></i> <%= t('footer.linkEmail') %></a>
+                        <a href="mailto:licensing@tududi.com" class="divider"><i class="fas fa-briefcase"></i> <%= t('footer.linkBusinessLicence') %></a>
+                    </div>
+                </div>
+                <%# Donations moved down here from the dark band that used to sit
+                    just before the pricing pitch. A small donation is a fine thing
+                    to offer on the way out, not on the way in. %>
+                <div>
+                    <h3><%= t('footer.colSupport') %></h3>
+                    <div class="footer-col">
+                        <a href="https://github.com/sponsors/chrisvel">GitHub Sponsors</a>
+                        <a href="https://www.patreon.com/ChrisVeleris">Patreon</a>
+                        <a href="https://coff.ee/chrisveleris"><%= t('footer.linkCoffee') %></a>
+                        <a href="https://www.paypal.com/donate/?hosted_button_id=QEQCKLXPB6XAE">PayPal</a>
+                    </div>
+                </div>
+                <% if (newsletterAction) { %>
+                <div class="footer-sub">
+                    <h3><%= t('footer.subTitle') %></h3>
+                    <p><%= t('footer.subBody') %></p>
+                    <form action="<%= newsletterAction %>" method="post" target="_blank">
+                        <input type="email" name="email" placeholder="<%= t('waitlist.placeholder') %>" aria-label="<%= t('waitlist.inputLabel') %>" required>
+                        <input type="hidden" name="tag" value="footer">
+                        <button type="submit"><%= t('footer.subSubmit') %></button>
+                    </form>
+                </div>
+                <% } %>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 <strong>tududi</strong>. <%= t('footer.rights') %></p>
+            </div>
+        </div>
+    </footer>

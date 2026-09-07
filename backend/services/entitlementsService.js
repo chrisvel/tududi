@@ -24,6 +24,22 @@ function isHostedMode() {
     return getConfig().hosted?.enabled === true;
 }
 
+// True when this instance sells access outright, so an account with no
+// subscription cannot use the app at all.
+function isSubscriptionRequired() {
+    const hosted = getConfig().hosted || {};
+    return hosted.enabled === true && hosted.requireSubscription === true;
+}
+
+// "This account is entitled to the app": a subscription, a trial, an admin
+// exemption, an admin override, or the past-due grace window. The 'free'
+// reason is the only one that means nothing is paying for it.
+async function hasActiveEntitlement(userId) {
+    if (!isHostedMode()) return true;
+    const ent = await getEntitlements(userId);
+    return ent.reason !== 'free';
+}
+
 function models() {
     return require('../models');
 }
@@ -127,6 +143,8 @@ async function getEntitlements(userId, { includeUsage = false } = {}) {
             reason: 'hosted_off',
             limits: UNLIMITED.limits,
             features: UNLIMITED.features,
+            subscription_required: false,
+            active: true,
             usage: includeUsage ? await getUsage(userId) : undefined,
         };
     }
@@ -150,6 +168,8 @@ async function getEntitlements(userId, { includeUsage = false } = {}) {
             current_period_end: account?.current_period_end || null,
             cancel_at_period_end: account?.cancel_at_period_end || false,
             grace_until: r.graceUntil || null,
+            subscription_required: isSubscriptionRequired(),
+            active: r.reason !== 'free',
             override: account?.override_plan
                 ? {
                       plan: account.override_plan,
@@ -299,6 +319,8 @@ async function getUsage(userId) {
 
 module.exports = {
     isHostedMode,
+    isSubscriptionRequired,
+    hasActiveEntitlement,
     resolvePlan,
     ensureAccount,
     getEntitlements,

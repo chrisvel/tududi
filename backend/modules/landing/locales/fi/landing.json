@@ -233,8 +233,6 @@
       },
       "cloud": {
         "name": "Cloud",
-        "toStart": "aluksi",
-        "proLabel": "Pro",
         "or": "tai",
         "launchNote": "Early bird -vuosihinta, sinun niin kauan kuin pysyt tilaajana.",
         "priceNote": "Luo tili minuutissa ja päivitä, kun ilmainen paketti käy pieneksi.",

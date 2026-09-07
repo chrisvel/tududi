@@ -743,7 +743,9 @@
       "completing_signin": "Dokončujem prijavo...",
       "authenticating_with_provider": "Avtentikacija pri ponudniku. Prosimo, počakajte..."
     },
-    "captcha_required": "Dokončajte preverjanje in poskusite znova."
+    "captcha_required": "Dokončajte preverjanje in poskusite znova.",
+    "registration_successful": "Potrdite svoj e-poštni naslov",
+    "registration_email_sent": "Potrdite svoj e-poštni naslov, da aktivirate račun. Poslali smo vam povezavo, preverite nabiralnik."
   },
   "dropdown": {
     "createNew": "Ustvari novo",

@@ -743,7 +743,9 @@
       "completing_signin": "Avslutar inloggning...",
       "authenticating_with_provider": "Autentiserar med leverantör. Vänligen vänta..."
     },
-    "captcha_required": "Slutför verifieringen och försök igen."
+    "captcha_required": "Slutför verifieringen och försök igen.",
+    "registration_successful": "Bekräfta din e-postadress",
+    "registration_email_sent": "Bekräfta din e-postadress för att aktivera ditt konto. Vi har skickat en länk, kontrollera din inkorg."
   },
   "dropdown": {
     "createNew": "Skapa ny",

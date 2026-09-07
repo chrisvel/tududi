@@ -743,7 +743,9 @@
       "completing_signin": "Đang hoàn tất đăng nhập...",
       "authenticating_with_provider": "Đang xác thực với nhà cung cấp. Vui lòng chờ..."
     },
-    "captcha_required": "Vui lòng hoàn tất xác minh và thử lại."
+    "captcha_required": "Vui lòng hoàn tất xác minh và thử lại.",
+    "registration_successful": "Xác minh địa chỉ email của bạn",
+    "registration_email_sent": "Xác minh địa chỉ email của bạn để kích hoạt tài khoản. Chúng tôi đã gửi một liên kết, hãy kiểm tra hộp thư."
   },
   "dropdown": {
     "createNew": "Tạo mới",

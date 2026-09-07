@@ -233,8 +233,6 @@
       },
       "cloud": {
         "name": "Cloud",
-        "toStart": "başlangıç için",
-        "proLabel": "Pro",
         "or": "veya",
         "launchNote": "Erken kayıt yıllık fiyatı, abone kaldığınız sürece sizin.",
         "priceNote": "Bir dakikada hesap oluşturun, ücretsiz plan yetmediğinde Pro'ya geçin.",

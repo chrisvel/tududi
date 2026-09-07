@@ -156,7 +156,9 @@
       "completing_signin": "Completando el inicio de sesión...",
       "authenticating_with_provider": "Autenticando con el proveedor. Por favor, espere..."
     },
-    "captcha_required": "Completa la verificación e inténtalo de nuevo."
+    "captcha_required": "Completa la verificación e inténtalo de nuevo.",
+    "registration_successful": "Verifica tu dirección de correo",
+    "registration_email_sent": "Verifica tu dirección de correo para activar tu cuenta. Te hemos enviado un enlace, revisa tu bandeja de entrada."
   },
   "profile": {
     "title": "Configuración de Perfil",

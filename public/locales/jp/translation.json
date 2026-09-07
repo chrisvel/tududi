@@ -725,7 +725,9 @@
       "completing_signin": "サインインを完了しています...",
       "authenticating_with_provider": "プロバイダーで認証中です。お待ちください..."
     },
-    "captcha_required": "認証を完了してから、もう一度お試しください。"
+    "captcha_required": "認証を完了してから、もう一度お試しください。",
+    "registration_successful": "メールアドレスを確認してください",
+    "registration_email_sent": "アカウントを有効にするには、メールアドレスを確認してください。リンクをお送りしましたので、受信トレイをご確認ください。"
   },
   "dropdown": {
     "createNew": "新規作成",
