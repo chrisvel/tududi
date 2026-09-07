@@ -742,7 +742,8 @@
     "oidc": {
       "completing_signin": "يتم إكمال تسجيل الدخول...",
       "authenticating_with_provider": "يتم المصادقة مع المزود. يرجى الانتظار..."
-    }
+    },
+    "captcha_required": "يرجى إكمال التحقق والمحاولة مرة أخرى."
   },
   "dropdown": {
     "createNew": "إنشاء جديد",

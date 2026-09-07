@@ -137,6 +137,14 @@ const config = {
         },
     },
 
+    // Bot protection on registration, password reset and verification
+    // resend (Cloudflare Turnstile). Off unless both keys are set.
+    captcha: {
+        siteKey: process.env.TURNSTILE_SITE_KEY,
+        secretKey: process.env.TURNSTILE_SECRET_KEY,
+        verifyUrl: process.env.TURNSTILE_VERIFY_URL || undefined,
+    },
+
     // Marketing page. When TUDUDI_LANDING_HOSTS names one or more hostnames,
     // requests for those hosts get the marketing page instead of the app,
     // and product paths on them redirect to FRONTEND_URL. Empty (the

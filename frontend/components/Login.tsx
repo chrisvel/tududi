@@ -4,6 +4,8 @@ import i18n from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { getApiPath, getAssetPath } from '../config/paths';
 import OIDCProviderButtons from './Auth/OIDCProviderButtons';
+import CaptchaWidget from './Auth/CaptchaWidget';
+import { fetchCaptchaConfig, CaptchaConfig } from '../utils/captcha';
 
 const Login: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -13,6 +15,8 @@ const Login: React.FC = () => {
     const [registrationEnabled, setRegistrationEnabled] = useState(false);
     const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
     const [resendState, setResendState] = useState<'idle' | 'sent'>('idle');
+    const [captcha, setCaptcha] = useState<CaptchaConfig | null>(null);
+    const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     const [passwordAuthEnabled, setPasswordAuthEnabled] = useState(true);
     const [oidcProviders, setOidcProviders] = useState<
         Array<{ slug: string; name: string }>
@@ -132,13 +136,21 @@ const Login: React.FC = () => {
         checkPasswordAuth();
     }, []);
 
+    useEffect(() => {
+        fetchCaptchaConfig().then(setCaptcha);
+    }, []);
+
     const handleResendVerification = async () => {
         if (!unverifiedEmail) return;
+        if (captcha && !captchaToken) return;
         try {
             await fetch(getApiPath('resend-verification'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: unverifiedEmail }),
+                body: JSON.stringify({
+                    email: unverifiedEmail,
+                    ...(captchaToken ? { captcha_token: captchaToken } : {}),
+                }),
                 credentials: 'include',
             });
         } catch (err) {
@@ -243,17 +255,30 @@ const Login: React.FC = () => {
                                             )}
                                         </span>
                                     ) : (
-                                        <button
-                                            type="button"
-                                            onClick={handleResendVerification}
-                                            className="text-blue-500 hover:text-blue-600"
-                                            data-testid="login-resend-verification"
-                                        >
-                                            {t(
-                                                'auth.resend_verification',
-                                                'Resend verification email'
+                                        <>
+                                            {captcha && (
+                                                <CaptchaWidget
+                                                    siteKey={captcha.site_key}
+                                                    onToken={setCaptchaToken}
+                                                />
                                             )}
-                                        </button>
+                                            <button
+                                                type="button"
+                                                onClick={
+                                                    handleResendVerification
+                                                }
+                                                disabled={
+                                                    !!captcha && !captchaToken
+                                                }
+                                                className="text-blue-500 hover:text-blue-600 disabled:opacity-60"
+                                                data-testid="login-resend-verification"
+                                            >
+                                                {t(
+                                                    'auth.resend_verification',
+                                                    'Resend verification email'
+                                                )}
+                                            </button>
+                                        </>
                                     )}
                                 </div>
                             )}

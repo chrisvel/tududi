@@ -742,7 +742,8 @@
     "oidc": {
       "completing_signin": "Concluindo login...",
       "authenticating_with_provider": "Autenticando com o provedor. Por favor, aguarde..."
-    }
+    },
+    "captcha_required": "Conclua a verificação e tente novamente."
   },
   "dropdown": {
     "createNew": "Criar Novo",

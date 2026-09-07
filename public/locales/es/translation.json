@@ -155,7 +155,8 @@
     "oidc": {
       "completing_signin": "Completando el inicio de sesión...",
       "authenticating_with_provider": "Autenticando con el proveedor. Por favor, espere..."
-    }
+    },
+    "captcha_required": "Completa la verificación e inténtalo de nuevo."
   },
   "profile": {
     "title": "Configuración de Perfil",

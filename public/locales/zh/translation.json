@@ -742,7 +742,8 @@
     "oidc": {
       "completing_signin": "正在完成登录...",
       "authenticating_with_provider": "正在与提供商进行身份验证。请稍候..."
-    }
+    },
+    "captcha_required": "请完成验证后重试。"
   },
   "dropdown": {
     "createNew": "创建新项",

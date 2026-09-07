@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getAssetPath } from '../config/paths';
 import { PASSWORD_MIN_LENGTH } from '../utils/passwordPolicy';
+import CaptchaWidget from './Auth/CaptchaWidget';
+import { fetchCaptchaConfig, CaptchaConfig } from '../utils/captcha';
 
 const Register: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -14,6 +16,13 @@ const Register: React.FC = () => {
     const [registrationEnabled, setRegistrationEnabled] = useState(true);
     const [notifyUrl, setNotifyUrl] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    const [captcha, setCaptcha] = useState<CaptchaConfig | null>(null);
+    const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+    const [captchaReset, setCaptchaReset] = useState(0);
+
+    useEffect(() => {
+        fetchCaptchaConfig().then(setCaptcha);
+    }, []);
     const { t } = useTranslation();
     const [isDarkMode] = useState<boolean>(() => {
         const storedPreference = localStorage.getItem('isDarkMode');
@@ -75,13 +84,27 @@ const Register: React.FC = () => {
             return;
         }
 
+        if (captcha && !captchaToken) {
+            setError(
+                t(
+                    'auth.captcha_required',
+                    'Please complete the verification and try again.'
+                )
+            );
+            return;
+        }
+
         try {
             const response = await fetch('/api/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({
+                    email,
+                    password,
+                    ...(captchaToken ? { captcha_token: captchaToken } : {}),
+                }),
                 credentials: 'include',
             });
 
@@ -90,6 +113,7 @@ const Register: React.FC = () => {
             if (response.ok) {
                 setSuccess(true);
             } else {
+                setCaptchaReset((k) => k + 1);
                 setError(
                     data.error ||
                         t(
@@ -207,10 +231,7 @@ const Register: React.FC = () => {
                                             'auth.notify_email_placeholder',
                                             'you@email.com'
                                         )}
-                                        aria-label={t(
-                                            'auth.email',
-                                            'Email'
-                                        )}
+                                        aria-label={t('auth.email', 'Email')}
                                         required
                                         className="flex-1 px-4 py-2 border dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                         data-testid="register-notify-email"
@@ -434,9 +455,17 @@ const Register: React.FC = () => {
                                         minLength={6}
                                     />
                                 </div>
+                                {captcha && (
+                                    <CaptchaWidget
+                                        siteKey={captcha.site_key}
+                                        onToken={setCaptchaToken}
+                                        resetKey={captchaReset}
+                                    />
+                                )}
                                 <button
                                     type="submit"
-                                    className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors"
+                                    disabled={!!captcha && !captchaToken}
+                                    className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-60"
                                     data-testid="register-submit"
                                 >
                                     {t('auth.sign_up', 'Sign Up')}

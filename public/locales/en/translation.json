@@ -735,7 +735,8 @@
     "oidc": {
       "completing_signin": "Completing sign-in...",
       "authenticating_with_provider": "Authenticating with provider. Please wait..."
-    }
+    },
+    "captcha_required": "Please complete the verification and try again."
   },
   "dropdown": {
     "createNew": "Create New",

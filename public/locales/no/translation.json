@@ -743,7 +743,8 @@
     "oidc": {
       "completing_signin": "Fullfører pålogging...",
       "authenticating_with_provider": "Autentiserer med leverandør. Vennligst vent..."
-    }
+    },
+    "captcha_required": "Fullfør verifiseringen og prøv igjen."
   },
   "dropdown": {
     "createNew": "Opprett ny",

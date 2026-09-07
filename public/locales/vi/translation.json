@@ -742,7 +742,8 @@
     "oidc": {
       "completing_signin": "Đang hoàn tất đăng nhập...",
       "authenticating_with_provider": "Đang xác thực với nhà cung cấp. Vui lòng chờ..."
-    }
+    },
+    "captcha_required": "Vui lòng hoàn tất xác minh và thử lại."
   },
   "dropdown": {
     "createNew": "Tạo mới",

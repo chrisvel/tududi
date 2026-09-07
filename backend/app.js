@@ -43,14 +43,21 @@ app.use(
         contentSecurityPolicy: {
             directives: {
                 defaultSrc: ["'self'"],
-                scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+                // challenges.cloudflare.com is Turnstile, the captcha on the
+                // public forms; harmless to allow when it is not configured
+                scriptSrc: [
+                    "'self'",
+                    "'unsafe-inline'",
+                    "'unsafe-eval'",
+                    'https://challenges.cloudflare.com',
+                ],
                 styleSrc: ["'self'", "'unsafe-inline'"],
                 imgSrc: ["'self'", 'data:', 'https:'],
                 connectSrc: ["'self'"],
                 fontSrc: ["'self'"],
                 objectSrc: ["'none'"],
                 mediaSrc: ["'self'"],
-                frameSrc: ["'none'"],
+                frameSrc: ['https://challenges.cloudflare.com'],
                 upgradeInsecureRequests:
                     process.env.UPGRADE_INSECURE_REQUESTS === 'true'
                         ? []

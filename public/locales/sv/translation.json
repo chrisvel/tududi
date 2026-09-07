@@ -742,7 +742,8 @@
     "oidc": {
       "completing_signin": "Avslutar inloggning...",
       "authenticating_with_provider": "Autentiserar med leverantör. Vänligen vänta..."
-    }
+    },
+    "captcha_required": "Slutför verifieringen och försök igen."
   },
   "dropdown": {
     "createNew": "Skapa ny",

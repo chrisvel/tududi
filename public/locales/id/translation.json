@@ -742,7 +742,8 @@
     "oidc": {
       "completing_signin": "Menyelesaikan masuk...",
       "authenticating_with_provider": "Mengautentikasi dengan penyedia. Silakan tunggu..."
-    }
+    },
+    "captcha_required": "Selesaikan verifikasi lalu coba lagi."
   },
   "dropdown": {
     "createNew": "Buat Baru",

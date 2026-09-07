@@ -42,6 +42,9 @@ Notable changes to tududi. Versions match the git tags and the
   health probes are not logged.
 - Docker images are published by CI on release tags
   (`.github/workflows/docker-publish.yml`).
+- Cloudflare Turnstile captcha on registration, password reset and
+  verification resend, on when `TURNSTILE_SITE_KEY` and
+  `TURNSTILE_SECRET_KEY` are set.
 - Lemon Squeezy as a payment provider beside Stripe, chosen with
   `BILLING_PROVIDER`. The `billing_accounts` and `billing_events` columns
   that named Stripe are now `provider_*`.

@@ -724,7 +724,8 @@
     "oidc": {
       "completing_signin": "サインインを完了しています...",
       "authenticating_with_provider": "プロバイダーで認証中です。お待ちください..."
-    }
+    },
+    "captcha_required": "認証を完了してから、もう一度お試しください。"
   },
   "dropdown": {
     "createNew": "新規作成",

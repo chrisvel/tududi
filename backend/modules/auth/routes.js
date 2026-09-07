@@ -9,6 +9,7 @@ const {
     apiLimiter,
 } = require('../../middleware/rateLimiter');
 const { csrfMiddleware } = require('../../middleware/csrf');
+const { requireCaptcha } = require('../../middleware/captcha');
 
 router.get('/version', authController.getVersion);
 router.get('/config', authController.getPublicConfig);
@@ -19,12 +20,13 @@ router.get(
     authController.getPasswordAuthStatus
 );
 router.get('/csrf-token', csrfMiddleware, authController.getCsrfToken);
-router.post('/register', authLimiter, authController.register);
+router.post('/register', authLimiter, requireCaptcha, authController.register);
 router.get('/verify-email', authLimiter, authController.verifyEmail);
 router.post(
     '/resend-verification',
     authLimiter,
     authEmailLimiter,
+    requireCaptcha,
     authController.resendVerification
 );
 router.get('/current_user', authController.getCurrentUser);
@@ -33,6 +35,7 @@ router.post(
     '/forgot-password',
     authLimiter,
     authEmailLimiter,
+    requireCaptcha,
     authController.forgotPassword
 );
 router.post('/reset-password', authLimiter, authController.resetPassword);

@@ -742,7 +742,8 @@
     "oidc": {
       "completing_signin": "Завершение входа...",
       "authenticating_with_provider": "Аутентификация с провайдером. Пожалуйста, подождите..."
-    }
+    },
+    "captcha_required": "Пройдите проверку и попробуйте снова."
   },
   "dropdown": {
     "createNew": "Создать новый",
