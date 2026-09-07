@@ -233,8 +233,6 @@
       },
       "cloud": {
         "name": "Cloud",
-        "toStart": "per iniziare",
-        "proLabel": "Pro",
         "or": "oppure",
         "launchNote": "Prezzo annuale early bird, tuo finché resti abbonato.",
         "priceNote": "Crea un account in un minuto, passa a Pro quando il piano gratuito ti sta stretto.",

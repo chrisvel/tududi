@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="<%= i18n.meta.htmlLang %>" dir="<%= i18n.meta.dir || 'ltr' %>">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VC2N7ZBPEE"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-VC2N7ZBPEE', { page_locale: '<%= i18n.locale %>' });
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= i18n.t('cloud.metaTitle') %></title>
+    <meta name="description" content="<%= i18n.t('cloud.metaDescription') %>">
+    <link rel="canonical" href="<%= canonicalUrl %>" />
+    <% locales.forEach(function (l) { %>
+    <link rel="alternate" hreflang="<%= l.htmlLang %>" href="<%= pageUrl(l.code, '/cloud') %>" />
+    <% }); %>
+    <link rel="alternate" hreflang="x-default" href="<%= pageUrl('en', '/cloud') %>" />
+    <meta property="og:locale" content="<%= i18n.meta.ogLocale %>">
+    <link rel="icon" href="/landing-assets/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <%- include('partials/styles') %>
+    <style>
+        /* Reasons list. Same card language as the feature grid, but two
+           columns at most: there are six of them and they are read, not
+           scanned. */
+        .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 40px; }
+        .why-card { background: #fff; border: 1px solid #ececee; border-radius: 12px; padding: 24px; }
+        .why-card h3 { font-size: 17px; font-weight: 700; color: #111827; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+        .why-card h3 i { color: #1e86e5; }
+        .why-card p { color: #4b5563; font-size: 15px; line-height: 1.6; }
+        .cloud-hero { padding: 120px 16px 56px; text-align: center; }
+        .cloud-hero h1 { font-family: 'Manrope', 'Inter', sans-serif; font-size: clamp(32px, 5vw, 52px); font-weight: 800; letter-spacing: -0.02em; color: #111827; margin-bottom: 18px; }
+        .cloud-hero p { font-size: 18.5px; color: #4b5563; max-width: 680px; margin: 0 auto 28px; line-height: 1.6; }
+    </style>
+</head>
+<body>
+<%
+    const t = i18n.t;
+    const personalPrice = pricing.launchActive ? pricing.annual : pricing.standard;
+    // Structure only; every string lives in locales/<lang>/landing.json
+    // under cloud.reasons.<id>, so a translation pass can never drop one.
+    const reasons = ['noOps', 'updates', 'backups', 'email', 'support', 'sameApp'];
+%>
+    <%- include('partials/nav') %>
+
+    <section class="cloud-hero">
+        <h1><%= t('cloud.title') %></h1>
+        <p><%= t('cloud.lede') %></p>
+        <div class="hero-actions" style="justify-content:center;">
+            <a href="<%= appUrl %>/register" class="btn-primary"><%= t('cloud.ctaPrimary') %></a>
+            <a href="#cloud-pricing" class="btn-secondary"><%= t('cloud.ctaPricing') %></a>
+        </div>
+        <p class="hero-note" style="margin-top:16px;"><i class="fas fa-lock-open"></i><%= t('cloud.note') %></p>
+    </section>
+
+    <section class="section" style="padding-top:24px;">
+        <div class="container-sm">
+            <div class="section-head">
+                <span class="eyebrow"><%= t('cloud.whyEyebrow') %></span>
+                <h2 class="section-title"><%= t('cloud.whyTitle') %></h2>
+                <p class="section-sub"><%= t('cloud.whySub') %></p>
+            </div>
+            <div class="why-grid">
+                <% reasons.forEach(function (id) { %>
+                <div class="why-card">
+                    <h3><i class="fas fa-check-circle"></i><%= t('cloud.reasons.' + id + '.title') %></h3>
+                    <p><%= t('cloud.reasons.' + id + '.body') %></p>
+                </div>
+                <% }); %>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing: one paid plan, monthly or annual. -->
+    <section id="cloud-pricing" class="section" style="background:#f7f6f3;">
+        <div class="container-sm">
+            <div class="section-head">
+                <span class="eyebrow"><%= t('pricing.eyebrow') %></span>
+                <h2 class="section-title"><%= t('cloud.pricingTitle') %></h2>
+                <p class="section-sub"><%= t('cloud.pricingSub') %></p>
+            </div>
+
+            <div class="plan-grid" style="grid-template-columns:minmax(0,1fr); max-width:520px; margin:0 auto;">
+                <div class="plan plan-featured">
+                    <div class="plan-head">
+                        <div class="plan-icon"><i class="fas fa-cloud"></i></div>
+                        <h3><%= t('pricing.plans.cloud.name') %></h3>
+                    </div>
+                    <div class="plan-price">
+                        <div class="plan-amount">
+                            <span>$<%= pricing.monthly %></span>
+                            <span><%= t('pricing.perMonth') %></span>
+                        </div>
+                        <div class="plan-pro-line">
+                            <%= t('cloud.orAnnual') %>
+                            <strong>$<%= personalPrice %></strong><%= t('pricing.perYear') %>
+                            <% if (pricing.launchActive) { %>
+                            <span class="plan-was">$<%= pricing.standard %></span>
+                            <span class="plan-tag"><%= t('pricing.earlyBird') %></span>
+                            <% } %>
+                        </div>
+                        <div class="plan-price-note"><%= t('cloud.priceNote') %></div>
+                    </div>
+                    <ul class="plan-features">
+                        <% i18n.tList('cloud.includes').forEach(function (feature) { %>
+                        <li><i class="fas fa-check"></i><%= feature %></li>
+                        <% }); %>
+                    </ul>
+                    <a href="<%= appUrl %>/register" class="plan-action plan-action-primary"><%= t('cloud.ctaPrimary') %></a>
+                </div>
+            </div>
+
+            <div class="closing">
+                <p><%= t('cloud.selfHostLine') %></p>
+                <a href="<%= localePath(i18n.locale) %>#self-host" class="btn-secondary"><i class="fab fa-docker"></i><%= t('compare.closingCta') %></a>
+            </div>
+        </div>
+    </section>
+
+    <%- include('partials/footer') %>
+</body>
+</html>

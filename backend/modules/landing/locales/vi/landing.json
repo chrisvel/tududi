@@ -233,8 +233,6 @@
       },
       "cloud": {
         "name": "Cloud",
-        "toStart": "để bắt đầu",
-        "proLabel": "Pro",
         "or": "hoặc",
         "launchNote": "Giá năm ưu đãi sớm, giữ nguyên chừng nào bạn còn đăng ký.",
         "priceNote": "Tạo tài khoản trong một phút, nâng cấp lên Pro khi gói miễn phí không còn đủ.",

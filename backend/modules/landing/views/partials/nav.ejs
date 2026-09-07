@@ -1,0 +1,112 @@
+<%# `t` is declared in the page that includes this; an include compiles
+    into its own function, so it is re-bound here from the shared locals. %>
+<% const t = i18n.t; %>
+    <!-- Nav -->
+    <div class="nav-wrap">
+        <div style="width:100%; max-width:1180px;">
+            <div class="nav-pill">
+                <a href="/" class="nav-logo">
+                    <img src="/landing-assets/wide-logo-dark.png" alt="tududi">
+                </a>
+                <div class="nav-links">
+                    <a href="#features" class="nav-link"><%= t('nav.features') %></a>
+                    <a href="#ai" class="nav-link"><%= t('nav.ai') %></a>
+                    <a href="#pricing" class="nav-link"><%= t('nav.pricing') %></a>
+                    <a href="#self-host" class="nav-link"><%= t('nav.selfHost') %></a>
+                    <a href="#faq" class="nav-link"><%= t('nav.faq') %></a>
+                    <%# Docs and Changelog are the only two entries that leave this
+                        page - everything left of here is an anchor down it. Grouping
+                        them makes the flat row mean one thing, and gives GitHub and
+                        Roadmap somewhere to live above the fold. Labels and hrefs are
+                        the footer's, so the two lists cannot drift apart. %>
+                    <details class="nav-dd">
+                        <summary class="nav-link">
+                            <span><%= t('footer.colResources') %></span>
+                            <i class="fas fa-chevron-down nav-lang-caret" aria-hidden="true"></i>
+                        </summary>
+                        <div class="nav-dd-menu" role="menu">
+                            <a role="menuitem" class="nav-dd-item" href="https://docs.tududi.com"><%= t('nav.docs') %></a>
+                            <a role="menuitem" class="nav-dd-item" href="https://github.com/chrisvel/tududi/releases"><%= t('nav.changelog') %></a>
+                            <a role="menuitem" class="nav-dd-item" href="https://github.com/chrisvel/tududi">GitHub</a>
+                            <a role="menuitem" class="nav-dd-item" href="https://github.com/users/chrisvel/projects/2"><%= t('footer.linkRoadmap') %></a>
+                        </div>
+                    </details>
+                    <%# <details> rather than a JS dropdown: it gives click-to-open
+                        and keyboard access for free, and still works with JS off. %>
+                    <details class="nav-dd nav-lang">
+                        <summary class="nav-link" aria-label="<%= t('meta.langSwitcherCurrent', { name: i18n.meta.nativeName }) %>">
+                            <i class="fas fa-globe"></i>
+                            <span><%= i18n.meta.nativeName %></span>
+                            <i class="fas fa-chevron-down nav-lang-caret"></i>
+                        </summary>
+                        <div class="nav-dd-menu" role="menu" aria-label="<%= t('meta.langSwitcherLabel') %>">
+                            <% locales.forEach(function (l) { %>
+                            <%# English links to /?hl=en, not /: a visitor whose cookie
+                                says 'de' would otherwise be bounced back to /de and
+                                could never reach the English page at all. %>
+                            <a role="menuitem"
+                               class="nav-dd-item<%= l.code === i18n.locale ? ' is-current' : '' %>"
+                               href="<%= l.code === 'en' ? '/?hl=en' : '/' + l.code %>"
+                               hreflang="<%= l.htmlLang %>" lang="<%= l.htmlLang %>" rel="alternate"
+                               <%= l.code === i18n.locale ? 'aria-current="true"' : '' %>>
+                                <span class="nav-lang-flag" aria-hidden="true"><%= l.flag %></span>
+                                <span><%= l.nativeName %></span>
+                            </a>
+                            <% }); %>
+                        </div>
+                    </details>
+                    <% if (demo && demo.available) { %>
+                    <a href="/demo" class="nav-demo">
+                        <span class="nav-demo-dot" aria-hidden="true"></span><%= t('nav.demo') %>
+                    </a>
+                    <% } %>
+                    <a href="<%= appUrl %>/login" class="nav-cta"><%= t('nav.signIn') %></a>
+                </div>
+                <button id="nav-toggle" class="nav-toggle" aria-label="<%= t('nav.toggle') %>" aria-expanded="false" aria-controls="nav-mobile">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <div id="nav-mobile" class="nav-mobile">
+                <%# Headings rather than the desktop dropdown: the sheet scrolls
+                    itself, so height is not the constraint width is up there, and
+                    collapsing would only put a tap in front of every link. %>
+                <p class="nav-mobile-heading"><%= t('footer.colProduct') %></p>
+                <a href="#features" class="nav-link"><%= t('nav.features') %></a>
+                <a href="#ai" class="nav-link"><%= t('nav.ai') %></a>
+                <a href="#pricing" class="nav-link"><%= t('nav.pricing') %></a>
+                <a href="#self-host" class="nav-link"><%= t('nav.selfHost') %></a>
+                <a href="#faq" class="nav-link"><%= t('nav.faq') %></a>
+                <p class="nav-mobile-heading"><%= t('footer.colResources') %></p>
+                <a href="https://docs.tududi.com" class="nav-link"><%= t('nav.docs') %></a>
+                <a href="https://github.com/chrisvel/tududi/releases" class="nav-link"><%= t('nav.changelog') %></a>
+                <a href="https://github.com/chrisvel/tududi" class="nav-link">GitHub</a>
+                <a href="https://github.com/users/chrisvel/projects/2" class="nav-link"><%= t('footer.linkRoadmap') %></a>
+                <% if (demo && demo.available) { %>
+                <a href="/demo" class="nav-demo">
+                    <span class="nav-demo-dot" aria-hidden="true"></span><%= t('nav.demo') %>
+                </a>
+                <% } %>
+                <a href="<%= appUrl %>/login" class="nav-cta"><%= t('nav.signIn') %></a>
+                <%# Collapsed, not flat: 25 chips laid out flat is taller than a
+                    phone screen on its own, which buried the nav links above it.
+                    Open it and the chips are plain taps - no second dropdown. %>
+                <details class="nav-mobile-lang-group">
+                    <summary aria-label="<%= t('meta.langSwitcherCurrent', { name: i18n.meta.nativeName }) %>">
+                        <i class="fas fa-globe" aria-hidden="true"></i>
+                        <span><%= i18n.meta.nativeName %></span>
+                        <i class="fas fa-chevron-down nav-lang-caret" aria-hidden="true"></i>
+                    </summary>
+                    <div class="nav-mobile-langs" aria-label="<%= t('meta.langSwitcherLabel') %>">
+                        <% locales.forEach(function (l) { %>
+                        <a class="nav-mobile-lang<%= l.code === i18n.locale ? ' is-current' : '' %>"
+                           href="<%= l.code === 'en' ? '/?hl=en' : '/' + l.code %>"
+                           hreflang="<%= l.htmlLang %>" lang="<%= l.htmlLang %>" rel="alternate"
+                           <%= l.code === i18n.locale ? 'aria-current="true"' : '' %>>
+                            <span aria-hidden="true"><%= l.flag %></span> <%= l.nativeName %>
+                        </a>
+                        <% }); %>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </div>

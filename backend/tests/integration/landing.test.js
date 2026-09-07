@@ -131,6 +131,43 @@ describe('Landing page', () => {
         expect(icon.status).toBe(200);
     });
 
+    it('serves the cloud page, in English and in other locales', async () => {
+        const en = await request(app).get('/cloud').set('Host', 'tududi.com');
+        expect(en.status).toBe(200);
+        expect(en.text).toContain('https://app.tududi.com/register');
+        expect(en.text).toContain(
+            'rel="canonical" href="https://tududi.com/cloud"'
+        );
+        expect(en.text).toContain(
+            'hreflang="fr" href="https://tududi.com/fr/cloud"'
+        );
+
+        const fr = await request(app)
+            .get('/fr/cloud')
+            .set('Host', 'tududi.com');
+        expect(fr.status).toBe(200);
+        expect(fr.text).toContain('<html lang="fr"');
+
+        const alias = await request(app)
+            .get('/en/cloud')
+            .set('Host', 'tududi.com');
+        expect(alias.status).toBe(301);
+        expect(alias.headers.location).toBe('/cloud');
+    });
+
+    it('offers Cloud and Self-hosted as the two hero choices', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        expect(res.text).toContain('href="/cloud"');
+        expect(res.text).toContain('href="#self-host"');
+    });
+
+    it('sends /cloud on the app host to the app, not the marketing page', async () => {
+        const res = await request(app)
+            .get('/cloud')
+            .set('Host', 'app.tududi.com');
+        expect(res.text).toContain('<div id="root"');
+    });
+
     it('serves the app on every other host', async () => {
         const res = await request(app).get('/').set('Host', 'app.tududi.com');
         expect(res.status).toBe(200);

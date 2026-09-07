@@ -233,8 +233,6 @@
       },
       "cloud": {
         "name": "Cloud",
-        "toStart": "for å starte",
-        "proLabel": "Pro",
         "or": "eller",
         "launchNote": "Early bird-årspris, din så lenge du forblir abonnent.",
         "priceNote": "Opprett en konto på ett minutt, oppgrader når gratisplanen blir for liten.",

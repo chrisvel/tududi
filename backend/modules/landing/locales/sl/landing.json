@@ -233,8 +233,6 @@
       },
       "cloud": {
         "name": "Cloud",
-        "toStart": "za začetek",
-        "proLabel": "Pro",
         "or": "ali",
         "launchNote": "Letna cena early bird, vaša, dokler ostanete naročeni.",
         "priceNote": "Ustvarite račun v minuti in nadgradite na Pro, ko brezplačni paket ne zadošča več.",

@@ -233,8 +233,6 @@
       },
       "cloud": {
         "name": "Cloud",
-        "toStart": "시작 시",
-        "proLabel": "Pro",
         "or": "또는",
         "launchNote": "얼리버드 연간 가격은 구독을 유지하는 동안 그대로 적용됩니다.",
         "priceNote": "1분이면 계정을 만들 수 있고, 무료 플랜이 부족해지면 Pro로 업그레이드하세요.",
