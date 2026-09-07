@@ -292,7 +292,7 @@
       "freeForever": "Gratis för alltid",
       "pricePerYear": "{{price}} $/år",
       "sharedInstance": "Delad instans, export när som helst",
-      "freeOrPro": "Gratis, eller Pro för ${{price}}/år"
+      "freeOrPro": "Gratis, eller Pro för {{price}}/år"
     },
     "closing": "Redo att köra ditt eget system?",
     "closingCta": "Hosta tududi själv"

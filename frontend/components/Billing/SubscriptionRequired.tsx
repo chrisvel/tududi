@@ -90,6 +90,17 @@ const SubscriptionRequired: React.FC = () => {
         }
     };
 
+    // The symbol follows whatever currency the instance quotes in, so a
+    // euro store never renders a dollar sign.
+    const money = (amount?: number) =>
+        amount === undefined
+            ? ''
+            : new Intl.NumberFormat(undefined, {
+                  style: 'currency',
+                  currency: status?.pricing?.currency || 'USD',
+                  maximumFractionDigits: 0,
+              }).format(amount);
+
     const pro = catalog?.plans.find((p) => p.key === 'pro');
     const perks = [
         t('subscription.perkUnlimited', 'Unlimited tasks, projects and notes'),
@@ -185,13 +196,17 @@ const SubscriptionRequired: React.FC = () => {
                                     {interval === 'month'
                                         ? t('subscription.priceMonthly', {
                                               defaultValue:
-                                                  '${{price}} per month',
-                                              price: 5,
+                                                  '{{price}} per month',
+                                              price: money(
+                                                  status?.pricing?.monthly
+                                              ),
                                           })
                                         : t('subscription.priceYearly', {
                                               defaultValue:
-                                                  '${{price}} per year',
-                                              price: 49,
+                                                  '{{price}} per year',
+                                              price: money(
+                                                  status?.pricing?.annual
+                                              ),
                                           })}
                                 </p>
                             </div>

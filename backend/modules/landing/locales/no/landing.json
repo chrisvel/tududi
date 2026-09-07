@@ -292,7 +292,7 @@
       "freeForever": "Gratis for alltid",
       "pricePerYear": "{{price}} $/år",
       "sharedInstance": "Delt instans, eksport når som helst",
-      "freeOrPro": "Gratis, eller Pro for ${{price}}/år"
+      "freeOrPro": "Gratis, eller Pro for {{price}}/år"
     },
     "closing": "Klar til å kjøre ditt eget system?",
     "closingCta": "Host tududi selv"

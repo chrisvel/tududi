@@ -49,6 +49,7 @@ export interface BillingStatus {
     subscription_required: boolean;
     active: boolean;
     billing_configured: boolean;
+    pricing: { currency: string; monthly: number; annual: number };
     provider: { name: string; display_name: string };
     checkout_available: boolean;
     portal_available: boolean;

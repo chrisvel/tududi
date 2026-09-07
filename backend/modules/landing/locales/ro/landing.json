@@ -292,7 +292,7 @@
       "freeForever": "Gratuit pentru totdeauna",
       "pricePerYear": "{{price}} $/an",
       "sharedInstance": "Instanță partajată, export oricând",
-      "freeOrPro": "Gratuit, sau Pro la ${{price}}/an"
+      "freeOrPro": "Gratuit, sau Pro la {{price}}/an"
     },
     "closing": "Gata să îți rulezi propriul sistem?",
     "closingCta": "Găzduiește tududi singur"

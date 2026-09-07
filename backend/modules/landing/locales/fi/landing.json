@@ -292,7 +292,7 @@
       "freeForever": "Ilmainen ikuisesti",
       "pricePerYear": "{{price}} $/vuosi",
       "sharedInstance": "Jaettu instanssi, vienti milloin tahansa",
-      "freeOrPro": "Ilmainen, tai Pro ${{price}}/vuosi"
+      "freeOrPro": "Ilmainen, tai Pro {{price}}/vuosi"
     },
     "closing": "Valmis ajamaan omaa järjestelmääsi?",
     "closingCta": "Ylläpidä tududia itse"

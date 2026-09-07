@@ -292,7 +292,7 @@
       "freeForever": "Бесплатно навсегда",
       "pricePerYear": "{{price}} $/год",
       "sharedInstance": "Общий экземпляр, экспорт в любой момент",
-      "freeOrPro": "Бесплатно, или Pro за ${{price}}/год"
+      "freeOrPro": "Бесплатно, или Pro за {{price}}/год"
     },
     "closing": "Готовы запустить собственную систему?",
     "closingCta": "Развернуть tududi у себя"

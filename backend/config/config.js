@@ -27,6 +27,27 @@ const credentials = {
 
 const defaultHost = environment === 'test' ? '127.0.0.1' : '0.0.0.0';
 
+// Prices as they are shown to people, in one place: the marketing page and
+// the in-app subscription page both read this, so neither can drift from
+// the other. Setting it does not change what the payment provider charges;
+// keep the two in step by hand.
+const displayPricing = () => ({
+    currency: 'USD',
+    monthly: 5,
+    annual: 49,
+    standard: 99,
+    business: 499,
+    launchActive: true,
+    // Flip to false while Cloud is being stood up on new infrastructure:
+    // the pricing card swaps to an "opening soon" notice with an email
+    // capture instead of the register link.
+    cloudOpen: true,
+    ...parseJsonEnv(
+        process.env.TUDUDI_PRICING_JSON ||
+            process.env.TUDUDI_LANDING_PRICING_JSON
+    ),
+});
+
 // A JSON object from an environment variable, or {} when unset or invalid.
 function parseJsonEnv(value) {
     if (!value) return {};
@@ -166,19 +187,12 @@ const config = {
                 : 'https://tududi.com'),
         appUrl: process.env.FRONTEND_URL || 'http://localhost:8080',
         newsletterAction: process.env.TUDUDI_LANDING_NEWSLETTER_URL || '',
-        pricing: {
-            monthly: 5,
-            annual: 49,
-            standard: 99,
-            business: 499,
-            launchActive: true,
-            // Flip to false while Cloud is being stood up on new
-            // infrastructure: the pricing card swaps to a "opening soon"
-            // notice with an email capture instead of the register link.
-            cloudOpen: true,
-            ...parseJsonEnv(process.env.TUDUDI_LANDING_PRICING_JSON),
-        },
+        pricing: displayPricing(),
     },
+
+    // Same object the marketing page uses, so /api/billing can quote the
+    // price without the frontend hardcoding numbers of its own.
+    pricing: displayPricing(),
 
     email: process.env.TUDUDI_USER_EMAIL,
 

@@ -71,6 +71,16 @@ function createLandingRouter(landing) {
     const rendered = new Map();
     const secureCookie = /^https:/.test(siteOrigin);
 
+    // Whole-unit price with the right symbol for the configured currency,
+    // so changing TUDUDI_PRICING_JSON's currency changes every price on the
+    // page rather than leaving a dollar sign in front of euros.
+    const money = (amount) =>
+        new Intl.NumberFormat('en', {
+            style: 'currency',
+            currency: landing.pricing.currency || 'USD',
+            maximumFractionDigits: 0,
+        }).format(amount);
+
     // Absolute URL of one page in one locale: '/', '/fr', '/cloud',
     // '/fr/cloud'. localeUrl alone cannot build the sub-pages, since it
     // returns a bare origin for English and no trailing slash for the rest.
@@ -115,6 +125,7 @@ function createLandingRouter(landing) {
                 localePath,
                 localeUrl,
                 pageUrl,
+                money,
                 jsonForScript,
                 ...extra,
             },
@@ -169,6 +180,8 @@ function createLandingRouter(landing) {
                 canonicalUrl: localeUrl(locale),
                 localePath,
                 localeUrl,
+                pageUrl,
+                money,
                 jsonForScript,
             },
             { cache: cacheRenders, rmWhitespace: false }

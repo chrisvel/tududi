@@ -292,7 +292,7 @@
       "freeForever": "Gratis selamanya",
       "pricePerYear": "{{price}} $/tahun",
       "sharedInstance": "Instans bersama, ekspor kapan saja",
-      "freeOrPro": "Gratis, atau Pro ${{price}}/tahun"
+      "freeOrPro": "Gratis, atau Pro {{price}}/tahun"
     },
     "closing": "Siap menjalankan sistem Anda sendiri?",
     "closingCta": "Hosting tududi sendiri"

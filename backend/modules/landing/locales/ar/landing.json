@@ -292,7 +292,7 @@
       "freeForever": "مجاني إلى الأبد",
       "pricePerYear": "{{price}} دولار/سنويًا",
       "sharedInstance": "خادم مشترك، تصدير في أي وقت",
-      "freeOrPro": "مجانًا، أو Pro مقابل ${{price}} سنويًا"
+      "freeOrPro": "مجانًا، أو Pro مقابل {{price}} سنويًا"
     },
     "closing": "مستعد لتشغيل نظامك الخاص؟",
     "closingCta": "استضف tududi بنفسك"
