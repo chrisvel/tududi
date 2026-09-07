@@ -42,12 +42,22 @@ Notable changes to tududi. Versions match the git tags and the
   health probes are not logged.
 - Docker images are published by CI on release tags
   (`.github/workflows/docker-publish.yml`).
+- Plans and limits for hosted instances: a Free and a Pro tier defined in
+  `backend/config/plans.js` and overridable with `TUDUDI_PLANS_JSON`.
+  Only creating is ever limited; reading, editing, completing, deleting and
+  exporting always work, so an account over its limits loses nothing
+  (#1478, #1479).
+- Subscriptions, a billing tab in the profile, and an admin billing page
+  with per-account plan overrides (#1482, #1483, #1484).
 - Cloudflare Turnstile captcha on registration, password reset and
   verification resend, on when `TURNSTILE_SITE_KEY` and
   `TURNSTILE_SECRET_KEY` are set.
 - Lemon Squeezy as a payment provider beside Stripe, chosen with
   `BILLING_PROVIDER`. The `billing_accounts` and `billing_events` columns
   that named Stripe are now `provider_*`.
+- Backup format 2: an export now carries goals, people, habit completions
+  and the attachments themselves, and an import into another account
+  rewires every reference (#1486).
 - The marketing page can be served by the same image: hostnames listed in
   `TUDUDI_LANDING_HOSTS` get it, in 25 languages, and product paths on those
   hosts redirect to `FRONTEND_URL`. Off unless the variable is set.
@@ -60,6 +70,14 @@ Notable changes to tududi. Versions match the git tags and the
 - The nightly token cleanup job had been failing on a wrong require path
   (#1476).
 - Owners can share tasks and notes directly, not only projects (#1472).
+- `GET /api/tasks` pages in the database instead of slicing in memory, so a
+  large task list no longer loads in full on every request (#1487).
+- The login page rendered its password form twice (#1493).
+
+### Changed
+
+- Translations for all 24 non-English locales cover the new billing,
+  password reset, share invitation and account deletion strings (#1488).
 
 ## 1.4.2
 
