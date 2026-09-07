@@ -81,8 +81,8 @@
     // template having to track which ones it actually used.
     const faqVars = {
         tools: mcpToolCount,
-        price: personalPrice,
-        monthly: pricing.monthly,
+        price: money(personalPrice),
+        monthly: money(pricing.monthly),
         businessPrice: pricing.business,
         freeTasks: plans.freeTasks,
         freeProjects: plans.freeProjects,
@@ -260,8 +260,8 @@
         { id: 'responseTime',    selfText: t('compare.values.community'), hostedText: t('compare.values.email'), bizText: t('compare.values.sameBusinessDay') },
         { id: 'invoice',         selfX: true,     hostedCheck: true, bizCheck: true },
         { id: 'pricing',         selfText: t('compare.values.freeForever'),
-                                 hostedText: t('compare.values.freeOrPro', { price: personalPrice }),
-                                 bizText:    t('compare.values.pricePerYear', { price: pricing.business }) },
+                                 hostedText: t('compare.values.freeOrPro', { price: money(personalPrice) }),
+                                 bizText:    t('compare.values.pricePerYear', { price: money(pricing.business) }) },
     ];
 %>
 
@@ -699,7 +699,7 @@
                         <h3><%= t('pricing.plans.selfHosted.name') %></h3>
                     </div>
                     <div class="plan-price">
-                        <div class="plan-amount"><span>$0</span><span><%= t('pricing.forever') %></span></div>
+                        <div class="plan-amount"><span><%= money(0) %></span><span><%= t('pricing.forever') %></span></div>
                         <div class="plan-price-note"><%= t('pricing.plans.selfHosted.priceNote') %></div>
                     </div>
                     <ul class="plan-features">
@@ -717,14 +717,18 @@
                     </div>
                     <% if (pricing.cloudOpen) { %>
                     <div class="plan-price">
-                        <div class="plan-amount"><span>$<%= pricing.monthly %></span><span><%= t('pricing.perMonth') %></span></div>
+                        <div class="plan-amount"><span><%= money(pricing.monthly) %></span><span><%= t('pricing.perMonth') %></span></div>
                         <%# Annual is the same plan paid yearly, shown against the
                             regular price while pricing.launchActive is set. %>
                         <div class="plan-pro-line">
                             <span class="plan-pro-sep"><%= t('pricing.plans.cloud.or') %></span>
-                            <strong>$<%= personalPrice %></strong><%= t('pricing.perYear') %>
+                            <strong><%= money(personalPrice) %></strong><%= t('pricing.perYear') %>
+                            <%# No crossed-out "was" price: nothing higher has
+                                ever been charged, and an invented prior price
+                                is exactly what the EU price-indication rules
+                                are about. The tag says it is introductory
+                                without claiming a past price. %>
                             <% if (pricing.launchActive) { %>
-                            <span class="plan-was">$<%= pricing.standard %></span>
                             <span class="plan-tag"><%= t('pricing.earlyBird') %></span>
                             <% } %>
                         </div>
@@ -769,7 +773,7 @@
                         <h3><%= t('pricing.plans.business.name') %></h3>
                     </div>
                     <div class="plan-price">
-                        <div class="plan-amount"><span>$<%= pricing.business %></span><span><%= t('pricing.perYear') %></span></div>
+                        <div class="plan-amount"><span><%= money(pricing.business) %></span><span><%= t('pricing.perYear') %></span></div>
                         <div class="plan-price-note"><%= t('pricing.plans.business.priceNote') %></div>
                     </div>
                     <ul class="plan-features">

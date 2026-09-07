@@ -292,7 +292,7 @@
       "freeForever": "평생 무료",
       "pricePerYear": "{{price}}달러/년",
       "sharedInstance": "공유 인스턴스, 언제든 내보내기",
-      "freeOrPro": "무료, 또는 Pro 연 ${{price}}"
+      "freeOrPro": "무료, 또는 Pro 연 {{price}}"
     },
     "closing": "나만의 시스템을 운영할 준비가 되셨나요?",
     "closingCta": "tududi 셀프호스팅하기"

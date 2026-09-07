@@ -292,7 +292,7 @@
       "freeForever": "永久免费",
       "pricePerYear": "{{price}} 美元/年",
       "sharedInstance": "共享实例，随时导出",
-      "freeOrPro": "免费，或 Pro ${{price}}/年"
+      "freeOrPro": "免费，或 Pro {{price}}/年"
     },
     "closing": "准备好运行属于自己的系统了吗？",
     "closingCta": "自托管 tududi"

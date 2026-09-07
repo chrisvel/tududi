@@ -292,7 +292,7 @@
       "freeForever": "Δωρεάν για πάντα",
       "pricePerYear": "{{price}} $/έτος",
       "sharedInstance": "Κοινή εγκατάσταση, εξαγωγή όποτε θέλετε",
-      "freeOrPro": "Δωρεάν, ή Pro με ${{price}}/έτος"
+      "freeOrPro": "Δωρεάν, ή Pro με {{price}}/έτος"
     },
     "closing": "Έτοιμος να τρέξεις το δικό σου σύστημα;",
     "closingCta": "Κάνε self-hosting το tududi"

@@ -42,6 +42,13 @@ class BillingService {
         return {
             ...ent,
             billing_configured: configured,
+            // What to print on the subscription page. Config, not the
+            // provider, so one place governs every price we display.
+            pricing: {
+                currency: getConfig().pricing.currency,
+                monthly: getConfig().pricing.monthly,
+                annual: getConfig().pricing.annual,
+            },
             provider: {
                 name: provider.name,
                 display_name: provider.displayName,

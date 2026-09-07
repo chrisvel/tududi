@@ -292,7 +292,7 @@
       "freeForever": "Brezplačno za vedno",
       "pricePerYear": "{{price}} $/leto",
       "sharedInstance": "Deljena instanca, izvoz kadar koli",
-      "freeOrPro": "Brezplačno, ali Pro za ${{price}}/leto"
+      "freeOrPro": "Brezplačno, ali Pro za {{price}}/leto"
     },
     "closing": "Pripravljeni pognati svoj sistem?",
     "closingCta": "Postavite tududi sami"

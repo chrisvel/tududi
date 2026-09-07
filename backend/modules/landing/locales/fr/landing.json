@@ -292,7 +292,7 @@
       "freeForever": "Gratuit pour toujours",
       "pricePerYear": "{{price}} $/an",
       "sharedInstance": "Instance partagée, export à tout moment",
-      "freeOrPro": "Gratuit, ou Pro à ${{price}}/an"
+      "freeOrPro": "Gratuit, ou Pro à {{price}}/an"
     },
     "closing": "Prêt à faire tourner votre propre système ?",
     "closingCta": "Auto-héberger tududi"

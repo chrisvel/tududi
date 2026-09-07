@@ -292,7 +292,7 @@
       "freeForever": "Für immer kostenlos",
       "pricePerYear": "{{price}} $/Jahr",
       "sharedInstance": "Gemeinsame Instanz, Export jederzeit",
-      "freeOrPro": "Kostenlos, oder Pro für ${{price}}/Jahr"
+      "freeOrPro": "Kostenlos, oder Pro für {{price}}/Jahr"
     },
     "closing": "Bereit, dein eigenes System zu betreiben?",
     "closingCta": "tududi selbst hosten"

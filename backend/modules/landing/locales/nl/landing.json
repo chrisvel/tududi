@@ -292,7 +292,7 @@
       "freeForever": "Voor altijd gratis",
       "pricePerYear": "{{price}} $/jaar",
       "sharedInstance": "Gedeelde instantie, altijd te exporteren",
-      "freeOrPro": "Gratis, of Pro voor ${{price}}/jaar"
+      "freeOrPro": "Gratis, of Pro voor {{price}}/jaar"
     },
     "closing": "Klaar om je eigen systeem te draaien?",
     "closingCta": "tududi zelf hosten"

@@ -94,14 +94,13 @@
                     </div>
                     <div class="plan-price">
                         <div class="plan-amount">
-                            <span>$<%= pricing.monthly %></span>
+                            <span><%= money(pricing.monthly) %></span>
                             <span><%= t('pricing.perMonth') %></span>
                         </div>
                         <div class="plan-pro-line">
                             <%= t('cloud.orAnnual') %>
-                            <strong>$<%= personalPrice %></strong><%= t('pricing.perYear') %>
+                            <strong><%= money(personalPrice) %></strong><%= t('pricing.perYear') %>
                             <% if (pricing.launchActive) { %>
-                            <span class="plan-was">$<%= pricing.standard %></span>
                             <span class="plan-tag"><%= t('pricing.earlyBird') %></span>
                             <% } %>
                         </div>

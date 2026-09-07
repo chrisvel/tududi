@@ -292,7 +292,7 @@
       "freeForever": "Grátis para sempre",
       "pricePerYear": "{{price}} $/ano",
       "sharedInstance": "Instância partilhada, exportação a qualquer momento",
-      "freeOrPro": "Gratuito, ou Pro por ${{price}}/ano"
+      "freeOrPro": "Gratuito, ou Pro por {{price}}/ano"
     },
     "closing": "Pronto para ter o seu próprio sistema a correr?",
     "closingCta": "Alojar o tududi por si"

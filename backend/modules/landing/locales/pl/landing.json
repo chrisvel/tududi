@@ -292,7 +292,7 @@
       "freeForever": "Za darmo na zawsze",
       "pricePerYear": "{{price}} $/rok",
       "sharedInstance": "Wspólna instancja, eksport w każdej chwili",
-      "freeOrPro": "Bezpłatnie, lub Pro za ${{price}}/rok"
+      "freeOrPro": "Bezpłatnie, lub Pro za {{price}}/rok"
     },
     "closing": "Gotów uruchomić własny system?",
     "closingCta": "Uruchom tududi u siebie"

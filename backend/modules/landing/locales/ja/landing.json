@@ -292,7 +292,7 @@
       "freeForever": "永久に無料",
       "pricePerYear": "{{price}}ドル/年",
       "sharedInstance": "共有インスタンス、いつでもエクスポート可能",
-      "freeOrPro": "無料、または Pro ${{price}}/年"
+      "freeOrPro": "無料、または Pro {{price}}/年"
     },
     "closing": "自分のシステムを動かす準備はできましたか？",
     "closingCta": "tududiをセルフホストする"

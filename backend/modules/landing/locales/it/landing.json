@@ -292,7 +292,7 @@
       "freeForever": "Gratis per sempre",
       "pricePerYear": "{{price}} $/anno",
       "sharedInstance": "Istanza condivisa, esportazione in qualsiasi momento",
-      "freeOrPro": "Gratis, oppure Pro a ${{price}}/anno"
+      "freeOrPro": "Gratis, oppure Pro a {{price}}/anno"
     },
     "closing": "Pronto a far girare il tuo sistema?",
     "closingCta": "Installa tududi da te"

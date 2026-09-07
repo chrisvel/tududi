@@ -292,7 +292,7 @@
       "freeForever": "Безкоштовно назавжди",
       "pricePerYear": "{{price}} $/рік",
       "sharedInstance": "Спільний екземпляр, експорт будь-коли",
-      "freeOrPro": "Безкоштовно, або Pro за ${{price}}/рік"
+      "freeOrPro": "Безкоштовно, або Pro за {{price}}/рік"
     },
     "closing": "Готові запустити власну систему?",
     "closingCta": "Розгорнути tududi у себе"

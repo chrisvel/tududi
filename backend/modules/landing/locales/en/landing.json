@@ -321,9 +321,9 @@
       "email": "Email",
       "sameBusinessDay": "Same business day",
       "freeForever": "Free forever",
-      "pricePerYear": "${{price}}/year",
+      "pricePerYear": "{{price}}/year",
       "sharedInstance": "Shared instance, export any time",
-      "freeOrPro": "${{price}}/year"
+      "freeOrPro": "{{price}}/year"
     },
     "closing": "Ready to run your own system?",
     "closingCta": "Self-host tududi"
@@ -395,7 +395,7 @@
       },
       "freePlan": {
         "q": "Is there a free plan on tududi Cloud?",
-        "a": "No. Cloud is ${{monthly}} a month or ${{price}} a year, and that is the whole price list. The free option is self-hosting, which is the same application with every feature, run on your own machine. Paying for Cloud buys the operating work, not the software."
+        "a": "No. Cloud is {{monthly}} a month or {{price}} a year, and that is the whole price list. The free option is self-hosting, which is the same application with every feature, run on your own machine. Paying for Cloud buys the operating work, not the software."
       },
       "leaving": {
         "q": "Can I leave, and what happens to my data?",
@@ -441,7 +441,7 @@
   },
   "cloud": {
     "metaTitle": "tududi Cloud: the hosted tududi, run for you",
-    "metaDescription": "tududi Cloud is the same open source system, running on our servers with updates, backups and email handled for you. $5 a month or $49 a year.",
+    "metaDescription": "tududi Cloud is the same open source system, running on our servers with updates, backups and email handled for you. One plan, monthly or yearly, cancel any time.",
     "title": "Why use tududi Cloud?",
     "lede": "The same system either way. The difference is who keeps it running, patched and backed up at three in the morning.",
     "ctaPrimary": "Get started",

@@ -292,7 +292,7 @@
       "freeForever": "Sonsuza dek ücretsiz",
       "pricePerYear": "{{price}} $/yıl",
       "sharedInstance": "Paylaşımlı örnek, istediğiniz zaman dışa aktarma",
-      "freeOrPro": "Ücretsiz, veya yılda ${{price}} ile Pro"
+      "freeOrPro": "Ücretsiz, veya yılda {{price}} ile Pro"
     },
     "closing": "Kendi sisteminizi çalıştırmaya hazır mısınız?",
     "closingCta": "tududi'yi kendiniz barındırın"

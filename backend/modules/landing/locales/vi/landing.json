@@ -292,7 +292,7 @@
       "freeForever": "Miễn phí mãi mãi",
       "pricePerYear": "{{price}} $/năm",
       "sharedInstance": "Máy chủ dùng chung, xuất dữ liệu bất cứ lúc nào",
-      "freeOrPro": "Miễn phí, hoặc Pro ${{price}}/năm"
+      "freeOrPro": "Miễn phí, hoặc Pro {{price}}/năm"
     },
     "closing": "Sẵn sàng vận hành hệ thống của riêng bạn chưa?",
     "closingCta": "Tự cài tududi"
