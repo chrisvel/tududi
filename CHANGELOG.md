@@ -49,6 +49,10 @@ Notable changes to tududi. Versions match the git tags and the
   (#1478, #1479).
 - Subscriptions, a billing tab in the profile, and an admin billing page
   with per-account plan overrides (#1482, #1483, #1484).
+- `TUDUDI_REQUIRE_SUBSCRIPTION` makes a hosted instance sell access rather
+  than upgrades: without a subscription the app answers `402`
+  `SUBSCRIPTION_REQUIRED` and the browser lands on a subscription page.
+  Billing, the profile and data export stay reachable.
 - Cloudflare Turnstile captcha on registration, password reset and
   verification resend, on when `TURNSTILE_SITE_KEY` and
   `TURNSTILE_SECRET_KEY` are set.

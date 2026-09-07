@@ -29,6 +29,10 @@ import ProfileSettings from './components/Profile/ProfileSettings';
 import About from './components/About';
 import BackupRestore from './components/Backup/BackupRestore';
 import Layout from './Layout';
+import SubscriptionGate from './components/Billing/SubscriptionGate';
+const SubscriptionRequired = lazy(
+    () => import('./components/Billing/SubscriptionRequired')
+);
 import { User } from './entities/User';
 import TasksToday from './components/Task/TasksToday';
 import TaskDetails from './components/Task/TaskDetails';
@@ -239,15 +243,21 @@ const App: React.FC = () => {
                 {currentUser ? (
                     <>
                         <Route
+                            path="/subscription/new"
+                            element={<SubscriptionRequired />}
+                        />
+                        <Route
                             element={
-                                <Layout
-                                    currentUser={currentUser}
-                                    setCurrentUser={setCurrentUser}
-                                    isDarkMode={isDarkMode}
-                                    toggleDarkMode={toggleDarkMode}
-                                >
-                                    <Outlet />
-                                </Layout>
+                                <SubscriptionGate>
+                                    <Layout
+                                        currentUser={currentUser}
+                                        setCurrentUser={setCurrentUser}
+                                        isDarkMode={isDarkMode}
+                                        toggleDarkMode={toggleDarkMode}
+                                    >
+                                        <Outlet />
+                                    </Layout>
+                                </SubscriptionGate>
                             }
                         >
                             <Route

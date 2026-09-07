@@ -743,7 +743,9 @@
       "completing_signin": "يتم إكمال تسجيل الدخول...",
       "authenticating_with_provider": "يتم المصادقة مع المزود. يرجى الانتظار..."
     },
-    "captcha_required": "يرجى إكمال التحقق والمحاولة مرة أخرى."
+    "captcha_required": "يرجى إكمال التحقق والمحاولة مرة أخرى.",
+    "registration_successful": "أكّد عنوان بريدك الإلكتروني",
+    "registration_email_sent": "أكّد عنوان بريدك الإلكتروني لتفعيل حسابك. أرسلنا لك رابطًا، تحقق من صندوق الوارد."
   },
   "dropdown": {
     "createNew": "إنشاء جديد",

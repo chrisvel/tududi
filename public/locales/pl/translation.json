@@ -743,7 +743,9 @@
       "completing_signin": "Kończenie logowania...",
       "authenticating_with_provider": "Uwierzytelnianie z dostawcą. Proszę czekać..."
     },
-    "captcha_required": "Ukończ weryfikację i spróbuj ponownie."
+    "captcha_required": "Ukończ weryfikację i spróbuj ponownie.",
+    "registration_successful": "Potwierdź swój adres e-mail",
+    "registration_email_sent": "Potwierdź swój adres e-mail, aby aktywować konto. Wysłaliśmy Ci link, sprawdź skrzynkę odbiorczą."
   },
   "dropdown": {
     "createNew": "Utwórz Nowy",

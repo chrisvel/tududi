@@ -743,7 +743,9 @@
       "completing_signin": "Afslutter log ind...",
       "authenticating_with_provider": "Autentificerer med udbyder. Vent venligst..."
     },
-    "captcha_required": "Fuldfør verificeringen, og prøv igen."
+    "captcha_required": "Fuldfør verificeringen, og prøv igen.",
+    "registration_successful": "Bekræft din e-mailadresse",
+    "registration_email_sent": "Bekræft din e-mailadresse for at aktivere din konto. Vi har sendt dig et link, tjek din indbakke."
   },
   "dropdown": {
     "createNew": "Opret Ny",

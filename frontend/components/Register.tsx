@@ -312,7 +312,7 @@ const Register: React.FC = () => {
                                     >
                                         {t(
                                             'auth.registration_successful',
-                                            'Check Your Email'
+                                            'Verify your email address'
                                         )}
                                     </h2>
                                     <p
@@ -321,7 +321,7 @@ const Register: React.FC = () => {
                                     >
                                         {t(
                                             'auth.registration_email_sent',
-                                            'We have sent a verification link to your email address. Please check your inbox and click the link to verify your account.'
+                                            'Verify your email address to activate your account. We have sent you a link, check your inbox.'
                                         )}
                                     </p>
                                     <Link

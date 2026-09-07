@@ -736,7 +736,9 @@
       "completing_signin": "Completing sign-in...",
       "authenticating_with_provider": "Authenticating with provider. Please wait..."
     },
-    "captcha_required": "Please complete the verification and try again."
+    "captcha_required": "Please complete the verification and try again.",
+    "registration_successful": "Verify your email address",
+    "registration_email_sent": "Verify your email address to activate your account. We have sent you a link, check your inbox."
   },
   "dropdown": {
     "createNew": "Create New",
@@ -1788,5 +1790,25 @@
     "open": "Open",
     "streaks": "Streaks",
     "areaBreakdown": "Area Breakdown"
+  },
+  "subscription": {
+    "title": "Subscription",
+    "chooseForCloud": "Choose a plan for tududi Cloud",
+    "noActive": "No active subscription",
+    "chooseToContinue": "Choose a plan to continue using tududi Cloud.",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "priceMonthly": "${{price}} per month",
+    "priceYearly": "${{price}} per year",
+    "subscribeMonthly": "Subscribe monthly",
+    "subscribeYearly": "Subscribe yearly",
+    "perkUnlimited": "Unlimited tasks, projects and notes",
+    "perkStorage": "Attachments and file uploads",
+    "perkFeatures": "AI assistant, MCP, CalDAV sync and the Telegram bot",
+    "perkBackups": "Daily backups and managed updates",
+    "perkExport": "Export everything at any time",
+    "taxNote": "Payments are handled by {{provider}}. Prices exclude applicable taxes. Cancel at any time.",
+    "notConfigured": "Subscriptions are not available on this instance yet. Please contact support.",
+    "exportData": "Export your data"
   }
 }

@@ -76,6 +76,21 @@ export const handleAuthResponse = async (
             } catch {
                 // keep the generic detail
             }
+            // No subscription at all is a different situation from a plan
+            // that is too small: there is no in-app action to offer, so the
+            // browser goes to the page that sells one.
+            if (detail.code === 'SUBSCRIPTION_REQUIRED') {
+                if (
+                    window.location.pathname !== '/subscription/new' &&
+                    !isRedirecting
+                ) {
+                    isRedirecting = true;
+                    setTimeout(() => {
+                        window.location.href = '/subscription/new';
+                    }, 100);
+                }
+                throw new PlanLimitError(detail);
+            }
             broadcastPlanLimit(detail);
             throw new PlanLimitError(detail);
         }

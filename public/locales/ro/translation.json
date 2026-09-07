@@ -743,7 +743,9 @@
       "completing_signin": "Finalizând conectarea...",
       "authenticating_with_provider": "Autentificare cu furnizorul. Te rugăm să aștepți..."
     },
-    "captcha_required": "Finalizează verificarea și încearcă din nou."
+    "captcha_required": "Finalizează verificarea și încearcă din nou.",
+    "registration_successful": "Verifică-ți adresa de e-mail",
+    "registration_email_sent": "Verifică-ți adresa de e-mail pentru a-ți activa contul. Ți-am trimis o legătură, verifică-ți inboxul."
   },
   "dropdown": {
     "createNew": "Creează Nou",

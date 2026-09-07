@@ -743,7 +743,9 @@
       "completing_signin": "Kirjautumisen viimeistely...",
       "authenticating_with_provider": "Todennetaan palveluntarjoajalla. Ole hyvä ja odota..."
     },
-    "captcha_required": "Suorita vahvistus loppuun ja yritä uudelleen."
+    "captcha_required": "Suorita vahvistus loppuun ja yritä uudelleen.",
+    "registration_successful": "Vahvista sähköpostiosoitteesi",
+    "registration_email_sent": "Vahvista sähköpostiosoitteesi aktivoidaksesi tilisi. Lähetimme sinulle linkin, tarkista saapuneet viestit."
   },
   "dropdown": {
     "createNew": "Luo uusi",

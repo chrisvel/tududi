@@ -64,6 +64,15 @@ class FeatureNotInPlanError extends AppError {
     }
 }
 
+// 402: this instance sells access, and this account has not bought any.
+// Distinct from PlanLimitError, which means "you have a plan, it is too
+// small"; here there is no plan at all and the app itself is closed.
+class SubscriptionRequiredError extends AppError {
+    constructor(message = 'A subscription is required to use this instance') {
+        super(message, 402, 'SUBSCRIPTION_REQUIRED');
+    }
+}
+
 class BillingNotConfiguredError extends AppError {
     constructor(message = 'Billing is not configured on this instance') {
         super(message, 503, 'BILLING_NOT_CONFIGURED');
@@ -86,5 +95,6 @@ module.exports = {
     ServiceUnavailableError,
     PlanLimitError,
     FeatureNotInPlanError,
+    SubscriptionRequiredError,
     BillingNotConfiguredError,
 };

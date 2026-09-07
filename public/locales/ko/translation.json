@@ -743,7 +743,9 @@
       "completing_signin": "로그인 완료 중...",
       "authenticating_with_provider": "제공자와 인증 중입니다. 잠시 기다려 주세요..."
     },
-    "captcha_required": "인증을 완료한 뒤 다시 시도해 주세요."
+    "captcha_required": "인증을 완료한 뒤 다시 시도해 주세요.",
+    "registration_successful": "이메일 주소를 인증하세요",
+    "registration_email_sent": "계정을 활성화하려면 이메일 주소를 인증하세요. 링크를 보내드렸으니 받은 편지함을 확인하세요."
   },
   "dropdown": {
     "createNew": "새로 만들기",

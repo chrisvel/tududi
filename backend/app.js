@@ -288,6 +288,7 @@ if (serveFromDist) {
 
 // Authentication middleware
 const { requireAuth } = require('./middleware/auth');
+const { requireSubscription } = require('./middleware/entitlements');
 const { uploadsAccessControl } = require('./middleware/uploadsAccess');
 const { INLINE_SAFE_EXTENSIONS } = require('./utils/attachment-utils');
 
@@ -443,6 +444,10 @@ const registerApiRoutes = (basePath) => {
     app.use(`${basePath}/oidc`, oidcModule.routes);
 
     app.use(basePath, requireAuth);
+    // Instances that sell access close everything past this point until the
+    // account has a subscription; billing, the profile and data export stay
+    // open. A no-op unless TUDUDI_REQUIRE_SUBSCRIPTION is set.
+    app.use(basePath, requireSubscription);
     app.use(basePath, tasksModule.routes);
     app.use(basePath, habitsModule.routes);
     app.use(basePath, projectsModule.routes);

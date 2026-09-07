@@ -1,5 +1,6 @@
 const entitlements = require('../services/entitlementsService');
 const { getAuthenticatedUserId } = require('../utils/request-utils');
+const { SubscriptionRequiredError } = require('../shared/errors');
 
 // Route-level guards for hosted mode. Each one is a no-op when hosted mode
 // is off (the service returns before any query), so self-hosted installs
@@ -40,4 +41,40 @@ const requireStorage = (bytesFromReq) => async (req, res, next) => {
     }
 };
 
-module.exports = { requireFeature, requireQuota, requireStorage };
+// What an account with no subscription may still reach. Everything else
+// answers 402 SUBSCRIPTION_REQUIRED when TUDUDI_REQUIRE_SUBSCRIPTION is on.
+//
+// Buying access has to work, obviously; so does leaving. Reading the
+// profile, exporting the data and deleting the account stay open, because
+// locking someone out of their own export would make the data theirs in
+// name only. Everything that creates or reads app content is closed.
+const OPEN_WITHOUT_SUBSCRIPTION = [
+    /^\/billing(\/|$)/,
+    /^\/profile$/,
+    /^\/profile\/change-password$/,
+    /^\/backup\/export$/,
+    /^\/backup\/list$/,
+    /^\/backup\/[^/]+\/download$/,
+];
+
+const requireSubscription = async (req, res, next) => {
+    try {
+        if (!entitlements.isSubscriptionRequired()) return next();
+        if (OPEN_WITHOUT_SUBSCRIPTION.some((rule) => rule.test(req.path))) {
+            return next();
+        }
+        const userId = getAuthenticatedUserId(req);
+        if (!userId) return next();
+        if (await entitlements.hasActiveEntitlement(userId)) return next();
+        throw new SubscriptionRequiredError();
+    } catch (error) {
+        next(error);
+    }
+};
+
+module.exports = {
+    requireFeature,
+    requireQuota,
+    requireStorage,
+    requireSubscription,
+};

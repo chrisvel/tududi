@@ -743,7 +743,9 @@
       "completing_signin": "Completando l'accesso...",
       "authenticating_with_provider": "Autenticazione con il fornitore. Attendere prego..."
     },
-    "captcha_required": "Completa la verifica e riprova."
+    "captcha_required": "Completa la verifica e riprova.",
+    "registration_successful": "Verifica il tuo indirizzo email",
+    "registration_email_sent": "Verifica il tuo indirizzo email per attivare l'account. Ti abbiamo inviato un link, controlla la tua casella di posta."
   },
   "dropdown": {
     "createNew": "Crea Nuovo",

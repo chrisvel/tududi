@@ -743,7 +743,9 @@
       "completing_signin": "Menyelesaikan masuk...",
       "authenticating_with_provider": "Mengautentikasi dengan penyedia. Silakan tunggu..."
     },
-    "captcha_required": "Selesaikan verifikasi lalu coba lagi."
+    "captcha_required": "Selesaikan verifikasi lalu coba lagi.",
+    "registration_successful": "Verifikasi alamat email Anda",
+    "registration_email_sent": "Verifikasi alamat email Anda untuk mengaktifkan akun. Kami telah mengirim tautan, periksa kotak masuk Anda."
   },
   "dropdown": {
     "createNew": "Buat Baru",
