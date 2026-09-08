@@ -1,7 +1,5 @@
 {
   "meta": {
-    "title": "tududi: itse ylläpidetty tehtävienhallinta ja elämänhallintajärjestelmä, MCP:llä tekoälyagenteille",
-    "description": "Itse ylläpidetty tehtävienhallinta ja elämänhallintajärjestelmä. Osa-alueet, tavoitteet, projektit ja tehtävät sekä muistiinpanot ja tavat, ja MCP-palvelin {{tools}} työkalulla, jotta tekoälyagentit voivat työstää listaasi. Avointa lähdekoodia MIT-lisenssillä.",
     "langSwitcherLabel": "Vaihda kieltä",
     "langSwitcherCurrent": "Kieli: {{name}}"
   },
@@ -10,7 +8,6 @@
     "features": "Ominaisuudet",
     "ai": "Tekoäly & MCP",
     "pricing": "Hinnat",
-    "selfHost": "Ylläpidä itse",
     "faq": "UKK",
     "docs": "Dokumentaatio",
     "changelog": "Muutokset",
@@ -21,15 +18,7 @@
     "badgeStars": "tähteä GitHubissa",
     "badgeMcp": "MCP-palvelin sisäänrakennettuna",
     "starsLoading": "Ladataan tähtien määrää",
-    "titleLine1": "Itse ylläpidetty elämänhallinta,",
-    "titleLine2": "jota tekoälysi oikeasti osaa käyttää",
-    "lede": "Osa-alueet, tavoitteet, projektit ja tehtävät sekä muistiinpanot ja tavat yhdessä järjestelmässä. Aja se omalla laitteistollasi, tai jätä ylläpito meille.",
-    "ctaPrimary": "Ylläpidä itse 2 minuutissa",
     "ctaDemo": "Kokeile live-demoa",
-    "ctaSecondary": "Katso GitHubissa",
-    "altLinkPrefix": "Tai",
-    "altLink": "luo ilmainen tili tududi Cloudiin",
-    "note": "MIT-lisenssi · avointa lähdekoodia ikuisesti",
     "demoNote": "Aito isännöity instanssi esimerkkidatalla, jaettu ja nollataan säännöllisesti",
     "screenshotAlt": "tududin käyttöliittymä, jossa näkyy Tänään-näkymä ja suunnitellut tehtävät"
   },
@@ -50,18 +39,12 @@
   },
   "ai": {
     "kicker": "Tekoäly & MCP",
-    "titleLine1": "Itse ylläpidetty järjestelmä,",
-    "titleLine2": "jota tekoälyagenttisi oikeasti osaa käyttää",
-    "ledeHtml": "tududin mukana tulee MCP-palvelin, joka tarjoaa <strong>{{tools}} työkalua</strong> tehtäviin, projekteihin, osa-alueisiin, tavoitteisiin, tapoihin, muistiinpanoihin, henkilöihin, tunnisteisiin, näkymiin, saapuneisiin, hakuun ja mittareihin. Yhdistä Claude tai mikä tahansa MCP-yhteensopiva agentti suoraan järjestelmääsi. Koska tududi pyörii omalla palvelimellasi, yhteyden tai tietojesi ei tarvitse koskaan poistua siltä. Se on rakenteellinen ero, jota Todoist ja Notion eivät voi tarjota, lupasivat ne mitä tahansa.",
     "cards": {
       "capture": {
         "title": "Kirjaa ja hae keskustelusta",
         "body": "Lisää, löydä ja merkitse tehtäviä valmiiksi poistumatta keskustelusta."
       },
-      "dataStays": {
-        "title": "Tiedot pysyvät omalla palvelimellasi",
-        "body": "MCP-yhteys puhuu oman instanssisi kanssa. Mikään ei kulje kolmannen osapuolen kautta."
-      },
+      "dataStays": {},
       "openProtocol": {
         "title": "Avoin protokolla, ei loukkua",
         "body": "Rakennettu avoimen Model Context Protocolin päälle. Toimii Clauden ja muiden MCP-asiakasohjelmien kanssa."
@@ -70,7 +53,6 @@
     "configTitle": "Yhdistä se Claude Desktopiin",
     "footnoteClients": "Sama toimii Cursorin, Windsurfin, Clinen ja minkä tahansa muun MCP-asiakkaan kanssa.",
     "footnoteDocsLink": "Lue MCP-dokumentaatio →",
-    "footnoteIncluded": "Sisältyy jokaiseen tasoon, sekä itse ylläpidettyyn että Hallittuun.",
     "assistantTitle": "Tekoälyavustaja",
     "assistantLede": "Erillinen, valinnainen kerros, joka lukee tietosi ja kirjoittaa niistä yhteenvedot selkokielellä. Toimii minkä tahansa OpenAI-yhteensopivan palveluntarjoajan kanssa, myös itse ylläpidettyjen kuten Ollaman.",
     "assistantCards": {
@@ -91,7 +73,6 @@
   "features": {
     "eyebrow": "Ominaisuudet",
     "title": "Täydellinen järjestelmä järjestäytyneeseen elämään",
-    "sub": "tududi yhdistää tavoitteet, projektit, tehtävät, muistiinpanot ja älykkäät näkymät yhdeksi rauhalliseksi ja keskittyneeksi järjestelmäksi. Suunniteltu yksilöille ja pienille tiimeille, jotka arvostavat yksityisyyttä ja selkeyttä.",
     "showAll": "Näytä kaikki {{count}} ominaisuutta",
     "groups": {
       "planFocus": "Suunnittele & keskity",
@@ -201,62 +182,24 @@
   "selfHost": {
     "eyebrow": "Ylläpidä itse",
     "title": "Aja se omalla palvelimellasi",
-    "sub": "Ilmainen, avointa lähdekoodia ja valmis Dockeriin. Tietosi ovat täysin sinun.",
     "cardTitle": "Docker-asennus",
-    "cardSub": "Käyttöön muutamassa minuutissa Dockerilla",
     "step1": "Hae Docker-image",
     "step2": "Käynnistä kontti",
     "step3Prefix": "Avaa osoitteessa",
-    "linkGithub": "Katso GitHubissa",
-    "linkDocs": "Dokumentaatio"
+    "linkGithub": "Katso GitHubissa"
   },
   "pricing": {
     "eyebrow": "Hinnat",
     "title": "Valitse miten käytät tududia",
-    "sub": "Yksi järjestelmä, kolme tapaa ajaa sitä",
     "mostPopular": "SUOSITUIN",
     "earlyBird": "ENNAKKOHINTA",
     "perYear": "/vuosi",
-    "forever": "/ikuisesti",
     "plans": {
-      "selfHosted": {
-        "name": "Itse ylläpidetty",
-        "priceNote": "Ilmainen ja avointa lähdekoodia, ikuisesti",
-        "features": [
-          "Avointa lähdekoodia, MIT-lisenssillä",
-          "Aja se omalla palvelimellasi",
-          "Täysi hallinta, ei toimittajaloukkua",
-          "Kaikki ominaisuudet, mitään ei ole maksumuurin takana",
-          "MCP ja tekoälyavustaja mukana"
-        ],
-        "action": "Ylläpidä tududia itse →"
-      },
+      "selfHosted": {},
       "cloud": {
         "name": "Cloud",
         "or": "tai",
-        "launchNote": "Early bird -vuosihinta, sinun niin kauan kuin pysyt tilaajana.",
-        "priceNote": "Luo tili minuutissa ja päivitä, kun ilmainen paketti käy pieneksi.",
-        "features": [
-          "Ilmainen paketti: {{freeTasks}} aktiivista tehtävää, {{freeProjects}} projektia, {{freeNotes}} muistiinpanoa, {{freeStorageMb}} MB liitteitä",
-          "Pro: rajattomasti tehtäviä, projekteja ja muistiinpanoja, {{proStorageGb}} GB liitteitä",
-          "Pro: tekoälyavustaja, MCP, CalDAV-synkronointi, Telegram-botti, varmuuskopioiden tuonti",
-          "Päivitykset ja päivittäiset varmuuskopiot hoidamme me",
-          "Vie kaikki milloin tahansa, poista tilisi itse"
-        ],
-        "action": "Luo ilmainen tili →"
-      },
-      "business": {
-        "name": "Yrityslisenssi",
-        "priceNote": "tududin käyttö työssä",
-        "features": [
-          "Kaupallisen käytön lisenssi",
-          "Ensisijainen tuki sovitulla vasteajalla",
-          "Lasku, jonka yrityksesi voi kirjata kuluksi, alv mukaan lukien",
-          "Pro tududi Cloudissa, tai kokonaan omalla palvelimellasi",
-          "Suora yhteys ylläpitäjään"
-        ],
-        "licenceNote": "tududi on MIT-lisensoitu ja kaupallinen käyttö on jo ilmaista. Tästä saat priorisoidun tuen, vastausaikalupauksen ja laskun.",
-        "action": "Lähetä sähköpostia: licensing@tududi.com →"
+        "launchNote": "Early bird -vuosihinta, sinun niin kauan kuin pysyt tilaajana."
       }
     },
     "fineprint": "Peruuta milloin tahansa ja vie kaikki. Jos tududi Cloud joskus suljetaan, saat tietosi ja oppaan siirtymiseen omalle palvelimelle. Tallennustilaan ja API-liikenteeseen sovelletaan kohtuullista käyttöä. 30 päivän rahat takaisin -takuu, ilman kysymyksiä.",
@@ -264,10 +207,6 @@
   },
   "compare": {
     "title": "Nopea vertailu",
-    "sub": "Kaikki kolme antavat sinulle koko tududi-järjestelmän",
-    "colSelf": "Itse ylläpidetty",
-    "colHosted": "Cloud",
-    "colBusiness": "Yrityslisenssi",
     "rows": {
       "openSource": "Avoimen lähdekoodin ydin",
       "commercialUse": "Kaupallinen käyttö",
@@ -277,25 +216,12 @@
       "noSetup": "Ei palvelimen pystytystä",
       "managedUpdates": "Hallitut päivitykset",
       "autoBackups": "Automaattiset varmuuskopiot",
-      "isolated": "Eristetty kontti ja tietokanta",
-      "prioritySupport": "Ensisijainen tuki",
-      "responseTime": "Sovittu vasteaika",
-      "invoice": "Lasku kulukorvausta varten",
       "pricing": "Hinta"
     },
     "values": {
-      "optional": "Valinnainen",
-      "yourServer": "Oma palvelimesi",
       "community": "Yhteisö",
-      "email": "Sähköposti",
-      "sameBusinessDay": "Saman arkipäivän aikana",
-      "freeForever": "Ilmainen ikuisesti",
-      "pricePerYear": "{{price}} $/vuosi",
-      "sharedInstance": "Jaettu instanssi, vienti milloin tahansa",
-      "freeOrPro": "Ilmainen, tai Pro {{price}}/vuosi"
-    },
-    "closing": "Valmis ajamaan omaa järjestelmääsi?",
-    "closingCta": "Ylläpidä tududia itse"
+      "email": "Sähköposti"
+    }
   },
   "waitlist": {
     "title": "Etkö ole vielä valmis?",
@@ -313,14 +239,12 @@
     "sub": "Keskustele muiden tududin käyttäjien kanssa, saa tukea ja pysy ajan tasalla"
   },
   "footer": {
-    "tagline": "Avoin järjestelmä elämän ja työn järjestämiseen. Sinun palvelimesi tai meidän.",
     "colProduct": "Tuote",
     "colResources": "Resurssit",
     "colCommunity": "Yhteisö & tuki",
     "colSupport": "Tue",
     "linkRoadmap": "Tiekartta",
     "linkIssues": "Ongelmat",
-    "linkBusinessLicence": "Yrityslisenssi",
     "linkEmail": "Sähköposti",
     "linkCoffee": "Tarjoa kahvit",
     "subTitle": "Julkaisutiedotteet sähköpostiin",
@@ -335,10 +259,7 @@
   },
   "faq": {
     "items": {
-      "freePlan": {
-        "q": "Mitä ilmainen Cloud-paketti sisältää?",
-        "a": "Enintään {{freeTasks}} aktiivista tehtävää, {{freeProjects}} projektia, {{freeNotes}} muistiinpanoa ja {{freeStorageMb}} MB liitteitä ilman aikarajaa. Valmiit tehtävät eivät kuluta rajaa. Jos raja tulee vastaan, kaikki säilyy ja voit yhä lukea, muokata, merkitä valmiiksi ja poistaa; vain uuden lisääminen odottaa, kunnes olet taas rajan alla tai päivität Prohon."
-      },
+      "freePlan": {},
       "leaving": {
         "q": "Voinko lähteä, ja mitä tiedoilleni tapahtuu?",
         "a": "Kyllä, milloin tahansa. Vie kaikki yhtenä tiedostona profiilistasi ja tuo se itse ylläpidettyyn tududiin, joka lukee saman muodon. Tilin poistaminen poistaa tietosi, liitteesi ja varmuuskopiosi palvelimiltamme ja peruu mahdollisen tilauksen."

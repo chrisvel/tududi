@@ -898,6 +898,29 @@
             gap: 8px;
             margin-bottom: 14px;
         }
+        .mcp-config-tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            margin: 0 0 10px;
+            font-size: 12.5px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #60bffa;
+        }
+        .mcp-config-alt { margin-top: 16px; }
+        .mcp-config-alt > summary {
+            cursor: pointer;
+            list-style: none;
+            font-size: 14px;
+            color: #8b93a3;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+        .mcp-config-alt > summary::-webkit-details-marker { display: none; }
+        .mcp-config-alt > summary:hover { color: #cbd5e1; }
+        .mcp-config-alt p { margin: 12px 0; font-size: 14px; color: #8b93a3; line-height: 1.6; }
         .mcp-config-head h4 { margin: 0; font-size: 15px; font-weight: 600; color: #fff; }
         .mcp-config-head span { font-size: 12.5px; color: #8b93a3; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
         .ai-divider { border-top: 1px solid #232d3f; padding-top: 48px; }
@@ -920,6 +943,14 @@
             margin: 0 auto;
             align-items: stretch;
         }
+        /* Two cards. auto-fit would hand each one half of 1180px, which makes a
+           five-bullet card look padded out rather than confident. 760 keeps them
+           at the ~378px they were as thirds, centred as a pair. */
+        /* Both selectors are two-class on purpose: .plan-notes sets its own
+           max-width further down the sheet and would otherwise win on order,
+           leaving the fineprint 1180px wide under a 760px pair of cards. */
+        .plan-grid.plan-grid-duo,
+        .plan-notes.plan-grid-duo { max-width: 760px; }
         .plan {
             background: #fcfbf9;
             border-radius: 24px;
@@ -992,7 +1023,10 @@
             letter-spacing: -0.02em;
         }
         .plan-featured .plan-amount span:first-child { color: #fff; }
-        .plan-amount span:last-child { color: #9ca3af; font-size: 15px; }
+        /* :not(:first-child) because the self-host card is a bare "$0" with no
+           period after it. A lone span matches both selectors, and this rule
+           wins on order, which shrank the headline number to caption grey. */
+        .plan-amount span:last-child:not(:first-child) { color: #9ca3af; font-size: 15px; }
         .plan-amount .plan-was {
             font-size: 20px;
             font-weight: 600;
@@ -1019,9 +1053,6 @@
         .plan-pro-line .plan-pro-sep { color: #9ca3af; }
         .plan-pro-line .plan-was { color: #9ca3af; text-decoration: line-through; font-size: 14px; }
         .plan-pro-line .plan-tag { background: #fef3c7; color: #92400e; border-radius: 999px; padding: 2px 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; }
-        /* Fine print under the Business bullets: quieter than a bullet, because
-           it corrects a misreading of the card rather than selling against it. */
-        .plan-licence-note { font-size: 13px; color: #9ca3af; line-height: 1.6; margin: 16px 0 0; }
         .plan-features {
             list-style: none;
             margin: 0;
@@ -1035,6 +1066,19 @@
         }
         .plan-features li { display: flex; gap: 10px; }
         .plan-features i { color: #1e86e5; margin-top: 4px; font-size: 13px; }
+        /* The featured card is dark, and these three were only ever written for
+           a white one: #111827 text on #111827 is invisible, which is what
+           moving the flag from Self-Hosted to Cloud would otherwise have done. */
+        .plan-featured .plan-pro-line { color: #cbd5e1; }
+        .plan-featured .plan-pro-line strong { color: #fff; }
+        .plan-featured .plan-pro-line .plan-pro-sep { color: #8b93a3; }
+        .plan-featured .plan-launch-note { color: #9ca3af; }
+        /* The utility column: self-hosting, priced at nothing and costing time.
+           Quieter than a plain .plan, and its bullets are wrenches rather than
+           ticks, because they are work the reader takes on rather than things
+           they get. */
+        .plan-utility { background: #fbfbfa; }
+        .plan-features-work i { color: #9ca3af; }
         .plan-featured .plan-features { color: #d1d5db; }
         .plan-featured .plan-features i { color: #60bffa; }
         .plan-action {
@@ -1299,6 +1343,41 @@
             transition: background .2s, color .2s;
         }
         .copy-btn:hover { background: #2a557c; color: #fff; }
+        /* Above the install card, not below it: the point of this section is
+           that most people should not be reading the rest of it. */
+        .selfhost-actions {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+        .setup-disclosure > summary {
+            cursor: pointer;
+            list-style: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            border: 1px solid #232d3f;
+            color: #cbd5e1;
+            padding: 10px 18px;
+            border-radius: 999px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: border-color .2s, color .2s;
+        }
+        .setup-disclosure > summary::-webkit-details-marker { display: none; }
+        .setup-disclosure > summary:hover { border-color: #2a557c; color: #fff; }
+        .setup-disclosure[open] > summary { margin-bottom: 24px; }
+        .setup-pulls {
+            margin: 22px 0 0;
+            font-size: 13.5px;
+            color: #8b93a3;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .setup-pulls strong { color: #cbd5e1; font-weight: 600; }
         .setup-links { margin-top: 28px; display: flex; gap: 14px; flex-wrap: wrap; }
         .btn-ghost {
             display: inline-flex;
@@ -1337,7 +1416,7 @@
         [dir="rtl"] .compare-scroll-wrap::after { background: linear-gradient(to right, #f7f6f3, rgba(247, 246, 243, 0)); }
         .compare-scroll-wrap.has-more::after { opacity: 1; }
         .compare { background: #fff; border-radius: 20px; overflow: hidden; border: 1px solid #ececee; }
-        .compare-row { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr)); background: #ececee; gap: 1px; }
+        .compare-row { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(2, minmax(0, 1fr)); background: #ececee; gap: 1px; }
         .compare-row > div { background: #fff; padding: 16px; }
         .compare-head > div { background: #f7f6f3; text-align: center; font-weight: 700; color: #111827; font-size: 14.5px; }
         .compare-head > div:first-child { text-align: left; }
@@ -1366,6 +1445,10 @@
            sitting under the comparison table. */
         .closing { text-align: center; margin-top: 44px; }
         .closing p { margin: 0 0 22px; color: #5b6472; font-size: 16.5px; }
+        .closing-actions { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+        .closing-selfhost { margin: 24px 0 0; font-size: 14.5px; color: #9ca3af; }
+        .closing-selfhost a { color: #6b7280; text-decoration: underline; text-underline-offset: 3px; }
+        .closing-selfhost a:hover { color: #111827; }
 
         /* ---------- Waitlist ---------- */
         .waitlist { background: #fbf8f3; padding: 80px 16px; border-top: 1px solid #f0eae1; }
@@ -1548,7 +1631,7 @@
             .faq-q h4 { font-size: 15.5px; }
             .faq-a { padding: 0 18px 18px; }
             .faq-a p { font-size: 15px; }
-            .compare-row { grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(0, 1fr)); }
+            .compare-row { grid-template-columns: minmax(0, 1.5fr) repeat(2, minmax(0, 1fr)); }
             .compare-row > div { padding: 12px 10px; }
             .compare-label, .compare-head > div { font-size: 13px; }
             .compare-cell .text { font-size: 12.5px; }
@@ -1560,12 +1643,12 @@
             .proofbar-outlet { font-size: 14.5px; }
             .press-card { padding: 24px 22px; }
         }
-        /* Four columns cannot hold below this: "Same business day" in a ~70px
+        /* Three columns cannot hold below this: "$5/mo or $49/yr" in a narrow
            cell wraps to three lines. Scroll the table instead of collapsing it.
-           The trigger is 820 rather than 600 because every translation of that
-           cell is longer than the English that already barely fits. */
+           The trigger is 820 rather than 600 because every translation of the
+           longest cell is wider than the English that already barely fits. */
         @media (max-width: 820px) {
-            .compare { min-width: 660px; }
+            .compare { min-width: 560px; }
             /* Six columns need more room than the four-column tier table above;
                this rule sits after .compare so it wins on elements carrying
                both classes. */

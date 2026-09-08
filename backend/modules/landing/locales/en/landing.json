@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "tududi: self-hosted task manager and life management system, with MCP for AI agents",
-    "description": "A self-hosted task manager and life management system. Areas, goals, projects and tasks, plus notes and habits, with an MCP server exposing {{tools}} tools so AI agents can work your list. Open source under MIT.",
+    "title": "tududi: task manager and life management system, with MCP for AI agents",
+    "description": "Areas, goals, projects and tasks, plus notes and habits, in one system. Set up a tududi Cloud account in a minute. An MCP server exposing {{tools}} tools lets AI agents work your list. Self-hosting is there if you would rather run the server yourself.",
     "langSwitcherLabel": "Change language",
     "langSwitcherCurrent": "Language: {{name}}"
   },
@@ -10,31 +10,26 @@
     "features": "Features",
     "ai": "AI & MCP",
     "pricing": "Pricing",
-    "selfHost": "Self-Host",
     "faq": "FAQ",
     "docs": "Docs",
     "changelog": "Changelog",
     "signIn": "Sign in",
-    "toggle": "Toggle navigation"
+    "toggle": "Toggle navigation",
+    "selfHostGuide": "Self-host guide"
   },
   "hero": {
     "badgeStars": "stars on GitHub",
     "badgeMcp": "MCP server built in",
     "starsLoading": "Loading star count",
-    "titleLine1": "Self-hosted life management",
-    "titleLine2": "your AI can actually use",
-    "lede": "Areas, goals, projects and tasks, plus notes and habits, in one system. Run it on your own hardware, or hand us the ops.",
-    "ctaPrimary": "Self-host in 2 minutes",
+    "titleLine1": "Productivity made simple",
+    "titleLine2": "",
+    "lede": "Areas, goals, projects, tasks, notes and habits, in one system. Create a Cloud account in a minute.",
+    "ctaPrimary": "Start on tududi Cloud",
     "ctaDemo": "Try the live demo",
-    "ctaSecondary": "View on GitHub",
-    "altLinkPrefix": "Or",
-    "altLink": "create a free account on tududi Cloud",
-    "note": "MIT licensed · open source forever",
     "demoNote": "A real hosted instance, seeded with sample data, shared and reset regularly",
     "screenshotAlt": "The tududi interface, showing the Today view with planned tasks",
-    "ctaCloud": "tududi Cloud",
-    "ctaSelfHosted": "Self-hosted",
-    "ctaWaitlist": "Join the waitlist"
+    "ctaWaitlist": "Join the waitlist",
+    "cloudNote": "No server to set up. Monthly or yearly, and you can cancel any time."
   },
   "proof": {
     "stars": "stars on GitHub",
@@ -42,7 +37,8 @@
     "languages": "{{count}} languages",
     "dockerPulls": "Docker pulls",
     "discord": "Discord members",
-    "discordAlt": "Discord: {{count}} members"
+    "discordAlt": "Discord: {{count}} members",
+    "minute": "Set up in a minute"
   },
   "press": {
     "featuredIn": "Featured in",
@@ -53,9 +49,9 @@
   },
   "ai": {
     "kicker": "AI & MCP",
-    "titleLine1": "The self-hosted system",
+    "titleLine1": "A real system",
     "titleLine2": "your AI agent can actually use",
-    "ledeHtml": "tududi ships an MCP server exposing <strong>{{tools}} tools</strong>, covering tasks, projects, areas, goals, habits, notes, people, tags, views, inbox, search and metrics. Connect Claude or any MCP-compatible agent straight to your system. Because tududi runs on your own server, the connection, and your data, never has to leave it. That's a structural difference Todoist and Notion can't offer, no matter what they promise.",
+    "ledeHtml": "tududi ships an MCP server exposing <strong>{{tools}} tools</strong>, covering tasks, projects, areas, goals, habits, notes, people, tags, views, inbox, search and metrics. Connect Claude or any MCP-compatible agent straight to your own instance, whether that is your Cloud account or a server you run yourself. The connection goes to your instance rather than through a relay in between, which is a structural difference Todoist and Notion cannot offer, no matter what they promise.",
     "demo": {
       "windowTitle": "Claude Desktop",
       "badge": "tududi MCP",
@@ -88,8 +84,8 @@
         "body": "Add, find, and complete tasks without leaving the conversation."
       },
       "dataStays": {
-        "title": "Data stays on your server",
-        "body": "The MCP connection talks to your own instance. Nothing routes through a third party."
+        "title": "It talks to your instance",
+        "body": "The MCP connection goes straight to your own tududi, on Cloud or on your own server. Nothing routes through a third party."
       },
       "openProtocol": {
         "title": "Open protocol, no lock-in",
@@ -99,7 +95,7 @@
     "configTitle": "Connect it to Claude Desktop",
     "footnoteClients": "The same works with Cursor, Windsurf, Cline, and any other MCP client.",
     "footnoteDocsLink": "Read the MCP docs →",
-    "footnoteIncluded": "Included in every tier, self-hosted and Managed alike.",
+    "footnoteIncluded": "MCP comes with tududi Cloud, and with every self-hosted instance.",
     "assistantTitle": "AI Assistant",
     "assistantLede": "A separate, optional layer that reads your data and writes back plain-language summaries. Works with any OpenAI-compatible provider, including self-hosted ones like Ollama.",
     "assistantCards": {
@@ -115,12 +111,15 @@
         "title": "Project Insights",
         "body": "A quick health assessment for a project: what's moving, what's stuck."
       }
-    }
+    },
+    "configCloudTab": "Cloud",
+    "configSelfHostTab": "Running it yourself?",
+    "configSelfHostNote": "Point TUDUDI_URL at your own instance instead. Everything else is identical."
   },
   "features": {
     "eyebrow": "Features",
     "title": "A complete system for organized living",
-    "sub": "tududi combines goals, projects, tasks, notes, and smart views into one calm, focused system. Designed for individuals and small teams who value privacy and clarity.",
+    "sub": "tududi combines goals, projects, tasks, notes, and smart views into one calm, focused system. Let us run it for you, or run it yourself if you prefer.",
     "showAll": "Show all {{count}} features",
     "groups": {
       "planFocus": "Plan & Focus",
@@ -230,35 +229,36 @@
   "selfHost": {
     "eyebrow": "Self-Host",
     "title": "Run it on your own server",
-    "sub": "Free, open source, and Docker-ready. Own your data completely.",
+    "sub": "Self-hosting is for people who already run Docker and a reverse proxy. If you want tududi without becoming the sysadmin, use Cloud.",
     "cardTitle": "Docker Setup",
-    "cardSub": "Deploy in minutes with Docker",
+    "cardSub": "For people already running Docker",
     "step1": "Pull the Docker image",
     "step2": "Run the container",
     "step3Prefix": "Access at",
     "linkGithub": "View on GitHub",
-    "linkDocs": "Documentation"
+    "linkDocs": "Read the self-host guide",
+    "ctaCloud": "Get started on Cloud",
+    "showCommands": "Show install commands"
   },
   "pricing": {
     "eyebrow": "Pricing",
     "title": "Choose how to use tududi",
-    "sub": "One system, three ways to run it",
+    "sub": "One hosted plan, or run it yourself if you would rather do the ops.",
     "mostPopular": "MOST POPULAR",
     "earlyBird": "EARLY BIRD",
     "perYear": "/year",
-    "forever": "/forever",
     "plans": {
       "selfHosted": {
-        "name": "Self-Hosted",
-        "priceNote": "Free and open source, forever",
+        "name": "Self-host (advanced)",
+        "priceNote": "Free, if you run the server yourself",
         "features": [
-          "Open source, MIT licensed",
-          "Run it on your own server",
-          "Full control, no vendor lock-in",
-          "Every feature, nothing paywalled",
-          "MCP and AI Assistant included"
+          "You provision a server or a NAS",
+          "You handle Docker, updates and migrations",
+          "You configure a reverse proxy and TLS",
+          "The backups are yours to own",
+          "Full feature set, no seat limits, data on your hardware"
         ],
-        "action": "Self-host tududi →"
+        "action": "Read the self-host guide →"
       },
       "cloud": {
         "name": "Cloud",
@@ -266,29 +266,16 @@
         "launchNote": "Early bird annual price, yours for as long as you stay subscribed.",
         "priceNote": "Everything included. Cancel any time.",
         "features": [
-          "Unlimited tasks, projects and notes",
-          "Attachments and file uploads",
-          "AI assistant, MCP, CalDAV sync and the Telegram bot",
-          "Updates and daily backups handled for you",
+          "Running in a minute, with no server to set up",
+          "Unlimited tasks, projects and notes, plus attachments",
+          "AI Assistant, MCP, CalDAV sync and the Telegram bot",
+          "Updates and daily backups handled for you, with {{proStorageGb}} GB of storage",
           "Export everything any time, delete your account yourself"
         ],
         "action": "Get started →",
         "comingSoon": "Opening in a few days",
         "comingSoonNote": "We're moving Cloud to new infrastructure. Leave your email below and we'll let you know the moment it's back.",
         "notifySubmit": "Notify me"
-      },
-      "business": {
-        "name": "Business Licence",
-        "priceNote": "Using tududi at work",
-        "features": [
-          "Commercial use licence",
-          "Priority support with a response commitment",
-          "An invoice your company can expense, VAT included",
-          "Pro on tududi Cloud, or run it entirely on your own server",
-          "Direct line to the maintainer"
-        ],
-        "licenceNote": "tududi is MIT licensed and commercial use is already free. This buys priority support, a response commitment, and an invoice.",
-        "action": "Email licensing@tududi.com →"
       }
     },
     "fineprint": "Cancel any time and export everything. If tududi Cloud ever shuts down, you get your data and a self-host migration guide. Fair use applies to storage and API volume. 30-day money-back guarantee, no questions asked.",
@@ -296,10 +283,8 @@
   },
   "compare": {
     "title": "Quick Comparison",
-    "sub": "All three give you the full tududi system",
-    "colSelf": "Self-Hosted",
-    "colHosted": "Cloud",
-    "colBusiness": "Business Licence",
+    "sub": "The same application either way. What differs is who runs it, and what that costs you.",
+    "colSelf": "Self-host",
     "rows": {
       "openSource": "Open source core",
       "commercialUse": "Commercial use",
@@ -309,25 +294,22 @@
       "noSetup": "No server setup required",
       "managedUpdates": "Managed updates",
       "autoBackups": "Automatic backups",
-      "isolated": "Isolated container and database",
-      "prioritySupport": "Priority support",
-      "responseTime": "Response commitment",
-      "invoice": "Invoice for expenses",
-      "pricing": "Pricing"
+      "pricing": "Pricing",
+      "startMinute": "Start in a minute",
+      "exportAnytime": "Export everything any time",
+      "proFeatures": "AI Assistant, MCP, CalDAV, Telegram",
+      "storage": "Attachment storage",
+      "support": "Support"
     },
     "values": {
-      "optional": "Optional",
-      "yourServer": "Your server",
       "community": "Community",
       "email": "Email",
-      "sameBusinessDay": "Same business day",
-      "freeForever": "Free forever",
-      "pricePerYear": "{{price}}/year",
-      "sharedInstance": "Shared instance, export any time",
-      "freeOrPro": "{{price}}/year"
+      "gigabytes": "{{count}} GB",
+      "yourDisk": "Your own disk",
+      "perMonthOrYear": "{{monthly}}/mo or {{price}}/yr",
+      "selfCost": "Free, plus your hosting"
     },
-    "closing": "Ready to run your own system?",
-    "closingCta": "Self-host tududi"
+    "colCloud": "tududi Cloud"
   },
   "faq": {
     "eyebrow": "FAQ",
@@ -342,11 +324,11 @@
     "items": {
       "licence": {
         "q": "Is tududi really free?",
-        "a": "tududi is open source under the MIT licence. You can run it, modify it, and build on it without paying anyone. There are no seat counts, no usage limits, and no features held back for a paid tier: the self-hosted version is the whole product. The paid options on this page sell hosting and support, not access."
+        "a": "The application is open source under the MIT licence, so you can run it on your own server for nothing, modify it, and build on it without paying anyone. There are no seat counts and no features held back: the self-hosted build is the whole product. tududi Cloud is a paid service, because hosting, backups and email cost money to run. You are paying for the operating work, never for access to the software."
       },
       "commercialUse": {
         "q": "Can I use tududi at work, or in my company?",
-        "a": "Yes, and you do not need to buy anything first. The MIT licence permits commercial use, including inside a business and inside a commercial product, with no revenue threshold and nothing to report. If your organisation needs a support commitment or an invoice for its procurement process, that is what the Business Licence is for. It buys priority support, a response commitment, and paperwork, not permission."
+        "a": "Yes, and you do not need to buy anything first. The MIT licence permits commercial use, including inside a business and inside a commercial product, with no revenue threshold and nothing to report. If your finance team needs an invoice, a Cloud subscription is billed through our payment provider and produces one. Nothing on this page sells permission, because permission is already yours."
       },
       "maintained": {
         "q": "Is tududi actively maintained?",
@@ -355,11 +337,11 @@
       },
       "shutdown": {
         "q": "What happens to my data if tududi goes away?",
-        "a": "The app is MIT licensed and the source is public, so it cannot be withdrawn from you. Anyone can keep running it, and you can fork it. For Managed instances, your data lives in a standard tududi database that is not in a proprietary format; if the Managed service ever shut down, you would get your data and a guide to moving it onto your own server."
+        "a": "The app is MIT licensed and the source is public, so it cannot be withdrawn from you. Anyone can keep running it, and you can fork it. On tududi Cloud your data lives in a standard tududi database rather than a proprietary format, so if the service ever shut down you would get your data and a guide to moving it onto your own server."
       },
       "requirements": {
         "q": "What do I need to run it myself?",
-        "a": "Docker and somewhere to run it. You pull the image, run the container, and mount a directory for the database. It is comfortable on a small VPS or a machine on your own network, and the exact commands are in the Self-Host section above and in the docs.",
+        "a": "Docker, somewhere persistent to store the database, a reverse proxy with TLS in front of it, and the discipline to apply updates and keep backups. It is comfortable on a small VPS or a machine on your own network, and the commands are in the Self-Host section and the docs. Most people are better served by Cloud, which is the same application with none of that work.",
         "linkLabel": "Read the docs"
       },
       "dataLocation": {
@@ -384,19 +366,19 @@
       },
       "aiPrivacy": {
         "q": "Does my data get sent to an AI company?",
-        "a": "That depends which of the two layers you mean, and the difference matters. The MCP server runs inside your own instance: an agent such as Claude Desktop connects to your server, so the connection and your data stay where you put them. The AI Assistant is different. It calls an OpenAI-compatible provider, so if you point it at a hosted one, the contents of those requests go to that provider. Point it at a local model instead, such as Ollama or LM Studio, and nothing leaves your machine. It stays off until you supply a key, so this is always your choice rather than a default."
+        "a": "That depends which of the two layers you mean, and the difference matters. The MCP server runs inside your own instance: an agent such as Claude Desktop connects to that instance directly, so the conversation is between your agent and your own tududi rather than a broker in between. The AI Assistant is different. It calls an OpenAI-compatible provider, so if you point it at a hosted one, the contents of those requests go to that provider. Point it at a local model instead, such as Ollama or LM Studio, and nothing leaves your machine. It stays off until you supply a key, so this is always your choice rather than a default."
       },
       "mcp": {
         "q": "What is MCP, and what can an agent actually do?",
-        "a": "MCP is the Model Context Protocol, an open standard for connecting AI agents to real systems. tududi ships an MCP server exposing {{tools}} tools spanning tasks, projects, areas, goals, habits, notes, people, tags, views, inbox, search and metrics, so an agent can capture, find, update and finish work rather than just talk about it. It is opt-in, and it works with Claude Desktop, Cursor, Windsurf, Cline, or any other MCP client."
+        "a": "MCP is the Model Context Protocol, an open standard for connecting AI agents to real systems. tududi ships an MCP server exposing {{tools}} tools spanning tasks, projects, areas, goals, habits, notes, people, tags, views, inbox, search and metrics, so an agent can capture, find, update and finish work rather than just talk about it. It is opt-in, it comes with Cloud and with every self-hosted instance, and it works with Claude Desktop, Cursor, Windsurf, Cline, or any other MCP client."
       },
       "whyManaged": {
-        "q": "Why pay for Pro when self-hosting is free?",
-        "a": "You are paying to not run it. tududi Cloud gives you the same system with updates and backups handled for you, and Pro adds the AI Assistant, MCP, CalDAV sync, the Telegram bot and unlimited items. If you already run Docker and a reverse proxy, self-hosting is genuinely the better deal and we would rather you did that. Cloud exists for people who want the system without becoming its sysadmin."
+        "q": "Why pay for Cloud when self-hosting is free?",
+        "a": "You are paying to not run infrastructure. tududi Cloud gives you the same system with the server, updates, backups and email handled for you, which is the fiddly, unglamorous half of self-hosting. Cloud is the path we recommend. Self-hosting is the better deal only if you already run Docker and a reverse proxy and actively want to operate the stack."
       },
       "freePlan": {
-        "q": "Is there a free plan on tududi Cloud?",
-        "a": "No. Cloud is {{monthly}} a month or {{price}} a year, and that is the whole price list. The free option is self-hosting, which is the same application with every feature, run on your own machine. Paying for Cloud buys the operating work, not the software."
+        "q": "Is there a free plan or a trial on tududi Cloud?",
+        "a": "No. Cloud is {{monthly}} a month or {{price}} a year, and that is the whole price list: no free tier, no trial clock, no card taken for something that quietly starts billing later. There is a 30-day money-back guarantee if it turns out not to suit you, and there is a live demo on this page if you would like a look around first. The free way to use tududi is to run it on your own server, which is the same application."
       },
       "leaving": {
         "q": "Can I leave, and what happens to my data?",
@@ -421,20 +403,20 @@
     "sub": "Connect with other tududi users, get support, and stay updated"
   },
   "footer": {
-    "tagline": "An open system for organizing life and work. Your server, or ours.",
+    "tagline": "An open system for organizing life and work. Hosted by us, or run it on your own server.",
     "colProduct": "Product",
     "colResources": "Resources",
     "colCommunity": "Community & Support",
     "colSupport": "Support",
     "linkRoadmap": "Roadmap",
     "linkIssues": "Issues",
-    "linkBusinessLicence": "Business licence",
     "linkEmail": "Email",
     "linkCoffee": "Buy a Coffee",
     "subTitle": "Release notes by email",
     "subBody": "Occasional release notes. No marketing, unsubscribe any time.",
     "subSubmit": "Join",
-    "rights": "All rights reserved."
+    "rights": "All rights reserved.",
+    "linkLicence": "MIT licence"
   },
   "js": {
     "showFewer": "Show fewer",
@@ -490,6 +472,14 @@
       "Support by email",
       "Export everything at any time"
     ],
-    "selfHostLine": "Rather run it yourself? That is free, forever, and always will be."
+    "selfHostLine": "Would you rather run the server yourself? That is free, and it is the same application."
+  },
+  "finalCta": {
+    "title": "Get organized in a minute",
+    "sub": "We run the server, the updates and the backups. You get the system, and a 30-day money-back guarantee if it is not for you.",
+    "primary": "Get started",
+    "secondary": "See pricing",
+    "selfHostPrefix": "Prefer to run it on your own server?",
+    "selfHostLink": "Read the guide."
   }
 }

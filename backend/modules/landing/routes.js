@@ -126,11 +126,11 @@ function createLandingRouter(landing) {
                 i18n,
                 locales: LOCALES,
                 pricing: landing.pricing,
+                // Paid plan only. The free limits in config/plans.js are an
+                // internal account state, not something Cloud is sold on, and
+                // passing them here once led to a homepage advertising a free
+                // tier that does not exist.
                 plans: {
-                    freeTasks: plans.free.limits.max_tasks,
-                    freeProjects: plans.free.limits.max_projects,
-                    freeNotes: plans.free.limits.max_notes,
-                    freeStorageMb: plans.free.limits.storage_mb,
                     proStorageGb: Math.round(
                         plans.pro.limits.storage_mb / 1000
                     ),
@@ -182,11 +182,11 @@ function createLandingRouter(landing) {
                 i18n,
                 locales: LOCALES,
                 pricing: landing.pricing,
+                // Paid plan only. The free limits in config/plans.js are an
+                // internal account state, not something Cloud is sold on, and
+                // passing them here once led to a homepage advertising a free
+                // tier that does not exist.
                 plans: {
-                    freeTasks: plans.free.limits.max_tasks,
-                    freeProjects: plans.free.limits.max_projects,
-                    freeNotes: plans.free.limits.max_notes,
-                    freeStorageMb: plans.free.limits.storage_mb,
                     proStorageGb: Math.round(
                         plans.pro.limits.storage_mb / 1000
                     ),

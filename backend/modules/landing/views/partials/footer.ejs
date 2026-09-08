@@ -15,15 +15,17 @@
                     <div class="footer-col">
                         <a href="#features"><%= t('nav.features') %></a>
                         <a href="#ai"><%= t('nav.ai') %></a>
-                        <a href="#self-host"><%= t('nav.selfHost') %></a>
                         <a href="#pricing"><%= t('nav.pricing') %></a>
+                        <a href="<%= localePath(i18n.locale, '/cloud') %>"><%= t('pricing.plans.cloud.name') %></a>
                     </div>
                 </div>
                 <div>
                     <h3><%= t('footer.colResources') %></h3>
                     <div class="footer-col">
                         <a href="https://docs.tududi.com"><%= t('nav.docs') %></a>
+                        <a href="#self-host"><%= t('nav.selfHostGuide') %></a>
                         <a href="https://github.com/chrisvel/tududi">GitHub</a>
+                        <a href="https://github.com/chrisvel/tududi/blob/main/LICENSE"><%= t('footer.linkLicence') %></a>
                         <a href="https://github.com/users/chrisvel/projects/2"><%= t('footer.linkRoadmap') %></a>
                         <a href="https://github.com/chrisvel/tududi/issues"><%= t('footer.linkIssues') %></a>
                     </div>
@@ -34,7 +36,6 @@
                         <a href="https://discord.gg/fkbeJ9CmcH"><i class="fab fa-discord"></i> Discord</a>
                         <a href="https://www.reddit.com/r/tududi/"><i class="fab fa-reddit"></i> Reddit</a>
                         <a href="mailto:info@tududi.com"><i class="fas fa-envelope"></i> <%= t('footer.linkEmail') %></a>
-                        <a href="mailto:licensing@tududi.com" class="divider"><i class="fas fa-briefcase"></i> <%= t('footer.linkBusinessLicence') %></a>
                     </div>
                 </div>
                 <%# Donations moved down here from the dark band that used to sit

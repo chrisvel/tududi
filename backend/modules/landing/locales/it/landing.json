@@ -1,7 +1,5 @@
 {
   "meta": {
-    "title": "tududi: gestore di attività self-hosted e sistema di organizzazione della vita, con MCP per gli agenti IA",
-    "description": "Un gestore di attività self-hosted e sistema di organizzazione della vita. Aree, obiettivi, progetti e attività, più note e abitudini, con un server MCP che espone {{tools}} strumenti perché gli agenti IA lavorino sulla tua lista. Open source con licenza MIT.",
     "langSwitcherLabel": "Cambia lingua",
     "langSwitcherCurrent": "Lingua: {{name}}"
   },
@@ -10,7 +8,6 @@
     "features": "Funzionalità",
     "ai": "IA & MCP",
     "pricing": "Prezzi",
-    "selfHost": "Self-hosting",
     "faq": "FAQ",
     "docs": "Documentazione",
     "changelog": "Novità",
@@ -21,15 +18,7 @@
     "badgeStars": "stelle su GitHub",
     "badgeMcp": "Server MCP integrato",
     "starsLoading": "Caricamento del numero di stelle",
-    "titleLine1": "Organizza la tua vita in self-hosting,",
-    "titleLine2": "con un sistema che la tua IA può davvero usare",
-    "lede": "Aree, obiettivi, progetti e attività, più note e abitudini, in un unico sistema. Installalo sul tuo hardware, oppure lascia a noi la gestione.",
-    "ctaPrimary": "Self-hosting in 2 minuti",
     "ctaDemo": "Prova la demo dal vivo",
-    "ctaSecondary": "Guarda su GitHub",
-    "altLinkPrefix": "Oppure",
-    "altLink": "crea un account gratuito su tududi Cloud",
-    "note": "Licenza MIT · open source per sempre",
     "demoNote": "Un'istanza ospitata reale, con dati di esempio, condivisa e reimpostata regolarmente",
     "screenshotAlt": "L'interfaccia di tududi, con la vista Oggi e le attività pianificate"
   },
@@ -50,18 +39,12 @@
   },
   "ai": {
     "kicker": "IA & MCP",
-    "titleLine1": "Il sistema self-hosted",
-    "titleLine2": "che il tuo agente IA può davvero usare",
-    "ledeHtml": "tududi include un server MCP che espone <strong>{{tools}} strumenti</strong>, per attività, progetti, aree, obiettivi, abitudini, note, persone, tag, viste, posta in arrivo, ricerca e metriche. Collega Claude o qualsiasi agente compatibile con MCP direttamente al tuo sistema. Poiché tududi gira sul tuo server, né la connessione né i tuoi dati devono mai lasciarlo. È una differenza strutturale che Todoist e Notion non possono offrire, qualunque cosa promettano.",
     "cards": {
       "capture": {
         "title": "Raccogli e cerca dalla chat",
         "body": "Aggiungi, trova e completa le attività senza uscire dalla conversazione."
       },
-      "dataStays": {
-        "title": "I dati restano sul tuo server",
-        "body": "La connessione MCP parla con la tua istanza. Niente passa da terze parti."
-      },
+      "dataStays": {},
       "openProtocol": {
         "title": "Protocollo aperto, nessun vincolo",
         "body": "Costruito sul Model Context Protocol aperto. Funziona con Claude e con gli altri client MCP."
@@ -70,7 +53,6 @@
     "configTitle": "Collegalo a Claude Desktop",
     "footnoteClients": "Funziona allo stesso modo con Cursor, Windsurf, Cline e qualsiasi altro client MCP.",
     "footnoteDocsLink": "Leggi la documentazione MCP →",
-    "footnoteIncluded": "Incluso in ogni piano, sia in self-hosting sia con il servizio Gestito.",
     "assistantTitle": "Assistente IA",
     "assistantLede": "Uno strato separato e facoltativo che legge i tuoi dati e ti restituisce riepiloghi in linguaggio naturale. Funziona con qualsiasi provider compatibile con OpenAI, anche self-hosted come Ollama.",
     "assistantCards": {
@@ -91,7 +73,6 @@
   "features": {
     "eyebrow": "Funzionalità",
     "title": "Un sistema completo per una vita organizzata",
-    "sub": "tududi unisce obiettivi, progetti, attività, note e viste intelligenti in un unico sistema calmo e concentrato. Pensato per singoli e piccoli team che tengono alla privacy e alla chiarezza.",
     "showAll": "Mostra tutte le {{count}} funzionalità",
     "groups": {
       "planFocus": "Pianifica e concentrati",
@@ -201,62 +182,24 @@
   "selfHost": {
     "eyebrow": "Self-hosting",
     "title": "Installalo sul tuo server",
-    "sub": "Gratuito, open source e pronto per Docker. I tuoi dati sono interamente tuoi.",
     "cardTitle": "Installazione con Docker",
-    "cardSub": "Pubblicalo in pochi minuti con Docker",
     "step1": "Scarica l'immagine Docker",
     "step2": "Avvia il container",
     "step3Prefix": "Raggiungilo su",
-    "linkGithub": "Guarda su GitHub",
-    "linkDocs": "Documentazione"
+    "linkGithub": "Guarda su GitHub"
   },
   "pricing": {
     "eyebrow": "Prezzi",
     "title": "Scegli come usare tududi",
-    "sub": "Un sistema, tre modi per farlo girare",
     "mostPopular": "PIÙ SCELTO",
     "earlyBird": "OFFERTA LANCIO",
     "perYear": "/anno",
-    "forever": "/per sempre",
     "plans": {
-      "selfHosted": {
-        "name": "Self-hosted",
-        "priceNote": "Gratuito e open source, per sempre",
-        "features": [
-          "Open source, con licenza MIT",
-          "Installalo sul tuo server",
-          "Controllo totale, nessun vincolo con il fornitore",
-          "Tutte le funzionalità, nulla a pagamento",
-          "MCP e Assistente IA inclusi"
-        ],
-        "action": "Installa tududi da te →"
-      },
+      "selfHosted": {},
       "cloud": {
         "name": "Cloud",
         "or": "oppure",
-        "launchNote": "Prezzo annuale early bird, tuo finché resti abbonato.",
-        "priceNote": "Crea un account in un minuto, passa a Pro quando il piano gratuito ti sta stretto.",
-        "features": [
-          "Piano gratuito: {{freeTasks}} attività attive, {{freeProjects}} progetti, {{freeNotes}} note, {{freeStorageMb}} MB di allegati",
-          "Pro: attività, progetti e note illimitati, {{proStorageGb}} GB di allegati",
-          "Pro: assistente IA, MCP, sincronizzazione CalDAV, bot Telegram, importazione backup",
-          "Aggiornamenti e backup giornalieri gestiti da noi",
-          "Esporta tutto quando vuoi, elimina l'account da solo"
-        ],
-        "action": "Crea un account gratuito →"
-      },
-      "business": {
-        "name": "Licenza Business",
-        "priceNote": "Usare tududi al lavoro",
-        "features": [
-          "Licenza per uso commerciale",
-          "Supporto prioritario con tempi di risposta garantiti",
-          "Una fattura che la tua azienda può scaricare, IVA inclusa",
-          "Pro su tududi Cloud, oppure interamente sul tuo server",
-          "Linea diretta con il manutentore"
-        ],
-        "licenceNote": "tududi ha licenza MIT e l'uso commerciale è già gratuito. Qui paghi supporto prioritario, un impegno sui tempi di risposta e una fattura.",
-        "action": "Scrivi a licensing@tududi.com →"
+        "launchNote": "Prezzo annuale early bird, tuo finché resti abbonato."
       }
     },
     "fineprint": "Annulla quando vuoi ed esporta tutto. Se tududi Cloud dovesse mai chiudere, ricevi i tuoi dati e una guida alla migrazione self-hosted. Per spazio e volume API vale il fair use. Garanzia soddisfatti o rimborsati di 30 giorni, senza domande.",
@@ -264,10 +207,6 @@
   },
   "compare": {
     "title": "Confronto rapido",
-    "sub": "Tutte e tre le opzioni ti danno il sistema tududi completo",
-    "colSelf": "Self-hosted",
-    "colHosted": "Cloud",
-    "colBusiness": "Licenza Business",
     "rows": {
       "openSource": "Nucleo open source",
       "commercialUse": "Uso commerciale",
@@ -277,25 +216,12 @@
       "noSetup": "Nessuna configurazione del server",
       "managedUpdates": "Aggiornamenti gestiti",
       "autoBackups": "Backup automatici",
-      "isolated": "Container e database isolati",
-      "prioritySupport": "Supporto prioritario",
-      "responseTime": "Tempi di risposta garantiti",
-      "invoice": "Fattura per le spese",
       "pricing": "Prezzo"
     },
     "values": {
-      "optional": "Opzionale",
-      "yourServer": "Il tuo server",
       "community": "Community",
-      "email": "Email",
-      "sameBusinessDay": "Entro la giornata lavorativa",
-      "freeForever": "Gratis per sempre",
-      "pricePerYear": "{{price}} $/anno",
-      "sharedInstance": "Istanza condivisa, esportazione in qualsiasi momento",
-      "freeOrPro": "Gratis, oppure Pro a {{price}}/anno"
-    },
-    "closing": "Pronto a far girare il tuo sistema?",
-    "closingCta": "Installa tududi da te"
+      "email": "Email"
+    }
   },
   "waitlist": {
     "title": "Non sei ancora pronto?",
@@ -313,14 +239,12 @@
     "sub": "Confrontati con altri utenti di tududi, ricevi supporto e resta aggiornato"
   },
   "footer": {
-    "tagline": "Un sistema aperto per organizzare vita e lavoro. Il tuo server, o il nostro.",
     "colProduct": "Prodotto",
     "colResources": "Risorse",
     "colCommunity": "Community e supporto",
     "colSupport": "Sostieni",
     "linkRoadmap": "Roadmap",
     "linkIssues": "Segnalazioni",
-    "linkBusinessLicence": "Licenza business",
     "linkEmail": "Email",
     "linkCoffee": "Offrici un caffè",
     "subTitle": "Note di rilascio via email",
@@ -335,10 +259,7 @@
   },
   "faq": {
     "items": {
-      "freePlan": {
-        "q": "Cosa include il piano Cloud gratuito?",
-        "a": "Fino a {{freeTasks}} attività attive, {{freeProjects}} progetti, {{freeNotes}} note e {{freeStorageMb}} MB di allegati, senza limiti di tempo. Le attività completate non contano. Se raggiungi un limite conservi tutto e puoi continuare a leggere, modificare, completare ed eliminare; solo l'aggiunta di nuovi elementi aspetta finché non torni sotto il limite o passi a Pro."
-      },
+      "freePlan": {},
       "leaving": {
         "q": "Posso andarmene, e che fine fanno i miei dati?",
         "a": "Sì, in qualsiasi momento. Esporta tutto in un unico file dal tuo profilo e importalo in un tududi self-hosted, che legge lo stesso formato. Eliminare l'account rimuove dati, allegati e backup dai nostri server e annulla qualsiasi abbonamento."

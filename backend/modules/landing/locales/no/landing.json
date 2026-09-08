@@ -1,7 +1,5 @@
 {
   "meta": {
-    "title": "tududi: selvhostet oppgavebehandler og system for livsorganisering, med MCP for KI-agenter",
-    "description": "En selvhostet oppgavebehandler og system for livsorganisering. Områder, mål, prosjekter og oppgaver, pluss notater og vaner, med en MCP-server som tilbyr {{tools}} verktøy slik at KI-agenter kan jobbe med lista di. Åpen kildekode under MIT.",
     "langSwitcherLabel": "Bytt språk",
     "langSwitcherCurrent": "Språk: {{name}}"
   },
@@ -10,7 +8,6 @@
     "features": "Funksjoner",
     "ai": "KI & MCP",
     "pricing": "Priser",
-    "selfHost": "Host selv",
     "faq": "FAQ",
     "docs": "Dokumentasjon",
     "changelog": "Endringer",
@@ -21,15 +18,7 @@
     "badgeStars": "stjerner på GitHub",
     "badgeMcp": "MCP-server innebygd",
     "starsLoading": "Laster antall stjerner",
-    "titleLine1": "Selvhostet livsorganisering",
-    "titleLine2": "som KI-en din faktisk kan bruke",
-    "lede": "Områder, mål, prosjekter og oppgaver, pluss notater og vaner, i ett system. Kjør det på din egen maskinvare, eller overlat driften til oss.",
-    "ctaPrimary": "Host selv på 2 minutter",
     "ctaDemo": "Prøv live-demoen",
-    "ctaSecondary": "Se på GitHub",
-    "altLinkPrefix": "Eller",
-    "altLink": "opprett en gratis konto på tududi Cloud",
-    "note": "MIT-lisens · åpen kildekode for alltid",
     "demoNote": "En ekte hostet instans med eksempeldata, delt og nullstilles jevnlig",
     "screenshotAlt": "Grensesnittet i tududi, med I dag-visningen og de planlagte oppgavene"
   },
@@ -50,18 +39,12 @@
   },
   "ai": {
     "kicker": "KI & MCP",
-    "titleLine1": "Det selvhostede systemet",
-    "titleLine2": "som KI-agenten din faktisk kan bruke",
-    "ledeHtml": "tududi kommer med en MCP-server som eksponerer <strong>{{tools}} verktøy</strong> for oppgaver, prosjekter, områder, mål, vaner, notater, personer, etiketter, visninger, innboks, søk og nøkkeltall. Koble Claude eller en hvilken som helst MCP-kompatibel agent rett til systemet ditt. Fordi tududi kjører på din egen server, trenger verken tilkoblingen eller dataene dine noen gang å forlate den. Det er en strukturell forskjell som Todoist og Notion ikke kan tilby, uansett hva de lover.",
     "cards": {
       "capture": {
         "title": "Fang opp og søk fra chatten",
         "body": "Legg til, finn og fullfør oppgaver uten å forlate samtalen."
       },
-      "dataStays": {
-        "title": "Dataene dine blir på serveren din",
-        "body": "MCP-tilkoblingen snakker med din egen instans. Ingenting går via en tredjepart."
-      },
+      "dataStays": {},
       "openProtocol": {
         "title": "Åpen protokoll, ingen låsing",
         "body": "Bygget på det åpne Model Context Protocol. Fungerer med Claude og andre MCP-klienter."
@@ -70,7 +53,6 @@
     "configTitle": "Koble det til Claude Desktop",
     "footnoteClients": "Det samme fungerer med Cursor, Windsurf, Cline og alle andre MCP-klienter.",
     "footnoteDocsLink": "Les MCP-dokumentasjonen →",
-    "footnoteIncluded": "Inkludert på alle nivåer, både selvhostet og Managed.",
     "assistantTitle": "KI-assistent",
     "assistantLede": "Et separat, valgfritt lag som leser dataene dine og skriver tilbake oppsummeringer i klarspråk. Fungerer med enhver OpenAI-kompatibel leverandør, også selvhostede som Ollama.",
     "assistantCards": {
@@ -91,7 +73,6 @@
   "features": {
     "eyebrow": "Funksjoner",
     "title": "Et komplett system for et organisert liv",
-    "sub": "tududi samler mål, prosjekter, oppgaver, notater og smarte visninger i ett rolig og fokusert system. Laget for enkeltpersoner og små team som bryr seg om personvern og oversikt.",
     "showAll": "Vis alle {{count}} funksjoner",
     "groups": {
       "planFocus": "Planlegg & fokusér",
@@ -201,62 +182,24 @@
   "selfHost": {
     "eyebrow": "Host selv",
     "title": "Kjør det på din egen server",
-    "sub": "Gratis, åpen kildekode og klart for Docker. Dataene dine er helt dine egne.",
     "cardTitle": "Docker-oppsett",
-    "cardSub": "Kom i gang på få minutter med Docker",
     "step1": "Hent Docker-imaget",
     "step2": "Start containeren",
     "step3Prefix": "Nå den på",
-    "linkGithub": "Se på GitHub",
-    "linkDocs": "Dokumentasjon"
+    "linkGithub": "Se på GitHub"
   },
   "pricing": {
     "eyebrow": "Priser",
     "title": "Velg hvordan du bruker tududi",
-    "sub": "Ett system, tre måter å kjøre det på",
     "mostPopular": "MEST VALGT",
     "earlyBird": "LANSERINGSPRIS",
     "perYear": "/år",
-    "forever": "/for alltid",
     "plans": {
-      "selfHosted": {
-        "name": "Selvhostet",
-        "priceNote": "Gratis og åpen kildekode, for alltid",
-        "features": [
-          "Åpen kildekode, MIT-lisensiert",
-          "Kjør det på din egen server",
-          "Full kontroll, ingen leverandørlåsing",
-          "Alle funksjoner, ingenting bak betalingsmur",
-          "MCP og KI-assistent inkludert"
-        ],
-        "action": "Host tududi selv →"
-      },
+      "selfHosted": {},
       "cloud": {
         "name": "Cloud",
         "or": "eller",
-        "launchNote": "Early bird-årspris, din så lenge du forblir abonnent.",
-        "priceNote": "Opprett en konto på ett minutt, oppgrader når gratisplanen blir for liten.",
-        "features": [
-          "Gratisplan: {{freeTasks}} aktive oppgaver, {{freeProjects}} prosjekter, {{freeNotes}} notater, {{freeStorageMb}} MB vedlegg",
-          "Pro: ubegrenset med oppgaver, prosjekter og notater, {{proStorageGb}} GB vedlegg",
-          "Pro: AI-assistent, MCP, CalDAV-synkronisering, Telegram-bot, import av sikkerhetskopier",
-          "Oppdateringer og daglige sikkerhetskopier tar vi oss av",
-          "Eksporter alt når som helst, slett kontoen selv"
-        ],
-        "action": "Opprett gratis konto →"
-      },
-      "business": {
-        "name": "Bedriftslisens",
-        "priceNote": "Å bruke tududi på jobb",
-        "features": [
-          "Lisens for kommersiell bruk",
-          "Prioritert støtte med lovet svartid",
-          "En faktura bedriften din kan føre som utgift, mva. inkludert",
-          "Pro på tududi Cloud, eller helt på din egen server",
-          "Direkte linje til den som vedlikeholder prosjektet"
-        ],
-        "licenceNote": "tududi er MIT-lisensiert, og kommersiell bruk er allerede gratis. Dette kjøper prioritert støtte, en svarfristgaranti og en faktura.",
-        "action": "Send e-post til licensing@tududi.com →"
+        "launchNote": "Early bird-årspris, din så lenge du forblir abonnent."
       }
     },
     "fineprint": "Si opp når som helst og eksporter alt. Skulle tududi Cloud noen gang stenge, får du dataene dine og en guide til selvhosting. Rimelig bruk gjelder for lagring og API-volum. 30 dagers pengene-tilbake-garanti, ingen spørsmål.",
@@ -264,10 +207,6 @@
   },
   "compare": {
     "title": "Rask sammenligning",
-    "sub": "Alle tre gir deg hele tududi-systemet",
-    "colSelf": "Selvhostet",
-    "colHosted": "Cloud",
-    "colBusiness": "Bedriftslisens",
     "rows": {
       "openSource": "Kjerne med åpen kildekode",
       "commercialUse": "Kommersiell bruk",
@@ -277,25 +216,12 @@
       "noSetup": "Ingen serveroppsett nødvendig",
       "managedUpdates": "Håndterte oppdateringer",
       "autoBackups": "Automatiske sikkerhetskopier",
-      "isolated": "Isolert container og database",
-      "prioritySupport": "Prioritert støtte",
-      "responseTime": "Lovet svartid",
-      "invoice": "Faktura til utlegg",
       "pricing": "Pris"
     },
     "values": {
-      "optional": "Valgfritt",
-      "yourServer": "Din server",
       "community": "Fellesskap",
-      "email": "E-post",
-      "sameBusinessDay": "Samme virkedag",
-      "freeForever": "Gratis for alltid",
-      "pricePerYear": "{{price}} $/år",
-      "sharedInstance": "Delt instans, eksport når som helst",
-      "freeOrPro": "Gratis, eller Pro for {{price}}/år"
-    },
-    "closing": "Klar til å kjøre ditt eget system?",
-    "closingCta": "Host tududi selv"
+      "email": "E-post"
+    }
   },
   "waitlist": {
     "title": "Ikke klar ennå?",
@@ -313,14 +239,12 @@
     "sub": "Snakk med andre tududi-brukere, få hjelp og hold deg oppdatert"
   },
   "footer": {
-    "tagline": "Et åpent system for å organisere liv og arbeid. Din server, eller vår.",
     "colProduct": "Produkt",
     "colResources": "Ressurser",
     "colCommunity": "Fellesskap & støtte",
     "colSupport": "Støtt",
     "linkRoadmap": "Veikart",
     "linkIssues": "Saker",
-    "linkBusinessLicence": "Bedriftslisens",
     "linkEmail": "E-post",
     "linkCoffee": "Spander en kaffe",
     "subTitle": "Utgivelsesnotater på e-post",
@@ -335,10 +259,7 @@
   },
   "faq": {
     "items": {
-      "freePlan": {
-        "q": "Hva inneholder den gratis Cloud-planen?",
-        "a": "Opptil {{freeTasks}} aktive oppgaver, {{freeProjects}} prosjekter, {{freeNotes}} notater og {{freeStorageMb}} MB vedlegg, uten tidsbegrensning. Fullførte oppgaver teller ikke. Når du når en grense beholder du alt og kan fortsatt lese, redigere, fullføre og slette; bare å legge til venter til du er under grensen igjen eller oppgraderer til Pro."
-      },
+      "freePlan": {},
       "leaving": {
         "q": "Kan jeg forlate tjenesten, og hva skjer med dataene mine?",
         "a": "Ja, når som helst. Eksporter alt som én fil fra profilen din og importer den i en selvhostet tududi, som leser samme format. Sletting av kontoen fjerner dataene, vedleggene og sikkerhetskopiene dine fra serverne våre og avslutter ethvert abonnement."

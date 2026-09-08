@@ -12,13 +12,13 @@
                     <a href="#features" class="nav-link"><%= t('nav.features') %></a>
                     <a href="#ai" class="nav-link"><%= t('nav.ai') %></a>
                     <a href="#pricing" class="nav-link"><%= t('nav.pricing') %></a>
-                    <a href="#self-host" class="nav-link"><%= t('nav.selfHost') %></a>
                     <a href="#faq" class="nav-link"><%= t('nav.faq') %></a>
-                    <%# Docs and Changelog are the only two entries that leave this
-                        page - everything left of here is an anchor down it. Grouping
-                        them makes the flat row mean one thing, and gives GitHub and
-                        Roadmap somewhere to live above the fold. Labels and hrefs are
-                        the footer's, so the two lists cannot drift apart. %>
+                    <%# Everything the visitor does not need in order to choose:
+                        docs, releases, the source, and the self-host guide, which
+                        used to sit in the top row as a peer of Pricing. It is a
+                        real option, not the offer, so it lives one click in.
+                        Labels and hrefs are the footer's, so the two lists cannot
+                        drift apart. %>
                     <details class="nav-dd">
                         <summary class="nav-link">
                             <span><%= t('footer.colResources') %></span>
@@ -27,8 +27,10 @@
                         <div class="nav-dd-menu" role="menu">
                             <a role="menuitem" class="nav-dd-item" href="https://docs.tududi.com"><%= t('nav.docs') %></a>
                             <a role="menuitem" class="nav-dd-item" href="https://github.com/chrisvel/tududi/releases"><%= t('nav.changelog') %></a>
+                            <a role="menuitem" class="nav-dd-item" href="#self-host"><%= t('nav.selfHostGuide') %></a>
                             <a role="menuitem" class="nav-dd-item" href="https://github.com/chrisvel/tududi">GitHub</a>
                             <a role="menuitem" class="nav-dd-item" href="https://github.com/users/chrisvel/projects/2"><%= t('footer.linkRoadmap') %></a>
+                            <a role="menuitem" class="nav-dd-item" href="https://discord.gg/fkbeJ9CmcH">Discord</a>
                         </div>
                     </details>
                     <%# <details> rather than a JS dropdown: it gives click-to-open
@@ -74,13 +76,14 @@
                 <a href="#features" class="nav-link"><%= t('nav.features') %></a>
                 <a href="#ai" class="nav-link"><%= t('nav.ai') %></a>
                 <a href="#pricing" class="nav-link"><%= t('nav.pricing') %></a>
-                <a href="#self-host" class="nav-link"><%= t('nav.selfHost') %></a>
                 <a href="#faq" class="nav-link"><%= t('nav.faq') %></a>
                 <p class="nav-mobile-heading"><%= t('footer.colResources') %></p>
                 <a href="https://docs.tududi.com" class="nav-link"><%= t('nav.docs') %></a>
                 <a href="https://github.com/chrisvel/tududi/releases" class="nav-link"><%= t('nav.changelog') %></a>
+                <a href="#self-host" class="nav-link"><%= t('nav.selfHostGuide') %></a>
                 <a href="https://github.com/chrisvel/tududi" class="nav-link">GitHub</a>
                 <a href="https://github.com/users/chrisvel/projects/2" class="nav-link"><%= t('footer.linkRoadmap') %></a>
+                <a href="https://discord.gg/fkbeJ9CmcH" class="nav-link">Discord</a>
                 <% if (demo && demo.available) { %>
                 <a href="<%= appUrl %>/demo" class="nav-demo">
                     <span class="nav-demo-dot" aria-hidden="true"></span><%= t('nav.demo') %>

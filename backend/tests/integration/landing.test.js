@@ -154,10 +154,113 @@ describe('Landing page', () => {
         expect(alias.headers.location).toBe('/cloud');
     });
 
-    it('offers Cloud and Self-hosted as the two hero choices', async () => {
+    it('makes Cloud signup the only offer in the hero', async () => {
         const res = await request(app).get('/').set('Host', 'tududi.com');
-        expect(res.text).toContain('href="/cloud"');
-        expect(res.text).toContain('href="#self-host"');
+        const heroStart = res.text.indexOf('<section class="hero"');
+        const hero = res.text.slice(
+            heroStart,
+            res.text.indexOf('</section>', heroStart)
+        );
+
+        // The filled button registers, and nothing in the hero links away.
+        expect(hero).toContain('https://app.tududi.com/register');
+
+        // Self-hosting and the repository are both near the foot of the page,
+        // not peer buttons up here, and the first viewport does not sell the
+        // licence. The stars chip stays: it is proof, and it is not a link.
+        expect(hero).not.toContain('#self-host');
+        expect(hero).not.toContain('github.com/chrisvel');
+        expect(hero).not.toMatch(/MIT|open source/i);
+        expect(hero).toContain('stars on GitHub');
+
+        // Still reachable further down, in the self-host section and footer.
+        const belowHero = res.text.slice(
+            res.text.indexOf('</section>', heroStart)
+        );
+        expect(belowHero).toContain('https://github.com/chrisvel/tududi');
+    });
+
+    it('keeps self-hosting reachable, one click in', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+
+        // Out of the top row of the navbar, into Resources - in both the
+        // desktop dropdown and the mobile sheet - and still in the footer.
+        const nav = res.text.slice(
+            res.text.indexOf('<div class="nav-wrap">'),
+            res.text.indexOf('<section class="hero"')
+        );
+        expect(nav.match(/href="#self-host"/g)).toHaveLength(2);
+        expect(res.text).toContain('id="self-host"');
+        expect(res.text).toContain('docker pull chrisvel/tududi:latest');
+        expect(res.text).toContain(
+            'https://github.com/chrisvel/tududi/blob/main/LICENSE'
+        );
+    });
+
+    it('flags the Cloud card rather than the self-host one', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        const pricing = res.text.slice(
+            res.text.indexOf('<section id="pricing"'),
+            res.text.indexOf('<section id="faq"')
+        );
+
+        // The flag sits inside the card that owns the register link, and the
+        // self-host card - which is still $0 - no longer carries it.
+        const flagged = pricing.slice(pricing.indexOf('plan-flag'));
+        expect(flagged).toContain('https://app.tududi.com/register');
+        expect(pricing.match(/plan-flag/g)).toHaveLength(1);
+
+        // Two cards, Cloud first.
+        expect(pricing.match(/class="plan /g)).toHaveLength(2);
+        expect(pricing.indexOf('plan-featured')).toBeLessThan(
+            pricing.indexOf('plan-utility')
+        );
+    });
+
+    it('never implies Cloud is free or has a trial', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+
+        // Scoped to where the offer is actually made. The FAQ says the words
+        // "free plan" and "no card" while denying both, so asserting over the
+        // whole document would fail on the honest answer.
+        // End the hero at its own closing tag: slicing to the proof bar runs
+        // through the comment above it, whose "no cards" is about visual style.
+        const heroOpen = res.text.indexOf('<section class="hero"');
+        const hero = res.text.slice(
+            heroOpen,
+            res.text.indexOf('</section>', heroOpen)
+        );
+        const pricingOpen = res.text.indexOf('<section id="pricing"');
+        const cloudCard = res.text.slice(
+            pricingOpen,
+            res.text.indexOf('plan-utility', pricingOpen)
+        );
+        [hero, cloudCard].forEach((region) => {
+            expect(region).not.toMatch(/free (account|plan|tier|trial)/i);
+            expect(region).not.toMatch(/start free|\bno card\b/i);
+        });
+
+        // The price is on the card, and the FAQ answers the question head on.
+        expect(cloudCard).toMatch(/€5/);
+        expect(cloudCard).toMatch(/€50/);
+        expect(res.text).toContain('Is there a free plan or a trial');
+
+        // Self-hosting is still free, and the page still says so.
+        expect(res.text).toMatch(/free, if you run the server yourself/i);
+    });
+
+    it('sells no Business Licence anywhere on the page', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+
+        // The card, the comparison footnote and the footer link all went
+        // together: a lone "Business licence" link under a page that no longer
+        // offers one reads as something half-deleted.
+        expect(res.text).not.toMatch(/business licence/i);
+        expect(res.text).not.toContain('licensing@tududi.com');
+
+        // The question it existed to answer is still answered, in the FAQ.
+        expect(res.text).toContain('Can I use tududi at work');
+        expect(res.text).toMatch(/MIT licence permits commercial use/);
     });
 
     it('sends /cloud on the app host to the app, not the marketing page', async () => {
@@ -284,10 +387,6 @@ describe('Landing page', () => {
             expect(catalog.pricing.plans.managed).toBeUndefined();
             expect(
                 i18n.tList('pricing.plans.cloud.features', {
-                    freeTasks: 200,
-                    freeProjects: 10,
-                    freeNotes: 50,
-                    freeStorageMb: 50,
                     proStorageGb: 5,
                 })
             ).toHaveLength(5);

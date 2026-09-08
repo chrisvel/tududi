@@ -32,11 +32,14 @@ const defaultHost = environment === 'test' ? '127.0.0.1' : '0.0.0.0';
 // the other. Setting it does not change what the payment provider charges;
 // keep the two in step by hand.
 const displayPricing = () => ({
-    currency: 'USD',
+    currency: 'EUR',
     monthly: 5,
-    annual: 49,
-    standard: 99,
-    business: 499,
+    annual: 50,
+    // The price after the early-bird tag comes off. It matches `annual`
+    // because no higher price has ever been charged or decided; an invented
+    // one is what the EU price-indication rules are about. Raise it here
+    // deliberately if that ever changes.
+    standard: 50,
     launchActive: true,
     // Flip to false while Cloud is being stood up on new infrastructure:
     // the pricing card swaps to an "opening soon" notice with an email
