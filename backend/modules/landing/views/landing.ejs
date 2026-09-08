@@ -301,7 +301,7 @@
                 <%# The two ways to run tududi, side by side and equally
                     weighted: somebody arriving here is choosing between them,
                     not being sold one. %>
-                <a href="<%= localePath(i18n.locale, '/cloud') %>" class="btn-primary"><i class="fas fa-cloud"></i><%= t('hero.ctaCloud') %></a>
+                <a href="<%= pricing.cloudOpen ? localePath(i18n.locale, '/cloud') : '#waitlist' %>" class="btn-primary"><i class="fas fa-cloud"></i><%= pricing.cloudOpen ? t('hero.ctaCloud') : t('hero.ctaWaitlist') %></a>
                 <a href="#self-host" class="btn-secondary"><i class="fab fa-docker"></i><%= t('hero.ctaSelfHosted') %></a>
             </div>
             <% if (demo && demo.available) { %>
@@ -944,10 +944,13 @@
                     <i class="fab fa-reddit"></i> r/tududi
                 </a>
             </div>
-            <% if (newsletterAction) { %>
-            <form class="waitlist-form" action="<%= newsletterAction %>" method="post" target="_blank">
+            <% if (joined) { %>
+            <p class="waitlist-done" data-testid="waitlist-joined"><%= t('waitlist.joined') %></p>
+            <% } else { %>
+            <form class="waitlist-form" action="/waitlist" method="post">
                 <input type="email" name="email" placeholder="<%= t('waitlist.placeholder') %>" aria-label="<%= t('waitlist.inputLabel') %>" required>
-                <input type="hidden" name="tag" value="waitlist">
+                <input type="hidden" name="source" value="waitlist">
+                <input type="hidden" name="locale" value="<%= i18n.locale %>">
                 <button type="submit"><%= t('waitlist.submit') %></button>
             </form>
             <p class="waitlist-note">

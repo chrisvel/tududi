@@ -87,6 +87,7 @@ const UserProjectArea = require('./user_project_area')(sequelize);
 const RateLimit = require('./rate_limit')(sequelize);
 const BillingAccount = require('./billing_account')(sequelize);
 const BillingEvent = require('./billing_event')(sequelize);
+const WaitlistSubscriber = require('./waitlist_subscriber')(sequelize);
 const UsageCounter = require('./usage_counter')(sequelize);
 
 User.hasOne(BillingAccount, { foreignKey: 'user_id', as: 'BillingAccount' });
@@ -487,5 +488,6 @@ module.exports = {
     RateLimit,
     BillingAccount,
     BillingEvent,
+    WaitlistSubscriber,
     UsageCounter,
 };

@@ -85,7 +85,9 @@
     "toggleSearch": "Toggle Search",
     "quickInboxCapture": "Quick Inbox Capture",
     "userMenu": "User Menu",
-    "search": "Search"
+    "search": "Search",
+    "admin": "Admin",
+    "adminBadge": "Admin"
   },
   "settings": {
     "todayPageSettings": "Today Page Settings",
@@ -1509,7 +1511,26 @@
     "failedToDeleteUser": "Failed to delete user",
     "confirmDelete": "Are you sure you want to delete this user?",
     "deleteUser": "Delete User",
-    "confirmDeleteUser": "Are you sure you want to delete {{email}}? This action cannot be undone."
+    "confirmDeleteUser": "Are you sure you want to delete {{email}}? This action cannot be undone.",
+    "dashboard": {
+      "title": "Admin",
+      "subtitle": "tududi {{version}} · {{env}}",
+      "users": "Users",
+      "usersHint": "{{verified}} verified · {{admins}} admin · {{new}} today",
+      "paying": "Paying",
+      "selfHosted": "self-hosted",
+      "waitlist": "Waitlist",
+      "waitlistHint": "{{n}} in 7 days",
+      "content": "Tasks",
+      "contentHint": "{{projects}} projects · {{notes}} notes",
+      "regOpen": "Registration open",
+      "regClosed": "Registration closed",
+      "waitlistLatest": "Latest waitlist signups",
+      "waitlistEmpty": "Nobody yet.",
+      "email": "Email",
+      "source": "Source",
+      "joined": "Joined"
+    }
   },
   "billing": {
     "title": "Plan & Billing",

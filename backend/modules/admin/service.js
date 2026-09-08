@@ -278,6 +278,100 @@ class AdminService {
     /**
      * Toggle registration setting.
      */
+    // One page's worth of numbers for the admin dashboard: who is here,
+    // what is being sold, and who is waiting for it to open.
+    async overview(requesterId) {
+        await this.verifyAdmin(requesterId);
+        const {
+            User,
+            Role,
+            Task,
+            Project,
+            Note,
+            BillingAccount,
+            WaitlistSubscriber,
+            Setting,
+        } = require('../../models');
+        const { getConfig } = require('../../config/config');
+        const entitlements = require('../../services/entitlementsService');
+        const { Op } = require('sequelize');
+
+        const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+        const config = getConfig();
+
+        const [
+            users,
+            admins,
+            verified,
+            newUsers,
+            tasks,
+            projects,
+            notes,
+            waitlist,
+            waitlistWeek,
+            paying,
+            registrationSetting,
+        ] = await Promise.all([
+            User.count(),
+            Role.count({ where: { is_admin: true } }),
+            User.count({ where: { email_verified: true } }),
+            User.count({ where: { created_at: { [Op.gte]: dayAgo } } }),
+            Task.count(),
+            Project.count(),
+            Note.count(),
+            WaitlistSubscriber.count(),
+            WaitlistSubscriber.count({
+                where: { created_at: { [Op.gte]: weekAgo } },
+            }),
+            BillingAccount.count({
+                where: { status: { [Op.in]: ['active', 'trialing'] } },
+            }),
+            Setting.findOne({ where: { key: 'registration_enabled' } }),
+        ]);
+
+        return {
+            users: { total: users, admins, verified, last24h: newUsers },
+            content: { tasks, projects, notes },
+            waitlist: { total: waitlist, last7d: waitlistWeek },
+            billing: {
+                paying,
+                hosted: config.hosted?.enabled === true,
+                subscription_required: entitlements.isSubscriptionRequired(),
+                provider: config.hosted?.billing?.provider || null,
+            },
+            instance: {
+                registration_enabled: registrationSetting
+                    ? registrationSetting.value === 'true'
+                    : false,
+                version: require('../../../package.json').version,
+                environment: config.environment,
+            },
+        };
+    }
+
+    // The waitlist, newest first, for the admin dashboard.
+    async listWaitlist(requesterId, { limit = 50, offset = 0 } = {}) {
+        await this.verifyAdmin(requesterId);
+        const { WaitlistSubscriber } = require('../../models');
+        const { rows, count } = await WaitlistSubscriber.findAndCountAll({
+            order: [['created_at', 'DESC']],
+            limit: Math.min(Number(limit) || 50, 500),
+            offset: Number(offset) || 0,
+        });
+        return {
+            total: count,
+            subscribers: rows.map((r) => ({
+                id: r.id,
+                email: r.email,
+                source: r.source,
+                locale: r.locale,
+                submission_count: r.submission_count,
+                created_at: r.created_at,
+            })),
+        };
+    }
+
     async toggleRegistration(requesterId, body) {
         await this.verifyAdmin(requesterId);
 

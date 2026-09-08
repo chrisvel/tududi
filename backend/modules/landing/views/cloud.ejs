@@ -53,7 +53,7 @@
         <h1><%= t('cloud.title') %></h1>
         <p><%= t('cloud.lede') %></p>
         <div class="hero-actions" style="justify-content:center;">
-            <a href="<%= appUrl %>/register" class="btn-primary"><%= t('cloud.ctaPrimary') %></a>
+            <a href="<%= pricing.cloudOpen ? appUrl + '/register' : localePath(i18n.locale) + '#waitlist' %>" class="btn-primary"><%= pricing.cloudOpen ? t('cloud.ctaPrimary') : t('hero.ctaWaitlist') %></a>
             <a href="#cloud-pricing" class="btn-secondary"><%= t('cloud.ctaPricing') %></a>
         </div>
         <p class="hero-note" style="margin-top:16px;"><i class="fas fa-lock-open"></i><%= t('cloud.note') %></p>
@@ -111,7 +111,7 @@
                         <li><i class="fas fa-check"></i><%= feature %></li>
                         <% }); %>
                     </ul>
-                    <a href="<%= appUrl %>/register" class="plan-action plan-action-primary"><%= t('cloud.ctaPrimary') %></a>
+                    <a href="<%= pricing.cloudOpen ? appUrl + '/register' : localePath(i18n.locale) + '#waitlist' %>" class="plan-action plan-action-primary"><%= pricing.cloudOpen ? t('cloud.ctaPrimary') : t('hero.ctaWaitlist') %></a>
                 </div>
             </div>
 

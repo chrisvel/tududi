@@ -49,17 +49,16 @@
                         <a href="https://www.paypal.com/donate/?hosted_button_id=QEQCKLXPB6XAE">PayPal</a>
                     </div>
                 </div>
-                <% if (newsletterAction) { %>
                 <div class="footer-sub">
                     <h3><%= t('footer.subTitle') %></h3>
                     <p><%= t('footer.subBody') %></p>
-                    <form action="<%= newsletterAction %>" method="post" target="_blank">
+                    <form action="/waitlist" method="post">
                         <input type="email" name="email" placeholder="<%= t('waitlist.placeholder') %>" aria-label="<%= t('waitlist.inputLabel') %>" required>
-                        <input type="hidden" name="tag" value="footer">
+                        <input type="hidden" name="source" value="footer">
+                        <input type="hidden" name="locale" value="<%= i18n.locale %>">
                         <button type="submit"><%= t('footer.subSubmit') %></button>
                     </form>
                 </div>
-                <% } %>
             </div>
             <div class="footer-bottom">
                 <p>&copy; 2026 <strong>tududi</strong>. <%= t('footer.rights') %></p>

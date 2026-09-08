@@ -34,6 +34,27 @@ const adminController = {
      * GET /api/admin/users
      * List all users with roles.
      */
+    async overview(req, res, next) {
+        try {
+            res.json(await adminService.overview(getRequesterId(req)));
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    async listWaitlist(req, res, next) {
+        try {
+            res.json(
+                await adminService.listWaitlist(getRequesterId(req), {
+                    limit: req.query.limit,
+                    offset: req.query.offset,
+                })
+            );
+        } catch (error) {
+            next(error);
+        }
+    },
+
     async listUsers(req, res, next) {
         try {
             const requesterId = getRequesterId(req);
