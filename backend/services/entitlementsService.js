@@ -293,27 +293,30 @@ async function consumeUsage(userId, metric, n = 1) {
 
 async function getUsage(userId) {
     const { UsageCounter } = models();
-    const [tasks, projects, notes, storage_bytes, ai] = await Promise.all([
-        countResource(userId, 'task'),
-        countResource(userId, 'project'),
-        countResource(userId, 'note'),
-        storageBytesUsed(userId),
+    const counter = (metric) =>
         UsageCounter.findOne({
-            where: {
-                user_id: userId,
-                metric: 'ai_requests',
-                period_key: todayKey(),
-            },
+            where: { user_id: userId, metric, period_key: todayKey() },
             attributes: ['count'],
             raw: true,
-        }),
-    ]);
+        });
+    const [tasks, projects, notes, storage_bytes, ai, aiTokens] =
+        await Promise.all([
+            countResource(userId, 'task'),
+            countResource(userId, 'project'),
+            countResource(userId, 'note'),
+            storageBytesUsed(userId),
+            counter('ai_requests'),
+            counter('ai_tokens'),
+        ]);
     return {
         tasks,
         projects,
         notes,
         storage_bytes,
         ai_requests_today: ai ? ai.count : 0,
+        // Unlimited by design: recorded so hosted pricing can be set from
+        // real spend rather than a request count. No plan caps it.
+        ai_tokens_today: aiTokens ? aiTokens.count : 0,
     };
 }
 

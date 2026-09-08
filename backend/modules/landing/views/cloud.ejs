@@ -92,13 +92,17 @@
                         <div class="plan-icon"><i class="fas fa-cloud"></i></div>
                         <h3><%= t('pricing.plans.cloud.name') %></h3>
                     </div>
+                    <%# Same shape as the pricing card on the homepage: one paid
+                        plan, monthly or yearly. The two pages disagreeing about
+                        whether Cloud has a free tier is worse than either answer
+                        on its own, so they are kept identical by hand. %>
                     <div class="plan-price">
                         <div class="plan-amount">
                             <span><%= money(pricing.monthly) %></span>
                             <span><%= t('pricing.perMonth') %></span>
                         </div>
                         <div class="plan-pro-line">
-                            <%= t('cloud.orAnnual') %>
+                            <span class="plan-pro-sep"><%= t('cloud.orAnnual') %></span>
                             <strong><%= money(personalPrice) %></strong><%= t('pricing.perYear') %>
                             <% if (pricing.launchActive) { %>
                             <span class="plan-tag"><%= t('pricing.earlyBird') %></span>
@@ -115,9 +119,11 @@
                 </div>
             </div>
 
+            <%# A text link, not a Docker button. This page exists to explain
+                why somebody would let us run it; closing it with a big button
+                pointing the other way was arguing against itself. %>
             <div class="closing">
-                <p><%= t('cloud.selfHostLine') %></p>
-                <a href="<%= localePath(i18n.locale) %>#self-host" class="btn-secondary"><i class="fab fa-docker"></i><%= t('compare.closingCta') %></a>
+                <p class="closing-selfhost"><%= t('cloud.selfHostLine') %> <a href="<%= localePath(i18n.locale) %>#self-host"><%= t('finalCta.selfHostLink') %></a></p>
             </div>
         </div>
     </section>

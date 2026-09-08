@@ -23,6 +23,9 @@ export interface BillingUsage {
     notes: number;
     storage_bytes: number;
     ai_requests_today: number;
+    // Recorded, not capped: real token spend, so Cloud pricing can be set
+    // from what usage actually costs rather than from a request count.
+    ai_tokens_today: number;
 }
 
 export interface BillingStatus {

@@ -1,7 +1,5 @@
 {
   "meta": {
-    "title": "tududi: セルフホスト型のタスク管理・ライフ管理システム、AIエージェント向けMCP搭載",
-    "description": "セルフホスト型のタスク管理・ライフ管理システム。エリア、ゴール、プロジェクト、タスクに加えてノートと習慣。{{tools}}個のツールを備えたMCPサーバーにより、AIエージェントがあなたのリストを直接扱えます。MITライセンスのオープンソース。",
     "langSwitcherLabel": "言語を変更",
     "langSwitcherCurrent": "言語: {{name}}"
   },
@@ -10,7 +8,6 @@
     "features": "機能",
     "ai": "AIとMCP",
     "pricing": "料金",
-    "selfHost": "セルフホスト",
     "faq": "よくある質問",
     "docs": "ドキュメント",
     "changelog": "更新履歴",
@@ -21,15 +18,7 @@
     "badgeStars": "GitHubスター",
     "badgeMcp": "MCPサーバー内蔵",
     "starsLoading": "スター数を読み込み中",
-    "titleLine1": "AIが本当に使える、",
-    "titleLine2": "セルフホスト型のライフ管理",
-    "lede": "エリア、ゴール、プロジェクト、タスクに加えてノートと習慣を、ひとつのシステムに。自分のハードウェアで動かすことも、運用をこちらに任せることもできます。",
-    "ctaPrimary": "2分でセルフホスト",
     "ctaDemo": "ライブデモを試す",
-    "ctaSecondary": "GitHubで見る",
-    "altLinkPrefix": "または",
-    "altLink": "tududi Cloud で無料アカウントを作成",
-    "note": "MITライセンス · ずっとオープンソース",
     "demoNote": "サンプルデータ入りの実際のホスティングインスタンス。共有され、定期的にリセットされます",
     "screenshotAlt": "tududiの画面。今日のビューと予定されたタスクが表示されています"
   },
@@ -50,18 +39,12 @@
   },
   "ai": {
     "kicker": "AIとMCP",
-    "titleLine1": "AIエージェントが本当に使える、",
-    "titleLine2": "セルフホスト型のシステム",
-    "ledeHtml": "tududiには<strong>{{tools}}個のツール</strong>を公開するMCPサーバーが付属し、タスク、プロジェクト、エリア、ゴール、習慣、ノート、人物、タグ、ビュー、受信箱、検索、指標までcarbonカバーします。Claudeをはじめ、MCP対応のあらゆるエージェントを自分のシステムに直接つなげられます。tududiは自分のサーバーで動くため、接続もデータもそこから出る必要がありません。これはTodoistやNotionが何を約束しようと提供できない、構造上の違いです。",
     "cards": {
       "capture": {
         "title": "チャットから記録・検索",
         "body": "会話から離れずに、タスクの追加・検索・完了ができます。"
       },
-      "dataStays": {
-        "title": "データは自分のサーバーに",
-        "body": "MCP接続は自分のインスタンスと通信します。第三者を経由するものはありません。"
-      },
+      "dataStays": {},
       "openProtocol": {
         "title": "オープンな規格、ロックインなし",
         "body": "オープンなModel Context Protocolの上に構築。Claudeやその他のMCPクライアントで動作します。"
@@ -70,7 +53,6 @@
     "configTitle": "Claude Desktopに接続する",
     "footnoteClients": "Cursor、Windsurf、Cline、その他のMCPクライアントでも同様に動作します。",
     "footnoteDocsLink": "MCPのドキュメントを読む →",
-    "footnoteIncluded": "セルフホストでもマネージドでも、すべてのプランに含まれます。",
     "assistantTitle": "AIアシスタント",
     "assistantLede": "データを読み取り、平易な言葉の要約を書き戻す、独立した任意のレイヤーです。Ollamaのようなセルフホスト型を含め、OpenAI互換のあらゆるプロバイダーで動作します。",
     "assistantCards": {
@@ -91,7 +73,6 @@
   "features": {
     "eyebrow": "機能",
     "title": "整った暮らしのための、完成されたシステム",
-    "sub": "tududiはゴール、プロジェクト、タスク、ノート、スマートビューを、静かで集中できるひとつのシステムにまとめます。プライバシーと明快さを大切にする個人と小さなチームのために。",
     "showAll": "{{count}}件すべての機能を表示",
     "groups": {
       "planFocus": "計画と集中",
@@ -201,62 +182,24 @@
   "selfHost": {
     "eyebrow": "セルフホスト",
     "title": "自分のサーバーで動かす",
-    "sub": "無料、オープンソース、Docker対応。データは完全にあなたのものです。",
     "cardTitle": "Dockerでのセットアップ",
-    "cardSub": "Dockerなら数分でデプロイ",
     "step1": "Dockerイメージを取得",
     "step2": "コンテナを起動",
     "step3Prefix": "アクセス先:",
-    "linkGithub": "GitHubで見る",
-    "linkDocs": "ドキュメント"
+    "linkGithub": "GitHubで見る"
   },
   "pricing": {
     "eyebrow": "料金",
     "title": "tududiの使い方を選ぶ",
-    "sub": "ひとつのシステム、三つの動かし方",
     "mostPopular": "人気No.1",
     "earlyBird": "早期割引",
     "perYear": "/年",
-    "forever": "/永久",
     "plans": {
-      "selfHosted": {
-        "name": "セルフホスト",
-        "priceNote": "無料でオープンソース、ずっと",
-        "features": [
-          "オープンソース、MITライセンス",
-          "自分のサーバーで動かせる",
-          "完全なコントロール、ベンダーロックインなし",
-          "すべての機能を利用可能、有料の壁なし",
-          "MCPとAIアシスタントを同梱"
-        ],
-        "action": "tududiをセルフホストする →"
-      },
+      "selfHosted": {},
       "cloud": {
         "name": "Cloud",
         "or": "または",
-        "launchNote": "早期割引の年額は、購読を続ける限りそのまま適用されます。",
-        "priceNote": "1分でアカウントを作成し、無料プランでは足りなくなったら Pro にアップグレード。",
-        "features": [
-          "無料プラン: 進行中のタスク {{freeTasks}} 件、プロジェクト {{freeProjects}} 件、ノート {{freeNotes}} 件、添付ファイル {{freeStorageMb}} MB",
-          "Pro: タスク・プロジェクト・ノート無制限、添付ファイル {{proStorageGb}} GB",
-          "Pro: AI アシスタント、MCP、CalDAV 同期、Telegram ボット、バックアップのインポート",
-          "アップデートと毎日のバックアップはこちらで対応",
-          "いつでもすべてをエクスポート、アカウント削除も自分で"
-        ],
-        "action": "無料アカウントを作成 →"
-      },
-      "business": {
-        "name": "ビジネスライセンス",
-        "priceNote": "仕事でtududiを使う",
-        "features": [
-          "商用利用ライセンス",
-          "応答時間を保証する優先サポート",
-          "会社の経費に計上できる請求書、消費税込み",
-          "tududi Cloud の Pro、または完全に自分のサーバーで",
-          "メンテナーへの直通の連絡手段"
-        ],
-        "licenceNote": "tududiはMITライセンスで、商用利用はすでに無料です。ここで購入するのは優先サポート、応答時間の保証、そして請求書です。",
-        "action": "licensing@tududi.com にメール →"
+        "launchNote": "早期割引の年額は、購読を続ける限りそのまま適用されます。"
       }
     },
     "fineprint": "いつでも解約でき、すべてをエクスポートできます。万一 tududi Cloud が終了する場合は、データとセルフホストへの移行ガイドをお渡しします。ストレージと API の利用量にはフェアユースが適用されます。30日間の返金保証、理由は問いません。",
@@ -264,10 +207,6 @@
   },
   "compare": {
     "title": "かんたん比較",
-    "sub": "三つとも、tududiのすべての機能が使えます",
-    "colSelf": "セルフホスト",
-    "colHosted": "Cloud",
-    "colBusiness": "ビジネスライセンス",
     "rows": {
       "openSource": "オープンソースのコア",
       "commercialUse": "商用利用",
@@ -277,25 +216,12 @@
       "noSetup": "サーバー構築が不要",
       "managedUpdates": "管理されたアップデート",
       "autoBackups": "自動バックアップ",
-      "isolated": "隔離されたコンテナとデータベース",
-      "prioritySupport": "優先サポート",
-      "responseTime": "応答時間の保証",
-      "invoice": "経費精算用の請求書",
       "pricing": "料金"
     },
     "values": {
-      "optional": "任意",
-      "yourServer": "自分のサーバー",
       "community": "コミュニティ",
-      "email": "メール",
-      "sameBusinessDay": "当営業日中",
-      "freeForever": "永久に無料",
-      "pricePerYear": "{{price}}ドル/年",
-      "sharedInstance": "共有インスタンス、いつでもエクスポート可能",
-      "freeOrPro": "無料、または Pro {{price}}/年"
-    },
-    "closing": "自分のシステムを動かす準備はできましたか？",
-    "closingCta": "tududiをセルフホストする"
+      "email": "メール"
+    }
   },
   "waitlist": {
     "title": "まだ決めきれませんか？",
@@ -313,14 +239,12 @@
     "sub": "他のtududiユーザーとつながり、サポートを受け、最新情報を追いかけましょう"
   },
   "footer": {
-    "tagline": "暮らしと仕事を整えるための、開かれたシステム。自分のサーバーでも、こちらのサーバーでも。",
     "colProduct": "製品",
     "colResources": "リソース",
     "colCommunity": "コミュニティとサポート",
     "colSupport": "支援する",
     "linkRoadmap": "ロードマップ",
     "linkIssues": "課題",
-    "linkBusinessLicence": "ビジネスライセンス",
     "linkEmail": "メール",
     "linkCoffee": "コーヒーを贈る",
     "subTitle": "メールでリリースノート",
@@ -335,10 +259,7 @@
   },
   "faq": {
     "items": {
-      "freePlan": {
-        "q": "無料の Cloud プランには何が含まれますか？",
-        "a": "期限なしで、進行中のタスク {{freeTasks}} 件、プロジェクト {{freeProjects}} 件、ノート {{freeNotes}} 件、添付ファイル {{freeStorageMb}} MB まで。完了したタスクは数えません。上限に達してもデータはすべて残り、閲覧・編集・完了・削除は引き続き可能です。新規追加だけは、上限を下回るか Pro にアップグレードするまでお待ちいただきます。"
-      },
+      "freePlan": {},
       "leaving": {
         "q": "退会できますか？データはどうなりますか？",
         "a": "はい、いつでも可能です。プロフィールからすべてを1つのファイルにエクスポートし、同じ形式を読み込めるセルフホストの tududi にインポートしてください。アカウントを削除すると、データ・添付ファイル・バックアップは当社サーバーから削除され、購読も解約されます。"

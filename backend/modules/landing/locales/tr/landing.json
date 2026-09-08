@@ -1,7 +1,5 @@
 {
   "meta": {
-    "title": "tududi: kendi sunucunuzda çalışan görev yöneticisi ve yaşam yönetim sistemi, yapay zekâ ajanları için MCP ile",
-    "description": "Kendi sunucunuzda çalışan bir görev yöneticisi ve yaşam yönetim sistemi. Alanlar, hedefler, projeler ve görevler; üstüne notlar ve alışkanlıklar, ayrıca {{tools}} araç sunan bir MCP sunucusu sayesinde yapay zekâ ajanları listenizi işleyebilir. MIT lisanslı açık kaynak.",
     "langSwitcherLabel": "Dili değiştir",
     "langSwitcherCurrent": "Dil: {{name}}"
   },
@@ -10,7 +8,6 @@
     "features": "Özellikler",
     "ai": "Yapay zekâ ve MCP",
     "pricing": "Fiyatlar",
-    "selfHost": "Kendin barındır",
     "faq": "SSS",
     "docs": "Belgeler",
     "changelog": "Değişiklikler",
@@ -21,15 +18,7 @@
     "badgeStars": "GitHub yıldızı",
     "badgeMcp": "Yerleşik MCP sunucusu",
     "starsLoading": "Yıldız sayısı yükleniyor",
-    "titleLine1": "Yapay zekânızın gerçekten kullanabileceği,",
-    "titleLine2": "kendi sunucunuzda çalışan yaşam yönetimi",
-    "lede": "Alanlar, hedefler, projeler ve görevler; üstüne notlar ve alışkanlıklar, hepsi tek bir sistemde. Kendi donanımınızda çalıştırın ya da işletmesini bize bırakın.",
-    "ctaPrimary": "2 dakikada kendiniz kurun",
     "ctaDemo": "Canlı demoyu deneyin",
-    "ctaSecondary": "GitHub'da görüntüle",
-    "altLinkPrefix": "Ya da",
-    "altLink": "tududi Cloud'da ücretsiz bir hesap oluşturun",
-    "note": "MIT lisansı · sonsuza dek açık kaynak",
     "demoNote": "Örnek verilerle dolu gerçek bir barındırılan örnek; paylaşılır ve düzenli olarak sıfırlanır",
     "screenshotAlt": "tududi arayüzü; Bugün görünümü ve planlanmış görevler"
   },
@@ -50,18 +39,12 @@
   },
   "ai": {
     "kicker": "Yapay zekâ ve MCP",
-    "titleLine1": "Yapay zekâ ajanınızın gerçekten kullanabileceği,",
-    "titleLine2": "kendi sunucunuzda çalışan sistem",
-    "ledeHtml": "tududi, görevleri, projeleri, alanları, hedefleri, alışkanlıkları, notları, kişileri, etiketleri, görünümleri, gelen kutusunu, aramayı ve ölçümleri kapsayan <strong>{{tools}} araç</strong> sunan bir MCP sunucusuyla gelir. Claude'u ya da MCP uyumlu herhangi bir ajanı doğrudan sisteminize bağlayın. tududi kendi sunucunuzda çalıştığı için ne bağlantının ne de verilerinizin oradan çıkması gerekir. Bu, Todoist ve Notion'ın ne vaat ederse etsin sunamayacağı yapısal bir fark.",
     "cards": {
       "capture": {
         "title": "Sohbetten kaydedin ve arayın",
         "body": "Konuşmadan çıkmadan görev ekleyin, bulun ve tamamlayın."
       },
-      "dataStays": {
-        "title": "Veriler kendi sunucunuzda kalır",
-        "body": "MCP bağlantısı yalnızca kendi örneğinizle konuşur. Hiçbir şey üçüncü taraflardan geçmez."
-      },
+      "dataStays": {},
       "openProtocol": {
         "title": "Açık protokol, bağımlılık yok",
         "body": "Açık Model Context Protocol üzerine kurulu. Claude ve diğer MCP istemcileriyle çalışır."
@@ -70,7 +53,6 @@
     "configTitle": "Claude Desktop'a bağlayın",
     "footnoteClients": "Aynısı Cursor, Windsurf, Cline ve diğer tüm MCP istemcileriyle de geçerli.",
     "footnoteDocsLink": "MCP belgelerini okuyun →",
-    "footnoteIncluded": "Kendi barındırmanızda da Yönetilen sürümde de her pakete dahildir.",
     "assistantTitle": "Yapay zekâ asistanı",
     "assistantLede": "Verilerinizi okuyup sade bir dille özet döndüren, ayrı ve isteğe bağlı bir katman. Ollama gibi kendi sunucunuzda çalışanlar dahil, OpenAI uyumlu her sağlayıcıyla çalışır.",
     "assistantCards": {
@@ -91,7 +73,6 @@
   "features": {
     "eyebrow": "Özellikler",
     "title": "Düzenli bir yaşam için eksiksiz bir sistem",
-    "sub": "tududi; hedefleri, projeleri, görevleri, notları ve akıllı görünümleri sakin ve odaklı tek bir sistemde birleştirir. Gizliliğe ve netliğe önem veren bireyler ile küçük ekipler için tasarlandı.",
     "showAll": "{{count}} özelliğin tamamını göster",
     "groups": {
       "planFocus": "Planla ve odaklan",
@@ -201,62 +182,24 @@
   "selfHost": {
     "eyebrow": "Kendin barındır",
     "title": "Kendi sunucunuzda çalıştırın",
-    "sub": "Ücretsiz, açık kaynak ve Docker'a hazır. Verileriniz tümüyle size ait.",
     "cardTitle": "Docker kurulumu",
-    "cardSub": "Docker ile dakikalar içinde yayına alın",
     "step1": "Docker imajını çekin",
     "step2": "Konteyneri çalıştırın",
     "step3Prefix": "Şu adresten erişin:",
-    "linkGithub": "GitHub'da görüntüle",
-    "linkDocs": "Belgeler"
+    "linkGithub": "GitHub'da görüntüle"
   },
   "pricing": {
     "eyebrow": "Fiyatlar",
     "title": "tududi'yi nasıl kullanacağınızı seçin",
-    "sub": "Tek sistem, onu çalıştırmanın üç yolu",
     "mostPopular": "EN ÇOK SEÇİLEN",
     "earlyBird": "ERKEN KAYIT",
     "perYear": "/yıl",
-    "forever": "/sonsuza dek",
     "plans": {
-      "selfHosted": {
-        "name": "Kendi sunucunuzda",
-        "priceNote": "Ücretsiz ve açık kaynak, sonsuza dek",
-        "features": [
-          "Açık kaynak, MIT lisanslı",
-          "Kendi sunucunuzda çalıştırın",
-          "Tam denetim, sağlayıcıya bağımlılık yok",
-          "Bütün özellikler açık, ödeme duvarı yok",
-          "MCP ve Yapay zekâ asistanı dahil"
-        ],
-        "action": "tududi'yi kendiniz barındırın →"
-      },
+      "selfHosted": {},
       "cloud": {
         "name": "Cloud",
         "or": "veya",
-        "launchNote": "Erken kayıt yıllık fiyatı, abone kaldığınız sürece sizin.",
-        "priceNote": "Bir dakikada hesap oluşturun, ücretsiz plan yetmediğinde Pro'ya geçin.",
-        "features": [
-          "Ücretsiz plan: {{freeTasks}} etkin görev, {{freeProjects}} proje, {{freeNotes}} not, {{freeStorageMb}} MB ek",
-          "Pro: sınırsız görev, proje ve not, {{proStorageGb}} GB ek",
-          "Pro: yapay zekâ asistanı, MCP, CalDAV eşitleme, Telegram botu, yedek içe aktarma",
-          "Güncellemeler ve günlük yedekler bizden",
-          "Her şeyi istediğiniz zaman dışa aktarın, hesabınızı kendiniz silin"
-        ],
-        "action": "Ücretsiz hesap oluştur →"
-      },
-      "business": {
-        "name": "Kurumsal lisans",
-        "priceNote": "tududi'yi işte kullanmak",
-        "features": [
-          "Ticari kullanım lisansı",
-          "Yanıt süresi taahhütlü öncelikli destek",
-          "Şirketinizin gider yazabileceği bir fatura, KDV dahil",
-          "tududi Cloud'da Pro, veya tamamen kendi sunucunuzda",
-          "Projeyi sürdüren kişiye doğrudan erişim"
-        ],
-        "licenceNote": "tududi MIT lisanslıdır ve ticari kullanım zaten ücretsizdir. Burada satın aldığınız şey öncelikli destek, yanıt süresi taahhüdü ve faturadır.",
-        "action": "licensing@tududi.com adresine yazın →"
+        "launchNote": "Erken kayıt yıllık fiyatı, abone kaldığınız sürece sizin."
       }
     },
     "fineprint": "İstediğiniz zaman iptal edin ve her şeyi dışa aktarın. tududi Cloud bir gün kapanırsa verilerinizi ve kendi sunucunuza taşınma rehberini alırsınız. Depolama ve API hacmi için adil kullanım geçerlidir. 30 gün para iade garantisi, soru sorulmaz.",
@@ -264,10 +207,6 @@
   },
   "compare": {
     "title": "Hızlı karşılaştırma",
-    "sub": "Üçü de size tududi'nin tamamını verir",
-    "colSelf": "Kendi sunucunuzda",
-    "colHosted": "Cloud",
-    "colBusiness": "Kurumsal lisans",
     "rows": {
       "openSource": "Açık kaynak çekirdek",
       "commercialUse": "Ticari kullanım",
@@ -277,25 +216,12 @@
       "noSetup": "Sunucu kurulumu gerekmez",
       "managedUpdates": "Yönetilen güncellemeler",
       "autoBackups": "Otomatik yedeklemeler",
-      "isolated": "Yalıtılmış konteyner ve veritabanı",
-      "prioritySupport": "Öncelikli destek",
-      "responseTime": "Yanıt süresi taahhüdü",
-      "invoice": "Gider için fatura",
       "pricing": "Fiyat"
     },
     "values": {
-      "optional": "İsteğe bağlı",
-      "yourServer": "Kendi sunucunuz",
       "community": "Topluluk",
-      "email": "E-posta",
-      "sameBusinessDay": "Aynı iş günü içinde",
-      "freeForever": "Sonsuza dek ücretsiz",
-      "pricePerYear": "{{price}} $/yıl",
-      "sharedInstance": "Paylaşımlı örnek, istediğiniz zaman dışa aktarma",
-      "freeOrPro": "Ücretsiz, veya yılda {{price}} ile Pro"
-    },
-    "closing": "Kendi sisteminizi çalıştırmaya hazır mısınız?",
-    "closingCta": "tududi'yi kendiniz barındırın"
+      "email": "E-posta"
+    }
   },
   "waitlist": {
     "title": "Henüz hazır değil misiniz?",
@@ -313,14 +239,12 @@
     "sub": "Diğer tududi kullanıcılarıyla tanışın, destek alın ve gelişmeleri takip edin"
   },
   "footer": {
-    "tagline": "Yaşamı ve işi düzenlemek için açık bir sistem. Sizin sunucunuz ya da bizimki.",
     "colProduct": "Ürün",
     "colResources": "Kaynaklar",
     "colCommunity": "Topluluk ve destek",
     "colSupport": "Destek olun",
     "linkRoadmap": "Yol haritası",
     "linkIssues": "Sorunlar",
-    "linkBusinessLicence": "Kurumsal lisans",
     "linkEmail": "E-posta",
     "linkCoffee": "Bir kahve ısmarlayın",
     "subTitle": "E-postayla sürüm notları",
@@ -335,10 +259,7 @@
   },
   "faq": {
     "items": {
-      "freePlan": {
-        "q": "Ücretsiz Cloud planı neleri içerir?",
-        "a": "Süre sınırı olmadan en fazla {{freeTasks}} etkin görev, {{freeProjects}} proje, {{freeNotes}} not ve {{freeStorageMb}} MB ek. Tamamlanan görevler sayılmaz. Bir sınıra ulaşırsanız her şey sizde kalır; okumaya, düzenlemeye, tamamlamaya ve silmeye devam edebilirsiniz. Yalnızca yeni ekleme, sınırın altına inene veya Pro'ya geçene kadar bekler."
-      },
+      "freePlan": {},
       "leaving": {
         "q": "Ayrılabilir miyim, verilerime ne olur?",
         "a": "Evet, istediğiniz zaman. Profilinizden her şeyi tek dosya olarak dışa aktarın ve aynı biçimi okuyan kendi barındırdığınız bir tududi'ye içe aktarın. Hesabınızı silmek verilerinizi, eklerinizi ve yedeklerinizi sunucularımızdan kaldırır ve aboneliği iptal eder."

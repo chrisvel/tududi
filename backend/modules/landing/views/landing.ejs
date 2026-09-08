@@ -59,20 +59,22 @@
             { id: 'maintained', link: { href: 'https://github.com/chrisvel/tududi/releases' } },
             { id: 'shutdown' },
         ]},
+        { id: 'managed', items: [
+            { id: 'freePlan' },
+            { id: 'whyManaged' },
+            { id: 'aiOptional' },
+            { id: 'aiPrivacy' },
+            { id: 'mcp' },
+            { id: 'leaving' },
+        ]},
+        // Self-hosting last. Nothing here is hidden, and the requirements answer
+        // leads the group; it is simply not the first thing the page argues for.
         { id: 'selfHost', items: [
             { id: 'requirements', link: { href: 'https://docs.tududi.com' } },
             { id: 'dataLocation' },
             { id: 'multiUser' },
             { id: 'mobile' },
             { id: 'reverseProxy' },
-        ]},
-        { id: 'managed', items: [
-            { id: 'aiOptional' },
-            { id: 'aiPrivacy' },
-            { id: 'mcp' },
-            { id: 'whyManaged' },
-            { id: 'freePlan' },
-            { id: 'leaving' },
         ]},
     ];
 
@@ -83,11 +85,6 @@
         tools: mcpToolCount,
         price: money(personalPrice),
         monthly: money(pricing.monthly),
-        businessPrice: pricing.business,
-        freeTasks: plans.freeTasks,
-        freeProjects: plans.freeProjects,
-        freeNotes: plans.freeNotes,
-        freeStorageMb: plans.freeStorageMb,
         proStorageGb: plans.proStorageGb,
     };
 
@@ -239,29 +236,34 @@
     // page counts it, rather than repeating a number that goes stale.
     const languageCount = locales.length;
 
-    // Ordered so the rows self-hosting wins come first. A table that opens with
-    // five managed-service ticks reads as an argument for the managed service,
-    // which is the opposite of what this page is for.
+    // Runtimes, not tiers. There is one Cloud plan and it is paid, so the
+    // table compares the two ways to run tududi and nothing else.
+    //
+    // Ordered so the rows Cloud wins come first, then the parity rows - which
+    // are the point of the whole section, since they say the self-hosted build
+    // is not crippled - then the three rows self-hosting genuinely wins.
     //
     // Ticks and crosses are product claims, not copy, so they stay here where
-    // no translation pass can flip one: only the row label and the three text
+    // no translation pass can flip one: only the row label and the two text
     // cells are localized, by id.
     const comparisonRows = [
-        { id: 'openSource',      selfCheck: true, hostedCheck: true, bizCheck: true },
-        { id: 'commercialUse',   selfCheck: true, hostedCheck: true, bizCheck: true },
-        { id: 'infraControl',    selfCheck: true, hostedX: true,     bizText: t('compare.values.optional') },
-        { id: 'dataOnHardware',  selfCheck: true, hostedX: true,     bizText: t('compare.values.optional') },
-        { id: 'noRecurring',     selfCheck: true, hostedX: true,     bizX: true },
-        { id: 'noSetup',         selfX: true,     hostedCheck: true, bizCheck: true },
-        { id: 'managedUpdates',  selfX: true,     hostedCheck: true, bizCheck: true },
-        { id: 'autoBackups',     selfX: true,     hostedCheck: true, bizCheck: true },
-        { id: 'isolated',        selfText: t('compare.values.yourServer'), hostedText: t('compare.values.sharedInstance'), bizCheck: true },
-        { id: 'prioritySupport', selfX: true,     hostedX: true,     bizCheck: true },
-        { id: 'responseTime',    selfText: t('compare.values.community'), hostedText: t('compare.values.email'), bizText: t('compare.values.sameBusinessDay') },
-        { id: 'invoice',         selfX: true,     hostedCheck: true, bizCheck: true },
-        { id: 'pricing',         selfText: t('compare.values.freeForever'),
-                                 hostedText: t('compare.values.freeOrPro', { price: money(personalPrice) }),
-                                 bizText:    t('compare.values.pricePerYear', { price: money(pricing.business) }) },
+        { id: 'noSetup',         cloudCheck: true, selfX: true },
+        { id: 'startMinute',     cloudCheck: true, selfX: true },
+        { id: 'managedUpdates',  cloudCheck: true, selfX: true },
+        { id: 'autoBackups',     cloudCheck: true, selfX: true },
+        { id: 'support',         cloudText: t('compare.values.email'),
+                                 selfText:  t('compare.values.community') },
+        { id: 'storage',         cloudText: t('compare.values.gigabytes', { count: plans.proStorageGb }),
+                                 selfText:  t('compare.values.yourDisk') },
+        { id: 'proFeatures',     cloudCheck: true, selfCheck: true },
+        { id: 'openSource',      cloudCheck: true, selfCheck: true },
+        { id: 'commercialUse',   cloudCheck: true, selfCheck: true },
+        { id: 'exportAnytime',   cloudCheck: true, selfCheck: true },
+        { id: 'dataOnHardware',  cloudX: true,     selfCheck: true },
+        { id: 'infraControl',    cloudX: true,     selfCheck: true },
+        { id: 'noRecurring',     cloudX: true,     selfCheck: true },
+        { id: 'pricing',         cloudText: t('compare.values.perMonthOrYear', { monthly: money(pricing.monthly), price: money(personalPrice) }),
+                                 selfText:  t('compare.values.selfCost') },
     ];
 %>
 
@@ -282,12 +284,24 @@
                 </span>
             </div>
             <%# Split into two keys rather than one string with a <br> in it, so
-                each translator picks where their own sentence breaks. %>
-            <h1><%= t('hero.titleLine1') %><br><%= t('hero.titleLine2') %></h1>
+                each translator picks where their own sentence breaks. The second
+                line is optional: a headline short enough to sit on one line
+                leaves it empty rather than shipping a trailing <br>, and a
+                language that needs a break where English does not can still use
+                it. %>
+            <% const heroLine2 = t('hero.titleLine2'); %>
+            <h1><%= t('hero.titleLine1') %><% if (heroLine2) { %><br><%= heroLine2 %><% } %></h1>
             <p class="hero-lede">
                 <%= t('hero.lede') %>
             </p>
             <div class="hero-actions">
+                <%# One offer, not a fork in the road: sign up, or look at a
+                    real instance first. Neither self-hosting nor the source
+                    repository is offered here - both live near the foot of the
+                    page, in the self-host section and the footer, where someone
+                    who came looking for them will still find them. The stars
+                    chip above stays, because that is proof rather than an exit. %>
+                <a href="<%= pricing.cloudOpen ? appUrl + '/register' : '#waitlist' %>" class="btn-primary"><i class="fas fa-cloud"></i><%= pricing.cloudOpen ? t('hero.ctaPrimary') : t('hero.ctaWaitlist') %></a>
                 <%# Rendered only when there is genuinely an instance to open.
                     demo.available is false while the container is being rebuilt
                     or if provisioning failed, and the whole button disappears
@@ -298,18 +312,13 @@
                     <span class="btn-demo-dot" aria-hidden="true"></span><%= t('hero.ctaDemo') %>
                 </a>
                 <% } %>
-                <%# The two ways to run tududi, side by side and equally
-                    weighted: somebody arriving here is choosing between them,
-                    not being sold one. %>
-                <a href="<%= pricing.cloudOpen ? localePath(i18n.locale, '/cloud') : '#waitlist' %>" class="btn-primary"><i class="fas fa-cloud"></i><%= pricing.cloudOpen ? t('hero.ctaCloud') : t('hero.ctaWaitlist') %></a>
-                <a href="#self-host" class="btn-secondary"><i class="fab fa-docker"></i><%= t('hero.ctaSelfHosted') %></a>
             </div>
-            <% if (demo && demo.available) { %>
-            <p class="hero-note" style="margin-top:14px;"><i class="fas fa-eye"></i><%= t('hero.demoNote') %></p>
+            <% if (pricing.cloudOpen) { %>
+            <p class="hero-note"><i class="fas fa-cloud"></i><%= t('hero.cloudNote') %></p>
             <% } %>
-            <p class="hero-alt-link"><%= t('hero.altLinkPrefix') %> <a href="https://github.com/chrisvel/tududi"><%= t('hero.ctaSecondary') %></a></p>
-            <p class="hero-note"><i class="fas fa-lock-open"></i><%= t('hero.note') %></p>
-
+            <% if (demo && demo.available) { %>
+            <p class="hero-note"><i class="fas fa-eye"></i><%= t('hero.demoNote') %></p>
+            <% } %>
         </div>
 
         <%# Outside .hero-inner on purpose: that column is capped at 900px for
@@ -331,8 +340,9 @@
         Row one is who has covered tududi - previously two unlinked claims
         ("Covered by XDA", "Listed in awesome-selfhosted") buried mid-sentence
         in row two, where nobody could check them. Row two is the countable
-        facts. The Docker pull count is omitted entirely when the server-side
-        fetch has nothing cached, rather than falling back to a stale number.
+        facts. The Docker pull count used to sit here and now lives in the
+        self-host section: it is proof that people run containers, which is a
+        different argument from the one this part of the page is making.
     -->
     <section class="proofbar">
         <div class="proofbar-inner">
@@ -351,10 +361,71 @@
                 <span class="proofbar-item"><%= t('proof.mcp', { tools: mcpToolCount }) %></span>
                 <span class="proofbar-sep">&middot;</span>
                 <span class="proofbar-item"><%= t('proof.languages', { count: languageCount }) %></span>
-                <% if (dockerPulls) { %>
+                <% if (pricing.cloudOpen) { %>
                 <span class="proofbar-sep">&middot;</span>
-                <span class="proofbar-item"><strong><%= Math.floor(dockerPulls / 1000).toLocaleString() %>k+</strong> <%= t('proof.dockerPulls') %></span>
+                <span class="proofbar-item"><%= t('proof.minute') %></span>
                 <% } %>
+            </div>
+        </div>
+    </section>
+
+    <!--
+        Features. Eight cards carry the page; the other sixteen stay in the DOM
+        behind a toggle so crawlers still see the full copy without the grid
+        eating a quarter of the page height.
+    -->
+    <section id="features" class="section features">
+        <div class="container">
+            <div class="section-head" style="margin-bottom:72px;">
+                <span class="eyebrow"><%= t('features.eyebrow') %></span>
+                <h2 class="section-title"><%= t('features.title') %></h2>
+                <p class="section-sub" style="max-width:720px; margin:0 auto;">
+                    <%= t('features.sub') %>
+                </p>
+            </div>
+
+            <%# Only one card body has a placeholder, but passing count to all of
+                them is free: interpolate() is a no-op on a string without one. %>
+            <% const cardVars = { count: languageCount }; %>
+            <% const featuredCards = featureGroups.flatMap(function (g) { return g.cards.filter(function (c) { return c.featured; }); }); %>
+            <div class="feature-grid">
+                <% featuredCards.forEach(function (card) { %>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="<%= card.icon %>"></i></div>
+                    <h4><%= t('features.cards.' + card.id + '.title', cardVars) %></h4>
+                    <p><%= t('features.cards.' + card.id + '.body', cardVars) %></p>
+                </div>
+                <% }); %>
+            </div>
+
+            <div id="feature-rest" hidden>
+                <% featureGroups.forEach(function (group) { %>
+                <% const rest = group.cards.filter(function (c) { return !c.featured; }); %>
+                <% if (rest.length) { %>
+                <div class="feature-group">
+                    <div class="feature-group-label">
+                        <span class="feature-group-dot"></span>
+                        <h3><%= t('features.groups.' + group.id) %></h3>
+                    </div>
+                    <div class="feature-grid">
+                        <% rest.forEach(function (card) { %>
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="<%= card.icon %>"></i></div>
+                            <h4><%= t('features.cards.' + card.id + '.title', cardVars) %></h4>
+                            <p><%= t('features.cards.' + card.id + '.body', cardVars) %></p>
+                        </div>
+                        <% }); %>
+                    </div>
+                </div>
+                <% } %>
+                <% }); %>
+            </div>
+
+            <% const featureTotal = featureGroups.reduce(function (n, g) { return n + g.cards.length; }, 0); %>
+            <div class="feature-more">
+                <button type="button" id="feature-toggle" class="feature-toggle" aria-expanded="false" aria-controls="feature-rest">
+                    <i class="fas fa-plus"></i><span><%= t('features.showAll', { count: featureTotal }) %></span>
+                </button>
             </div>
         </div>
     </section>
@@ -473,25 +544,35 @@
             </div>
 
             <%# The snippet is the one the dashboard hands real users (see
-                views/dashboard/index.ejs) with the token and URL left as
-                placeholders. Keep the two in step if the env vars ever change. %>
+                views/dashboard/index.ejs) with the token left as a placeholder.
+                Keep the two in step if the env vars ever change. %>
             <div class="mcp-config">
                 <div class="mcp-config-head">
                     <h4><%= t('ai.configTitle') %></h4>
                     <span>claude_desktop_config.json</span>
                 </div>
+                <%# Cloud is the default example because it is the instance most
+                    readers will have. The self-hosted URL is the same snippet
+                    with one line changed, so it is a disclosure rather than a
+                    second block competing for attention. %>
+                <p class="mcp-config-tab"><i class="fas fa-cloud"></i><%= t('ai.configCloudTab') %></p>
                 <div class="setup-pre"><pre><code>{
   "mcpServers": {
     "tududi": {
       "command": "npx",
       "args": ["-y", "tududi-mcp"],
       "env": {
-        "TUDUDI_URL": "https://localhost:3002",
+        "TUDUDI_URL": "<%= appUrl %>",
         "TUDUDI_API_TOKEN": "your-personal-access-token"
       }
     }
   }
 }</code></pre></div>
+                <details class="mcp-config-alt">
+                    <summary><%= t('ai.configSelfHostTab') %></summary>
+                    <p><%= t('ai.configSelfHostNote') %></p>
+                    <div class="setup-pre"><pre><code>"TUDUDI_URL": "http://localhost:3002"</code></pre></div>
+                </details>
             </div>
             <p class="ai-footnote" style="margin-bottom:20px;">
                 <%= t('ai.footnoteClients') %>
@@ -527,129 +608,10 @@
     </section>
 
     <!--
-        Features. Eight cards carry the page; the other sixteen stay in the DOM
-        behind a toggle so crawlers still see the full copy without the grid
-        eating a quarter of the page height.
-    -->
-    <section id="features" class="section features">
-        <div class="container">
-            <div class="section-head" style="margin-bottom:72px;">
-                <span class="eyebrow"><%= t('features.eyebrow') %></span>
-                <h2 class="section-title"><%= t('features.title') %></h2>
-                <p class="section-sub" style="max-width:720px; margin:0 auto;">
-                    <%= t('features.sub') %>
-                </p>
-            </div>
-
-            <%# Only one card body has a placeholder, but passing count to all of
-                them is free: interpolate() is a no-op on a string without one. %>
-            <% const cardVars = { count: languageCount }; %>
-            <% const featuredCards = featureGroups.flatMap(function (g) { return g.cards.filter(function (c) { return c.featured; }); }); %>
-            <div class="feature-grid">
-                <% featuredCards.forEach(function (card) { %>
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="<%= card.icon %>"></i></div>
-                    <h4><%= t('features.cards.' + card.id + '.title', cardVars) %></h4>
-                    <p><%= t('features.cards.' + card.id + '.body', cardVars) %></p>
-                </div>
-                <% }); %>
-            </div>
-
-            <div id="feature-rest" hidden>
-                <% featureGroups.forEach(function (group) { %>
-                <% const rest = group.cards.filter(function (c) { return !c.featured; }); %>
-                <% if (rest.length) { %>
-                <div class="feature-group">
-                    <div class="feature-group-label">
-                        <span class="feature-group-dot"></span>
-                        <h3><%= t('features.groups.' + group.id) %></h3>
-                    </div>
-                    <div class="feature-grid">
-                        <% rest.forEach(function (card) { %>
-                        <div class="feature-card">
-                            <div class="feature-icon"><i class="<%= card.icon %>"></i></div>
-                            <h4><%= t('features.cards.' + card.id + '.title', cardVars) %></h4>
-                            <p><%= t('features.cards.' + card.id + '.body', cardVars) %></p>
-                        </div>
-                        <% }); %>
-                    </div>
-                </div>
-                <% } %>
-                <% }); %>
-            </div>
-
-            <% const featureTotal = featureGroups.reduce(function (n, g) { return n + g.cards.length; }, 0); %>
-            <div class="feature-more">
-                <button type="button" id="feature-toggle" class="feature-toggle" aria-expanded="false" aria-controls="feature-rest">
-                    <i class="fas fa-plus"></i><span><%= t('features.showAll', { count: featureTotal }) %></span>
-                </button>
-            </div>
-        </div>
-    </section>
-
-    <!--
-        Self-Host. The primary pitch, so it gets the loud treatment and sits
-        above pricing: a visitor should see how little work this is before being
-        asked to choose. Dark rather than a third colour - see the CSS note.
-    -->
-    <section id="self-host" class="section section-dark selfhost">
-        <div class="container-sm">
-            <div class="section-head" style="margin-bottom:56px;">
-                <span class="eyebrow"><%= t('selfHost.eyebrow') %></span>
-                <h2 class="section-title" style="margin-bottom:16px;"><%= t('selfHost.title') %></h2>
-                <p class="section-sub"><%= t('selfHost.sub') %></p>
-            </div>
-
-            <div class="setup-card">
-                <div class="setup-head">
-                    <div class="setup-head-icon"><i class="fab fa-docker"></i></div>
-                    <div>
-                        <h3><%= t('selfHost.cardTitle') %></h3>
-                        <p><%= t('selfHost.cardSub') %></p>
-                    </div>
-                </div>
-
-                <div class="setup-steps">
-                    <div>
-                        <div class="setup-step-head">
-                            <span class="setup-num">1</span>
-                            <h4><%= t('selfHost.step1') %></h4>
-                        </div>
-                        <div class="setup-pre"><pre><code>docker pull chrisvel/tududi:latest</code></pre></div>
-                    </div>
-                    <div>
-                        <div class="setup-step-head">
-                            <span class="setup-num">2</span>
-                            <h4><%= t('selfHost.step2') %></h4>
-                        </div>
-                        <div class="setup-pre"><pre><code>docker run \
-  -e TUDUDI_USER_EMAIL=you@example.com \
-  -e TUDUDI_USER_PASSWORD=yourpassword \
-  -e TUDUDI_SESSION_SECRET=$(openssl rand -hex 64) \
-  -v ~/tududi_db:/app/db \
-  -p 3002:3002 \
-  -d chrisvel/tududi:latest</code></pre></div>
-                    </div>
-                    <div>
-                        <div class="setup-step-head" style="margin-bottom:0;">
-                            <span class="setup-num">3</span>
-                            <h4><%= t('selfHost.step3Prefix') %> <code style="color:#60bffa;">http://localhost:3002</code></h4>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="setup-links">
-                    <a href="https://github.com/chrisvel/tududi" class="btn-ghost"><i class="fab fa-github"></i><%= t('selfHost.linkGithub') %></a>
-                    <a href="https://docs.tududi.com" class="btn-ghost"><i class="fas fa-book"></i><%= t('selfHost.linkDocs') %></a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!--
         Press. Three cards, named humans, verbatim sentences, each linking to
         the piece it came from - the whole point is that a visitor can check it
-        in one click. Placed between the free self-host pitch and the price.
+        in one click. Placed between the product sections and the price, where
+        it answers "is this any good" just before the ask.
     -->
     <section id="press" class="section press">
         <div class="container-md">
@@ -691,35 +653,23 @@
                 <p class="section-sub"><%= t('pricing.sub') %></p>
             </div>
 
-            <div class="plan-grid">
+            <%# Two cards, not three, so the offer is simply first. The grid is
+                narrowed to keep each card the width it had as one of three:
+                auto-fit would otherwise stretch a five-bullet card to 580px. %>
+            <div class="plan-grid plan-grid-duo">
                 <div class="plan plan-featured">
                     <span class="plan-flag"><%= t('pricing.mostPopular') %></span>
-                    <div class="plan-head">
-                        <div class="plan-icon"><i class="fab fa-docker"></i></div>
-                        <h3><%= t('pricing.plans.selfHosted.name') %></h3>
-                    </div>
-                    <div class="plan-price">
-                        <div class="plan-amount"><span><%= money(0) %></span><span><%= t('pricing.forever') %></span></div>
-                        <div class="plan-price-note"><%= t('pricing.plans.selfHosted.priceNote') %></div>
-                    </div>
-                    <ul class="plan-features">
-                        <% i18n.tList('pricing.plans.selfHosted.features').forEach(function (feature) { %>
-                        <li><i class="fas fa-check"></i><%= feature %></li>
-                        <% }); %>
-                    </ul>
-                    <a href="#self-host" class="plan-action plan-action-primary"><%= t('pricing.plans.selfHosted.action') %></a>
-                </div>
-
-                <div class="plan">
                     <div class="plan-head">
                         <div class="plan-icon"><i class="fas fa-cloud"></i></div>
                         <h3><%= t('pricing.plans.cloud.name') %></h3>
                     </div>
                     <% if (pricing.cloudOpen) { %>
                     <div class="plan-price">
+                        <%# One plan, and it is paid. There is no free tier and no
+                            trial, so nothing here may imply a way in without a
+                            card - the money-back guarantee in the fineprint is
+                            the only safety net we actually offer. %>
                         <div class="plan-amount"><span><%= money(pricing.monthly) %></span><span><%= t('pricing.perMonth') %></span></div>
-                        <%# Annual is the same plan paid yearly, shown against the
-                            regular price while pricing.launchActive is set. %>
                         <div class="plan-pro-line">
                             <span class="plan-pro-sep"><%= t('pricing.plans.cloud.or') %></span>
                             <strong><%= money(personalPrice) %></strong><%= t('pricing.perYear') %>
@@ -742,7 +692,7 @@
                         <li><i class="fas fa-check"></i><%= feature %></li>
                         <% }); %>
                     </ul>
-                    <a href="<%= appUrl %>/register" class="plan-action"><%= t('pricing.plans.cloud.action') %></a>
+                    <a href="<%= appUrl %>/register" class="plan-action plan-action-primary"><%= t('pricing.plans.cloud.action') %></a>
                     <% } else { %>
                     <%# Cloud is being moved to new infrastructure: no register
                         link, just the notice and the same email capture the
@@ -767,33 +717,36 @@
                     <% } %>
                 </div>
 
-                <div class="plan">
+                <%# Bullets here are work the visitor takes on, not benefits, so
+                    they get a wrench rather than a tick. The card is deliberately
+                    plain: self-hosting is a real option and stays on the page,
+                    but it is not the offer. %>
+                <div class="plan plan-utility">
                     <div class="plan-head">
-                        <div class="plan-icon"><i class="fas fa-briefcase"></i></div>
-                        <h3><%= t('pricing.plans.business.name') %></h3>
+                        <div class="plan-icon"><i class="fab fa-docker"></i></div>
+                        <h3><%= t('pricing.plans.selfHosted.name') %></h3>
                     </div>
                     <div class="plan-price">
-                        <div class="plan-amount"><span><%= money(pricing.business) %></span><span><%= t('pricing.perYear') %></span></div>
-                        <div class="plan-price-note"><%= t('pricing.plans.business.priceNote') %></div>
+                        <%# The number, without the "/forever" flourish that used
+                            to sit beside it. It is still free; it is no longer the
+                            page's headline claim, and the note under it says what
+                            the zero actually costs. %>
+                        <div class="plan-amount"><span><%= money(0) %></span></div>
+                        <div class="plan-price-note"><%= t('pricing.plans.selfHosted.priceNote') %></div>
                     </div>
-                    <ul class="plan-features">
-                        <% i18n.tList('pricing.plans.business.features').forEach(function (feature) { %>
-                        <li><i class="fas fa-check"></i><%= feature %></li>
+                    <ul class="plan-features plan-features-work">
+                        <% i18n.tList('pricing.plans.selfHosted.features').forEach(function (feature) { %>
+                        <li><i class="fas fa-wrench"></i><%= feature %></li>
                         <% }); %>
                     </ul>
-                    <%# The comparison table below already gives commercial use a
-                        tick on all three tiers, but nobody reads a table to decide
-                        they are allowed to use MIT software at work. Say it on the
-                        card, where the misreading actually happens. %>
-                    <p class="plan-licence-note"><%= t('pricing.plans.business.licenceNote') %></p>
-                    <a href="mailto:licensing@tududi.com?subject=tududi%20business%20licence" class="plan-action"><%= t('pricing.plans.business.action') %></a>
+                    <a href="#self-host" class="plan-action"><%= t('pricing.plans.selfHosted.action') %></a>
                 </div>
             </div>
 
-            <!-- Mirrors .plan-grid's template so this lands under the Personal
-                 card without pulling that card out of the cards' shared row. -->
-            <div class="plan-notes">
-                <div></div>
+            <!-- Mirrors .plan-grid's template so this lands under the Cloud
+                 card without pulling that card out of the cards' shared row.
+                 Two cells now, note first, because Cloud is column one. -->
+            <div class="plan-notes plan-grid-duo">
                 <div>
                     <p class="plan-fineprint">
                         <%= t('pricing.fineprint') %>
@@ -817,27 +770,21 @@
                 <div class="compare">
                     <div class="compare-row compare-head">
                         <div></div>
+                        <div><%= t('compare.colCloud') %></div>
                         <div><%= t('compare.colSelf') %></div>
-                        <div><%= t('compare.colHosted') %></div>
-                        <div><%= t('compare.colBusiness') %></div>
                     </div>
                     <% comparisonRows.forEach(function (row) { %>
                     <div class="compare-row">
                         <div class="compare-label"><%= t('compare.rows.' + row.id) %></div>
                         <div class="compare-cell">
+                            <% if (row.cloudText) { %><span class="text"><%= row.cloudText %></span><% } %>
+                            <% if (row.cloudCheck) { %><i class="fas fa-check yes"></i><% } %>
+                            <% if (row.cloudX) { %><i class="fas fa-times no"></i><% } %>
+                        </div>
+                        <div class="compare-cell">
                             <% if (row.selfText) { %><span class="text"><%= row.selfText %></span><% } %>
                             <% if (row.selfCheck) { %><i class="fas fa-check yes"></i><% } %>
                             <% if (row.selfX) { %><i class="fas fa-times no"></i><% } %>
-                        </div>
-                        <div class="compare-cell">
-                            <% if (row.hostedText) { %><span class="text"><%= row.hostedText %></span><% } %>
-                            <% if (row.hostedCheck) { %><i class="fas fa-check yes"></i><% } %>
-                            <% if (row.hostedX) { %><i class="fas fa-times no"></i><% } %>
-                        </div>
-                        <div class="compare-cell">
-                            <% if (row.bizText) { %><span class="text"><%= row.bizText %></span><% } %>
-                            <% if (row.bizCheck) { %><i class="fas fa-check yes"></i><% } %>
-                            <% if (row.bizX) { %><i class="fas fa-times no"></i><% } %>
                         </div>
                     </div>
                     <% }); %>
@@ -845,10 +792,6 @@
             </div>
             </div>
 
-            <div class="closing">
-                <p><%= t('compare.closing') %></p>
-                <a href="#self-host" class="btn-primary"><i class="fab fa-docker"></i><%= t('compare.closingCta') %></a>
-            </div>
         </div>
     </section>
 
@@ -919,6 +862,112 @@
     </section>
 
     <!--
+        Self-Host. Demoted on purpose, and late on purpose. It used to open with
+        "deploy in minutes" above the pricing, which sold the hard path to people
+        who had not asked for it. The honest version leads with what the reader
+        signs up for - Docker, a reverse proxy, TLS, updates, backups - offers
+        Cloud first, and keeps the commands behind a disclosure. Nothing is
+        removed: everything that was here is still here, one click in.
+    -->
+    <section id="self-host" class="section section-dark selfhost">
+        <div class="container-sm">
+            <div class="section-head" style="margin-bottom:36px;">
+                <span class="eyebrow"><%= t('selfHost.eyebrow') %></span>
+                <h2 class="section-title" style="margin-bottom:16px;"><%= t('selfHost.title') %></h2>
+                <p class="section-sub"><%= t('selfHost.sub') %></p>
+            </div>
+
+            <div class="selfhost-actions">
+                <% if (pricing.cloudOpen) { %>
+                <a href="<%= appUrl %>/register" class="btn-primary"><i class="fas fa-cloud"></i><%= t('selfHost.ctaCloud') %></a>
+                <% } %>
+                <a href="https://docs.tududi.com" class="btn-ghost"><i class="fas fa-book"></i><%= t('selfHost.linkDocs') %></a>
+            </div>
+
+            <div class="setup-card">
+                <div class="setup-head">
+                    <div class="setup-head-icon"><i class="fab fa-docker"></i></div>
+                    <div>
+                        <h3><%= t('selfHost.cardTitle') %></h3>
+                        <p><%= t('selfHost.cardSub') %></p>
+                    </div>
+                </div>
+
+                <%# Collapsed rather than deleted. A two-line docker run in the
+                    open reads as "this is easy", which is the claim the section
+                    above spends three sentences correcting. The uploads volume
+                    is here because the README mounts it too: a one-liner that
+                    quietly loses attachments is worse than no one-liner. %>
+                <details class="setup-disclosure">
+                    <summary><i class="fas fa-terminal"></i><%= t('selfHost.showCommands') %></summary>
+                    <div class="setup-steps">
+                        <div>
+                            <div class="setup-step-head">
+                                <span class="setup-num">1</span>
+                                <h4><%= t('selfHost.step1') %></h4>
+                            </div>
+                            <div class="setup-pre"><pre><code>docker pull chrisvel/tududi:latest</code></pre></div>
+                        </div>
+                        <div>
+                            <div class="setup-step-head">
+                                <span class="setup-num">2</span>
+                                <h4><%= t('selfHost.step2') %></h4>
+                            </div>
+                            <div class="setup-pre"><pre><code>docker run \
+  -e TUDUDI_USER_EMAIL=you@example.com \
+  -e TUDUDI_USER_PASSWORD=yourpassword \
+  -e TUDUDI_SESSION_SECRET=$(openssl rand -hex 64) \
+  -v ~/tududi_db:/app/db \
+  -v ~/tududi_uploads:/app/uploads \
+  -p 3002:3002 \
+  -d chrisvel/tududi:latest</code></pre></div>
+                        </div>
+                        <div>
+                            <div class="setup-step-head" style="margin-bottom:0;">
+                                <span class="setup-num">3</span>
+                                <h4><%= t('selfHost.step3Prefix') %> <code style="color:#60bffa;">http://localhost:3002</code></h4>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
+                <div class="setup-links">
+                    <a href="https://github.com/chrisvel/tududi" class="btn-ghost"><i class="fab fa-github"></i><%= t('selfHost.linkGithub') %></a>
+                    <a href="https://docs.tududi.com" class="btn-ghost"><i class="fas fa-book"></i><%= t('nav.docs') %></a>
+                </div>
+
+                <%# The pull count lives here now rather than in the proof bar.
+                    Same rule as before: omitted entirely when the fetch has
+                    nothing cached, never a stale hardcoded number. %>
+                <% if (dockerPulls) { %>
+                <p class="setup-pulls"><i class="fab fa-docker"></i><strong><%= Math.floor(dockerPulls / 1000).toLocaleString() %>k+</strong> <%= t('proof.dockerPulls') %></p>
+                <% } %>
+            </div>
+        </div>
+    </section>
+
+    <!--
+        Final CTA. Replaces the band that used to close the comparison table with
+        "Ready to run your own system?" and a Docker button. Same position in the
+        funnel, opposite recommendation: the filled button is the free Cloud
+        account, and self-hosting is a sentence of plain text underneath, which
+        is the weight it should have had all along.
+    -->
+    <section class="section" style="padding-top:72px; padding-bottom:72px;">
+        <div class="container-sm">
+            <div class="closing" style="margin-top:0;">
+                <h2 class="section-title" style="font-size:32px; margin-bottom:14px;"><%= t('finalCta.title') %></h2>
+                <p><%= t('finalCta.sub') %></p>
+                <div class="closing-actions">
+                    <a href="<%= pricing.cloudOpen ? appUrl + '/register' : '#waitlist' %>" class="btn-primary"><i class="fas fa-cloud"></i><%= pricing.cloudOpen ? t('finalCta.primary') : t('hero.ctaWaitlist') %></a>
+                    <a href="#pricing" class="btn-secondary"><%= t('finalCta.secondary') %></a>
+                </div>
+                <p class="closing-selfhost"><%= t('finalCta.selfHostPrefix') %> <a href="#self-host"><%= t('finalCta.selfHostLink') %></a></p>
+            </div>
+        </div>
+    </section>
+
+    <!--
         Release-notes signup. Posts straight to the mailing-list provider in
         TUDUDI_LANDING_NEWSLETTER_URL and renders nothing when none is set.
 
@@ -927,9 +976,14 @@
     -->
     <section class="waitlist" id="waitlist">
         <div class="waitlist-inner">
-            <h2 class="section-title" style="font-size:30px; margin-bottom:14px;"><%= t('waitlist.title') %></h2>
+            <%# Two jobs, one form. While Cloud is shut this is the waitlist the
+                hero points at; while it is open the same capture is the release
+                notes list, and it says so, because "Cloud is opening soon" sitting
+                under a live signup button is a plain contradiction. The open-state
+                strings are the footer's, already translated everywhere. %>
+            <h2 class="section-title" style="font-size:30px; margin-bottom:14px;"><%= pricing.cloudOpen ? t('footer.subTitle') : t('waitlist.title') %></h2>
             <p class="section-sub" style="font-size:16.5px; margin-bottom:28px;">
-                <%= t('waitlist.sub') %>
+                <%= pricing.cloudOpen ? t('footer.subBody') : t('waitlist.sub') %>
             </p>
             <div class="waitlist-proof">
                 <a href="https://github.com/chrisvel/tududi" class="waitlist-proof-item" rel="noopener">
@@ -1188,8 +1242,9 @@
             });
         })();
 
-        // Copy buttons on the docker commands. Added rather than assumed: the
-        // command block never had one, and self-hosting is now the primary CTA.
+        // Copy buttons on the code blocks: the docker commands and the MCP
+        // config. Created for every .setup-pre whether or not its <details> is
+        // open, so unfolding the install commands does not arrive without one.
         (function copyButtons() {
             if (!navigator.clipboard) return;
 

@@ -88,6 +88,7 @@ describe('entitlementsService with hosted mode on', () => {
             notes: 0,
             storage_bytes: 0,
             ai_requests_today: 0,
+            ai_tokens_today: 0,
         });
         expect(
             await BillingAccount.count({ where: { user_id: user.id } })
