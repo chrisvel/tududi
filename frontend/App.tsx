@@ -30,6 +30,7 @@ import About from './components/About';
 import BackupRestore from './components/Backup/BackupRestore';
 import Layout from './Layout';
 import SubscriptionGate from './components/Billing/SubscriptionGate';
+import DemoEntry from './components/DemoEntry';
 const SubscriptionRequired = lazy(
     () => import('./components/Billing/SubscriptionRequired')
 );
@@ -246,6 +247,7 @@ const App: React.FC = () => {
                             path="/subscription/new"
                             element={<SubscriptionRequired />}
                         />
+                        <Route path="/demo" element={<DemoEntry />} />
                         <Route
                             element={
                                 <SubscriptionGate>
@@ -476,6 +478,7 @@ const App: React.FC = () => {
                 ) : (
                     <>
                         <Route path="/login" element={<Login />} />
+                        <Route path="/demo" element={<DemoEntry />} />
                         <Route path="/register" element={<Register />} />
                         <Route
                             path="/forgot-password"

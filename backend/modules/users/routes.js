@@ -7,6 +7,7 @@ const fs = require('fs');
 const { getConfig } = require('../../config/config');
 const config = getConfig();
 const router = express.Router();
+const { blockDemoUser } = require('../../middleware/demo');
 const usersController = require('./controller');
 const {
     apiKeyManagementLimiter,
@@ -59,8 +60,8 @@ router.get('/users', usersController.list);
 
 // Profile routes
 router.get('/profile', usersController.getProfile);
-router.patch('/profile', usersController.updateProfile);
-router.delete('/profile', usersController.deleteAccount);
+router.patch('/profile', blockDemoUser, usersController.updateProfile);
+router.delete('/profile', blockDemoUser, usersController.deleteAccount);
 
 // Avatar routes
 router.post(
@@ -76,7 +77,11 @@ router.delete(
 );
 
 // Password change
-router.post('/profile/change-password', usersController.changePassword);
+router.post(
+    '/profile/change-password',
+    blockDemoUser,
+    usersController.changePassword
+);
 
 // API keys (with rate limiting)
 router.get(

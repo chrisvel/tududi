@@ -343,6 +343,7 @@ const goalsModule = require('./modules/goals');
 const authModule = require('./modules/auth');
 const backupModule = require('./modules/backup');
 const featureFlagsModule = require('./modules/feature-flags');
+const demoModule = require('./modules/demo');
 const habitsModule = require('./modules/habits');
 const inboxModule = require('./modules/inbox');
 const notesModule = require('./modules/notes');
@@ -441,6 +442,7 @@ registerRateLimiting(rateLimitPath);
 const registerApiRoutes = (basePath) => {
     app.use(basePath, authModule.routes);
     app.use(basePath, featureFlagsModule.routes);
+    app.use(basePath, demoModule.routes);
     app.use(`${basePath}/oidc`, oidcModule.routes);
 
     app.use(basePath, requireAuth);
@@ -523,6 +525,23 @@ async function startServer() {
         // Initialize CalDAV sync scheduler
         const caldavSyncScheduler = require('./modules/caldav/services/sync-scheduler');
         await caldavSyncScheduler.initialize();
+
+        // Public demo sandbox: make sure it exists, then wipe it on a timer.
+        // withJobLock inside resetDemo keeps one worker doing it.
+        if (demoModule.service.isDemoEnabled()) {
+            await demoModule.service.ensureDemoUser();
+            if (!config.disableScheduler) {
+                const everyMs =
+                    Math.max(5, config.demo.resetMinutes) * 60 * 1000;
+                setInterval(() => {
+                    demoModule.service
+                        .resetDemo()
+                        .catch((error) =>
+                            console.error('Demo reset failed:', error)
+                        );
+                }, everyMs).unref();
+            }
+        }
 
         // Validate authentication configuration
         const { validateAuthConfiguration } = require('./config/authConfig');

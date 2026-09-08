@@ -4,6 +4,24 @@ const ejs = require('ejs');
 const { getPlans } = require('../../config/plans');
 const { logError } = require('../../services/logService');
 const { getStats } = require('./stats');
+
+// Whether to offer the demo, refreshed in the background so a page render
+// never waits on a query. Null until the first check, which reads as "no".
+let demoAvailable = null;
+let demoCheckedAt = 0;
+function demoSnapshot() {
+    const demo = require('../demo/service');
+    if (!demo.isDemoEnabled()) return null;
+    if (Date.now() - demoCheckedAt > 60_000) {
+        demoCheckedAt = Date.now();
+        demo.demoStatus()
+            .then((s) => {
+                demoAvailable = s.available;
+            })
+            .catch(() => {});
+    }
+    return demoAvailable ? { available: true } : null;
+}
 const {
     DEFAULT_LOCALE,
     LANG_COOKIE,
@@ -121,7 +139,7 @@ function createLandingRouter(landing) {
                 newsletterAction,
                 dockerPulls: stats.dockerPulls,
                 discordMembers: stats.discordMembers,
-                demo: null,
+                demo: demoSnapshot(),
                 mcpToolCount: MCP_TOOL_COUNT,
                 localePath,
                 localeUrl,
@@ -177,7 +195,7 @@ function createLandingRouter(landing) {
                 newsletterAction,
                 dockerPulls: stats.dockerPulls,
                 discordMembers: stats.discordMembers,
-                demo: null,
+                demo: demoSnapshot(),
                 mcpToolCount: MCP_TOOL_COUNT,
                 canonicalUrl: localeUrl(locale),
                 localePath,

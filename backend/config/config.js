@@ -163,6 +163,18 @@ const config = {
         },
     },
 
+    // Public demo sandbox: one shared account, seeded and wiped on a timer.
+    // Off unless TUDUDI_DEMO_ENABLED is set, so a self-hosted instance never
+    // grows a public login.
+    demo: {
+        enabled: process.env.TUDUDI_DEMO_ENABLED === 'true',
+        email: process.env.TUDUDI_DEMO_EMAIL || 'demo@tududi.com',
+        password: process.env.TUDUDI_DEMO_PASSWORD || 'demodemo',
+        resetMinutes: process.env.TUDUDI_DEMO_RESET_MINUTES
+            ? parseInt(process.env.TUDUDI_DEMO_RESET_MINUTES, 10)
+            : 60,
+    },
+
     // Bot protection on registration, password reset and verification
     // resend (Cloudflare Turnstile). Off unless both keys are set.
     captcha: {

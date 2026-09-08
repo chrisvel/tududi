@@ -53,6 +53,10 @@ Notable changes to tududi. Versions match the git tags and the
   than upgrades: without a subscription the app answers `402`
   `SUBSCRIPTION_REQUIRED` and the browser lands on a subscription page.
   Billing, the profile and data export stay reachable.
+- A public demo sandbox (`TUDUDI_DEMO_ENABLED`): one shared account, seeded
+  and wiped on a timer, opened in a click with no password to publish.
+- A Cloud waitlist on the marketing page, stored on the instance itself, and
+  an admin dashboard at `/admin` with users, billing, waitlist and content.
 - Cloudflare Turnstile captcha on registration, password reset and
   verification resend, on when `TURNSTILE_SITE_KEY` and
   `TURNSTILE_SECRET_KEY` are set.

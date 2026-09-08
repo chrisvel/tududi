@@ -1831,5 +1831,10 @@
     "taxNote": "Payments are handled by {{provider}}. Prices exclude applicable taxes. Cancel at any time.",
     "notConfigured": "Subscriptions are not available on this instance yet. Please contact support.",
     "exportData": "Export your data"
+  },
+  "demo": {
+    "opening": "Opening the demo...",
+    "unavailableTitle": "The demo is not available",
+    "unavailableBody": "It may be rebuilding itself. Try again in a moment."
   }
 }

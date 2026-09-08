@@ -56,7 +56,7 @@
                         </div>
                     </details>
                     <% if (demo && demo.available) { %>
-                    <a href="/demo" class="nav-demo">
+                    <a href="<%= appUrl %>/demo" class="nav-demo">
                         <span class="nav-demo-dot" aria-hidden="true"></span><%= t('nav.demo') %>
                     </a>
                     <% } %>
@@ -82,7 +82,7 @@
                 <a href="https://github.com/chrisvel/tududi" class="nav-link">GitHub</a>
                 <a href="https://github.com/users/chrisvel/projects/2" class="nav-link"><%= t('footer.linkRoadmap') %></a>
                 <% if (demo && demo.available) { %>
-                <a href="/demo" class="nav-demo">
+                <a href="<%= appUrl %>/demo" class="nav-demo">
                     <span class="nav-demo-dot" aria-hidden="true"></span><%= t('nav.demo') %>
                 </a>
                 <% } %>

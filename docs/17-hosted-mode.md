@@ -183,6 +183,30 @@ not need to be on Cloudflare DNS). The forms send the token as
 let through and logged, so an outage there never locks people out; the
 rate limiters still apply. Unset (the default) means no captcha anywhere.
 
+## Public demo
+
+`TUDUDI_DEMO_ENABLED=true` stands up a sandbox anyone can open without
+signing up: one shared account, seeded with plausible content, wiped and
+seeded again on a timer.
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `TUDUDI_DEMO_ENABLED` | `false` | off unless set, so a self-hosted instance never grows a public login |
+| `TUDUDI_DEMO_EMAIL` | `demo@tududi.com` | the shared account |
+| `TUDUDI_DEMO_PASSWORD` | `demodemo` | only used to create the account; visitors never type it |
+| `TUDUDI_DEMO_RESET_MINUTES` | `60` | how often everything in it is thrown away |
+
+`POST /api/demo/login` signs the caller into the shared account, so the
+marketing site links straight to `/demo` on the app and nobody has to be
+told a password. The account can never hold an admin role, cannot change
+its own password or email, and cannot delete itself; everything else it may
+do, because the reset clears up after it. On an instance that requires a
+subscription the demo passes through an admin override rather than a
+payment, so it shows up in the admin billing list as a comped account.
+
+The reset runs in whichever process has background jobs enabled and takes
+the `demo-reset` job lock, so several app containers cannot wipe it at once.
+
 ## Marketing page
 
 The same image can serve the public marketing page, so a hosted deployment
