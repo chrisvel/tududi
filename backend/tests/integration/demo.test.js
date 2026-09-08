@@ -109,6 +109,30 @@ describe('Public demo sandbox', () => {
         ).not.toBeNull();
     });
 
+    it('cannot mint an API token, and any old one dies at the reset', async () => {
+        const { ApiToken } = require('../../models');
+        const agent = request.agent(app);
+        await agent.post('/api/demo/login');
+        const user = await User.findOne({ where: { email: DEMO_EMAIL } });
+
+        // A token would outlive the wipe, which is the one kind of access
+        // the reset exists to remove.
+        const minted = await agent
+            .post('/api/profile/api-keys')
+            .send({ name: 'persistence' });
+        expect(minted.status).toBe(403);
+
+        // One created before the guard existed is cleared by the reset
+        await ApiToken.create({
+            user_id: user.id,
+            name: 'legacy',
+            token_hash: 'x'.repeat(60),
+            token_prefix: 'tt_test',
+        });
+        await demoService.resetDemo();
+        expect(await ApiToken.count({ where: { user_id: user.id } })).toBe(0);
+    });
+
     it('wipes what a visitor did and seeds it again on reset', async () => {
         const agent = request.agent(app);
         await agent.post('/api/demo/login');

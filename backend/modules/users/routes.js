@@ -89,9 +89,12 @@ router.get(
     apiKeyManagementLimiter,
     usersController.listApiKeys
 );
+// Closed to the demo account: a token would keep working after the sandbox
+// is wiped, which is the one thing the reset exists to prevent.
 router.post(
     '/profile/api-keys',
     apiKeyManagementLimiter,
+    blockDemoUser,
     usersController.createApiKey
 );
 router.post(

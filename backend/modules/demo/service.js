@@ -118,6 +118,7 @@ async function resetDemo({ force = false } = {}) {
             Goal,
             View,
             Person,
+            ApiToken,
         } = models;
         const where = { where: { user_id: user.id } };
         // Tasks first: notes and projects are referenced by them.
@@ -130,6 +131,8 @@ async function resetDemo({ force = false } = {}) {
         await Tag.destroy({ ...where, force: true });
         if (View) await View.destroy({ ...where, force: true });
         if (Person) await Person.destroy({ ...where, force: true });
+        // Any token minted before the route guard existed dies here too.
+        if (ApiToken) await ApiToken.destroy({ ...where, force: true });
 
         await seedDemoData(user.id, models);
         await user.update({
