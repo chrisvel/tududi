@@ -10,6 +10,7 @@ import {
     EnvelopeIcon,
     MagnifyingGlassIcon,
     Cog6ToothIcon,
+    ShieldCheckIcon,
     CircleStackIcon,
     InformationCircleIcon,
     ArrowRightStartOnRectangleIcon,
@@ -267,6 +268,25 @@ const Navbar: React.FC<NavbarProps> = ({
                                     </div>
                                 )}
                                 {featureFlags.hosted && <PlanBadge />}
+                                {currentUser?.is_admin && (
+                                    <Link
+                                        to="/admin"
+                                        className="flex items-center justify-between px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                        onClick={() => setIsDropdownOpen(false)}
+                                        data-testid="navbar-admin-link"
+                                    >
+                                        <span className="flex items-center">
+                                            <ShieldCheckIcon className="h-4 w-4 mr-2 shrink-0" />
+                                            {t('navigation.admin', 'Admin')}
+                                        </span>
+                                        <span className="ml-3 px-1.5 py-0.5 rounded text-[10px] font-semibold tracking-wide uppercase bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200">
+                                            {t(
+                                                'navigation.adminBadge',
+                                                'Admin'
+                                            )}
+                                        </span>
+                                    </Link>
+                                )}
                                 <Link
                                     to="/profile"
                                     className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"

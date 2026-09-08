@@ -36,9 +36,8 @@ describe('Landing page', () => {
         expect(res.text).toContain('<html lang="en"');
         expect(res.text).toContain('https://app.tududi.com/register');
         expect(res.text).toContain('https://app.tududi.com/login');
-        expect(res.text).toContain(
-            'action="https://buttondown.com/api/emails/embed-subscribe/tududi"'
-        );
+        // The waitlist posts to the site's own endpoint, not a third party
+        expect(res.text).toContain('action="/waitlist"');
         // Every locale, itself included, plus x-default
         const hreflangs = res.text.match(/hreflang="/g) || [];
         expect(hreflangs.length).toBeGreaterThanOrEqual(LOCALES.length + 1);
@@ -166,6 +165,98 @@ describe('Landing page', () => {
             .get('/cloud')
             .set('Host', 'app.tududi.com');
         expect(res.text).toContain('<div id="root"');
+    });
+
+    describe('the Cloud waitlist', () => {
+        const { WaitlistSubscriber } = require('../../models');
+
+        it('stores an address and answers the same way twice', async () => {
+            const email = `wait_${Date.now()}@example.com`;
+            const first = await request(app)
+                .post('/waitlist')
+                .set('Host', 'tududi.com')
+                .type('form')
+                .send({ email, source: 'hero', locale: 'en' });
+            expect(first.status).toBe(303);
+            expect(first.headers.location).toBe('/?joined=1#waitlist');
+
+            const row = await WaitlistSubscriber.findOne({ where: { email } });
+            expect(row.source).toBe('hero');
+            expect(row.submission_count).toBe(1);
+
+            // A second go looks identical from outside, so the form cannot
+            // be used to test whether an address is already on the list.
+            const again = await request(app)
+                .post('/waitlist')
+                .set('Host', 'tududi.com')
+                .type('form')
+                .send({ email, source: 'footer', locale: 'en' });
+            expect(again.status).toBe(303);
+            expect(again.headers.location).toBe(first.headers.location);
+            await row.reload();
+            expect(row.submission_count).toBe(2);
+            expect(await WaitlistSubscriber.count({ where: { email } })).toBe(
+                1
+            );
+        });
+
+        it('lower-cases the address and comes back in the visitor locale', async () => {
+            const email = `MiXeD_${Date.now()}@Example.COM`;
+            const res = await request(app)
+                .post('/waitlist')
+                .set('Host', 'tududi.com')
+                .type('form')
+                .send({ email, source: 'waitlist', locale: 'fr' });
+            expect(res.headers.location).toBe('/fr?joined=1#waitlist');
+            expect(
+                await WaitlistSubscriber.findOne({
+                    where: { email: email.toLowerCase() },
+                })
+            ).not.toBeNull();
+        });
+
+        it('says the same thing for a malformed address and stores nothing', async () => {
+            const before = await WaitlistSubscriber.count();
+            const res = await request(app)
+                .post('/waitlist')
+                .set('Host', 'tududi.com')
+                .type('form')
+                .send({ email: 'not-an-email', source: 'hero' });
+            expect(res.status).toBe(303);
+            expect(res.headers.location).toBe('/?joined=1#waitlist');
+            expect(await WaitlistSubscriber.count()).toBe(before);
+        });
+
+        it('shows the confirmation instead of the form after joining', async () => {
+            const res = await request(app)
+                .get('/?joined=1')
+                .set('Host', 'tududi.com');
+            expect(res.text).toContain('data-testid="waitlist-joined"');
+            // The section's own form is replaced by the confirmation; the
+            // footer signup stays, so look for that form specifically.
+            expect(res.text).not.toContain('value="waitlist"');
+        });
+
+        it('is not reachable on the app host', async () => {
+            const res = await request(app)
+                .post('/waitlist')
+                .set('Host', 'app.tududi.com')
+                .type('form')
+                .send({ email: 'x@example.com' });
+            expect(res.status).not.toBe(303);
+        });
+    });
+
+    it('sends the hero to the waitlist while Cloud is shut', async () => {
+        const original = config.landing.pricing.cloudOpen;
+        config.landing.pricing.cloudOpen = false;
+        try {
+            const res = await request(app).get('/').set('Host', 'tududi.com');
+            expect(res.text).toContain('href="#waitlist"');
+            expect(res.text).toContain('action="/waitlist"');
+        } finally {
+            config.landing.pricing.cloudOpen = original;
+        }
     });
 
     it('serves the app on every other host', async () => {

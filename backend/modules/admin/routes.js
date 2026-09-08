@@ -8,6 +8,8 @@ const adminController = require('./controller');
 // Admin verification is done in the service layer
 
 router.post('/admin/set-admin-role', adminController.setAdminRole);
+router.get('/admin/overview', adminController.overview);
+router.get('/admin/waitlist', adminController.listWaitlist);
 router.get('/admin/users', adminController.listUsers);
 router.post('/admin/users', adminController.createUser);
 router.put('/admin/users/:id', adminController.updateUser);

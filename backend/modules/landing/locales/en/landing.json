@@ -33,7 +33,8 @@
     "demoNote": "A real hosted instance, seeded with sample data, shared and reset regularly",
     "screenshotAlt": "The tududi interface, showing the Today view with planned tasks",
     "ctaCloud": "tududi Cloud",
-    "ctaSelfHosted": "Self-hosted"
+    "ctaSelfHosted": "Self-hosted",
+    "ctaWaitlist": "Join the waitlist"
   },
   "proof": {
     "stars": "stars on GitHub",
@@ -404,12 +405,13 @@
     }
   },
   "waitlist": {
-    "title": "Not ready yet?",
-    "sub": "Leave your email for release notes and the occasional update. No spam, unsubscribe in one click.",
+    "title": "tududi Cloud is opening soon",
+    "sub": "Leave your email and we will tell you the day it opens. Nothing else, and one click to leave.",
     "placeholder": "you@email.com",
     "inputLabel": "Email address",
     "submit": "Notify me",
-    "note": "We store your address and the date you gave it, so we can send you release notes and nothing else. We never share it."
+    "note": "We store your address and the date you gave it, so we can tell you when Cloud opens. We never share it.",
+    "joined": "You are on the list. We will email you when tududi Cloud opens."
   },
   "langs": {
     "heading": "The tududi app is available in {{count}} languages worldwide"

@@ -2,6 +2,7 @@ const path = require('path');
 const express = require('express');
 const ejs = require('ejs');
 const { getPlans } = require('../../config/plans');
+const { logError } = require('../../services/logService');
 const { getStats } = require('./stats');
 const {
     DEFAULT_LOCALE,
@@ -127,6 +128,7 @@ function createLandingRouter(landing) {
                 pageUrl,
                 money,
                 jsonForScript,
+                joined: req.query.joined === '1',
                 ...extra,
             },
             { cache: cacheRenders, rmWhitespace: false }
@@ -183,10 +185,12 @@ function createLandingRouter(landing) {
                 pageUrl,
                 money,
                 jsonForScript,
+                joined: req.query.joined === '1',
             },
             { cache: cacheRenders, rmWhitespace: false }
         );
-        if (cacheRenders) rendered.set(cacheKey, { html, at: Date.now() });
+        if (cacheRenders && !req.query.joined)
+            rendered.set(cacheKey, { html, at: Date.now() });
         res.type('html').send(html);
     }
 
@@ -230,6 +234,55 @@ function createLandingRouter(landing) {
 
         if (req.path.endsWith('/')) return res.redirect(301, `/${pathLocale}`);
         return renderLanding(req, res, pathLocale).catch(next);
+    });
+
+    // Waitlist capture. A plain form post on the marketing host itself, so
+    // it needs no JavaScript, no CORS and no CSRF token: there is no session
+    // here to ride on. The answer is always the same page with ?joined=1,
+    // whether the address was new, already on the list or refused, so the
+    // form cannot be used to find out who has signed up.
+    const waitlistBody = express.urlencoded({ extended: false, limit: '4kb' });
+    const WAITLIST_SOURCES = new Set(['hero', 'waitlist', 'footer', 'cloud']);
+
+    router.post('/waitlist', waitlistBody, async (req, res) => {
+        const locale = isSupportedLocale(req.body?.locale)
+            ? req.body.locale
+            : DEFAULT_LOCALE;
+        const back = `${localePath(locale)}?joined=1#waitlist`;
+        const email = String(req.body?.email || '')
+            .trim()
+            .toLowerCase();
+        const source = WAITLIST_SOURCES.has(req.body?.source)
+            ? req.body.source
+            : 'unknown';
+
+        // Cheap shape check only. Anything past this is the mail provider's
+        // problem, and telling a visitor their address looks wrong is worse
+        // than quietly keeping a dud row.
+        if (
+            !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) ||
+            email.length > 254
+        ) {
+            return res.redirect(303, back);
+        }
+
+        try {
+            const { WaitlistSubscriber } = require('../../models');
+            const [row, created] = await WaitlistSubscriber.findOrCreate({
+                where: { email },
+                defaults: {
+                    email,
+                    source,
+                    locale,
+                    referrer: (req.get('referer') || '').slice(0, 512) || null,
+                },
+            });
+            if (!created) await row.increment('submission_count');
+        } catch (error) {
+            // A capture failure must not show a stranger a stack trace.
+            logError('Waitlist signup failed:', error);
+        }
+        return res.redirect(303, back);
     });
 
     // The base language lives at the root, so /en is not a real URL.

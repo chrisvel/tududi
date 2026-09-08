@@ -46,6 +46,7 @@ const CLEANUP_TABLES = [
     'calendar_tokens',
     'rate_limits',
     'usage_counters',
+    'waitlist_subscribers',
     'billing_events',
     'billing_accounts',
     'notifications',
