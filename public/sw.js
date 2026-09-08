@@ -1,4 +1,6 @@
-const CACHE_VERSION = 'tududi-v1';
+// v2: manifest.json gained a share_target member, and the static cache is
+// cache-first — existing installs need the stale copy evicted to pick it up
+const CACHE_VERSION = 'tududi-v2';
 const API_CACHE = 'tududi-api-v1';
 const SYNC_QUEUE = 'tududi-sync-queue';
 

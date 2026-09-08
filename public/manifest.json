@@ -10,6 +10,15 @@
   "background_color": "#ffffff",
   "lang": "en",
   "orientation": "portrait-primary",
+  "share_target": {
+    "action": "/inbox",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
   "icons": [
     {
       "src": "/icon-logo.png",

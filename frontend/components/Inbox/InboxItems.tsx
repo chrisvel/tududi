@@ -25,6 +25,7 @@ import { createProject } from '../../utils/projectsService';
 import { createNote } from '../../utils/notesService';
 import { OfflineQueuedError } from '../../utils/authUtils';
 import { isUrl } from '../../utils/urlService';
+import { takeSharedText } from '../../utils/shareTargetService';
 import { fetchAreas } from '../../utils/areasService';
 import { fetchProjects } from '../../utils/projectsService';
 import { useStore } from '../../store/useStore';
@@ -59,6 +60,11 @@ const InboxItems: React.FC = () => {
     const location = useLocation();
 
     const [hasInitialized, setHasInitialized] = useState(false);
+
+    // Content handed over by the OS share sheet (see shareTargetService) is
+    // prefilled into the composer rather than captured straight away, so the
+    // user can still edit it or pick task/note/project
+    const [sharedDraft] = useState<string>(() => takeSharedText() || '');
 
     const { inboxItems, isLoading, pagination, trashedCount } = useStore(
         (state) => state.inboxStore
@@ -666,6 +672,7 @@ const InboxItems: React.FC = () => {
                     onTaskCreate={handleSaveTask}
                     onNoteCreate={handleSaveNote}
                     projects={projects}
+                    initialValue={sharedDraft}
                     autoFocus={true}
                     openTaskModal={handleOpenTaskModal}
                     openProjectModal={handleOpenProjectModal}

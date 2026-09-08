@@ -58,6 +58,16 @@ Located at the top of the Inbox page:
    - Keyboard shortcut: `g` then `i` (Go to Inbox)
    - Sidebar navigation clicks auto-focus input
 
+### Share Sheet (installed PWA)
+
+Share a link or selected text from another app (Android, or desktop Chrome/Edge) and pick tududi:
+- The app opens on `/inbox` with the shared title, text and URL prefilled in Quick Capture
+- Nothing is saved yet — edit it, then press Enter or pick Task / Note / Project
+- Smart parsing, URL preview and suggestions behave exactly as if you had typed it
+- If your session expired, you land on login first and the shared content is restored afterwards
+
+See [PWA & Offline Support](15-pwa.md) for the manifest configuration and limitations (text/links only, not available on iOS).
+
 ### Telegram Integration
 
 Send messages to your tududi bot:
