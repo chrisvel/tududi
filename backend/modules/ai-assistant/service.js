@@ -6,6 +6,7 @@ const moment = require('moment-timezone');
 const { User, Goal, Project, Area } = require('../../models');
 const { computeTaskMetrics } = require('../tasks/queries/metrics-computation');
 const { AppError } = require('../../shared/errors');
+const { logError } = require('../../services/logService');
 
 const PRIORITY_LABELS = { 0: 'low', 1: 'medium', 2: 'high' };
 const STATUS_LABELS = {
@@ -103,9 +104,28 @@ function buildResponseFormat(name, schema) {
     };
 }
 
-async function callWithFallback(client, params) {
+// What the call actually cost, banked per user per day. The request
+// counter that gates the plan says nothing about spend: two daily briefs
+// differ by an order of magnitude in tokens depending on how much of
+// someone's list fits in the prompt, so a plan priced on request counts
+// under-prices whoever has the most in tududi. No plan defines
+// `ai_tokens_per_day`, so consumeUsage records this without ever throwing;
+// give it a limit later and the same call starts enforcing one.
+async function recordTokenUsage(userId, response) {
+    const total = response?.usage?.total_tokens;
+    if (!userId || !Number.isFinite(total) || total <= 0) return;
     try {
-        return await client.chat.completions.create(params);
+        await entitlements.consumeUsage(userId, 'ai_tokens', total);
+    } catch (err) {
+        // Never fail a generation the user already paid for over bookkeeping.
+        logError(`Failed to record AI token usage: ${err.message}`);
+    }
+}
+
+async function callWithFallback(client, userId, params) {
+    let response;
+    try {
+        response = await client.chat.completions.create(params);
     } catch (err) {
         const is400 = err?.status === 400;
         const mentionsFormat =
@@ -113,10 +133,13 @@ async function callWithFallback(client, params) {
             err?.error?.message?.includes('response_format');
         if (is400 && mentionsFormat) {
             const { response_format: _dropped, ...fallbackParams } = params;
-            return await client.chat.completions.create(fallbackParams);
+            response = await client.chat.completions.create(fallbackParams);
+        } else {
+            throw err;
         }
-        throw err;
     }
+    await recordTokenUsage(userId, response);
+    return response;
 }
 
 async function fetchUserContext(userId) {
@@ -336,10 +359,14 @@ function buildEntityMaps({ metrics, projects }) {
 
 async function generateDailyBrief(userId) {
     const client = getOpenAIClient();
-    await entitlements.consumeUsage(userId, 'ai_requests');
 
     const context = await fetchUserContext(userId);
     const contextSummary = buildContextSummary(context);
+
+    // Charged once there is something to send, not on the way in: gathering
+    // the context is a database read that can fail on its own, and losing a
+    // day's allowance to our own error is not the user's mistake.
+    await entitlements.consumeUsage(userId, 'ai_requests');
 
     const systemPrompt = `You are a productivity assistant in Tududi. Return a daily brief as JSON. Keep every field very short — no full sentences, no filler words.
 
@@ -366,7 +393,7 @@ Rules:
 - Plain text only — no markdown, no ** formatting
 - Return only the JSON object, no other text`;
 
-    const response = await callWithFallback(client, {
+    const response = await callWithFallback(client, userId, {
         model: getAIModel(),
         messages: [
             { role: 'system', content: systemPrompt },
@@ -604,7 +631,7 @@ Rules:
 - Always reference the actual task name, project name, or tags in your response
 - Return only the JSON object, no other text`;
 
-    const response = await callWithFallback(client, {
+    const response = await callWithFallback(client, userId, {
         model: getAIModel(),
         messages: [
             { role: 'system', content: systemPrompt },
@@ -764,7 +791,7 @@ Rules:
 - watch_out should be null (JSON null) if there's no meaningful risk to flag
 - Return only the JSON object, no other text`;
 
-    const response = await callWithFallback(client, {
+    const response = await callWithFallback(client, userId, {
         model: getAIModel(),
         messages: [
             { role: 'system', content: systemPrompt },
