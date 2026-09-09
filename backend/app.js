@@ -57,7 +57,7 @@ app.use(
                 fontSrc: ["'self'"],
                 objectSrc: ["'none'"],
                 mediaSrc: ["'self'"],
-                frameSrc: ['https://challenges.cloudflare.com'],
+                frameSrc: ["'self'", 'https://challenges.cloudflare.com'],
                 upgradeInsecureRequests:
                     process.env.UPGRADE_INSECURE_REQUESTS === 'true'
                         ? []
