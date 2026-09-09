@@ -122,22 +122,59 @@ async function recordTokenUsage(userId, response) {
     }
 }
 
+function isResponseFormatRejection(err) {
+    const is400 = err?.status === 400;
+    const mentionsFormat =
+        err?.message?.includes('response_format') ||
+        err?.error?.message?.includes('response_format');
+    return is400 && mentionsFormat;
+}
+
+// Current OpenAI models (o-series, GPT-5 and newer) reject the legacy
+// max_tokens parameter with a 400 and require max_completion_tokens instead.
+// We still send max_tokens first so OpenAI-compatible servers that predate
+// the rename (Ollama, LM Studio, vLLM) keep working, then swap the name and
+// retry once for the providers that demand the new one.
+function isMaxTokensRejection(err) {
+    const code = err?.code || err?.error?.code;
+    const param = err?.param || err?.error?.param;
+    return code === 'unsupported_parameter' && param === 'max_tokens';
+}
+
+function swapToMaxCompletionTokens(params) {
+    if (!('max_tokens' in params)) return params;
+    const { max_tokens: value, ...rest } = params;
+    return { ...rest, max_completion_tokens: value };
+}
+
+// A single request can hit both fallbacks (drop response_format and swap
+// max_tokens), so retry in a loop and apply each fallback at most once.
 async function callWithFallback(client, userId, params) {
+    let attempt = { ...params };
+    let triedFormatFallback = false;
+    let triedMaxTokensFallback = false;
     let response;
-    try {
-        response = await client.chat.completions.create(params);
-    } catch (err) {
-        const is400 = err?.status === 400;
-        const mentionsFormat =
-            err?.message?.includes('response_format') ||
-            err?.error?.message?.includes('response_format');
-        if (is400 && mentionsFormat) {
-            const { response_format: _dropped, ...fallbackParams } = params;
-            response = await client.chat.completions.create(fallbackParams);
-        } else {
+
+    for (;;) {
+        try {
+            response = await client.chat.completions.create(attempt);
+            break;
+        } catch (err) {
+            if (!triedMaxTokensFallback && isMaxTokensRejection(err)) {
+                triedMaxTokensFallback = true;
+                attempt = swapToMaxCompletionTokens(attempt);
+                continue;
+            }
+            if (!triedFormatFallback && isResponseFormatRejection(err)) {
+                triedFormatFallback = true;
+                const { response_format: _dropped, ...rest } = attempt;
+                attempt = rest;
+                continue;
+            }
             throw err;
         }
     }
+
     await recordTokenUsage(userId, response);
     return response;
 }
