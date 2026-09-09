@@ -12,7 +12,7 @@ const isEmailEnabled = () => {
 const hasValidEmailConfig = () => {
     const config = getConfig();
     const { smtp, from } = config.emailConfig;
-    return !!(smtp.host && smtp.auth.user && smtp.auth.pass && from.address);
+    return !!(smtp.host && smtp.port && from.address);
 };
 
 const createTransporter = () => {
@@ -33,15 +33,20 @@ const createTransporter = () => {
     const { smtp } = config.emailConfig;
 
     try {
-        return nodemailer.createTransport({
+        const transportOptions = {
             host: smtp.host,
             port: smtp.port,
             secure: smtp.secure,
-            auth: {
+        };
+
+        if (smtp.auth.user && smtp.auth.pass) {
+            transportOptions.auth = {
                 user: smtp.auth.user,
                 pass: smtp.auth.pass,
-            },
-        });
+            };
+        }
+
+        return nodemailer.createTransport(transportOptions);
     } catch (error) {
         logError(error, 'Failed to create email transporter');
         return null;
