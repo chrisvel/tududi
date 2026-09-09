@@ -63,8 +63,11 @@ const TaskAreaCard: React.FC<TaskAreaCardProps> = ({
         setSearchQuery('');
     };
 
-    if (task.Project) {
-        if (!effectiveArea) return null;
+    // Show a read-only card only when the area is genuinely inherited from the
+    // task's project. A task keeps its own independent area_id, so in every
+    // other case (project without an area, or the task carrying its own area)
+    // the selector below stays editable.
+    if (isInherited && effectiveArea) {
         return (
             <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 p-4">
                 <div className="flex items-center justify-between gap-2">
