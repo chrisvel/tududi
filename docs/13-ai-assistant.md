@@ -60,6 +60,8 @@ LLM_MAX_TOKENS_PROJECT_INSIGHTS=600   # default 600
 
 Non-numeric or non-positive values are ignored and fall back to the default.
 
+Requests are sent with `max_tokens`. Current OpenAI models (o-series, GPT-5 and newer) reject that name with an HTTP 400 (`code: unsupported_parameter`, `param: max_tokens`) and require `max_completion_tokens` instead. `callWithFallback()` catches that specific rejection, swaps the parameter name, and retries once. Sending `max_tokens` first keeps older OpenAI-compatible servers (Ollama, LM Studio, vLLM) working, since some do not recognize the newer name.
+
 ### Optional: skip the thinking phase
 
 Some reasoning models keep spending tokens on hidden reasoning no matter how high `max_tokens` is raised. If your provider supports it (e.g. Qwen3 served via vLLM), set:
@@ -79,6 +81,8 @@ The fallback only trusts a field if it actually parses as JSON. Most reasoning-p
 ### `LLM_DISABLE_THINKING` failure mode
 
 If your provider doesn't support `chat_template_kwargs` and rejects it with an HTTP 400, the request fails loudly rather than silently retrying without the flag — `callWithFallback()` only auto-retries by dropping `response_format`, not `chat_template_kwargs`. This is intentional for an explicitly opt-in flag, but if you enable `LLM_DISABLE_THINKING` and start seeing errors instead of empty results, check that your provider actually documents support for it.
+
+The `max_tokens` -> `max_completion_tokens` retry and the `response_format` drop compose: a request that needs both (a current OpenAI reasoning model plus a schema it will not honour) applies each fallback once in the same `callWithFallback()` call.
 
 ---
 
