@@ -7,6 +7,7 @@ const { getConfig } = require('../../config/config');
 const { isPasswordAuthEnabled } = require('../../config/authConfig');
 const {
     isRegistrationEnabled,
+    isCloudClosed,
     createUnverifiedUser,
     sendVerificationEmail,
     verifyUserEmail,
@@ -33,12 +34,13 @@ class AuthService {
     }
 
     async getRegistrationStatus() {
-        const config = getConfig();
-        // Set only on the hosted marketing deployment (see backend/config/landing),
-        // so a self-hosted instance with registration off keeps the generic
-        // "closed" message instead of the Cloud-specific "opening soon" copy.
-        const notifyUrl = config.landing?.newsletterAction || null;
-        return { enabled: await isRegistrationEnabled(), notifyUrl };
+        // True only while hosted Cloud is shut, so a self-hosted instance
+        // with registration off keeps the generic "closed" message instead
+        // of the Cloud-specific "opening soon" copy and its email capture.
+        return {
+            enabled: await isRegistrationEnabled(),
+            waitlist: isCloudClosed(),
+        };
     }
 
     async register(email, password) {

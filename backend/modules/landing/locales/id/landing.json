@@ -20,7 +20,8 @@
     "starsLoading": "Memuat jumlah bintang",
     "ctaDemo": "Coba demo langsung",
     "demoNote": "Instance terkelola sungguhan dengan data contoh, dipakai bersama dan direset secara berkala",
-    "screenshotAlt": "Antarmuka tududi, menampilkan tampilan Hari Ini dengan tugas yang direncanakan"
+    "screenshotAlt": "Antarmuka tududi, menampilkan tampilan Hari Ini dengan tugas yang direncanakan",
+    "ctaWaitlist": "Gabung daftar tunggu"
   },
   "proof": {
     "stars": "bintang di GitHub",
@@ -199,7 +200,10 @@
       "cloud": {
         "name": "Cloud",
         "or": "atau",
-        "launchNote": "Harga tahunan early bird, tetap milik Anda selama berlangganan."
+        "launchNote": "Harga tahunan early bird, tetap milik Anda selama berlangganan.",
+        "comingSoon": "Dibuka dalam beberapa hari",
+        "comingSoonNote": "Kami sedang memindahkan Cloud ke infrastruktur baru. Tinggalkan email Anda di bawah dan kami akan mengabari begitu kembali aktif.",
+        "notifySubmit": "Beri tahu saya"
       }
     },
     "fineprint": "Batalkan kapan saja dan ekspor semuanya. Jika tududi Cloud suatu saat ditutup, Anda mendapat data Anda dan panduan migrasi ke self-host. Penggunaan wajar berlaku untuk penyimpanan dan volume API. Garansi uang kembali 30 hari, tanpa pertanyaan.",
@@ -229,7 +233,8 @@
     "placeholder": "kamu@email.com",
     "inputLabel": "Alamat email",
     "submit": "Beri tahu saya",
-    "note": "Kami menyimpan alamat Anda dan tanggal Anda memberikannya, semata untuk mengirim catatan rilis dan tidak untuk hal lain. Kami tidak pernah membagikannya."
+    "note": "Kami menyimpan alamat Anda dan tanggal Anda memberikannya, semata untuk mengirim catatan rilis dan tidak untuk hal lain. Kami tidak pernah membagikannya.",
+    "joined": "Anda sudah masuk daftar. Kami akan mengirim email saat tududi Cloud dibuka."
   },
   "langs": {
     "heading": "Tersedia dalam {{count}} bahasa di seluruh dunia"

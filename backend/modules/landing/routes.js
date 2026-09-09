@@ -4,6 +4,7 @@ const ejs = require('ejs');
 const { getPlans } = require('../../config/plans');
 const { logError } = require('../../services/logService');
 const { getStats } = require('./stats');
+const waitlist = require('../../services/waitlistService');
 
 // Whether to offer the demo, refreshed in the background so a page render
 // never waits on a query. Null until the first check, which reads as "no".
@@ -46,15 +47,9 @@ const MCP_TOOL_COUNT = 59;
 
 // The template pulls fonts, icons and analytics from a handful of hosts the
 // app's own policy has no reason to allow, so the marketing responses carry
-// their own policy in place of helmet's.
-function buildCsp(newsletterAction) {
-    let formAction = "'self'";
-    try {
-        if (newsletterAction)
-            formAction += ` ${new URL(newsletterAction).origin}`;
-    } catch {
-        // an unparsable action is rendered nowhere, see renderLanding
-    }
+// their own policy in place of helmet's. Every form on the page posts back
+// here, hence the bare 'self' form-action.
+function buildCsp() {
     return [
         "default-src 'self'",
         "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
@@ -62,19 +57,11 @@ function buildCsp(newsletterAction) {
         "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com",
         "img-src 'self' data: https:",
         "connect-src 'self' https://api.github.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com",
-        `form-action ${formAction}`,
+        "form-action 'self'",
         "frame-src 'none'",
         "object-src 'none'",
         "base-uri 'self'",
     ].join('; ');
-}
-
-function isValidUrl(value) {
-    try {
-        return /^https?:$/.test(new URL(value).protocol);
-    } catch {
-        return false;
-    }
 }
 
 function createLandingRouter(landing) {
@@ -82,10 +69,7 @@ function createLandingRouter(landing) {
     const siteOrigin = landing.siteUrl;
     const localeUrl = makeLocaleUrl(siteOrigin);
     const appUrl = landing.appUrl.replace(/\/$/, '');
-    const newsletterAction = isValidUrl(landing.newsletterAction)
-        ? landing.newsletterAction
-        : null;
-    const csp = buildCsp(newsletterAction);
+    const csp = buildCsp();
     const cacheRenders = process.env.NODE_ENV === 'production';
     const rendered = new Map();
     const secureCookie = /^https:/.test(siteOrigin);
@@ -136,7 +120,6 @@ function createLandingRouter(landing) {
                     ),
                 },
                 appUrl,
-                newsletterAction,
                 dockerPulls: stats.dockerPulls,
                 discordMembers: stats.discordMembers,
                 demo: demoSnapshot(),
@@ -169,7 +152,9 @@ function createLandingRouter(landing) {
 
         const stats = getStats();
         const cacheKey = `${locale}:${stats.dockerPulls}:${stats.discordMembers}`;
-        const cached = rendered.get(cacheKey);
+        // A cached render is the page without the thank-you, so the visitor
+        // who just left their address must not be served one.
+        const cached = req.query.joined ? null : rendered.get(cacheKey);
         if (cached && Date.now() - cached.at < RENDER_TTL_MS) {
             return res.type('html').send(cached.html);
         }
@@ -192,7 +177,6 @@ function createLandingRouter(landing) {
                     ),
                 },
                 appUrl,
-                newsletterAction,
                 dockerPulls: stats.dockerPulls,
                 discordMembers: stats.discordMembers,
                 demo: demoSnapshot(),
@@ -260,46 +244,29 @@ function createLandingRouter(landing) {
     // whether the address was new, already on the list or refused, so the
     // form cannot be used to find out who has signed up.
     const waitlistBody = express.urlencoded({ extended: false, limit: '4kb' });
-    const WAITLIST_SOURCES = new Set(['hero', 'waitlist', 'footer', 'cloud']);
+    const WAITLIST_SOURCES = new Set([
+        'hero',
+        'waitlist',
+        'footer',
+        'cloud',
+        'pricing',
+    ]);
 
     router.post('/waitlist', waitlistBody, async (req, res) => {
         const locale = isSupportedLocale(req.body?.locale)
             ? req.body.locale
             : DEFAULT_LOCALE;
         const back = `${localePath(locale)}?joined=1#waitlist`;
-        const email = String(req.body?.email || '')
-            .trim()
-            .toLowerCase();
         const source = WAITLIST_SOURCES.has(req.body?.source)
             ? req.body.source
             : 'unknown';
 
-        // Cheap shape check only. Anything past this is the mail provider's
-        // problem, and telling a visitor their address looks wrong is worse
-        // than quietly keeping a dud row.
-        if (
-            !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) ||
-            email.length > 254
-        ) {
-            return res.redirect(303, back);
-        }
-
-        try {
-            const { WaitlistSubscriber } = require('../../models');
-            const [row, created] = await WaitlistSubscriber.findOrCreate({
-                where: { email },
-                defaults: {
-                    email,
-                    source,
-                    locale,
-                    referrer: (req.get('referer') || '').slice(0, 512) || null,
-                },
-            });
-            if (!created) await row.increment('submission_count');
-        } catch (error) {
-            // A capture failure must not show a stranger a stack trace.
-            logError('Waitlist signup failed:', error);
-        }
+        await waitlist.capture({
+            email: req.body?.email,
+            source,
+            locale,
+            referrer: req.get('referer'),
+        });
         return res.redirect(303, back);
     });
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { getAssetPath } from '../config/paths';
+import { getApiPath, getAssetPath } from '../config/paths';
 import { PASSWORD_MIN_LENGTH } from '../utils/passwordPolicy';
 import CaptchaWidget from './Auth/CaptchaWidget';
 import { fetchCaptchaConfig, CaptchaConfig } from '../utils/captcha';
@@ -14,7 +14,11 @@ const Register: React.FC = () => {
     const [success, setSuccess] = useState(false);
     const [passwordAuthEnabled, setPasswordAuthEnabled] = useState(true);
     const [registrationEnabled, setRegistrationEnabled] = useState(true);
-    const [notifyUrl, setNotifyUrl] = useState<string | null>(null);
+    const [showWaitlist, setShowWaitlist] = useState(false);
+    const [waitlistEmail, setWaitlistEmail] = useState('');
+    const [waitlistJoined, setWaitlistJoined] = useState(false);
+    const [waitlistBusy, setWaitlistBusy] = useState(false);
+    const [waitlistError, setWaitlistError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [captcha, setCaptcha] = useState<CaptchaConfig | null>(null);
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
@@ -23,7 +27,7 @@ const Register: React.FC = () => {
     useEffect(() => {
         fetchCaptchaConfig().then(setCaptcha);
     }, []);
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [isDarkMode] = useState<boolean>(() => {
         const storedPreference = localStorage.getItem('isDarkMode');
         return storedPreference !== null
@@ -53,7 +57,7 @@ const Register: React.FC = () => {
                 if (registrationRes.ok) {
                     const data = await registrationRes.json();
                     setRegistrationEnabled(data.enabled);
-                    setNotifyUrl(data.notifyUrl || null);
+                    setShowWaitlist(data.waitlist === true);
                 }
             } catch (err) {
                 console.error('Error checking registration status:', err);
@@ -63,6 +67,38 @@ const Register: React.FC = () => {
         };
         checkStatus();
     }, []);
+
+    // Kept even when the address is already on the list or is refused: the
+    // answer is the same either way, so the form cannot be used to find out
+    // who has signed up.
+    const joinWaitlist = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setWaitlistBusy(true);
+        setWaitlistError(null);
+        try {
+            const res = await fetch(getApiPath('waitlist'), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    email: waitlistEmail,
+                    locale: i18n.language,
+                }),
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            setWaitlistJoined(true);
+        } catch (err) {
+            console.error('Waitlist signup failed:', err);
+            setWaitlistError(
+                t(
+                    'auth.notify_failed',
+                    'We could not save your address. Please try again.'
+                )
+            );
+        } finally {
+            setWaitlistBusy(false);
+        }
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -204,7 +240,7 @@ const Register: React.FC = () => {
 
                 <div className="bg-gray-100 dark:bg-gray-900 min-h-screen px-4 pt-16 flex items-center justify-center">
                     <div className="w-full max-w-md text-center">
-                        {notifyUrl ? (
+                        {showWaitlist ? (
                             <>
                                 <h2 className="text-2xl font-semibold text-gray-700 dark:text-gray-200 mb-4">
                                     {t(
@@ -218,37 +254,55 @@ const Register: React.FC = () => {
                                         "We're putting the finishing touches on tududi Cloud. Leave your email and we'll let you know the moment it's ready."
                                     )}
                                 </p>
-                                <form
-                                    action={notifyUrl}
-                                    method="post"
-                                    target="_blank"
-                                    className="flex flex-col sm:flex-row gap-2 mb-6"
-                                >
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        placeholder={t(
-                                            'auth.notify_email_placeholder',
-                                            'you@email.com'
-                                        )}
-                                        aria-label={t('auth.email', 'Email')}
-                                        required
-                                        className="flex-1 px-4 py-2 border dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                        data-testid="register-notify-email"
-                                    />
-                                    <input
-                                        type="hidden"
-                                        name="tag"
-                                        value="app-waitlist"
-                                    />
-                                    <button
-                                        type="submit"
-                                        className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors whitespace-nowrap"
-                                        data-testid="register-notify-submit"
+                                {waitlistJoined ? (
+                                    <p
+                                        className="text-green-600 dark:text-green-400 mb-6"
+                                        data-testid="register-notify-joined"
                                     >
-                                        {t('auth.notify_me', 'Notify me')}
-                                    </button>
-                                </form>
+                                        {t(
+                                            'auth.notify_joined',
+                                            "You're on the list. We'll email you the day tududi Cloud opens."
+                                        )}
+                                    </p>
+                                ) : (
+                                    <form
+                                        onSubmit={joinWaitlist}
+                                        className="flex flex-col sm:flex-row gap-2 mb-6"
+                                    >
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            value={waitlistEmail}
+                                            onChange={(e) =>
+                                                setWaitlistEmail(e.target.value)
+                                            }
+                                            placeholder={t(
+                                                'auth.notify_email_placeholder',
+                                                'you@email.com'
+                                            )}
+                                            aria-label={t(
+                                                'auth.email',
+                                                'Email'
+                                            )}
+                                            required
+                                            className="flex-1 px-4 py-2 border dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                            data-testid="register-notify-email"
+                                        />
+                                        <button
+                                            type="submit"
+                                            disabled={waitlistBusy}
+                                            className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors whitespace-nowrap disabled:opacity-60"
+                                            data-testid="register-notify-submit"
+                                        >
+                                            {t('auth.notify_me', 'Notify me')}
+                                        </button>
+                                    </form>
+                                )}
+                                {waitlistError && (
+                                    <p className="text-red-500 mb-6">
+                                        {waitlistError}
+                                    </p>
+                                )}
                             </>
                         ) : (
                             <>

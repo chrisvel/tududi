@@ -150,14 +150,40 @@ describe('OIDC Provisioning Service', () => {
 
         describe('hosted mode', () => {
             const config = getConfig();
+            const originalCloudOpen = config.pricing.cloudOpen;
 
             beforeEach(async () => {
                 config.hosted.enabled = true;
+                // A shut Cloud closes registration for SSO too, which has
+                // its own test below; these cover the admin toggle.
+                config.pricing.cloudOpen = true;
                 await Setting.destroy({ where: {}, force: true });
             });
 
             afterEach(() => {
                 config.hosted.enabled = false;
+                config.pricing.cloudOpen = originalCloudOpen;
+            });
+
+            it('refuses to provision a new user while Cloud is shut', async () => {
+                await Setting.upsert({
+                    key: 'registration_enabled',
+                    value: 'true',
+                });
+                config.pricing.cloudOpen = false;
+
+                await expect(
+                    provisioningService.provisionUser(
+                        'test-provider',
+                        { sub: 'sub-hosted-shut', email: 'shut@example.com' },
+                        {}
+                    )
+                ).rejects.toThrow('Registration is not enabled');
+
+                const user = await User.findOne({
+                    where: { email: 'shut@example.com' },
+                });
+                expect(user).toBeNull();
             });
 
             it('refuses to provision a new user while registration is disabled', async () => {

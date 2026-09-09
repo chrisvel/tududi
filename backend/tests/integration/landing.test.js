@@ -16,17 +16,22 @@ const {
 describe('Landing page', () => {
     const config = getConfig();
     const original = { ...config.landing };
+    // pricing is a nested object, so the spread above holds the same
+    // reference: cloudOpen has to be restored on its own.
+    const originalCloudOpen = config.landing.pricing.cloudOpen;
 
     beforeAll(() => {
         config.landing.hosts = ['tududi.com', 'www.tududi.com'];
         config.landing.siteUrl = 'https://tududi.com';
         config.landing.appUrl = 'https://app.tududi.com';
-        config.landing.newsletterAction =
-            'https://buttondown.com/api/emails/embed-subscribe/tududi';
+        // Most of what follows describes the page as it looks once Cloud is
+        // selling; the shut state has its own block at the end.
+        config.landing.pricing.cloudOpen = true;
     });
 
     afterAll(() => {
         Object.assign(config.landing, original);
+        config.landing.pricing.cloudOpen = originalCloudOpen;
     });
 
     it('renders the English page on a landing host', async () => {
@@ -47,8 +52,9 @@ describe('Landing page', () => {
         expect(res.headers['content-security-policy']).toContain(
             'fonts.googleapis.com'
         );
+        // Every form on the page posts back here, nowhere else.
         expect(res.headers['content-security-policy']).toContain(
-            "form-action 'self' https://buttondown.com"
+            "form-action 'self';"
         );
     });
 
@@ -350,16 +356,58 @@ describe('Landing page', () => {
         });
     });
 
-    it('sends the hero to the waitlist while Cloud is shut', async () => {
-        const original = config.landing.pricing.cloudOpen;
-        config.landing.pricing.cloudOpen = false;
-        try {
+    describe('while Cloud is shut', () => {
+        beforeAll(() => {
+            config.landing.pricing.cloudOpen = false;
+        });
+        afterAll(() => {
+            config.landing.pricing.cloudOpen = true;
+        });
+
+        it('sends the hero to the waitlist instead of registration', async () => {
             const res = await request(app).get('/').set('Host', 'tududi.com');
             expect(res.text).toContain('href="#waitlist"');
             expect(res.text).toContain('action="/waitlist"');
-        } finally {
-            config.landing.pricing.cloudOpen = original;
-        }
+            expect(res.text).toContain('Join the waitlist');
+            expect(res.text).not.toContain('https://app.tududi.com/register');
+        });
+
+        it('captures the pricing card address on the site itself', async () => {
+            const res = await request(app).get('/').set('Host', 'tududi.com');
+            const pricing = res.text.slice(
+                res.text.indexOf('<section id="pricing"'),
+                res.text.indexOf('<section id="faq"')
+            );
+            // Its own source, so the two forms can be told apart in the
+            // admin list, and it posts here rather than to a mail provider.
+            expect(pricing).toContain('action="/waitlist"');
+            expect(pricing).toContain('value="pricing"');
+            expect(pricing).not.toMatch(/action="https?:/);
+        });
+
+        it('stores an address from the pricing card', async () => {
+            const email = `pricing_${Date.now()}@example.com`;
+            const res = await request(app)
+                .post('/waitlist')
+                .set('Host', 'tududi.com')
+                .type('form')
+                .send({ email, source: 'pricing', locale: 'fr' });
+            expect(res.status).toBe(303);
+
+            const { WaitlistSubscriber } = require('../../models');
+            const row = await WaitlistSubscriber.findOne({ where: { email } });
+            expect(row).not.toBeNull();
+            expect(row.source).toBe('pricing');
+            expect(row.locale).toBe('fr');
+        });
+
+        it('answers the joined redirect with the confirmation, not a cached page', async () => {
+            await request(app).get('/').set('Host', 'tududi.com');
+            const res = await request(app)
+                .get('/?joined=1')
+                .set('Host', 'tududi.com');
+            expect(res.text).toContain('data-testid="waitlist-joined"');
+        });
     });
 
     it('serves the app on every other host', async () => {

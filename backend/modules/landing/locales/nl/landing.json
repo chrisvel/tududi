@@ -20,7 +20,8 @@
     "starsLoading": "Aantal sterren wordt geladen",
     "ctaDemo": "Probeer de live demo",
     "demoNote": "Een echte gehoste instantie met voorbeeldgegevens, gedeeld en regelmatig gereset",
-    "screenshotAlt": "De interface van tududi, met de Vandaag-weergave en de geplande taken"
+    "screenshotAlt": "De interface van tududi, met de Vandaag-weergave en de geplande taken",
+    "ctaWaitlist": "Zet me op de wachtlijst"
   },
   "proof": {
     "stars": "sterren op GitHub",
@@ -199,7 +200,10 @@
       "cloud": {
         "name": "Cloud",
         "or": "of",
-        "launchNote": "Early-bird jaarprijs, van jou zolang je geabonneerd blijft."
+        "launchNote": "Early-bird jaarprijs, van jou zolang je geabonneerd blijft.",
+        "comingSoon": "Opent over een paar dagen",
+        "comingSoonNote": "We verhuizen Cloud naar nieuwe infrastructuur. Laat hieronder je e-mailadres achter, dan laten we het weten zodra het er weer is.",
+        "notifySubmit": "Houd me op de hoogte"
       }
     },
     "fineprint": "Zeg op wanneer je wilt en exporteer alles. Mocht tududi Cloud ooit stoppen, dan krijg je je gegevens en een handleiding om zelf te hosten. Voor opslag en API-volume geldt fair use. 30 dagen geld-terug-garantie, zonder vragen.",
@@ -229,7 +233,8 @@
     "placeholder": "jij@email.com",
     "inputLabel": "E-mailadres",
     "submit": "Houd me op de hoogte",
-    "note": "We bewaren je adres en de datum waarop je het gaf, om je releasenotes te sturen en niets anders. We delen het nooit."
+    "note": "We bewaren je adres en de datum waarop je het gaf, om je releasenotes te sturen en niets anders. We delen het nooit.",
+    "joined": "Je staat op de lijst. We mailen je zodra tududi Cloud opengaat."
   },
   "langs": {
     "heading": "Beschikbaar in {{count}} talen wereldwijd"

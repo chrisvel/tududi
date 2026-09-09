@@ -20,7 +20,8 @@
     "starsLoading": "Đang tải số sao",
     "ctaDemo": "Dùng thử bản demo trực tiếp",
     "demoNote": "Một phiên bản lưu trữ thật với dữ liệu mẫu, dùng chung và được đặt lại thường xuyên",
-    "screenshotAlt": "Giao diện tududi với chế độ xem Hôm nay và các công việc đã lên kế hoạch"
+    "screenshotAlt": "Giao diện tududi với chế độ xem Hôm nay và các công việc đã lên kế hoạch",
+    "ctaWaitlist": "Tham gia danh sách chờ"
   },
   "proof": {
     "stars": "sao trên GitHub",
@@ -199,7 +200,10 @@
       "cloud": {
         "name": "Cloud",
         "or": "hoặc",
-        "launchNote": "Giá năm ưu đãi sớm, giữ nguyên chừng nào bạn còn đăng ký."
+        "launchNote": "Giá năm ưu đãi sớm, giữ nguyên chừng nào bạn còn đăng ký.",
+        "comingSoon": "Mở trong vài ngày nữa",
+        "comingSoonNote": "Chúng tôi đang chuyển Cloud sang hạ tầng mới. Hãy để lại email bên dưới và chúng tôi sẽ báo ngay khi mở lại.",
+        "notifySubmit": "Báo cho tôi"
       }
     },
     "fineprint": "Hủy bất cứ lúc nào và xuất mọi thứ. Nếu tududi Cloud có ngày đóng cửa, bạn nhận được dữ liệu của mình cùng hướng dẫn chuyển sang tự lưu trữ. Áp dụng sử dụng hợp lý cho dung lượng và lưu lượng API. Hoàn tiền trong 30 ngày, không cần lý do.",
@@ -229,7 +233,8 @@
     "placeholder": "ban@email.com",
     "inputLabel": "Địa chỉ email",
     "submit": "Báo cho tôi",
-    "note": "Chúng tôi lưu địa chỉ của bạn và ngày bạn gửi, chỉ để gửi ghi chú phát hành chứ không gì khác. Chúng tôi không bao giờ chia sẻ nó."
+    "note": "Chúng tôi lưu địa chỉ của bạn và ngày bạn gửi, chỉ để gửi ghi chú phát hành chứ không gì khác. Chúng tôi không bao giờ chia sẻ nó.",
+    "joined": "Bạn đã có trong danh sách. Chúng tôi sẽ gửi email khi tududi Cloud mở."
   },
   "langs": {
     "heading": "Có sẵn bằng {{count}} ngôn ngữ trên toàn thế giới"
