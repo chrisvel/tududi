@@ -126,10 +126,12 @@ ENABLE_EMAIL=false
 EMAIL_SMTP_HOST=smtp.example.com
 EMAIL_SMTP_PORT=587
 EMAIL_SMTP_SECURE=false
-EMAIL_SMTP_USERNAME=user
-EMAIL_SMTP_PASSWORD=pass
 EMAIL_FROM_ADDRESS=noreply@example.com
 EMAIL_FROM_NAME=Tududi
+# EMAIL_SMTP_USERNAME and EMAIL_SMTP_PASSWORD are optional. Leave both unset
+# to use a passwordless SMTP relay (auth is skipped entirely in that case).
+EMAIL_SMTP_USERNAME=user
+EMAIL_SMTP_PASSWORD=pass
 
 # Optional - AI Assistant (any OpenAI-compatible provider)
 LLM_API_KEY=sk-...            # or OPENAI_API_KEY as fallback
