@@ -48,8 +48,23 @@ const adminController = {
                 await adminService.listWaitlist(getRequesterId(req), {
                     limit: req.query.limit,
                     offset: req.query.offset,
+                    q: req.query.q,
                 })
             );
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    async exportWaitlist(req, res, next) {
+        try {
+            const csv = await adminService.exportWaitlist(getRequesterId(req));
+            const day = new Date().toISOString().slice(0, 10);
+            res.type('text/csv').set(
+                'Content-Disposition',
+                `attachment; filename="waitlist-${day}.csv"`
+            );
+            res.send(csv);
         } catch (error) {
             next(error);
         }

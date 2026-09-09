@@ -20,7 +20,8 @@
     "starsLoading": "Ladataan tähtien määrää",
     "ctaDemo": "Kokeile live-demoa",
     "demoNote": "Aito isännöity instanssi esimerkkidatalla, jaettu ja nollataan säännöllisesti",
-    "screenshotAlt": "tududin käyttöliittymä, jossa näkyy Tänään-näkymä ja suunnitellut tehtävät"
+    "screenshotAlt": "tududin käyttöliittymä, jossa näkyy Tänään-näkymä ja suunnitellut tehtävät",
+    "ctaWaitlist": "Liity jonotuslistalle"
   },
   "proof": {
     "stars": "tähteä GitHubissa",
@@ -199,7 +200,10 @@
       "cloud": {
         "name": "Cloud",
         "or": "tai",
-        "launchNote": "Early bird -vuosihinta, sinun niin kauan kuin pysyt tilaajana."
+        "launchNote": "Early bird -vuosihinta, sinun niin kauan kuin pysyt tilaajana.",
+        "comingSoon": "Avautuu muutaman päivän kuluttua",
+        "comingSoonNote": "Siirrämme Cloudin uuteen infrastruktuuriin. Jätä sähköpostiosoitteesi alle, niin ilmoitamme heti kun se on taas käytössä.",
+        "notifySubmit": "Ilmoita minulle"
       }
     },
     "fineprint": "Peruuta milloin tahansa ja vie kaikki. Jos tududi Cloud joskus suljetaan, saat tietosi ja oppaan siirtymiseen omalle palvelimelle. Tallennustilaan ja API-liikenteeseen sovelletaan kohtuullista käyttöä. 30 päivän rahat takaisin -takuu, ilman kysymyksiä.",
@@ -229,7 +233,8 @@
     "placeholder": "sina@email.com",
     "inputLabel": "Sähköpostiosoite",
     "submit": "Ilmoita minulle",
-    "note": "Säilytämme osoitteesi ja päivämäärän jolloin annoit sen, jotta voimme lähettää sinulle julkaisutiedotteita eikä mitään muuta. Emme jaa sitä koskaan."
+    "note": "Säilytämme osoitteesi ja päivämäärän jolloin annoit sen, jotta voimme lähettää sinulle julkaisutiedotteita eikä mitään muuta. Emme jaa sitä koskaan.",
+    "joined": "Olet listalla. Lähetämme sähköpostia, kun tududi Cloud avautuu."
   },
   "langs": {
     "heading": "Saatavilla {{count}} kielellä ympäri maailman"

@@ -31,7 +31,9 @@
     "download": "Download",
     "exitFocusMode": "Exit focus mode",
     "searchTimezones": "Search timezones...",
-    "dismiss": "Dismiss"
+    "dismiss": "Dismiss",
+    "search": "Search",
+    "previous": "Previous"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -740,7 +742,9 @@
     },
     "captcha_required": "Please complete the verification and try again.",
     "registration_successful": "Verify your email address",
-    "registration_email_sent": "Verify your email address to activate your account. We have sent you a link, check your inbox."
+    "registration_email_sent": "Verify your email address to activate your account. We have sent you a link, check your inbox.",
+    "notify_joined": "You're on the list. We'll email you the day tududi Cloud opens.",
+    "notify_failed": "We could not save your address. Please try again."
   },
   "dropdown": {
     "createNew": "Create New",
@@ -1529,7 +1533,21 @@
       "waitlistEmpty": "Nobody yet.",
       "email": "Email",
       "source": "Source",
-      "joined": "Joined"
+      "joined": "Joined",
+      "waitlistAll": "See all"
+    },
+    "waitlist": {
+      "title": "Waitlist",
+      "export": "Export CSV",
+      "searchPlaceholder": "Search by email",
+      "email": "Email",
+      "source": "Source",
+      "locale": "Language",
+      "submissions": "Submissions",
+      "joined": "Joined",
+      "empty": "Nobody has signed up yet",
+      "noMatches": "No addresses match that search",
+      "showing": "{{from}}-{{to}} of {{total}}"
     }
   },
   "billing": {

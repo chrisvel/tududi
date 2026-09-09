@@ -20,7 +20,8 @@
     "starsLoading": "Cargando el número de estrellas",
     "ctaDemo": "Prueba la demo en vivo",
     "demoNote": "Una instancia alojada real, con datos de ejemplo, compartida y reiniciada con regularidad",
-    "screenshotAlt": "La interfaz de tududi, con la vista Hoy y sus tareas planificadas"
+    "screenshotAlt": "La interfaz de tududi, con la vista Hoy y sus tareas planificadas",
+    "ctaWaitlist": "Únete a la lista de espera"
   },
   "proof": {
     "stars": "estrellas en GitHub",
@@ -199,7 +200,10 @@
       "cloud": {
         "name": "Cloud",
         "or": "o",
-        "launchNote": "Precio anual early bird, tuyo mientras sigas suscrito."
+        "launchNote": "Precio anual early bird, tuyo mientras sigas suscrito.",
+        "comingSoon": "Abre en unos días",
+        "comingSoonNote": "Estamos moviendo Cloud a una nueva infraestructura. Déjanos tu correo abajo y te avisamos en cuanto vuelva.",
+        "notifySubmit": "Avísame"
       }
     },
     "fineprint": "Cancela cuando quieras y exporta todo. Si tududi Cloud cerrara algún día, recibirás tus datos y una guía para migrar a autoalojado. Se aplica uso razonable al almacenamiento y al volumen de API. Garantía de devolución de 30 días, sin preguntas.",
@@ -229,7 +233,8 @@
     "placeholder": "tu@email.com",
     "inputLabel": "Dirección de correo",
     "submit": "Avísame",
-    "note": "Guardamos tu dirección y la fecha en que nos la diste, solo para enviarte las notas de versión. Nunca la compartimos."
+    "note": "Guardamos tu dirección y la fecha en que nos la diste, solo para enviarte las notas de versión. Nunca la compartimos.",
+    "joined": "Estás en la lista. Te escribiremos cuando tududi Cloud abra."
   },
   "langs": {
     "heading": "Disponible en {{count}} idiomas en todo el mundo"

@@ -20,7 +20,8 @@
     "starsLoading": "Laster antall stjerner",
     "ctaDemo": "Prøv live-demoen",
     "demoNote": "En ekte hostet instans med eksempeldata, delt og nullstilles jevnlig",
-    "screenshotAlt": "Grensesnittet i tududi, med I dag-visningen og de planlagte oppgavene"
+    "screenshotAlt": "Grensesnittet i tududi, med I dag-visningen og de planlagte oppgavene",
+    "ctaWaitlist": "Bli med på ventelisten"
   },
   "proof": {
     "stars": "stjerner på GitHub",
@@ -199,7 +200,10 @@
       "cloud": {
         "name": "Cloud",
         "or": "eller",
-        "launchNote": "Early bird-årspris, din så lenge du forblir abonnent."
+        "launchNote": "Early bird-årspris, din så lenge du forblir abonnent.",
+        "comingSoon": "Åpner om noen få dager",
+        "comingSoonNote": "Vi flytter Cloud til ny infrastruktur. Legg igjen e-posten din under, så sier vi fra så snart den er tilbake.",
+        "notifySubmit": "Gi meg beskjed"
       }
     },
     "fineprint": "Si opp når som helst og eksporter alt. Skulle tududi Cloud noen gang stenge, får du dataene dine og en guide til selvhosting. Rimelig bruk gjelder for lagring og API-volum. 30 dagers pengene-tilbake-garanti, ingen spørsmål.",
@@ -229,7 +233,8 @@
     "placeholder": "du@email.com",
     "inputLabel": "E-postadresse",
     "submit": "Gi meg beskjed",
-    "note": "Vi lagrer adressen din og datoen du ga oss den, for å sende deg utgivelsesnotater og ingenting annet. Vi deler den aldri."
+    "note": "Vi lagrer adressen din og datoen du ga oss den, for å sende deg utgivelsesnotater og ingenting annet. Vi deler den aldri.",
+    "joined": "Du står på listen. Vi sender deg en e-post når tududi Cloud åpner."
   },
   "langs": {
     "heading": "Tilgjengelig på {{count}} språk over hele verden"

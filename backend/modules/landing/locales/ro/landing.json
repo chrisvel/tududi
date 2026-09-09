@@ -20,7 +20,8 @@
     "starsLoading": "Se încarcă numărul de stele",
     "ctaDemo": "Încearcă demo-ul live",
     "demoNote": "O instanță găzduită reală, cu date de exemplu, partajată și resetată periodic",
-    "screenshotAlt": "Interfața tududi, cu vizualizarea Astăzi și sarcinile planificate"
+    "screenshotAlt": "Interfața tududi, cu vizualizarea Astăzi și sarcinile planificate",
+    "ctaWaitlist": "Înscrie-te pe lista de așteptare"
   },
   "proof": {
     "stars": "stele pe GitHub",
@@ -199,7 +200,10 @@
       "cloud": {
         "name": "Cloud",
         "or": "sau",
-        "launchNote": "Preț anual early bird, al tău atât timp cât rămâi abonat."
+        "launchNote": "Preț anual early bird, al tău atât timp cât rămâi abonat.",
+        "comingSoon": "Se deschide în câteva zile",
+        "comingSoonNote": "Mutăm Cloud pe o infrastructură nouă. Lasă-ți adresa de e-mail mai jos și te anunțăm imediat ce revine.",
+        "notifySubmit": "Anunță-mă"
       }
     },
     "fineprint": "Anulează oricând și exportă tot. Dacă tududi Cloud se va închide vreodată, primești datele tale și un ghid de migrare către găzduire proprie. Pentru stocare și volumul API se aplică utilizarea rezonabilă. Garanție de returnare a banilor în 30 de zile, fără întrebări.",
@@ -229,7 +233,8 @@
     "placeholder": "tu@email.com",
     "inputLabel": "Adresă de e-mail",
     "submit": "Anunță-mă",
-    "note": "Păstrăm adresa ta și data la care ne-ai dat-o, ca să îți trimitem notele de versiune și nimic altceva. Nu o împărtășim niciodată."
+    "note": "Păstrăm adresa ta și data la care ne-ai dat-o, ca să îți trimitem notele de versiune și nimic altceva. Nu o împărtășim niciodată.",
+    "joined": "Ești pe listă. Îți scriem când se deschide tududi Cloud."
   },
   "langs": {
     "heading": "Disponibil în {{count}} limbi în toată lumea"

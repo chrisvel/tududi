@@ -20,7 +20,8 @@
     "starsLoading": "Wczytywanie liczby gwiazdek",
     "ctaDemo": "Wypróbuj demo na żywo",
     "demoNote": "Prawdziwa hostowana instancja z przykładowymi danymi, współdzielona i regularnie resetowana",
-    "screenshotAlt": "Interfejs tududi z widokiem Dziś i zaplanowanymi zadaniami"
+    "screenshotAlt": "Interfejs tududi z widokiem Dziś i zaplanowanymi zadaniami",
+    "ctaWaitlist": "Dołącz do listy oczekujących"
   },
   "proof": {
     "stars": "gwiazdek na GitHubie",
@@ -199,7 +200,10 @@
       "cloud": {
         "name": "Cloud",
         "or": "lub",
-        "launchNote": "Roczna cena early bird, Twoja tak długo, jak utrzymujesz subskrypcję."
+        "launchNote": "Roczna cena early bird, Twoja tak długo, jak utrzymujesz subskrypcję.",
+        "comingSoon": "Otwieramy za kilka dni",
+        "comingSoonNote": "Przenosimy Cloud na nową infrastrukturę. Zostaw poniżej swój adres e-mail, a damy znać, gdy tylko wróci.",
+        "notifySubmit": "Powiadom mnie"
       }
     },
     "fineprint": "Zrezygnuj w każdej chwili i wyeksportuj wszystko. Gdyby tududi Cloud kiedykolwiek został zamknięty, otrzymasz swoje dane i przewodnik migracji na własny serwer. Do przestrzeni i ruchu API stosuje się zasada fair use. 30-dniowa gwarancja zwrotu pieniędzy, bez pytań.",
@@ -229,7 +233,8 @@
     "placeholder": "ty@email.com",
     "inputLabel": "Adres e-mail",
     "submit": "Powiadom mnie",
-    "note": "Przechowujemy twój adres i datę, kiedy nam go podałeś, wyłącznie po to, by wysyłać ci informacje o nowych wersjach. Nigdy go nie udostępniamy."
+    "note": "Przechowujemy twój adres i datę, kiedy nam go podałeś, wyłącznie po to, by wysyłać ci informacje o nowych wersjach. Nigdy go nie udostępniamy.",
+    "joined": "Jesteś na liście. Napiszemy, gdy tududi Cloud zostanie otwarte."
   },
   "langs": {
     "heading": "Dostępne w {{count}} językach na całym świecie"

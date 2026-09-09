@@ -20,7 +20,8 @@
     "starsLoading": "Nalaganje števila zvezdic",
     "ctaDemo": "Preizkusite demo v živo",
     "demoNote": "Prava gostovana instanca z vzorčnimi podatki, deljena in redno ponastavljena",
-    "screenshotAlt": "Vmesnik tududi s pogledom Danes in načrtovanimi opravili"
+    "screenshotAlt": "Vmesnik tududi s pogledom Danes in načrtovanimi opravili",
+    "ctaWaitlist": "Pridruži se čakalnemu seznamu"
   },
   "proof": {
     "stars": "zvezdic na GitHubu",
@@ -199,7 +200,10 @@
       "cloud": {
         "name": "Cloud",
         "or": "ali",
-        "launchNote": "Letna cena early bird, vaša, dokler ostanete naročeni."
+        "launchNote": "Letna cena early bird, vaša, dokler ostanete naročeni.",
+        "comingSoon": "Odpremo čez nekaj dni",
+        "comingSoonNote": "Cloud selimo na novo infrastrukturo. Spodaj pustite svoj e-naslov in sporočili vam bomo takoj, ko bo spet na voljo.",
+        "notifySubmit": "Obvestite me"
       }
     },
     "fineprint": "Prekličite kadar koli in izvozite vse. Če bi se tududi Cloud kdaj zaprl, dobite svoje podatke in vodnik za selitev na lastni strežnik. Za prostor in obseg API velja poštena uporaba. 30-dnevna garancija vračila denarja, brez vprašanj.",
@@ -229,7 +233,8 @@
     "placeholder": "vi@email.com",
     "inputLabel": "E-poštni naslov",
     "submit": "Obvestite me",
-    "note": "Shranimo vaš naslov in datum, ko ste nam ga dali, da vam pošiljamo opombe ob izdajah in nič drugega. Nikoli ga ne delimo naprej."
+    "note": "Shranimo vaš naslov in datum, ko ste nam ga dali, da vam pošiljamo opombe ob izdajah in nič drugega. Nikoli ga ne delimo naprej.",
+    "joined": "Ste na seznamu. Pisali vam bomo, ko se tududi Cloud odpre."
   },
   "langs": {
     "heading": "Na voljo v {{count}} jezikih po vsem svetu"

@@ -20,7 +20,8 @@
     "starsLoading": "正在加载星标数",
     "ctaDemo": "试用在线演示",
     "demoNote": "一个真实的托管实例，内含示例数据，共享使用并定期重置",
-    "screenshotAlt": "tududi 的界面，显示「今天」视图和已规划的任务"
+    "screenshotAlt": "tududi 的界面，显示「今天」视图和已规划的任务",
+    "ctaWaitlist": "加入等候名单"
   },
   "proof": {
     "stars": "GitHub 星标",
@@ -199,7 +200,10 @@
       "cloud": {
         "name": "Cloud",
         "or": "或",
-        "launchNote": "早鸟年付价格，只要保持订阅就一直有效。"
+        "launchNote": "早鸟年付价格，只要保持订阅就一直有效。",
+        "comingSoon": "几天后开放",
+        "comingSoonNote": "我们正在将 Cloud 迁移到新的基础设施。在下方留下你的邮箱，恢复上线时我们会第一时间通知你。",
+        "notifySubmit": "通知我"
       }
     },
     "fineprint": "随时取消并导出全部数据。如果 tududi Cloud 有一天关闭，您会拿到自己的数据和自托管迁移指南。存储和 API 用量遵循合理使用原则。30 天退款保证，不问原因。",
@@ -229,7 +233,8 @@
     "placeholder": "you@email.com",
     "inputLabel": "电子邮箱地址",
     "submit": "通知我",
-    "note": "我们只保存你的邮箱地址和提交日期，用来给你发送版本更新说明，别无他用。我们从不将它分享给任何人。"
+    "note": "我们只保存你的邮箱地址和提交日期，用来给你发送版本更新说明，别无他用。我们从不将它分享给任何人。",
+    "joined": "你已在名单中。tududi Cloud 开放时我们会发邮件通知你。"
   },
   "langs": {
     "heading": "在全球提供 {{count}} 种语言"

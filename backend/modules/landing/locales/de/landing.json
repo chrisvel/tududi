@@ -20,7 +20,8 @@
     "starsLoading": "Sternanzahl wird geladen",
     "ctaDemo": "Live-Demo ausprobieren",
     "demoNote": "Eine echte gehostete Instanz mit Beispieldaten, gemeinsam genutzt und regelmäßig zurückgesetzt",
-    "screenshotAlt": "Die Oberfläche von tududi mit der Heute-Ansicht und den geplanten Aufgaben"
+    "screenshotAlt": "Die Oberfläche von tududi mit der Heute-Ansicht und den geplanten Aufgaben",
+    "ctaWaitlist": "Auf die Warteliste"
   },
   "proof": {
     "stars": "Sterne auf GitHub",
@@ -199,7 +200,10 @@
       "cloud": {
         "name": "Cloud",
         "or": "oder",
-        "launchNote": "Frühbucher-Jahrespreis, deiner, solange du abonniert bleibst."
+        "launchNote": "Frühbucher-Jahrespreis, deiner, solange du abonniert bleibst.",
+        "comingSoon": "Öffnet in wenigen Tagen",
+        "comingSoonNote": "Wir ziehen Cloud auf eine neue Infrastruktur um. Hinterlass unten deine E-Mail-Adresse und wir sagen dir Bescheid, sobald es wieder da ist.",
+        "notifySubmit": "Benachrichtigen"
       }
     },
     "fineprint": "Jederzeit kündbar, alles exportierbar. Sollte tududi Cloud je eingestellt werden, bekommst du deine Daten und eine Anleitung zum Selbsthosten. Für Speicher und API-Volumen gilt Fair Use. 30 Tage Geld-zurück-Garantie, ohne Nachfragen.",
@@ -229,7 +233,8 @@
     "placeholder": "du@email.com",
     "inputLabel": "E-Mail-Adresse",
     "submit": "Benachrichtigen",
-    "note": "Wir speichern deine Adresse und das Datum, an dem du sie uns gegeben hast, um dir Release-Notes zu schicken und sonst nichts. Wir geben sie niemals weiter."
+    "note": "Wir speichern deine Adresse und das Datum, an dem du sie uns gegeben hast, um dir Release-Notes zu schicken und sonst nichts. Wir geben sie niemals weiter.",
+    "joined": "Du stehst auf der Liste. Wir schreiben dir, sobald tududi Cloud öffnet."
   },
   "langs": {
     "heading": "Die tududi-App ist weltweit in {{count}} Sprachen verfügbar"

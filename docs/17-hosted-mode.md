@@ -219,7 +219,6 @@ and is switched on per hostname:
 |---|---|
 | `TUDUDI_LANDING_HOSTS` | comma-separated hostnames that get the marketing page, e.g. `tududi.com,www.tududi.com`. Empty (default) means it is never served |
 | `TUDUDI_LANDING_URL` | canonical origin used in `hreflang` and canonical tags; defaults to `https://` plus the first host |
-| `TUDUDI_LANDING_NEWSLETTER_URL` | form action for the release-notes signup (a Buttondown or similar embed endpoint). Unset hides the forms |
 | `TUDUDI_LANDING_PRICING_JSON` | overrides for the prices printed on the page: `{"monthly":5,"annual":49,"standard":99,"business":499,"launchActive":true}` |
 
 On a landing host, `/` and `/<locale>` render the page, `/landing-assets/*`
@@ -233,6 +232,39 @@ The page carries its own `Content-Security-Policy` (Google Fonts, Font
 Awesome from cdnjs, Google Analytics, the GitHub API for the star count).
 `node backend/scripts/landing-i18n-check.js` reports locale keys that are
 missing or whose `{{placeholders}}` differ from English.
+
+### Waitlist
+
+`cloudOpen` in the pricing config says whether Cloud is selling. It ships
+false, and is reopened with `TUDUDI_PRICING_JSON='{"cloudOpen":true}'`.
+
+While it is false:
+
+- every "start on tududi Cloud" call to action becomes "join the waitlist"
+  and points at the page's own `#waitlist` form, and the Cloud pricing card
+  swaps its price and register link for an "opening soon" notice with its
+  own capture form;
+- in hosted mode registration is closed with it, whatever the admin toggle
+  says, so a direct link to `app.example.com/register` cannot open an
+  account that a payment provider is not ready to charge. SSO provisioning
+  of new accounts is closed too; existing accounts sign in as usual. A
+  self-hosted instance is untouched, since hosted mode is off there;
+- the register page shows the same "opening in a few days" copy and capture
+  form rather than the generic "registration closed" notice.
+
+Every form posts to tududi itself, never to a third party: the marketing
+page's to `POST /waitlist` on the landing host, the register page's to
+`POST /api/waitlist`. Both write one `waitlist_subscribers` row per
+address, counting a repeat submission in `submission_count` rather than
+adding a row, and both answer identically whether the address was new,
+already listed or malformed, so neither can be used to find out who has
+signed up. `source` records which form it was (`hero`, `waitlist`,
+`footer`, `cloud`, `pricing`, `app`).
+
+Admins read the list at `/admin/waitlist` in the app: newest first, search
+by address, and "Export CSV" (`GET /api/admin/waitlist/export`) for the
+whole list on launch day. The dashboard shows the total and the last seven
+days beside it.
 
 ## Deploying on one machine
 

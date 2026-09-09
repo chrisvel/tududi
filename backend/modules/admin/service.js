@@ -350,26 +350,20 @@ class AdminService {
         };
     }
 
-    // The waitlist, newest first, for the admin dashboard.
-    async listWaitlist(requesterId, { limit = 50, offset = 0 } = {}) {
+    // The waitlist, newest first, for the admin dashboard and the waitlist
+    // page. `q` narrows it to addresses containing that fragment.
+    async listWaitlist(requesterId, { limit = 50, offset = 0, q = '' } = {}) {
         await this.verifyAdmin(requesterId);
-        const { WaitlistSubscriber } = require('../../models');
-        const { rows, count } = await WaitlistSubscriber.findAndCountAll({
-            order: [['created_at', 'DESC']],
-            limit: Math.min(Number(limit) || 50, 500),
-            offset: Number(offset) || 0,
-        });
-        return {
-            total: count,
-            subscribers: rows.map((r) => ({
-                id: r.id,
-                email: r.email,
-                source: r.source,
-                locale: r.locale,
-                submission_count: r.submission_count,
-                created_at: r.created_at,
-            })),
-        };
+        const waitlist = require('../../services/waitlistService');
+        return waitlist.list({ limit, offset, q });
+    }
+
+    // The whole list as CSV, which is how it gets into a mail provider on
+    // launch day.
+    async exportWaitlist(requesterId) {
+        await this.verifyAdmin(requesterId);
+        const waitlist = require('../../services/waitlistService');
+        return waitlist.toCsv(await waitlist.all());
     }
 
     async toggleRegistration(requesterId, body) {

@@ -30,6 +30,24 @@ const authController = {
         }
     },
 
+    // The register page's waitlist capture while Cloud is shut. The answer
+    // is the same for a new address, one already on the list and one that
+    // was refused, so it cannot be used to find out who has signed up.
+    async joinWaitlist(req, res, next) {
+        try {
+            const waitlist = require('../../services/waitlistService');
+            await waitlist.capture({
+                email: req.body?.email,
+                source: 'app',
+                locale: req.body?.locale || null,
+                referrer: req.get('referer'),
+            });
+            res.json({ joined: true });
+        } catch (error) {
+            next(error);
+        }
+    },
+
     getPasswordAuthStatus(req, res, next) {
         try {
             res.json({ enabled: isPasswordAuthEnabled() });

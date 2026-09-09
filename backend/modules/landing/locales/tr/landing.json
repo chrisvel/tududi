@@ -20,7 +20,8 @@
     "starsLoading": "Yıldız sayısı yükleniyor",
     "ctaDemo": "Canlı demoyu deneyin",
     "demoNote": "Örnek verilerle dolu gerçek bir barındırılan örnek; paylaşılır ve düzenli olarak sıfırlanır",
-    "screenshotAlt": "tududi arayüzü; Bugün görünümü ve planlanmış görevler"
+    "screenshotAlt": "tududi arayüzü; Bugün görünümü ve planlanmış görevler",
+    "ctaWaitlist": "Bekleme listesine katıl"
   },
   "proof": {
     "stars": "GitHub yıldızı",
@@ -199,7 +200,10 @@
       "cloud": {
         "name": "Cloud",
         "or": "veya",
-        "launchNote": "Erken kayıt yıllık fiyatı, abone kaldığınız sürece sizin."
+        "launchNote": "Erken kayıt yıllık fiyatı, abone kaldığınız sürece sizin.",
+        "comingSoon": "Birkaç gün içinde açılıyor",
+        "comingSoonNote": "Cloud'u yeni altyapıya taşıyoruz. E-posta adresinizi aşağıya bırakın, geri döndüğü anda haber verelim.",
+        "notifySubmit": "Haber ver"
       }
     },
     "fineprint": "İstediğiniz zaman iptal edin ve her şeyi dışa aktarın. tududi Cloud bir gün kapanırsa verilerinizi ve kendi sunucunuza taşınma rehberini alırsınız. Depolama ve API hacmi için adil kullanım geçerlidir. 30 gün para iade garantisi, soru sorulmaz.",
@@ -229,7 +233,8 @@
     "placeholder": "siz@email.com",
     "inputLabel": "E-posta adresi",
     "submit": "Haber ver",
-    "note": "Adresinizi ve bize verdiğiniz tarihi yalnızca sürüm notları göndermek için saklıyoruz, başka bir şey için değil. Asla paylaşmıyoruz."
+    "note": "Adresinizi ve bize verdiğiniz tarihi yalnızca sürüm notları göndermek için saklıyoruz, başka bir şey için değil. Asla paylaşmıyoruz.",
+    "joined": "Listedesiniz. tududi Cloud açıldığında size e-posta göndereceğiz."
   },
   "langs": {
     "heading": "Dünya genelinde {{count}} dilde kullanılabilir"

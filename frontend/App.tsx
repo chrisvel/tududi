@@ -448,6 +448,31 @@ const App: React.FC = () => {
                                 }
                             />
                             <Route
+                                path="/admin/waitlist"
+                                element={
+                                    currentUser?.is_admin === true ? (
+                                        <React.Suspense
+                                            fallback={
+                                                <div className="p-4">
+                                                    Loading...
+                                                </div>
+                                            }
+                                        >
+                                            {React.createElement(
+                                                React.lazy(
+                                                    () =>
+                                                        import(
+                                                            './components/Admin/AdminWaitlistPage'
+                                                        )
+                                                )
+                                            )}
+                                        </React.Suspense>
+                                    ) : (
+                                        <Navigate to="/today" replace />
+                                    )
+                                }
+                            />
+                            <Route
                                 path="/admin/users"
                                 element={
                                     currentUser?.is_admin === true ? (

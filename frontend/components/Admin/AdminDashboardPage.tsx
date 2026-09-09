@@ -171,6 +171,13 @@ const AdminDashboardPage: React.FC = () => {
                     <CreditCardIcon className="w-4 h-4 mr-2" />
                     {t('admin.billing.title', 'Billing')}
                 </Link>
+                <Link
+                    to="/admin/waitlist"
+                    className="inline-flex items-center px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+                >
+                    <EnvelopeIcon className="w-4 h-4 mr-2" />
+                    {t('admin.waitlist.title', 'Waitlist')}
+                </Link>
                 <span className="inline-flex items-center px-4 py-2 rounded-lg text-sm text-gray-500 dark:text-gray-400">
                     <RectangleStackIcon className="w-4 h-4 mr-2" />
                     {data.instance.registration_enabled
@@ -182,6 +189,12 @@ const AdminDashboardPage: React.FC = () => {
             <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center">
                 <EnvelopeIcon className="w-5 h-5 mr-2" />
                 {t('admin.dashboard.waitlistLatest', 'Latest waitlist signups')}
+                <Link
+                    to="/admin/waitlist"
+                    className="ml-3 text-sm font-normal text-blue-500 hover:text-blue-600"
+                >
+                    {t('admin.dashboard.waitlistAll', 'See all')}
+                </Link>
             </h2>
             {waitlist.length === 0 ? (
                 <p className="text-gray-500 dark:text-gray-400 text-sm">
