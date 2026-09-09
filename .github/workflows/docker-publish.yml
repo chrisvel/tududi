@@ -27,6 +27,11 @@ jobs:
   publish:
     runs-on: ubuntu-latest
 
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      latest: ${{ steps.version.outputs.latest }}
+      prerelease: ${{ steps.version.outputs.prerelease }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -49,12 +54,17 @@ jobs:
             echo "Refusing to publish: '$VERSION' is not a version" >&2
             exit 1
           fi
+          # One rule for both: anything with a hyphen (1.5.0-rc.1,
+          # 1.5.0-dev.3) is a pre-release. It never moves the :latest image
+          # tag and it is flagged as a pre-release on GitHub.
+          PRERELEASE="false"
           case "$VERSION" in
-            *-*) LATEST="false" ;;   # pre-releases never move latest
+            *-*) LATEST="false"; PRERELEASE="true" ;;
           esac
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "latest=$LATEST" >> "$GITHUB_OUTPUT"
-          echo "Publishing $VERSION (latest: $LATEST)"
+          echo "prerelease=$PRERELEASE" >> "$GITHUB_OUTPUT"
+          echo "Publishing $VERSION (latest: $LATEST, prerelease: $PRERELEASE)"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -84,3 +94,79 @@ jobs:
       - name: Print digest
         run: |
           echo "chrisvel/tududi:${{ steps.version.outputs.version }}@${{ steps.build.outputs.digest }}" | tee -a "$GITHUB_STEP_SUMMARY"
+
+  # The GitHub Release is cut only from a real tag push, and only after the
+  # image it describes is on Docker Hub, so a release never points at
+  # something nobody can pull. workflow_dispatch republishes an image for a
+  # tag that already has its release, so it is skipped here.
+  release:
+    needs: publish
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build release notes
+        id: notes
+        env:
+          VERSION: ${{ needs.publish.outputs.version }}
+          PRERELEASE: ${{ needs.publish.outputs.prerelease }}
+        run: |
+          # A stable release documents itself: CHANGELOG.md carries a section
+          # written by hand, and that is the release body. Pre-releases are
+          # cut too often to justify that, so they get generated notes.
+          NOTES_FILE="release-notes.md"
+          if [ "$PRERELEASE" = "false" ] && [ -f CHANGELOG.md ]; then
+            awk -v v="$VERSION" '
+              $0 == "## " v { found = 1; next }
+              found && /^## / { exit }
+              found { print }
+            ' CHANGELOG.md > "$NOTES_FILE"
+          fi
+          if [ -s "$NOTES_FILE" ]; then
+            echo "Using the CHANGELOG.md section for $VERSION"
+            echo "generate=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "No CHANGELOG.md section for $VERSION; generating notes"
+            printf '' > "$NOTES_FILE"
+            echo "generate=true" >> "$GITHUB_OUTPUT"
+          fi
+          {
+            echo ""
+            echo "Docker image: \`docker pull chrisvel/tududi:$VERSION\`"
+          } >> "$NOTES_FILE"
+
+      - name: Create the GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+          PRERELEASE: ${{ needs.publish.outputs.prerelease }}
+          GENERATE: ${{ steps.notes.outputs.generate }}
+        run: |
+          # Re-running the workflow on a tag that already has a release must
+          # update it rather than fail the run.
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG exists, updating it"
+            ACTION=edit
+          else
+            ACTION=create
+          fi
+          set -- "$TAG" --title "$TAG" --notes-file release-notes.md
+          if [ "$PRERELEASE" = "true" ]; then
+            set -- "$@" --prerelease
+          else
+            set -- "$@" --latest
+          fi
+          if [ "$ACTION" = "create" ] && [ "$GENERATE" = "true" ]; then
+            set -- "$@" --generate-notes
+          fi
+          gh release "$ACTION" "$@"
+          gh release view "$TAG" --json tagName,isPrerelease,url \
+            | tee -a "$GITHUB_STEP_SUMMARY"
