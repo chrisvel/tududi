@@ -7,16 +7,36 @@ set -euo pipefail
 #
 #   ./scripts/create-version.sh              ask which kind, propose the number
 #   ./scripts/create-version.sh v1.5.0       take that version, no questions
+#   ./scripts/create-version.sh --no-push    stop at the local commit and tag
+#
+# Pushing is the publish: the tag is what builds the image and cuts the
+# GitHub Release, so this pushes the branch and the tag when it is done. The
+# push is confirmed separately from the version, because it is the step that
+# cannot be taken back.
 #
 # The version decides everything downstream: anything with a hyphen
 # (v1.5.0-rc.1, v1.5.0-dev.3) is a pre-release, which never moves the :latest
 # image tag and is flagged as a pre-release on GitHub. A plain v1.5.0 does
 # both.
 
-if [[ $# -gt 1 ]]; then
-  echo "Usage: $0 [version]" >&2
-  exit 1
-fi
+PUSH=true
+VERSION=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --no-push) PUSH=false; shift ;;
+    -h|--help) echo "Usage: $0 [--no-push] [version]"; exit 0 ;;
+    -*) echo "Error: unknown option: $1" >&2; exit 1 ;;
+    *)
+      if [[ -n "$VERSION" ]]; then
+        echo "Error: unexpected argument: $1" >&2
+        exit 1
+      fi
+      VERSION="$1"
+      shift
+      ;;
+  esac
+done
 
 if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   echo "Error: This script must be run inside a git repository." >&2
@@ -36,7 +56,6 @@ if [[ -n $(git status --porcelain) ]]; then
   exit 1
 fi
 
-VERSION="${1:-}"
 
 if [[ -z "$VERSION" ]]; then
   if [[ ! -t 0 ]]; then
@@ -168,5 +187,51 @@ git tag -a "$VERSION" -m "Release $VERSION"
 echo "Version updated to $VERSION."
 echo "Created commit: $COMMIT_MESSAGE"
 echo "Created annotated tag: $VERSION"
+
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+publish_hint() {
+  echo "Publish it with:  git push origin $BRANCH && git push origin $VERSION"
+}
+
+if [[ "$PUSH" != "true" ]]; then
+  echo
+  publish_hint
+  exit 0
+fi
+
+if [[ -t 0 ]]; then
+  printf '\n'
+  echo "Pushing publishes it: the tag builds the image and cuts the GitHub Release."
+  read -r -p "Push $BRANCH and $VERSION to origin now? [Y/n]: " DO_PUSH || {
+    printf '\nNot pushed.\n'
+    publish_hint
+    exit 1
+  }
+  case "$DO_PUSH" in
+    ''|y|Y|yes|YES) ;;
+    *) echo; echo "Not pushed."; publish_hint; exit 0 ;;
+  esac
+fi
+
+# Two pushes, deliberately. Sending the branch and the tag in one push (what
+# --follow-tags does) has left the tag on the remote without GitHub raising a
+# tag event, so nothing built: v1.5.0-rc.8 landed that way. Pushing the tag on
+# its own is the ref update the publish workflow listens for.
+git push origin "$BRANCH"
+git push origin "$VERSION"
+
+ORIGIN_URL=$(git remote get-url origin)
 echo
-echo "Publish it with:  git push origin main --follow-tags"
+case "$ORIGIN_URL" in
+  *github.com*)
+    SLUG=$(printf '%s' "$ORIGIN_URL" | sed -E 's#^(git@github\.com:|https://github\.com/)##; s#\.git$##')
+    echo "Pushed. Building the image and cutting the release:"
+    echo "  https://github.com/$SLUG/actions"
+    echo
+    echo "Watch it with:  gh run watch \$(gh run list --workflow 'Publish Docker image' --limit 1 --json databaseId --jq '.[0].databaseId')"
+    ;;
+  *)
+    echo "Pushed $BRANCH and $VERSION to $ORIGIN_URL."
+    ;;
+esac
