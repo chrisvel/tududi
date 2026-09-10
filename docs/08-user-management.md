@@ -265,10 +265,15 @@ to an account, so it cannot be used to discover who has signed up - Declining re
 ### User CRUD Operations
 
 30. **Admins can create new users directly**
-    - Bypasses registration flow and email verification
-    - Created users can log in immediately
-    - Requires: email, password
-    - Optional: name, surname, role (admin or user)
+    - Bypasses the registration flow
+    - Requires: email. Optional: name, surname, role (admin or user)
+    - **With a password:** the account is verified and can log in immediately
+    - **Without a password (invite):** the account is created unverified with no
+      password, and an email is sent with a set-password link (reuses the
+      password-reset token; expiry `INVITE_TOKEN_EXPIRY_HOURS`, default 168).
+      Using the link sets the password and verifies the email. The response
+      carries `invited: true` and `email_sent`; if email is disabled the account
+      is still kept and the admin sets a password via update.
 
 31. **Admins can list all users**
     - Shows email, name, surname, role, creation date
@@ -351,7 +356,8 @@ to an account, so it cannot be used to discover who has signed up - Declining re
     Registration → Email Verification → First Login → Profile Setup → Active User
     ```
 
-    - Or: Admin creates user → Active user (no verification needed)
+    - Or: Admin creates user with a password → Active user (no verification needed)
+    - Or: Admin creates user without a password → Invite email → user sets password → Active user
 
 40. **User deletion flow:**
     ```

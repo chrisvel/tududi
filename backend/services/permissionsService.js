@@ -1,5 +1,13 @@
 const { Op } = require('sequelize');
-const { Project, Task, Note, Permission } = require('../models');
+const {
+    Project,
+    Task,
+    Note,
+    Area,
+    Goal,
+    Person,
+    Permission,
+} = require('../models');
 const { isAdmin } = require('./rolesService');
 
 const ACCESS = { NONE: 'none', RO: 'ro', RW: 'rw', ADMIN: 'admin' };
@@ -18,7 +26,24 @@ async function getSharedUidsForUser(resourceType, userId) {
     return Array.from(set);
 }
 
-const RESOURCE_MODELS = { project: Project, task: Task, note: Note };
+const RESOURCE_MODELS = {
+    project: Project,
+    task: Task,
+    note: Note,
+    area: Area,
+    goal: Goal,
+};
+
+// The uids of every Person record that points at this user's account (normally
+// just their self-person). A task assigned to any of these is "assigned to me".
+async function getMyPersonUids(userId) {
+    const rows = await Person.findAll({
+        where: { linked_user_id: userId },
+        attributes: ['uid'],
+        raw: true,
+    });
+    return rows.map((r) => r.uid);
+}
 
 // Whether the resource row still exists, regardless of who may read it.
 // Used to tell "gone" apart from "not yours" when access is denied.
@@ -51,11 +76,22 @@ async function getAccess(userId, resourceType, resourceUid) {
     } else if (resourceType === 'task') {
         const t = await Task.findOne({
             where: { uid: resourceUid },
-            attributes: ['user_id', 'project_id', 'parent_task_id'],
+            attributes: [
+                'user_id',
+                'project_id',
+                'parent_task_id',
+                'assigned_to',
+            ],
             raw: true,
         });
         if (!t) return ACCESS.NONE;
         if (t.user_id === userId) return ACCESS.RW;
+
+        // A task assigned to the caller is theirs to act on, wherever it lives.
+        if (t.assigned_to) {
+            const myPersonUids = await getMyPersonUids(userId);
+            if (myPersonUids.includes(t.assigned_to)) return ACCESS.RW;
+        }
 
         // Subtasks don't always carry their own project_id, so walk up the
         // parent chain to find the project (or an owning ancestor) they
@@ -118,6 +154,22 @@ async function getAccess(userId, resourceType, resourceUid) {
                 }
             }
         }
+    } else if (resourceType === 'area') {
+        const area = await Area.findOne({
+            where: { uid: resourceUid },
+            attributes: ['user_id'],
+            raw: true,
+        });
+        if (!area) return ACCESS.NONE;
+        if (area.user_id === userId) return ACCESS.RW;
+    } else if (resourceType === 'goal') {
+        const goal = await Goal.findOne({
+            where: { uid: resourceUid },
+            attributes: ['user_id'],
+            raw: true,
+        });
+        if (!goal) return ACCESS.NONE;
+        if (goal.user_id === userId) return ACCESS.RW;
     }
 
     // shared
@@ -190,6 +242,15 @@ async function ownershipOrPermissionWhere(resourceType, userId, cache = null) {
             conditions.push({ project_id: { [Op.in]: sharedProjectIds } }); // Items in shared projects
         }
 
+        // Tasks assigned to the caller show up even when they own nothing else
+        // in the task's project.
+        if (resourceType === 'task') {
+            const myPersonUids = await getMyPersonUids(userId);
+            if (myPersonUids.length > 0) {
+                conditions.push({ assigned_to: { [Op.in]: myPersonUids } });
+            }
+        }
+
         const result = { [Op.or]: conditions };
         if (cache) cache.set(cacheKey, result);
         return result;
@@ -214,4 +275,5 @@ module.exports = {
     resourceExists,
     ownershipOrPermissionWhere,
     getSharedUidsForUser,
+    getMyPersonUids,
 };

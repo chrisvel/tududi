@@ -62,6 +62,12 @@ describe('Notification Preferences', () => {
                     push: false,
                     telegram: false,
                 },
+                taskAssigned: {
+                    inApp: true,
+                    email: false,
+                    push: false,
+                    telegram: false,
+                },
             });
         });
 

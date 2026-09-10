@@ -73,7 +73,8 @@
     "boards": "Boards",
     "bookmarks": "Favorites",
     "reports": "Reports",
-    "productivityAssistant": "Productivity Assistant"
+    "productivityAssistant": "Productivity Assistant",
+    "assignedToMe": "Assigned to me"
   },
   "navigation": {
     "home": "Home",
@@ -1548,7 +1549,10 @@
       "empty": "Nobody has signed up yet",
       "noMatches": "No addresses match that search",
       "showing": "{{from}}-{{to}} of {{total}}"
-    }
+    },
+    "passwordInviteHint": "Leave blank to send an invitation email",
+    "invitationSent": "Invitation email sent to {{email}}",
+    "invitationNotSent": "Account created, but email is disabled - set a password for this user manually."
   },
   "billing": {
     "title": "Plan & Billing",
@@ -1619,7 +1623,11 @@
     "noShares": "Not shared yet",
     "noAvailableUsers": "No users available to share with",
     "shared": "Shared",
-    "sharedWithTeam": "Shared with the team"
+    "sharedWithTeam": "Shared with the team",
+    "shareArea": "Share area",
+    "shareGoal": "Share goal",
+    "shareNote": "Share note",
+    "shareTask": "Share task"
   },
   "views": {
     "title": "Smart Views",
@@ -1755,14 +1763,16 @@
       "overdueTasks": "Overdue Tasks",
       "deferUntil": "Defer Until",
       "dueProjects": "Due Projects",
-      "overdueProjects": "Overdue Projects"
+      "overdueProjects": "Overdue Projects",
+      "taskAssigned": "Task Assigned"
     },
     "descriptions": {
       "dueTasks": "Tasks that are due within 24 hours",
       "overdueTasks": "Tasks that have passed their due date",
       "deferUntil": "Tasks that are now available to work on",
       "dueProjects": "Projects that are due within 24 hours",
-      "overdueProjects": "Projects that have passed their due date"
+      "overdueProjects": "Projects that have passed their due date",
+      "taskAssigned": "A task was assigned to you by someone else"
     },
     "telegram": {
       "notConfigured": {

@@ -131,12 +131,19 @@ class AdminService {
         const { email, password, name, surname, role } =
             validateCreateUser(body);
         const { linked_person_uid } = body || {};
+        const invite = !password;
 
         const userData = {
             email,
-            password,
             notification_preferences: getDefaultNotificationPreferences(),
         };
+        if (password) {
+            userData.password = password;
+        } else {
+            // No password yet: the account is inert until the invite link is
+            // used, which also verifies the email.
+            userData.email_verified = false;
+        }
         if (name) userData.name = name;
         if (surname) userData.surname = surname;
 
@@ -180,6 +187,20 @@ class AdminService {
             );
         }
 
+        let emailSent = false;
+        if (invite) {
+            const {
+                sendMemberInviteEmail,
+            } = require('../auth/passwordResetService');
+            try {
+                const result = await sendMemberInviteEmail(user);
+                emailSent = result.sent;
+            } catch (err) {
+                // The account stays; the admin can resend or set a password.
+                logError(err, 'Failed to send member invite email');
+            }
+        }
+
         return {
             id: user.id,
             email: user.email,
@@ -187,6 +208,8 @@ class AdminService {
             surname: user.surname,
             created_at: user.created_at,
             role: makeAdmin ? 'admin' : 'user',
+            invited: invite,
+            email_sent: emailSent,
         };
     }
 

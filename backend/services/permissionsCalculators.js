@@ -1,4 +1,4 @@
-const { Project, Task, Note } = require('../models');
+const { Project, Task, Note, Area, Goal } = require('../models');
 
 function emptyChanges() {
     return { upserts: [], deletes: [] };
@@ -47,28 +47,46 @@ async function collectProjectDescendants(projectId) {
     };
 }
 
-async function calculateProjectPerms(ctx, action) {
-    const changes = emptyChanges();
-    // find project id
-    const project = await Project.findOne({
-        where: { uid: action.resourceUid },
-        attributes: ['id', 'user_id'],
-        transaction: ctx.tx,
-    });
-    if (!project) return changes;
+async function collectTaskSubtree(taskId, seedUid) {
+    const taskUids = new Set(seedUid ? [seedUid] : []);
+    const queue = [{ id: taskId }];
+    while (queue.length) {
+        const node = queue.shift();
+        const children = await Task.findAll({
+            where: { parent_task_id: node.id },
+            attributes: ['id', 'uid'],
+            raw: true,
+        });
+        for (const c of children) {
+            if (!taskUids.has(c.uid)) {
+                taskUids.add(c.uid);
+                queue.push({ id: c.id });
+            }
+        }
+    }
+    return Array.from(taskUids);
+}
 
+// Emit the permission changes for one project and everything under it (tasks at
+// all depths, notes). `projectPropagation` is 'direct' for a plain project share
+// and 'inherited' when the project is being cascaded from an area or goal grant.
+async function projectSubtreeChanges(
+    changes,
+    project,
+    action,
+    projectPropagation
+) {
     const { taskUids, noteUids } = await collectProjectDescendants(project.id);
 
     if (action.verb === 'share_grant') {
-        const direct = {
+        pushUpsert(changes, {
             userId: action.targetUserId,
             resourceType: 'project',
-            resourceUid: action.resourceUid,
+            resourceUid: project.uid,
             accessLevel: action.accessLevel,
-            propagation: 'direct',
+            propagation: projectPropagation,
             grantedByUserId: action.actorUserId,
-        };
-        pushUpsert(changes, direct);
+        });
         for (const tuid of taskUids)
             pushUpsert(changes, {
                 userId: action.targetUserId,
@@ -91,7 +109,7 @@ async function calculateProjectPerms(ctx, action) {
         pushDelete(changes, {
             userId: action.targetUserId,
             resourceType: 'project',
-            resourceUid: action.resourceUid,
+            resourceUid: project.uid,
         });
         for (const tuid of taskUids)
             pushDelete(changes, {
@@ -106,7 +124,37 @@ async function calculateProjectPerms(ctx, action) {
                 resourceUid: nuid,
             });
     }
+}
 
+function taskUidChange(changes, action, taskUid, propagation) {
+    if (action.verb === 'share_grant') {
+        pushUpsert(changes, {
+            userId: action.targetUserId,
+            resourceType: 'task',
+            resourceUid: taskUid,
+            accessLevel: action.accessLevel,
+            propagation,
+            grantedByUserId: action.actorUserId,
+        });
+    } else if (action.verb === 'share_revoke') {
+        pushDelete(changes, {
+            userId: action.targetUserId,
+            resourceType: 'task',
+            resourceUid: taskUid,
+        });
+    }
+}
+
+async function calculateProjectPerms(ctx, action) {
+    const changes = emptyChanges();
+    const project = await Project.findOne({
+        where: { uid: action.resourceUid },
+        attributes: ['id', 'uid', 'user_id'],
+        transaction: ctx.tx,
+    });
+    if (!project) return changes;
+
+    await projectSubtreeChanges(changes, project, action, 'direct');
     return changes;
 }
 
@@ -120,42 +168,14 @@ async function calculateTaskPerms(ctx, action) {
     });
     if (!task) return changes;
 
-    const taskUids = new Set([action.resourceUid]);
-    const queue = [{ id: task.id }];
-    while (queue.length) {
-        const node = queue.shift();
-        const children = await Task.findAll({
-            where: { parent_task_id: node.id },
-            attributes: ['id', 'uid'],
-            transaction: ctx.tx,
-            raw: true,
-        });
-        for (const c of children) {
-            if (!taskUids.has(c.uid)) {
-                taskUids.add(c.uid);
-                queue.push({ id: c.id });
-            }
-        }
-    }
-
-    if (action.verb === 'share_grant') {
-        for (const tuid of taskUids)
-            pushUpsert(changes, {
-                userId: action.targetUserId,
-                resourceType: 'task',
-                resourceUid: tuid,
-                accessLevel: action.accessLevel,
-                propagation:
-                    tuid === action.resourceUid ? 'direct' : 'inherited',
-                grantedByUserId: action.actorUserId,
-            });
-    } else if (action.verb === 'share_revoke') {
-        for (const tuid of taskUids)
-            pushDelete(changes, {
-                userId: action.targetUserId,
-                resourceType: 'task',
-                resourceUid: tuid,
-            });
+    const taskUids = await collectTaskSubtree(task.id, action.resourceUid);
+    for (const tuid of taskUids) {
+        taskUidChange(
+            changes,
+            action,
+            tuid,
+            tuid === action.resourceUid ? 'direct' : 'inherited'
+        );
     }
 
     return changes;
@@ -182,16 +202,98 @@ async function calculateNotePerms(ctx, action) {
     return changes;
 }
 
+function containerRowChange(changes, action, resourceType, resourceUid) {
+    if (action.verb === 'share_grant') {
+        pushUpsert(changes, {
+            userId: action.targetUserId,
+            resourceType,
+            resourceUid,
+            accessLevel: action.accessLevel,
+            propagation: 'direct',
+            grantedByUserId: action.actorUserId,
+        });
+    } else if (action.verb === 'share_revoke') {
+        pushDelete(changes, {
+            userId: action.targetUserId,
+            resourceType,
+            resourceUid,
+        });
+    }
+}
+
+// Sharing an area cascades to every project the area owner keeps in it, and each
+// project's own task/note subtree. The area row itself is 'direct' so the share
+// list, revoke and accept/decline set-move can find it; the projects and their
+// children are 'inherited'. Projects added to the area later are covered by
+// containerShareSync.syncProjectSharesFromContainer, not here.
 async function calculateAreaPerms(ctx, action) {
     const changes = emptyChanges();
-    // TODO: implement area→projects→tasks/notes cascade later
+    const area = await Area.findOne({
+        where: { uid: action.resourceUid },
+        attributes: ['id', 'uid', 'user_id'],
+        transaction: ctx.tx,
+    });
+    if (!area) return changes;
+
+    containerRowChange(changes, action, 'area', area.uid);
+
+    const projects = await Project.findAll({
+        where: { area_id: area.id, user_id: area.user_id },
+        attributes: ['id', 'uid', 'user_id'],
+        transaction: ctx.tx,
+        raw: true,
+    });
+    for (const project of projects) {
+        await projectSubtreeChanges(changes, project, action, 'inherited');
+    }
+
     return changes;
 }
 
-async function calculateTagPerms(ctx, action) {
+// Sharing a goal cascades to its linked projects (and their subtrees) and to
+// tasks assigned directly to the goal (plus their subtasks). Same 'direct' goal
+// row + 'inherited' children shape as area sharing.
+async function calculateGoalPerms(ctx, action) {
     const changes = emptyChanges();
-    // No-op for now (tags excluded from project cascade)
+    const goal = await Goal.findOne({
+        where: { uid: action.resourceUid },
+        attributes: ['id', 'uid', 'user_id'],
+        transaction: ctx.tx,
+    });
+    if (!goal) return changes;
+
+    containerRowChange(changes, action, 'goal', goal.uid);
+
+    const projects = await Project.findAll({
+        where: { goal_id: goal.id, user_id: goal.user_id },
+        attributes: ['id', 'uid', 'user_id'],
+        transaction: ctx.tx,
+        raw: true,
+    });
+    for (const project of projects) {
+        await projectSubtreeChanges(changes, project, action, 'inherited');
+    }
+
+    // Tasks attached straight to the goal (no project). Walk each subtask tree.
+    const goalTasks = await Task.findAll({
+        where: { goal_id: goal.id, parent_task_id: null },
+        attributes: ['id', 'uid'],
+        transaction: ctx.tx,
+        raw: true,
+    });
+    for (const gt of goalTasks) {
+        const taskUids = await collectTaskSubtree(gt.id, gt.uid);
+        for (const tuid of taskUids) {
+            taskUidChange(changes, action, tuid, 'inherited');
+        }
+    }
+
     return changes;
+}
+
+async function calculateTagPerms() {
+    // No-op for now (tags excluded from project cascade)
+    return emptyChanges();
 }
 
 module.exports = {
@@ -199,5 +301,8 @@ module.exports = {
     calculateTaskPerms,
     calculateNotePerms,
     calculateAreaPerms,
+    calculateGoalPerms,
     calculateTagPerms,
+    collectProjectDescendants,
+    projectSubtreeChanges,
 };

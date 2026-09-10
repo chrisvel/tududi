@@ -11,7 +11,7 @@ const {
     ForbiddenError,
 } = require('../../shared/errors');
 
-const SHAREABLE_TYPES = new Set(['project', 'task', 'note']);
+const SHAREABLE_TYPES = new Set(['project', 'task', 'note', 'area', 'goal']);
 const ACCESS_LEVELS = new Set(['ro', 'rw']);
 
 class SharesService {

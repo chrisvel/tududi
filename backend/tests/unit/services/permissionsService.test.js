@@ -9,6 +9,9 @@ const {
     Project,
     Task,
     Note,
+    Area,
+    Goal,
+    Person,
     Permission,
     sequelize,
 } = require('../../../models');
@@ -279,6 +282,55 @@ describe('permissionsService', () => {
             const access = await getAccess(otherUser.id, 'note', note.uid);
             expect(access).toBe('ro');
         });
+
+        // --- Areas & Goals ---
+
+        it('should return rw for area owner and none for a stranger', async () => {
+            const area = await Area.create({ name: 'Home', user_id: owner.id });
+            expect(await getAccess(owner.id, 'area', area.uid)).toBe('rw');
+            expect(await getAccess(otherUser.id, 'area', area.uid)).toBe(
+                'none'
+            );
+        });
+
+        it('should honour an accepted area share', async () => {
+            const area = await Area.create({ name: 'Home', user_id: owner.id });
+            await Permission.create({
+                user_id: otherUser.id,
+                resource_type: 'area',
+                resource_uid: area.uid,
+                access_level: 'ro',
+                propagation: 'direct',
+                status: 'accepted',
+                granted_by_user_id: owner.id,
+            });
+            expect(await getAccess(otherUser.id, 'area', area.uid)).toBe('ro');
+        });
+
+        it('should return rw for goal owner and none for a stranger', async () => {
+            const goal = await Goal.create({
+                title: 'Ship it',
+                user_id: owner.id,
+            });
+            expect(await getAccess(owner.id, 'goal', goal.uid)).toBe('rw');
+            expect(await getAccess(otherUser.id, 'goal', goal.uid)).toBe(
+                'none'
+            );
+        });
+
+        it('should grant rw to the assignee of a task they do not own', async () => {
+            const person = await Person.create({
+                user_id: owner.id,
+                linked_user_id: otherUser.id,
+                name: 'Other Person',
+            });
+            const task = await Task.create({
+                name: 'Assigned task',
+                user_id: owner.id,
+                assigned_to: person.uid,
+            });
+            expect(await getAccess(otherUser.id, 'task', task.uid)).toBe('rw');
+        });
     });
 
     describe('getSharedUidsForUser', () => {
@@ -403,6 +455,26 @@ describe('permissionsService', () => {
             // Should have a project_id IN condition
             const projectCondition = conditions.find((c) => c.project_id);
             expect(projectCondition).toBeDefined();
+        });
+
+        it('should include tasks assigned to the caller', async () => {
+            const person = await Person.create({
+                user_id: owner.id,
+                linked_user_id: otherUser.id,
+                name: 'Other Person',
+            });
+            const where = await ownershipOrPermissionWhere(
+                'task',
+                otherUser.id
+            );
+            const orKey = Object.getOwnPropertySymbols(where)[0];
+            const conditions = where[orKey];
+            const assignedCondition = conditions.find((c) => c.assigned_to);
+            expect(assignedCondition).toBeDefined();
+            const inKey = Object.getOwnPropertySymbols(
+                assignedCondition.assigned_to
+            )[0];
+            expect(assignedCondition.assigned_to[inKey]).toContain(person.uid);
         });
     });
 

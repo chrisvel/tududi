@@ -13,6 +13,7 @@ const DEFAULT_PREFERENCES = {
         telegram: false,
     },
     deferUntil: { inApp: true, email: false, push: false, telegram: false },
+    taskAssigned: { inApp: true, email: false, push: false, telegram: false },
 };
 
 /**
@@ -23,6 +24,7 @@ const NOTIFICATION_TYPE_MAPPING = {
     task_overdue: 'overdueTasks',
     project_due_soon: 'dueProjects',
     project_overdue: 'overdueProjects',
+    task_assigned: 'taskAssigned',
 };
 
 /**

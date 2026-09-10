@@ -22,6 +22,83 @@ const tokenExpiry = () => {
     return new Date(Date.now() + minutes * 60 * 1000);
 };
 
+// Store a fresh set-password token (SHA-256 hashed) on the account and return
+// the raw token for the emailed link. Shared by the password-reset flow and the
+// admin member-invite flow.
+async function issueResetToken(user, expiresAt = tokenExpiry()) {
+    const token = crypto.randomBytes(32).toString('hex');
+    await user.update({
+        password_reset_token_hash: hashToken(token),
+        password_reset_token_expires_at: expiresAt,
+    });
+    return token;
+}
+
+const buildInviteEmail = (setPasswordUrl, expiryHours) => {
+    const subject = 'You have been added to a Tududi workspace';
+    const text = `You have been added to a Tududi workspace.
+
+Choose a password to activate your account and sign in:
+
+${setPasswordUrl}
+
+The link expires in ${expiryHours} hours. If you were not expecting this, you can ignore this email.
+
+Best regards,
+The Tududi Team`;
+
+    const html = `
+<p>You have been added to a Tududi workspace.</p>
+
+<p>Choose a password to activate your account and sign in:</p>
+
+<p style="text-align: center; margin: 30px 0;">
+    <a href="${setPasswordUrl}" style="background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Set your password</a>
+</p>
+
+<p>Or copy and paste this link into your browser:</p>
+<p style="word-break: break-all; color: #666;">${setPasswordUrl}</p>
+
+<p><strong>The link expires in ${expiryHours} hours.</strong> If you were not expecting this, you can ignore this email.</p>
+
+<p>Best regards,<br>The Tududi Team</p>
+`;
+    return { subject, text, html };
+};
+
+// Creates a set-password token for an admin-created account and emails the
+// activation link. Returns whether the email was actually sent so the caller
+// can report it; unlike registration, the account is kept either way.
+async function sendMemberInviteEmail(user) {
+    const config = getConfig();
+    const hours = config.inviteTokenExpiryHours;
+    const expiresAt = new Date(Date.now() + hours * 60 * 60 * 1000);
+    const token = await issueResetToken(user, expiresAt);
+
+    if (!isEmailEnabled()) {
+        logInfo(
+            `Email service is disabled. Invite link for ${user.email} not sent.`
+        );
+        return { sent: false };
+    }
+
+    const setPasswordUrl = `${config.frontendUrl}/reset-password?token=${token}`;
+    const result = await sendEmail({
+        to: user.email,
+        ...buildInviteEmail(setPasswordUrl, hours),
+    });
+
+    if (result.success) {
+        logInfo(`Member invite email sent to ${user.email}`);
+    } else {
+        logError(
+            new Error(result.reason),
+            `Failed to send member invite email to ${user.email}`
+        );
+    }
+    return { sent: !!result.success };
+}
+
 const buildResetEmail = (resetUrl, minutes) => {
     const subject = 'Reset your Tududi password';
     const text = `Someone asked to reset the password for your Tududi account.
@@ -62,11 +139,7 @@ async function requestPasswordReset(email) {
         return;
     }
 
-    const token = crypto.randomBytes(32).toString('hex');
-    await user.update({
-        password_reset_token_hash: hashToken(token),
-        password_reset_token_expires_at: tokenExpiry(),
-    });
+    const token = await issueResetToken(user);
 
     if (!isEmailEnabled()) {
         logInfo(
@@ -126,5 +199,7 @@ async function resetPasswordWithToken(token, password) {
 module.exports = {
     requestPasswordReset,
     resetPasswordWithToken,
+    sendMemberInviteEmail,
+    issueResetToken,
     hashToken,
 };

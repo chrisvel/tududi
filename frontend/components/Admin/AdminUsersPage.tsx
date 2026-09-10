@@ -21,6 +21,8 @@ interface AdminUserItem {
     surname?: string;
     created_at: string;
     role: 'admin' | 'user';
+    invited?: boolean;
+    email_sent?: boolean;
 }
 
 const fetchAdminUsers = async (t: any): Promise<AdminUserItem[]> => {
@@ -47,6 +49,8 @@ const createAdminUser = async (
     role?: 'admin' | 'user',
     linked_person_uid?: string
 ): Promise<AdminUserItem> => {
+    const body: any = { email, name, surname, role, linked_person_uid };
+    if (password) body.password = password;
     const res = await fetchWithCsrf(getApiPath('admin/users'), {
         method: 'POST',
         credentials: 'include',
@@ -54,7 +58,7 @@ const createAdminUser = async (
             'Content-Type': 'application/json',
             Accept: 'application/json',
         },
-        body: JSON.stringify({ email, password, name, surname, role, linked_person_uid }),
+        body: JSON.stringify(body),
     });
     if (res.status === 401)
         throw new Error(
@@ -183,7 +187,9 @@ const AddUserModal: React.FC<{
                 setSurname('');
                 setRole('user');
                 setSelectedPersonUid('');
-                fetchPeople({ unlinked: true }).then(setUnlinkedPeople).catch(() => setUnlinkedPeople([]));
+                fetchPeople({ unlinked: true })
+                    .then(setUnlinkedPeople)
+                    .catch(() => setUnlinkedPeople([]));
             }
             setError(null);
             setIsRoleDropdownOpen(false);
@@ -233,11 +239,8 @@ const AddUserModal: React.FC<{
             setError(t('errors.invalidEmail', 'Invalid email address'));
             return;
         }
-        // Password is required for new users, optional for updates
-        if (!editingUser && !password) {
-            setError(t('errors.required', 'This field is required'));
-            return;
-        }
+        // Password is optional for new users: leaving it blank sends an
+        // invitation email so the member sets their own.
         setSubmitting(true);
         try {
             if (editingUser) {
@@ -302,12 +305,15 @@ const AddUserModal: React.FC<{
                             <select
                                 className="w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm"
                                 value={selectedPersonUid}
-                                onChange={(e) => handlePersonSelect(e.target.value)}
+                                onChange={(e) =>
+                                    handlePersonSelect(e.target.value)
+                                }
                             >
                                 <option value="">— none —</option>
                                 {unlinkedPeople.map((p) => (
                                     <option key={p.uid} value={p.uid}>
-                                        {p.name}{p.email ? ` (${p.email})` : ''}
+                                        {p.name}
+                                        {p.email ? ` (${p.email})` : ''}
                                     </option>
                                 ))}
                             </select>
@@ -350,24 +356,26 @@ const AddUserModal: React.FC<{
                     <div>
                         <label className="block text-sm text-gray-700 dark:text-gray-300 mb-1">
                             {t('admin.password', 'Password')}
-                            {editingUser && (
-                                <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
-                                    (
-                                    {t(
-                                        'admin.passwordOptional',
-                                        'Leave blank to keep current'
-                                    )}
-                                    )
-                                </span>
-                            )}
+                            <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
+                                (
+                                {editingUser
+                                    ? t(
+                                          'admin.passwordOptional',
+                                          'Leave blank to keep current'
+                                      )
+                                    : t(
+                                          'admin.passwordInviteHint',
+                                          'Leave blank to send an invitation email'
+                                      )}
+                                )
+                            </span>
                         </label>
                         <input
                             type="password"
                             className="w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            required={!editingUser}
-                            minLength={6}
+                            minLength={8}
                         />
                     </div>
                     <div>
@@ -506,14 +514,17 @@ const AdminUsersPage: React.FC = () => {
     // Toggle registration
     const toggleRegistration = async () => {
         try {
-            const res = await fetchWithCsrf(getApiPath('admin/toggle-registration'), {
-                method: 'POST',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ enabled: !registrationEnabled }),
-            });
+            const res = await fetchWithCsrf(
+                getApiPath('admin/toggle-registration'),
+                {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ enabled: !registrationEnabled }),
+                }
+            );
             if (res.ok) {
                 const data = await res.json();
                 setRegistrationEnabled(data.enabled);
@@ -762,9 +773,25 @@ const AdminUsersPage: React.FC = () => {
                         setAddOpen(false);
                         setEditingUser(null);
                     }}
-                    onCreated={(user) =>
-                        setUsers((prev) => (prev ? [user, ...prev] : [user]))
-                    }
+                    onCreated={(user) => {
+                        setUsers((prev) => (prev ? [user, ...prev] : [user]));
+                        if (user.invited && user.email_sent) {
+                            showSuccessToast(
+                                t(
+                                    'admin.invitationSent',
+                                    'Invitation email sent to {{email}}',
+                                    { email: user.email }
+                                )
+                            );
+                        } else if (user.invited && !user.email_sent) {
+                            showErrorToast(
+                                t(
+                                    'admin.invitationNotSent',
+                                    'Account created, but email is disabled - set a password for this user manually.'
+                                )
+                            );
+                        }
+                    }}
                     onUpdated={(user) =>
                         setUsers((prev) =>
                             prev

@@ -209,12 +209,19 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
             }
             if (
                 answer === 'accept' &&
-                notification.data?.resourceType === 'project' &&
+                notification.data?.resourceType &&
                 notification.data?.resourceUid
             ) {
+                const { resourceType, resourceUid } = notification.data;
                 await loadProjects();
                 setIsOpen(false);
-                navigate(`/project/${notification.data.resourceUid}`);
+                if (resourceType === 'project') {
+                    navigate(`/project/${resourceUid}`);
+                } else if (resourceType === 'area' || resourceType === 'goal') {
+                    // The area/goal container is not listed for collaborators;
+                    // its shared projects show up on the Projects page.
+                    navigate('/projects');
+                }
             }
         } catch (error) {
             console.error('Error answering share invitation:', error);

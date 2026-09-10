@@ -23,6 +23,8 @@ async function handleRecurrenceUpdate(task, recurrenceFields, reqBody) {
         'project_id',
         'priority',
         'note',
+        'assigned_to',
+        'involves',
     ].some((field) => {
         const newValue = reqBody[field];
         return newValue !== undefined && newValue !== task[field];

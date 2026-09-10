@@ -7,6 +7,7 @@ import {
     ListBulletIcon,
     ClockIcon,
     CalendarIcon,
+    UserIcon,
 } from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
 import { loadInboxItemsToStore } from '../../utils/inboxService';
@@ -24,7 +25,9 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
 }) => {
     const { t } = useTranslation();
     const store = useStore();
-    const calendarEnabled = useStore((state) => state.userSettingsStore.calendarEnabled);
+    const calendarEnabled = useStore(
+        (state) => state.userSettingsStore.calendarEnabled
+    );
 
     const inboxItemsCount = store.inboxStore.pagination.total;
 
@@ -61,6 +64,12 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
             icon: <ListBulletIcon className="h-[15px] w-[15px]" />,
             query: 'status=active',
         },
+        {
+            path: '/tasks?assigned_to=me&status=active',
+            title: t('sidebar.assignedToMe', 'Assigned to me'),
+            icon: <UserIcon className="h-[15px] w-[15px]" />,
+            query: 'assigned_to=me',
+        },
     ];
 
     const navLinks = allNavLinks.filter((link) => {
@@ -83,8 +92,16 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
             return location.pathname === '/upcoming';
         }
         const isPathMatch = location.pathname === '/tasks';
-        const isQueryMatch = query ? location.search.includes(query) : location.search === '';
-        return isPathMatch && isQueryMatch;
+        if (!isPathMatch) return false;
+        const hasAssignedToMe = location.search.includes('assigned_to=me');
+        // "Assigned to me" and "All Tasks" both live at /tasks; disambiguate on
+        // the assigned_to marker so only one highlights.
+        if (query === 'assigned_to=me') return hasAssignedToMe;
+        if (query === 'status=active' && hasAssignedToMe) return false;
+        const isQueryMatch = query
+            ? location.search.includes(query)
+            : location.search === '';
+        return isQueryMatch;
     };
 
     const isActive = (path: string, query?: string) =>
@@ -95,14 +112,20 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
             {navLinks.map((link) => (
                 <li key={link.path}>
                     <button
-                        onClick={() => handleNavClick(link.path, link.title, link.icon)}
+                        onClick={() =>
+                            handleNavClick(link.path, link.title, link.icon)
+                        }
                         data-testid={`sidebar-nav-${link.path.replace(/^\//, '').replace(/\?.*$/, '')}`}
                         className={`w-full flex items-center gap-[5px] px-[10px] py-[4px] rounded-[8px] transition-colors duration-150 ${isActive(link.path, link.query)}`}
                     >
-                        <span className={`flex-shrink-0 ${isActiveLink(link.path, link.query) ? 'text-blue-600 dark:text-[oklch(68%_0.14_250)]' : 'text-gray-400 dark:text-[oklch(55%_0.006_95)]'}`}>
+                        <span
+                            className={`flex-shrink-0 ${isActiveLink(link.path, link.query) ? 'text-blue-600 dark:text-[oklch(68%_0.14_250)]' : 'text-gray-400 dark:text-[oklch(55%_0.006_95)]'}`}
+                        >
                             {link.icon}
                         </span>
-                        <span className="flex-1 text-left text-[13.5px]">{link.title}</span>
+                        <span className="flex-1 text-left text-[13.5px]">
+                            {link.title}
+                        </span>
                         {link.path === '/inbox' && inboxItemsCount > 0 && (
                             <span className="text-[12px] text-gray-400 dark:text-[oklch(60%_0.01_250)]">
                                 {inboxItemsCount > 99 ? '99+' : inboxItemsCount}

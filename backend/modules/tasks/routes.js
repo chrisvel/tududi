@@ -57,6 +57,7 @@ const { createSubtasks, updateSubtasks } = require('./operations/subtasks');
 const { requireQuota } = require('../../middleware/entitlements');
 const { handleCompletionStatus } = require('./operations/completion');
 const { captureOldValues, logTaskChanges } = require('./utils/logging');
+const { notifyAssignee } = require('./operations/assignment');
 const {
     handleParentChildOnStatusChange,
 } = require('./operations/parent-child');
@@ -497,6 +498,12 @@ router.post(
                 return res.status(201).json(fallbackTask);
             }
 
+            await notifyAssignee(
+                taskWithAssociations,
+                null,
+                req.currentUser.id
+            );
+
             const serializedTask = await serializeTask(
                 taskWithAssociations,
                 req.currentUser.timezone,
@@ -901,6 +908,12 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
         const taskWithAssociations = await taskRepository.findById(task.id, {
             include: TASK_INCLUDES_WITH_SUBTASKS,
         });
+
+        await notifyAssignee(
+            taskWithAssociations,
+            oldValues.assigned_to,
+            req.currentUser.id
+        );
 
         const serializedTask = await serializeTask(
             taskWithAssociations,

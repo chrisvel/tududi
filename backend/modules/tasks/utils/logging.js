@@ -9,6 +9,7 @@ function captureOldValues(task) {
         due_date: task.due_date,
         defer_until: task.defer_until,
         project_id: task.project_id,
+        assigned_to: task.assigned_to,
         note: task.note,
         recurrence_type: task.recurrence_type,
         recurrence_interval: task.recurrence_interval,

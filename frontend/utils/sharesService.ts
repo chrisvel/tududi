@@ -4,7 +4,7 @@ import { getCsrfToken } from './csrfService';
 export type AccessLevel = 'ro' | 'rw';
 
 export interface ShareGrantRequest {
-    resource_type: 'project' | 'task' | 'note' | 'area' | 'tag';
+    resource_type: 'project' | 'task' | 'note' | 'area' | 'goal' | 'tag';
     resource_uid: string;
     target_user_email: string;
     access_level: AccessLevel;
