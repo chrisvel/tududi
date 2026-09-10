@@ -15,6 +15,9 @@ const {
 const { uid: generateUid } = require('../../utils/uid');
 const { extractUidFromSlug } = require('../../utils/slug-utils');
 const { logError } = require('../../services/logService');
+const {
+    syncProjectSharesFromContainer,
+} = require('../../services/containerShareSync');
 const { Project } = require('../../models');
 
 const PROJECT_STATUSES = Project.rawAttributes.status.values;
@@ -342,6 +345,10 @@ class ProjectsService {
             );
         }
 
+        if (projectData.area_id || projectData.goal_id) {
+            await syncProjectSharesFromContainer(project.id);
+        }
+
         return {
             ...project.toJSON(),
             uid: projectUid,
@@ -419,6 +426,16 @@ class ProjectsService {
 
         await projectsRepository.update(project, updateData);
         await updateProjectTags(project, tagsData, userId);
+
+        // Moving the project into a (possibly shared) area or goal mirrors that
+        // container's collaborators onto the project.
+        if (
+            isOwner &&
+            (updateData.area_id !== undefined ||
+                updateData.goal_id !== undefined)
+        ) {
+            await syncProjectSharesFromContainer(project.id);
+        }
 
         const projectWithAssociations =
             await projectsRepository.findByUidWithTagsAndArea(validatedUid);

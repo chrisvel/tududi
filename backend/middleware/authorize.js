@@ -1,7 +1,7 @@
 const permissionsService = require('../services/permissionsService');
 
 // requiredAccess: 'ro' | 'rw' | 'admin'
-// resourceType: 'project' | 'task' | 'note'
+// resourceType: 'project' | 'task' | 'note' | 'area' | 'goal'
 // getResourceUid: function(req) => string | Promise<string>
 function hasAccess(requiredAccess, resourceType, getResourceUid, options = {}) {
     const notFoundMessage = options.notFoundMessage || 'Not found';

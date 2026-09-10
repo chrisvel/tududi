@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import {
     PencilIcon,
     FlagIcon,
+    ShareIcon,
     XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
@@ -16,11 +17,13 @@ import { updateArea } from '../../utils/areasService';
 import { updateGoal } from '../../utils/goalsService';
 import AreaModal from './AreaModal';
 import TaskList from '../Task/TaskList';
+import ShareModal from '../Shared/ShareModal';
 import { createGoalUrl } from '../../utils/slugUtils';
 
 const STATUS_COLORS: Record<string, string> = {
     active: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-    achieved: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+    achieved:
+        'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
     paused: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
     dropped: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400',
 };
@@ -41,6 +44,7 @@ const AreaDetails: React.FC = () => {
     const [areaTasks, setAreaTasks] = useState<Task[]>([]);
     const [loadingTasks, setLoadingTasks] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
     const areaUid = uidSlug?.split('-')[0] || '';
 
@@ -82,7 +86,9 @@ const AreaDetails: React.FC = () => {
         if (!area?.uid) return;
         setLoadingTasks(true);
         try {
-            const result = await fetchTasks(`?area_uid=${area.uid}&type=all&status=all`);
+            const result = await fetchTasks(
+                `?area_uid=${area.uid}&type=all&status=all`
+            );
             setAreaTasks(result.tasks || []);
         } catch {
             setAreaTasks([]);
@@ -101,7 +107,8 @@ const AreaDetails: React.FC = () => {
     });
 
     const areaGoals: Goal[] = goalsStore.goals.filter(
-        (g: Goal) => g.Area?.uid === areaUid || (area && g.area_id === (area as any).id)
+        (g: Goal) =>
+            g.Area?.uid === areaUid || (area && g.area_id === (area as any).id)
     );
 
     const handleRemoveGoalFromArea = async (goal: Goal) => {
@@ -109,7 +116,9 @@ const AreaDetails: React.FC = () => {
         try {
             const result = await updateGoal(goal.uid, { area_id: null });
             goalsStore.setGoals(
-                goalsStore.goals.map((g: Goal) => g.uid === result.goal.uid ? result.goal : g)
+                goalsStore.goals.map((g: Goal) =>
+                    g.uid === result.goal.uid ? result.goal : g
+                )
             );
         } catch {
             // silently ignore
@@ -117,13 +126,21 @@ const AreaDetails: React.FC = () => {
     };
 
     const handleTaskUpdate = async (updatedTask: Task) => {
-        setAreaTasks((prev) => prev.map((t) => (t.uid === updatedTask.uid ? updatedTask : t)));
-        tasksStore.setTasks(tasksStore.tasks.map((t: Task) => (t.uid === updatedTask.uid ? updatedTask : t)));
+        setAreaTasks((prev) =>
+            prev.map((t) => (t.uid === updatedTask.uid ? updatedTask : t))
+        );
+        tasksStore.setTasks(
+            tasksStore.tasks.map((t: Task) =>
+                t.uid === updatedTask.uid ? updatedTask : t
+            )
+        );
     };
 
     const handleTaskDelete = (taskUid: string) => {
         setAreaTasks((prev) => prev.filter((t) => t.uid !== taskUid));
-        tasksStore.setTasks(tasksStore.tasks.filter((t: Task) => t.uid !== taskUid));
+        tasksStore.setTasks(
+            tasksStore.tasks.filter((t: Task) => t.uid !== taskUid)
+        );
     };
 
     const handleAreaSave = async (areaData: Partial<Area>) => {
@@ -133,10 +150,17 @@ const AreaDetails: React.FC = () => {
             description: areaData.description,
             color: areaData.color,
         });
-        areasStore.setAreas(areasStore.areas.map((a: Area) => (a.uid === result.uid ? result : a)));
+        areasStore.setAreas(
+            areasStore.areas.map((a: Area) =>
+                a.uid === result.uid ? result : a
+            )
+        );
         setArea(result);
         setIsEditModalOpen(false);
-        const slug = result.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        const slug = result.name
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-|-$/g, '');
         navigate(`/area/${result.uid}-${slug}`, { replace: true });
     };
 
@@ -157,9 +181,15 @@ const AreaDetails: React.FC = () => {
     }
 
     const activeTasks = areaTasks.filter(
-        (t) => t.status !== 'done' && t.status !== 2 && t.status !== 'archived' && t.status !== 3
+        (t) =>
+            t.status !== 'done' &&
+            t.status !== 2 &&
+            t.status !== 'archived' &&
+            t.status !== 3
     );
-    const completedTasks = areaTasks.filter((t) => t.status === 'done' || t.status === 2);
+    const completedTasks = areaTasks.filter(
+        (t) => t.status === 'done' || t.status === 2
+    );
 
     return (
         <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">
@@ -168,46 +198,80 @@ const AreaDetails: React.FC = () => {
                 className="rounded-xl mb-8 overflow-hidden"
                 style={area.color ? { backgroundColor: area.color } : undefined}
             >
-                <div className={`p-6 ${area.color ? '' : 'bg-gray-50 dark:bg-gray-900 rounded-xl'}`}>
+                <div
+                    className={`p-6 ${area.color ? '' : 'bg-gray-50 dark:bg-gray-900 rounded-xl'}`}
+                >
                     <div className="flex items-start justify-between gap-4">
                         <div className="min-w-0">
-                            <p className={`text-xs font-medium uppercase tracking-widest mb-1 ${
-                                area.color ? 'text-white/60' : 'text-gray-400 dark:text-gray-500'
-                            }`}>
+                            <p
+                                className={`text-xs font-medium uppercase tracking-widest mb-1 ${
+                                    area.color
+                                        ? 'text-white/60'
+                                        : 'text-gray-400 dark:text-gray-500'
+                                }`}
+                            >
                                 Area
                             </p>
-                            <h1 className={`text-3xl font-light uppercase tracking-wide ${
-                                area.color ? 'text-white' : 'text-gray-900 dark:text-gray-100'
-                            }`}>
+                            <h1
+                                className={`text-3xl font-light uppercase tracking-wide ${
+                                    area.color
+                                        ? 'text-white'
+                                        : 'text-gray-900 dark:text-gray-100'
+                                }`}
+                            >
                                 {area.name}
                             </h1>
                             {area.description && (
-                                <p className={`mt-2 text-sm ${area.color ? 'text-white/80' : 'text-gray-600 dark:text-gray-400'}`}>
+                                <p
+                                    className={`mt-2 text-sm ${area.color ? 'text-white/80' : 'text-gray-600 dark:text-gray-400'}`}
+                                >
                                     {area.description}
                                 </p>
                             )}
-                            <div className={`mt-3 flex gap-4 text-xs ${area.color ? 'text-white/70' : 'text-gray-500 dark:text-gray-400'}`}>
+                            <div
+                                className={`mt-3 flex gap-4 text-xs ${area.color ? 'text-white/70' : 'text-gray-500 dark:text-gray-400'}`}
+                            >
                                 <Link
                                     to={`/projects?area=${area.uid}`}
                                     className={`hover:underline ${area.color ? 'hover:text-white' : 'hover:text-gray-700 dark:hover:text-gray-200'}`}
                                 >
-                                    {areaProjects.length} {t('areas.projects', 'projects')}
+                                    {areaProjects.length}{' '}
+                                    {t('areas.projects', 'projects')}
                                 </Link>
-                                <span>{areaGoals.length} {t('areas.goals', 'goals')}</span>
-                                <span>{areaTasks.length} {t('areas.tasks', 'tasks')}</span>
+                                <span>
+                                    {areaGoals.length}{' '}
+                                    {t('areas.goals', 'goals')}
+                                </span>
+                                <span>
+                                    {areaTasks.length}{' '}
+                                    {t('areas.tasks', 'tasks')}
+                                </span>
                             </div>
                         </div>
-                        <button
-                            onClick={() => setIsEditModalOpen(true)}
-                            className={`p-2 rounded-lg transition-colors flex-shrink-0 ${
-                                area.color
-                                    ? 'text-white/80 hover:text-white hover:bg-white/10'
-                                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
-                            }`}
-                            title={t('areas.edit', 'Edit area')}
-                        >
-                            <PencilIcon className="h-5 w-5" />
-                        </button>
+                        <div className="flex items-start gap-1 flex-shrink-0">
+                            <button
+                                onClick={() => setIsShareModalOpen(true)}
+                                className={`p-2 rounded-lg transition-colors ${
+                                    area.color
+                                        ? 'text-white/80 hover:text-white hover:bg-white/10'
+                                        : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                }`}
+                                title={t('shares.shareArea', 'Share area')}
+                            >
+                                <ShareIcon className="h-5 w-5" />
+                            </button>
+                            <button
+                                onClick={() => setIsEditModalOpen(true)}
+                                className={`p-2 rounded-lg transition-colors ${
+                                    area.color
+                                        ? 'text-white/80 hover:text-white hover:bg-white/10'
+                                        : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                }`}
+                                title={t('areas.edit', 'Edit area')}
+                            >
+                                <PencilIcon className="h-5 w-5" />
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -220,18 +284,36 @@ const AreaDetails: React.FC = () => {
 
                 {areaGoals.length === 0 ? (
                     <p className="text-sm text-gray-400 dark:text-gray-500">
-                        {t('goals.noGoalsInArea', 'No goals linked to this area.')}
+                        {t(
+                            'goals.noGoalsInArea',
+                            'No goals linked to this area.'
+                        )}
                     </p>
                 ) : (
                     <div className="flex flex-col gap-2">
                         {areaGoals.map((goal) => {
-                            const goalUrl = goal.uid ? createGoalUrl({ uid: goal.uid, title: goal.title }) : '/goals';
+                            const goalUrl = goal.uid
+                                ? createGoalUrl({
+                                      uid: goal.uid,
+                                      title: goal.title,
+                                  })
+                                : '/goals';
                             return (
-                                <div key={goal.uid} className="flex items-center gap-2 group">
+                                <div
+                                    key={goal.uid}
+                                    className="flex items-center gap-2 group"
+                                >
                                     <Link
                                         to={goalUrl}
                                         className={`flex-1 flex items-center gap-3 px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 hover:bg-white dark:hover:bg-gray-800 transition-colors ${goal.color ? 'border-l-4' : ''}`}
-                                        style={goal.color ? { borderLeftColor: goal.color } : {}}
+                                        style={
+                                            goal.color
+                                                ? {
+                                                      borderLeftColor:
+                                                          goal.color,
+                                                  }
+                                                : {}
+                                        }
                                     >
                                         <FlagIcon className="h-4 w-4 text-blue-500 flex-shrink-0" />
                                         <span className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate flex-1">
@@ -242,14 +324,24 @@ const AreaDetails: React.FC = () => {
                                                 {goal.why}
                                             </span>
                                         )}
-                                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium flex-shrink-0 ${STATUS_COLORS[goal.status] ?? ''}`}>
-                                            {t(`goals.status.${goal.status}`, goal.status)}
+                                        <span
+                                            className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium flex-shrink-0 ${STATUS_COLORS[goal.status] ?? ''}`}
+                                        >
+                                            {t(
+                                                `goals.status.${goal.status}`,
+                                                goal.status
+                                            )}
                                         </span>
                                     </Link>
                                     <button
-                                        onClick={() => handleRemoveGoalFromArea(goal)}
+                                        onClick={() =>
+                                            handleRemoveGoalFromArea(goal)
+                                        }
                                         className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 rounded"
-                                        title={t('goals.removeFromArea', 'Remove from area')}
+                                        title={t(
+                                            'goals.removeFromArea',
+                                            'Remove from area'
+                                        )}
                                     >
                                         <XMarkIcon className="h-4 w-4" />
                                     </button>
@@ -286,7 +378,8 @@ const AreaDetails: React.FC = () => {
                         {completedTasks.length > 0 && (
                             <div>
                                 <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">
-                                    {t('tasks.completed', 'Completed')} ({completedTasks.length})
+                                    {t('tasks.completed', 'Completed')} (
+                                    {completedTasks.length})
                                 </h3>
                                 <TaskList
                                     tasks={completedTasks}
@@ -309,6 +402,14 @@ const AreaDetails: React.FC = () => {
                     onClose={() => setIsEditModalOpen(false)}
                 />
             )}
+
+            <ShareModal
+                isOpen={isShareModalOpen}
+                onClose={() => setIsShareModalOpen(false)}
+                resourceType="area"
+                resourceUid={area.uid || null}
+                resourceName={area.name}
+            />
         </div>
     );
 };

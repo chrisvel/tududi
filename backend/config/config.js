@@ -100,6 +100,10 @@ const passwordResetConfig = {
         : 60,
 };
 
+const inviteTokenExpiryHours = process.env.INVITE_TOKEN_EXPIRY_HOURS
+    ? parseInt(process.env.INVITE_TOKEN_EXPIRY_HOURS, 10)
+    : 168;
+
 const config = {
     allowedOrigins: process.env.TUDUDI_ALLOWED_ORIGINS
         ? process.env.TUDUDI_ALLOWED_ORIGINS.split(',').map((origin) =>
@@ -246,6 +250,8 @@ const config = {
     registrationConfig,
 
     passwordResetConfig,
+
+    inviteTokenExpiryHours,
 
     uploadPath:
         process.env.TUDUDI_UPLOAD_PATH || path.join(projectRootPath, 'uploads'),

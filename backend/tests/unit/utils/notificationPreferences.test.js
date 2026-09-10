@@ -41,6 +41,12 @@ describe('notificationPreferences utils', () => {
                     push: false,
                     telegram: false,
                 },
+                taskAssigned: {
+                    inApp: true,
+                    email: false,
+                    push: false,
+                    telegram: false,
+                },
             });
         });
 
@@ -203,6 +209,7 @@ describe('notificationPreferences utils', () => {
                 task_overdue: 'overdueTasks',
                 project_due_soon: 'dueProjects',
                 project_overdue: 'overdueProjects',
+                task_assigned: 'taskAssigned',
             });
         });
     });
@@ -331,6 +338,12 @@ describe('notificationPreferences utils', () => {
                     email: true,
                     push: false,
                     telegram: true,
+                },
+                taskAssigned: {
+                    inApp: false,
+                    email: true,
+                    push: false,
+                    telegram: false,
                 },
             };
 

@@ -418,7 +418,15 @@ async function filterTasksByParams(
     }
 
     if (params.assigned_to) {
-        whereClause.assigned_to = params.assigned_to;
+        if (params.assigned_to === 'me') {
+            const myPersonUids =
+                await permissionsService.getMyPersonUids(userId);
+            whereClause.assigned_to = myPersonUids.length
+                ? { [Op.in]: myPersonUids }
+                : null;
+        } else {
+            whereClause.assigned_to = params.assigned_to;
+        }
     }
 
     const finalWhereClause = {

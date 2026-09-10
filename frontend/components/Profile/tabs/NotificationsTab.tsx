@@ -28,6 +28,7 @@ const DEFAULT_PREFERENCES: NotificationPreferences = {
         telegram: false,
     },
     deferUntil: { inApp: true, email: false, push: false, telegram: false },
+    taskAssigned: { inApp: true, email: false, push: false, telegram: false },
 };
 
 interface NotificationTypeRowProps {
@@ -319,6 +320,22 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                             preferences={preferences.deferUntil}
                             onToggle={(channel, value) =>
                                 handleToggle('deferUntil', channel, value)
+                            }
+                            telegramConfigured={telegramConfigured}
+                        />
+                        <NotificationTypeRow
+                            icon={BellIcon}
+                            label={t(
+                                'notifications.types.taskAssigned',
+                                'Task Assigned'
+                            )}
+                            description={t(
+                                'notifications.descriptions.taskAssigned',
+                                'A task was assigned to you by someone else'
+                            )}
+                            preferences={preferences.taskAssigned}
+                            onToggle={(channel, value) =>
+                                handleToggle('taskAssigned', channel, value)
                             }
                             telegramConfigured={telegramConfigured}
                         />

@@ -49,16 +49,20 @@ function validateSetAdminRole(body) {
 }
 
 /**
- * Validate create user request body.
+ * Validate create user request body. Password is optional: when it is omitted
+ * the account is created without one and an invite email is sent so the member
+ * can set their own.
  */
 function validateCreateUser(body) {
     const { email, password, name, surname, role } = body || {};
-    if (!email || !password) {
-        throw new ValidationError('Email and password are required');
+    if (!email) {
+        throw new ValidationError('Email is required');
     }
     validateEmail(email);
-    validatePassword(password);
-    return { email, password, name, surname, role };
+    if (password) {
+        validatePassword(password);
+    }
+    return { email, password: password || null, name, surname, role };
 }
 
 /**

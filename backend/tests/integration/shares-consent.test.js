@@ -4,6 +4,8 @@ const {
     Project,
     Task,
     Note,
+    Area,
+    Goal,
     Permission,
     Role,
     Notification,
@@ -257,6 +259,170 @@ describe('Share invitations (consent + no user enumeration)', () => {
             access_level: 'ro',
         });
         expect(res.status).toBe(403);
+    });
+});
+
+describe('Sharing an area cascades to its projects and tasks', () => {
+    let owner, invitee, ownerAgent, inviteeAgent, area, areaProject;
+
+    beforeEach(async () => {
+        owner = await createTestUser({
+            email: `areaowner_${Date.now()}@example.com`,
+        });
+        invitee = await createTestUser({
+            email: `areainvitee_${Date.now()}@example.com`,
+        });
+        ownerAgent = await login(owner);
+        inviteeAgent = await login(invitee);
+
+        area = await Area.create({ name: 'Home', user_id: owner.id });
+        areaProject = await Project.create({
+            name: 'Renovation',
+            user_id: owner.id,
+            area_id: area.id,
+        });
+        await Task.create({
+            name: 'Plaster the hallway',
+            user_id: owner.id,
+            project_id: areaProject.id,
+        });
+    });
+
+    const shareArea = (access = 'ro') =>
+        ownerAgent.post('/api/shares').send({
+            resource_type: 'area',
+            resource_uid: area.uid,
+            target_user_email: invitee.email,
+            access_level: access,
+        });
+
+    const acceptFirstInvitation = async () => {
+        const list = await inviteeAgent.get('/api/shares/invitations');
+        const inv = list.body.invitations[0];
+        return inviteeAgent.post(`/api/shares/invitations/${inv.id}/accept`);
+    };
+
+    it('hides the projects until the invitation is accepted', async () => {
+        expect((await shareArea()).status).toBe(204);
+
+        const before = await inviteeAgent.get('/api/projects');
+        expect(
+            before.body.projects.find((p) => p.uid === areaProject.uid)
+        ).toBeUndefined();
+
+        await acceptFirstInvitation();
+
+        const after = await inviteeAgent.get('/api/projects');
+        expect(
+            after.body.projects.find((p) => p.uid === areaProject.uid)
+        ).toBeDefined();
+
+        const tasks = await inviteeAgent.get('/api/tasks');
+        expect(
+            tasks.body.tasks.find((t) => t.name === 'Plaster the hallway')
+        ).toBeDefined();
+    });
+
+    it('removes the whole cascade when declined', async () => {
+        await shareArea();
+        const list = await inviteeAgent.get('/api/shares/invitations');
+        await inviteeAgent.post(
+            `/api/shares/invitations/${list.body.invitations[0].id}/decline`
+        );
+
+        const count = await Permission.count({
+            where: { user_id: invitee.id },
+        });
+        expect(count).toBe(0);
+    });
+
+    it('auto-shares a project added to the area after the grant', async () => {
+        await shareArea('rw');
+        await acceptFirstInvitation();
+
+        const created = await ownerAgent.post('/api/project').send({
+            name: 'Bathroom',
+            area_id: area.id,
+        });
+        expect(created.status).toBe(201);
+
+        const projects = await inviteeAgent.get('/api/projects');
+        expect(
+            projects.body.projects.find((p) => p.name === 'Bathroom')
+        ).toBeDefined();
+    });
+
+    it('does not leak a new project while the area invite is still pending', async () => {
+        await shareArea('rw');
+
+        const created = await ownerAgent.post('/api/project').send({
+            name: 'Garden',
+            area_id: area.id,
+        });
+        expect(created.status).toBe(201);
+
+        const projects = await inviteeAgent.get('/api/projects');
+        expect(
+            projects.body.projects.find((p) => p.name === 'Garden')
+        ).toBeUndefined();
+
+        await acceptFirstInvitation();
+        const after = await inviteeAgent.get('/api/projects');
+        expect(
+            after.body.projects.find((p) => p.name === 'Garden')
+        ).toBeDefined();
+    });
+});
+
+describe('Sharing a goal cascades to its projects and direct tasks', () => {
+    let owner, invitee, ownerAgent, inviteeAgent, goal, goalProject;
+
+    beforeEach(async () => {
+        owner = await createTestUser({
+            email: `goalowner_${Date.now()}@example.com`,
+        });
+        invitee = await createTestUser({
+            email: `goalinvitee_${Date.now()}@example.com`,
+        });
+        ownerAgent = await login(owner);
+        inviteeAgent = await login(invitee);
+
+        goal = await Goal.create({ title: 'Get closer', user_id: owner.id });
+        goalProject = await Project.create({
+            name: 'Date nights',
+            user_id: owner.id,
+            goal_id: goal.id,
+        });
+        await Task.create({
+            name: 'Buy a gift',
+            user_id: owner.id,
+            goal_id: goal.id,
+        });
+    });
+
+    it('shares linked projects and direct goal tasks once accepted', async () => {
+        const res = await ownerAgent.post('/api/shares').send({
+            resource_type: 'goal',
+            resource_uid: goal.uid,
+            target_user_email: invitee.email,
+            access_level: 'rw',
+        });
+        expect(res.status).toBe(204);
+
+        const list = await inviteeAgent.get('/api/shares/invitations');
+        await inviteeAgent.post(
+            `/api/shares/invitations/${list.body.invitations[0].id}/accept`
+        );
+
+        const projects = await inviteeAgent.get('/api/projects');
+        expect(
+            projects.body.projects.find((p) => p.uid === goalProject.uid)
+        ).toBeDefined();
+
+        const tasks = await inviteeAgent.get('/api/tasks');
+        expect(
+            tasks.body.tasks.find((t) => t.name === 'Buy a gift')
+        ).toBeDefined();
     });
 });
 

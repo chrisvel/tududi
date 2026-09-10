@@ -6,6 +6,7 @@ const {
     calculateTaskPerms,
     calculateNotePerms,
     calculateAreaPerms,
+    calculateGoalPerms,
     calculateTagPerms,
 } = require('./permissionsCalculators');
 
@@ -21,8 +22,14 @@ async function assertActorCanShare(actorUserId, resourceType, resourceOwnerId) {
 async function execAction(action) {
     // action: { verb, actorUserId, targetUserId, resourceType, resourceUid, accessLevel?, status? }
     return await sequelize.transaction(async (tx) => {
-        const { Project, Task, Note } = require('../models');
-        const ownerModels = { project: Project, task: Task, note: Note };
+        const { Project, Task, Note, Area, Goal } = require('../models');
+        const ownerModels = {
+            project: Project,
+            task: Task,
+            note: Note,
+            area: Area,
+            goal: Goal,
+        };
         const ownerModel = ownerModels[action.resourceType];
 
         let ownerUserId = null;
@@ -71,6 +78,8 @@ async function execAction(action) {
             changes = await calculateNotePerms(ctx, action);
         } else if (action.resourceType === 'area') {
             changes = await calculateAreaPerms(ctx, action);
+        } else if (action.resourceType === 'goal') {
+            changes = await calculateGoalPerms(ctx, action);
         } else if (action.resourceType === 'tag') {
             changes = await calculateTagPerms(ctx, action);
         }

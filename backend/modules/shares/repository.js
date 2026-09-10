@@ -1,10 +1,30 @@
 'use strict';
 
 const { Op } = require('sequelize');
-const { User, Permission, Project, Task, Note } = require('../../models');
+const {
+    User,
+    Permission,
+    Project,
+    Task,
+    Note,
+    Area,
+    Goal,
+} = require('../../models');
 
-const RESOURCE_MODELS = { project: Project, task: Task, note: Note };
-const RESOURCE_NAME_FIELDS = { project: 'name', task: 'name', note: 'title' };
+const RESOURCE_MODELS = {
+    project: Project,
+    task: Task,
+    note: Note,
+    area: Area,
+    goal: Goal,
+};
+const RESOURCE_NAME_FIELDS = {
+    project: 'name',
+    task: 'name',
+    note: 'title',
+    area: 'name',
+    goal: 'title',
+};
 
 class SharesRepository {
     async findResourceOwner(resourceType, resourceUid) {

@@ -5,14 +5,21 @@ import {
     PencilSquareIcon,
     TrashIcon,
     FlagIcon,
+    ShareIcon,
     XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { Goal, GoalHorizon, GoalStatus } from '../../entities/Goal';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
-import { fetchGoalByUid, createGoal, updateGoal, deleteGoal } from '../../utils/goalsService';
+import {
+    fetchGoalByUid,
+    createGoal,
+    updateGoal,
+    deleteGoal,
+} from '../../utils/goalsService';
 import { extractUidFromSlug, createProjectUrl } from '../../utils/slugUtils';
 import ConfirmDialog from '../Shared/ConfirmDialog';
+import ShareModal from '../Shared/ShareModal';
 import TaskList from '../Task/TaskList';
 import { useStore } from '../../store/useStore';
 import { useToast } from '../Shared/ToastContext';
@@ -38,26 +45,38 @@ const GoalDetails: React.FC = () => {
     const { showSuccessToast, showErrorToast } = useToast();
 
     const isNew = uidSlug === 'new';
-    const prefilledAreaId = isNew ? ((location.state as any)?.area_id ?? null) : null;
+    const prefilledAreaId = isNew
+        ? ((location.state as any)?.area_id ?? null)
+        : null;
 
     const [goal, setGoal] = useState<Goal | null>(null);
     const [loading, setLoading] = useState(!isNew);
     const [error, setError] = useState<string | null>(null);
     const [isEditing, setIsEditing] = useState(isNew);
     const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
-    const [formData, setFormData] = useState<Partial<Goal>>({ ...defaultFormData(), area_id: prefilledAreaId });
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+    const [formData, setFormData] = useState<Partial<Goal>>({
+        ...defaultFormData(),
+        area_id: prefilledAreaId,
+    });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [formError, setFormError] = useState<string | null>(null);
 
     const loadGoals = useStore((state: any) => state.goalsStore.loadGoals);
     const areas = useStore((state: any) => state.areasStore.areas);
-    const projects: Project[] = useStore((state: any) => state.projectsStore.projects);
+    const projects: Project[] = useStore(
+        (state: any) => state.projectsStore.projects
+    );
 
     useEffect(() => {
         if (isNew) return;
 
         const uid = extractUidFromSlug(uidSlug ?? '');
-        if (!uid) { setError(t('goals.notFound', 'Goal not found')); setLoading(false); return; }
+        if (!uid) {
+            setError(t('goals.notFound', 'Goal not found'));
+            setLoading(false);
+            return;
+        }
 
         fetchGoalByUid(uid)
             .then((data) => {
@@ -72,23 +91,34 @@ const GoalDetails: React.FC = () => {
                     color: data.color ?? '',
                 });
             })
-            .catch((err) => setError(err?.message || t('goals.notFound', 'Goal not found')))
+            .catch((err) =>
+                setError(err?.message || t('goals.notFound', 'Goal not found'))
+            )
             .finally(() => setLoading(false));
     }, [uidSlug, t, isNew]);
 
     const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+        e: React.ChangeEvent<
+            HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+        >
     ) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
-            [name]: name === 'area_id' ? (value ? parseInt(value, 10) : null) : value,
+            [name]:
+                name === 'area_id'
+                    ? value
+                        ? parseInt(value, 10)
+                        : null
+                    : value,
         }));
     };
 
     const handleSubmit = async () => {
         if (!formData.title?.trim()) {
-            setFormError(t('errors.goalTitleRequired', 'Goal title is required'));
+            setFormError(
+                t('errors.goalTitleRequired', 'Goal title is required')
+            );
             return;
         }
         setIsSubmitting(true);
@@ -102,20 +132,32 @@ const GoalDetails: React.FC = () => {
             if (isNew) {
                 const result = await createGoal(payload as any);
                 const current = useStore.getState().goalsStore.goals;
-                useStore.getState().goalsStore.setGoals([...current, result.goal]);
+                useStore
+                    .getState()
+                    .goalsStore.setGoals([...current, result.goal]);
                 showSuccessToast(t('success.goalCreated', 'Goal created!'));
                 const { createGoalUrl } = await import('../../utils/slugUtils');
-                navigate(createGoalUrl({ uid: result.goal.uid!, title: result.goal.title }), { replace: true });
+                navigate(
+                    createGoalUrl({
+                        uid: result.goal.uid!,
+                        title: result.goal.title,
+                    }),
+                    { replace: true }
+                );
             } else {
                 const result = await updateGoal(goal!.uid!, payload);
-                setGoal((prev) => prev ? { ...prev, ...result.goal } : result.goal);
+                setGoal((prev) =>
+                    prev ? { ...prev, ...result.goal } : result.goal
+                );
                 setIsEditing(false);
                 loadGoals(true);
                 showSuccessToast(t('success.goalUpdated', 'Goal updated!'));
             }
         } catch (err) {
             setFormError((err as Error).message);
-            showErrorToast(t('errors.failedToSaveGoal', 'Failed to save goal.'));
+            showErrorToast(
+                t('errors.failedToSaveGoal', 'Failed to save goal.')
+            );
         } finally {
             setIsSubmitting(false);
         }
@@ -149,7 +191,9 @@ const GoalDetails: React.FC = () => {
             showSuccessToast(t('success.goalDeleted', 'Goal deleted!'));
             navigate('/goals');
         } catch {
-            showErrorToast(t('errors.failedToDeleteGoal', 'Failed to delete goal.'));
+            showErrorToast(
+                t('errors.failedToDeleteGoal', 'Failed to delete goal.')
+            );
         }
         setIsConfirmDeleteOpen(false);
     };
@@ -160,7 +204,9 @@ const GoalDetails: React.FC = () => {
             return {
                 ...prev,
                 Tasks: (prev.Tasks ?? []).map((t: any) =>
-                    (t.uid ?? t.id) === (updatedTask.uid ?? updatedTask.id) ? updatedTask : t
+                    (t.uid ?? t.id) === (updatedTask.uid ?? updatedTask.id)
+                        ? updatedTask
+                        : t
                 ),
             };
         });
@@ -185,13 +231,21 @@ const GoalDetails: React.FC = () => {
     }
 
     if (error || (!isNew && !goal)) {
-        return <div className="text-red-500 p-4">{error ?? t('goals.notFound', 'Goal not found')}</div>;
+        return (
+            <div className="text-red-500 p-4">
+                {error ?? t('goals.notFound', 'Goal not found')}
+            </div>
+        );
     }
 
     const tasks: Task[] = (goal?.Tasks ?? []) as Task[];
     const goalProjects: Project[] = (goal?.Projects ?? []) as Project[];
-    const activeTasks = tasks.filter((t) => !TASK_STATUS_DONE.includes(t.status as any));
-    const completedTasks = tasks.filter((t) => TASK_STATUS_DONE.includes(t.status as any));
+    const activeTasks = tasks.filter(
+        (t) => !TASK_STATUS_DONE.includes(t.status as any)
+    );
+    const completedTasks = tasks.filter((t) =>
+        TASK_STATUS_DONE.includes(t.status as any)
+    );
 
     const effectiveColor = goal?.color || goal?.Area?.color;
     const hasColor = !!effectiveColor;
@@ -202,16 +256,24 @@ const GoalDetails: React.FC = () => {
             {/* Header banner */}
             <div
                 className="rounded-xl mb-8 overflow-hidden"
-                style={hasColor && !showForm ? { backgroundColor: effectiveColor } : undefined}
+                style={
+                    hasColor && !showForm
+                        ? { backgroundColor: effectiveColor }
+                        : undefined
+                }
             >
-                <div className={`p-6 ${(!hasColor || showForm) ? 'bg-gray-50 dark:bg-gray-900 rounded-xl' : ''}`}>
+                <div
+                    className={`p-6 ${!hasColor || showForm ? 'bg-gray-50 dark:bg-gray-900 rounded-xl' : ''}`}
+                >
                     {showForm ? (
                         /* Edit / Create form inline */
                         <div className="flex flex-col gap-4">
                             <div className="flex items-center gap-2 mb-1">
                                 <FlagIcon className="h-4 w-4 text-blue-500" />
                                 <p className="text-xs font-medium uppercase tracking-widest text-gray-400 dark:text-gray-500">
-                                    {isNew ? t('goals.newGoal', 'New Goal') : t('goals.editGoal', 'Edit Goal')}
+                                    {isNew
+                                        ? t('goals.newGoal', 'New Goal')
+                                        : t('goals.editGoal', 'Edit Goal')}
                                 </p>
                             </div>
 
@@ -222,7 +284,10 @@ const GoalDetails: React.FC = () => {
                                 value={formData.title ?? ''}
                                 onChange={handleChange}
                                 className="w-full text-3xl font-light bg-transparent text-gray-900 dark:text-gray-100 border-b border-gray-300 dark:border-gray-600 focus:outline-none focus:border-blue-500 pb-1"
-                                placeholder={t('forms.goalTitlePlaceholder', 'Goal title')}
+                                placeholder={t(
+                                    'forms.goalTitlePlaceholder',
+                                    'Goal title'
+                                )}
                             />
 
                             <div>
@@ -235,7 +300,10 @@ const GoalDetails: React.FC = () => {
                                     onChange={handleChange}
                                     rows={3}
                                     className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 resize-none"
-                                    placeholder={t('forms.goalWhyPlaceholder', 'What will achieving this enable?')}
+                                    placeholder={t(
+                                        'forms.goalWhyPlaceholder',
+                                        'What will achieving this enable?'
+                                    )}
                                 />
                             </div>
 
@@ -250,8 +318,15 @@ const GoalDetails: React.FC = () => {
                                         onChange={handleChange}
                                         className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500"
                                     >
-                                        <option value="season">{t('goals.horizon.season', 'Season')}</option>
-                                        <option value="year">{t('goals.horizon.year', 'Year')}</option>
+                                        <option value="season">
+                                            {t(
+                                                'goals.horizon.season',
+                                                'Season'
+                                            )}
+                                        </option>
+                                        <option value="year">
+                                            {t('goals.horizon.year', 'Year')}
+                                        </option>
                                     </select>
                                 </div>
                                 <div>
@@ -264,10 +339,24 @@ const GoalDetails: React.FC = () => {
                                         onChange={handleChange}
                                         className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500"
                                     >
-                                        <option value="active">{t('goals.status.active', 'Active')}</option>
-                                        <option value="achieved">{t('goals.status.achieved', 'Achieved')}</option>
-                                        <option value="paused">{t('goals.status.paused', 'Paused')}</option>
-                                        <option value="dropped">{t('goals.status.dropped', 'Dropped')}</option>
+                                        <option value="active">
+                                            {t('goals.status.active', 'Active')}
+                                        </option>
+                                        <option value="achieved">
+                                            {t(
+                                                'goals.status.achieved',
+                                                'Achieved'
+                                            )}
+                                        </option>
+                                        <option value="paused">
+                                            {t('goals.status.paused', 'Paused')}
+                                        </option>
+                                        <option value="dropped">
+                                            {t(
+                                                'goals.status.dropped',
+                                                'Dropped'
+                                            )}
+                                        </option>
                                     </select>
                                 </div>
                             </div>
@@ -292,14 +381,18 @@ const GoalDetails: React.FC = () => {
                                 <ColorPicker
                                     value={formData.color || ''}
                                     onChange={(color) =>
-                                        setFormData((prev) => ({ ...prev, color: color || '' }))
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            color: color || '',
+                                        }))
                                     }
                                 />
                             </div>
 
                             <div>
                                 <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider">
-                                    {t('forms.goalArea', 'Area')} ({t('common.optional', 'optional')})
+                                    {t('forms.goalArea', 'Area')} (
+                                    {t('common.optional', 'optional')})
                                 </label>
                                 <select
                                     name="area_id"
@@ -307,7 +400,9 @@ const GoalDetails: React.FC = () => {
                                     onChange={handleChange}
                                     className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500"
                                 >
-                                    <option value="">{t('forms.noArea', 'No area')}</option>
+                                    <option value="">
+                                        {t('forms.noArea', 'No area')}
+                                    </option>
                                     {areas.map((area: any) => (
                                         <option key={area.id} value={area.id}>
                                             {area.name}
@@ -317,7 +412,9 @@ const GoalDetails: React.FC = () => {
                             </div>
 
                             {formError && (
-                                <div className="text-red-500 text-sm">{formError}</div>
+                                <div className="text-red-500 text-sm">
+                                    {formError}
+                                </div>
                             )}
 
                             <div className="flex items-center gap-3 pt-2">
@@ -329,8 +426,14 @@ const GoalDetails: React.FC = () => {
                                     {isSubmitting
                                         ? t('modals.submitting', 'Saving...')
                                         : isNew
-                                            ? t('modals.createGoal', 'Create Goal')
-                                            : t('modals.updateGoal', 'Update Goal')}
+                                          ? t(
+                                                'modals.createGoal',
+                                                'Create Goal'
+                                            )
+                                          : t(
+                                                'modals.updateGoal',
+                                                'Update Goal'
+                                            )}
                                 </button>
                                 <button
                                     onClick={handleCancelEdit}
@@ -350,49 +453,115 @@ const GoalDetails: React.FC = () => {
                                     {goal!.Area ? (
                                         <>
                                             <Link
-                                                to={`/area/${goal!.Area.uid}-${goal!.Area.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`}
+                                                to={`/area/${goal!.Area.uid}-${goal!.Area.name
+                                                    .toLowerCase()
+                                                    .replace(/[^a-z0-9]+/g, '-')
+                                                    .replace(/^-|-$/g, '')}`}
                                                 className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium transition-opacity hover:opacity-80 ${
-                                                    hasColor ? 'bg-white/20 text-white' : ''
+                                                    hasColor
+                                                        ? 'bg-white/20 text-white'
+                                                        : ''
                                                 }`}
-                                                style={!hasColor && goal!.Area.color ? { backgroundColor: goal!.Area.color + '33', color: goal!.Area.color } : {}}
+                                                style={
+                                                    !hasColor &&
+                                                    goal!.Area.color
+                                                        ? {
+                                                              backgroundColor:
+                                                                  goal!.Area
+                                                                      .color +
+                                                                  '33',
+                                                              color: goal!.Area
+                                                                  .color,
+                                                          }
+                                                        : {}
+                                                }
                                             >
-                                                {!hasColor && !goal!.Area.color && (
-                                                    <span className="w-2 h-2 rounded-full bg-gray-400 dark:bg-gray-500" />
-                                                )}
+                                                {!hasColor &&
+                                                    !goal!.Area.color && (
+                                                        <span className="w-2 h-2 rounded-full bg-gray-400 dark:bg-gray-500" />
+                                                    )}
                                                 {goal!.Area.name}
                                             </Link>
-                                            <span className={`text-xs ${hasColor ? 'text-white/40' : 'text-gray-300 dark:text-gray-600'}`}>/</span>
+                                            <span
+                                                className={`text-xs ${hasColor ? 'text-white/40' : 'text-gray-300 dark:text-gray-600'}`}
+                                            >
+                                                /
+                                            </span>
                                         </>
                                     ) : null}
                                     <div className="flex items-center gap-1.5">
-                                        <FlagIcon className={`h-3.5 w-3.5 ${hasColor ? 'text-white/70' : 'text-blue-500'}`} />
-                                        <p className={`text-xs font-medium uppercase tracking-widest ${hasColor ? 'text-white/60' : 'text-gray-400 dark:text-gray-500'}`}>
+                                        <FlagIcon
+                                            className={`h-3.5 w-3.5 ${hasColor ? 'text-white/70' : 'text-blue-500'}`}
+                                        />
+                                        <p
+                                            className={`text-xs font-medium uppercase tracking-widest ${hasColor ? 'text-white/60' : 'text-gray-400 dark:text-gray-500'}`}
+                                        >
                                             {t('goals.singular', 'Goal')}
                                         </p>
                                     </div>
                                 </div>
 
-                                <h1 className={`text-3xl font-light ${hasColor ? 'text-white' : 'text-gray-900 dark:text-gray-100'}`}>
+                                <h1
+                                    className={`text-3xl font-light ${hasColor ? 'text-white' : 'text-gray-900 dark:text-gray-100'}`}
+                                >
                                     {goal!.title}
                                 </h1>
                                 {goal!.why && (
-                                    <p className={`mt-2 text-sm italic ${hasColor ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'}`}>
+                                    <p
+                                        className={`mt-2 text-sm italic ${hasColor ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'}`}
+                                    >
                                         {goal!.why}
                                     </p>
                                 )}
-                                <div className={`mt-3 flex gap-4 text-xs ${hasColor ? 'text-white/70' : 'text-gray-500 dark:text-gray-400'}`}>
-                                    <span>{t(`goals.status.${goal!.status}`, goal!.status)}</span>
-                                    <span>{t(`goals.horizon.${goal!.horizon}`, goal!.horizon)}</span>
+                                <div
+                                    className={`mt-3 flex gap-4 text-xs ${hasColor ? 'text-white/70' : 'text-gray-500 dark:text-gray-400'}`}
+                                >
+                                    <span>
+                                        {t(
+                                            `goals.status.${goal!.status}`,
+                                            goal!.status
+                                        )}
+                                    </span>
+                                    <span>
+                                        {t(
+                                            `goals.horizon.${goal!.horizon}`,
+                                            goal!.horizon
+                                        )}
+                                    </span>
                                     {goal!.target_date && (
-                                        <span>{t('goals.targetDate', 'Target')}: {new Date(goal!.target_date).toLocaleDateString()}</span>
+                                        <span>
+                                            {t('goals.targetDate', 'Target')}:{' '}
+                                            {new Date(
+                                                goal!.target_date
+                                            ).toLocaleDateString()}
+                                        </span>
                                     )}
                                 </div>
-                                <div className={`mt-3 flex gap-4 text-xs ${hasColor ? 'text-white/70' : 'text-gray-500 dark:text-gray-400'}`}>
-                                    <span>{tasks.length} {t('tasks.title', 'tasks')}</span>
-                                    <span>{goalProjects.length} {t('projects.title', 'projects')}</span>
+                                <div
+                                    className={`mt-3 flex gap-4 text-xs ${hasColor ? 'text-white/70' : 'text-gray-500 dark:text-gray-400'}`}
+                                >
+                                    <span>
+                                        {tasks.length}{' '}
+                                        {t('tasks.title', 'tasks')}
+                                    </span>
+                                    <span>
+                                        {goalProjects.length}{' '}
+                                        {t('projects.title', 'projects')}
+                                    </span>
                                 </div>
                             </div>
                             <div className="flex items-center gap-1 flex-shrink-0">
+                                <button
+                                    onClick={() => setIsShareModalOpen(true)}
+                                    className={`p-2 rounded-lg transition-colors ${
+                                        hasColor
+                                            ? 'text-white/80 hover:text-white hover:bg-white/10'
+                                            : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                    }`}
+                                    title={t('shares.shareGoal', 'Share goal')}
+                                >
+                                    <ShareIcon className="h-5 w-5" />
+                                </button>
                                 <button
                                     onClick={() => setIsEditing(true)}
                                     className={`p-2 rounded-lg transition-colors ${
@@ -427,27 +596,45 @@ const GoalDetails: React.FC = () => {
                     {/* Projects section */}
                     <div>
                         <h3 className="text-lg font-light text-gray-700 dark:text-gray-300 mb-4">
-                            {t('projects.title', 'Projects')} ({goalProjects.length})
+                            {t('projects.title', 'Projects')} (
+                            {goalProjects.length})
                         </h3>
                         {goalProjects.length === 0 ? (
                             <p className="text-sm text-gray-400 dark:text-gray-500">
-                                {t('goals.noProjects', 'No projects linked to this goal.')}
+                                {t(
+                                    'goals.noProjects',
+                                    'No projects linked to this goal.'
+                                )}
                             </p>
                         ) : (
                             <div className="flex flex-col gap-2">
                                 {goalProjects.map((project) => (
                                     <Link
                                         key={project.uid ?? project.id}
-                                        to={project.uid ? createProjectUrl({ uid: project.uid, name: project.name }) : '/projects'}
+                                        to={
+                                            project.uid
+                                                ? createProjectUrl({
+                                                      uid: project.uid,
+                                                      name: project.name,
+                                                  })
+                                                : '/projects'
+                                        }
                                         className="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 hover:bg-white dark:hover:bg-gray-800 transition-colors group border-l-4"
-                                        style={{ borderLeftColor: (project as any).color || '#6366f1' }}
+                                        style={{
+                                            borderLeftColor:
+                                                (project as any).color ||
+                                                '#6366f1',
+                                        }}
                                     >
                                         <span className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate flex-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                                             {project.name}
                                         </span>
                                         {project.status && (
                                             <span className="text-xs text-gray-400 dark:text-gray-500 flex-shrink-0">
-                                                {project.status.replace('_', ' ')}
+                                                {project.status.replace(
+                                                    '_',
+                                                    ' '
+                                                )}
                                             </span>
                                         )}
                                     </Link>
@@ -463,7 +650,10 @@ const GoalDetails: React.FC = () => {
                         </h3>
                         {tasks.length === 0 ? (
                             <p className="text-sm text-gray-400 dark:text-gray-500">
-                                {t('goals.noTasks', 'No tasks assigned to this goal.')}
+                                {t(
+                                    'goals.noTasks',
+                                    'No tasks assigned to this goal.'
+                                )}
                             </p>
                         ) : (
                             <div className="space-y-6">
@@ -478,7 +668,8 @@ const GoalDetails: React.FC = () => {
                                 {completedTasks.length > 0 && (
                                     <div>
                                         <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">
-                                            {t('tasks.completed', 'Completed')} ({completedTasks.length})
+                                            {t('tasks.completed', 'Completed')}{' '}
+                                            ({completedTasks.length})
                                         </h4>
                                         <TaskList
                                             tasks={completedTasks}
@@ -503,6 +694,14 @@ const GoalDetails: React.FC = () => {
                     onCancel={() => setIsConfirmDeleteOpen(false)}
                 />
             )}
+
+            <ShareModal
+                isOpen={isShareModalOpen}
+                onClose={() => setIsShareModalOpen(false)}
+                resourceType="goal"
+                resourceUid={goal?.uid || null}
+                resourceName={goal?.title}
+            />
         </div>
     );
 };

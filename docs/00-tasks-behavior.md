@@ -420,7 +420,12 @@ This document explains how tasks work in tududi from a user behavior perspective
     - Task due soon (based on due date)
     - Task overdue
     - Defer Until time reached
-    - Task assigned to you (shared via project)
+    - **Task assigned to you** — when someone sets `assigned_to` to a person
+      linked to your account, you get a `task_assigned` notification (channels
+      configurable under the "Task Assigned" preference). An assigned task also
+      shows up in your task lists and the "Assigned to me" sidebar view, and you
+      can open and complete it, even if you don't otherwise have access to its
+      project.
 
 55. **Notification channels:**
     - In-app notifications (navbar indicator)

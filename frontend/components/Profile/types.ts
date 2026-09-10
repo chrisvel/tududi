@@ -67,6 +67,12 @@ export interface NotificationPreferences {
         push: boolean;
         telegram: boolean;
     };
+    taskAssigned: {
+        inApp: boolean;
+        email: boolean;
+        push: boolean;
+        telegram: boolean;
+    };
 }
 
 export interface Profile {

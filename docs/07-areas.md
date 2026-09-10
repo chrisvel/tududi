@@ -117,8 +117,12 @@ Area: "Health"
 
 5. **User ID** (system-managed)
    - Links area to the user who created it
-   - Areas are private to each user
-   - Cannot be shared between users
+   - The area container itself stays with its owner (it is not listed for
+     collaborators), but an area **can be shared**: the share cascades to every
+     project the owner keeps in the area (and their tasks and notes), through
+     the same invite-and-accept flow as project sharing. Projects added to the
+     area later are shared automatically. See
+     [Projects](06-projects.md#project-sharing-and-collaboration).
 
 ---
 
@@ -609,7 +613,8 @@ No Area
 ### "Can't delete an area"
 
 **Possible reasons:**
-1. You're not the owner (areas can't be shared)
+1. You're not the owner (only the owner manages the area; a shared area's
+   projects appear for collaborators but the area itself does not)
 2. Network error
 3. Permission issue
 

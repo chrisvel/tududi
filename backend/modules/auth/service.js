@@ -37,9 +37,11 @@ class AuthService {
         // True only while hosted Cloud is shut, so a self-hosted instance
         // with registration off keeps the generic "closed" message instead
         // of the Cloud-specific "opening soon" copy and its email capture.
+        const { isEmailEnabled } = require('../../services/emailService');
         return {
             enabled: await isRegistrationEnabled(),
             waitlist: isCloudClosed(),
+            email_enabled: isEmailEnabled(),
         };
     }
 
