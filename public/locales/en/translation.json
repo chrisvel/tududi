@@ -74,7 +74,8 @@
     "bookmarks": "Favorites",
     "reports": "Reports",
     "productivityAssistant": "Productivity Assistant",
-    "assignedToMe": "Assigned to me"
+    "assignedToMe": "Assigned to me",
+    "everyone": "Everyone"
   },
   "navigation": {
     "home": "Home",
@@ -1864,5 +1865,17 @@
     "opening": "Opening the demo...",
     "unavailableTitle": "The demo is not available",
     "unavailableBody": "It may be rebuilding itself. Try again in a moment."
+  },
+  "everyone": {
+    "title": "Everyone",
+    "subtitle": "What everyone you share work with has on now",
+    "you": "You",
+    "overdue": "Overdue",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "upcoming": "This week",
+    "noDate": "No date",
+    "nothing": "Nothing right now",
+    "empty": "Nothing shared is on right now. Share an area, project or goal, or assign someone a task, to see it here."
   }
 }

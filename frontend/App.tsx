@@ -48,6 +48,7 @@ import ReportsPage from './components/Insights/ReportsPage';
 import DailyBriefPage from './components/Insights/DailyBriefPage';
 import PeopleList from './components/People/PeopleList';
 import PersonDetails from './components/People/PersonDetails';
+import EveryoneDashboard from './components/Everyone/EveryoneDashboard';
 import Templates from './components/Templates/Templates';
 import { setCurrentUser as setUserInStorage } from './utils/userUtils';
 import { getApiPath, getLocalesPath } from './config/paths';
@@ -109,6 +110,11 @@ const App: React.FC = () => {
                     .getState()
                     .userSettingsStore.setCalendarEnabled(
                         data.user.features?.calendar_enabled === true
+                    );
+                useStore
+                    .getState()
+                    .userSettingsStore.setHasCollaborators(
+                        data.user.has_collaborators === true
                     );
                 useStore
                     .getState()
@@ -396,6 +402,10 @@ const App: React.FC = () => {
                             <Route
                                 path="/person/:uid"
                                 element={<PersonDetails />}
+                            />
+                            <Route
+                                path="/everyone"
+                                element={<EveryoneDashboard />}
                             />
                             <Route
                                 path="/admin/billing"
