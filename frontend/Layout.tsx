@@ -29,6 +29,7 @@ import {
 } from './utils/projectsService';
 import { isAuthError } from './utils/authUtils';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { TaskRowExpansionProvider } from './components/Task/TaskRow/TaskRowExpansionContext';
 import { getApiPath } from './config/paths';
 import { KeyboardShortcutsConfig } from './utils/keyboardShortcutsService';
 
@@ -565,7 +566,11 @@ const Layout: React.FC<LayoutProps> = ({
                             } md:pt-20 ${isUpcomingView ? 'md:px-6 lg:px-8' : 'md:px-4'} overflow-hidden`}
                         >
                             <div className="w-full h-full overflow-auto">
-                                {children}
+                                <TaskRowExpansionProvider
+                                    key={location.pathname}
+                                >
+                                    {children}
+                                </TaskRowExpansionProvider>
                             </div>
                         </div>
                     </div>

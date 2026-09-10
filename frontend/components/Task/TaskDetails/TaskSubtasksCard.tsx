@@ -52,6 +52,7 @@ const TaskSubtasksCard: React.FC<TaskSubtasksCardProps> = ({
                             onTaskDelete={onSubtaskDelete}
                             projects={projects}
                             hideProjectName
+                            disableExpand
                         />
                     ))}
                 </div>

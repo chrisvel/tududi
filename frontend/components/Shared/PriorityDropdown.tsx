@@ -13,11 +13,17 @@ import { useTranslation } from 'react-i18next';
 interface PriorityDropdownProps {
     value: PriorityType;
     onChange: (value: PriorityType) => void;
+    renderTrigger?: (opts: {
+        isOpen: boolean;
+        onClick: () => void;
+        displayValue: string | null;
+    }) => React.ReactNode;
 }
 
 const PriorityDropdown: React.FC<PriorityDropdownProps> = ({
     value,
     onChange,
+    renderTrigger,
 }) => {
     const { t } = useTranslation();
 
@@ -125,33 +131,43 @@ const PriorityDropdown: React.FC<PriorityDropdownProps> = ({
             ref={dropdownRef}
             data-testid="priority-dropdown"
             data-state={isOpen ? 'open' : 'closed'}
-            className="relative inline-block text-left w-full"
+            className={`relative inline-block text-left ${renderTrigger ? '' : 'w-full'}`}
         >
-            <button
-                type="button"
-                className="inline-flex justify-between w-full px-3 py-2 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-900 rounded-md shadow-sm focus:outline-none"
-                onClick={handleToggle}
-            >
-                <span className="flex items-center space-x-2">
-                    {selectedPriority ? selectedPriority.icon : ''}
-                    <span>
-                        {selectedPriority
-                            ? selectedPriority.label
-                            : t('forms.priority', 'Select Priority')}
+            {renderTrigger ? (
+                renderTrigger({
+                    isOpen,
+                    onClick: handleToggle,
+                    displayValue: selectedPriority
+                        ? selectedPriority.label
+                        : null,
+                })
+            ) : (
+                <button
+                    type="button"
+                    className="inline-flex justify-between w-full px-3 py-2 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-900 rounded-md shadow-sm focus:outline-none"
+                    onClick={handleToggle}
+                >
+                    <span className="flex items-center space-x-2">
+                        {selectedPriority ? selectedPriority.icon : ''}
+                        <span>
+                            {selectedPriority
+                                ? selectedPriority.label
+                                : t('forms.priority', 'Select Priority')}
+                        </span>
                     </span>
-                </span>
-                <ChevronDownIcon className="w-5 h-5 text-gray-500 dark:text-gray-300" />
-            </button>
+                    <ChevronDownIcon className="w-5 h-5 text-gray-500 dark:text-gray-300" />
+                </button>
+            )}
 
             {isOpen &&
                 createPortal(
                     <div
                         ref={menuRef}
-                        className="fixed z-50 bg-white dark:bg-gray-700 shadow-lg rounded-md border border-gray-200 dark:border-gray-600"
+                        className="fixed z-[10050] whitespace-nowrap bg-white dark:bg-gray-700 shadow-lg rounded-md border border-gray-200 dark:border-gray-600"
                         style={{
                             top: `${position.top}px`,
                             left: `${position.left}px`,
-                            width: `${position.width}px`,
+                            minWidth: `${Math.max(position.width, 160)}px`,
                         }}
                     >
                         {priorities.map((priority) => (

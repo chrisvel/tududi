@@ -12,6 +12,7 @@ export interface Person {
     notes?: string | null;
     archived?: boolean;
     color?: string | null;
+    is_self?: boolean;
     created_at?: string;
     updated_at?: string;
 }
