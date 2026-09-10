@@ -1,6 +1,6 @@
 const request = require('supertest');
 const app = require('../../app');
-const { Project, Task, Area } = require('../../models');
+const { Project, Task, Area, Person } = require('../../models');
 const {
     createTestUser,
     acceptAllInvitations,
@@ -97,6 +97,58 @@ describe('GET /api/everyone', () => {
         ).toBeUndefined();
     });
 
+    it('folds a look-alike contact card into the collaborator column', async () => {
+        // The owner also keeps a plain address-book card for the mate.
+        const card = await Person.create({
+            name: 'Mate',
+            user_id: owner.id,
+            linked_user_id: null,
+        });
+        await Task.create({
+            name: 'Pick up parcel',
+            user_id: owner.id,
+            project_id: project.id,
+            assigned_to: card.uid,
+            due_date: new Date(),
+        });
+
+        const res = await ownerAgent.get('/api/everyone');
+        const mateColumns = res.body.columns.filter(
+            (c) => c.person.name === 'Mate'
+        );
+        expect(mateColumns).toHaveLength(1);
+        expect(mateColumns[0].person.uid).toBe(mateSelf.uid);
+        expect(
+            mateColumns[0].today.find((t) => t.name === 'Pick up parcel')
+        ).toBeDefined();
+    });
+
+    it('folds a linked contact card into the collaborator column', async () => {
+        const card = await Person.create({
+            name: 'Housemate',
+            user_id: owner.id,
+            linked_user_id: mate.id,
+        });
+        await Task.create({
+            name: 'Water the plants',
+            user_id: owner.id,
+            project_id: project.id,
+            assigned_to: card.uid,
+            due_date: new Date(),
+        });
+
+        const res = await ownerAgent.get('/api/everyone');
+        expect(res.body.columns.some((c) => c.person.uid === card.uid)).toBe(
+            false
+        );
+        const mateColumn = res.body.columns.find(
+            (c) => c.person.uid === mateSelf.uid
+        );
+        expect(
+            mateColumn.today.find((t) => t.name === 'Water the plants')
+        ).toBeDefined();
+    });
+
     it('does not expose a private task in an unshared project', async () => {
         const priv = await Project.create({
             name: 'Mate private',
@@ -154,6 +206,33 @@ describe('GET /api/everyone', () => {
         expect(res.status).toBe(200);
         expect(res.body.columns).toHaveLength(1);
         expect(res.body.columns[0].is_self).toBe(true);
+        expect(res.body.summary).toEqual({
+            people: 1,
+            total: 0,
+            overdue: 0,
+            today: 0,
+        });
+    });
+
+    it('returns board totals in the summary', async () => {
+        const mk = (name, due, user) =>
+            Task.create({
+                name,
+                user_id: user.id,
+                project_id: project.id,
+                due_date: due,
+            });
+        await mk('owner overdue', daysFromNow(-1), owner);
+        await mk('owner today', new Date(), owner);
+        await mk('mate soon', daysFromNow(3), mate);
+        await mk('mate no date', null, mate);
+
+        const res = await ownerAgent.get('/api/everyone');
+        expect(res.status).toBe(200);
+        expect(res.body.summary.people).toBe(res.body.columns.length);
+        expect(res.body.summary.overdue).toBe(1);
+        expect(res.body.summary.today).toBe(1);
+        expect(res.body.summary.total).toBe(4);
     });
 });
 

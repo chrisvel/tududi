@@ -17,6 +17,8 @@ const HIDDEN_STATUSES = [
 
 const BUCKET_KEYS = ['overdue', 'today', 'tomorrow', 'upcoming', 'no_date'];
 
+const normalizeName = (name) => (name || '').trim().toLowerCase();
+
 // The set of user ids that share something with me or that I share something
 // with (accepted, top-level grants only).
 async function getCollaboratorUserIds(userId) {
@@ -113,11 +115,34 @@ async function getEveryoneDashboard(userId, timezone) {
 
     const userIdToSelfPersonUid = {};
     const personByUid = {};
+    const nameToSelfPersonUid = {};
     for (const p of selfPeople) {
         userIdToSelfPersonUid[p.linked_user_id] = p.uid;
         personByUid[p.uid] = p;
+        nameToSelfPersonUid[normalizeName(p.name)] = p.uid;
     }
-    const collaboratorPersonUids = Object.values(userIdToSelfPersonUid);
+    const selfPersonUids = new Set(Object.values(userIdToSelfPersonUid));
+    const collaboratorPersonUids = Array.from(selfPersonUids);
+
+    // The viewer's address book can hold a plain contact card that stands in
+    // for a collaborator - linked to their account, or just sharing a name.
+    // Fold each such card into the collaborator's canonical column so one
+    // person is never listed twice.
+    const viewerPeople = await peopleRepository.findAllByUser(userId, {
+        archived: null,
+    });
+    const personUidAlias = {};
+    for (const p of viewerPeople) {
+        if (selfPersonUids.has(p.uid)) continue;
+        if (p.linked_user_id && userIdToSelfPersonUid[p.linked_user_id]) {
+            personUidAlias[p.uid] = userIdToSelfPersonUid[p.linked_user_id];
+        } else if (
+            !p.linked_user_id &&
+            nameToSelfPersonUid[normalizeName(p.name)]
+        ) {
+            personUidAlias[p.uid] = nameToSelfPersonUid[normalizeName(p.name)];
+        }
+    }
 
     const sharedProjectIds = await getSharedProjectIds(userId);
 
@@ -125,10 +150,12 @@ async function getEveryoneDashboard(userId, timezone) {
     if (sharedProjectIds.length > 0) {
         orConditions.push({ project_id: { [Op.in]: sharedProjectIds } });
     }
-    if (collaboratorPersonUids.length > 0) {
-        orConditions.push({
-            assigned_to: { [Op.in]: collaboratorPersonUids },
-        });
+    const assigneeUids = [
+        ...collaboratorPersonUids,
+        ...Object.keys(personUidAlias),
+    ];
+    if (assigneeUids.length > 0) {
+        orConditions.push({ assigned_to: { [Op.in]: assigneeUids } });
     }
 
     let tasks = [];
@@ -148,22 +175,38 @@ async function getEveryoneDashboard(userId, timezone) {
         });
     }
 
-    // Non-account people (e.g. children) enter the roster via assignment.
+    // Genuine non-account people (e.g. children) enter the roster via
+    // assignment; an aliased contact card never gets its own column.
     for (const task of tasks) {
-        if (task.AssignedTo && !personByUid[task.AssignedTo.uid]) {
-            personByUid[task.AssignedTo.uid] = task.AssignedTo;
-        }
+        const a = task.AssignedTo;
+        if (!a || selfPersonUids.has(a.uid) || personUidAlias[a.uid]) continue;
+        if (!personByUid[a.uid]) personByUid[a.uid] = a;
     }
 
-    return {
-        columns: await buildColumns(
-            tasks,
-            userId,
-            userIdToSelfPersonUid,
-            personByUid,
-            tz
-        ),
-    };
+    const columns = await buildColumns(
+        tasks,
+        userId,
+        userIdToSelfPersonUid,
+        personByUid,
+        personUidAlias,
+        tz
+    );
+
+    return { columns, summary: summarize(columns) };
+}
+
+// At-a-glance totals for the stats row on the Everyone page. Derived from the
+// finished columns so the numbers always match what the board shows.
+function summarize(columns) {
+    let total = 0;
+    let overdue = 0;
+    let today = 0;
+    for (const col of columns) {
+        for (const key of BUCKET_KEYS) total += col.counts[key];
+        overdue += col.counts.overdue;
+        today += col.counts.today;
+    }
+    return { people: columns.length, total, overdue, today };
 }
 
 async function buildColumns(
@@ -171,6 +214,7 @@ async function buildColumns(
     userId,
     userIdToSelfPersonUid,
     personByUid,
+    personUidAlias,
     tz
 ) {
     const selfPersonUid = userIdToSelfPersonUid[userId] || null;
@@ -186,8 +230,11 @@ async function buildColumns(
     for (const uid of Object.values(userIdToSelfPersonUid)) ensure(uid);
 
     for (const task of tasks) {
+        const assignedUid = task.assigned_to
+            ? personUidAlias[task.assigned_to] || task.assigned_to
+            : null;
         const personUid =
-            task.assigned_to || userIdToSelfPersonUid[task.user_id] || null;
+            assignedUid || userIdToSelfPersonUid[task.user_id] || null;
         if (!personUid) continue;
         const bucket = bucketForDue(task.due_date, tz);
         if (!bucket) continue;

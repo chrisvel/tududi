@@ -25,8 +25,16 @@ export interface EveryoneColumn {
     no_date: Task[];
 }
 
+export interface EveryoneSummary {
+    people: number;
+    total: number;
+    overdue: number;
+    today: number;
+}
+
 export interface EveryoneResponse {
     columns: EveryoneColumn[];
+    summary: EveryoneSummary;
 }
 
 export const fetchEveryone = async (): Promise<EveryoneResponse> => {

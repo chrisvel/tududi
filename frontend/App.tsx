@@ -150,6 +150,10 @@ const App: React.FC = () => {
             const user = event.detail;
             setCurrentUser(user);
             setUserInStorage(user);
+            // The login payload carries no feature flags or has_collaborators,
+            // so re-read the full user; otherwise the sidebar (Calendar, the
+            // "Everyone" dashboard, ...) stays wrong until a manual reload.
+            fetchCurrentUser();
         };
 
         window.addEventListener(
@@ -161,6 +165,16 @@ const App: React.FC = () => {
                 'userLoggedIn',
                 handleUserLoggedIn as EventListener
             );
+    }, []);
+
+    // Accepting a share invitation or revoking a collaborator changes whether
+    // the "Everyone" dashboard applies; re-read the user so its sidebar item
+    // appears or disappears without a reload.
+    useEffect(() => {
+        const refresh = () => fetchCurrentUser();
+        window.addEventListener('collaboratorsChanged', refresh);
+        return () =>
+            window.removeEventListener('collaboratorsChanged', refresh);
     }, []);
 
     useEffect(() => {

@@ -33,7 +33,9 @@
     "searchTimezones": "Search timezones...",
     "dismiss": "Dismiss",
     "search": "Search",
-    "previous": "Previous"
+    "previous": "Previous",
+    "done": "Done",
+    "clear": "Clear"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -206,7 +208,10 @@
     "noCompletedTasksToday": "No completed tasks today.",
     "markAsDone": "Mark as done",
     "chaseUp": "Chase up",
-    "habit": "Habit"
+    "habit": "Habit",
+    "assignedTo": "Assigned to",
+    "subtasks": "Subtasks",
+    "openFullPage": "Open full view"
   },
   "timeline": {
     "activityTimeline": "Activity Timeline",
@@ -689,7 +694,8 @@
         "short": "Try to be more specific about what needs to be done",
         "noVerb": "What specific action do you need to take? Try starting with a verb.",
         "vague": "Try starting with an action verb like \"Call\", \"Write\", \"Schedule\", or \"Research\""
-      }
+      },
+      "notePlaceholder": "Add a note..."
     },
     "noteTitle": "Note Title",
     "noteContent": "Note Content",
@@ -1089,7 +1095,8 @@
     "noDeferUntil": "No defer until",
     "deferUntilUpdated": "Defer until updated successfully",
     "deferUntilUpdateError": "Failed to update defer until",
-    "upcoming": "upcoming"
+    "upcoming": "upcoming",
+    "assigneeUpdateError": "Failed to update assignee"
   },
   "subtasks": {
     "placeholder": "Add a subtask..."
@@ -1143,7 +1150,8 @@
       "somedayTooltip": "Projects tagged \"someday\" are hidden by default. Click to reveal them.",
       "systemTagCannotBeDeleted": "System tags cannot be deleted",
       "systemTagCannotBeRenamed": "System tags cannot be renamed"
-    }
+    },
+    "noResults": "No projects"
   },
   "projectStatus": {
     "not_started": "Not Started",
@@ -1276,7 +1284,11 @@
     "inheritedSettingsMessage": "This task was generated from a recurring task. The recurrence settings shown below are inherited from the original task and cannot be edited here.",
     "cancelEdit": "Cancel Edit",
     "editParentRecurrence": "Edit Parent Recurrence",
-    "parentEditWarning": "⚠️ You are editing the parent task's recurrence settings. Changes will affect all future instances of this recurring task."
+    "parentEditWarning": "⚠️ You are editing the parent task's recurrence settings. Changes will affect all future instances of this recurring task.",
+    "every": "Every",
+    "weeks": "weeks",
+    "months": "months",
+    "advancedHint": "For specific weekdays or an end date, open the full task."
   },
   "weekdays": {
     "sunday": "Sun",
@@ -1870,6 +1882,8 @@
     "title": "Everyone",
     "subtitle": "What everyone you share work with has on now",
     "you": "You",
+    "people": "People",
+    "tasks": "Tasks",
     "overdue": "Overdue",
     "today": "Today",
     "tomorrow": "Tomorrow",
