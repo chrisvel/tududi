@@ -204,6 +204,9 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
                 [notification.uid]:
                     answer === 'accept' ? 'accepted' : 'declined',
             }));
+            // May have gained (or, on decline of the last one, not) a
+            // collaborator; let the app re-read has_collaborators.
+            window.dispatchEvent(new CustomEvent('collaboratorsChanged'));
             if (!notification.read_at) {
                 handleMarkAsRead(notification.uid);
             }

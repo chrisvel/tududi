@@ -8,6 +8,7 @@ import {
     ClockIcon,
     CalendarIcon,
     UserIcon,
+    UsersIcon,
 } from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
 import { loadInboxItemsToStore } from '../../utils/inboxService';
@@ -27,6 +28,9 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
     const store = useStore();
     const calendarEnabled = useStore(
         (state) => state.userSettingsStore.calendarEnabled
+    );
+    const hasCollaborators = useStore(
+        (state) => state.userSettingsStore.hasCollaborators
     );
 
     const inboxItemsCount = store.inboxStore.pagination.total;
@@ -70,11 +74,20 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
             icon: <UserIcon className="h-[15px] w-[15px]" />,
             query: 'assigned_to=me',
         },
+        {
+            path: '/everyone',
+            title: t('sidebar.everyone', 'Everyone'),
+            icon: <UsersIcon className="h-[15px] w-[15px]" />,
+            userFlag: 'everyone',
+        },
     ];
 
     const navLinks = allNavLinks.filter((link) => {
         if (link.userFlag === 'calendar') {
             return calendarEnabled;
+        }
+        if (link.userFlag === 'everyone') {
+            return hasCollaborators;
         }
         return true;
     });
@@ -85,7 +98,12 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
         'text-gray-700 dark:text-[oklch(75%_0.006_95)] hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)]';
 
     const isActiveLink = (path: string, query?: string): boolean => {
-        if (path === '/inbox' || path === '/today' || path === '/calendar') {
+        if (
+            path === '/inbox' ||
+            path === '/today' ||
+            path === '/calendar' ||
+            path === '/everyone'
+        ) {
             return location.pathname === path;
         }
         if (path.startsWith('/upcoming')) {

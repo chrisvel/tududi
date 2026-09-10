@@ -10,8 +10,21 @@ const {
 const VALID_RELATIONSHIP_TYPES = ['family', 'work', 'friend', 'other'];
 
 class PeopleService {
+    // Flag the caller's own canonical self-person so the UI can offer a
+    // "(me)" option for quick self-assignment.
+    markSelf(userId, people) {
+        return people.map((p) => {
+            const plain =
+                typeof p.toJSON === 'function' ? p.toJSON() : { ...p };
+            plain.is_self =
+                plain.user_id === userId && plain.linked_user_id === userId;
+            return plain;
+        });
+    }
+
     async getAll(userId, filters = {}) {
-        return peopleRepository.findAllByUser(userId, filters);
+        const people = await peopleRepository.findAllByUser(userId, filters);
+        return this.markSelf(userId, people);
     }
 
     // Own people plus the self-person of the project owner and any
@@ -22,7 +35,7 @@ class PeopleService {
 
         const ownerUserId =
             await peopleRepository.findProjectOwnerUserId(projectUid);
-        if (!ownerUserId) return people;
+        if (!ownerUserId) return this.markSelf(userId, people);
 
         const collaboratorUserIds =
             await peopleRepository.findProjectCollaboratorUserIds(projectUid);
@@ -30,7 +43,7 @@ class PeopleService {
             new Set([ownerUserId, ...collaboratorUserIds])
         ).filter((id) => id !== userId);
 
-        if (!otherUserIds.length) return people;
+        if (!otherUserIds.length) return this.markSelf(userId, people);
 
         const selfPeople =
             await peopleRepository.findSelfPeopleByUserIds(otherUserIds);
@@ -42,7 +55,7 @@ class PeopleService {
                 existingUids.add(person.uid);
             }
         }
-        return merged;
+        return this.markSelf(userId, merged);
     }
 
     async getUnlinked(userId) {

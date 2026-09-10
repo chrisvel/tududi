@@ -124,6 +124,8 @@ const ShareModal: React.FC<ShareModalProps> = ({
         try {
             await revokeShare(resourceType, resourceUid, userId);
             await refreshShares(resourceUid);
+            // Removing the last collaborator hides the "Everyone" sidebar item.
+            window.dispatchEvent(new CustomEvent('collaboratorsChanged'));
         } catch (err: any) {
             setError(err.message || 'Failed to revoke share');
         }
