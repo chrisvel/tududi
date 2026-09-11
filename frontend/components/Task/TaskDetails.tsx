@@ -1472,7 +1472,11 @@ const TaskDetails: React.FC = () => {
                             <div className="space-y-6">
                                 <TaskProjectCard
                                     task={task}
-                                    projects={projectsStore.projects}
+                                    projects={projectsStore.projects.filter(
+                                        (p: Project) =>
+                                            p.status !== 'done' &&
+                                            p.status !== 'cancelled'
+                                    )}
                                     onProjectSelect={handleProjectSelection}
                                     onProjectClear={handleClearProject}
                                     onProjectCreate={
