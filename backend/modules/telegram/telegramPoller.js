@@ -152,7 +152,15 @@ const makeHttpGetRequest = (url, timeout = 5000) => {
                 res.on('end', () => {
                     try {
                         const response = JSON.parse(data);
-                        resolve(response);
+                        if (response.ok) {
+                            resolve(response);
+                        } else {
+                            reject(
+                                new Error(
+                                    `Telegram error ${response.error_code}: ${response.description}`
+                                )
+                            );
+                        }
                     } catch (error) {
                         reject(error);
                     }
@@ -176,7 +184,15 @@ const makeHttpPostRequest = (url, postData, options) => {
             res.on('end', () => {
                 try {
                     const response = JSON.parse(data);
-                    resolve(response);
+                    if (response.ok) {
+                        resolve(response);
+                    } else {
+                        reject(
+                            new Error(
+                                `Telegram error ${response.error_code}: ${response.description}`
+                            )
+                        );
+                    }
                 } catch (error) {
                     reject(error);
                 }
