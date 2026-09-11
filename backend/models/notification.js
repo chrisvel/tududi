@@ -74,7 +74,12 @@ module.exports = (sequelize) => {
                         if (!Array.isArray(value)) {
                             throw new Error('Sources must be an array');
                         }
-                        const validSources = ['telegram', 'mobile', 'email'];
+                        const validSources = [
+                            'telegram',
+                            'mobile',
+                            'email',
+                            'webhook',
+                        ];
                         const invalidSources = value.filter(
                             (s) => !validSources.includes(s)
                         );
@@ -177,6 +182,10 @@ module.exports = (sequelize) => {
             );
         }
 
+        if (sources.includes('webhook')) {
+            await sendWebhookNotifications(userId, notification);
+        }
+
         return notification;
     };
 
@@ -266,6 +275,20 @@ module.exports = (sequelize) => {
             }
         } catch (error) {
             console.error('Failed to send Telegram notification:', error);
+        }
+    }
+
+    async function sendWebhookNotifications(userId, notificationInstance) {
+        try {
+            const {
+                webhookNotificationService,
+            } = require('../modules/webhooks');
+            await webhookNotificationService.dispatchForNotification(
+                userId,
+                notificationInstance
+            );
+        } catch (error) {
+            console.error('Failed to send webhook notifications:', error);
         }
     }
 

@@ -65,6 +65,7 @@ class NotificationsService {
         const { User, Notification } = require('../../models');
         const {
             shouldSendTelegramNotification,
+            shouldSendWebhookNotification,
             ensureNotificationPreferences,
         } = require('../../utils/notificationPreferences');
 
@@ -141,6 +142,9 @@ class NotificationsService {
         const sources = [];
         if (shouldSendTelegramNotification(user, config.preferenceKey)) {
             sources.push('telegram');
+        }
+        if (shouldSendWebhookNotification(user, config.preferenceKey)) {
+            sources.push('webhook');
         }
 
         const notification = await Notification.createNotification({

@@ -1769,7 +1769,8 @@
       "inApp": "In-app",
       "email": "Email",
       "push": "Push",
-      "telegram": "Telegram"
+      "telegram": "Telegram",
+      "webhook": "Webhook"
     },
     "types": {
       "dueTasks": "Due Tasks",

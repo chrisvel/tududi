@@ -10,6 +10,9 @@ const {
     NotFoundError,
     ForbiddenError,
 } = require('../../shared/errors');
+const {
+    shouldSendWebhookNotification,
+} = require('../../utils/notificationPreferences');
 
 const SHAREABLE_TYPES = new Set(['project', 'task', 'note', 'area', 'goal']);
 const ACCESS_LEVELS = new Set(['ro', 'rw']);
@@ -125,6 +128,11 @@ class SharesService {
             const accessLabel =
                 accessLevel === 'rw' ? 'read & write' : 'read only';
 
+            const sources = [];
+            if (shouldSendWebhookNotification(target, 'share_invitation')) {
+                sources.push('webhook');
+            }
+
             await Notification.createNotification({
                 userId: target.id,
                 type: 'share_invitation',
@@ -139,6 +147,7 @@ class SharesService {
                     accessLevel,
                     inviterEmail: actor?.email || null,
                 },
+                sources,
             });
         } catch (error) {
             // The share itself is recorded; a failed notification must not

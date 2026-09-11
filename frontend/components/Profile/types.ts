@@ -42,36 +42,42 @@ export interface NotificationPreferences {
         email: boolean;
         push: boolean;
         telegram: boolean;
+        webhook: boolean;
     };
     overdueTasks: {
         inApp: boolean;
         email: boolean;
         push: boolean;
         telegram: boolean;
+        webhook: boolean;
     };
     dueProjects: {
         inApp: boolean;
         email: boolean;
         push: boolean;
         telegram: boolean;
+        webhook: boolean;
     };
     overdueProjects: {
         inApp: boolean;
         email: boolean;
         push: boolean;
         telegram: boolean;
+        webhook: boolean;
     };
     deferUntil: {
         inApp: boolean;
         email: boolean;
         push: boolean;
         telegram: boolean;
+        webhook: boolean;
     };
     taskAssigned: {
         inApp: boolean;
         email: boolean;
         push: boolean;
         telegram: boolean;
+        webhook: boolean;
     };
 }
 

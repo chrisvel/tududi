@@ -16,36 +16,42 @@ describe('notificationPreferences utils', () => {
                     email: false,
                     push: false,
                     telegram: false,
+                    webhook: false,
                 },
                 overdueTasks: {
                     inApp: true,
                     email: false,
                     push: false,
                     telegram: false,
+                    webhook: false,
                 },
                 dueProjects: {
                     inApp: true,
                     email: false,
                     push: false,
                     telegram: false,
+                    webhook: false,
                 },
                 overdueProjects: {
                     inApp: true,
                     email: false,
                     push: false,
                     telegram: false,
+                    webhook: false,
                 },
                 deferUntil: {
                     inApp: true,
                     email: false,
                     push: false,
                     telegram: false,
+                    webhook: false,
                 },
                 taskAssigned: {
                     inApp: true,
                     email: false,
                     push: false,
                     telegram: false,
+                    webhook: false,
                 },
             });
         });
@@ -248,12 +254,14 @@ describe('notificationPreferences utils', () => {
                     email: true,
                     push: false,
                     telegram: true,
+                    webhook: false,
                 },
                 overdueTasks: {
                     inApp: true,
                     email: false,
                     push: false,
                     telegram: false,
+                    webhook: false,
                 },
             };
 
@@ -269,18 +277,21 @@ describe('notificationPreferences utils', () => {
                 email: false,
                 push: false,
                 telegram: false,
+                webhook: false,
             });
             expect(result.overdueProjects).toEqual({
                 inApp: true,
                 email: false,
                 push: false,
                 telegram: false,
+                webhook: false,
             });
             expect(result.deferUntil).toEqual({
                 inApp: true,
                 email: false,
                 push: false,
                 telegram: false,
+                webhook: false,
             });
         });
 
@@ -292,18 +303,20 @@ describe('notificationPreferences utils', () => {
 
             const result = ensureNotificationPreferences(input);
 
-            // Should add missing push and telegram channels
+            // Should add missing push, telegram and webhook channels
             expect(result.dueTasks).toEqual({
                 inApp: false,
                 email: true,
                 push: false,
                 telegram: false,
+                webhook: false,
             });
             expect(result.overdueTasks).toEqual({
                 inApp: true,
                 email: false,
                 push: false,
                 telegram: false,
+                webhook: false,
             });
         });
 
@@ -314,36 +327,42 @@ describe('notificationPreferences utils', () => {
                     email: true,
                     push: false,
                     telegram: true,
+                    webhook: false,
                 },
                 overdueTasks: {
                     inApp: true,
                     email: false,
                     push: true,
                     telegram: false,
+                    webhook: false,
                 },
                 dueProjects: {
                     inApp: true,
                     email: false,
                     push: false,
                     telegram: false,
+                    webhook: false,
                 },
                 overdueProjects: {
                     inApp: false,
                     email: false,
                     push: false,
                     telegram: false,
+                    webhook: false,
                 },
                 deferUntil: {
                     inApp: true,
                     email: true,
                     push: false,
                     telegram: true,
+                    webhook: false,
                 },
                 taskAssigned: {
                     inApp: false,
                     email: true,
                     push: false,
                     telegram: false,
+                    webhook: false,
                 },
             };
 
@@ -360,6 +379,7 @@ describe('notificationPreferences utils', () => {
                     email: false,
                     push: false,
                     telegram: false,
+                    webhook: false,
                 },
             };
 
@@ -371,6 +391,7 @@ describe('notificationPreferences utils', () => {
                 email: false,
                 push: false,
                 telegram: false,
+                webhook: false,
             });
 
             // Valid type should be preserved

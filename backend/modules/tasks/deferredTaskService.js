@@ -4,6 +4,7 @@ const { logError } = require('../../services/logService');
 const {
     shouldSendInAppNotification,
     shouldSendTelegramNotification,
+    shouldSendWebhookNotification,
 } = require('../../utils/notificationPreferences');
 const telegramPoller = require('../telegram/telegramPoller');
 
@@ -119,12 +120,17 @@ async function checkDeferredTasks() {
                         }
                     }
 
+                    const sources = [];
+                    if (shouldSendWebhookNotification(user, 'deferUntil')) {
+                        sources.push('webhook');
+                    }
+
                     const notification = await Notification.createNotification({
                         userId: task.user_id,
                         type: 'task_due_soon',
                         title: 'Task is now active',
                         message: `Your task "${task.name}" is now available to work on`,
-                        sources: [],
+                        sources,
                         data: {
                             taskUid: task.uid,
                             taskName: task.name,

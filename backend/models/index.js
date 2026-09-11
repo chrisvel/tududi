@@ -89,6 +89,7 @@ const BillingAccount = require('./billing_account')(sequelize);
 const BillingEvent = require('./billing_event')(sequelize);
 const WaitlistSubscriber = require('./waitlist_subscriber')(sequelize);
 const UsageCounter = require('./usage_counter')(sequelize);
+const WebhookEndpoint = require('./webhook_endpoint')(sequelize);
 
 User.hasOne(BillingAccount, { foreignKey: 'user_id', as: 'BillingAccount' });
 BillingAccount.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
@@ -214,6 +215,12 @@ ApiToken.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 
 User.hasMany(Notification, { foreignKey: 'user_id', as: 'Notifications' });
 Notification.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+
+User.hasMany(WebhookEndpoint, {
+    foreignKey: 'user_id',
+    as: 'WebhookEndpoints',
+});
+WebhookEndpoint.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 
 // TaskAttachment associations
 User.hasMany(TaskAttachment, { foreignKey: 'user_id' });
@@ -490,4 +497,5 @@ module.exports = {
     BillingEvent,
     WaitlistSubscriber,
     UsageCounter,
+    WebhookEndpoint,
 };
