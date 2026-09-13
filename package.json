@@ -173,10 +173,10 @@
     "lodash": "~4.18.1",
     "lusca": "^1.7.0",
     "moment-timezone": "~0.6.0",
-    "multer": "^2.2.0",
+    "multer": "^2.3.0",
     "nanoid": "^3.3.18",
     "node-cron": "~4.1.0",
-    "nodemailer": "^9.0.1",
+    "nodemailer": "^9.1.1",
     "openai": "^6.45.0",
     "openid-client": "^5.7.1",
     "pg": "^8.23.0",
@@ -198,7 +198,7 @@
   },
   "overrides": {
     "tar": "^7.5.19",
-    "hono": "^4.12.27",
+    "hono": "^4.13.5",
     "http-proxy-middleware": "^3.0.6",
     "form-data": "^4.0.6",
     "launch-editor": "^2.14.1",
@@ -209,7 +209,34 @@
     "ip-address": "^10.4.0",
     "fast-uri": "^3.1.7",
     "@hono/node-server": "^2.0.5",
-    "body-parser": "^1.20.6"
+    "body-parser": "^1.20.6",
+    "eslint": {
+      "js-yaml": "^4.3.2",
+      "@eslint/eslintrc": {
+        "js-yaml": "^4.3.2"
+      }
+    },
+    "postcss-loader": {
+      "js-yaml": "^4.3.2",
+      "cosmiconfig": {
+        "js-yaml": "^4.3.2"
+      }
+    },
+    "swagger-jsdoc": {
+      "js-yaml": "^4.3.2",
+      "swagger-parser": {
+        "js-yaml": "^4.3.2",
+        "@apidevtools/swagger-parser": {
+          "js-yaml": "^4.3.2",
+          "@apidevtools/json-schema-ref-parser": {
+            "js-yaml": "^4.3.2"
+          }
+        }
+      }
+    },
+    "babel-plugin-istanbul": {
+      "js-yaml": "^3.15.2"
+    }
   },
   "lint-staged": {
     "frontend/**/*.{js,jsx,ts,tsx}": [
