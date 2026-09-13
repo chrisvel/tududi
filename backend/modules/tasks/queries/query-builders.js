@@ -421,9 +421,10 @@ async function filterTasksByParams(
         if (params.assigned_to === 'me') {
             const myPersonUids =
                 await permissionsService.getMyPersonUids(userId);
-            whereClause.assigned_to = myPersonUids.length
-                ? { [Op.in]: myPersonUids }
-                : null;
+            if (myPersonUids.length === 0) {
+                return page ? { rows: [], count: 0 } : [];
+            }
+            whereClause.assigned_to = { [Op.in]: myPersonUids };
         } else {
             whereClause.assigned_to = params.assigned_to;
         }

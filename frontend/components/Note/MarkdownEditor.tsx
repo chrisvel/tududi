@@ -1,5 +1,11 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
-import { EditorView, ViewUpdate, keymap, placeholder as cmPlaceholder } from '@codemirror/view';
+import {
+    EditorView,
+    ViewUpdate,
+    keymap,
+    drawSelection,
+    placeholder as cmPlaceholder,
+} from '@codemirror/view';
 import { EditorState, Compartment } from '@codemirror/state';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import { history, defaultKeymap, historyKeymap } from '@codemirror/commands';
@@ -230,6 +236,11 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
             extensions: [
                 markdown({ base: markdownLanguage }),
                 history(),
+                // Draw the caret/selection with CodeMirror (instead of the
+                // browser's native caret) so the caret height matches the
+                // line box; the native caret rides the font box and appears
+                // to hang below the placeholder text.
+                drawSelection(),
                 keymap.of([...defaultKeymap, ...historyKeymap]),
                 EditorView.lineWrapping,
                 cmPlaceholder(placeholder),
