@@ -31,7 +31,11 @@
     "download": "Descarcă",
     "exitFocusMode": "Ieși din modul de concentrare",
     "searchTimezones": "Caută fusuri orare...",
-    "dismiss": "Respinge"
+    "dismiss": "Respinge",
+    "search": "Caută",
+    "previous": "Anterior",
+    "done": "Finalizat",
+    "clear": "Șterge"
   },
   "sidebar": {
     "dashboard": "Tabloul de bord",
@@ -72,7 +76,9 @@
     "boards": "Tablouri",
     "bookmarks": "Marcaje",
     "reports": "Rapoarte",
-    "productivityAssistant": "Asistent de Productivitate"
+    "productivityAssistant": "Asistent de Productivitate",
+    "assignedToMe": "Atribuit mie",
+    "everyone": "Toată lumea"
   },
   "navigation": {
     "home": "Acasă",
@@ -86,7 +92,9 @@
     "toggleSearch": "Comută căutarea",
     "quickInboxCapture": "Captură rapidă din inbox",
     "userMenu": "Meniu utilizator",
-    "search": "Caută"
+    "search": "Caută",
+    "admin": "Admin",
+    "adminBadge": "Admin"
   },
   "settings": {
     "todayPageSettings": "Setări Pagina de Azi",
@@ -201,7 +209,10 @@
       "dropHere": "Aruncă aici"
     },
     "chaseUp": "Urmărește",
-    "habit": "Obicei"
+    "habit": "Obicei",
+    "assignedTo": "Atribuit lui",
+    "subtasks": "Subtask-uri",
+    "openFullPage": "Deschide vizualizarea completă"
   },
   "timeline": {
     "activityTimeline": "Cronologia activităților",
@@ -690,7 +701,8 @@
         "vague": "Încercați să începeți cu un verb de acțiune, cum ar fi \"Sună\", \"Scrie\", \"Programează\" sau \"Cercetează\""
       },
       "selectAtLeastOneDay": "Te rugăm să selectezi cel puțin o zi",
-      "deferUntilPlaceholder": "Selectați data și ora până la care să amânați"
+      "deferUntilPlaceholder": "Selectați data și ora până la care să amânați",
+      "notePlaceholder": "Adaugă o notă..."
     },
     "noteTitle": "Titlul notei",
     "noteContent": "Conținutul notei",
@@ -745,7 +757,9 @@
     },
     "captcha_required": "Finalizează verificarea și încearcă din nou.",
     "registration_successful": "Verifică-ți adresa de e-mail",
-    "registration_email_sent": "Verifică-ți adresa de e-mail pentru a-ți activa contul. Ți-am trimis o legătură, verifică-ți inboxul."
+    "registration_email_sent": "Verifică-ți adresa de e-mail pentru a-ți activa contul. Ți-am trimis o legătură, verifică-ți inboxul.",
+    "notify_joined": "Ești pe listă. Îți vom trimite un email în ziua în care tududi Cloud se deschide.",
+    "notify_failed": "Nu am putut salva adresa ta. Te rugăm să încerci din nou."
   },
   "dropdown": {
     "createNew": "Creează Nou",
@@ -868,7 +882,47 @@
     "rollingMsg3": "Notează-l...",
     "saveAs": "Salvează ca",
     "shiftEnterHint": "Shift + Enter pentru un nou rând",
-    "addToInbox": "Adaugă ca element în inbox (Enter)"
+    "addToInbox": "Adaugă ca element în inbox (Enter)",
+    "emptyItem": "(Element gol)",
+    "itemQueuedOffline": "Salvat offline. Se va sincroniza automat odată ce ești din nou online.",
+    "infoShort": "Inbox-ul este locul unde ajung gândurile neclasificate — notează lucruri, sortează-le mai târziu.",
+    "recentlyCaptured": "Capturat recent",
+    "line": "linie",
+    "lines": "linii",
+    "processN": "Procesează {{count}}",
+    "allClarified": "Toate clarificate",
+    "reClarify": "Reclarifică",
+    "trashedRestore": "{{count}} aruncate · restaurează",
+    "restored": "Elemente aruncate restaurate",
+    "restoreError": "Restaurarea elementelor a eșuat",
+    "trashError": "Aruncarea elementului a eșuat",
+    "clarifyProgress": "Clarifică · {{progress}}",
+    "clarifyDone": "Toate clarificate. Inbox-ul este calm.",
+    "clarifyBackToList": "Înapoi la listă",
+    "clarifyExit": "Ieși din clarificare",
+    "clarifyBack": "← Înapoi",
+    "clarifyQ": {
+      "actionable": "Este acest lucru acționabil?",
+      "notActionable": "Ce fel de lucru este?",
+      "steps": "Un pas sau mai multe?",
+      "twomin": "Poți să-l faci în mai puțin de 2 minute?",
+      "deferDelegate": "Mai târziu tu, sau să-l predai?"
+    },
+    "clarifyChoice": {
+      "yesActionable": "Da, acționabil",
+      "notActionable": "Nu este acționabil",
+      "trash": "Aruncă",
+      "someday": "Cândva / Poate",
+      "referenceNote": "Notă de referință",
+      "oneStep": "Un pas",
+      "severalSteps": "Mai mulți pași (proiect)",
+      "doItNow": "Da — fă-o acum",
+      "no": "Nu",
+      "scheduleIt": "Programează-l",
+      "delegate": "Deleagă"
+    },
+    "somedayCreated": "Adăugat la Cândva",
+    "reClarifyLink": "Reclarifică"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1052,7 +1106,8 @@
     "statusUpdated": "Starea a fost actualizată cu succes",
     "statusUpdateError": "Actualizarea stării a eșuat",
     "updatedAt": "Actualizat la",
-    "upcoming": "viitor"
+    "upcoming": "viitor",
+    "assigneeUpdateError": "Actualizarea responsabilului a eșuat"
   },
   "projects": {
     "loading": "Se încarcă proiectele...",
@@ -1116,7 +1171,9 @@
     "focusHint": "Mută această sarcină la în progres și astăzi",
     "noNextAction": "Totul în regulă - nicio sarcină în așteptare.",
     "selectDueDatePlaceholder": "Selectează data limită",
-    "goalTitle": "Obiectiv"
+    "goalTitle": "Obiectiv",
+    "addProject": "Adaugă Proiect",
+    "noResults": "Nu sunt proiecte"
   },
   "projectItem": {
     "edit": "Editează",
@@ -1179,7 +1236,11 @@
     "contentPlaceholderMarkdown": "Scrie conținutul tău folosind formatarea Markdown...\n\nExemple:\n# Titlu\n**Text îngroșat**\n*Text italic*\n- Element de listă\n```cod```",
     "pinToSidebar": "Fixează în bara laterală",
     "unpinFromSidebar": "Dezfixează din bara laterală",
-    "save": "Salvează"
+    "save": "Salvează",
+    "addNote": "Adaugă Notă",
+    "tree": {
+      "folders": "Foldere"
+    }
   },
   "tags": {
     "loading": "Se încarcă etichetele...",
@@ -1207,7 +1268,8 @@
     "systemTags": "Etichete de sistem",
     "systemTagsDescription": "Gestionate automat · Nu pot fi șterse sau redenumite",
     "system": "Sistem",
-    "customize": "Personalizează"
+    "customize": "Personalizează",
+    "addTag": "Adaugă Etichetă"
   },
   "recurrence": {
     "none": "Niciuna",
@@ -1227,7 +1289,11 @@
     "inheritedSettingsMessage": "Această sarcină a fost generată dintr-o sarcină recurentă. Setările de recurență afișate mai jos sunt moștenite din sarcina originală și nu pot fi editate aici.",
     "cancelEdit": "Anulează Editarea",
     "editParentRecurrence": "Editează Recurența Părinte",
-    "parentEditWarning": "⚠️ Editezi setările de recurență ale sarcinii părinte. Modificările vor afecta toate instanțele viitoare ale acestei sarcini recurente."
+    "parentEditWarning": "⚠️ Editezi setările de recurență ale sarcinii părinte. Modificările vor afecta toate instanțele viitoare ale acestei sarcini recurente.",
+    "every": "Fiecare",
+    "weeks": "săptămâni",
+    "months": "luni",
+    "advancedHint": "Pentru zile specifice ale săptămânii sau o dată de finalizare, deschideți sarcina completă."
   },
   "weekdays": {
     "sunday": "Dum",
@@ -1470,7 +1536,43 @@
       "overrideSaved": "Excepție salvată",
       "overrideCleared": "Excepție eliminată",
       "synced": "Sincronizat de la furnizorul de plăți"
-    }
+    },
+    "dashboard": {
+      "title": "Admin",
+      "subtitle": "tududi {{version}} · {{env}}",
+      "users": "Utilizatori",
+      "usersHint": "{{verified}} verificați · {{admins}} admin · {{new}} astăzi",
+      "paying": "Plătitor",
+      "selfHosted": "auto-găzduit",
+      "waitlist": "Listă de așteptare",
+      "waitlistHint": "{{n}} în 7 zile",
+      "content": "Sarcini",
+      "contentHint": "{{projects}} proiecte · {{notes}} note",
+      "regOpen": "Înscriere deschisă",
+      "regClosed": "Înscriere închisă",
+      "waitlistLatest": "Cele mai recente înscrieri pe lista de așteptare",
+      "waitlistEmpty": "Încă nimeni.",
+      "email": "Email",
+      "source": "Sursă",
+      "joined": "Înscris",
+      "waitlistAll": "Vezi tot"
+    },
+    "waitlist": {
+      "title": "Listă de așteptare",
+      "export": "Export CSV",
+      "searchPlaceholder": "Caută după email",
+      "email": "Email",
+      "source": "Sursă",
+      "locale": "Limba",
+      "submissions": "Trimiteri",
+      "joined": "Înscris",
+      "empty": "Nimeni nu s-a înscris încă",
+      "noMatches": "Niciună dintre adrese nu se potrivește cu această căutare",
+      "showing": "{{from}}-{{to}} din {{total}}"
+    },
+    "passwordInviteHint": "Lăsați gol pentru a trimite un email de invitație",
+    "invitationSent": "Email de invitație trimis la {{email}}",
+    "invitationNotSent": "Cont creat, dar emailul este dezactivat - setați o parolă pentru acest utilizator manual."
   },
   "shares": {
     "shareProject": "Partajați proiectul",
@@ -1496,7 +1598,11 @@
     "noShares": "Încă nu a fost partajat",
     "noAvailableUsers": "Nu sunt utilizatori disponibili pentru a partaja",
     "shared": "Partajat",
-    "sharedWithTeam": "Partajat cu echipa"
+    "sharedWithTeam": "Partajat cu echipa",
+    "shareArea": "Zona de partajare",
+    "shareGoal": "Obiectiv de partajare",
+    "shareNote": "Notă de partajare",
+    "shareTask": "Sarcină de partajare"
   },
   "views": {
     "title": "Vizualizări inteligente",
@@ -1642,14 +1748,16 @@
       "overdueTasks": "Sarcini Întârziate",
       "deferUntil": "Amână Până La",
       "dueProjects": "Proiecte Scadente",
-      "overdueProjects": "Proiecte Întârziate"
+      "overdueProjects": "Proiecte Întârziate",
+      "taskAssigned": "Sarcină atribuită"
     },
     "descriptions": {
       "dueTasks": "Sarcini care sunt scadente în următoarele 24 de ore",
       "overdueTasks": "Sarcini care au depășit data limită",
       "deferUntil": "Sarcini care sunt acum disponibile pentru a fi lucrate",
       "dueProjects": "Proiecte care sunt scadente în următoarele 24 de ore",
-      "overdueProjects": "Proiecte care au depășit data limită"
+      "overdueProjects": "Proiecte care au depășit data limită",
+      "taskAssigned": "O sarcină a fost atribuită de altcineva"
     },
     "telegram": {
       "notConfigured": {
@@ -1779,5 +1887,44 @@
       "backups_import": "importul de copii de rezervă",
       "attachments": "atașamentele"
     }
+  },
+  "subscription": {
+    "title": "Abonament",
+    "chooseForCloud": "Alegeți un plan pentru tududi Cloud",
+    "noActive": "Nicio subscriere activă",
+    "chooseToContinue": "Alege un plan pentru a continua să folosești tududi Cloud.",
+    "monthly": "Lunar",
+    "yearly": "Anual",
+    "priceMonthly": "{{price}} pe lună",
+    "priceYearly": "{{price}} pe an",
+    "subscribeMonthly": "Abonează-te lunar",
+    "subscribeYearly": "Abonează-te anual",
+    "perkUnlimited": "Sarcini, proiecte și note nelimitate",
+    "perkStorage": "Atașamente și încărcări de fișiere",
+    "perkFeatures": "Asistent AI, MCP, sincronizare CalDAV și botul Telegram",
+    "perkBackups": "Backup-uri zilnice și actualizări gestionate",
+    "perkExport": "Exportă totul în orice moment",
+    "taxNote": "Plățile sunt gestionate de {{provider}}. Prețurile nu includ impozitele aplicabile. Poți anula în orice moment.",
+    "notConfigured": "Subscrierile nu sunt disponibile încă pe această instanță. Te rugăm să contactezi suportul.",
+    "exportData": "Exportă datele tale"
+  },
+  "demo": {
+    "opening": "Deschiderea demo-ului...",
+    "unavailableTitle": "Demo-ul nu este disponibil",
+    "unavailableBody": "Este posibil să se reconstruiască. Încearcă din nou în câteva momente."
+  },
+  "everyone": {
+    "title": "Toată lumea",
+    "subtitle": "Ce au acum toți cei cu care împărtășești muncă",
+    "you": "Tu",
+    "people": "Oameni",
+    "tasks": "Sarcini",
+    "overdue": "Întârziat",
+    "today": "Astăzi",
+    "tomorrow": "Mâine",
+    "upcoming": "Săptămâna aceasta",
+    "noDate": "Nicio dată",
+    "nothing": "Nimic în acest moment",
+    "empty": "Nimic împărtășit nu este activ acum. Împărtășește o zonă, un proiect sau un obiectiv, sau atribuie cuiva o sarcină, pentru a-l vedea aici."
   }
 }

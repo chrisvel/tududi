@@ -31,7 +31,11 @@
     "download": "تنزيل",
     "exitFocusMode": "الخروج من وضع التركيز",
     "searchTimezones": "بحث عن المناطق الزمنية...",
-    "dismiss": "إلغاء"
+    "dismiss": "إلغاء",
+    "search": "بحث",
+    "previous": "السابق",
+    "done": "تم",
+    "clear": "مسح"
   },
   "sidebar": {
     "dashboard": "لوحة التحكم",
@@ -72,7 +76,9 @@
     "boards": "لوحات",
     "bookmarks": "المفضلات",
     "reports": "تقارير",
-    "productivityAssistant": "مساعد الإنتاجية"
+    "productivityAssistant": "مساعد الإنتاجية",
+    "assignedToMe": "مخصص لي",
+    "everyone": "الجميع"
   },
   "navigation": {
     "home": "الرئيسية",
@@ -86,7 +92,9 @@
     "toggleSearch": "تبديل البحث",
     "quickInboxCapture": "التقاط سريع للبريد الوارد",
     "userMenu": "قائمة المستخدم",
-    "search": "بحث"
+    "search": "بحث",
+    "admin": "مدير",
+    "adminBadge": "مدير"
   },
   "settings": {
     "todayPageSettings": "إعدادات صفحة اليوم",
@@ -201,7 +209,10 @@
       "dropHere": "اسحب هنا"
     },
     "chaseUp": "متابعة",
-    "habit": "عادة"
+    "habit": "عادة",
+    "assignedTo": "مخصص لـ",
+    "subtasks": "المهام الفرعية",
+    "openFullPage": "فتح العرض الكامل"
   },
   "timeline": {
     "activityTimeline": "جدول الأنشطة",
@@ -381,7 +392,7 @@
     "confirmNewPassword": "أكد كلمة المرور الجديدة",
     "currentPasswordRequired": "كلمة المرور الحالية مطلوبة",
     "newPasswordRequired": "كلمة المرور الجديدة مطلوبة",
-    "passwordTooShort": "يجب أن تتكون كلمة المرور من {{count}} أحرف على الأقل",
+    "passwordTooShort": "يجب أن تكون كلمة المرور على الأقل {{count}} حرفاً",
     "passwordMismatch": "كلمات المرور غير متطابقة",
     "passwordChangeError": "فشل في تغيير كلمة المرور",
     "passwordChangeSuccess": "تم تغيير كلمة المرور بنجاح!",
@@ -690,7 +701,8 @@
         "vague": "حاول البدء بفعل عمل مثل \"اتصل\"، \"اكتب\"، \"حدد موعدًا\"، أو \"ابحث\""
       },
       "selectAtLeastOneDay": "يرجى اختيار يوم واحد على الأقل",
-      "deferUntilPlaceholder": "اختر تاريخ ووقت التأجيل"
+      "deferUntilPlaceholder": "اختر تاريخ ووقت التأجيل",
+      "notePlaceholder": "أضف ملاحظة..."
     },
     "noteTitle": "عنوان الملاحظة",
     "noteContent": "محتوى الملاحظة",
@@ -745,7 +757,9 @@
     },
     "captcha_required": "يرجى إكمال التحقق والمحاولة مرة أخرى.",
     "registration_successful": "أكّد عنوان بريدك الإلكتروني",
-    "registration_email_sent": "أكّد عنوان بريدك الإلكتروني لتفعيل حسابك. أرسلنا لك رابطًا، تحقق من صندوق الوارد."
+    "registration_email_sent": "أكّد عنوان بريدك الإلكتروني لتفعيل حسابك. أرسلنا لك رابطًا، تحقق من صندوق الوارد.",
+    "notify_joined": "أنت على القائمة. سنرسل لك بريدًا إلكترونيًا يوم فتح سحابة تودودي.",
+    "notify_failed": "لم نتمكن من حفظ عنوانك. يرجى المحاولة مرة أخرى."
   },
   "dropdown": {
     "createNew": "إنشاء جديد",
@@ -849,9 +863,9 @@
     "deleteError": "فشل في حذف عنصر صندوق الوارد",
     "updateError": "فشل في تحديث عنصر صندوق الوارد",
     "contentRequired": "لا يمكن أن يكون المحتوى فارغًا",
-    "createTask": "إنشاء مهمة",
-    "createProject": "إنشاء مشروع",
-    "createNote": "إنشاء ملاحظة",
+    "createTask": "مهمة",
+    "createProject": "مشروع",
+    "createNote": "ملاحظة",
     "convertTo": "تحويل إلى",
     "unprocessedItems": "لديك {{count}} عنصر(عناصر) في صندوق الوارد",
     "processNow": "معالجة الآن",
@@ -868,7 +882,47 @@
     "rollingMsg3": "اكتبها…",
     "saveAs": "احفظ باسم",
     "shiftEnterHint": "Shift + Enter لخط جديد",
-    "addToInbox": "أضف كعنصر في صندوق الوارد (Enter)"
+    "addToInbox": "أضف كعنصر في صندوق الوارد (Enter)",
+    "emptyItem": "(عنصر فارغ)",
+    "itemQueuedOffline": "تم حفظه في وضع عدم الاتصال. سيتم مزامنته تلقائيًا بمجرد عودتك إلى الإنترنت.",
+    "infoShort": "صندوق الوارد هو المكان الذي تهبط فيه الأفكار غير المصنفة - قم بتدوين الأشياء، ثم قم بفرزها لاحقًا.",
+    "recentlyCaptured": "تم التقاطه مؤخرًا",
+    "line": "سطر",
+    "lines": "أسطر",
+    "processN": "معالجة {{count}}",
+    "allClarified": "تم التوضيح بالكامل",
+    "reClarify": "إعادة التوضيح",
+    "trashedRestore": "{{count}} محذوفة · استعادة",
+    "restored": "تم استعادة العناصر المحذوفة",
+    "restoreError": "فشل في استعادة العناصر",
+    "trashError": "فشل في حذف العنصر",
+    "clarifyProgress": "توضيح · {{progress}}",
+    "clarifyDone": "تم التوضيح بالكامل. صندوق الوارد هادئ.",
+    "clarifyBackToList": "العودة إلى القائمة",
+    "clarifyExit": "خروج من التوضيح",
+    "clarifyBack": "← العودة",
+    "clarifyQ": {
+      "actionable": "هل يمكن اتخاذ إجراء بشأن هذا؟",
+      "notActionable": "ما نوع الشيء هذا؟",
+      "steps": "خطوة واحدة، أم عدة خطوات؟",
+      "twomin": "هل يمكنك القيام بذلك في أقل من دقيقتين؟",
+      "deferDelegate": "هل تؤجل ذلك لنفسك، أم تسلمه لشخص آخر؟"
+    },
+    "clarifyChoice": {
+      "yesActionable": "نعم، يمكن اتخاذ إجراء",
+      "notActionable": "لا يمكن اتخاذ إجراء",
+      "trash": "حذف",
+      "someday": "يومًا ما / ربما",
+      "referenceNote": "ملاحظة مرجعية",
+      "oneStep": "خطوة واحدة",
+      "severalSteps": "عدة خطوات (مشروع)",
+      "doItNow": "نعم — قم بذلك الآن",
+      "no": "لا",
+      "scheduleIt": "جدولها",
+      "delegate": "تفويض"
+    },
+    "somedayCreated": "تمت إضافته إلى يومًا ما",
+    "reClarifyLink": "إعادة التوضيح"
   },
   "dateFormats": {
     "long": "EEEE، d MMMM، yyyy",
@@ -1052,7 +1106,8 @@
     "statusUpdated": "تم تحديث الحالة بنجاح",
     "statusUpdateError": "فشل في تحديث الحالة",
     "updatedAt": "تم التحديث في",
-    "upcoming": "قادم"
+    "upcoming": "قادم",
+    "assigneeUpdateError": "فشل في تحديث المعين"
   },
   "projects": {
     "loading": "جارٍ تحميل المشاريع...",
@@ -1116,7 +1171,9 @@
     "focusHint": "ينقل هذه المهمة إلى قيد التنفيذ واليوم",
     "noNextAction": "كل شيء واضح - لا توجد مهام متبقية.",
     "selectDueDatePlaceholder": "اختر تاريخ الاستحقاق",
-    "goalTitle": "الهدف"
+    "goalTitle": "الهدف",
+    "addProject": "إضافة مشروع",
+    "noResults": "لا توجد مشاريع"
   },
   "projectItem": {
     "edit": "تعديل",
@@ -1179,7 +1236,11 @@
     "contentPlaceholderMarkdown": "اكتب محتواك باستخدام تنسيق Markdown...\n\nأمثلة:\n# عنوان\n**نص عريض**\n*نص مائل*\n- عنصر قائمة\n```كود```",
     "pinToSidebar": "تثبيت في الشريط الجانبي",
     "unpinFromSidebar": "إلغاء تثبيت من الشريط الجانبي",
-    "save": "حفظ"
+    "save": "حفظ",
+    "addNote": "إضافة ملاحظة",
+    "tree": {
+      "folders": "مجلدات"
+    }
   },
   "tags": {
     "loading": "جاري تحميل العلامات...",
@@ -1207,7 +1268,8 @@
     "systemTags": "وسوم النظام",
     "systemTagsDescription": "مدارة تلقائيًا · لا يمكن حذفها أو إعادة تسميتها",
     "system": "النظام",
-    "customize": "تخصيص"
+    "customize": "تخصيص",
+    "addTag": "إضافة علامة"
   },
   "recurrence": {
     "none": "لا شيء",
@@ -1227,7 +1289,11 @@
     "inheritedSettingsMessage": "تم إنشاء هذه المهمة من مهمة متكررة. إعدادات التكرار الموضحة أدناه موروثة من المهمة الأصلية ولا يمكن تعديلها هنا.",
     "cancelEdit": "إلغاء التعديل",
     "editParentRecurrence": "تعديل تكرار المهمة الأصلية",
-    "parentEditWarning": "⚠️ أنت تقوم بتعديل إعدادات تكرار المهمة الأصلية. ستؤثر التغييرات على جميع النسخ المستقبلية من هذه المهمة المتكررة."
+    "parentEditWarning": "⚠️ أنت تقوم بتعديل إعدادات تكرار المهمة الأصلية. ستؤثر التغييرات على جميع النسخ المستقبلية من هذه المهمة المتكررة.",
+    "every": "كل",
+    "weeks": "أسابيع",
+    "months": "أشهر",
+    "advancedHint": "لأيام الأسبوع المحددة أو تاريخ انتهاء، افتح المهمة الكاملة."
   },
   "weekdays": {
     "sunday": "أحد",
@@ -1357,7 +1423,7 @@
       "noteNotFound": "لم يتم العثور على الملاحظة.",
       "noteDeleted": "تم حذف الملاحظة بنجاح.",
       "profileNotFound": "لم يتم العثور على الملف الشخصي.",
-      "passwordTooShort": "يجب أن تكون كلمة المرور مكونة من 6 أحرف على الأقل",
+      "passwordTooShort": "يجب أن تكون كلمة المرور على الأقل {{count}} حرفاً",
       "currentPasswordIncorrect": "كلمة المرور الحالية غير صحيحة",
       "failedToUpdateProfile": "فشل في تحديث الملف الشخصي.",
       "passwordChangeRequired": "كلمة المرور الحالية وكلمة المرور الجديدة مطلوبة",
@@ -1470,7 +1536,43 @@
       "overrideSaved": "تم حفظ الاستثناء",
       "overrideCleared": "تمت إزالة الاستثناء",
       "synced": "تمت المزامنة من مزوّد الدفع"
-    }
+    },
+    "dashboard": {
+      "title": "المسؤول",
+      "subtitle": "تودودي {{version}} · {{env}}",
+      "users": "المستخدمون",
+      "usersHint": "{{verified}} موثق · {{admins}} مسؤول · {{new}} اليوم",
+      "paying": "دفع",
+      "selfHosted": "مستضاف ذاتيًا",
+      "waitlist": "قائمة الانتظار",
+      "waitlistHint": "{{n}} خلال 7 أيام",
+      "content": "المهام",
+      "contentHint": "{{projects}} مشاريع · {{notes}} ملاحظات",
+      "regOpen": "التسجيل مفتوح",
+      "regClosed": "التسجيل مغلق",
+      "waitlistLatest": "أحدث تسجيلات قائمة الانتظار",
+      "waitlistEmpty": "لا أحد حتى الآن.",
+      "email": "البريد الإلكتروني",
+      "source": "المصدر",
+      "joined": "انضم",
+      "waitlistAll": "عرض الكل"
+    },
+    "waitlist": {
+      "title": "قائمة الانتظار",
+      "export": "تصدير CSV",
+      "searchPlaceholder": "ابحث بواسطة البريد الإلكتروني",
+      "email": "البريد الإلكتروني",
+      "source": "المصدر",
+      "locale": "اللغة",
+      "submissions": "التقديمات",
+      "joined": "انضم",
+      "empty": "لم يسجل أحد بعد",
+      "noMatches": "لا توجد عناوين تطابق هذا البحث",
+      "showing": "{{from}}-{{to}} من {{total}}"
+    },
+    "passwordInviteHint": "اتركه فارغًا لإرسال بريد دعوة",
+    "invitationSent": "تم إرسال بريد الدعوة إلى {{email}}",
+    "invitationNotSent": "تم إنشاء الحساب، لكن البريد الإلكتروني معطل - قم بتعيين كلمة مرور لهذا المستخدم يدويًا."
   },
   "shares": {
     "shareProject": "مشاركة المشروع",
@@ -1496,7 +1598,11 @@
     "noShares": "لم يتم المشاركة بعد",
     "noAvailableUsers": "لا يوجد مستخدمون متاحون للمشاركة معهم",
     "shared": "تمت المشاركة",
-    "sharedWithTeam": "تمت المشاركة مع الفريق"
+    "sharedWithTeam": "تمت المشاركة مع الفريق",
+    "shareArea": "منطقة المشاركة",
+    "shareGoal": "هدف المشاركة",
+    "shareNote": "ملاحظة المشاركة",
+    "shareTask": "مهمة المشاركة"
   },
   "views": {
     "title": "عرض ذكي",
@@ -1642,14 +1748,16 @@
       "overdueTasks": "المهام المتأخرة",
       "deferUntil": "تأجيل حتى",
       "dueProjects": "المشاريع المستحقة",
-      "overdueProjects": "المشاريع المتأخرة"
+      "overdueProjects": "المشاريع المتأخرة",
+      "taskAssigned": "مهمة معينة"
     },
     "descriptions": {
       "dueTasks": "المهام المستحقة خلال 24 ساعة",
       "overdueTasks": "المهام التي تجاوزت تاريخ استحقاقها",
       "deferUntil": "المهام المتاحة الآن للعمل عليها",
       "dueProjects": "المشاريع المستحقة خلال 24 ساعة",
-      "overdueProjects": "المشاريع التي تجاوزت تاريخ استحقاقها"
+      "overdueProjects": "المشاريع التي تجاوزت تاريخ استحقاقها",
+      "taskAssigned": "تم تعيين مهمة لك من قبل شخص آخر"
     },
     "telegram": {
       "notConfigured": {
@@ -1779,5 +1887,44 @@
       "backups_import": "استيراد النسخ الاحتياطية",
       "attachments": "المرفقات"
     }
+  },
+  "subscription": {
+    "title": "الاشتراك",
+    "chooseForCloud": "اختر خطة لـ tududi Cloud",
+    "noActive": "لا توجد اشتراكات نشطة",
+    "chooseToContinue": "اختر خطة للاستمرار في استخدام سحابة tududi.",
+    "monthly": "شهري",
+    "yearly": "سنوي",
+    "priceMonthly": "{{price}} شهرياً",
+    "priceYearly": "{{price}} سنوياً",
+    "subscribeMonthly": "اشترك شهرياً",
+    "subscribeYearly": "اشترك سنوياً",
+    "perkUnlimited": "مهام ومشاريع وملاحظات غير محدودة",
+    "perkStorage": "المرفقات ورفع الملفات",
+    "perkFeatures": "مساعد ذكي، MCP، مزامنة CalDAV وروبوت Telegram",
+    "perkBackups": "نسخ احتياطية يومية وتحديثات مدارة",
+    "perkExport": "تصدير كل شيء في أي وقت",
+    "taxNote": "تتم معالجة المدفوعات بواسطة {{provider}}. الأسعار لا تشمل الضرائب المطبقة. يمكنك الإلغاء في أي وقت.",
+    "notConfigured": "الاشتراكات غير متاحة في هذه النسخة بعد. يرجى الاتصال بالدعم.",
+    "exportData": "تصدير بياناتك"
+  },
+  "demo": {
+    "opening": "فتح العرض التوضيحي...",
+    "unavailableTitle": "العرض التوضيحي غير متاح",
+    "unavailableBody": "قد يتم إعادة بنائه. حاول مرة أخرى بعد قليل."
+  },
+  "everyone": {
+    "title": "الجميع",
+    "subtitle": "ما يشاركه الجميع في العمل الآن",
+    "you": "أنت",
+    "people": "الأشخاص",
+    "tasks": "المهام",
+    "overdue": "متأخر",
+    "today": "اليوم",
+    "tomorrow": "غداً",
+    "upcoming": "هذا الأسبوع",
+    "noDate": "لا يوجد تاريخ",
+    "nothing": "لا شيء في الوقت الحالي",
+    "empty": "لا يوجد شيء مشترك في الوقت الحالي. شارك منطقة أو مشروع أو هدف، أو كلف شخصاً بمهمة، لرؤيتها هنا."
   }
 }

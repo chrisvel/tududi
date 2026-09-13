@@ -31,7 +31,11 @@
     "download": "Ladda ner",
     "exitFocusMode": "Avsluta fokusläge",
     "searchTimezones": "Sök tidszoner...",
-    "dismiss": "Avfärda"
+    "dismiss": "Avfärda",
+    "search": "Sök",
+    "previous": "Föregående",
+    "done": "Utförd",
+    "clear": "Rensa"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -72,7 +76,9 @@
     "boards": "Tavlor",
     "bookmarks": "Bokmärken",
     "reports": "Rapporter",
-    "productivityAssistant": "Produktivitetsassistent"
+    "productivityAssistant": "Produktivitetsassistent",
+    "assignedToMe": "Tilldelat mig",
+    "everyone": "Alla"
   },
   "navigation": {
     "home": "Hem",
@@ -86,7 +92,9 @@
     "toggleSearch": "Växla sök",
     "quickInboxCapture": "Snabb inkapsling av inkorgen",
     "userMenu": "Användarmenyn",
-    "search": "Sök"
+    "search": "Sök",
+    "admin": "Admin",
+    "adminBadge": "Admin"
   },
   "settings": {
     "todayPageSettings": "Inställningar för dagens sida",
@@ -201,7 +209,10 @@
       "dropHere": "Släpp här"
     },
     "chaseUp": "Följ upp",
-    "habit": "Vana"
+    "habit": "Vana",
+    "assignedTo": "Tilldelat till",
+    "subtasks": "Deluppgifter",
+    "openFullPage": "Öppna fullständig vy"
   },
   "timeline": {
     "activityTimeline": "Aktivitetslinje",
@@ -690,7 +701,8 @@
         "vague": "Försök att börja med ett handlingsverb som \"Ring\", \"Skriv\", \"Boka\" eller \"Forska\""
       },
       "selectAtLeastOneDay": "Vänligen välj minst en dag",
-      "deferUntilPlaceholder": "Välj datum och tid för uppskjutning"
+      "deferUntilPlaceholder": "Välj datum och tid för uppskjutning",
+      "notePlaceholder": "Lägg till en anteckning..."
     },
     "noteTitle": "Anteckningsitel",
     "noteContent": "Anteckningsinnehåll",
@@ -745,7 +757,9 @@
     },
     "captcha_required": "Slutför verifieringen och försök igen.",
     "registration_successful": "Bekräfta din e-postadress",
-    "registration_email_sent": "Bekräfta din e-postadress för att aktivera ditt konto. Vi har skickat en länk, kontrollera din inkorg."
+    "registration_email_sent": "Bekräfta din e-postadress för att aktivera ditt konto. Vi har skickat en länk, kontrollera din inkorg.",
+    "notify_joined": "Du är på listan. Vi kommer att mejla dig den dag tududi Cloud öppnar.",
+    "notify_failed": "Vi kunde inte spara din adress. Vänligen försök igen."
   },
   "dropdown": {
     "createNew": "Skapa ny",
@@ -868,7 +882,47 @@
     "rollingMsg3": "Skriv ner det…",
     "saveAs": "Spara som",
     "shiftEnterHint": "Shift + Enter för en ny rad",
-    "addToInbox": "Lägg till som inkorgsobjekt (Enter)"
+    "addToInbox": "Lägg till som inkorgsobjekt (Enter)",
+    "emptyItem": "(Tomt objekt)",
+    "itemQueuedOffline": "Sparad offline. Den kommer att synkroniseras automatiskt när du är tillbaka online.",
+    "infoShort": "Inkorgen är där okategoriserade tankar landar — skriv ner saker, sortera dem senare.",
+    "recentlyCaptured": "Nyligen fångad",
+    "line": "rad",
+    "lines": "rader",
+    "processN": "Bearbeta {{count}}",
+    "allClarified": "Alla klargjorda",
+    "reClarify": "Klargör igen",
+    "trashedRestore": "{{count}} raderade · återställ",
+    "restored": "Raderade objekt återställda",
+    "restoreError": "Misslyckades med att återställa objekt",
+    "trashError": "Misslyckades med att radera objekt",
+    "clarifyProgress": "Klargör · {{progress}}",
+    "clarifyDone": "Alla klargjorda. Inkorgen är lugn.",
+    "clarifyBackToList": "Tillbaka till listan",
+    "clarifyExit": "Avsluta klargörande",
+    "clarifyBack": "← Tillbaka",
+    "clarifyQ": {
+      "actionable": "Är detta genomförbart?",
+      "notActionable": "Vad är det för slags sak?",
+      "steps": "Ett steg, eller flera?",
+      "twomin": "Kan du göra det på under 2 minuter?",
+      "deferDelegate": "Senare själv, eller överlämna?"
+    },
+    "clarifyChoice": {
+      "yesActionable": "Ja, genomförbart",
+      "notActionable": "Inte genomförbart",
+      "trash": "Radera",
+      "someday": "Någon gång / Kanske",
+      "referenceNote": "Referensanteckning",
+      "oneStep": "Ett steg",
+      "severalSteps": "Flera steg (projekt)",
+      "doItNow": "Ja — gör det nu",
+      "no": "Nej",
+      "scheduleIt": "Schemalägg det",
+      "delegate": "Delegera"
+    },
+    "somedayCreated": "Tillagd till Någon gång",
+    "reClarifyLink": "Återklargöra"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1052,7 +1106,8 @@
     "statusUpdated": "Status uppdaterad framgångsrikt",
     "statusUpdateError": "Misslyckades med att uppdatera status",
     "updatedAt": "Uppdaterad den",
-    "upcoming": "kommande"
+    "upcoming": "kommande",
+    "assigneeUpdateError": "Misslyckades med att uppdatera tilldelad"
   },
   "projects": {
     "loading": "Laddar projekt...",
@@ -1116,7 +1171,9 @@
     "focusHint": "Flyttar denna uppgift till pågående och idag",
     "noNextAction": "Allt klart - inga utestående uppgifter.",
     "selectDueDatePlaceholder": "Välj förfallodatum",
-    "goalTitle": "Mål"
+    "goalTitle": "Mål",
+    "addProject": "Lägg till Projekt",
+    "noResults": "Inga projekt"
   },
   "projectItem": {
     "edit": "Ändra",
@@ -1179,7 +1236,11 @@
     "contentPlaceholderMarkdown": "Skriv ditt innehåll med Markdown-formatering...\n\nExempel:\n# Rubrik\n**Fet text**\n*Kursiv text*\n- Lista objekt\n```kod```",
     "pinToSidebar": "Fäst i sidofältet",
     "unpinFromSidebar": "Ta bort från sidofältet",
-    "save": "Spara"
+    "save": "Spara",
+    "addNote": "Lägg till Anteckning",
+    "tree": {
+      "folders": "Mappar"
+    }
   },
   "tags": {
     "loading": "Laddar taggar...",
@@ -1207,7 +1268,8 @@
     "systemTags": "Systemtaggar",
     "systemTagsDescription": "Automatiskt hanterade · Kan inte tas bort eller döpas om",
     "system": "System",
-    "customize": "Anpassa"
+    "customize": "Anpassa",
+    "addTag": "Lägg till Tagg"
   },
   "recurrence": {
     "none": "Ingen",
@@ -1227,7 +1289,11 @@
     "inheritedSettingsMessage": "Denna uppgift genererades från en återkommande uppgift. Återkommande inställningar som visas nedan är ärvda från den ursprungliga uppgiften och kan inte ändras här.",
     "cancelEdit": "Avbryt Ändring",
     "editParentRecurrence": "Ändra Föräldraåterkommande",
-    "parentEditWarning": "⚠️ Du ändrar föräldrauppgiftens återkommande inställningar. Ändringarna kommer att påverka alla framtida instanser av denna återkommande uppgift."
+    "parentEditWarning": "⚠️ Du ändrar föräldrauppgiftens återkommande inställningar. Ändringarna kommer att påverka alla framtida instanser av denna återkommande uppgift.",
+    "every": "Varje",
+    "weeks": "veckor",
+    "months": "månader",
+    "advancedHint": "För specifika veckodagar eller ett slutdatum, öppna hela uppgiften."
   },
   "weekdays": {
     "sunday": "Sön",
@@ -1470,7 +1536,43 @@
       "overrideSaved": "Undantag sparat",
       "overrideCleared": "Undantag borttaget",
       "synced": "Synkroniserat från betalleverantören"
-    }
+    },
+    "dashboard": {
+      "title": "Admin",
+      "subtitle": "tududi {{version}} · {{env}}",
+      "users": "Användare",
+      "usersHint": "{{verified}} verifierade · {{admins}} admin · {{new}} idag",
+      "paying": "Betalande",
+      "selfHosted": "egen hosting",
+      "waitlist": "Väntelista",
+      "waitlistHint": "{{n}} om 7 dagar",
+      "content": "Uppgifter",
+      "contentHint": "{{projects}} projekt · {{notes}} anteckningar",
+      "regOpen": "Registrering öppen",
+      "regClosed": "Registrering stängd",
+      "waitlistLatest": "Senaste anmälningar till väntelistan",
+      "waitlistEmpty": "Ingen ännu.",
+      "email": "E-post",
+      "source": "Källa",
+      "joined": "Gick med",
+      "waitlistAll": "Se alla"
+    },
+    "waitlist": {
+      "title": "Väntelista",
+      "export": "Exportera CSV",
+      "searchPlaceholder": "Sök med e-post",
+      "email": "E-post",
+      "source": "Källa",
+      "locale": "Språk",
+      "submissions": "Inlämningar",
+      "joined": "Gick med",
+      "empty": "Ingen har registrerat sig ännu",
+      "noMatches": "Inga adresser matchar den sökningen",
+      "showing": "{{from}}-{{to}} av {{total}}"
+    },
+    "passwordInviteHint": "Lämna tomt för att skicka en inbjudan via e-post",
+    "invitationSent": "Inbjudan skickad till {{email}}",
+    "invitationNotSent": "Konto skapat, men e-post är inaktiverad - ställ in ett lösenord för denna användare manuellt."
   },
   "shares": {
     "shareProject": "Dela projekt",
@@ -1496,7 +1598,11 @@
     "noShares": "Inte delad än",
     "noAvailableUsers": "Inga användare tillgängliga att dela med",
     "shared": "Delad",
-    "sharedWithTeam": "Delad med teamet"
+    "sharedWithTeam": "Delad med teamet",
+    "shareArea": "Dela område",
+    "shareGoal": "Dela mål",
+    "shareNote": "Dela anteckning",
+    "shareTask": "Dela uppgift"
   },
   "views": {
     "title": "Smart Vyer",
@@ -1642,14 +1748,16 @@
       "overdueTasks": "Överfallna uppgifter",
       "deferUntil": "Skjut upp till",
       "dueProjects": "Förfallna projekt",
-      "overdueProjects": "Överfallna projekt"
+      "overdueProjects": "Överfallna projekt",
+      "taskAssigned": "Uppgift tilldelad"
     },
     "descriptions": {
       "dueTasks": "Uppgifter som förfaller inom 24 timmar",
       "overdueTasks": "Uppgifter som har passerat sitt förfallodatum",
       "deferUntil": "Uppgifter som nu är tillgängliga att arbeta med",
       "dueProjects": "Projekt som förfaller inom 24 timmar",
-      "overdueProjects": "Projekt som har passerat sitt förfallodatum"
+      "overdueProjects": "Projekt som har passerat sitt förfallodatum",
+      "taskAssigned": "En uppgift har tilldelats dig av någon annan"
     },
     "telegram": {
       "notConfigured": {
@@ -1779,5 +1887,44 @@
       "backups_import": "import av säkerhetskopior",
       "attachments": "bilagor"
     }
+  },
+  "subscription": {
+    "title": "Prenumeration",
+    "chooseForCloud": "Välj en plan för tududi Cloud",
+    "noActive": "Ingen aktiv prenumeration",
+    "chooseToContinue": "Välj en plan för att fortsätta använda tududi Cloud.",
+    "monthly": "Månatlig",
+    "yearly": "Årlig",
+    "priceMonthly": "{{price}} per månad",
+    "priceYearly": "{{price}} per år",
+    "subscribeMonthly": "Prenumerera månatligen",
+    "subscribeYearly": "Prenumerera årligen",
+    "perkUnlimited": "Obegränsade uppgifter, projekt och anteckningar",
+    "perkStorage": "Bilagor och filuppladdningar",
+    "perkFeatures": "AI-assistent, MCP, CalDAV-synk och Telegram-bot",
+    "perkBackups": "Dagliga säkerhetskopior och hanterade uppdateringar",
+    "perkExport": "Exportera allt när som helst",
+    "taxNote": "Betalningar hanteras av {{provider}}. Priser exklusive tillämpliga skatter. Avbryt när som helst.",
+    "notConfigured": "Prenumerationer är inte tillgängliga på denna instans än. Vänligen kontakta support.",
+    "exportData": "Exportera dina data"
+  },
+  "demo": {
+    "opening": "Öppnar demon...",
+    "unavailableTitle": "Demon är inte tillgänglig",
+    "unavailableBody": "Den kan bygga om sig själv. Försök igen om en stund."
+  },
+  "everyone": {
+    "title": "Alla",
+    "subtitle": "Vad alla du delar arbete med har på nu",
+    "you": "Du",
+    "people": "Personer",
+    "tasks": "Uppgifter",
+    "overdue": "Förfallen",
+    "today": "Idag",
+    "tomorrow": "Imorgon",
+    "upcoming": "Denna vecka",
+    "noDate": "Inget datum",
+    "nothing": "Ingenting just nu",
+    "empty": "Ingenting delat är på just nu. Dela ett område, projekt eller mål, eller tilldela någon en uppgift, för att se det här."
   }
 }

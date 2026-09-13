@@ -31,7 +31,11 @@
     "download": "Herunterladen",
     "exitFocusMode": "Fokusmodus beenden",
     "searchTimezones": "Zeitzonen suchen...",
-    "dismiss": "Schließen"
+    "dismiss": "Schließen",
+    "search": "Suche",
+    "previous": "Vorherige",
+    "done": "Fertig",
+    "clear": "Löschen"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -72,7 +76,9 @@
     "boards": "Boards",
     "bookmarks": "Lesezeichen",
     "reports": "Berichte",
-    "productivityAssistant": "Produktivitätsassistent"
+    "productivityAssistant": "Produktivitätsassistent",
+    "assignedToMe": "Mir zugewiesen",
+    "everyone": "Jeder"
   },
   "navigation": {
     "home": "Startseite",
@@ -86,7 +92,9 @@
     "toggleSearch": "Suche umschalten",
     "quickInboxCapture": "Schnelle Posteingangserfassung",
     "userMenu": "Benutzermenü",
-    "search": "Suche"
+    "search": "Suche",
+    "admin": "Admin",
+    "adminBadge": "Admin"
   },
   "settings": {
     "todayPageSettings": "Heute-Seite Einstellungen",
@@ -201,7 +209,10 @@
       "dropHere": "Hier ablegen"
     },
     "chaseUp": "Nachverfolgen",
-    "habit": "Gewohnheit"
+    "habit": "Gewohnheit",
+    "assignedTo": "Zugewiesen an",
+    "subtasks": "Unteraufgaben",
+    "openFullPage": "Vollansicht öffnen"
   },
   "timeline": {
     "activityTimeline": "Aktivitätsverlauf",
@@ -295,7 +306,8 @@
         "vague": "Versuchen Sie, mit einem Aktionsverb wie \"Anrufen\", \"Schreiben\", \"Planen\" oder \"Forschen\" zu beginnen"
       },
       "selectAtLeastOneDay": "Bitte wählen Sie mindestens einen Tag aus",
-      "deferUntilPlaceholder": "Wählen Sie das Datum und die Uhrzeit für das Aufschieben aus"
+      "deferUntilPlaceholder": "Wählen Sie das Datum und die Uhrzeit für das Aufschieben aus",
+      "notePlaceholder": "Eine Notiz hinzufügen..."
     },
     "noteTitle": "Notiz-Titel",
     "noteContent": "Notiz-Inhalt",
@@ -423,7 +435,11 @@
     "contentPlaceholderMarkdown": "Schreiben Sie Ihren Inhalt mit Markdown-Formatierung...\n\nBeispiele:\n# Überschrift\n**Fetter Text**\n*Kursiver Text*\n- Listenpunkt\n```code```",
     "pinToSidebar": "An der Seitenleiste anheften",
     "unpinFromSidebar": "Von der Seitenleiste lösen",
-    "save": "Speichern"
+    "save": "Speichern",
+    "addNote": "Notiz hinzufügen",
+    "tree": {
+      "folders": "Ordner"
+    }
   },
   "recurrence": {
     "none": "Keine",
@@ -443,7 +459,11 @@
     "inheritedSettingsMessage": "Diese Aufgabe wurde aus einer wiederkehrenden Aufgabe generiert. Die unten angezeigten Wiederholungseinstellungen stammen von der ursprünglichen Aufgabe und können hier nicht bearbeitet werden.",
     "cancelEdit": "Bearbeitung abbrechen",
     "editParentRecurrence": "Elternwiederholung bearbeiten",
-    "parentEditWarning": "⚠️ Sie bearbeiten die Wiederholungseinstellungen der übergeordneten Aufgabe. Änderungen wirken sich auf alle zukünftigen Instanzen dieser wiederkehrenden Aufgabe aus."
+    "parentEditWarning": "⚠️ Sie bearbeiten die Wiederholungseinstellungen der übergeordneten Aufgabe. Änderungen wirken sich auf alle zukünftigen Instanzen dieser wiederkehrenden Aufgabe aus.",
+    "every": "Jeden",
+    "weeks": "Wochen",
+    "months": "Monate",
+    "advancedHint": "Für spezifische Wochentage oder ein Enddatum, öffnen Sie die vollständige Aufgabe."
   },
   "weekdays": {
     "sunday": "So",
@@ -493,7 +513,47 @@
     "rollingMsg3": "Notiere es…",
     "saveAs": "Speichern unter",
     "shiftEnterHint": "Umschalt + Eingabetaste für eine neue Zeile",
-    "addToInbox": "Als Posteingangsartikel hinzufügen (Eingabetaste)"
+    "addToInbox": "Als Posteingangsartikel hinzufügen (Eingabetaste)",
+    "emptyItem": "(Leerer Eintrag)",
+    "itemQueuedOffline": "Offline gespeichert. Es wird automatisch synchronisiert, sobald du wieder online bist.",
+    "infoShort": "Der Posteingang ist der Ort, an dem nicht kategorisierte Gedanken landen – schreibe Dinge auf, sortiere sie später.",
+    "recentlyCaptured": "Kürzlich erfasst",
+    "line": "Zeile",
+    "lines": "Zeilen",
+    "processN": "Verarbeite {{count}}",
+    "allClarified": "Alle geklärt",
+    "reClarify": "Erneut klären",
+    "trashedRestore": "{{count}} gelöscht · wiederherstellen",
+    "restored": "Gelöschte Elemente wiederhergestellt",
+    "restoreError": "Wiederherstellung der Elemente fehlgeschlagen",
+    "trashError": "Löschen des Elements fehlgeschlagen",
+    "clarifyProgress": "Klären · {{progress}}",
+    "clarifyDone": "Alle geklärt. Posteingang ist ruhig.",
+    "clarifyBackToList": "Zurück zur Liste",
+    "clarifyExit": "Klären beenden",
+    "clarifyBack": "← Zurück",
+    "clarifyQ": {
+      "actionable": "Ist das umsetzbar?",
+      "notActionable": "Was für eine Art von Sache ist das?",
+      "steps": "Ein Schritt oder mehrere?",
+      "twomin": "Kannst du es in weniger als 2 Minuten erledigen?",
+      "deferDelegate": "Später selbst, oder abgeben?"
+    },
+    "clarifyChoice": {
+      "yesActionable": "Ja, umsetzbar",
+      "notActionable": "Nicht umsetzbar",
+      "trash": "Löschen",
+      "someday": "Irgendwann / Vielleicht",
+      "referenceNote": "Referenznotiz",
+      "oneStep": "Ein Schritt",
+      "severalSteps": "Mehrere Schritte (Projekt)",
+      "doItNow": "Ja — jetzt machen",
+      "no": "Nein",
+      "scheduleIt": "Planen",
+      "delegate": "Delegieren"
+    },
+    "somedayCreated": "Zu Irgendwann hinzugefügt",
+    "reClarifyLink": "Neu klären"
   },
   "project": {
     "projectImage": "Projektbild",
@@ -971,7 +1031,8 @@
     "statusUpdated": "Status erfolgreich aktualisiert",
     "statusUpdateError": "Fehler beim Aktualisieren des Status",
     "updatedAt": "Aktualisiert am",
-    "upcoming": "bevorstehend"
+    "upcoming": "bevorstehend",
+    "assigneeUpdateError": "Fehler beim Aktualisieren des Zuweisenden"
   },
   "calendar": {
     "month": "Monat",
@@ -1090,7 +1151,9 @@
     },
     "captcha_required": "Bitte schließe die Überprüfung ab und versuche es erneut.",
     "registration_successful": "Bestätige deine E-Mail-Adresse",
-    "registration_email_sent": "Bestätige deine E-Mail-Adresse, um dein Konto zu aktivieren. Wir haben dir einen Link geschickt, sieh in deinem Posteingang nach."
+    "registration_email_sent": "Bestätige deine E-Mail-Adresse, um dein Konto zu aktivieren. Wir haben dir einen Link geschickt, sieh in deinem Posteingang nach.",
+    "notify_joined": "Du bist auf der Liste. Wir senden dir eine E-Mail, wenn die tududi Cloud öffnet.",
+    "notify_failed": "Wir konnten deine Adresse nicht speichern. Bitte versuche es erneut."
   },
   "dropdown": {
     "createNew": "Neu erstellen",
@@ -1218,7 +1281,9 @@
     "focusHint": "Verschiebt diese Aufgabe zu „In Bearbeitung\" und „Heute\"",
     "noNextAction": "Alles klar - keine ausstehenden Aufgaben.",
     "selectDueDatePlaceholder": "Fälligkeitsdatum auswählen",
-    "goalTitle": "Ziel"
+    "goalTitle": "Ziel",
+    "addProject": "Projekt hinzufügen",
+    "noResults": "Keine Projekte"
   },
   "projectItem": {
     "edit": "Bearbeiten",
@@ -1288,7 +1353,8 @@
     "systemTags": "System-Tags",
     "systemTagsDescription": "Automatisch verwaltet · Können nicht gelöscht oder umbenannt werden",
     "system": "System",
-    "customize": "Anpassen"
+    "customize": "Anpassen",
+    "addTag": "Tag hinzufügen"
   },
   "pomodoro": {
     "play": "Abspielen",
@@ -1479,7 +1545,43 @@
       "overrideSaved": "Ausnahme gespeichert",
       "overrideCleared": "Ausnahme entfernt",
       "synced": "Vom Zahlungsanbieter synchronisiert"
-    }
+    },
+    "dashboard": {
+      "title": "Admin",
+      "subtitle": "tududi {{version}} · {{env}}",
+      "users": "Benutzer",
+      "usersHint": "{{verified}} verifiziert · {{admins}} Admin · {{new}} heute",
+      "paying": "Zahlend",
+      "selfHosted": "selbstgehostet",
+      "waitlist": "Warteliste",
+      "waitlistHint": "{{n}} in 7 Tagen",
+      "content": "Aufgaben",
+      "contentHint": "{{projects}} Projekte · {{notes}} Notizen",
+      "regOpen": "Registrierung offen",
+      "regClosed": "Registrierung geschlossen",
+      "waitlistLatest": "Neueste Wartelistenanmeldungen",
+      "waitlistEmpty": "Noch niemand.",
+      "email": "E-Mail",
+      "source": "Quelle",
+      "joined": "Beigetreten",
+      "waitlistAll": "Alle anzeigen"
+    },
+    "waitlist": {
+      "title": "Warteliste",
+      "export": "CSV exportieren",
+      "searchPlaceholder": "Nach E-Mail suchen",
+      "email": "E-Mail",
+      "source": "Quelle",
+      "locale": "Sprache",
+      "submissions": "Einreichungen",
+      "joined": "Beigetreten",
+      "empty": "Niemand hat sich bisher angemeldet",
+      "noMatches": "Keine Adressen entsprechen dieser Suche",
+      "showing": "{{from}}-{{to}} von {{total}}"
+    },
+    "passwordInviteHint": "Feld leer lassen, um eine Einladung zu senden",
+    "invitationSent": "Einladung per E-Mail an {{email}} gesendet",
+    "invitationNotSent": "Konto erstellt, aber E-Mail ist deaktiviert - setzen Sie manuell ein Passwort für diesen Benutzer."
   },
   "shares": {
     "shareProject": "Projekt teilen",
@@ -1505,7 +1607,11 @@
     "noShares": "Noch nicht geteilt",
     "noAvailableUsers": "Keine Benutzer verfügbar, um zu teilen",
     "shared": "Geteilt",
-    "sharedWithTeam": "Mit dem Team geteilt"
+    "sharedWithTeam": "Mit dem Team geteilt",
+    "shareArea": "Freigabebereich",
+    "shareGoal": "Freigabenziel",
+    "shareNote": "Freigabenotiz",
+    "shareTask": "Freigabeaufgabe"
   },
   "views": {
     "title": "Intelligente Ansichten",
@@ -1651,14 +1757,16 @@
       "overdueTasks": "Überfällige Aufgaben",
       "deferUntil": "Aufschieben bis",
       "dueProjects": "Fällige Projekte",
-      "overdueProjects": "Überfällige Projekte"
+      "overdueProjects": "Überfällige Projekte",
+      "taskAssigned": "Aufgabe zugewiesen"
     },
     "descriptions": {
       "dueTasks": "Aufgaben, die innerhalb von 24 Stunden fällig sind",
       "overdueTasks": "Aufgaben, deren Fälligkeitsdatum überschritten ist",
       "deferUntil": "Aufgaben, die jetzt zur Bearbeitung verfügbar sind",
       "dueProjects": "Projekte, die innerhalb von 24 Stunden fällig sind",
-      "overdueProjects": "Projekte, deren Fälligkeitsdatum überschritten ist"
+      "overdueProjects": "Projekte, deren Fälligkeitsdatum überschritten ist",
+      "taskAssigned": "Eine Aufgabe wurde Ihnen von jemand anderem zugewiesen"
     },
     "telegram": {
       "notConfigured": {
@@ -1788,5 +1896,44 @@
       "backups_import": "den Backup-Import",
       "attachments": "Anhänge"
     }
+  },
+  "subscription": {
+    "title": "Abonnement",
+    "chooseForCloud": "Wählen Sie einen Plan für tududi Cloud",
+    "noActive": "Keine aktive Abonnements",
+    "chooseToContinue": "Wählen Sie einen Plan, um tududi Cloud weiterhin zu nutzen.",
+    "monthly": "Monatlich",
+    "yearly": "Jährlich",
+    "priceMonthly": "{{price}} pro Monat",
+    "priceYearly": "{{price}} pro Jahr",
+    "subscribeMonthly": "Monatlich abonnieren",
+    "subscribeYearly": "Jährlich abonnieren",
+    "perkUnlimited": "Unbegrenzte Aufgaben, Projekte und Notizen",
+    "perkStorage": "Anhänge und Datei-Uploads",
+    "perkFeatures": "KI-Assistent, MCP, CalDAV-Synchronisierung und der Telegram-Bot",
+    "perkBackups": "Tägliche Backups und verwaltete Updates",
+    "perkExport": "Alles jederzeit exportieren",
+    "taxNote": "Zahlungen werden von {{provider}} abgewickelt. Preise verstehen sich zuzüglich der geltenden Steuern. Jederzeit kündbar.",
+    "notConfigured": "Abonnements sind auf dieser Instanz noch nicht verfügbar. Bitte kontaktieren Sie den Support.",
+    "exportData": "Exportieren Sie Ihre Daten"
+  },
+  "demo": {
+    "opening": "Öffne die Demo...",
+    "unavailableTitle": "Die Demo ist nicht verfügbar",
+    "unavailableBody": "Es könnte sich selbst neu aufbauen. Versuchen Sie es in einem Moment erneut."
+  },
+  "everyone": {
+    "title": "Jeder",
+    "subtitle": "Was alle, mit denen Sie arbeiten, jetzt haben",
+    "you": "Du",
+    "people": "Menschen",
+    "tasks": "Aufgaben",
+    "overdue": "Überfällig",
+    "today": "Heute",
+    "tomorrow": "Morgen",
+    "upcoming": "Diese Woche",
+    "noDate": "Kein Datum",
+    "nothing": "Gerade nichts",
+    "empty": "Gerade ist nichts geteilt. Teilen Sie einen Bereich, ein Projekt oder ein Ziel oder weisen Sie jemandem eine Aufgabe zu, um es hier zu sehen."
   }
 }

@@ -31,7 +31,11 @@
     "download": "Tải xuống",
     "exitFocusMode": "Thoát chế độ tập trung",
     "searchTimezones": "Tìm kiếm múi giờ...",
-    "dismiss": "Bỏ qua"
+    "dismiss": "Bỏ qua",
+    "search": "Tìm kiếm",
+    "previous": "Trước",
+    "done": "Hoàn thành",
+    "clear": "Xóa"
   },
   "sidebar": {
     "dashboard": "Bảng điều khiển",
@@ -72,7 +76,9 @@
     "boards": "Bảng",
     "bookmarks": "Đánh dấu",
     "reports": "Báo cáo",
-    "productivityAssistant": "Trợ lý Năng suất"
+    "productivityAssistant": "Trợ lý Năng suất",
+    "assignedToMe": "Được giao cho tôi",
+    "everyone": "Mọi người"
   },
   "navigation": {
     "home": "Trang chủ",
@@ -86,7 +92,9 @@
     "toggleSearch": "Chuyển đổi Tìm kiếm",
     "quickInboxCapture": "Chụp nhanh Hộp thư đến",
     "userMenu": "Menu Người dùng",
-    "search": "Tìm kiếm"
+    "search": "Tìm kiếm",
+    "admin": "Quản trị viên",
+    "adminBadge": "Quản trị viên"
   },
   "settings": {
     "todayPageSettings": "Cài đặt Trang Hôm nay",
@@ -201,7 +209,10 @@
       "dropHere": "Thả ở đây"
     },
     "chaseUp": "Theo dõi",
-    "habit": "Thói quen"
+    "habit": "Thói quen",
+    "assignedTo": "Giao cho",
+    "subtasks": "Công việc con",
+    "openFullPage": "Mở chế độ xem đầy đủ"
   },
   "timeline": {
     "activityTimeline": "Dòng Thời Gian Hoạt Động",
@@ -690,7 +701,8 @@
         "vague": "Hãy thử bắt đầu bằng một động từ hành động như \"Gọi\", \"Viết\", \"Lên lịch\", hoặc \"Nghiên cứu\""
       },
       "selectAtLeastOneDay": "Vui lòng chọn ít nhất một ngày",
-      "deferUntilPlaceholder": "Chọn ngày và giờ hoãn đến"
+      "deferUntilPlaceholder": "Chọn ngày và giờ hoãn đến",
+      "notePlaceholder": "Thêm ghi chú..."
     },
     "noteTitle": "Tiêu đề ghi chú",
     "noteContent": "Nội dung ghi chú",
@@ -745,7 +757,9 @@
     },
     "captcha_required": "Vui lòng hoàn tất xác minh và thử lại.",
     "registration_successful": "Xác minh địa chỉ email của bạn",
-    "registration_email_sent": "Xác minh địa chỉ email của bạn để kích hoạt tài khoản. Chúng tôi đã gửi một liên kết, hãy kiểm tra hộp thư."
+    "registration_email_sent": "Xác minh địa chỉ email của bạn để kích hoạt tài khoản. Chúng tôi đã gửi một liên kết, hãy kiểm tra hộp thư.",
+    "notify_joined": "Bạn đã có trong danh sách. Chúng tôi sẽ gửi email cho bạn vào ngày tududi Cloud mở.",
+    "notify_failed": "Chúng tôi không thể lưu địa chỉ của bạn. Vui lòng thử lại."
   },
   "dropdown": {
     "createNew": "Tạo mới",
@@ -868,7 +882,47 @@
     "rollingMsg3": "Ghi lại nào…",
     "saveAs": "Lưu dưới dạng",
     "shiftEnterHint": "Shift + Enter để xuống dòng mới",
-    "addToInbox": "Thêm vào mục hộp thư đến (Enter)"
+    "addToInbox": "Thêm vào mục hộp thư đến (Enter)",
+    "emptyItem": "(Mục trống)",
+    "itemQueuedOffline": "Đã lưu ngoại tuyến. Nó sẽ tự động đồng bộ khi bạn trực tuyến trở lại.",
+    "infoShort": "Hộp thư đến là nơi những suy nghĩ chưa được phân loại xuất hiện — ghi lại mọi thứ, sắp xếp chúng sau.",
+    "recentlyCaptured": "Mới ghi lại",
+    "line": "dòng",
+    "lines": "các dòng",
+    "processN": "Xử lý {{count}}",
+    "allClarified": "Tất cả đã được làm rõ",
+    "reClarify": "Làm rõ lại",
+    "trashedRestore": "{{count}} đã bị xóa · khôi phục",
+    "restored": "Các mục đã bị xóa được khôi phục",
+    "restoreError": "Khôi phục mục không thành công",
+    "trashError": "Xóa mục không thành công",
+    "clarifyProgress": "Làm rõ · {{progress}}",
+    "clarifyDone": "Tất cả đã được làm rõ. Hộp thư đến đã bình tĩnh.",
+    "clarifyBackToList": "Quay lại danh sách",
+    "clarifyExit": "Thoát làm rõ",
+    "clarifyBack": "← Quay lại",
+    "clarifyQ": {
+      "actionable": "Có thể thực hiện không?",
+      "notActionable": "Đây là loại gì?",
+      "steps": "Một bước hay nhiều bước?",
+      "twomin": "Bạn có thể làm điều này trong dưới 2 phút không?",
+      "deferDelegate": "Để sau cho bạn, hay chuyển giao?"
+    },
+    "clarifyChoice": {
+      "yesActionable": "Có, có thể thực hiện",
+      "notActionable": "Không thể thực hiện",
+      "trash": "Xóa",
+      "someday": "Một ngày nào đó / Có thể",
+      "referenceNote": "Ghi chú tham khảo",
+      "oneStep": "Một bước",
+      "severalSteps": "Nhiều bước (dự án)",
+      "doItNow": "Có — làm ngay bây giờ",
+      "no": "Không",
+      "scheduleIt": "Lên lịch",
+      "delegate": "Giao phó"
+    },
+    "somedayCreated": "Đã thêm vào Một ngày nào đó",
+    "reClarifyLink": "Làm rõ lại"
   },
   "dateFormats": {
     "long": "EEEE, d tháng MMMM, yyyy",
@@ -1052,7 +1106,8 @@
     "statusUpdated": "Cập nhật trạng thái thành công",
     "statusUpdateError": "Cập nhật trạng thái thất bại",
     "updatedAt": "Cập nhật lúc",
-    "upcoming": "sắp tới"
+    "upcoming": "sắp tới",
+    "assigneeUpdateError": "Cập nhật người được giao không thành công"
   },
   "projects": {
     "loading": "Đang tải dự án...",
@@ -1116,7 +1171,9 @@
     "focusHint": "Chuyển nhiệm vụ này sang đang thực hiện và hôm nay",
     "noNextAction": "Tất cả rõ ràng-không có nhiệm vụ nào chưa hoàn thành.",
     "selectDueDatePlaceholder": "Chọn ngày hết hạn",
-    "goalTitle": "Mục tiêu"
+    "goalTitle": "Mục tiêu",
+    "addProject": "Thêm Dự án",
+    "noResults": "Không có dự án"
   },
   "projectItem": {
     "edit": "Chỉnh sửa",
@@ -1179,7 +1236,11 @@
     "contentPlaceholderMarkdown": "Viết nội dung của bạn bằng định dạng Markdown...\n\nVí dụ:\n# Tiêu đề\n**Văn bản in đậm**\n*Văn bản nghiêng*\n- Mục danh sách\n```code```",
     "pinToSidebar": "Ghim vào thanh bên",
     "unpinFromSidebar": "Bỏ ghim khỏi thanh bên",
-    "save": "Lưu"
+    "save": "Lưu",
+    "addNote": "Thêm Ghi chú",
+    "tree": {
+      "folders": "Thư mục"
+    }
   },
   "tags": {
     "loading": "Đang tải thẻ...",
@@ -1207,7 +1268,8 @@
     "systemTags": "Thẻ Hệ Thống",
     "systemTagsDescription": "Quản lý tự động · Không thể xóa hoặc đổi tên",
     "system": "Hệ Thống",
-    "customize": "Tùy Chỉnh"
+    "customize": "Tùy Chỉnh",
+    "addTag": "Thêm Thẻ"
   },
   "recurrence": {
     "none": "Không có",
@@ -1227,7 +1289,11 @@
     "inheritedSettingsMessage": "Tác vụ này được tạo ra từ một tác vụ lặp lại. Các cài đặt lặp lại bên dưới được kế thừa từ tác vụ gốc và không thể chỉnh sửa ở đây.",
     "cancelEdit": "Hủy chỉnh sửa",
     "editParentRecurrence": "Chỉnh sửa Lặp lại của Tác vụ Cha",
-    "parentEditWarning": "⚠️ Bạn đang chỉnh sửa cài đặt lặp lại của tác vụ cha. Những thay đổi sẽ ảnh hưởng đến tất cả các phiên bản tương lai của tác vụ lặp lại này."
+    "parentEditWarning": "⚠️ Bạn đang chỉnh sửa cài đặt lặp lại của tác vụ cha. Những thay đổi sẽ ảnh hưởng đến tất cả các phiên bản tương lai của tác vụ lặp lại này.",
+    "every": "Mỗi",
+    "weeks": "tuần",
+    "months": "tháng",
+    "advancedHint": "Đối với các ngày trong tuần cụ thể hoặc một ngày kết thúc, hãy mở nhiệm vụ đầy đủ."
   },
   "weekdays": {
     "sunday": "CN",
@@ -1470,7 +1536,43 @@
       "overrideSaved": "Đã lưu ngoại lệ",
       "overrideCleared": "Đã gỡ ngoại lệ",
       "synced": "Đã đồng bộ từ nhà cung cấp thanh toán"
-    }
+    },
+    "dashboard": {
+      "title": "Quản trị viên",
+      "subtitle": "tududi {{version}} · {{env}}",
+      "users": "Người dùng",
+      "usersHint": "{{verified}} đã xác minh · {{admins}} quản trị viên · {{new}} hôm nay",
+      "paying": "Đang thanh toán",
+      "selfHosted": "tự lưu trữ",
+      "waitlist": "Danh sách chờ",
+      "waitlistHint": "{{n}} trong 7 ngày",
+      "content": "Nhiệm vụ",
+      "contentHint": "{{projects}} dự án · {{notes}} ghi chú",
+      "regOpen": "Đăng ký mở",
+      "regClosed": "Đăng ký đóng",
+      "waitlistLatest": "Đăng ký danh sách chờ mới nhất",
+      "waitlistEmpty": "Chưa có ai.",
+      "email": "Email",
+      "source": "Nguồn",
+      "joined": "Đã tham gia",
+      "waitlistAll": "Xem tất cả"
+    },
+    "waitlist": {
+      "title": "Danh sách chờ",
+      "export": "Xuất CSV",
+      "searchPlaceholder": "Tìm kiếm theo email",
+      "email": "Email",
+      "source": "Nguồn",
+      "locale": "Ngôn ngữ",
+      "submissions": "Đơn đăng ký",
+      "joined": "Đã tham gia",
+      "empty": "Chưa có ai đăng ký",
+      "noMatches": "Không có địa chỉ nào khớp với tìm kiếm đó",
+      "showing": "{{from}}-{{to}} của {{total}}"
+    },
+    "passwordInviteHint": "Để trống để gửi email mời",
+    "invitationSent": "Email mời đã được gửi đến {{email}}",
+    "invitationNotSent": "Tài khoản đã được tạo, nhưng email đã bị vô hiệu hóa - hãy đặt mật khẩu cho người dùng này một cách thủ công."
   },
   "shares": {
     "shareProject": "Chia sẻ dự án",
@@ -1496,7 +1598,11 @@
     "noShares": "Chưa chia sẻ",
     "noAvailableUsers": "Không có người dùng nào để chia sẻ",
     "shared": "Đã chia sẻ",
-    "sharedWithTeam": "Đã chia sẻ với nhóm"
+    "sharedWithTeam": "Đã chia sẻ với nhóm",
+    "shareArea": "Khu vực chia sẻ",
+    "shareGoal": "Mục tiêu chia sẻ",
+    "shareNote": "Ghi chú chia sẻ",
+    "shareTask": "Nhiệm vụ chia sẻ"
   },
   "views": {
     "title": "Chế độ xem thông minh",
@@ -1642,14 +1748,16 @@
       "overdueTasks": "Công Việc Quá Hạn",
       "deferUntil": "Hoãn Đến",
       "dueProjects": "Dự Án Đến Hạn",
-      "overdueProjects": "Dự Án Quá Hạn"
+      "overdueProjects": "Dự Án Quá Hạn",
+      "taskAssigned": "Nhiệm vụ đã được giao"
     },
     "descriptions": {
       "dueTasks": "Công việc đến hạn trong vòng 24 giờ",
       "overdueTasks": "Công việc đã qua hạn",
       "deferUntil": "Công việc hiện có sẵn để làm",
       "dueProjects": "Dự án đến hạn trong vòng 24 giờ",
-      "overdueProjects": "Dự án đã qua hạn"
+      "overdueProjects": "Dự án đã qua hạn",
+      "taskAssigned": "Một nhiệm vụ đã được giao cho bạn bởi người khác"
     },
     "telegram": {
       "notConfigured": {
@@ -1779,5 +1887,44 @@
       "backups_import": "nhập bản sao lưu",
       "attachments": "tệp đính kèm"
     }
+  },
+  "subscription": {
+    "title": "Đăng ký",
+    "chooseForCloud": "Chọn một gói cho tududi Cloud",
+    "noActive": "Không có đăng ký hoạt động",
+    "chooseToContinue": "Chọn một gói để tiếp tục sử dụng tududi Cloud.",
+    "monthly": "Hàng tháng",
+    "yearly": "Hàng năm",
+    "priceMonthly": "{{price}} mỗi tháng",
+    "priceYearly": "{{price}} mỗi năm",
+    "subscribeMonthly": "Đăng ký hàng tháng",
+    "subscribeYearly": "Đăng ký hàng năm",
+    "perkUnlimited": "Nhiều nhiệm vụ, dự án và ghi chú không giới hạn",
+    "perkStorage": "Tệp đính kèm và tải lên tệp",
+    "perkFeatures": "Trợ lý AI, MCP, đồng bộ CalDAV và bot Telegram",
+    "perkBackups": "Sao lưu hàng ngày và cập nhật được quản lý",
+    "perkExport": "Xuất mọi thứ bất cứ lúc nào",
+    "taxNote": "Thanh toán được xử lý bởi {{provider}}. Giá chưa bao gồm thuế áp dụng. Hủy bất cứ lúc nào.",
+    "notConfigured": "Đăng ký chưa có sẵn trên phiên bản này. Vui lòng liên hệ với hỗ trợ.",
+    "exportData": "Xuất dữ liệu của bạn"
+  },
+  "demo": {
+    "opening": "Đang mở bản demo...",
+    "unavailableTitle": "Bản demo không có sẵn",
+    "unavailableBody": "Nó có thể đang tự xây dựng lại. Hãy thử lại trong một lúc."
+  },
+  "everyone": {
+    "title": "Mọi người",
+    "subtitle": "Những gì mọi người bạn chia sẻ công việc đang có hiện tại",
+    "you": "Bạn",
+    "people": "Mọi người",
+    "tasks": "Công việc",
+    "overdue": "Quá hạn",
+    "today": "Hôm nay",
+    "tomorrow": "Ngày mai",
+    "upcoming": "Tuần này",
+    "noDate": "Không có ngày",
+    "nothing": "Hiện tại không có gì",
+    "empty": "Không có gì được chia sẻ hiện tại. Chia sẻ một khu vực, dự án hoặc mục tiêu, hoặc giao cho ai đó một công việc, để thấy nó ở đây."
   }
 }
