@@ -1,7 +1,9 @@
 {
   "meta": {
     "langSwitcherLabel": "切换语言",
-    "langSwitcherCurrent": "语言：{{name}}"
+    "langSwitcherCurrent": "语言：{{name}}",
+    "description": "领域、目标、项目和任务，还有笔记和习惯，全都在一个系统中。一分钟内设置好 tududi Cloud 账户。一个暴露 {{tools}} 个工具的 MCP 服务器让 AI 代理可以处理您的清单。如果您更愿意自己运行服务器，自托管选项也在这里。",
+    "title": "tududi：任务管理器与生活管理系统，为 AI 代理配备 MCP"
   },
   "nav": {
     "demo": "在线演示",
@@ -12,7 +14,8 @@
     "docs": "文档",
     "changelog": "更新日志",
     "signIn": "登录",
-    "toggle": "打开菜单"
+    "toggle": "打开菜单",
+    "selfHostGuide": "自托管指南"
   },
   "hero": {
     "badgeStars": "GitHub 星标",
@@ -21,7 +24,12 @@
     "ctaDemo": "试用在线演示",
     "demoNote": "一个真实的托管实例，内含示例数据，共享使用并定期重置",
     "screenshotAlt": "tududi 的界面，显示「今天」视图和已规划的任务",
-    "ctaWaitlist": "加入等候名单"
+    "ctaWaitlist": "加入等候名单",
+    "cloudNote": "没有服务器需要搭建。按月或按年，随时可以取消。",
+    "ctaPrimary": "在 tududi Cloud 上开始使用",
+    "lede": "领域、目标、项目、任务、笔记和习惯，全都在一个系统中。一分钟内创建一个 Cloud 账户。",
+    "titleLine1": "让生产力变得简单",
+    "titleLine2": ""
   },
   "proof": {
     "stars": "GitHub 星标",
@@ -29,7 +37,8 @@
     "languages": "{{count}} 种语言",
     "dockerPulls": "次 Docker 拉取",
     "discord": "位 Discord 成员",
-    "discordAlt": "Discord：{{count}} 位成员"
+    "discordAlt": "Discord：{{count}} 位成员",
+    "minute": "一分钟内完成设置"
   },
   "press": {
     "featuredIn": "媒体报道",
@@ -45,7 +54,10 @@
         "title": "在对话里记录和搜索",
         "body": "不用离开对话，就能添加、查找和完成任务。"
       },
-      "dataStays": {},
+      "dataStays": {
+        "body": "MCP 连接直接通向您自己的 tududi 实例，无论是在 Cloud 上还是您自己的服务器上。没有任何内容经过第三方。",
+        "title": "它与您的实例对话"
+      },
       "openProtocol": {
         "title": "开放协议，不被锁定",
         "body": "基于开放的 Model Context Protocol 构建，可配合 Claude 及其他 MCP 客户端使用。"
@@ -69,7 +81,40 @@
         "title": "项目洞察",
         "body": "快速判断项目的健康状况：哪些在推进，哪些卡住了。"
       }
-    }
+    },
+    "configCloudTab": "Cloud",
+    "configSelfHostNote": "改为将 TUDUDI_URL 指向您自己的实例。其他一切都相同。",
+    "configSelfHostTab": "您自己托管吗？",
+    "demo": {
+      "answer1Html": "从<strong>发布账单迁移</strong>开始。它今天到期，<strong>付款</strong>中还有三项任务排在它后面。",
+      "answer2Html": "完成了。<strong>审查重新设计草稿</strong>现在的到期日是星期五，<strong>解除付款队列的阻塞</strong>在付款项目中，今天到期。",
+      "ask1": "今天我应该专注于什么，有什么事情正在延误吗？",
+      "ask2": "把重新设计审查移到星期五，并添加一项解除付款阻塞的任务。",
+      "badge": "tududi MCP",
+      "caption": "一个示例会话。您的代理通过 MCP 直接连接到您自己的实例。",
+      "composer": "回复 Claude…",
+      "groupTitle": "值得了解",
+      "rows": {
+        "habit": {
+          "label": "连续记录有风险",
+          "text": "晨间回顾，连续 12 天，今天还未记录"
+        },
+        "overdue": {
+          "label": "已逾期",
+          "text": "家务中有 2 项任务，最早的已过去 6 天"
+        },
+        "stalled": {
+          "label": "已停滞",
+          "text": "网站重新设计，11 天没有任何进展"
+        }
+      },
+      "toolLabel": "已使用 tududi",
+      "windowTitle": "Claude Desktop"
+    },
+    "footnoteIncluded": "MCP 随 tududi Cloud 提供，也随每个自托管实例提供。",
+    "ledeHtml": "tududi 提供一个暴露 <strong>{{tools}} 个工具</strong>的 MCP 服务器，涵盖任务、项目、领域、目标、习惯、笔记、人员、标签、视图、收件箱、搜索和指标。将 Claude 或任何兼容 MCP 的代理直接连接到您自己的实例，无论是您的 Cloud 账户还是您自己运营的服务器。连接直接通向您的实例，而不是经过中间的中继，这是 Todoist 和 Notion 无论如何承诺都无法提供的结构性差异。",
+    "titleLine1": "一个真正的系统",
+    "titleLine2": "您的 AI 代理真正可以使用的系统"
   },
   "features": {
     "eyebrow": "功能",
@@ -178,7 +223,8 @@
         "title": "项目协作",
         "body": "以细粒度权限共享项目——只读，或可读可写。"
       }
-    }
+    },
+    "sub": "tududi 将目标、项目、任务、笔记和智能视图整合到一个平静、专注的系统中。让我们为您运营它，或者如果您更愿意，也可以自己运营。"
   },
   "selfHost": {
     "eyebrow": "自托管",
@@ -187,7 +233,12 @@
     "step1": "拉取 Docker 镜像",
     "step2": "运行容器",
     "step3Prefix": "访问地址：",
-    "linkGithub": "在 GitHub 上查看"
+    "linkGithub": "在 GitHub 上查看",
+    "cardSub": "适合已经在运行 Docker 的人",
+    "ctaCloud": "在 Cloud 上开始使用",
+    "linkDocs": "阅读自托管指南",
+    "showCommands": "显示安装命令",
+    "sub": "自托管适合已经在运行 Docker 和反向代理的人。如果您想要 tududi 却不想成为系统管理员，请使用 Cloud。"
   },
   "pricing": {
     "eyebrow": "价格",
@@ -196,18 +247,39 @@
     "earlyBird": "早鸟价",
     "perYear": "/年",
     "plans": {
-      "selfHosted": {},
+      "selfHosted": {
+        "action": "阅读自托管指南 →",
+        "features": [
+          "您自己配置一台服务器或 NAS",
+          "您自己处理 Docker、更新和迁移",
+          "您自己配置反向代理和 TLS",
+          "备份归您自己所有",
+          "完整功能集，没有座位数限制，数据在您自己的硬件上"
+        ],
+        "name": "自托管（高级）",
+        "priceNote": "如果您自己运行服务器则免费"
+      },
       "cloud": {
         "name": "Cloud",
         "or": "或",
         "launchNote": "早鸟年付价格，只要保持订阅就一直有效。",
         "comingSoon": "几天后开放",
         "comingSoonNote": "我们正在将 Cloud 迁移到新的基础设施。在下方留下你的邮箱，恢复上线时我们会第一时间通知你。",
-        "notifySubmit": "通知我"
+        "notifySubmit": "通知我",
+        "action": "开始使用 →",
+        "features": [
+          "一分钟内运行起来，无需搭建服务器",
+          "无限任务、项目和笔记，加上附件",
+          "AI 助手、MCP、CalDAV 同步和 Telegram 机器人",
+          "为您处理的更新和每日备份，附带 {{proStorageGb}} GB 存储空间",
+          "随时导出所有内容，自行删除您的账户"
+        ],
+        "priceNote": "一切都已包含。随时可以取消。"
       }
     },
     "fineprint": "随时取消并导出全部数据。如果 tududi Cloud 有一天关闭，您会拿到自己的数据和自托管迁移指南。存储和 API 用量遵循合理使用原则。30 天退款保证，不问原因。",
-    "perMonth": "/月"
+    "perMonth": "/月",
+    "sub": "一个托管套餐，或者如果您更愿意自己负责运维，就自己运行它。"
   },
   "compare": {
     "title": "快速对比",
@@ -220,12 +292,24 @@
       "noSetup": "无需搭建服务器",
       "managedUpdates": "托管式更新",
       "autoBackups": "自动备份",
-      "pricing": "价格"
+      "pricing": "价格",
+      "exportAnytime": "随时导出所有内容",
+      "proFeatures": "AI 助手、MCP、CalDAV、Telegram",
+      "startMinute": "一分钟内开始",
+      "storage": "附件存储",
+      "support": "支持"
     },
     "values": {
       "community": "社区",
-      "email": "邮件"
-    }
+      "email": "邮件",
+      "gigabytes": "{{count}} GB",
+      "perMonthOrYear": "每月 {{monthly}} 或每年 {{price}}",
+      "selfCost": "免费，加上您的托管费用",
+      "yourDisk": "您自己的磁盘"
+    },
+    "colCloud": "tududi Cloud",
+    "colSelf": "自托管",
+    "sub": "无论哪种方式都是同一个应用程序。不同的是谁来运营它，以及这会花费您多少。"
   },
   "waitlist": {
     "title": "还没想好？",
@@ -255,7 +339,9 @@
     "subTitle": "邮件版本说明",
     "subBody": "偶尔发送版本说明。没有营销，随时退订。",
     "subSubmit": "订阅",
-    "rights": "保留所有权利。"
+    "rights": "保留所有权利。",
+    "linkLicence": "MIT 许可证",
+    "tagline": "一个用于整理生活与工作的开放系统。由我们托管，或在您自己的服务器上运行。"
   },
   "js": {
     "showFewer": "收起",
@@ -264,11 +350,136 @@
   },
   "faq": {
     "items": {
-      "freePlan": {},
+      "freePlan": {
+        "a": "没有。Cloud 每月 {{monthly}} 或每年 {{price}}，这就是全部价目表：没有免费层级，没有试用倒计时，没有为某个后来悄悄开始计费的东西预先刷卡。如果发现不适合您，有 30 天退款保证，如果您想先看看，这个页面上也有实时演示。使用 tududi 的免费方式是在您自己的服务器上运行它，那就是同一个应用程序。",
+        "q": "tududi Cloud 有免费套餐或试用吗？"
+      },
       "leaving": {
         "q": "我可以离开吗？我的数据会怎样？",
         "a": "可以，随时都行。在个人资料中把全部数据导出为一个文件，再导入到读取同一格式的自托管 tududi 即可。删除账户会从我们的服务器移除您的数据、附件和备份，并取消所有订阅。"
+      },
+      "aiOptional": {
+        "a": "不需要。两个 AI 层在您启用之前都是关闭的，没有它们 tududi 也是一个完整的系统。如果您从不启用它们，什么都不会缺失，也没有任何东西会提醒您。",
+        "q": "我必须使用 AI 功能吗？"
+      },
+      "aiPrivacy": {
+        "a": "这取决于您指的是两层中的哪一层，而这个区别很重要。MCP 服务器运行在您自己的实例内部：像 Claude Desktop 这样的代理直接连接到那个实例，因此对话发生在您的代理和您自己的 tududi 之间，而不经过中间人。AI 助手则不同。它调用一个兼容 OpenAI 的提供商，因此如果您将它指向一个托管的提供商，这些请求的内容就会发送给那个提供商。相反，将它指向本地模型，比如 Ollama 或 LM Studio，就没有任何内容离开您的机器。它在您提供密钥之前保持关闭，因此这始终是您的选择，而不是默认设置。",
+        "q": "我的数据会被发送给某家 AI 公司吗？"
+      },
+      "commercialUse": {
+        "a": "可以，而且您不需要先购买任何东西。MIT 许可证允许商业使用，包括在企业内部和商业产品中使用，没有营收门槛，也不需要任何报告。如果您的财务部门需要发票，Cloud 订阅会通过我们的支付服务商计费并生成一张发票。这个页面上没有任何东西在出售许可，因为那份许可已经是您的了。",
+        "q": "我可以在工作中，或在我的公司里使用 tududi 吗？"
+      },
+      "dataLocation": {
+        "a": "一切都存在于您挂载的卷内的一个 SQLite 数据库文件中。备份它意味着把那个文件复制到安全的地方，恢复它意味着把它复制回来。tududi 还会在应用迁移之前自动为数据库拍摄快照，保留最近的副本。在您和您自己的数据之间，没有专有格式，也没有导出步骤。",
+        "q": "我的数据在哪里，我该如何备份它？"
+      },
+      "licence": {
+        "a": "该应用程序是基于 MIT 许可证的开源软件，因此您可以在自己的服务器上免费运行它，修改它，并在其之上构建，不需要向任何人付费。没有座位数限制，也没有被保留的功能：自托管版本就是完整的产品。tududi Cloud 是一个付费服务，因为托管、备份和邮件的运营都需要花钱。您付费的是运营工作，绝不是软件的访问权。",
+        "q": "tududi 真的是免费的吗？"
+      },
+      "maintained": {
+        "a": "是的。它主要由一位维护者开发，并接受社区的贡献，发布频繁。每个版本都列在 GitHub 的发布页面上，从上方菜单的更新日志中可以链接到那里，这样您可以自己判断发布节奏，而不是只听我们的一面之词。开发是公开进行的：问题追踪、公开路线图，还有一个会回答问题的 Discord。",
+        "linkLabel": "查看所有发布",
+        "q": "tududi 是否在积极维护？"
+      },
+      "mcp": {
+        "a": "MCP 是 Model Context Protocol，一个用于将 AI 代理连接到真实系统的开放标准。tududi 提供一个暴露 {{tools}} 个工具的 MCP 服务器，涵盖任务、项目、领域、目标、习惯、笔记、人员、标签、视图、收件箱、搜索和指标，让代理可以捕捉、查找、更新和完成工作，而不只是谈论它。它是可选的，随 Cloud 和每个自托管实例提供，并可与 Claude Desktop、Cursor、Windsurf、Cline 或任何其他 MCP 客户端配合使用。",
+        "q": "MCP 是什么，代理实际能做什么？"
+      },
+      "mobile": {
+        "a": "tududi 以 PWA 而非原生应用的形式安装。在 Android 或 iOS 上将它添加到主屏幕，或在桌面上安装它，它就会像应用一样运作：离线时从缓存中读取，重新连接时同步您的更改。没有任何东西需要从 App Store 或 Play Store 下载。",
+        "q": "有移动应用吗？"
+      },
+      "multiUser": {
+        "a": "有。单个实例可以托管多个用户，项目可以以只读或读写权限共享，其中的任务和笔记会继承该权限。默认情况下自助注册是关闭的，因此管理员会创建账户，或有意开放注册。不会因为您忘了关门而有人闯进来。",
+        "q": "多个人可以共用一个实例吗？"
+      },
+      "requirements": {
+        "a": "Docker、一个存储数据库的持久位置、前面带有 TLS 的反向代理，以及应用更新和保留备份的自律。它在小型 VPS 或您自己网络中的机器上运行起来相当轻松，命令在自托管部分和文档中都有。大多数人使用 Cloud 会更好，那是没有这一切工作的同一个应用程序。",
+        "linkLabel": "阅读文档",
+        "q": "我需要什么才能自己托管它？"
+      },
+      "reverseProxy": {
+        "a": "可以，而且这是运行它的常规方式。设置 TUDUDI_TRUST_PROXY，让应用信任 nginx、Caddy 或 Traefik 转发的标头。如果您跳过这一步，登录和 IP 记录会以难以诊断的方式表现异常，因此应用会抛出一个具体的错误，而不是悄悄失败。可接受的值记录在 README 中。",
+        "q": "它能在反向代理后面运行吗？"
+      },
+      "shutdown": {
+        "a": "该应用采用 MIT 许可证，源代码是公开的，因此它不能从您手中被夺走。任何人都可以继续运行它，您也可以对它进行分叉。在 tududi Cloud 上，您的数据存放在标准的 tududi 数据库中而不是专有格式，因此如果服务有一天关闭，您会获得您的数据和一份将其迁移到您自己服务器的指南。",
+        "q": "如果 tududi 消失了，我的数据会怎样？"
+      },
+      "whyManaged": {
+        "a": "您付费是为了不运维基础设施。tududi Cloud 为您提供同一个系统，服务器、更新、备份和邮件都为您处理好了，而这正是自托管中麻烦、不那么光鲜的那一半。Cloud 是我们推荐的路径。自托管只有在您已经运行 Docker 和反向代理，并真的想要运营这一整套技术栈时，才是更好的选择。",
+        "q": "既然自托管是免费的，为什么要为 Cloud 付费？"
       }
-    }
+    },
+    "eyebrow": "常见问题",
+    "groups": {
+      "managed": "AI、MCP 与 Cloud",
+      "project": "许可与项目",
+      "selfHost": "自托管与数据"
+    },
+    "permalink": "指向此答案的链接",
+    "sub": "许可、AI，以及您的数据会发生什么。如果缺少什么，请在 Discord 上提问。",
+    "title": "在做出决定之前值得先弄清楚的问题"
+  },
+  "cloud": {
+    "ctaPricing": "查看价格",
+    "ctaPrimary": "开始使用",
+    "includes": [
+      "无限任务、项目和笔记",
+      "附件和文件上传",
+      "AI 助手、MCP、CalDAV 同步和 Telegram 机器人",
+      "每日备份和托管更新",
+      "电子邮件支持",
+      "随时导出所有内容"
+    ],
+    "lede": "无论哪种方式都是同一个系统。区别在于谁在凌晨三点让它保持运行、打好补丁并备份。",
+    "metaDescription": "tududi Cloud 是同一个开源系统，运行在我们的服务器上，更新、备份和电子邮件都由我们为您处理。一个套餐，按月或按年付费，随时可以取消。",
+    "metaTitle": "tududi Cloud：为您运营的托管版 tududi",
+    "note": "同一个 MIT 许可的应用程序。随时导出所有内容。",
+    "orAnnual": "或",
+    "priceNote": "由我们的支付服务商计费。价格不含适用的税费。",
+    "pricingSub": "一切都已包含。随时可以取消。",
+    "pricingTitle": "一个套餐，两种付款方式",
+    "reasons": {
+      "backups": {
+        "body": "数据库每晚导出，并保存在为您提供服务的机器之外。您也可以随时自己导出全部内容。",
+        "title": "不用自己记着做的备份"
+      },
+      "email": {
+        "body": "验证邮件、密码重置和提醒通过预热过的发送域名发出，这自己设置起来很麻烦也很枯燥。",
+        "title": "能送达的邮件"
+      },
+      "noOps": {
+        "body": "没有 VPS 要租，没有 Docker 要更新，没有反向代理或证书要续期。您登录，它就在那里。",
+        "title": "没有服务器要运维"
+      },
+      "sameApp": {
+        "body": "没有仅限云端的功能，也没有被削减的自托管版本。如果我们有一天关闭服务，您会获得您的数据和迁移指南。",
+        "title": "完全相同的应用程序"
+      },
+      "support": {
+        "body": "有一个了解代码的人来回答。使用自托管时，您有社区，这很好，但没有人有义务回答。",
+        "title": "可以联系的人"
+      },
+      "updates": {
+        "body": "新版本到达您的账户，不需要拉取、重启，也不需要您监控迁移。",
+        "title": "为您应用的更新"
+      }
+    },
+    "selfHostLine": "更愿意自己运营服务器？那是免费的，而且是同一个应用程序。",
+    "title": "为什么使用 tududi Cloud？",
+    "whyEyebrow": "Cloud",
+    "whySub": "不是功能。每个功能在自托管版本中也存在。",
+    "whyTitle": "您实际付费的是什么"
+  },
+  "finalCta": {
+    "primary": "开始使用",
+    "secondary": "查看价格",
+    "selfHostLink": "阅读指南。",
+    "selfHostPrefix": "更愿意在自己的服务器上运行它？",
+    "sub": "我们运营服务器、更新和备份。您获得这套系统，如果不适合您，还有 30 天退款保证。",
+    "title": "一分钟内整理妥当"
   }
 }

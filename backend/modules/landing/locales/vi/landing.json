@@ -1,7 +1,9 @@
 {
   "meta": {
     "langSwitcherLabel": "Đổi ngôn ngữ",
-    "langSwitcherCurrent": "Ngôn ngữ: {{name}}"
+    "langSwitcherCurrent": "Ngôn ngữ: {{name}}",
+    "description": "Lĩnh vực, mục tiêu, dự án và nhiệm vụ, cùng với ghi chú và thói quen, trong một hệ thống. Thiết lập tài khoản tududi Cloud trong một phút. Một máy chủ MCP hiển thị {{tools}} công cụ cho phép các trợ lý AI làm việc trên danh sách của bạn. Tự lưu trữ luôn có sẵn nếu bạn thích tự chạy máy chủ hơn.",
+    "title": "tududi: trình quản lý nhiệm vụ và hệ thống quản lý cuộc sống, với MCP cho các trợ lý AI"
   },
   "nav": {
     "demo": "Bản demo trực tiếp",
@@ -12,7 +14,8 @@
     "docs": "Tài liệu",
     "changelog": "Thay đổi",
     "signIn": "Đăng nhập",
-    "toggle": "Mở menu"
+    "toggle": "Mở menu",
+    "selfHostGuide": "Hướng dẫn tự lưu trữ"
   },
   "hero": {
     "badgeStars": "sao trên GitHub",
@@ -21,7 +24,12 @@
     "ctaDemo": "Dùng thử bản demo trực tiếp",
     "demoNote": "Một phiên bản lưu trữ thật với dữ liệu mẫu, dùng chung và được đặt lại thường xuyên",
     "screenshotAlt": "Giao diện tududi với chế độ xem Hôm nay và các công việc đã lên kế hoạch",
-    "ctaWaitlist": "Tham gia danh sách chờ"
+    "ctaWaitlist": "Tham gia danh sách chờ",
+    "cloudNote": "Không có máy chủ nào cần thiết lập. Hàng tháng hoặc hàng năm, và bạn có thể hủy bất cứ lúc nào.",
+    "ctaPrimary": "Bắt đầu trên tududi Cloud",
+    "lede": "Lĩnh vực, mục tiêu, dự án, nhiệm vụ, ghi chú và thói quen, trong một hệ thống. Tạo một tài khoản Cloud trong một phút.",
+    "titleLine1": "Năng suất được đơn giản hóa",
+    "titleLine2": ""
   },
   "proof": {
     "stars": "sao trên GitHub",
@@ -29,7 +37,8 @@
     "languages": "{{count}} ngôn ngữ",
     "dockerPulls": "lượt tải Docker",
     "discord": "thành viên Discord",
-    "discordAlt": "Discord: {{count}} thành viên"
+    "discordAlt": "Discord: {{count}} thành viên",
+    "minute": "Thiết lập trong một phút"
   },
   "press": {
     "featuredIn": "Được nhắc đến trên",
@@ -45,7 +54,10 @@
         "title": "Ghi nhận và tìm kiếm ngay trong đoạn chat",
         "body": "Thêm, tìm và hoàn tất công việc mà không cần rời khỏi cuộc trò chuyện."
       },
-      "dataStays": {},
+      "dataStays": {
+        "body": "Kết nối MCP đi thẳng đến phiên bản tududi của riêng bạn, trên Cloud hoặc trên máy chủ riêng của bạn. Không có gì đi qua bên thứ ba.",
+        "title": "Nó trò chuyện với phiên bản của bạn"
+      },
       "openProtocol": {
         "title": "Giao thức mở, không lệ thuộc",
         "body": "Xây trên Model Context Protocol mở. Hoạt động với Claude và các máy khách MCP khác."
@@ -69,7 +81,40 @@
         "title": "Phân tích dự án",
         "body": "Đánh giá nhanh tình trạng một dự án: điều gì đang tiến triển, điều gì đang tắc."
       }
-    }
+    },
+    "configCloudTab": "Cloud",
+    "configSelfHostNote": "Hãy hướng TUDUDI_URL đến phiên bản riêng của bạn thay vào đó. Mọi thứ khác đều giống nhau.",
+    "configSelfHostTab": "Bạn tự lưu trữ chứ?",
+    "demo": {
+      "answer1Html": "Hãy bắt đầu với <strong>Phát hành migration hóa đơn</strong>. Nó hết hạn hôm nay, và ba nhiệm vụ trong <strong>Thanh toán</strong> đang chờ sau nó.",
+      "answer2Html": "Xong. <strong>Xem lại bản thiết kế lại</strong> giờ hết hạn vào thứ Sáu, và <strong>Bỏ chặn hàng đợi Thanh toán</strong> nằm trong dự án Thanh toán, hết hạn hôm nay.",
+      "ask1": "Hôm nay tôi nên tập trung vào điều gì, và có gì bị trễ không?",
+      "ask2": "Chuyển việc xem lại bản thiết kế lại sang thứ Sáu và thêm một nhiệm vụ để bỏ chặn Thanh toán.",
+      "badge": "tududi MCP",
+      "caption": "Một buổi làm việc ví dụ. Trợ lý của bạn kết nối trực tiếp đến phiên bản riêng của bạn qua MCP.",
+      "composer": "Trả lời Claude…",
+      "groupTitle": "Điều nên biết",
+      "rows": {
+        "habit": {
+          "label": "Chuỗi ngày đang gặp rủi ro",
+          "text": "Xem lại buổi sáng, 12 ngày liên tiếp, chưa được ghi nhận hôm nay"
+        },
+        "overdue": {
+          "label": "Quá hạn",
+          "text": "2 nhiệm vụ trong Nhà cửa, cái cũ nhất đã 6 ngày"
+        },
+        "stalled": {
+          "label": "Bị đình trệ",
+          "text": "Thiết kế lại trang web, không có hoạt động trong 11 ngày"
+        }
+      },
+      "toolLabel": "Đã dùng tududi",
+      "windowTitle": "Claude Desktop"
+    },
+    "footnoteIncluded": "MCP đi kèm với tududi Cloud, và với mọi phiên bản tự lưu trữ.",
+    "ledeHtml": "tududi cung cấp một máy chủ MCP hiển thị <strong>{{tools}} công cụ</strong>, bao gồm nhiệm vụ, dự án, lĩnh vực, mục tiêu, thói quen, ghi chú, người, thẻ, chế độ xem, hộp thư đến, tìm kiếm và số liệu. Kết nối Claude hoặc bất kỳ trợ lý tương thích MCP nào trực tiếp đến phiên bản riêng của bạn, cho dù đó là tài khoản Cloud của bạn hay một máy chủ do bạn tự điều hành. Kết nối đi đến phiên bản của bạn thay vì qua một trạm chuyển tiếp trung gian, một sự khác biệt về cấu trúc mà Todoist và Notion không thể cung cấp, bất kể họ hứa gì.",
+    "titleLine1": "Một hệ thống thực sự",
+    "titleLine2": "mà trợ lý AI của bạn có thể thực sự sử dụng"
   },
   "features": {
     "eyebrow": "Tính năng",
@@ -178,7 +223,8 @@
         "title": "Cộng tác trong dự án",
         "body": "Chia sẻ dự án với quyền truy cập chi tiết - chỉ đọc hoặc đọc và ghi."
       }
-    }
+    },
+    "sub": "tududi kết hợp mục tiêu, dự án, nhiệm vụ, ghi chú và các chế độ xem thông minh vào một hệ thống bình lặng, tập trung. Hãy để chúng tôi vận hành nó cho bạn, hoặc tự vận hành nếu bạn thích như vậy."
   },
   "selfHost": {
     "eyebrow": "Tự vận hành",
@@ -187,7 +233,12 @@
     "step1": "Tải image Docker",
     "step2": "Chạy container",
     "step3Prefix": "Truy cập tại",
-    "linkGithub": "Xem trên GitHub"
+    "linkGithub": "Xem trên GitHub",
+    "cardSub": "Dành cho những người đã chạy Docker rồi",
+    "ctaCloud": "Bắt đầu trên Cloud",
+    "linkDocs": "Đọc hướng dẫn tự lưu trữ",
+    "showCommands": "Hiển thị các lệnh cài đặt",
+    "sub": "Tự lưu trữ dành cho những người đã chạy Docker và reverse proxy. Nếu bạn muốn tududi mà không trở thành quản trị viên hệ thống, hãy dùng Cloud."
   },
   "pricing": {
     "eyebrow": "Giá",
@@ -196,18 +247,39 @@
     "earlyBird": "ƯU ĐÃI SỚM",
     "perYear": "/năm",
     "plans": {
-      "selfHosted": {},
+      "selfHosted": {
+        "action": "Đọc hướng dẫn tự lưu trữ →",
+        "features": [
+          "Bạn tự cung cấp một máy chủ hoặc NAS",
+          "Bạn xử lý Docker, các bản cập nhật và migration",
+          "Bạn cấu hình một reverse proxy và TLS",
+          "Bản sao lưu thuộc về bạn",
+          "Bộ tính năng đầy đủ, không giới hạn số ghế, dữ liệu trên phần cứng riêng của bạn"
+        ],
+        "name": "Tự lưu trữ (nâng cao)",
+        "priceNote": "Miễn phí, nếu bạn tự chạy máy chủ"
+      },
       "cloud": {
         "name": "Cloud",
         "or": "hoặc",
         "launchNote": "Giá năm ưu đãi sớm, giữ nguyên chừng nào bạn còn đăng ký.",
         "comingSoon": "Mở trong vài ngày nữa",
         "comingSoonNote": "Chúng tôi đang chuyển Cloud sang hạ tầng mới. Hãy để lại email bên dưới và chúng tôi sẽ báo ngay khi mở lại.",
-        "notifySubmit": "Báo cho tôi"
+        "notifySubmit": "Báo cho tôi",
+        "action": "Bắt đầu →",
+        "features": [
+          "Hoạt động trong một phút, không cần máy chủ để thiết lập",
+          "Nhiệm vụ, dự án và ghi chú không giới hạn, cộng với tệp đính kèm",
+          "Trợ lý AI, MCP, đồng bộ CalDAV và bot Telegram",
+          "Các bản cập nhật và sao lưu hàng ngày được xử lý cho bạn, với {{proStorageGb}} GB dung lượng lưu trữ",
+          "Xuất mọi thứ bất cứ lúc nào, tự xóa tài khoản của mình"
+        ],
+        "priceNote": "Mọi thứ đều được bao gồm. Hủy bất cứ lúc nào."
       }
     },
     "fineprint": "Hủy bất cứ lúc nào và xuất mọi thứ. Nếu tududi Cloud có ngày đóng cửa, bạn nhận được dữ liệu của mình cùng hướng dẫn chuyển sang tự lưu trữ. Áp dụng sử dụng hợp lý cho dung lượng và lưu lượng API. Hoàn tiền trong 30 ngày, không cần lý do.",
-    "perMonth": "/tháng"
+    "perMonth": "/tháng",
+    "sub": "Một gói được lưu trữ, hoặc tự chạy nó nếu bạn thích tự xử lý vận hành hơn."
   },
   "compare": {
     "title": "So sánh nhanh",
@@ -220,12 +292,24 @@
       "noSetup": "Không cần dựng máy chủ",
       "managedUpdates": "Cập nhật được quản lý",
       "autoBackups": "Sao lưu tự động",
-      "pricing": "Giá"
+      "pricing": "Giá",
+      "exportAnytime": "Xuất mọi thứ bất cứ lúc nào",
+      "proFeatures": "Trợ lý AI, MCP, CalDAV, Telegram",
+      "startMinute": "Bắt đầu trong một phút",
+      "storage": "Dung lượng lưu trữ tệp đính kèm",
+      "support": "Hỗ trợ"
     },
     "values": {
       "community": "Cộng đồng",
-      "email": "Email"
-    }
+      "email": "Email",
+      "gigabytes": "{{count}} GB",
+      "perMonthOrYear": "{{monthly}}/tháng hoặc {{price}}/năm",
+      "selfCost": "Miễn phí, cộng với chi phí lưu trữ của bạn",
+      "yourDisk": "Ổ đĩa riêng của bạn"
+    },
+    "colCloud": "tududi Cloud",
+    "colSelf": "Tự lưu trữ",
+    "sub": "Cùng một ứng dụng trong cả hai trường hợp. Điều khác biệt là ai điều hành nó, và nó khiến bạn phải trả bao nhiêu."
   },
   "waitlist": {
     "title": "Chưa sẵn sàng?",
@@ -255,7 +339,9 @@
     "subTitle": "Ghi chú phát hành qua email",
     "subBody": "Thỉnh thoảng có ghi chú phát hành. Không tiếp thị, hủy đăng ký bất cứ lúc nào.",
     "subSubmit": "Đăng ký",
-    "rights": "Bảo lưu mọi quyền."
+    "rights": "Bảo lưu mọi quyền.",
+    "linkLicence": "Bản quyền MIT",
+    "tagline": "Một hệ thống mở để tổ chức cuộc sống và công việc. Được chúng tôi lưu trữ, hoặc trên máy chủ riêng của bạn."
   },
   "js": {
     "showFewer": "Thu gọn",
@@ -264,11 +350,136 @@
   },
   "faq": {
     "items": {
-      "freePlan": {},
+      "freePlan": {
+        "a": "Không. Cloud có giá {{monthly}} mỗi tháng hoặc {{price}} mỗi năm, và đó là toàn bộ bảng giá: không có mức miễn phí, không có đồng hồ thử nghiệm, không có thẻ bị tính phí cho thứ mà sau này lặng lẽ bắt đầu tính tiền. Có bảo đảm hoàn tiền trong 30 ngày nếu nó không phù hợp với bạn, và có một bản demo trực tiếp trên trang này nếu bạn muốn xem trước. Cách miễn phí để dùng tududi là chạy nó trên máy chủ riêng của bạn, đó là cùng một ứng dụng.",
+        "q": "Có gói miễn phí hoặc bản thử nghiệm nào trên tududi Cloud không?"
+      },
       "leaving": {
         "q": "Tôi có thể rời đi không, và dữ liệu của tôi sẽ ra sao?",
         "a": "Có, bất cứ lúc nào. Xuất mọi thứ thành một tệp duy nhất từ hồ sơ của bạn và nhập vào tududi tự lưu trữ, vốn đọc cùng định dạng. Xóa tài khoản sẽ xóa dữ liệu, tệp đính kèm và bản sao lưu của bạn khỏi máy chủ của chúng tôi và hủy mọi gói đăng ký."
+      },
+      "aiOptional": {
+        "a": "Không. Cả hai lớp AI đều tắt cho đến khi bạn kích hoạt chúng, và tududi vẫn là một hệ thống hoàn chỉnh mà không cần chúng. Nếu bạn không bao giờ kích hoạt chúng, không có gì bị thiếu và không có gì làm phiền bạn.",
+        "q": "Tôi có phải sử dụng các tính năng AI không?"
+      },
+      "aiPrivacy": {
+        "a": "Điều đó tùy thuộc vào lớp nào trong hai lớp mà bạn muốn nói đến, và sự khác biệt này quan trọng. Máy chủ MCP chạy bên trong phiên bản riêng của bạn: một trợ lý như Claude Desktop kết nối trực tiếp đến phiên bản đó, vì vậy cuộc trò chuyện diễn ra giữa trợ lý của bạn và tududi của riêng bạn, không qua trung gian. Trợ lý AI thì khác. Nó gọi đến một nhà cung cấp tương thích OpenAI, vì vậy nếu bạn hướng nó đến một nhà cung cấp được lưu trữ, nội dung của các yêu cầu đó sẽ đi đến nhà cung cấp đó. Thay vào đó, hướng nó đến một mô hình cục bộ, như Ollama hoặc LM Studio, và không có gì rời khỏi máy của bạn. Nó vẫn tắt cho đến khi bạn cung cấp một khóa, vì vậy đây luôn là lựa chọn của bạn, không phải mặc định.",
+        "q": "Dữ liệu của tôi có được gửi đến một công ty AI không?"
+      },
+      "commercialUse": {
+        "a": "Có, và bạn không cần mua gì trước. Bản quyền MIT cho phép sử dụng thương mại, bao gồm cả trong một công ty và trong một sản phẩm thương mại, không có ngưỡng doanh thu và không có gì phải báo cáo. Nếu bộ phận tài chính của bạn cần hóa đơn, một gói đăng ký Cloud được lập hóa đơn qua nhà cung cấp thanh toán của chúng tôi và tạo ra một hóa đơn. Không có gì trên trang này bán sự cho phép, vì sự cho phép đó đã là của bạn rồi.",
+        "q": "Tôi có thể dùng tududi tại nơi làm việc, hoặc trong công ty của mình không?"
+      },
+      "dataLocation": {
+        "a": "Mọi thứ đều tồn tại trong một tệp cơ sở dữ liệu SQLite duy nhất bên trong volume mà bạn đã mount. Sao lưu nghĩa là sao chép tệp đó đến một nơi an toàn, và khôi phục nghĩa là sao chép nó lại. tududi cũng tự động chụp một bản snapshot của cơ sở dữ liệu trước khi áp dụng migration, giữ lại các bản sao gần đây. Không có định dạng độc quyền và không có bước xuất nào nằm giữa bạn và dữ liệu của riêng bạn.",
+        "q": "Dữ liệu của tôi ở đâu, và tôi sao lưu nó như thế nào?"
+      },
+      "licence": {
+        "a": "Ứng dụng này là mã nguồn mở theo bản quyền MIT, vì vậy bạn có thể chạy nó trên máy chủ riêng của mình miễn phí, chỉnh sửa nó, và xây dựng dựa trên nó mà không phải trả tiền cho ai. Không có giới hạn số ghế và không có tính năng bị giữ lại: bản tự lưu trữ là sản phẩm hoàn chỉnh. tududi Cloud là một dịch vụ có phí, vì lưu trữ, sao lưu và email tốn tiền để vận hành. Bạn trả tiền cho công việc vận hành, không bao giờ cho quyền truy cập vào phần mềm.",
+        "q": "tududi có thực sự miễn phí không?"
+      },
+      "maintained": {
+        "a": "Có. Nó được phát triển chủ yếu bởi một người duy trì, với sự đóng góp từ cộng đồng, và phát hành thường xuyên. Mỗi phiên bản được liệt kê trên trang phát hành GitHub, được liên kết từ Changelog trong menu ở trên, để bạn có thể tự đánh giá tốc độ chứ không chỉ dựa vào lời chúng tôi nói. Việc phát triển diễn ra công khai: các vấn đề, một lộ trình công khai, và một Discord nơi các câu hỏi được trả lời.",
+        "linkLabel": "Xem tất cả các phiên bản",
+        "q": "tududi có được duy trì tích cực không?"
+      },
+      "mcp": {
+        "a": "MCP là Model Context Protocol, một tiêu chuẩn mở để kết nối các trợ lý AI với các hệ thống thực. tududi cung cấp một máy chủ MCP hiển thị {{tools}} công cụ bao gồm nhiệm vụ, dự án, lĩnh vực, mục tiêu, thói quen, ghi chú, người, thẻ, chế độ xem, hộp thư đến, tìm kiếm và số liệu, để một trợ lý có thể ghi lại, tìm, cập nhật và hoàn thành công việc thay vì chỉ nói về nó. Đây là tùy chọn, đi kèm với Cloud và với mọi phiên bản tự lưu trữ, và hoạt động với Claude Desktop, Cursor, Windsurf, Cline, hoặc bất kỳ ứng dụng MCP khác.",
+        "q": "MCP là gì, và một trợ lý thực sự có thể làm gì?"
+      },
+      "mobile": {
+        "a": "tududi được cài đặt như một PWA thay vì một ứng dụng gốc. Thêm nó vào màn hình chính trên Android hoặc iOS, hoặc cài đặt nó trên máy tính để bàn, và nó hoạt động như một ứng dụng: nó đọc từ bộ nhớ đệm khi bạn offline và đồng bộ hóa các thay đổi của bạn khi kết nối lại. Không có gì cần tải xuống từ App Store hay Play Store.",
+        "q": "Có ứng dụng di động không?"
+      },
+      "multiUser": {
+        "a": "Có. Một phiên bản duy nhất có thể lưu trữ nhiều người dùng, và các dự án có thể được chia sẻ với quyền truy cập chỉ đọc hoặc đọc-ghi, quyền mà các nhiệm vụ và ghi chú bên trong sẽ kế thừa. Tự đăng ký bị tắt theo mặc định, vì vậy một quản trị viên sẽ tạo tài khoản hoặc mở đăng ký một cách có chủ ý. Không ai vào được chỉ vì bạn quên đóng một cánh cửa.",
+        "q": "Nhiều người có thể dùng chung một phiên bản không?"
+      },
+      "requirements": {
+        "a": "Docker, một nơi lưu trữ ổn định cho cơ sở dữ liệu, một reverse proxy có TLS phía trước, và tính kỷ luật để áp dụng các bản cập nhật và giữ bản sao lưu. Nó chạy thoải mái trên một VPS nhỏ hoặc một máy trong chính mạng của bạn, và các lệnh có trong phần Tự lưu trữ và trong tài liệu. Hầu hết mọi người sẽ được phục vụ tốt hơn bởi Cloud, đó là cùng một ứng dụng mà không cần tất cả công việc đó.",
+        "linkLabel": "Đọc tài liệu",
+        "q": "Tôi cần gì để tự lưu trữ nó?"
+      },
+      "reverseProxy": {
+        "a": "Có, và đó là cách thông thường để chạy nó. Đặt TUDUDI_TRUST_PROXY để ứng dụng tin tưởng các header được chuyển tiếp bởi nginx, Caddy hoặc Traefik. Nếu bạn bỏ qua điều này, việc đăng nhập và ghi log IP sẽ hoạt động kỳ lạ theo cách khó chẩn đoán, vì vậy ứng dụng sẽ đưa ra một lỗi cụ thể thay vì thất bại một cách âm thầm. Các giá trị được chấp nhận được ghi trong README.",
+        "q": "Nó có hoạt động sau một reverse proxy không?"
+      },
+      "shutdown": {
+        "a": "Ứng dụng có bản quyền MIT, và mã nguồn là công khai, vì vậy nó không thể bị lấy đi từ bạn. Bất kỳ ai cũng có thể tiếp tục chạy nó, và bạn có thể fork nó. Trên tududi Cloud, dữ liệu của bạn sống trong một cơ sở dữ liệu tududi chuẩn thay vì một định dạng độc quyền, vì vậy nếu dịch vụ có bao giờ đóng lại, bạn sẽ nhận được dữ liệu của mình và một hướng dẫn để chuyển nó sang máy chủ riêng của bạn.",
+        "q": "Điều gì sẽ xảy ra với dữ liệu của tôi nếu tududi biến mất?"
+      },
+      "whyManaged": {
+        "a": "Bạn trả tiền để không phải vận hành hạ tầng. tududi Cloud cho bạn cùng một hệ thống với máy chủ, các bản cập nhật, sao lưu và email được xử lý cho bạn, đó là nửa phần phiền phức, kém hào nhoáng của tự lưu trữ. Cloud là con đường chúng tôi đề xuất. Tự lưu trữ chỉ là lựa chọn tốt hơn nếu bạn đã chạy Docker và reverse proxy và thực sự muốn vận hành cả bộ công cụ đó.",
+        "q": "Vì sao phải trả tiền cho Cloud khi tự lưu trữ là miễn phí?"
       }
-    }
+    },
+    "eyebrow": "FAQ",
+    "groups": {
+      "managed": "AI, MCP & Cloud",
+      "project": "Bản quyền & dự án",
+      "selfHost": "Tự lưu trữ & dữ liệu"
+    },
+    "permalink": "Liên kết đến câu trả lời này",
+    "sub": "Bản quyền, AI, và điều gì xảy ra với dữ liệu của bạn. Nếu thiếu điều gì, hãy hỏi trên Discord.",
+    "title": "Những câu hỏi đáng được trả lời trước khi bạn quyết định"
+  },
+  "cloud": {
+    "ctaPricing": "Xem giá",
+    "ctaPrimary": "Bắt đầu",
+    "includes": [
+      "Nhiệm vụ, dự án và ghi chú không giới hạn",
+      "Tệp đính kèm và tải lên tệp",
+      "Trợ lý AI, MCP, đồng bộ CalDAV và bot Telegram",
+      "Sao lưu hàng ngày và cập nhật được quản lý",
+      "Hỗ trợ qua email",
+      "Xuất mọi thứ, bất cứ lúc nào"
+    ],
+    "lede": "Cùng một hệ thống trong cả hai trường hợp. Sự khác biệt là ai giữ cho nó chạy, được vá lỗi và sao lưu vào lúc ba giờ sáng.",
+    "metaDescription": "tududi Cloud là cùng một hệ thống mã nguồn mở, chạy trên máy chủ của chúng tôi với các bản cập nhật, sao lưu và email được xử lý cho bạn. Một gói duy nhất, hàng tháng hoặc hàng năm, có thể hủy bất cứ lúc nào.",
+    "metaTitle": "tududi Cloud: tududi được lưu trữ, vận hành cho bạn",
+    "note": "Cùng một ứng dụng có bản quyền MIT. Xuất mọi thứ, bất cứ lúc nào.",
+    "orAnnual": "hoặc",
+    "priceNote": "Được lập hóa đơn bởi nhà cung cấp thanh toán của chúng tôi. Giá chưa bao gồm các loại thuế áp dụng.",
+    "pricingSub": "Mọi thứ đều được bao gồm. Hủy bất cứ khi nào bạn muốn.",
+    "pricingTitle": "Một gói, hai cách thanh toán",
+    "reasons": {
+      "backups": {
+        "body": "Cơ sở dữ liệu được xuất ra mỗi đêm và được lưu giữ tách biệt với máy phục vụ bạn. Bạn cũng có thể tự xuất mọi thứ bất cứ lúc nào.",
+        "title": "Bản sao lưu bạn không cần phải nhớ"
+      },
+      "email": {
+        "body": "Xác minh, đặt lại mật khẩu và nhắc nhở được gửi qua một miền gửi đã được làm nóng, điều này khá phiền phức và nhàm chán để tự thiết lập.",
+        "title": "Email đến được"
+      },
+      "noOps": {
+        "body": "Không có VPS để thuê, không có Docker để cập nhật, không có reverse proxy hay chứng chỉ để gia hạn. Bạn đăng nhập, và nó ở đó.",
+        "title": "Không có máy chủ để vận hành"
+      },
+      "sameApp": {
+        "body": "Không có tính năng chỉ dành riêng cho cloud và không có bản tự lưu trữ bị cắt giảm. Nếu chúng tôi từng đóng dịch vụ, bạn sẽ nhận được dữ liệu của mình và một hướng dẫn di chuyển.",
+        "title": "Chính xác là cùng một ứng dụng"
+      },
+      "support": {
+        "body": "Một người hiểu code sẽ trả lời. Với tự lưu trữ, bạn có cộng đồng, điều đó tốt, nhưng không ai có nghĩa vụ phải trả lời.",
+        "title": "Có người để bạn viết email"
+      },
+      "updates": {
+        "body": "Các phiên bản mới đến với tài khoản của bạn mà không cần pull, khởi động lại hay migration nào bạn phải theo dõi.",
+        "title": "Cập nhật được áp dụng cho bạn"
+      }
+    },
+    "selfHostLine": "Bạn thích tự điều hành máy chủ hơn? Điều đó là miễn phí, và đó là cùng một ứng dụng.",
+    "title": "Vì sao nên dùng tududi Cloud?",
+    "whyEyebrow": "Cloud",
+    "whySub": "Không phải là tính năng. Mọi tính năng đều có trong bản tự lưu trữ.",
+    "whyTitle": "Bạn thực sự đang trả tiền cho điều gì"
+  },
+  "finalCta": {
+    "primary": "Bắt đầu",
+    "secondary": "Xem giá",
+    "selfHostLink": "Đọc hướng dẫn.",
+    "selfHostPrefix": "Bạn thích chạy nó trên máy chủ riêng của mình hơn?",
+    "sub": "Chúng tôi vận hành máy chủ, các bản cập nhật và bản sao lưu. Bạn có được hệ thống, và một bảo đảm hoàn tiền trong 30 ngày nếu nó không phù hợp với bạn.",
+    "title": "Tổ chức mọi thứ trong một phút"
   }
 }

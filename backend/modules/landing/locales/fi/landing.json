@@ -1,7 +1,9 @@
 {
   "meta": {
     "langSwitcherLabel": "Vaihda kieltä",
-    "langSwitcherCurrent": "Kieli: {{name}}"
+    "langSwitcherCurrent": "Kieli: {{name}}",
+    "description": "Alueet, tavoitteet, projektit ja tehtävät, sekä muistiinpanot ja tavat, yhdessä järjestelmässä. Ota tududi Cloud -tili käyttöön minuutissa. MCP-palvelin, joka tarjoaa {{tools}} työkalua, antaa AI-agenttien työskennellä listasi kanssa. Itse ylläpito on tarjolla, jos haluat mieluummin ajaa palvelinta itse.",
+    "title": "tududi: tehtävienhallinta ja elämänhallintajärjestelmä, MCP:llä AI-agenteille"
   },
   "nav": {
     "demo": "Live-demo",
@@ -12,7 +14,8 @@
     "docs": "Dokumentaatio",
     "changelog": "Muutokset",
     "signIn": "Kirjaudu sisään",
-    "toggle": "Avaa valikko"
+    "toggle": "Avaa valikko",
+    "selfHostGuide": "Itse ylläpidon opas"
   },
   "hero": {
     "badgeStars": "tähteä GitHubissa",
@@ -21,7 +24,12 @@
     "ctaDemo": "Kokeile live-demoa",
     "demoNote": "Aito isännöity instanssi esimerkkidatalla, jaettu ja nollataan säännöllisesti",
     "screenshotAlt": "tududin käyttöliittymä, jossa näkyy Tänään-näkymä ja suunnitellut tehtävät",
-    "ctaWaitlist": "Liity jonotuslistalle"
+    "ctaWaitlist": "Liity jonotuslistalle",
+    "cloudNote": "Ei palvelinta pystytettäväksi. Kuukausittain tai vuosittain, ja voit peruuttaa milloin tahansa.",
+    "ctaPrimary": "Aloita tududi Cloudissa",
+    "lede": "Alueet, tavoitteet, projektit, tehtävät, muistiinpanot ja tavat, yhdessä järjestelmässä. Luo Cloud-tili minuutissa.",
+    "titleLine1": "Tuottavuus tehty yksinkertaiseksi",
+    "titleLine2": ""
   },
   "proof": {
     "stars": "tähteä GitHubissa",
@@ -29,7 +37,8 @@
     "languages": "{{count}} kieltä",
     "dockerPulls": "Docker-latausta",
     "discord": "Discord-jäsentä",
-    "discordAlt": "Discord: {{count}} jäsentä"
+    "discordAlt": "Discord: {{count}} jäsentä",
+    "minute": "Käyttövalmis minuutissa"
   },
   "press": {
     "featuredIn": "Esillä julkaisuissa",
@@ -45,7 +54,10 @@
         "title": "Kirjaa ja hae keskustelusta",
         "body": "Lisää, löydä ja merkitse tehtäviä valmiiksi poistumatta keskustelusta."
       },
-      "dataStays": {},
+      "dataStays": {
+        "body": "MCP-yhteys menee suoraan omaan tududi-instanssiisi, Cloudissa tai omalla palvelimellasi. Mikään ei kulje kolmannen osapuolen kautta.",
+        "title": "Se puhuu instanssisi kanssa"
+      },
       "openProtocol": {
         "title": "Avoin protokolla, ei loukkua",
         "body": "Rakennettu avoimen Model Context Protocolin päälle. Toimii Clauden ja muiden MCP-asiakasohjelmien kanssa."
@@ -69,7 +81,40 @@
         "title": "Projektianalyysi",
         "body": "Nopea arvio projektin tilasta: mikä etenee ja mikä on jumissa."
       }
-    }
+    },
+    "configCloudTab": "Cloud",
+    "configSelfHostNote": "Osoita TUDUDI_URL sen sijaan omaan instanssiisi. Kaikki muu on identtistä.",
+    "configSelfHostTab": "Ylläpidätkö sitä itse?",
+    "demo": {
+      "answer1Html": "Aloita <strong>Laskutusmigraation julkaisemisesta</strong>. Se erääntyy tänään, ja kolme tehtävää kohteessa <strong>Maksut</strong> odottaa sen jälkeen.",
+      "answer2Html": "Valmis. <strong>Tarkista uudelleensuunnittelun luonnos</strong> erääntyy nyt perjantaina, ja <strong>Poista Maksut-jonon esto</strong> on Maksut-projektissa, erääntyy tänään.",
+      "ask1": "Mihin minun kannattaisi keskittyä tänään, ja on jokin myöhässä?",
+      "ask2": "Siirrä uudelleensuunnittelun tarkistus perjantaihin ja lisää tehtävä Maksujen eston poistamiseksi.",
+      "badge": "tududi MCP",
+      "caption": "Esimerkkiistunto. Agenttisi yhdistää suoraan omaan instanssiisi MCP:n kautta.",
+      "composer": "Vastaa Claudelle…",
+      "groupTitle": "Hyvä tietää",
+      "rows": {
+        "habit": {
+          "label": "Sarja vaarassa",
+          "text": "Aamukatsaus, 12 päivää putkeen, ei vielä kirjattu tänään"
+        },
+        "overdue": {
+          "label": "Myöhässä",
+          "text": "2 tehtävää kohteessa Koti, vanhin 6 päivän takaa"
+        },
+        "stalled": {
+          "label": "Pysähtynyt",
+          "text": "Sivuston uudelleensuunnittelu, ei toimintaa 11 päivään"
+        }
+      },
+      "toolLabel": "Käytti tududia",
+      "windowTitle": "Claude Desktop"
+    },
+    "footnoteIncluded": "MCP sisältyy tududi Cloudiin ja kaikkiin itse ylläpidettyihin instansseihin.",
+    "ledeHtml": "tududi sisältää MCP-palvelimen, joka tarjoaa <strong>{{tools}} työkalua</strong> ja kattaa tehtävät, projektit, alueet, tavoitteet, tavat, muistiinpanot, henkilöt, tagit, näkymät, saapuneet, haun ja mittarit. Yhdistä Claude tai mikä tahansa MCP-yhteensopiva agentti suoraan omaan instanssiisi, olipa se Cloud-tilisi tai itse ylläpitämäsi palvelin. Yhteys menee instanssiisi sen sijaan, että se kulkisi välissä olevan releen kautta, rakenteellinen ero, jota Todoist ja Notion eivät voi tarjota, luvatpa ne mitä tahansa.",
+    "titleLine1": "Todellinen järjestelmä",
+    "titleLine2": "jota AI-agenttisi voi oikeasti käyttää"
   },
   "features": {
     "eyebrow": "Ominaisuudet",
@@ -178,7 +223,8 @@
         "title": "Projektiyhteistyö",
         "body": "Jaa projekteja tarkoin käyttöoikeuksin - vain luku tai luku ja kirjoitus."
       }
-    }
+    },
+    "sub": "tududi yhdistää tavoitteet, projektit, tehtävät, muistiinpanot ja älykkäät näkymät yhdeksi rauhalliseksi, keskittyneeksi järjestelmäksi. Anna meidän ylläpitää sitä puolestasi, tai ylläpidä se itse, jos haluat."
   },
   "selfHost": {
     "eyebrow": "Ylläpidä itse",
@@ -187,7 +233,12 @@
     "step1": "Hae Docker-image",
     "step2": "Käynnistä kontti",
     "step3Prefix": "Avaa osoitteessa",
-    "linkGithub": "Katso GitHubissa"
+    "linkGithub": "Katso GitHubissa",
+    "cardSub": "Niille, jotka ajavat jo Dockeria",
+    "ctaCloud": "Aloita Cloudissa",
+    "linkDocs": "Lue itse ylläpidon opas",
+    "showCommands": "Näytä asennuskomennot",
+    "sub": "Itse ylläpito on niille, jotka ajavat jo Dockeria ja reverse proxyä. Jos haluat tududin muuttumatta järjestelmänvalvojaksi, käytä Cloudia."
   },
   "pricing": {
     "eyebrow": "Hinnat",
@@ -196,18 +247,39 @@
     "earlyBird": "ENNAKKOHINTA",
     "perYear": "/vuosi",
     "plans": {
-      "selfHosted": {},
+      "selfHosted": {
+        "action": "Lue itse ylläpidon opas →",
+        "features": [
+          "Hankit palvelimen tai NAS-laitteen",
+          "Hoidat Dockerin, päivitykset ja migraatiot",
+          "Määrität reverse proxyn ja TLS:n",
+          "Varmuuskopiot ovat omiasi",
+          "Täysi ominaisuusvalikoima, ei käyttäjärajaa, data omalla laitteistollasi"
+        ],
+        "name": "Itse ylläpidetty (edistynyt)",
+        "priceNote": "Ilmainen, jos ajat palvelinta itse"
+      },
       "cloud": {
         "name": "Cloud",
         "or": "tai",
         "launchNote": "Early bird -vuosihinta, sinun niin kauan kuin pysyt tilaajana.",
         "comingSoon": "Avautuu muutaman päivän kuluttua",
         "comingSoonNote": "Siirrämme Cloudin uuteen infrastruktuuriin. Jätä sähköpostiosoitteesi alle, niin ilmoitamme heti kun se on taas käytössä.",
-        "notifySubmit": "Ilmoita minulle"
+        "notifySubmit": "Ilmoita minulle",
+        "action": "Aloita →",
+        "features": [
+          "Käynnissä minuutissa, ei palvelinta pystytettäväksi",
+          "Rajattomat tehtävät, projektit ja muistiinpanot, plus liitteet",
+          "AI-avustaja, MCP, CalDAV-synkronointi ja Telegram-botti",
+          "Päivitykset ja päivittäiset varmuuskopiot hoidettuna puolestasi, ja {{proStorageGb}} GB tallennustilaa",
+          "Vie kaikki milloin tahansa, poista tilisi itse"
+        ],
+        "priceNote": "Kaikki mukana. Peruuta milloin tahansa."
       }
     },
     "fineprint": "Peruuta milloin tahansa ja vie kaikki. Jos tududi Cloud joskus suljetaan, saat tietosi ja oppaan siirtymiseen omalle palvelimelle. Tallennustilaan ja API-liikenteeseen sovelletaan kohtuullista käyttöä. 30 päivän rahat takaisin -takuu, ilman kysymyksiä.",
-    "perMonth": "/kk"
+    "perMonth": "/kk",
+    "sub": "Yksi isännöity paketti, tai aja sitä itse, jos haluat mieluummin hoitaa ylläpidon."
   },
   "compare": {
     "title": "Nopea vertailu",
@@ -220,12 +292,24 @@
       "noSetup": "Ei palvelimen pystytystä",
       "managedUpdates": "Hallitut päivitykset",
       "autoBackups": "Automaattiset varmuuskopiot",
-      "pricing": "Hinta"
+      "pricing": "Hinta",
+      "exportAnytime": "Vie kaikki milloin tahansa",
+      "proFeatures": "AI-avustaja, MCP, CalDAV, Telegram",
+      "startMinute": "Aloita minuutissa",
+      "storage": "Liitetiedostojen tallennustila",
+      "support": "Tuki"
     },
     "values": {
       "community": "Yhteisö",
-      "email": "Sähköposti"
-    }
+      "email": "Sähköposti",
+      "gigabytes": "{{count}} GB",
+      "perMonthOrYear": "{{monthly}}/kk tai {{price}}/vuosi",
+      "selfCost": "Ilmainen, plus omat isännöintikustannuksesi",
+      "yourDisk": "Oma levysi"
+    },
+    "colCloud": "tududi Cloud",
+    "colSelf": "Itse ylläpidetty",
+    "sub": "Samat sovellus molemmissa tapauksissa. Se, mikä eroaa, on kuka sitä ylläpitää ja mitä se maksaa sinulle."
   },
   "waitlist": {
     "title": "Etkö ole vielä valmis?",
@@ -255,7 +339,9 @@
     "subTitle": "Julkaisutiedotteet sähköpostiin",
     "subBody": "Satunnaisia julkaisutiedotteita. Ei markkinointia, peruuta milloin tahansa.",
     "subSubmit": "Liity",
-    "rights": "Kaikki oikeudet pidätetään."
+    "rights": "Kaikki oikeudet pidätetään.",
+    "linkLicence": "MIT-lisenssi",
+    "tagline": "Avoin järjestelmä elämän ja työn organisointiin. Meidän isännöimänä, tai omalla palvelimellasi."
   },
   "js": {
     "showFewer": "Näytä vähemmän",
@@ -264,11 +350,136 @@
   },
   "faq": {
     "items": {
-      "freePlan": {},
+      "freePlan": {
+        "a": "Ei. Cloud maksaa {{monthly}} kuukaudessa tai {{price}} vuodessa, ja se on koko hinnasto: ei ilmaistasoa, ei kokeiluaikaa, ei korttia veloitettuna jostain, joka alkaa hiljaa laskuttaa myöhemmin. Tarjolla on 30 päivän rahat takaisin -takuu, jos se ei osoittaudu sopivaksi, ja tällä sivulla on live-demo, jos haluat vilkaista ensin. Ilmainen tapa käyttää tududia on ajaa sitä omalla palvelimellasi, joka on samat sovellus.",
+        "q": "Onko tududi Cloudissa ilmaistaso tai kokeilua?"
+      },
       "leaving": {
         "q": "Voinko lähteä, ja mitä tiedoilleni tapahtuu?",
         "a": "Kyllä, milloin tahansa. Vie kaikki yhtenä tiedostona profiilistasi ja tuo se itse ylläpidettyyn tududiin, joka lukee saman muodon. Tilin poistaminen poistaa tietosi, liitteesi ja varmuuskopiosi palvelimiltamme ja peruu mahdollisen tilauksen."
+      },
+      "aiOptional": {
+        "a": "Ei. Molemmat AI-kerrokset ovat pois päältä, kunnes otat ne käyttöön, ja tududi on täysi järjestelmä myös niitä käyttämättä. Jos et koskaan ota niitä käyttöön, mitään ei puutu ja mikään ei muistuttele sinua.",
+        "q": "Täytyykö minun käyttää AI-ominaisuuksia?"
+      },
+      "aiPrivacy": {
+        "a": "Se riippuu siitä, kumpaa kahdesta kerroksesta tarkoitat, ja ero on merkittävä. MCP-palvelin toimii omassa instanssissasi: agentti kuten Claude Desktop yhdistää suoraan siihen instanssiin, joten keskustelu tapahtuu agenttisi ja oman tududisi välillä, ei välittäjän kautta. AI-avustaja on erilainen. Se kutsuu OpenAI-yhteensopivaa palveluntarjoajaa, joten jos osoitat sen isännöityyn tarjoajaan, näiden pyyntöjen sisältö menee tälle tarjoajalle. Osoita se sen sijaan paikalliseen malliin, kuten Ollamaan tai LM Studioon, ja mikään ei poistu koneeltasi. Se pysyy pois päältä, kunnes annat avaimen, joten se on aina omaa valintaasi, ei oletusta.",
+        "q": "Lähetetäänkö tietoni AI-yritykselle?"
+      },
+      "commercialUse": {
+        "a": "Kyllä, ja sinun ei tarvitse ostaa mitään ensin. MIT-lisenssi sallii kommertiaalisen käytön, myös yrityksessä ja kommertiaalisessa tuotteessa, ilman liikevaihtorajaa ja ilman raportointivelvollisuutta. Jos taloushallintosi tarvitsee laskun, Cloud-tilaus laskutetaan maksunvälittäjämme kautta ja tuottaa sellaisen. Mikään tällä sivulla ei myy lupaa, koska se lupa on jo sinun.",
+        "q": "Voinko käyttää tududia töissä tai yrityksessäni?"
+      },
+      "dataLocation": {
+        "a": "Kaikki asuu yhdessä SQLite-tietokantatiedostossa liittämäsi taltion sisällä. Sen varmuuskopiointi tarkoittaa tiedoston kopioimista turvalliseen paikkaan, ja sen palauttaminen tarkoittaa sen kopioimista takaisin. tududi ottaa myös automaattisesti tietokannasta tilannevedoksen ennen migraatioiden ajamista ja säilyttää tuoreita kopioita. Ei ole omistusoikeudellista muotoa eikä vientivaihetta sinun ja omien tietojesi välissä.",
+        "q": "Missä tietoni ovat, ja miten varmuuskopioin ne?"
+      },
+      "licence": {
+        "a": "Sovellus on avoimen lähdekoodin MIT-lisenssillä, niin voit ajaa sitä omalla palvelimellasi ilmaiseksi, muokata sitä ja rakentaa sen päälle maksamatta kenellekään. Ei käyttäjärajoja eikä pidätettyjä ominaisuuksia: itse ylläpidetty versio on koko tuote. tududi Cloud on maksullinen palvelu, koska isännöinti, varmuuskopiot ja sähköposti maksavat rahaa ylläpitää. Maksat käyttötyöstä, ei koskaan ohjelmiston käyttöoikeudesta.",
+        "q": "Onko tududi todella ilmainen?"
+      },
+      "maintained": {
+        "a": "Kyllä. Sitä kehittää pääosin yksi ylläpitäjä yhteisön panoksilla, ja julkaisuja tulee usein. Kaikki versiot löytyvät GitHubin julkaisusivulta, linkitettynä yllä olevan valikon muutoslokista, joten voit itse arvioida tahdin sen sijaan, että luottaisit sanaamme. Kehitys tapahtuu julkisesti: tikettejä, julkinen etenemissuunnitelma ja Discord, jossa kysymyksiin vastataan.",
+        "linkLabel": "Katso kaikki julkaisut",
+        "q": "Ylläpidetäänkö tududia aktiivisesti?"
+      },
+      "mcp": {
+        "a": "MCP on Model Context Protocol, avoin standardi AI-agenttien yhdistämiseksi oikeisiin järjestelmiin. tududi sisältää MCP-palvelimen, joka tarjoaa {{tools}} työkalua tehtäviin, projekteihin, alueisiin, tavoitteisiin, tapoihin, muistiinpanoihin, henkilöihin, tageihin, näkymiin, saapuneisiin, hakuun ja mittareihin, jotta agentti voi tallentaa, löytää, päivittää ja saattaa työn loppuun sen sijaan, että puhuisi siitä vain. Se on valinnainen, sisältyy Cloudiin ja kaikkiin itse ylläpidettyihin instansseihin, ja toimii Claude Desktopin, Cursorin, Windsurfin, Clinen tai minkä tahansa muun MCP-asiakkaan kanssa.",
+        "q": "Mikä on MCP, ja mitä agentti voi oikeastaan tehdä?"
+      },
+      "mobile": {
+        "a": "tududi asentuu PWA:na eikä alkuperäisenä sovelluksena. Lisää se aloitusnäytöllesi Androidissa tai iOS:ssa, tai asenna se työpöydälle, ja se käyttäytyy kuin sovellus: se lukee välimuistista, kun olet offline, ja synkronoi muutoksesi, kun yhdistät uudelleen. Ei ole mitään ladattavaa App Storesta tai Play Storesta.",
+        "q": "Onko mobiilisovellusta?"
+      },
+      "multiUser": {
+        "a": "Kyllä. Yksi instanssi voi isännöidä useita käyttäjiä, ja projekteja voidaan jakaa luku- tai luku-kirjoitusoikeudella, jonka niiden sisällä olevat tehtävät ja muistiinpanot perivät. Itserekisteröinti on oletuksena pois päältä, niin ylläpitäjä luo tilit tai avaa rekisteröitymisen tarkoituksella. Kukaan ei pääse sisään, koska unohdit sulkea oven.",
+        "q": "Voiko useampi henkilö jakaa yhden instanssin?"
+      },
+      "requirements": {
+        "a": "Docker, pysyvä paikka tietokannan tallentamiseen, reverse proxy TLS:llä edessä, ja kuri päivitysten ajamiseen ja varmuuskopioiden säilyttämiseen. Se toimii mukavasti pienellä VPS:llä tai omassa verkossasi olevalla koneella, ja komennot löytyvät Itse ylläpito -osiosta ja dokumentaatiosta. Useimmat ovat paremmin palveltuja Cloudilla, joka on sama sovellus ilman kaikkea sitä työtä.",
+        "linkLabel": "Lue dokumentaatio",
+        "q": "Mitä tarvitsen ylläpitääkseni sitä itse?"
+      },
+      "reverseProxy": {
+        "a": "Kyllä, ja se on normaali tapa ajaa sitä. Aseta TUDUDI_TRUST_PROXY, jotta sovellus luottaa nginxin, Caddyn tai Traefikin välittämiin otsikoihin. Jos ohitat sen, kirjautumiset ja IP-lokitus käyttäytyvät oudosti tavalla, jota on vaikea diagnosoida, niin sovellus heittää tarkan virheen sen sijaan, että epäonnistuisi hiljaa. Hyväksytyt arvot on dokumentoitu README:ssä.",
+        "q": "Toimiiko se reverse proxyn takana?"
+      },
+      "shutdown": {
+        "a": "Sovellus on MIT-lisensoitu ja lähdekoodi on julkinen, niin sitä ei voida viedä sinulta. Kuka tahansa voi jatkaa sen ajamista, ja voit forkata sen. tududi Cloudissa tietosi asuvat vakiomuotoisessa tududi-tietokannassa eikä omistusoikeudellisessa muodossa, niin jos palvelu joskus suljettaisiin, saisit tietosi ja oppaan niiden siirtämiseen omalle palvelimellesi.",
+        "q": "Mitä tapahtuu tiedoillleni, jos tududi katoaa?"
+      },
+      "whyManaged": {
+        "a": "Maksat siitä, että et ylläpidä infrastruktuuria. tududi Cloud antaa saman järjestelmän, ja palvelin, päivitykset, varmuuskopiot ja sähköposti on hoidettu puolestasi, mikä on itse ylläpidon hankala, vähemmän hohdokas puoli. Cloud on tie, jota suosittelemme. Itse ylläpito on paras vaihtoehto vain, jos ajat jo Dockeria ja reverse proxyä ja haluat aktiivisesti ylläpitää pinoa.",
+        "q": "Miksi maksaa Cloudista, kun itse ylläpito on ilmaista?"
       }
-    }
+    },
+    "eyebrow": "FAQ",
+    "groups": {
+      "managed": "AI, MCP & Cloud",
+      "project": "Lisenssi & projekti",
+      "selfHost": "Itse ylläpito & data"
+    },
+    "permalink": "Linkki tähän vastaukseen",
+    "sub": "Lisenssi, AI ja mitä tiedoillesi tapahtuu. Jos jokin puuttuu, kysy Discordissa.",
+    "title": "Kysymyksiä, joihin kannattaa vastata ennen sitoutumista"
+  },
+  "cloud": {
+    "ctaPricing": "Katso hinta",
+    "ctaPrimary": "Aloita",
+    "includes": [
+      "Rajattomat tehtävät, projektit ja muistiinpanot",
+      "Liitteet ja tiedostojen lataus",
+      "AI-avustaja, MCP, CalDAV-synkronointi ja Telegram-botti",
+      "Päivittäiset varmuuskopiot ja hallitut päivitykset",
+      "Tuki sähköpostitse",
+      "Vie kaikki, milloin tahansa"
+    ],
+    "lede": "Sama järjestelmä molemmissa tapauksissa. Ero on siinä, kuka pitää sen käynnissä, päivitettynä ja varmuuskopioituna kolmelta yöllä.",
+    "metaDescription": "tududi Cloud on sama avoimen lähdekoodin järjestelmä, joka toimii palvelimillamme, ja päivitykset, varmuuskopiot ja sähköposti on hoidettu puolestasi. Yksi paketti, kuukausittain tai vuosittain, peruutettavissa milloin tahansa.",
+    "metaTitle": "tududi Cloud: isännöity tududi, ylläpidettynä puolestasi",
+    "note": "Samat MIT-lisensoidut sovellus. Vie kaikki, milloin tahansa.",
+    "orAnnual": "tai",
+    "priceNote": "Maksunvälittäjämme laskuttaa. Hinnat eivät sisällä sovellettavia veroja.",
+    "pricingSub": "Kaikki mukana. Peruuta milloin haluat.",
+    "pricingTitle": "Yksi paketti, kaksi tapaa maksaa",
+    "reasons": {
+      "backups": {
+        "body": "Tietokanta varmuuskopioidaan joka yö ja säilytetään erillään koneesta, joka palvelee sinua. Voit myös viedä kaiken itse milloin tahansa.",
+        "title": "Varmuuskopiot, joita ei tarvitse muistaa itse"
+      },
+      "email": {
+        "body": "Vahvistukset, salasanan palautukset ja muistutukset lähtevät lämmitetyn lähettävän verkkotunnuksen kautta, mikä on hankalaa ja tylsää pystyttää itse.",
+        "title": "Sähköposti, joka perillä"
+      },
+      "noOps": {
+        "body": "Ei VPS:ää vuokrattavaksi, ei Dockeria päivitettäväksi, ei reverse proxyä eikä sertifikaattia uusittavaksi. Kirjaudut sisään, ja se on siellä.",
+        "title": "Ei palvelinta ylläpidettäväksi"
+      },
+      "sameApp": {
+        "body": "Ei pilviyksinoikeutta ja ei rajoitettua itse ylläpidettyä versiota. Jos joskus lopetamme palvelun, saat datasi ja siirto-oppaan.",
+        "title": "Täsmälleen sama sovellus"
+      },
+      "support": {
+        "body": "Koodin tunteva henkilö vastaa. Itse ylläpidossa sinulla on yhteisö, mikä on hyvä, mutta kukaan ei ole velvoitettu vastaamaan.",
+        "title": "Joku, jolle kirjoittaa"
+      },
+      "updates": {
+        "body": "Uudet versiot saapuvat tilillesi ilman pullia, uudelleenkäynnistystä tai migraatiota, jota sinun täytyy valvoa.",
+        "title": "Päivitykset asennettuna puolestasi"
+      }
+    },
+    "selfHostLine": "Haluatko mieluummin ylläpitää palvelinta itse? Se on ilmaista, ja se on samat sovellus.",
+    "title": "Miksi käyttää tududi Cloudia?",
+    "whyEyebrow": "Cloud",
+    "whySub": "Eivät ominaisuudet. Kaikki ominaisuudet löytyvät myös itse ylläpidetystä versiosta.",
+    "whyTitle": "Mistä oikeastaan maksat"
+  },
+  "finalCta": {
+    "primary": "Aloita",
+    "secondary": "Katso hinnat",
+    "selfHostLink": "Lue opas.",
+    "selfHostPrefix": "Haluatko mieluummin ajaa sen omalla palvelimellasi?",
+    "sub": "Me ylläpidämme palvelinta, päivityksiä ja varmuuskopioita. Sinä saat järjestelmän, ja 30 päivän rahat takaisin -takuun, jos se ei sopinut sinulle.",
+    "title": "Järjestäydy minuutissa"
   }
 }

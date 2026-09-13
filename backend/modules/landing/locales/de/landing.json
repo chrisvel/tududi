@@ -1,7 +1,9 @@
 {
   "meta": {
     "langSwitcherLabel": "Sprache wechseln",
-    "langSwitcherCurrent": "Sprache: {{name}}"
+    "langSwitcherCurrent": "Sprache: {{name}}",
+    "description": "Bereiche, Ziele, Projekte und Aufgaben, dazu Notizen und Gewohnheiten, in einem System. Richte in einer Minute ein tududi-Cloud-Konto ein. Ein MCP-Server mit {{tools}} Tools lässt KI-Agenten an deiner Liste arbeiten. Self-Hosting steht bereit, wenn du den Server lieber selbst betreiben möchtest.",
+    "title": "tududi: Aufgabenverwaltung und Lebensorganisationssystem, mit MCP für KI-Agenten"
   },
   "nav": {
     "demo": "Live-Demo",
@@ -12,7 +14,8 @@
     "docs": "Doku",
     "changelog": "Änderungen",
     "signIn": "Anmelden",
-    "toggle": "Navigation umschalten"
+    "toggle": "Navigation umschalten",
+    "selfHostGuide": "Self-Host-Anleitung"
   },
   "hero": {
     "badgeStars": "Sterne auf GitHub",
@@ -21,7 +24,12 @@
     "ctaDemo": "Live-Demo ausprobieren",
     "demoNote": "Eine echte gehostete Instanz mit Beispieldaten, gemeinsam genutzt und regelmäßig zurückgesetzt",
     "screenshotAlt": "Die Oberfläche von tududi mit der Heute-Ansicht und den geplanten Aufgaben",
-    "ctaWaitlist": "Auf die Warteliste"
+    "ctaWaitlist": "Auf die Warteliste",
+    "cloudNote": "Kein Server einzurichten. Monatlich oder jährlich, und du kannst jederzeit kündigen.",
+    "ctaPrimary": "Auf tududi Cloud starten",
+    "lede": "Bereiche, Ziele, Projekte, Aufgaben, Notizen und Gewohnheiten in einem System. Erstelle in einer Minute ein Cloud-Konto.",
+    "titleLine1": "Produktivität ganz einfach",
+    "titleLine2": ""
   },
   "proof": {
     "stars": "Sterne auf GitHub",
@@ -29,7 +37,8 @@
     "languages": "{{count}} Sprachen",
     "dockerPulls": "Docker-Pulls",
     "discord": "Discord-Mitglieder",
-    "discordAlt": "Discord: {{count}} Mitglieder"
+    "discordAlt": "Discord: {{count}} Mitglieder",
+    "minute": "In einer Minute eingerichtet"
   },
   "press": {
     "featuredIn": "Erwähnt in",
@@ -45,7 +54,10 @@
         "title": "Erfassen und suchen im Chat",
         "body": "Aufgaben anlegen, finden und abschließen, ohne das Gespräch zu verlassen."
       },
-      "dataStays": {},
+      "dataStays": {
+        "body": "Die MCP-Verbindung geht direkt zu deiner eigenen tududi-Instanz, in der Cloud oder auf deinem eigenen Server. Nichts läuft über einen Dritten.",
+        "title": "Sie spricht mit deiner Instanz"
+      },
       "openProtocol": {
         "title": "Offenes Protokoll, kein Lock-in",
         "body": "Basiert auf dem offenen Model Context Protocol. Funktioniert mit Claude und anderen MCP-Clients."
@@ -69,7 +81,40 @@
         "title": "Projekt-Analyse",
         "body": "Eine schnelle Einschätzung zum Zustand eines Projekts: was läuft, was hängt."
       }
-    }
+    },
+    "configCloudTab": "Cloud",
+    "configSelfHostNote": "Zeige TUDUDI_URL stattdessen auf deine eigene Instanz. Alles andere ist identisch.",
+    "configSelfHostTab": "Betreibst du es selbst?",
+    "demo": {
+      "answer1Html": "Beginne mit <strong>Billing-Migration veröffentlichen</strong>. Sie ist heute fällig, und drei Aufgaben in <strong>Zahlungen</strong> warten dahinter.",
+      "answer2Html": "Erledigt. <strong>Redesign-Entwurf prüfen</strong> ist jetzt bis Freitag fällig, und <strong>Payments-Warteschlange freigeben</strong> liegt im Projekt Zahlungen und ist heute fällig.",
+      "ask1": "Worauf sollte ich mich heute konzentrieren, und gerät irgendetwas in Verzug?",
+      "ask2": "Verschiebe die Redesign-Prüfung auf Freitag und füge eine Aufgabe hinzu, um Zahlungen freizugeben.",
+      "badge": "tududi MCP",
+      "caption": "Eine Beispielsitzung. Dein Agent verbindet sich direkt über MCP mit deiner eigenen Instanz.",
+      "composer": "Claude antworten…",
+      "groupTitle": "Wissenswert",
+      "rows": {
+        "habit": {
+          "label": "Serie in Gefahr",
+          "text": "Morgen-Review, 12 Tage in Folge, heute noch nicht eingetragen"
+        },
+        "overdue": {
+          "label": "Überfällig",
+          "text": "2 Aufgaben in Haushalt, die älteste seit 6 Tagen"
+        },
+        "stalled": {
+          "label": "Ins Stocken geraten",
+          "text": "Website-Redesign, seit 11 Tagen keine Aktivität"
+        }
+      },
+      "toolLabel": "tududi verwendet",
+      "windowTitle": "Claude Desktop"
+    },
+    "footnoteIncluded": "MCP ist in tududi Cloud und in jeder selbst gehosteten Instanz enthalten.",
+    "ledeHtml": "tududi liefert einen MCP-Server mit <strong>{{tools}} Tools</strong>, die Aufgaben, Projekte, Bereiche, Ziele, Gewohnheiten, Notizen, Personen, Tags, Ansichten, den Posteingang, die Suche und Kennzahlen abdecken. Verbinde Claude oder jeden MCP-kompatiblen Agenten direkt mit deiner eigenen Instanz, ob das nun dein Cloud-Konto ist oder ein Server, den du selbst betreibst. Die Verbindung geht zu deiner Instanz statt über ein Relais dazwischen, ein struktureller Unterschied, den Todoist und Notion nicht bieten können, egal was sie versprechen.",
+    "titleLine1": "Ein echtes System",
+    "titleLine2": "das dein KI-Agent tatsächlich nutzen kann"
   },
   "features": {
     "eyebrow": "Funktionen",
@@ -178,7 +223,8 @@
         "title": "Zusammenarbeit an Projekten",
         "body": "Teile Projekte mit feingranularen Rechten - nur lesen oder lesen und schreiben."
       }
-    }
+    },
+    "sub": "tududi vereint Ziele, Projekte, Aufgaben, Notizen und smarte Ansichten in einem ruhigen, fokussierten System. Lass uns es für dich betreiben, oder betreibe es selbst, wenn du das bevorzugst."
   },
   "selfHost": {
     "eyebrow": "Selbst hosten",
@@ -187,7 +233,12 @@
     "step1": "Docker-Image holen",
     "step2": "Container starten",
     "step3Prefix": "Aufrufen unter",
-    "linkGithub": "Auf GitHub ansehen"
+    "linkGithub": "Auf GitHub ansehen",
+    "cardSub": "Für alle, die bereits Docker nutzen",
+    "ctaCloud": "Auf Cloud starten",
+    "linkDocs": "Self-Host-Anleitung lesen",
+    "showCommands": "Installationsbefehle anzeigen",
+    "sub": "Self-Hosting ist für Leute, die bereits Docker und einen Reverse Proxy betreiben. Wenn du tududi willst, ohne Systemadministrator zu werden, nutze Cloud."
   },
   "pricing": {
     "eyebrow": "Preise",
@@ -196,18 +247,39 @@
     "earlyBird": "FRÜHBUCHER",
     "perYear": "/Jahr",
     "plans": {
-      "selfHosted": {},
+      "selfHosted": {
+        "action": "Self-Host-Anleitung lesen →",
+        "features": [
+          "Du stellst einen Server oder ein NAS bereit",
+          "Du kümmerst dich um Docker, Updates und Migrationen",
+          "Du richtest einen Reverse Proxy und TLS ein",
+          "Die Backups gehören dir",
+          "Voller Funktionsumfang, keine Nutzerbegrenzung, Daten auf deiner eigenen Hardware"
+        ],
+        "name": "Self-Hosted (fortgeschritten)",
+        "priceNote": "Kostenlos, wenn du den Server selbst betreibst"
+      },
       "cloud": {
         "name": "Cloud",
         "or": "oder",
         "launchNote": "Frühbucher-Jahrespreis, deiner, solange du abonniert bleibst.",
         "comingSoon": "Öffnet in wenigen Tagen",
         "comingSoonNote": "Wir ziehen Cloud auf eine neue Infrastruktur um. Hinterlass unten deine E-Mail-Adresse und wir sagen dir Bescheid, sobald es wieder da ist.",
-        "notifySubmit": "Benachrichtigen"
+        "notifySubmit": "Benachrichtigen",
+        "action": "Loslegen →",
+        "features": [
+          "In einer Minute startklar, ohne Server einzurichten",
+          "Unbegrenzte Aufgaben, Projekte und Notizen, plus Anhänge",
+          "KI-Assistent, MCP, CalDAV-Sync und der Telegram-Bot",
+          "Updates und tägliche Backups für dich erledigt, mit {{proStorageGb}} GB Speicher",
+          "Exportiere jederzeit alles, lösche dein Konto selbst"
+        ],
+        "priceNote": "Alles inklusive. Jederzeit kündbar."
       }
     },
     "fineprint": "Jederzeit kündbar, alles exportierbar. Sollte tududi Cloud je eingestellt werden, bekommst du deine Daten und eine Anleitung zum Selbsthosten. Für Speicher und API-Volumen gilt Fair Use. 30 Tage Geld-zurück-Garantie, ohne Nachfragen.",
-    "perMonth": "/Monat"
+    "perMonth": "/Monat",
+    "sub": "Ein gehosteter Plan, oder betreibe ihn selbst, wenn du den Betrieb lieber übernimmst."
   },
   "compare": {
     "title": "Kurzer Vergleich",
@@ -220,12 +292,24 @@
       "noSetup": "Keine Servereinrichtung nötig",
       "managedUpdates": "Verwaltete Updates",
       "autoBackups": "Automatische Backups",
-      "pricing": "Preis"
+      "pricing": "Preis",
+      "exportAnytime": "Exportiere jederzeit alles",
+      "proFeatures": "KI-Assistent, MCP, CalDAV, Telegram",
+      "startMinute": "Starte in einer Minute",
+      "storage": "Anhang-Speicher",
+      "support": "Support"
     },
     "values": {
       "community": "Community",
-      "email": "E-Mail"
-    }
+      "email": "E-Mail",
+      "gigabytes": "{{count}} GB",
+      "perMonthOrYear": "{{monthly}}/Monat oder {{price}}/Jahr",
+      "selfCost": "Kostenlos, plus dein Hosting",
+      "yourDisk": "Deine eigene Festplatte"
+    },
+    "colCloud": "tududi Cloud",
+    "colSelf": "Self-Hosting",
+    "sub": "Dieselbe Anwendung in beiden Fällen. Was sich unterscheidet, ist, wer sie betreibt, und was dich das kostet."
   },
   "waitlist": {
     "title": "Noch nicht so weit?",
@@ -255,7 +339,9 @@
     "subTitle": "Release Notes per E-Mail",
     "subBody": "Gelegentliche Release Notes. Kein Marketing, jederzeit abbestellbar.",
     "subSubmit": "Eintragen",
-    "rights": "Alle Rechte vorbehalten."
+    "rights": "Alle Rechte vorbehalten.",
+    "linkLicence": "MIT-Lizenz",
+    "tagline": "Ein offenes System, um Leben und Arbeit zu organisieren. Von uns gehostet, oder auf deinem eigenen Server."
   },
   "js": {
     "showFewer": "Weniger anzeigen",
@@ -264,11 +350,136 @@
   },
   "faq": {
     "items": {
-      "freePlan": {},
+      "freePlan": {
+        "a": "Nein. Cloud kostet {{monthly}} im Monat oder {{price}} im Jahr, und das ist die gesamte Preisliste: kein kostenloser Tarif, keine Probezeit, keine Karte, die für etwas belastet wird, das später still zu berechnen beginnt. Es gibt eine 30-tägige Geld-zurück-Garantie, falls es sich als unpassend erweist, und es gibt auf dieser Seite eine Live-Demo, falls du dir vorab einen Eindruck verschaffen möchtest. Der kostenlose Weg, tududi zu nutzen, ist, es auf deinem eigenen Server zu betreiben, was dieselbe Anwendung ist.",
+        "q": "Gibt es bei tududi Cloud einen kostenlosen Tarif oder eine Testphase?"
+      },
       "leaving": {
         "q": "Kann ich gehen, und was passiert mit meinen Daten?",
         "a": "Ja, jederzeit. Exportiere alles als eine Datei aus deinem Profil und importiere sie in ein selbst gehostetes tududi, das dasselbe Format liest. Das Löschen deines Kontos entfernt deine Daten, Anhänge und Backups von unseren Servern und kündigt jedes Abo."
+      },
+      "aiOptional": {
+        "a": "Nein. Beide KI-Ebenen sind ausgeschaltet, bis du sie aktivierst, und tududi ist auch ohne sie ein vollständiges System. Wenn du sie nie aktivierst, fehlt nichts und nichts nervt dich.",
+        "q": "Muss ich die KI-Funktionen nutzen?"
+      },
+      "aiPrivacy": {
+        "a": "Das hängt davon ab, welche der beiden Ebenen du meinst, und der Unterschied ist wichtig. Der MCP-Server läuft innerhalb deiner eigenen Instanz: Ein Agent wie Claude Desktop verbindet sich direkt mit dieser Instanz, das Gespräch findet also zwischen deinem Agenten und deinem eigenen tududi statt, nicht über einen Vermittler dazwischen. Der KI-Assistent ist anders. Er ruft einen OpenAI-kompatiblen Anbieter auf, wenn du ihn also auf einen gehosteten Anbieter richtest, gehen die Inhalte dieser Anfragen an diesen Anbieter. Richte ihn stattdessen auf ein lokales Modell wie Ollama oder LM Studio, und nichts verlässt deinen Rechner. Er bleibt aus, bis du einen Schlüssel angibst, es ist also immer deine Entscheidung, keine Vorgabe.",
+        "q": "Werden meine Daten an ein KI-Unternehmen gesendet?"
+      },
+      "commercialUse": {
+        "a": "Ja, und du musst dafür nichts kaufen. Die MIT-Lizenz erlaubt die kommerzielle Nutzung, auch innerhalb eines Unternehmens und in einem kommerziellen Produkt, ohne Umsatzschwelle und ohne Meldepflicht. Falls deine Buchhaltung eine Rechnung braucht: Ein Cloud-Abo wird über unseren Zahlungsanbieter abgerechnet und erzeugt eine. Nichts auf dieser Seite verkauft eine Erlaubnis, denn diese Erlaubnis gehört dir bereits.",
+        "q": "Darf ich tududi bei der Arbeit oder in meiner Firma nutzen?"
+      },
+      "dataLocation": {
+        "a": "Alles liegt in einer einzigen SQLite-Datenbankdatei innerhalb des von dir eingebundenen Volumes. Sie zu sichern heißt, diese Datei an einen sicheren Ort zu kopieren, und sie wiederherzustellen heißt, sie zurückzukopieren. tududi erstellt außerdem automatisch einen Datenbank-Snapshot, bevor Migrationen angewendet werden, und behält aktuelle Kopien. Es gibt kein proprietäres Format und keinen Exportschritt zwischen dir und deinen eigenen Daten.",
+        "q": "Wo liegen meine Daten, und wie sichere ich sie?"
+      },
+      "licence": {
+        "a": "Die Anwendung ist Open Source unter der MIT-Lizenz, du kannst sie also kostenlos auf deinem eigenen Server betreiben, verändern und darauf aufbauen, ohne jemanden zu bezahlen. Es gibt keine Nutzerzahl-Begrenzung und keine zurückgehaltenen Funktionen: Der Self-Hosted-Build ist das komplette Produkt. tududi Cloud ist ein kostenpflichtiger Dienst, weil Hosting, Backups und E-Mail Geld kosten, um sie zu betreiben. Du bezahlst für die Betriebsarbeit, nie für den Zugang zur Software.",
+        "q": "Ist tududi wirklich kostenlos?"
+      },
+      "maintained": {
+        "a": "Ja. Es wird hauptsächlich von einem Maintainer entwickelt, mit Beiträgen aus der Community, und es erscheinen häufig Releases. Jede Version steht auf der GitHub-Releases-Seite, verlinkt aus dem Changelog im Menü oben, damit du das Tempo selbst beurteilen kannst, statt uns nur zu vertrauen. Die Entwicklung findet öffentlich statt: Issues, eine öffentliche Roadmap und ein Discord, in dem Fragen beantwortet werden.",
+        "linkLabel": "Alle Releases ansehen",
+        "q": "Wird tududi aktiv gepflegt?"
+      },
+      "mcp": {
+        "a": "MCP ist das Model Context Protocol, ein offener Standard, um KI-Agenten mit echten Systemen zu verbinden. tududi liefert einen MCP-Server mit {{tools}} Tools, die Aufgaben, Projekte, Bereiche, Ziele, Gewohnheiten, Notizen, Personen, Tags, Ansichten, den Posteingang, die Suche und Kennzahlen abdecken, damit ein Agent Arbeit erfassen, finden, aktualisieren und abschließen kann, statt nur darüber zu reden. Es ist optional, ist in Cloud und in jeder selbst gehosteten Instanz enthalten und funktioniert mit Claude Desktop, Cursor, Windsurf, Cline oder jedem anderen MCP-Client.",
+        "q": "Was ist MCP, und was kann ein Agent damit wirklich tun?"
+      },
+      "mobile": {
+        "a": "tududi installiert sich als PWA statt als native App. Füge es auf Android oder iOS zum Startbildschirm hinzu oder installiere es auf dem Desktop, dann verhält es sich wie eine App: Es liest offline aus dem Cache und synchronisiert deine Änderungen, sobald du wieder verbunden bist. Es gibt nichts aus dem App Store oder Play Store herunterzuladen.",
+        "q": "Gibt es eine mobile App?"
+      },
+      "multiUser": {
+        "a": "Ja. Eine einzelne Instanz kann mehrere Nutzer beherbergen, und Projekte lassen sich mit Nur-Lese- oder Lese-Schreib-Zugriff teilen, den die enthaltenen Aufgaben und Notizen erben. Die Selbstregistrierung ist standardmäßig deaktiviert, ein Admin erstellt also entweder Konten oder öffnet die Registrierung bewusst. Niemand kommt herein, weil du vergessen hast, eine Tür zu schließen.",
+        "q": "Können sich mehrere Personen eine Instanz teilen?"
+      },
+      "requirements": {
+        "a": "Docker, ein dauerhafter Ort, um die Datenbank zu speichern, ein Reverse Proxy mit TLS davor, und die Disziplin, Updates einzuspielen und Backups aufzubewahren. Es läuft angenehm auf einem kleinen VPS oder einer Maschine im eigenen Netzwerk, und die Befehle finden sich im Self-Host-Abschnitt und in der Dokumentation. Den meisten Leuten ist mit Cloud besser gedient, das dieselbe Anwendung ohne diesen ganzen Aufwand ist.",
+        "linkLabel": "Dokumentation lesen",
+        "q": "Was brauche ich, um es selbst zu betreiben?"
+      },
+      "reverseProxy": {
+        "a": "Ja, und das ist der normale Weg, es zu betreiben. Setze TUDUDI_TRUST_PROXY, damit die App den von nginx, Caddy oder Traefik weitergeleiteten Headern vertraut. Lässt du das aus, verhalten sich Anmeldungen und IP-Protokollierung auf schwer zu diagnostizierende Weise seltsam, weshalb die App einen spezifischen Fehler auslöst, statt stillschweigend zu versagen. Die akzeptierten Werte sind im README dokumentiert.",
+        "q": "Funktioniert es hinter einem Reverse Proxy?"
+      },
+      "shutdown": {
+        "a": "Die App ist MIT-lizenziert und der Quellcode ist öffentlich, sie kann dir also nicht entzogen werden. Jeder kann sie weiterbetreiben, und du kannst sie forken. In tududi Cloud liegen deine Daten in einer Standard-tududi-Datenbank statt in einem proprietären Format, sollte der Dienst also je eingestellt werden, bekämst du deine Daten und eine Anleitung, sie auf deinen eigenen Server umzuziehen.",
+        "q": "Was passiert mit meinen Daten, wenn es tududi nicht mehr gibt?"
+      },
+      "whyManaged": {
+        "a": "Du bezahlst dafür, keine Infrastruktur zu betreiben. tududi Cloud gibt dir dasselbe System, wobei Server, Updates, Backups und E-Mail für dich erledigt werden, was die mühsame, wenig glamouröse Hälfte des Self-Hostings ist. Cloud ist der Weg, den wir empfehlen. Self-Hosting ist nur dann die bessere Wahl, wenn du bereits Docker und einen Reverse Proxy betreibst und den Stack aktiv betreiben möchtest.",
+        "q": "Warum für Cloud bezahlen, wenn Self-Hosting kostenlos ist?"
       }
-    }
+    },
+    "eyebrow": "FAQ",
+    "groups": {
+      "managed": "KI, MCP & Cloud",
+      "project": "Lizenz & Projekt",
+      "selfHost": "Self-Hosting & Daten"
+    },
+    "permalink": "Link zu dieser Antwort",
+    "sub": "Die Lizenz, die KI, und was mit deinen Daten passiert. Fehlt etwas, frag im Discord.",
+    "title": "Fragen, die eine Antwort verdienen, bevor du dich festlegst"
+  },
+  "cloud": {
+    "ctaPricing": "Preis ansehen",
+    "ctaPrimary": "Loslegen",
+    "includes": [
+      "Unbegrenzte Aufgaben, Projekte und Notizen",
+      "Anhänge und Datei-Uploads",
+      "KI-Assistent, MCP, CalDAV-Sync und der Telegram-Bot",
+      "Tägliche Backups und verwaltete Updates",
+      "Support per E-Mail",
+      "Exportiere jederzeit alles"
+    ],
+    "lede": "Das gleiche System in beiden Fällen. Der Unterschied ist, wer es um drei Uhr morgens am Laufen, gepatcht und gesichert hält.",
+    "metaDescription": "tududi Cloud ist dasselbe Open-Source-System, läuft auf unseren Servern mit Updates, Backups und E-Mail-Versand, um die wir uns kümmern. Ein Plan, monatlich oder jährlich, jederzeit kündbar.",
+    "metaTitle": "tududi Cloud: das gehostete tududi, für dich betrieben",
+    "note": "Dieselbe MIT-lizenzierte App. Exportiere jederzeit alles.",
+    "orAnnual": "oder",
+    "priceNote": "Abrechnung über unseren Zahlungsanbieter. Preise verstehen sich zzgl. anfallender Steuern.",
+    "pricingSub": "Alles inklusive. Kündige, wann du willst.",
+    "pricingTitle": "Ein Plan, zwei Zahlweisen",
+    "reasons": {
+      "backups": {
+        "body": "Die Datenbank wird nächtlich gesichert und abseits der Maschine aufbewahrt, die dich bedient. Du kannst auch jederzeit selbst alles exportieren.",
+        "title": "Backups, an die du nicht denken musst"
+      },
+      "email": {
+        "body": "Verifizierungen, Passwort-Zurücksetzungen und Erinnerungen gehen über eine warmgelaufene Versanddomain hinaus, was auf der eigenen Maschine mühsam und lästig einzurichten ist.",
+        "title": "E-Mail, die ankommt"
+      },
+      "noOps": {
+        "body": "Kein VPS zu mieten, kein Docker zu aktualisieren, kein Reverse Proxy oder Zertifikat zu erneuern. Du meldest dich an, und es ist da.",
+        "title": "Kein Server zu betreiben"
+      },
+      "sameApp": {
+        "body": "Keine Cloud-exklusiven Funktionen und kein verstümmelter Self-Hosted-Build. Sollten wir den Dienst je einstellen, bekommst du deine Daten und eine Migrationsanleitung.",
+        "title": "Genau dieselbe App"
+      },
+      "support": {
+        "body": "Eine Person, die den Code kennt, antwortet. Beim Self-Hosting hast du die Community, was gut ist, aber niemand ist dafür verantwortlich.",
+        "title": "Jemand zum Schreiben"
+      },
+      "updates": {
+        "body": "Neue Versionen erreichen dein Konto ohne einen Pull, einen Neustart oder eine Migration, die du überwachen musst.",
+        "title": "Updates werden für dich eingespielt"
+      }
+    },
+    "selfHostLine": "Möchtest du den Server lieber selbst betreiben? Das ist kostenlos, und es ist dieselbe Anwendung.",
+    "title": "Warum tududi Cloud nutzen?",
+    "whyEyebrow": "Cloud",
+    "whySub": "Keine Funktionen. Jede Funktion steckt auch im Self-Hosted-Build.",
+    "whyTitle": "Wofür du eigentlich bezahlst"
+  },
+  "finalCta": {
+    "primary": "Loslegen",
+    "secondary": "Preise ansehen",
+    "selfHostLink": "Lies die Anleitung.",
+    "selfHostPrefix": "Möchtest du es lieber auf deinem eigenen Server betreiben?",
+    "sub": "Wir betreiben den Server, die Updates und die Backups. Du bekommst das System, und eine 30-tägige Geld-zurück-Garantie, falls es nichts für dich ist.",
+    "title": "In einer Minute organisiert sein"
   }
 }

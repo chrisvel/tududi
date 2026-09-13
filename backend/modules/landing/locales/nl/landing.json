@@ -1,7 +1,9 @@
 {
   "meta": {
     "langSwitcherLabel": "Taal wijzigen",
-    "langSwitcherCurrent": "Taal: {{name}}"
+    "langSwitcherCurrent": "Taal: {{name}}",
+    "description": "Gebieden, doelen, projecten en taken, plus notities en gewoontes, in één systeem. Zet een tududi Cloud-account op in een minuut. Een MCP-server met {{tools}} tools laat AI-agenten aan je lijst werken. Zelfhosten kan als je liever zelf de server draait.",
+    "title": "tududi: taakbeheer en levensbeheersysteem, met MCP voor AI-agenten"
   },
   "nav": {
     "demo": "Live demo",
@@ -12,7 +14,8 @@
     "docs": "Documentatie",
     "changelog": "Wijzigingen",
     "signIn": "Inloggen",
-    "toggle": "Menu openen"
+    "toggle": "Menu openen",
+    "selfHostGuide": "Zelfhostgids"
   },
   "hero": {
     "badgeStars": "sterren op GitHub",
@@ -21,7 +24,12 @@
     "ctaDemo": "Probeer de live demo",
     "demoNote": "Een echte gehoste instantie met voorbeeldgegevens, gedeeld en regelmatig gereset",
     "screenshotAlt": "De interface van tududi, met de Vandaag-weergave en de geplande taken",
-    "ctaWaitlist": "Zet me op de wachtlijst"
+    "ctaWaitlist": "Zet me op de wachtlijst",
+    "cloudNote": "Geen server om op te zetten. Maandelijks of jaarlijks, en je kunt op elk moment opzeggen.",
+    "ctaPrimary": "Begin op tududi Cloud",
+    "lede": "Gebieden, doelen, projecten, taken, notities en gewoontes, in één systeem. Maak een Cloud-account in een minuut.",
+    "titleLine1": "Productiviteit eenvoudig gemaakt",
+    "titleLine2": ""
   },
   "proof": {
     "stars": "sterren op GitHub",
@@ -29,7 +37,8 @@
     "languages": "{{count}} talen",
     "dockerPulls": "Docker-pulls",
     "discord": "Discord-leden",
-    "discordAlt": "Discord: {{count}} leden"
+    "discordAlt": "Discord: {{count}} leden",
+    "minute": "Opgezet in een minuut"
   },
   "press": {
     "featuredIn": "Te zien in",
@@ -45,7 +54,10 @@
         "title": "Vastleggen en zoeken vanuit de chat",
         "body": "Taken toevoegen, terugvinden en afronden zonder het gesprek te verlaten."
       },
-      "dataStays": {},
+      "dataStays": {
+        "body": "De MCP-verbinding gaat rechtstreeks naar jouw eigen tududi-instantie, op Cloud of op je eigen server. Niets loopt via een derde partij.",
+        "title": "Het praat met jouw instantie"
+      },
       "openProtocol": {
         "title": "Open protocol, geen lock-in",
         "body": "Gebouwd op het open Model Context Protocol. Werkt met Claude en andere MCP-clients."
@@ -69,7 +81,40 @@
         "title": "Projectinzichten",
         "body": "Een snelle inschatting van de gezondheid van een project: wat loopt en wat vastzit."
       }
-    }
+    },
+    "configCloudTab": "Cloud",
+    "configSelfHostNote": "Wijs TUDUDI_URL in plaats daarvan naar je eigen instantie. Al het andere is identiek.",
+    "configSelfHostTab": "Host je het zelf?",
+    "demo": {
+      "answer1Html": "Begin met <strong>Factureringsmigratie uitbrengen</strong>. Die is vandaag verschuldigd, en drie taken in <strong>Betalingen</strong> wachten erachter.",
+      "answer2Html": "Gedaan. <strong>Herontwerp-concept beoordelen</strong> is nu verschuldigd op vrijdag, en <strong>Betalingenwachtrij deblokkeren</strong> staat in het project Betalingen, verschuldigd vandaag.",
+      "ask1": "Waar moet ik me vandaag op richten, en loopt er iets achter?",
+      "ask2": "Verplaats de herontwerpbeoordeling naar vrijdag en voeg een taak toe om Betalingen te deblokkeren.",
+      "badge": "tududi MCP",
+      "caption": "Een voorbeeldsessie. Je agent verbindt rechtstreeks met je eigen instantie via MCP.",
+      "composer": "Reageer op Claude…",
+      "groupTitle": "Goed om te weten",
+      "rows": {
+        "habit": {
+          "label": "Reeks in gevaar",
+          "text": "Ochtendreview, 12 dagen op rij, vandaag nog niet geregistreerd"
+        },
+        "overdue": {
+          "label": "Te laat",
+          "text": "2 taken in Huishouden, de oudste al 6 dagen"
+        },
+        "stalled": {
+          "label": "Stilgevallen",
+          "text": "Herontwerp van de website, geen activiteit in 11 dagen"
+        }
+      },
+      "toolLabel": "Gebruikte tududi",
+      "windowTitle": "Claude Desktop"
+    },
+    "footnoteIncluded": "MCP wordt geleverd bij tududi Cloud en bij elke zelfgehoste instantie.",
+    "ledeHtml": "tududi levert een MCP-server met <strong>{{tools}} tools</strong>, die taken, projecten, gebieden, doelen, gewoontes, notities, personen, tags, weergaven, de inbox, zoeken en statistieken dekken. Verbind Claude of elke MCP-compatibele agent rechtstreeks met je eigen instantie, of dat nu je Cloud-account is of een server die je zelf beheert. De verbinding gaat naar jouw instantie in plaats van via een tussenliggende relay, een structureel verschil dat Todoist en Notion niet kunnen bieden, wat ze ook beloven.",
+    "titleLine1": "Een echt systeem",
+    "titleLine2": "dat jouw AI-agent daadwerkelijk kan gebruiken"
   },
   "features": {
     "eyebrow": "Functies",
@@ -178,7 +223,8 @@
         "title": "Samenwerken aan projecten",
         "body": "Deel projecten met fijnmazige rechten - alleen lezen of lezen en schrijven."
       }
-    }
+    },
+    "sub": "tududi combineert doelen, projecten, taken, notities en slimme weergaven in één rustig, gefocust systeem. Laat ons het voor je draaien, of draai het zelf als je dat liever hebt."
   },
   "selfHost": {
     "eyebrow": "Zelf hosten",
@@ -187,7 +233,12 @@
     "step1": "Haal de Docker-image op",
     "step2": "Start de container",
     "step3Prefix": "Bereikbaar op",
-    "linkGithub": "Bekijk op GitHub"
+    "linkGithub": "Bekijk op GitHub",
+    "cardSub": "Voor mensen die al Docker draaien",
+    "ctaCloud": "Begin op Cloud",
+    "linkDocs": "Lees de zelfhostgids",
+    "showCommands": "Toon installatiecommando's",
+    "sub": "Zelfhosten is voor mensen die al Docker en een reverse proxy draaien. Als je tududi wilt zonder de systeembeheerder te worden, gebruik Cloud."
   },
   "pricing": {
     "eyebrow": "Prijzen",
@@ -196,18 +247,39 @@
     "earlyBird": "VROEGBOEK",
     "perYear": "/jaar",
     "plans": {
-      "selfHosted": {},
+      "selfHosted": {
+        "action": "Lees de zelfhostgids →",
+        "features": [
+          "Jij zet een server of NAS op",
+          "Jij regelt Docker, updates en migraties",
+          "Jij configureert een reverse proxy en TLS",
+          "De backups zijn van jou",
+          "Volledige functieset, geen plaatsenlimiet, gegevens op je eigen hardware"
+        ],
+        "name": "Zelfhosten (geavanceerd)",
+        "priceNote": "Gratis, als je de server zelf draait"
+      },
       "cloud": {
         "name": "Cloud",
         "or": "of",
         "launchNote": "Early-bird jaarprijs, van jou zolang je geabonneerd blijft.",
         "comingSoon": "Opent over een paar dagen",
         "comingSoonNote": "We verhuizen Cloud naar nieuwe infrastructuur. Laat hieronder je e-mailadres achter, dan laten we het weten zodra het er weer is.",
-        "notifySubmit": "Houd me op de hoogte"
+        "notifySubmit": "Houd me op de hoogte",
+        "action": "Aan de slag →",
+        "features": [
+          "Binnen een minuut draaiend, zonder server om op te zetten",
+          "Onbeperkte taken, projecten en notities, plus bijlagen",
+          "AI-assistent, MCP, CalDAV-synchronisatie en de Telegram-bot",
+          "Updates en dagelijkse backups voor je verzorgd, met {{proStorageGb}} GB opslag",
+          "Exporteer alles op elk moment, verwijder je account zelf"
+        ],
+        "priceNote": "Alles inbegrepen. Zeg op elk moment op."
       }
     },
     "fineprint": "Zeg op wanneer je wilt en exporteer alles. Mocht tududi Cloud ooit stoppen, dan krijg je je gegevens en een handleiding om zelf te hosten. Voor opslag en API-volume geldt fair use. 30 dagen geld-terug-garantie, zonder vragen.",
-    "perMonth": "/maand"
+    "perMonth": "/maand",
+    "sub": "Één gehost abonnement, of draai het zelf als je liever de operatie doet."
   },
   "compare": {
     "title": "Snelle vergelijking",
@@ -220,12 +292,24 @@
       "noSetup": "Geen serverinstallatie nodig",
       "managedUpdates": "Beheerde updates",
       "autoBackups": "Automatische back-ups",
-      "pricing": "Prijs"
+      "pricing": "Prijs",
+      "exportAnytime": "Exporteer alles op elk moment",
+      "proFeatures": "AI-assistent, MCP, CalDAV, Telegram",
+      "startMinute": "Begin in een minuut",
+      "storage": "Opslag voor bijlagen",
+      "support": "Support"
     },
     "values": {
       "community": "Community",
-      "email": "E-mail"
-    }
+      "email": "E-mail",
+      "gigabytes": "{{count}} GB",
+      "perMonthOrYear": "{{monthly}}/mnd of {{price}}/jaar",
+      "selfCost": "Gratis, plus je hosting",
+      "yourDisk": "Je eigen schijf"
+    },
+    "colCloud": "tududi Cloud",
+    "colSelf": "Zelfhosten",
+    "sub": "Dezelfde applicatie in beide gevallen. Wat verschilt, is wie hem beheert, en wat je dat kost."
   },
   "waitlist": {
     "title": "Nog niet zover?",
@@ -255,7 +339,9 @@
     "subTitle": "Releasenotes per e-mail",
     "subBody": "Af en toe releasenotes. Geen marketing, uitschrijven wanneer je wilt.",
     "subSubmit": "Aanmelden",
-    "rights": "Alle rechten voorbehouden."
+    "rights": "Alle rechten voorbehouden.",
+    "linkLicence": "MIT-licentie",
+    "tagline": "Een open systeem voor het organiseren van leven en werk. Door ons gehost, of op je eigen server."
   },
   "js": {
     "showFewer": "Minder tonen",
@@ -264,11 +350,136 @@
   },
   "faq": {
     "items": {
-      "freePlan": {},
+      "freePlan": {
+        "a": "Nee. Cloud kost {{monthly}} per maand of {{price}} per jaar, en dat is de hele prijslijst: geen gratis laag, geen proefklok, geen kaart belast voor iets dat later stilletjes begint te factureren. Er is een geld-terug-garantie van 30 dagen als het niet blijkt te passen, en er is een live demo op deze pagina als je eerst wilt rondkijken. De gratis manier om tududi te gebruiken is het op je eigen server te draaien, wat dezelfde applicatie is.",
+        "q": "Is er een gratis abonnement of een proefperiode op tududi Cloud?"
+      },
       "leaving": {
         "q": "Kan ik weg, en wat gebeurt er met mijn gegevens?",
         "a": "Ja, op elk moment. Exporteer alles als één bestand vanuit je profiel en importeer het in een zelfgehoste tududi, die hetzelfde formaat leest. Je account verwijderen wist je gegevens, bijlagen en back-ups van onze servers en zegt elk abonnement op."
+      },
+      "aiOptional": {
+        "a": "Nee. Beide AI-lagen staan uit totdat je ze inschakelt, en tududi is een compleet systeem zonder ze. Als je ze nooit inschakelt, mis je niets en zeurt niets je aan het hoofd.",
+        "q": "Moet ik de AI-functies gebruiken?"
+      },
+      "aiPrivacy": {
+        "a": "Dat hangt af van welke van de twee lagen je bedoelt, en het verschil is belangrijk. De MCP-server draait binnen je eigen instantie: een agent zoals Claude Desktop verbindt rechtstreeks met die instantie, dus het gesprek is tussen jouw agent en jouw eigen tududi, niet een tussenpartij. De AI-assistent is anders. Die roept een OpenAI-compatibele provider aan, dus als je die naar een gehoste provider wijst, gaat de inhoud van die verzoeken naar die provider. Wijs hem in plaats daarvan naar een lokaal model, zoals Ollama of LM Studio, en niets verlaat je machine. Hij blijft uit totdat je een sleutel opgeeft, dus het is altijd jouw keuze, geen standaardinstelling.",
+        "q": "Worden mijn gegevens naar een AI-bedrijf gestuurd?"
+      },
+      "commercialUse": {
+        "a": "Ja, en je hoeft daarvoor niets te kopen. De MIT-licentie staat commercieel gebruik toe, ook binnen een bedrijf en in een commercieel product, zonder omzetgrens en zonder iets te melden. Als je financiële afdeling een factuur nodig heeft: een Cloud-abonnement wordt via onze betalingsprovider gefactureerd en levert er een. Niets op deze pagina verkoopt toestemming, want die toestemming heb je al.",
+        "q": "Mag ik tududi op het werk, of in mijn bedrijf, gebruiken?"
+      },
+      "dataLocation": {
+        "a": "Alles leeft in één enkel SQLite-databasebestand binnen het volume dat je hebt gekoppeld. Backuppen betekent dat bestand ergens veilig kopiëren, en herstellen betekent het terugkopiëren. tududi maakt ook automatisch een snapshot van de database voordat migraties worden toegepast, en houdt recente kopieën bij. Er is geen eigen formaat en geen exportstap tussen jou en je eigen gegevens.",
+        "q": "Waar staan mijn gegevens, en hoe backup ik ze?"
+      },
+      "licence": {
+        "a": "De applicatie is open source onder de MIT-licentie, dus je kunt hem gratis op je eigen server draaien, aanpassen en erop bouwen zonder iemand te betalen. Er is geen plaatsenlimiet en geen achtergehouden functies: de zelfgehoste build is het volledige product. tududi Cloud is een betaalde dienst, omdat hosting, backups en e-mail geld kosten om te draaien. Je betaalt voor het operationele werk, nooit voor toegang tot de software.",
+        "q": "Is tududi echt gratis?"
+      },
+      "maintained": {
+        "a": "Ja. Het wordt vooral ontwikkeld door één maintainer, met bijdragen van de community, en er komen vaak releases uit. Elke versie staat op de GitHub-releasepagina, gelinkt vanuit de Changelog in het menu hierboven, zodat je het tempo zelf kunt beoordelen in plaats van ons op ons woord te geloven. De ontwikkeling gebeurt in het openbaar: issues, een openbare roadmap, en een Discord waar vragen worden beantwoord.",
+        "linkLabel": "Bekijk alle releases",
+        "q": "Wordt tududi actief onderhouden?"
+      },
+      "mcp": {
+        "a": "MCP is het Model Context Protocol, een open standaard om AI-agenten met echte systemen te verbinden. tududi levert een MCP-server met {{tools}} tools voor taken, projecten, gebieden, doelen, gewoontes, notities, personen, tags, weergaven, de inbox, zoeken en statistieken, zodat een agent werk kan vastleggen, vinden, bijwerken en afronden in plaats van er alleen over te praten. Het is optioneel, het wordt geleverd bij Cloud en bij elke zelfgehoste instantie, en het werkt met Claude Desktop, Cursor, Windsurf, Cline, of elke andere MCP-client.",
+        "q": "Wat is MCP, en wat kan een agent er echt mee doen?"
+      },
+      "mobile": {
+        "a": "tududi installeert als een PWA in plaats van een native app. Voeg het toe aan je startscherm op Android of iOS, of installeer het op een desktop, en het gedraagt zich als een app: het leest uit de cache als je offline bent en synchroniseert je wijzigingen bij het opnieuw verbinden. Er is niets te downloaden uit de App Store of Play Store.",
+        "q": "Is er een mobiele app?"
+      },
+      "multiUser": {
+        "a": "Ja. Één instantie kan meerdere gebruikers hosten, en projecten kunnen worden gedeeld met alleen-lezen of lees-schrijftoegang, die de taken en notities erin overnemen. Zelfregistratie staat standaard uit, dus een beheerder maakt accounts aan of opent bewust de aanmelding. Niemand komt binnen omdat je vergat een deur te sluiten.",
+        "q": "Kunnen meerdere mensen één instantie delen?"
+      },
+      "requirements": {
+        "a": "Docker, een persistente plek om de database op te slaan, een reverse proxy met TLS ervoor, en de discipline om updates toe te passen en backups te bewaren. Het draait comfortabel op een kleine VPS of een machine in je eigen netwerk, en de commando's staan in de sectie Zelfhosten en in de documentatie. De meeste mensen zijn beter af met Cloud, dat dezelfde applicatie is zonder al dat werk.",
+        "linkLabel": "Lees de documentatie",
+        "q": "Wat heb ik nodig om het zelf te hosten?"
+      },
+      "reverseProxy": {
+        "a": "Ja, en dat is de normale manier om het te draaien. Stel TUDUDI_TRUST_PROXY in zodat de app de doorgestuurde headers van nginx, Caddy of Traefik vertrouwt. Sla je dit over, dan gedragen logins en IP-logging zich vreemd op een manier die moeilijk te diagnosticeren is, dus de app geeft een specifieke foutmelding in plaats van stilletjes te falen. De geaccepteerde waarden staan gedocumenteerd in de README.",
+        "q": "Werkt het achter een reverse proxy?"
+      },
+      "shutdown": {
+        "a": "De app is MIT-gelicentieerd en de broncode is openbaar, dus die kan niet van je worden afgenomen. Iedereen kan hem blijven draaien, en jij kunt hem forken. Bij tududi Cloud leven je gegevens in een standaard tududi-database in plaats van een eigen formaat, dus als de dienst ooit zou stoppen, krijg je je gegevens en een gids om ze naar je eigen server te verhuizen.",
+        "q": "Wat gebeurt er met mijn gegevens als tududi verdwijnt?"
+      },
+      "whyManaged": {
+        "a": "Je betaalt om geen infrastructuur te beheren. tududi Cloud geeft je hetzelfde systeem met de server, updates, backups en e-mail voor je verzorgd, wat de vervelende, weinig glamoureuze helft van zelfhosten is. Cloud is het pad dat we aanraden. Zelfhosten is alleen de betere deal als je al Docker en een reverse proxy draait en de stack actief wilt beheren.",
+        "q": "Waarom betalen voor Cloud als zelfhosten gratis is?"
       }
-    }
+    },
+    "eyebrow": "FAQ",
+    "groups": {
+      "managed": "AI, MCP & Cloud",
+      "project": "Licentie & project",
+      "selfHost": "Zelfhosten & gegevens"
+    },
+    "permalink": "Link naar dit antwoord",
+    "sub": "De licentie, de AI, en wat er met je gegevens gebeurt. Als er iets ontbreekt, vraag het op Discord.",
+    "title": "Vragen die het waard zijn te beantwoorden voordat je je vastlegt"
+  },
+  "cloud": {
+    "ctaPricing": "Bekijk de prijs",
+    "ctaPrimary": "Aan de slag",
+    "includes": [
+      "Onbeperkte taken, projecten en notities",
+      "Bijlagen en bestandsuploads",
+      "AI-assistent, MCP, CalDAV-synchronisatie en de Telegram-bot",
+      "Dagelijkse backups en beheerde updates",
+      "Support via e-mail",
+      "Exporteer alles, op elk moment"
+    ],
+    "lede": "Hetzelfde systeem in beide gevallen. Het verschil is wie het om drie uur 's nachts draaiend, gepatcht en gebackupt houdt.",
+    "metaDescription": "tududi Cloud is hetzelfde opensourcesysteem, draaiend op onze servers met updates, backups en e-mail voor je verzorgd. Één abonnement, maandelijks of jaarlijks, op elk moment op te zeggen.",
+    "metaTitle": "tududi Cloud: het gehoste tududi, voor je gedraaid",
+    "note": "Dezelfde MIT-gelicentieerde app. Exporteer alles, op elk moment.",
+    "orAnnual": "of",
+    "priceNote": "Gefactureerd door onze betalingsprovider. Prijzen zijn exclusief eventuele belastingen.",
+    "pricingSub": "Alles inbegrepen. Zeg op wanneer je wilt.",
+    "pricingTitle": "Één abonnement, twee manieren van betalen",
+    "reasons": {
+      "backups": {
+        "body": "De database wordt elke nacht gedumpt en bewaard buiten de machine die jou bedient. Je kunt ook altijd zelf alles exporteren.",
+        "title": "Backups die je niet zelf hoeft te onthouden"
+      },
+      "email": {
+        "body": "Verificaties, wachtwoordresets en herinneringen gaan via een opgewarmd verzenddomein, wat lastig en saai is om zelf op te zetten.",
+        "title": "E-mail die aankomt"
+      },
+      "noOps": {
+        "body": "Geen VPS te huren, geen Docker om bij te werken, geen reverse proxy of certificaat om te vernieuwen. Je logt in en het is er.",
+        "title": "Geen server om te beheren"
+      },
+      "sameApp": {
+        "body": "Geen cloud-only functies en geen verminkte zelfgehoste build. Als we de dienst ooit stopzetten, krijg je je gegevens en een migratiegids.",
+        "title": "Precies dezelfde app"
+      },
+      "support": {
+        "body": "Iemand die de code kent, antwoordt. Bij zelfhosten heb je de community, wat goed is, maar niemand is ervoor verantwoordelijk.",
+        "title": "Iemand om te mailen"
+      },
+      "updates": {
+        "body": "Nieuwe releases bereiken je account zonder een pull, een herstart of een migratie die je moet bewaken.",
+        "title": "Updates voor je toegepast"
+      }
+    },
+    "selfHostLine": "Wil je liever de server zelf draaien? Dat is gratis, en het is dezelfde applicatie.",
+    "title": "Waarom tududi Cloud gebruiken?",
+    "whyEyebrow": "Cloud",
+    "whySub": "Geen functies. Elke functie zit ook in de zelfgehoste build.",
+    "whyTitle": "Waarvoor je eigenlijk betaalt"
+  },
+  "finalCta": {
+    "primary": "Aan de slag",
+    "secondary": "Bekijk prijzen",
+    "selfHostLink": "Lees de gids.",
+    "selfHostPrefix": "Liever op je eigen server draaien?",
+    "sub": "Wij beheren de server, de updates en de backups. Jij krijgt het systeem, en een geld-terug-garantie van 30 dagen als het niet voor jou is.",
+    "title": "Organiseer jezelf in een minuut"
   }
 }
