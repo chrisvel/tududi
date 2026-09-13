@@ -31,7 +31,11 @@
     "download": "Lataa",
     "exitFocusMode": "Poistu keskittymistilasta",
     "searchTimezones": "Etsi aikavyöhykkeitä...",
-    "dismiss": "Hylkää"
+    "dismiss": "Hylkää",
+    "search": "Haku",
+    "previous": "Edellinen",
+    "done": "Valmis",
+    "clear": "Tyhjennä"
   },
   "sidebar": {
     "dashboard": "Ohjauspaneeli",
@@ -72,7 +76,9 @@
     "boards": "Taulut",
     "bookmarks": "Kirjanmerkit",
     "reports": "Raportit",
-    "productivityAssistant": "Tuottavuusavustaja"
+    "productivityAssistant": "Tuottavuusavustaja",
+    "assignedToMe": "Mulle osoitettu",
+    "everyone": "Kaikki"
   },
   "navigation": {
     "home": "Koti",
@@ -86,7 +92,9 @@
     "toggleSearch": "Vaihda haku",
     "quickInboxCapture": "Nopea saapuneet-tallennus",
     "userMenu": "Käyttäjävalikko",
-    "search": "Haku"
+    "search": "Haku",
+    "admin": "Ylläpitäjä",
+    "adminBadge": "Ylläpitäjä"
   },
   "settings": {
     "todayPageSettings": "Tänään-sivun asetukset",
@@ -201,7 +209,10 @@
       "dropHere": "Tiputa tähän"
     },
     "chaseUp": "Seuraa perään",
-    "habit": "Tapa"
+    "habit": "Tapa",
+    "assignedTo": "Osoitettu",
+    "subtasks": "Ala-tehtävät",
+    "openFullPage": "Avaa koko näkymä"
   },
   "timeline": {
     "activityTimeline": "Toiminta-aikajana",
@@ -690,7 +701,8 @@
         "vague": "Yritä aloittaa toimintaverbillä kuten \"Soita\", \"Kirjoita\", \"Aikatauluta\" tai \"Tutki\""
       },
       "selectAtLeastOneDay": "Valitse vähintään yksi päivä",
-      "deferUntilPlaceholder": "Valitse viivytyspäivämäärä ja -aika"
+      "deferUntilPlaceholder": "Valitse viivytyspäivämäärä ja -aika",
+      "notePlaceholder": "Lisää muistiinpano..."
     },
     "noteTitle": "Muistion Otsikko",
     "noteContent": "Muistion Sisältö",
@@ -745,7 +757,9 @@
     },
     "captcha_required": "Suorita vahvistus loppuun ja yritä uudelleen.",
     "registration_successful": "Vahvista sähköpostiosoitteesi",
-    "registration_email_sent": "Vahvista sähköpostiosoitteesi aktivoidaksesi tilisi. Lähetimme sinulle linkin, tarkista saapuneet viestit."
+    "registration_email_sent": "Vahvista sähköpostiosoitteesi aktivoidaksesi tilisi. Lähetimme sinulle linkin, tarkista saapuneet viestit.",
+    "notify_joined": "Olet listalla. Lähetämme sinulle sähköpostia, kun tududi Cloud avautuu.",
+    "notify_failed": "Emme voineet tallentaa osoitettasi. Yritä uudelleen."
   },
   "dropdown": {
     "createNew": "Luo uusi",
@@ -868,7 +882,47 @@
     "rollingMsg3": "Kirjoita se ylös…",
     "saveAs": "Tallenna nimellä",
     "shiftEnterHint": "Shift + Enter uuden rivin lisäämiseksi",
-    "addToInbox": "Lisää saapuneisiin (Enter)"
+    "addToInbox": "Lisää saapuneisiin (Enter)",
+    "emptyItem": "(Tyhjät kohteet)",
+    "itemQueuedOffline": "Tallennettu offline-tilassa. Se synkronoituu automaattisesti, kun olet jälleen online.",
+    "infoShort": "Saapuneet ovat paikka, johon luokittelemattomat ajatukset laskeutuvat — kirjoita asiat ylös, lajittele ne myöhemmin.",
+    "recentlyCaptured": "Äskettäin tallennettu",
+    "line": "rivi",
+    "lines": "riviä",
+    "processN": "Käsittele {{count}}",
+    "allClarified": "Kaikki selvennetty",
+    "reClarify": "Selvennä uudelleen",
+    "trashedRestore": "{{count}} roskassa · palauttaa",
+    "restored": "Roskiin heitetyt kohteet palautettu",
+    "restoreError": "Kohteiden palauttaminen epäonnistui",
+    "trashError": "Kohteen roskiin heittäminen epäonnistui",
+    "clarifyProgress": "Selvennä · {{progress}}",
+    "clarifyDone": "Kaikki selvennetty. Saapuneet viestit ovat rauhallisia.",
+    "clarifyBackToList": "Takaisin listaan",
+    "clarifyExit": "Poistu selvennyksestä",
+    "clarifyBack": "← Takaisin",
+    "clarifyQ": {
+      "actionable": "Onko tämä toteutettavissa?",
+      "notActionable": "Minkälainen asia tämä on?",
+      "steps": "Yksi askel vai useita?",
+      "twomin": "Voitko tehdä sen alle 2 minuutissa?",
+      "deferDelegate": "Myöhemmin itse, vai annetaanko eteenpäin?"
+    },
+    "clarifyChoice": {
+      "yesActionable": "Kyllä, toteutettavissa",
+      "notActionable": "Ei toteutettavissa",
+      "trash": "Roskakoriin",
+      "someday": "Jonain päivänä / Ehkä",
+      "referenceNote": "Viitehuomautus",
+      "oneStep": "Yksi askel",
+      "severalSteps": "Useita askeleita (projekti)",
+      "doItNow": "Kyllä — tee se nyt",
+      "no": "Ei",
+      "scheduleIt": "Aikatauluta se",
+      "delegate": "Delegoi"
+    },
+    "somedayCreated": "Lisätty Jonain päivänä",
+    "reClarifyLink": "Tarkista uudelleen"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1052,7 +1106,8 @@
     "statusUpdated": "Tila päivitetty onnistuneesti",
     "statusUpdateError": "Tilapäivitys epäonnistui",
     "updatedAt": "Päivitetty",
-    "upcoming": "tulossa"
+    "upcoming": "tulossa",
+    "assigneeUpdateError": "Vastaavan päivittäminen epäonnistui"
   },
   "projects": {
     "loading": "Ladataan projekteja...",
@@ -1116,7 +1171,9 @@
     "focusHint": "Siirtää tehtävän tilaan käynnissä ja tänään",
     "noNextAction": "Kaikki kunnossa - ei avoimia tehtäviä.",
     "selectDueDatePlaceholder": "Valitse eräpäivä",
-    "goalTitle": "Tavoite"
+    "goalTitle": "Tavoite",
+    "addProject": "Lisää projekti",
+    "noResults": "Ei projekteja"
   },
   "projectItem": {
     "edit": "Muokkaa",
@@ -1179,7 +1236,11 @@
     "contentPlaceholderMarkdown": "Kirjoita sisältösi käyttäen Markdown-muotoilua...\n\nEsimerkit:\n# Otsikko\n**Lihavoitu teksti**\n*Kursivoitu teksti*\n- Luettelokohta\n```koodi```",
     "pinToSidebar": "Kiinnitä sivupalkkiin",
     "unpinFromSidebar": "Poista kiinnitys sivupalkista",
-    "save": "Tallenna"
+    "save": "Tallenna",
+    "addNote": "Lisää muistiinpano",
+    "tree": {
+      "folders": "Kansiot"
+    }
   },
   "tags": {
     "loading": "Ladataan tageja...",
@@ -1207,7 +1268,8 @@
     "systemTags": "Järjestelmän tunnisteet",
     "systemTagsDescription": "Automaattisesti hallittu · Ei voi poistaa tai nimetä uudelleen",
     "system": "Järjestelmä",
-    "customize": "Mukauta"
+    "customize": "Mukauta",
+    "addTag": "Lisää tunniste"
   },
   "recurrence": {
     "none": "Ei mitään",
@@ -1227,7 +1289,11 @@
     "inheritedSettingsMessage": "Tämä tehtävä on luotu toistuvasta tehtävästä. Alla näkyvät toistuvat asetukset on peritty alkuperäisestä tehtävästä, eikä niitä voi muokata täällä.",
     "cancelEdit": "Peruuta muokkaus",
     "editParentRecurrence": "Muokkaa vanhemman toistuvuutta",
-    "parentEditWarning": "⚠️ Olet muokkaamassa vanhemman tehtävän toistuvia asetuksia. Muutokset vaikuttavat kaikkiin tuleviin ilmentymiin tästä toistuvasta tehtävästä."
+    "parentEditWarning": "⚠️ Olet muokkaamassa vanhemman tehtävän toistuvia asetuksia. Muutokset vaikuttavat kaikkiin tuleviin ilmentymiin tästä toistuvasta tehtävästä.",
+    "every": "Joka",
+    "weeks": "viikkoa",
+    "months": "kuukautta",
+    "advancedHint": "Tietyille viikonpäiville tai loppupäivämäärälle avaa koko tehtävä."
   },
   "weekdays": {
     "sunday": "Su",
@@ -1470,7 +1536,43 @@
       "overrideSaved": "Poikkeus tallennettu",
       "overrideCleared": "Poikkeus poistettu",
       "synced": "Synkronoitu maksupalvelusta"
-    }
+    },
+    "dashboard": {
+      "title": "Ylläpito",
+      "subtitle": "tududi {{version}} · {{env}}",
+      "users": "Käyttäjät",
+      "usersHint": "{{verified}} vahvistettua · {{admins}} ylläpitäjää · {{new}} tänään",
+      "paying": "Maksava",
+      "selfHosted": "itse isännöity",
+      "waitlist": "Jonotuslista",
+      "waitlistHint": "{{n}} 7 päivän sisällä",
+      "content": "Tehtävät",
+      "contentHint": "{{projects}} projektia · {{notes}} muistiota",
+      "regOpen": "Rekisteröinti avoinna",
+      "regClosed": "Rekisteröinti suljettu",
+      "waitlistLatest": "Viimeisimmät jonotuslistan ilmoittautumiset",
+      "waitlistEmpty": "Ei vielä ketään.",
+      "email": "Sähköposti",
+      "source": "Lähde",
+      "joined": "Liittynyt",
+      "waitlistAll": "Näytä kaikki"
+    },
+    "waitlist": {
+      "title": "Jonotuslista",
+      "export": "Vie CSV",
+      "searchPlaceholder": "Hae sähköpostilla",
+      "email": "Sähköposti",
+      "source": "Lähde",
+      "locale": "Kieli",
+      "submissions": "Lähetykset",
+      "joined": "Liittynyt",
+      "empty": "Kukaan ei ole vielä rekisteröitynyt",
+      "noMatches": "Ei osoitteita, jotka vastaavat tätä hakua",
+      "showing": "{{from}}-{{to}} / {{total}}"
+    },
+    "passwordInviteHint": "Jätä tyhjäksi lähettääksesi kutsusähköpostin",
+    "invitationSent": "Kutsusähköposti lähetetty osoitteeseen {{email}}",
+    "invitationNotSent": "Tili luotu, mutta sähköposti on pois käytöstä - aseta salasana tälle käyttäjälle manuaalisesti."
   },
   "shares": {
     "shareProject": "Jaa projekti",
@@ -1496,7 +1598,11 @@
     "noShares": "Ei vielä jaettu",
     "noAvailableUsers": "Ei käyttäjiä, joille jakaa",
     "shared": "Jaettu",
-    "sharedWithTeam": "Jaettu tiimin kanssa"
+    "sharedWithTeam": "Jaettu tiimin kanssa",
+    "shareArea": "Jaa alue",
+    "shareGoal": "Jaa tavoite",
+    "shareNote": "Jaa muistiinpano",
+    "shareTask": "Jaa tehtävä"
   },
   "views": {
     "title": "Älykkäät näkymät",
@@ -1642,14 +1748,16 @@
       "overdueTasks": "Myöhästyneet tehtävät",
       "deferUntil": "Viivästytä kunnes",
       "dueProjects": "Erääntyneet projektit",
-      "overdueProjects": "Myöhästyneet projektit"
+      "overdueProjects": "Myöhästyneet projektit",
+      "taskAssigned": "Tehtävä annettu"
     },
     "descriptions": {
       "dueTasks": "Tehtävät, jotka erääntyvät 24 tunnin sisällä",
       "overdueTasks": "Tehtävät, joiden eräpäivä on mennyt",
       "deferUntil": "Tehtävät, jotka ovat nyt saatavilla työstettäväksi",
       "dueProjects": "Projektit, jotka erääntyvät 24 tunnin sisällä",
-      "overdueProjects": "Projektit, joiden eräpäivä on mennyt"
+      "overdueProjects": "Projektit, joiden eräpäivä on mennyt",
+      "taskAssigned": "Tehtävä on annettu sinulle jonkun muun toimesta"
     },
     "telegram": {
       "notConfigured": {
@@ -1779,5 +1887,44 @@
       "backups_import": "varmuuskopioiden tuonti",
       "attachments": "liitteet"
     }
+  },
+  "subscription": {
+    "title": "Tilauksen",
+    "chooseForCloud": "Valitse suunnitelma tududi Cloudille",
+    "noActive": "Ei aktiivista tilausta",
+    "chooseToContinue": "Valitse suunnitelma jatkaaksesi tududi Cloudin käyttöä.",
+    "monthly": "Kuukausittain",
+    "yearly": "Vuosittain",
+    "priceMonthly": "{{price}} kuukaudessa",
+    "priceYearly": "{{price}} vuodessa",
+    "subscribeMonthly": "Tilaa kuukausittain",
+    "subscribeYearly": "Tilaa vuosittain",
+    "perkUnlimited": "Rajattomat tehtävät, projektit ja muistiinpanot",
+    "perkStorage": "Liitteet ja tiedostojen lataukset",
+    "perkFeatures": "AI-avustaja, MCP, CalDAV-synkronointi ja Telegram-botti",
+    "perkBackups": "Päivittäiset varmuuskopiot ja hallitut päivitykset",
+    "perkExport": "Vie kaikki milloin tahansa",
+    "taxNote": "Maksut käsittelee {{provider}}. Hinnat eivät sisällä sovellettavia veroja. Peruuta milloin tahansa.",
+    "notConfigured": "Tilausta ei ole vielä saatavilla tässä instanssissa. Ota yhteyttä tukeen.",
+    "exportData": "Vie tietosi"
+  },
+  "demo": {
+    "opening": "Avaamassa demoa...",
+    "unavailableTitle": "Demo ei ole saatavilla",
+    "unavailableBody": "Se saattaa olla uudelleenrakennuksessa. Yritä hetken kuluttua uudelleen."
+  },
+  "everyone": {
+    "title": "Kaikki",
+    "subtitle": "Mitä kaikilla, joiden kanssa jaat työtä, on nyt päällä",
+    "you": "Sinä",
+    "people": "Ihmiset",
+    "tasks": "Tehtävät",
+    "overdue": "Erääntynyt",
+    "today": "Tänään",
+    "tomorrow": "Huomenna",
+    "upcoming": "Tällä viikolla",
+    "noDate": "Ei päivämäärää",
+    "nothing": "Ei mitään juuri nyt",
+    "empty": "Ei mitään jaettua ole nyt päällä. Jaa alue, projekti tai tavoite, tai määritä joku tehtävään, jotta näet sen täällä."
   }
 }

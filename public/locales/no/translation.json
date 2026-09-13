@@ -31,7 +31,11 @@
     "download": "Last ned",
     "exitFocusMode": "Avslutt fokusmodus",
     "searchTimezones": "Søk etter tidssoner...",
-    "dismiss": "Avvis"
+    "dismiss": "Avvis",
+    "search": "Søk",
+    "previous": "Forrige",
+    "done": "Ferdig",
+    "clear": "Tøm"
   },
   "sidebar": {
     "dashboard": "Dashbord",
@@ -72,7 +76,9 @@
     "boards": "Tavler",
     "bookmarks": "Bokmerker",
     "reports": "Rapporter",
-    "productivityAssistant": "Produktivitetsassistent"
+    "productivityAssistant": "Produktivitetsassistent",
+    "assignedToMe": "Tildelt meg",
+    "everyone": "Alle"
   },
   "navigation": {
     "home": "Hjem",
@@ -86,7 +92,9 @@
     "toggleSearch": "Bytt søk",
     "quickInboxCapture": "Rask innboksfangst",
     "userMenu": "Brukermeny",
-    "search": "Søk"
+    "search": "Søk",
+    "admin": "Admin",
+    "adminBadge": "Admin"
   },
   "settings": {
     "todayPageSettings": "Innstillinger for Dagens Side",
@@ -202,7 +210,10 @@
       "dropHere": "Slipp her"
     },
     "chaseUp": "Følge opp",
-    "habit": "Vane"
+    "habit": "Vane",
+    "assignedTo": "Tildelt til",
+    "subtasks": "Undertasker",
+    "openFullPage": "Åpne full visning"
   },
   "timeline": {
     "activityTimeline": "Aktivitetslinje",
@@ -691,7 +702,8 @@
         "vague": "Prøv å starte med et handlingsverb som \"Ring\", \"Skriv\", \"Planlegg\" eller \"Undersøk\""
       },
       "selectAtLeastOneDay": "Vennligst velg minst én dag",
-      "deferUntilPlaceholder": "Velg dato og klokkeslett for utsettelse"
+      "deferUntilPlaceholder": "Velg dato og klokkeslett for utsettelse",
+      "notePlaceholder": "Legg til en notat..."
     },
     "noteTitle": "Notattittel",
     "noteContent": "Notatinnhold",
@@ -746,7 +758,9 @@
     },
     "captcha_required": "Fullfør verifiseringen og prøv igjen.",
     "registration_successful": "Bekreft e-postadressen din",
-    "registration_email_sent": "Bekreft e-postadressen din for å aktivere kontoen. Vi har sendt deg en lenke, sjekk innboksen din."
+    "registration_email_sent": "Bekreft e-postadressen din for å aktivere kontoen. Vi har sendt deg en lenke, sjekk innboksen din.",
+    "notify_joined": "Du er på listen. Vi sender deg en e-post den dagen tududi Cloud åpner.",
+    "notify_failed": "Vi kunne ikke lagre adressen din. Vennligst prøv igjen."
   },
   "dropdown": {
     "createNew": "Opprett ny",
@@ -869,7 +883,47 @@
     "rollingMsg3": "Skriv det ned…",
     "saveAs": "Lagre som",
     "shiftEnterHint": "Shift + Enter for ny linje",
-    "addToInbox": "Legg til som innboks-element (Enter)"
+    "addToInbox": "Legg til som innboks-element (Enter)",
+    "emptyItem": "(Tomt element)",
+    "itemQueuedOffline": "Laget offline. Det vil synkronisere automatisk når du er tilbake på nett.",
+    "infoShort": "Innboksen er der ukategoriserte tanker lander — skriv ned ting, sorter dem senere.",
+    "recentlyCaptured": "Nylig fanget",
+    "line": "linje",
+    "lines": "linjer",
+    "processN": "Behandle {{count}}",
+    "allClarified": "Alt avklart",
+    "reClarify": "Avklar på nytt",
+    "trashedRestore": "{{count}} kastet · gjenopprett",
+    "restored": "Kastede elementer gjenopprettet",
+    "restoreError": "Kunne ikke gjenopprette elementer",
+    "trashError": "Kunne ikke kaste element",
+    "clarifyProgress": "Avklar · {{progress}}",
+    "clarifyDone": "Alt avklart. Innboksen er rolig.",
+    "clarifyBackToList": "Tilbake til listen",
+    "clarifyExit": "Avslutt avklaring",
+    "clarifyBack": "← Tilbake",
+    "clarifyQ": {
+      "actionable": "Er dette håndterbart?",
+      "notActionable": "Hva slags ting er det?",
+      "steps": "Én steg, eller flere?",
+      "twomin": "Kan du gjøre det på under 2 minutter?",
+      "deferDelegate": "Senere selv, eller overlate det?"
+    },
+    "clarifyChoice": {
+      "yesActionable": "Ja, håndterbart",
+      "notActionable": "Ikke håndterbart",
+      "trash": "Kast",
+      "someday": "En dag / Kanskje",
+      "referenceNote": "Referansenote",
+      "oneStep": "Étt steg",
+      "severalSteps": "Flere steg (prosjekt)",
+      "doItNow": "Ja — gjør det nå",
+      "no": "Nei",
+      "scheduleIt": "Planlegg det",
+      "delegate": "Delegere"
+    },
+    "somedayCreated": "Lagt til En dag",
+    "reClarifyLink": "Re-klargjør"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1053,7 +1107,8 @@
     "statusUpdated": "Status oppdatert med suksess",
     "statusUpdateError": "Feil ved oppdatering av status",
     "updatedAt": "Oppdatert kl",
-    "upcoming": "kommende"
+    "upcoming": "kommende",
+    "assigneeUpdateError": "Kunne ikke oppdatere tildelt"
   },
   "projects": {
     "loading": "Laster prosjekter...",
@@ -1117,7 +1172,9 @@
     "focusHint": "Flytter denne oppgaven til pågående og i dag",
     "noNextAction": "Alt klart - ingen utestående oppgaver.",
     "selectDueDatePlaceholder": "Velg forfallsdato",
-    "goalTitle": "Mål"
+    "goalTitle": "Mål",
+    "addProject": "Legg til prosjekt",
+    "noResults": "Ingen prosjekter"
   },
   "projectItem": {
     "edit": "Rediger",
@@ -1180,7 +1237,11 @@
     "contentPlaceholderMarkdown": "Skriv innholdet ditt med Markdown-formatering...\n\nEksempler:\n# Overskrift\n**Fet tekst**\n*Kursiv tekst*\n- Listeelement\n```kode```",
     "pinToSidebar": "Fest til sidepanelet",
     "unpinFromSidebar": "Fjern festing fra sidepanelet",
-    "save": "Lagre"
+    "save": "Lagre",
+    "addNote": "Legg til notat",
+    "tree": {
+      "folders": "Mapper"
+    }
   },
   "tags": {
     "loading": "Laster etiketter...",
@@ -1208,7 +1269,8 @@
     "systemTags": "Systemetiketter",
     "systemTagsDescription": "Automatisk administrert · Kan ikke slettes eller omdøpes",
     "system": "System",
-    "customize": "Tilpass"
+    "customize": "Tilpass",
+    "addTag": "Legg til tag"
   },
   "recurrence": {
     "none": "Ingen",
@@ -1228,7 +1290,11 @@
     "inheritedSettingsMessage": "Denne oppgaven ble generert fra en gjentakende oppgave. Innstillingene for gjentakelse som vises nedenfor er arvet fra den opprinnelige oppgaven og kan ikke redigeres her.",
     "cancelEdit": "Avbryt redigering",
     "editParentRecurrence": "Rediger overordnet gjentakelse",
-    "parentEditWarning": "⚠️ Du redigerer innstillingene for gjentakelse av den overordnede oppgaven. Endringer vil påvirke alle fremtidige instanser av denne gjentakende oppgaven."
+    "parentEditWarning": "⚠️ Du redigerer innstillingene for gjentakelse av den overordnede oppgaven. Endringer vil påvirke alle fremtidige instanser av denne gjentakende oppgaven.",
+    "every": "Hver",
+    "weeks": "uker",
+    "months": "måneder",
+    "advancedHint": "For spesifikke ukedager eller en sluttdato, åpne den fullstendige oppgaven."
   },
   "weekdays": {
     "sunday": "Søn",
@@ -1471,7 +1537,43 @@
       "overrideSaved": "Unntak lagret",
       "overrideCleared": "Unntak fjernet",
       "synced": "Synkronisert fra betalingsleverandøren"
-    }
+    },
+    "dashboard": {
+      "title": "Admin",
+      "subtitle": "tududi {{version}} · {{env}}",
+      "users": "Brukere",
+      "usersHint": "{{verified}} verifiserte · {{admins}} administratorer · {{new}} i dag",
+      "paying": "Betaler",
+      "selfHosted": "egenvert",
+      "waitlist": "Venteliste",
+      "waitlistHint": "{{n}} om 7 dager",
+      "content": "Oppgaver",
+      "contentHint": "{{projects}} prosjekter · {{notes}} notater",
+      "regOpen": "Registrering åpen",
+      "regClosed": "Registrering stengt",
+      "waitlistLatest": "Nyeste venteliste påmeldinger",
+      "waitlistEmpty": "Ingen ennå.",
+      "email": "E-post",
+      "source": "Kilde",
+      "joined": "Bli med",
+      "waitlistAll": "Se alle"
+    },
+    "waitlist": {
+      "title": "Venteliste",
+      "export": "Eksporter CSV",
+      "searchPlaceholder": "Søk med e-post",
+      "email": "E-post",
+      "source": "Kilde",
+      "locale": "Språk",
+      "submissions": "Innleveringer",
+      "joined": "Bli med",
+      "empty": "Ingen har registrert seg ennå",
+      "noMatches": "Ingen adresser samsvarer med dette søket",
+      "showing": "{{from}}-{{to}} av {{total}}"
+    },
+    "passwordInviteHint": "La stå tomt for å sende en invitasjons-e-post",
+    "invitationSent": "Invitasjons-e-post sendt til {{email}}",
+    "invitationNotSent": "Konto opprettet, men e-post er deaktivert - sett et passord for denne brukeren manuelt."
   },
   "shares": {
     "shareProject": "Del prosjekt",
@@ -1497,7 +1599,11 @@
     "noShares": "Ikke delt ennå",
     "noAvailableUsers": "Ingen brukere tilgjengelige for å dele med",
     "shared": "Delt",
-    "sharedWithTeam": "Delt med teamet"
+    "sharedWithTeam": "Delt med teamet",
+    "shareArea": "Delingsområde",
+    "shareGoal": "Delingsmål",
+    "shareNote": "Delingsnotat",
+    "shareTask": "Delingsoppgave"
   },
   "views": {
     "title": "Smarte Visninger",
@@ -1643,14 +1749,16 @@
       "overdueTasks": "Overforfalte oppgaver",
       "deferUntil": "Utsett til",
       "dueProjects": "Forfalte prosjekter",
-      "overdueProjects": "Overforfalte prosjekter"
+      "overdueProjects": "Overforfalte prosjekter",
+      "taskAssigned": "Oppgave Tildelt"
     },
     "descriptions": {
       "dueTasks": "Oppgaver som forfaller innen 24 timer",
       "overdueTasks": "Oppgaver som har overskredet forfallsdato",
       "deferUntil": "Oppgaver som nå er tilgjengelige for arbeid",
       "dueProjects": "Prosjekter som forfaller innen 24 timer",
-      "overdueProjects": "Prosjekter som har overskredet forfallsdato"
+      "overdueProjects": "Prosjekter som har overskredet forfallsdato",
+      "taskAssigned": "En oppgave ble tildelt deg av noen andre"
     },
     "telegram": {
       "notConfigured": {
@@ -1784,5 +1892,44 @@
       "backups_import": "import av sikkerhetskopier",
       "attachments": "vedlegg"
     }
+  },
+  "subscription": {
+    "title": "Abonnement",
+    "chooseForCloud": "Velg en plan for tududi Cloud",
+    "noActive": "Ingen aktiv abonnement",
+    "chooseToContinue": "Velg en plan for å fortsette å bruke tududi Cloud.",
+    "monthly": "Månedlig",
+    "yearly": "Årlig",
+    "priceMonthly": "{{price}} per måned",
+    "priceYearly": "{{price}} per år",
+    "subscribeMonthly": "Abonner månedlig",
+    "subscribeYearly": "Abonner årlig",
+    "perkUnlimited": "Ubegrensede oppgaver, prosjekter og notater",
+    "perkStorage": "Vedlegg og filopplastinger",
+    "perkFeatures": "AI-assistent, MCP, CalDAV-synkronisering og Telegram-bot",
+    "perkBackups": "Daglige sikkerhetskopier og administrerte oppdateringer",
+    "perkExport": "Eksporter alt når som helst",
+    "taxNote": "Betalinger håndteres av {{provider}}. Priser ekskluderer gjeldende skatter. Kanseller når som helst.",
+    "notConfigured": "Abonnementer er ikke tilgjengelige på denne instansen ennå. Vennligst kontakt support.",
+    "exportData": "Eksporter dataene dine"
+  },
+  "demo": {
+    "opening": "Åpner demoen...",
+    "unavailableTitle": "Demoen er ikke tilgjengelig",
+    "unavailableBody": "Den kan være i ferd med å bygge seg opp igjen. Prøv igjen om et øyeblikk."
+  },
+  "everyone": {
+    "title": "Alle",
+    "subtitle": "Hva alle du deler arbeid med har nå",
+    "you": "Du",
+    "people": "Folk",
+    "tasks": "Oppgaver",
+    "overdue": "Forsinket",
+    "today": "I dag",
+    "tomorrow": "I morgen",
+    "upcoming": "Denne uken",
+    "noDate": "Ingen dato",
+    "nothing": "Ingenting akkurat nå",
+    "empty": "Ingenting delt er på akkurat nå. Del et område, prosjekt eller mål, eller tildel noen en oppgave, for å se det her."
   }
 }

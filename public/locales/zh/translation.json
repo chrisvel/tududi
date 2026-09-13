@@ -31,7 +31,11 @@
     "download": "下载",
     "exitFocusMode": "退出专注模式",
     "searchTimezones": "搜索时区...",
-    "dismiss": "关闭"
+    "dismiss": "关闭",
+    "search": "搜索",
+    "previous": "上一个",
+    "done": "完成",
+    "clear": "清除"
   },
   "sidebar": {
     "dashboard": "仪表板",
@@ -72,7 +76,9 @@
     "boards": "看板",
     "bookmarks": "书签",
     "reports": "报告",
-    "productivityAssistant": "生产力助手"
+    "productivityAssistant": "生产力助手",
+    "assignedToMe": "分配给我",
+    "everyone": "所有人"
   },
   "navigation": {
     "home": "首页",
@@ -86,7 +92,9 @@
     "toggleSearch": "切换搜索",
     "quickInboxCapture": "快速收件箱捕获",
     "userMenu": "用户菜单",
-    "search": "搜索"
+    "search": "搜索",
+    "admin": "管理员",
+    "adminBadge": "管理员"
   },
   "settings": {
     "todayPageSettings": "今日页面设置",
@@ -201,7 +209,10 @@
       "dropHere": "拖放到这里"
     },
     "chaseUp": "催促",
-    "habit": "习惯"
+    "habit": "习惯",
+    "assignedTo": "分配给",
+    "subtasks": "子任务",
+    "openFullPage": "打开完整视图"
   },
   "timeline": {
     "activityTimeline": "活动时间线",
@@ -690,7 +701,8 @@
         "vague": "尝试以动作动词开头，例如 \"打电话\"、\"写\"、\"安排\" 或 \"研究\""
       },
       "selectAtLeastOneDay": "请至少选择一天",
-      "deferUntilPlaceholder": "选择延迟至的日期和时间"
+      "deferUntilPlaceholder": "选择延迟至的日期和时间",
+      "notePlaceholder": "添加备注..."
     },
     "noteTitle": "笔记标题",
     "noteContent": "笔记内容",
@@ -745,7 +757,9 @@
     },
     "captcha_required": "请完成验证后重试。",
     "registration_successful": "请验证您的邮箱地址",
-    "registration_email_sent": "请验证您的邮箱地址以激活账户。我们已发送链接，请查看收件箱。"
+    "registration_email_sent": "请验证您的邮箱地址以激活账户。我们已发送链接，请查看收件箱。",
+    "notify_joined": "您已在列表中。我们将在tududi Cloud开放的那天通过电子邮件通知您。",
+    "notify_failed": "我们无法保存您的地址。请再试一次。"
   },
   "dropdown": {
     "createNew": "创建新项",
@@ -868,7 +882,47 @@
     "rollingMsg3": "记下来…",
     "saveAs": "另存为",
     "shiftEnterHint": "Shift + Enter 换行",
-    "addToInbox": "添加为收件箱项目（Enter）"
+    "addToInbox": "添加为收件箱项目（Enter）",
+    "emptyItem": "(空项目)",
+    "itemQueuedOffline": "已离线保存。一旦您重新在线，它将自动同步。",
+    "infoShort": "收件箱是未分类想法的归宿——记下内容，稍后整理。",
+    "recentlyCaptured": "最近捕获",
+    "line": "行",
+    "lines": "行",
+    "processN": "处理 {{count}}",
+    "allClarified": "全部已澄清",
+    "reClarify": "重新澄清",
+    "trashedRestore": "{{count}} 已删除 · 恢复",
+    "restored": "已恢复已删除项目",
+    "restoreError": "恢复项目失败",
+    "trashError": "删除项目失败",
+    "clarifyProgress": "澄清 · {{progress}}",
+    "clarifyDone": "全部已澄清。收件箱已平静。",
+    "clarifyBackToList": "返回列表",
+    "clarifyExit": "退出澄清",
+    "clarifyBack": "← 返回",
+    "clarifyQ": {
+      "actionable": "这是可操作的吗？",
+      "notActionable": "这是什么类型的事情？",
+      "steps": "一步，还是几步？",
+      "twomin": "你能在 2 分钟内完成吗？",
+      "deferDelegate": "自己稍后做，还是交给别人？"
+    },
+    "clarifyChoice": {
+      "yesActionable": "是的，可操作",
+      "notActionable": "不可操作",
+      "trash": "删除",
+      "someday": "某天 / 也许",
+      "referenceNote": "参考备注",
+      "oneStep": "一步",
+      "severalSteps": "多个步骤（项目）",
+      "doItNow": "是 — 现在就做",
+      "no": "不",
+      "scheduleIt": "安排它",
+      "delegate": "委派"
+    },
+    "somedayCreated": "已添加到某天",
+    "reClarifyLink": "重新澄清"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1052,7 +1106,8 @@
     "statusUpdated": "状态更新成功",
     "statusUpdateError": "更新状态失败",
     "updatedAt": "更新时间",
-    "upcoming": "即将到来"
+    "upcoming": "即将到来",
+    "assigneeUpdateError": "更新受托人失败"
   },
   "projects": {
     "loading": "加载项目中...",
@@ -1116,7 +1171,9 @@
     "focusHint": "将此任务移至进行中和今天",
     "noNextAction": "一切正常--没有未完成的任务。",
     "selectDueDatePlaceholder": "选择截止日期",
-    "goalTitle": "目标"
+    "goalTitle": "目标",
+    "addProject": "添加项目",
+    "noResults": "没有项目"
   },
   "projectItem": {
     "edit": "编辑",
@@ -1179,7 +1236,11 @@
     "contentPlaceholderMarkdown": "使用Markdown格式编写内容...\n\n示例：\n# 标题\n**粗体文本**\n*斜体文本*\n- 列表项\n```代码```",
     "pinToSidebar": "固定到侧边栏",
     "unpinFromSidebar": "从侧边栏取消固定",
-    "save": "保存"
+    "save": "保存",
+    "addNote": "添加备注",
+    "tree": {
+      "folders": "文件夹"
+    }
   },
   "tags": {
     "loading": "加载标签...",
@@ -1207,7 +1268,8 @@
     "systemTags": "系统标签",
     "systemTagsDescription": "自动管理 · 不能被删除或重命名",
     "system": "系统",
-    "customize": "自定义"
+    "customize": "自定义",
+    "addTag": "添加标签"
   },
   "recurrence": {
     "none": "无",
@@ -1227,7 +1289,11 @@
     "inheritedSettingsMessage": "此任务是从一个重复任务生成的。下面显示的重复设置是从原始任务继承的，无法在此处编辑。",
     "cancelEdit": "取消编辑",
     "editParentRecurrence": "编辑父级重复",
-    "parentEditWarning": "⚠️ 您正在编辑父任务的重复设置。更改将影响此重复任务的所有未来实例。"
+    "parentEditWarning": "⚠️ 您正在编辑父任务的重复设置。更改将影响此重复任务的所有未来实例。",
+    "every": "每",
+    "weeks": "周",
+    "months": "月",
+    "advancedHint": "要指定特定的工作日或结束日期，请打开完整任务。"
   },
   "weekdays": {
     "sunday": "星期日",
@@ -1470,7 +1536,43 @@
       "overrideSaved": "例外已保存",
       "overrideCleared": "例外已移除",
       "synced": "已从支付服务商同步"
-    }
+    },
+    "dashboard": {
+      "title": "管理员",
+      "subtitle": "tududi {{version}} · {{env}}",
+      "users": "用户",
+      "usersHint": "{{verified}} 已验证 · {{admins}} 管理员 · {{new}} 今天",
+      "paying": "付费",
+      "selfHosted": "自托管",
+      "waitlist": "等待名单",
+      "waitlistHint": "{{n}} 在 7 天内",
+      "content": "任务",
+      "contentHint": "{{projects}} 项目 · {{notes}} 备注",
+      "regOpen": "注册开放",
+      "regClosed": "注册关闭",
+      "waitlistLatest": "最新的等待名单注册",
+      "waitlistEmpty": "还没有人。",
+      "email": "电子邮件",
+      "source": "来源",
+      "joined": "已加入",
+      "waitlistAll": "查看全部"
+    },
+    "waitlist": {
+      "title": "等待名单",
+      "export": "导出 CSV",
+      "searchPlaceholder": "通过电子邮件搜索",
+      "email": "电子邮件",
+      "source": "来源",
+      "locale": "语言",
+      "submissions": "提交",
+      "joined": "已加入",
+      "empty": "还没有人注册",
+      "noMatches": "没有地址与该搜索匹配",
+      "showing": "{{from}}-{{to}} 共 {{total}}"
+    },
+    "passwordInviteHint": "留空以发送邀请电子邮件",
+    "invitationSent": "邀请电子邮件已发送至 {{email}}",
+    "invitationNotSent": "账户已创建，但电子邮件被禁用 - 请手动为此用户设置密码。"
   },
   "shares": {
     "shareProject": "分享项目",
@@ -1496,7 +1598,11 @@
     "noShares": "尚未共享",
     "noAvailableUsers": "没有可共享的用户",
     "shared": "已共享",
-    "sharedWithTeam": "与团队共享"
+    "sharedWithTeam": "与团队共享",
+    "shareArea": "分享区域",
+    "shareGoal": "分享目标",
+    "shareNote": "分享备注",
+    "shareTask": "分享任务"
   },
   "views": {
     "title": "智能视图",
@@ -1642,14 +1748,16 @@
       "overdueTasks": "逾期任务",
       "deferUntil": "推迟至",
       "dueProjects": "到期项目",
-      "overdueProjects": "逾期项目"
+      "overdueProjects": "逾期项目",
+      "taskAssigned": "任务分配"
     },
     "descriptions": {
       "dueTasks": "在24小时内到期的任务",
       "overdueTasks": "已过截止日期的任务",
       "deferUntil": "现在可以开始处理的任务",
       "dueProjects": "在24小时内到期的项目",
-      "overdueProjects": "已过截止日期的项目"
+      "overdueProjects": "已过截止日期的项目",
+      "taskAssigned": "有人将任务分配给您"
     },
     "telegram": {
       "notConfigured": {
@@ -1779,5 +1887,44 @@
       "backups_import": "备份导入",
       "attachments": "附件"
     }
+  },
+  "subscription": {
+    "title": "订阅",
+    "chooseForCloud": "为 tududi Cloud 选择一个计划",
+    "noActive": "没有有效的订阅",
+    "chooseToContinue": "选择一个计划以继续使用 tududi Cloud。",
+    "monthly": "按月",
+    "yearly": "按年",
+    "priceMonthly": "{{price}} 每月",
+    "priceYearly": "{{price}} 每年",
+    "subscribeMonthly": "按月订阅",
+    "subscribeYearly": "按年订阅",
+    "perkUnlimited": "无限任务、项目和笔记",
+    "perkStorage": "附件和文件上传",
+    "perkFeatures": "AI 助手、MCP、CalDAV 同步和 Telegram 机器人",
+    "perkBackups": "每日备份和管理更新",
+    "perkExport": "随时导出所有内容",
+    "taxNote": "付款由 {{provider}} 处理。价格不含适用税费。随时取消。",
+    "notConfigured": "此实例尚未提供订阅服务。请联系支持。",
+    "exportData": "导出您的数据"
+  },
+  "demo": {
+    "opening": "正在打开演示...",
+    "unavailableTitle": "演示不可用",
+    "unavailableBody": "它可能正在重建。请稍后再试。"
+  },
+  "everyone": {
+    "title": "每个人",
+    "subtitle": "你与之共享工作的每个人现在在做什么",
+    "you": "你",
+    "people": "人",
+    "tasks": "任务",
+    "overdue": "逾期",
+    "today": "今天",
+    "tomorrow": "明天",
+    "upcoming": "本周",
+    "noDate": "没有日期",
+    "nothing": "现在没有任何内容",
+    "empty": "现在没有共享的内容。共享一个区域、项目或目标，或分配给某人一个任务，以便在这里查看。"
   }
 }
