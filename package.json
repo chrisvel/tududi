@@ -6,7 +6,7 @@
     "test": "test"
   },
   "scripts": {
-    "start": "bash scripts/start-all-dev.sh",
+    "start": "cross-env TUDUDI_LANDING_HOSTS=localhost bash scripts/start-all-dev.sh",
     "dev": "npm run frontend:dev",
     "build": "npm run frontend:build",
     "pre-push": "lint-staged",
