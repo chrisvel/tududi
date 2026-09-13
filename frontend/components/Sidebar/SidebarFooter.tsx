@@ -13,7 +13,6 @@ import {
 } from '@heroicons/react/24/outline';
 import TelegramIcon from '../Shared/Icons/TelegramIcon';
 import { useTranslation } from 'react-i18next';
-import { Note } from '../../entities/Note';
 import { Area } from '../../entities/Area';
 import { useTelegramStatus } from '../../contexts/TelegramStatusContext';
 import { getApiPath } from '../../config/paths';
@@ -36,7 +35,7 @@ interface SidebarFooterProps {
     toggleDropdown: () => void;
     openTaskModal: () => void;
     openProjectModal: () => void;
-    openNoteModal: (note: Note | null) => void;
+    onCreateNote: () => void;
     openAreaModal: (area: Area | null) => void;
     openTagModal: (tag: any | null) => void;
     keyboardShortcuts?: KeyboardShortcutsConfig | null;
@@ -48,7 +47,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
     setIsSidebarOpen,
     openTaskModal,
     openProjectModal,
-    openNoteModal,
+    onCreateNote,
     openAreaModal,
     openTagModal,
     keyboardShortcuts,
@@ -120,7 +119,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                 openProjectModal();
                 break;
             case 'Note':
-                openNoteModal(null);
+                onCreateNote();
                 break;
             case 'Area':
                 openAreaModal(null);

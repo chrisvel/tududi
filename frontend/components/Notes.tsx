@@ -19,7 +19,7 @@ import {
 } from '@heroicons/react/24/outline';
 import PushPinIcon from './Shared/Icons/PushPinIcon';
 import { useToast } from './Shared/ToastContext';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import NoteModal from './Note/NoteModal';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import DiscardChangesDialog from './Shared/DiscardChangesDialog';
@@ -55,6 +55,7 @@ const Notes: React.FC = () => {
     const { showSuccessToast } = useToast();
     const { uid } = useParams<{ uid?: string }>();
     const navigate = useNavigate();
+    const location = useLocation();
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const [previewNote, setPreviewNote] = useState<Note | null>(null);
     const [isEditing, setIsEditing] = useState(false);
@@ -76,6 +77,11 @@ const Notes: React.FC = () => {
     >('saved');
     const [isFocusMode, setIsFocusMode] = useState(false);
     const hasAutoSelected = useRef(false);
+    // Timestamp flag attached to the /notes navigation state by Layout's
+    // "new note" action; deduplicated per location entry below.
+    const newNoteSignal = (location.state as { newNote?: number } | null)
+        ?.newNote;
+    const newNoteSignalRef = useRef<number | null>(null);
 
     const editingNoteColor =
         ENABLE_NOTE_COLOR && editingNote ? editingNote.color : undefined;
@@ -247,7 +253,10 @@ const Notes: React.FC = () => {
                 setShowProjectDropdown(false);
                 setShowTagsInput(false);
                 setPreviewNote(savedNote);
-                navigate(`/notes/${savedNote.uid}`, { replace: true });
+                navigate(`/notes/${savedNote.uid}`, {
+                    replace: true,
+                    state: {},
+                });
             } else {
                 const newNote = await createNote(editingNote);
                 setNotes([newNote, ...notes]);
@@ -256,7 +265,10 @@ const Notes: React.FC = () => {
                 setShowProjectDropdown(false);
                 setShowTagsInput(false);
                 setPreviewNote(newNote);
-                navigate(`/notes/${newNote.uid}`, { replace: true });
+                navigate(`/notes/${newNote.uid}`, {
+                    replace: true,
+                    state: {},
+                });
             }
         } catch (err) {
             console.error('Error saving note:', err);
@@ -377,11 +389,38 @@ const Notes: React.FC = () => {
         [notes, orderBy]
     );
 
+    const startNewNote = useCallback(() => {
+        // Fresh blank note opened straight in the inline editor; nothing is
+        // persisted until the user types a title and saves.
+        setPreviewNote(null);
+        setEditingNote({ title: '', content: '' });
+        setIsEditing(true);
+        setSaveStatus('saved');
+        setShowProjectDropdown(false);
+        setShowTagsInput(false);
+        setIsFocusMode(false);
+    }, []);
+
+    // Open a blank editor when navigated here with the "new note" flag
+    // (sidebar + button, footer create menu, keyboard shortcut). The ref
+    // deduplicates React 18 StrictMode's double effect invocation.
+    useEffect(() => {
+        if (
+            newNoteSignal &&
+            newNoteSignalRef.current !== newNoteSignal
+        ) {
+            newNoteSignalRef.current = newNoteSignal;
+            startNewNote();
+            navigate('/notes', { replace: true, state: {} });
+        }
+    }, [newNoteSignal, startNewNote, navigate]);
+
     useEffect(() => {
         hasAutoSelected.current = false;
     }, [uid]);
 
     useEffect(() => {
+        if (newNoteSignal) return;
         if (uid && sortedNotes.length > 0 && !hasAutoSelected.current) {
             const noteFromUrl = sortedNotes.find((note) => note.uid === uid);
             if (noteFromUrl) {
@@ -398,6 +437,7 @@ const Notes: React.FC = () => {
     }, [uid, sortedNotes]);
 
     useEffect(() => {
+        if (newNoteSignal) return;
         if (
             !uid &&
             sortedNotes.length > 0 &&
