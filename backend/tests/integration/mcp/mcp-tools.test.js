@@ -1007,6 +1007,112 @@ describe('MCP Tools Integration', () => {
                 expect(content.project.status).toBe('in_progress');
                 expect(content.project.priority).toBe(2);
             });
+
+            it('should create a project with multiple tags', async () => {
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'create_project',
+                    {
+                        name: 'Tagged MCP Project',
+                        tags: [
+                            'first-tag',
+                            'second-tag',
+                            'first-tag',
+                            'third-tag',
+                        ],
+                    }
+                );
+
+                expect(response.status).toBe(200);
+                const { content, isError } = getToolContent(response);
+                expect(isError).toBe(false);
+                expect(content.message).toBe('Project created successfully');
+                expect(content.project.tags).toEqual(
+                    expect.arrayContaining([
+                        'first-tag',
+                        'second-tag',
+                        'third-tag',
+                    ])
+                );
+                expect(content.project.tags).toHaveLength(3);
+            });
+
+            it('should roll back the project and new tags when a tag fails', async () => {
+                const bulkCreate = Tag.bulkCreate;
+                const bulkCreateSpy = jest
+                    .spyOn(Tag, 'bulkCreate')
+                    .mockImplementation(async (...args) => {
+                        await bulkCreate.apply(Tag, args);
+                        throw new Error('Tag write failed');
+                    });
+
+                try {
+                    const response = await callMcpTool(
+                        apiTokenValue,
+                        'create_project',
+                        {
+                            name: 'Rolled Back MCP Project',
+                            tags: ['new-tag'],
+                        }
+                    );
+
+                    expect(response.status).toBe(200);
+                    expect(getToolContent(response).isError).toBe(true);
+                    await expect(
+                        Project.findOne({
+                            where: {
+                                user_id: user.id,
+                                name: 'Rolled Back MCP Project',
+                            },
+                        })
+                    ).resolves.toBeNull();
+                    await expect(
+                        Tag.findOne({
+                            where: { user_id: user.id, name: 'new-tag' },
+                        })
+                    ).resolves.toBeNull();
+                } finally {
+                    bulkCreateSpy.mockRestore();
+                }
+            });
+
+            it('should roll back the project and new tags when association fails', async () => {
+                const setTagsSpy = jest
+                    .spyOn(Project.prototype, 'setTags')
+                    .mockRejectedValue(new Error('Tag association failed'));
+
+                try {
+                    const response = await callMcpTool(
+                        apiTokenValue,
+                        'create_project',
+                        {
+                            name: 'Association Failure MCP Project',
+                            tags: ['association-failure-tag'],
+                        }
+                    );
+
+                    expect(response.status).toBe(200);
+                    expect(getToolContent(response).isError).toBe(true);
+                    await expect(
+                        Project.findOne({
+                            where: {
+                                user_id: user.id,
+                                name: 'Association Failure MCP Project',
+                            },
+                        })
+                    ).resolves.toBeNull();
+                    await expect(
+                        Tag.findOne({
+                            where: {
+                                user_id: user.id,
+                                name: 'association-failure-tag',
+                            },
+                        })
+                    ).resolves.toBeNull();
+                } finally {
+                    setTagsSpy.mockRestore();
+                }
+            });
         });
 
         describe('update_project', () => {

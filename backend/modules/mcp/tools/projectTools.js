@@ -1,7 +1,7 @@
 'use strict';
 
 const entitlements = require('../../../services/entitlementsService');
-const { Project, Area, Tag } = require('../../../models');
+const { sequelize, Project, Area, Tag } = require('../../../models');
 const { Op } = require('sequelize');
 const projectsRepository = require('../../projects/repository');
 const permissionsService = require('../../../services/permissionsService');
@@ -215,6 +215,7 @@ function registerProjectTools(server, context, tools) {
             required: ['name'],
         },
         handler: async (params) => {
+            const tagNames = [...new Set(params.tags || [])];
             const projectData = {
                 user_id: context.userId,
                 name: params.name,
@@ -227,19 +228,34 @@ function registerProjectTools(server, context, tools) {
             };
 
             await entitlements.assertCanCreate(context.userId, 'project');
-            const project = await Project.create(projectData);
+            const project = await sequelize.transaction(async (transaction) => {
+                const project = await Project.create(projectData, {
+                    transaction,
+                });
 
-            if (params.tags && params.tags.length > 0) {
-                const tagInstances = await Promise.all(
-                    params.tags.map(async (tagName) => {
-                        const [tag] = await Tag.findOrCreate({
-                            where: { name: tagName, user_id: context.userId },
-                        });
-                        return tag;
-                    })
+                if (tagNames.length === 0) {
+                    return project;
+                }
+
+                await Tag.bulkCreate(
+                    tagNames.map((name) => ({
+                        name,
+                        user_id: context.userId,
+                    })),
+                    { ignoreDuplicates: true, transaction }
                 );
-                await project.setTags(tagInstances);
-            }
+
+                const tagInstances = await Tag.findAll({
+                    where: {
+                        name: { [Op.in]: tagNames },
+                        user_id: context.userId,
+                    },
+                    transaction,
+                });
+                await project.setTags(tagInstances, { transaction });
+
+                return project;
+            });
 
             const reloadedProject = await Project.findByPk(project.id, {
                 include: [
