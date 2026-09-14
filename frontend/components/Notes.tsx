@@ -26,7 +26,11 @@ import DiscardChangesDialog from './Shared/DiscardChangesDialog';
 import MarkdownRenderer from './Shared/MarkdownRenderer';
 import TagInput from './Tag/TagInput';
 import { Note } from '../entities/Note';
-import { createNote, updateNote } from '../utils/notesService';
+import {
+    createNote,
+    updateNote,
+    fetchNoteBySlug,
+} from '../utils/notesService';
 import { deleteNoteWithStoreUpdate } from '../utils/noteDeleteUtils';
 import { useStore } from '../store/useStore';
 import { createProject } from '../utils/projectsService';
@@ -421,20 +425,37 @@ const Notes: React.FC = () => {
 
     useEffect(() => {
         if (newNoteSignal) return;
-        if (uid && sortedNotes.length > 0 && !hasAutoSelected.current) {
-            const noteFromUrl = sortedNotes.find((note) => note.uid === uid);
-            if (noteFromUrl) {
-                setPreviewNote(noteFromUrl);
-                hasAutoSelected.current = true;
-            } else if (!previewNote) {
-                const isDesktop = window.innerWidth >= 768;
-                if (isDesktop) {
-                    handleSelectNote(sortedNotes[0]);
-                    hasAutoSelected.current = true;
-                }
-            }
+        if (!uid || !hasLoaded || hasAutoSelected.current) return;
+
+        const noteFromUrl = sortedNotes.find((note) => note.uid === uid);
+        if (noteFromUrl) {
+            setPreviewNote(noteFromUrl);
+            hasAutoSelected.current = true;
+            return;
         }
-    }, [uid, sortedNotes]);
+
+        // Not in the cached notes list. This can legitimately happen when a
+        // project was shared with us after the list was last loaded (#1523):
+        // the note exists and we have access, it's just missing from the
+        // stale cache. Fetch it directly before assuming it doesn't exist -
+        // otherwise we'd silently fall back to whatever note happens to be
+        // first in the list.
+        hasAutoSelected.current = true;
+        fetchNoteBySlug(uid)
+            .then((fetchedNote) => {
+                if (!fetchedNote) throw new Error('Note not found');
+                setNotes([fetchedNote, ...notes]);
+                setPreviewNote(fetchedNote);
+            })
+            .catch(() => {
+                if (!previewNote) {
+                    const isDesktop = window.innerWidth >= 768;
+                    if (isDesktop) {
+                        handleSelectNote(sortedNotes[0]);
+                    }
+                }
+            });
+    }, [uid, sortedNotes, hasLoaded]);
 
     useEffect(() => {
         if (newNoteSignal) return;
