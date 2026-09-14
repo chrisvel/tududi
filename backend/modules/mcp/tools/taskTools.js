@@ -9,7 +9,7 @@ const {
 const { calculateInitialDueDate } = require('../../tasks/core/builders');
 const { handleRecurrenceUpdate } = require('../../tasks/operations/recurring');
 const { Op } = require('sequelize');
-const { Task, Project, Tag } = require('../../../models');
+const { sequelize, Task, Project, Tag } = require('../../../models');
 const {
     validateProjectAccess,
     validateDeferUntilAndDueDate,
@@ -20,6 +20,7 @@ const {
     processDeferUntilForStorage,
 } = require('../../../utils/timezone-utils');
 const permissionsService = require('../../../services/permissionsService');
+const { resolveTagsForTransaction } = require('./tagResolver');
 
 const RECURRENCE_TYPES = [
     'none',
@@ -383,18 +384,22 @@ function registerTaskTools(server, context, tools) {
             };
 
             await entitlements.assertCanCreate(context.userId, 'task');
-            const task = await taskRepository.create(taskData);
+            const task = await sequelize.transaction(async (transaction) => {
+                const task = await taskRepository.create(taskData, {
+                    transaction,
+                });
 
-            if (params.tags && params.tags.length > 0) {
-                const tagInstances = [];
-                for (const tagName of params.tags) {
-                    const [tag] = await Tag.findOrCreate({
-                        where: { name: tagName, user_id: context.userId },
-                    });
-                    tagInstances.push(tag);
+                const tagInstances = await resolveTagsForTransaction(
+                    params.tags,
+                    context.userId,
+                    transaction
+                );
+                if (tagInstances !== undefined) {
+                    await task.setTags(tagInstances, { transaction });
                 }
-                await task.setTags(tagInstances);
-            }
+
+                return task;
+            });
 
             const reloadedTask = await taskRepository.findByIdAndUser(
                 task.id,
@@ -648,18 +653,18 @@ function registerTaskTools(server, context, tools) {
             // future recurring instances get regenerated, matching PATCH /api/task/:uid
             await handleRecurrenceUpdate(task, RECURRENCE_FIELDS, params);
 
-            await task.update(updates);
+            await sequelize.transaction(async (transaction) => {
+                await task.update(updates, { transaction });
 
-            if (params.tags !== undefined) {
-                const tagInstances = [];
-                for (const tagName of params.tags) {
-                    const [tag] = await Tag.findOrCreate({
-                        where: { name: tagName, user_id: context.userId },
-                    });
-                    tagInstances.push(tag);
+                const tagInstances = await resolveTagsForTransaction(
+                    params.tags,
+                    context.userId,
+                    transaction
+                );
+                if (tagInstances !== undefined) {
+                    await task.setTags(tagInstances, { transaction });
                 }
-                await task.setTags(tagInstances);
-            }
+            });
 
             const reloadedTask = await taskRepository.findById(task.id, {
                 include: [
