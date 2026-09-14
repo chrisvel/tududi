@@ -11,6 +11,7 @@ router.post('/admin/set-admin-role', adminController.setAdminRole);
 router.get('/admin/overview', adminController.overview);
 router.get('/admin/waitlist', adminController.listWaitlist);
 router.get('/admin/waitlist/export', adminController.exportWaitlist);
+router.delete('/admin/waitlist/:id', adminController.deleteWaitlistEntry);
 router.get('/admin/users', adminController.listUsers);
 router.post('/admin/users', adminController.createUser);
 router.put('/admin/users/:id', adminController.updateUser);

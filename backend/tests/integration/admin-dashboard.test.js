@@ -88,6 +88,7 @@ describe('Admin dashboard', () => {
             email,
             source: 'pricing',
             locale: 'de',
+            ip_address: '203.0.113.5',
         });
 
         const res = await adminAgent.get('/api/admin/waitlist/export');
@@ -97,9 +98,37 @@ describe('Admin dashboard', () => {
             /attachment; filename="waitlist-\d{4}-\d{2}-\d{2}\.csv"/
         );
         expect(res.text.split('\r\n')[0]).toBe(
-            '"email","source","locale","submissions","joined_at"'
+            '"email","source","locale","ip_address","submissions","joined_at"'
         );
-        expect(res.text).toContain(`"${email}","pricing","de","1"`);
+        expect(res.text).toContain(
+            `"${email}","pricing","de","203.0.113.5","1"`
+        );
+    });
+
+    it('removes an entry from the waitlist', async () => {
+        const entry = await WaitlistSubscriber.create({
+            email: `remove_${Date.now()}@example.com`,
+            source: 'hero',
+        });
+
+        const res = await adminAgent.delete(`/api/admin/waitlist/${entry.id}`);
+        expect(res.status).toBe(204);
+        expect(await WaitlistSubscriber.findByPk(entry.id)).toBeNull();
+    });
+
+    it('404s removing an entry that is not there', async () => {
+        const res = await adminAgent.delete('/api/admin/waitlist/999999999');
+        expect(res.status).toBe(404);
+    });
+
+    it('refuses removal to a non-admin', async () => {
+        const entry = await WaitlistSubscriber.create({
+            email: `noperm_${Date.now()}@example.com`,
+            source: 'hero',
+        });
+        const res = await plainAgent.delete(`/api/admin/waitlist/${entry.id}`);
+        expect(res.status).toBe(403);
+        expect(await WaitlistSubscriber.findByPk(entry.id)).not.toBeNull();
     });
 
     it('refuses both endpoints to a non-admin', async () => {

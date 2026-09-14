@@ -43,6 +43,13 @@ module.exports = (sequelize) => {
                 type: DataTypes.STRING(512),
                 allowNull: true,
             },
+            // Overwritten on every resubmission, unlike source: it's an
+            // abuse/debugging trail, and the most recent address someone
+            // submitted from is the useful one.
+            ip_address: {
+                type: DataTypes.STRING(45),
+                allowNull: true,
+            },
             // A second submission is not a second person; it is someone
             // checking the form worked.
             submission_count: {
