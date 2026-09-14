@@ -54,6 +54,7 @@
                     <h3><%= t('footer.subTitle') %></h3>
                     <p><%= t('footer.subBody') %></p>
                     <form action="/waitlist" method="post">
+                        <input type="text" name="company" value="" autocomplete="off" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
                         <input type="email" name="email" placeholder="<%= t('waitlist.placeholder') %>" aria-label="<%= t('waitlist.inputLabel') %>" required>
                         <input type="hidden" name="source" value="footer">
                         <input type="hidden" name="locale" value="<%= i18n.locale %>">
