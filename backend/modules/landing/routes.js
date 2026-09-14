@@ -266,6 +266,7 @@ function createLandingRouter(landing) {
             source,
             locale,
             referrer: req.get('referer'),
+            ip: req.ip,
         });
         return res.redirect(303, back);
     });
