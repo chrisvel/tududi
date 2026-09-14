@@ -214,12 +214,25 @@ if [[ -t 0 ]]; then
   esac
 fi
 
+WORKFLOW='Publish Docker image'
+
+# Recorded before the push so we can tell a fresh run from one already in
+# flight when we go looking for it below.
+BASELINE_RUN_ID=""
+if command -v gh >/dev/null 2>&1; then
+  BASELINE_RUN_ID=$(gh run list --workflow "$WORKFLOW" --limit 1 --json databaseId --jq '.[0].databaseId' 2>/dev/null || true)
+fi
+
 # Two pushes, deliberately. Sending the branch and the tag in one push (what
 # --follow-tags does) has left the tag on the remote without GitHub raising a
 # tag event, so nothing built: v1.5.0-rc.8 landed that way. Pushing the tag on
 # its own is the ref update the publish workflow listens for.
 git push origin "$BRANCH"
 git push origin "$VERSION"
+
+watch_hint() {
+  echo "Watch it with:  gh run watch \$(gh run list --workflow '$WORKFLOW' --limit 1 --json databaseId --jq '.[0].databaseId')"
+}
 
 ORIGIN_URL=$(git remote get-url origin)
 echo
@@ -229,7 +242,29 @@ case "$ORIGIN_URL" in
     echo "Pushed. Building the image and cutting the release:"
     echo "  https://github.com/$SLUG/actions"
     echo
-    echo "Watch it with:  gh run watch \$(gh run list --workflow 'Publish Docker image' --limit 1 --json databaseId --jq '.[0].databaseId')"
+    if command -v gh >/dev/null 2>&1; then
+      # The tag push above is what triggers the workflow, but GitHub takes a
+      # few seconds to register it as a run. Poll for one newer than whatever
+      # was already there before we pushed, rather than watching a stale run.
+      NEW_RUN_ID=""
+      for _ in $(seq 1 20); do
+        CANDIDATE=$(gh run list --workflow "$WORKFLOW" --limit 1 --json databaseId --jq '.[0].databaseId' 2>/dev/null || true)
+        if [[ -n "$CANDIDATE" && "$CANDIDATE" != "$BASELINE_RUN_ID" ]]; then
+          NEW_RUN_ID="$CANDIDATE"
+          break
+        fi
+        sleep 3
+      done
+
+      if [[ -n "$NEW_RUN_ID" ]]; then
+        gh run watch "$NEW_RUN_ID"
+      else
+        echo "No new run showed up yet."
+        watch_hint
+      fi
+    else
+      watch_hint
+    fi
     ;;
   *)
     echo "Pushed $BRANCH and $VERSION to $ORIGIN_URL."
