@@ -22,6 +22,7 @@ jest.mock('../components/Shared/ToastContext', () => ({
 jest.mock('../utils/notesService', () => ({
     createNote: jest.fn(),
     updateNote: jest.fn(),
+    fetchNoteBySlug: jest.fn(),
 }));
 
 jest.mock('../components/Note/MarkdownEditor', () => ({
@@ -50,10 +51,11 @@ jest.mock('../components/Note/NoteFocusMode', () => ({
     default: () => null,
 }));
 
-import { createNote, updateNote } from '../utils/notesService';
+import { createNote, updateNote, fetchNoteBySlug } from '../utils/notesService';
 
 const mockCreateNote = createNote as jest.Mock;
 const mockUpdateNote = updateNote as jest.Mock;
+const mockFetchNoteBySlug = fetchNoteBySlug as jest.Mock;
 
 const baseStoreState: any = {
     notesStore: {
@@ -109,6 +111,12 @@ describe('Notes new-note flow', () => {
             updated_at: '2026-01-01T00:00:00Z',
         });
         mockUpdateNote.mockResolvedValue({
+            uid: 'n1',
+            title: 'Groceries',
+            content: '',
+            updated_at: '2026-01-01T00:00:00Z',
+        });
+        mockFetchNoteBySlug.mockResolvedValue({
             uid: 'n1',
             title: 'Groceries',
             content: '',

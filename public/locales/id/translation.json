@@ -31,7 +31,11 @@
     "download": "Unduh",
     "exitFocusMode": "Keluar dari mode fokus",
     "searchTimezones": "Cari zona waktu...",
-    "dismiss": "Tutup"
+    "dismiss": "Tutup",
+    "search": "Cari",
+    "previous": "Sebelumnya",
+    "done": "Selesai",
+    "clear": "Bersihkan"
   },
   "sidebar": {
     "dashboard": "Dasbor",
@@ -72,7 +76,9 @@
     "boards": "Papan",
     "bookmarks": "Tanda Buku",
     "reports": "Laporan",
-    "productivityAssistant": "Asisten Produktivitas"
+    "productivityAssistant": "Asisten Produktivitas",
+    "assignedToMe": "Ditetapkan untuk saya",
+    "everyone": "Semua orang"
   },
   "navigation": {
     "home": "Beranda",
@@ -86,7 +92,9 @@
     "toggleSearch": "Beralih ke Pencarian",
     "quickInboxCapture": "Tangkap Kotak Masuk Cepat",
     "userMenu": "Menu Pengguna",
-    "search": "Cari"
+    "search": "Cari",
+    "admin": "Admin",
+    "adminBadge": "Admin"
   },
   "settings": {
     "todayPageSettings": "Pengaturan Halaman Hari Ini",
@@ -201,7 +209,10 @@
       "dropHere": "Jatuhkan di sini"
     },
     "chaseUp": "Tindak Lanjut",
-    "habit": "Kebiasaan"
+    "habit": "Kebiasaan",
+    "assignedTo": "Ditetapkan untuk",
+    "subtasks": "Subtugas",
+    "openFullPage": "Buka tampilan penuh"
   },
   "timeline": {
     "activityTimeline": "Garis Waktu Aktivitas",
@@ -690,7 +701,8 @@
         "vague": "Cobalah mulai dengan kata kerja aksi seperti \"Hubungi\", \"Tulis\", \"Jadwalkan\", atau \"Teliti\""
       },
       "selectAtLeastOneDay": "Silakan pilih setidaknya satu hari",
-      "deferUntilPlaceholder": "Pilih tanggal dan waktu tunda hingga"
+      "deferUntilPlaceholder": "Pilih tanggal dan waktu tunda hingga",
+      "notePlaceholder": "Tambahkan catatan..."
     },
     "noteTitle": "Judul Catatan",
     "noteContent": "Konten Catatan",
@@ -745,7 +757,9 @@
     },
     "captcha_required": "Selesaikan verifikasi lalu coba lagi.",
     "registration_successful": "Verifikasi alamat email Anda",
-    "registration_email_sent": "Verifikasi alamat email Anda untuk mengaktifkan akun. Kami telah mengirim tautan, periksa kotak masuk Anda."
+    "registration_email_sent": "Verifikasi alamat email Anda untuk mengaktifkan akun. Kami telah mengirim tautan, periksa kotak masuk Anda.",
+    "notify_joined": "Anda ada dalam daftar. Kami akan mengirimkan email kepada Anda pada hari tududi Cloud dibuka.",
+    "notify_failed": "Kami tidak dapat menyimpan alamat Anda. Silakan coba lagi."
   },
   "dropdown": {
     "createNew": "Buat Baru",
@@ -868,7 +882,47 @@
     "rollingMsg3": "Catat…",
     "saveAs": "Simpan sebagai",
     "shiftEnterHint": "Shift + Enter untuk baris baru",
-    "addToInbox": "Tambahkan sebagai item kotak masuk (Enter)"
+    "addToInbox": "Tambahkan sebagai item kotak masuk (Enter)",
+    "emptyItem": "(Item kosong)",
+    "itemQueuedOffline": "Disimpan secara offline. Ini akan disinkronkan secara otomatis setelah Anda kembali online.",
+    "infoShort": "Kotak masuk adalah tempat pikiran yang tidak terkategori mendarat — catat hal-hal, urutkan nanti.",
+    "recentlyCaptured": "Baru saja ditangkap",
+    "line": "garis",
+    "lines": "garis",
+    "processN": "Proses {{count}}",
+    "allClarified": "Semua telah dijelaskan",
+    "reClarify": "Jelaskan kembali",
+    "trashedRestore": "{{count}} terhapus · pulihkan",
+    "restored": "Item yang terhapus dipulihkan",
+    "restoreError": "Gagal memulihkan item",
+    "trashError": "Gagal menghapus item",
+    "clarifyProgress": "Jelaskan · {{progress}}",
+    "clarifyDone": "Semua telah dijelaskan. Kotak masuk tenang.",
+    "clarifyBackToList": "Kembali ke daftar",
+    "clarifyExit": "Keluar dari penjelasan",
+    "clarifyBack": "← Kembali",
+    "clarifyQ": {
+      "actionable": "Apakah ini dapat ditindaklanjuti?",
+      "notActionable": "Apa jenis hal ini?",
+      "steps": "Satu langkah, atau beberapa?",
+      "twomin": "Bisakah Anda melakukannya dalam waktu kurang dari 2 menit?",
+      "deferDelegate": "Nanti sendiri, atau serahkan?"
+    },
+    "clarifyChoice": {
+      "yesActionable": "Ya, dapat ditindaklanjuti",
+      "notActionable": "Tidak dapat ditindaklanjuti",
+      "trash": "Hapus",
+      "someday": "Suatu hari / Mungkin",
+      "referenceNote": "Catatan referensi",
+      "oneStep": "Satu langkah",
+      "severalSteps": "Beberapa langkah (proyek)",
+      "doItNow": "Ya — lakukan sekarang",
+      "no": "Tidak",
+      "scheduleIt": "Jadwalkan",
+      "delegate": "Delegasikan"
+    },
+    "somedayCreated": "Ditambahkan ke Suatu Hari",
+    "reClarifyLink": "Jelaskan ulang"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1052,7 +1106,8 @@
     "statusUpdated": "Status berhasil diperbarui",
     "statusUpdateError": "Gagal memperbarui status",
     "updatedAt": "Diperbarui pada",
-    "upcoming": "mendatang"
+    "upcoming": "mendatang",
+    "assigneeUpdateError": "Gagal memperbarui penugasan"
   },
   "projects": {
     "loading": "Memuat proyek...",
@@ -1116,7 +1171,9 @@
     "focusHint": "Memindahkan tugas ini ke sedang berlangsung dan hari ini",
     "noNextAction": "Semua bersih-tidak ada tugas tertunda.",
     "selectDueDatePlaceholder": "Pilih tanggal jatuh tempo",
-    "goalTitle": "Tujuan"
+    "goalTitle": "Tujuan",
+    "addProject": "Tambahkan Proyek",
+    "noResults": "Tidak ada proyek"
   },
   "projectItem": {
     "edit": "Sunting",
@@ -1179,7 +1236,11 @@
     "contentPlaceholderMarkdown": "Tulis konten Anda menggunakan format Markdown...\n\nContoh:\n# Judul\n**Teks tebal**\n*Teks miring*\n- Item daftar\n```kode```",
     "pinToSidebar": "Sematkan ke sidebar",
     "unpinFromSidebar": "Lepaskan dari sidebar",
-    "save": "Simpan"
+    "save": "Simpan",
+    "addNote": "Tambahkan Catatan",
+    "tree": {
+      "folders": "Folder"
+    }
   },
   "tags": {
     "loading": "Memuat tag...",
@@ -1207,7 +1268,8 @@
     "systemTags": "Tag Sistem",
     "systemTagsDescription": "Dikelola secara otomatis · Tidak dapat dihapus atau dinamai ulang",
     "system": "Sistem",
-    "customize": "Kustomisasi"
+    "customize": "Kustomisasi",
+    "addTag": "Tambahkan Tag"
   },
   "recurrence": {
     "none": "Tidak ada",
@@ -1227,7 +1289,11 @@
     "inheritedSettingsMessage": "Tugas ini dihasilkan dari tugas berulang. Pengaturan pengulangan yang ditunjukkan di bawah ini diwarisi dari tugas asli dan tidak dapat diedit di sini.",
     "cancelEdit": "Batalkan Edit",
     "editParentRecurrence": "Edit Pengulangan Induk",
-    "parentEditWarning": "⚠️ Anda sedang mengedit pengaturan pengulangan tugas induk. Perubahan akan mempengaruhi semua instance masa depan dari tugas berulang ini."
+    "parentEditWarning": "⚠️ Anda sedang mengedit pengaturan pengulangan tugas induk. Perubahan akan mempengaruhi semua instance masa depan dari tugas berulang ini.",
+    "every": "Setiap",
+    "weeks": "minggu",
+    "months": "bulan",
+    "advancedHint": "Untuk hari kerja tertentu atau tanggal akhir, buka tugas lengkap."
   },
   "weekdays": {
     "sunday": "Min",
@@ -1470,7 +1536,43 @@
       "overrideSaved": "Pengecualian disimpan",
       "overrideCleared": "Pengecualian dihapus",
       "synced": "Disinkronkan dari penyedia pembayaran"
-    }
+    },
+    "dashboard": {
+      "title": "Admin",
+      "subtitle": "tududi {{version}} · {{env}}",
+      "users": "Pengguna",
+      "usersHint": "{{verified}} terverifikasi · {{admins}} admin · {{new}} hari ini",
+      "paying": "Membayar",
+      "selfHosted": "self-hosted",
+      "waitlist": "Daftar Tunggu",
+      "waitlistHint": "{{n}} dalam 7 hari",
+      "content": "Tugas",
+      "contentHint": "{{projects}} proyek · {{notes}} catatan",
+      "regOpen": "Pendaftaran dibuka",
+      "regClosed": "Pendaftaran ditutup",
+      "waitlistLatest": "Pendaftaran daftar tunggu terbaru",
+      "waitlistEmpty": "Belum ada.",
+      "email": "Email",
+      "source": "Sumber",
+      "joined": "Bergabung",
+      "waitlistAll": "Lihat semua"
+    },
+    "waitlist": {
+      "title": "Daftar Tunggu",
+      "export": "Ekspor CSV",
+      "searchPlaceholder": "Cari berdasarkan email",
+      "email": "Email",
+      "source": "Sumber",
+      "locale": "Bahasa",
+      "submissions": "Pengajuan",
+      "joined": "Bergabung",
+      "empty": "Belum ada yang mendaftar",
+      "noMatches": "Tidak ada alamat yang cocok dengan pencarian itu",
+      "showing": "{{from}}-{{to}} dari {{total}}"
+    },
+    "passwordInviteHint": "Biarkan kosong untuk mengirim email undangan",
+    "invitationSent": "Email undangan telah dikirim ke {{email}}",
+    "invitationNotSent": "Akun telah dibuat, tetapi email dinonaktifkan - atur kata sandi untuk pengguna ini secara manual."
   },
   "shares": {
     "shareProject": "Bagikan proyek",
@@ -1496,7 +1598,11 @@
     "noShares": "Belum dibagikan",
     "noAvailableUsers": "Tidak ada pengguna yang tersedia untuk dibagikan",
     "shared": "Dibagikan",
-    "sharedWithTeam": "Dibagikan dengan tim"
+    "sharedWithTeam": "Dibagikan dengan tim",
+    "shareArea": "Area berbagi",
+    "shareGoal": "Tujuan berbagi",
+    "shareNote": "Catatan berbagi",
+    "shareTask": "Tugas berbagi"
   },
   "views": {
     "title": "Tampilan Cerdas",
@@ -1642,14 +1748,16 @@
       "overdueTasks": "Tugas Terlambat",
       "deferUntil": "Tunda Hingga",
       "dueProjects": "Proyek Jatuh Tempo",
-      "overdueProjects": "Proyek Terlambat"
+      "overdueProjects": "Proyek Terlambat",
+      "taskAssigned": "Tugas Diberikan"
     },
     "descriptions": {
       "dueTasks": "Tugas yang jatuh tempo dalam 24 jam",
       "overdueTasks": "Tugas yang telah melewati tanggal jatuh tempo",
       "deferUntil": "Tugas yang sekarang tersedia untuk dikerjakan",
       "dueProjects": "Proyek yang jatuh tempo dalam 24 jam",
-      "overdueProjects": "Proyek yang telah melewati tanggal jatuh tempo"
+      "overdueProjects": "Proyek yang telah melewati tanggal jatuh tempo",
+      "taskAssigned": "Sebuah tugas telah diberikan kepada Anda oleh orang lain"
     },
     "telegram": {
       "notConfigured": {
@@ -1779,5 +1887,44 @@
       "backups_import": "impor cadangan",
       "attachments": "lampiran"
     }
+  },
+  "subscription": {
+    "title": "Langganan",
+    "chooseForCloud": "Pilih rencana untuk tududi Cloud",
+    "noActive": "Tidak ada langganan aktif",
+    "chooseToContinue": "Pilih rencana untuk melanjutkan penggunaan tududi Cloud.",
+    "monthly": "Bulanan",
+    "yearly": "Tahunan",
+    "priceMonthly": "{{price}} per bulan",
+    "priceYearly": "{{price}} per tahun",
+    "subscribeMonthly": "Langganan bulanan",
+    "subscribeYearly": "Langganan tahunan",
+    "perkUnlimited": "Tugas, proyek, dan catatan tidak terbatas",
+    "perkStorage": "Lampiran dan unggahan file",
+    "perkFeatures": "Asisten AI, MCP, sinkronisasi CalDAV, dan bot Telegram",
+    "perkBackups": "Cadangan harian dan pembaruan yang dikelola",
+    "perkExport": "Ekspor semuanya kapan saja",
+    "taxNote": "Pembayaran ditangani oleh {{provider}}. Harga tidak termasuk pajak yang berlaku. Batalkan kapan saja.",
+    "notConfigured": "Langganan belum tersedia di instance ini. Silakan hubungi dukungan.",
+    "exportData": "Ekspor data Anda"
+  },
+  "demo": {
+    "opening": "Membuka demo...",
+    "unavailableTitle": "Demo tidak tersedia",
+    "unavailableBody": "Mungkin sedang membangun ulang. Coba lagi dalam beberapa saat."
+  },
+  "everyone": {
+    "title": "Semua orang",
+    "subtitle": "Apa yang dimiliki semua orang yang Anda bagikan pekerjaan saat ini",
+    "you": "Anda",
+    "people": "Orang-orang",
+    "tasks": "Tugas",
+    "overdue": "Terlambat",
+    "today": "Hari ini",
+    "tomorrow": "Besok",
+    "upcoming": "Minggu ini",
+    "noDate": "Tidak ada tanggal",
+    "nothing": "Tidak ada saat ini",
+    "empty": "Tidak ada yang dibagikan saat ini. Bagikan area, proyek, atau tujuan, atau tugaskan seseorang sebuah tugas, untuk melihatnya di sini."
   }
 }

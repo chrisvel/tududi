@@ -484,6 +484,27 @@ describe('MCP Tools Integration', () => {
                 const { content } = getToolContent(response);
                 expect(content.task.recurrence_type).toBe('none');
             });
+
+            it('should create a task with multiple tags without SQLITE_BUSY (issue #1526)', async () => {
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'create_task',
+                    {
+                        name: 'Tagged Task',
+                        tags: ['alpha', 'beta', 'gamma', 'delta', 'epsilon'],
+                    }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.task.tags.map((t) => t.name).sort()).toEqual([
+                    'alpha',
+                    'beta',
+                    'delta',
+                    'epsilon',
+                    'gamma',
+                ]);
+            });
         });
 
         describe('get_task', () => {

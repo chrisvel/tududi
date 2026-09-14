@@ -70,6 +70,18 @@ const adminController = {
         }
     },
 
+    async deleteWaitlistEntry(req, res, next) {
+        try {
+            await adminService.deleteWaitlistEntry(
+                getRequesterId(req),
+                req.params.id
+            );
+            res.status(204).send();
+        } catch (error) {
+            next(error);
+        }
+    },
+
     async listUsers(req, res, next) {
         try {
             const requesterId = getRequesterId(req);

@@ -389,6 +389,22 @@ class AdminService {
         return waitlist.toCsv(await waitlist.all());
     }
 
+    // Removing an address someone asked to be forgotten, or a bad row that
+    // will never be mailed anyway.
+    async deleteWaitlistEntry(requesterId, id) {
+        await this.verifyAdmin(requesterId);
+        const numericId = Number(id);
+        if (!Number.isInteger(numericId) || numericId <= 0) {
+            throw new ValidationError('Invalid id');
+        }
+
+        const waitlist = require('../../services/waitlistService');
+        const removed = await waitlist.remove(numericId);
+        if (!removed) {
+            throw new NotFoundError('Waitlist entry not found');
+        }
+    }
+
     async toggleRegistration(requesterId, body) {
         await this.verifyAdmin(requesterId);
 

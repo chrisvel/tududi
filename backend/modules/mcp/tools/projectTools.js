@@ -2,9 +2,9 @@
 
 const entitlements = require('../../../services/entitlementsService');
 const { sequelize, Project, Area, Tag } = require('../../../models');
-const { Op } = require('sequelize');
 const projectsRepository = require('../../projects/repository');
 const permissionsService = require('../../../services/permissionsService');
+const { resolveTagsForTransaction } = require('./tagResolver');
 
 function registerProjectTools(server, context, tools) {
     // 1. list_projects - List projects
@@ -215,7 +215,6 @@ function registerProjectTools(server, context, tools) {
             required: ['name'],
         },
         handler: async (params) => {
-            const tagNames = [...new Set(params.tags || [])];
             const projectData = {
                 user_id: context.userId,
                 name: params.name,
@@ -233,26 +232,14 @@ function registerProjectTools(server, context, tools) {
                     transaction,
                 });
 
-                if (tagNames.length === 0) {
-                    return project;
-                }
-
-                await Tag.bulkCreate(
-                    tagNames.map((name) => ({
-                        name,
-                        user_id: context.userId,
-                    })),
-                    { ignoreDuplicates: true, transaction }
+                const tagInstances = await resolveTagsForTransaction(
+                    params.tags,
+                    context.userId,
+                    transaction
                 );
-
-                const tagInstances = await Tag.findAll({
-                    where: {
-                        name: { [Op.in]: tagNames },
-                        user_id: context.userId,
-                    },
-                    transaction,
-                });
-                await project.setTags(tagInstances, { transaction });
+                if (tagInstances !== undefined) {
+                    await project.setTags(tagInstances, { transaction });
+                }
 
                 return project;
             });

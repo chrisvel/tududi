@@ -31,7 +31,11 @@
     "download": "다운로드",
     "exitFocusMode": "포커스 모드 종료",
     "searchTimezones": "시간대 검색...",
-    "dismiss": "해제"
+    "dismiss": "해제",
+    "search": "검색",
+    "previous": "이전",
+    "done": "완료",
+    "clear": "지우기"
   },
   "sidebar": {
     "dashboard": "대시보드",
@@ -72,7 +76,9 @@
     "boards": "보드",
     "bookmarks": "북마크",
     "reports": "보고서",
-    "productivityAssistant": "생산성 도우미"
+    "productivityAssistant": "생산성 도우미",
+    "assignedToMe": "내게 할당됨",
+    "everyone": "모두"
   },
   "navigation": {
     "home": "홈",
@@ -86,7 +92,9 @@
     "toggleSearch": "검색 전환",
     "quickInboxCapture": "빠른 인박스 캡처",
     "userMenu": "사용자 메뉴",
-    "search": "검색"
+    "search": "검색",
+    "admin": "관리자",
+    "adminBadge": "관리자"
   },
   "settings": {
     "todayPageSettings": "오늘 페이지 설정",
@@ -201,7 +209,10 @@
       "dropHere": "여기에 드롭"
     },
     "chaseUp": "추적",
-    "habit": "습관"
+    "habit": "습관",
+    "assignedTo": "할당됨",
+    "subtasks": "하위 작업",
+    "openFullPage": "전체 보기 열기"
   },
   "timeline": {
     "activityTimeline": "활동 타임라인",
@@ -690,7 +701,8 @@
         "vague": "\"전화하기\", \"작성하기\", \"일정 잡기\", 또는 \"조사하기\"와 같은 행동 동사로 시작해보세요"
       },
       "selectAtLeastOneDay": "하루 이상 선택해 주세요",
-      "deferUntilPlaceholder": "연기할 날짜와 시간을 선택하세요"
+      "deferUntilPlaceholder": "연기할 날짜와 시간을 선택하세요",
+      "notePlaceholder": "메모 추가..."
     },
     "noteTitle": "노트 제목",
     "noteContent": "노트 내용",
@@ -745,7 +757,9 @@
     },
     "captcha_required": "인증을 완료한 뒤 다시 시도해 주세요.",
     "registration_successful": "이메일 주소를 인증하세요",
-    "registration_email_sent": "계정을 활성화하려면 이메일 주소를 인증하세요. 링크를 보내드렸으니 받은 편지함을 확인하세요."
+    "registration_email_sent": "계정을 활성화하려면 이메일 주소를 인증하세요. 링크를 보내드렸으니 받은 편지함을 확인하세요.",
+    "notify_joined": "당신은 목록에 있습니다. tududi Cloud가 열리는 날 이메일로 알려드리겠습니다.",
+    "notify_failed": "주소를 저장할 수 없습니다. 다시 시도해 주세요."
   },
   "dropdown": {
     "createNew": "새로 만들기",
@@ -868,7 +882,47 @@
     "rollingMsg3": "적어 두세요…",
     "saveAs": "다른 이름으로 저장",
     "shiftEnterHint": "새 줄을 위해 Shift + Enter",
-    "addToInbox": "받은 편지함 항목으로 추가 (Enter)"
+    "addToInbox": "받은 편지함 항목으로 추가 (Enter)",
+    "emptyItem": "(빈 항목)",
+    "itemQueuedOffline": "오프라인으로 저장됨. 온라인으로 돌아오면 자동으로 동기화됩니다.",
+    "infoShort": "받은 편지함은 분류되지 않은 생각이 모이는 곳입니다 — 메모를 적고 나중에 정리하세요.",
+    "recentlyCaptured": "최근 캡처됨",
+    "line": "줄",
+    "lines": "줄들",
+    "processN": "처리 {{count}}",
+    "allClarified": "모두 명확해짐",
+    "reClarify": "다시 명확히 하기",
+    "trashedRestore": "{{count}} 휴지통에서 복원 · 복원",
+    "restored": "휴지통 항목이 복원되었습니다",
+    "restoreError": "항목 복원에 실패했습니다",
+    "trashError": "항목을 휴지통에 버리는 데 실패했습니다",
+    "clarifyProgress": "명확히 하기 · {{progress}}",
+    "clarifyDone": "모두 명확해졌습니다. 받은 편지함이 안정적입니다.",
+    "clarifyBackToList": "목록으로 돌아가기",
+    "clarifyExit": "명확히 하기 종료",
+    "clarifyBack": "← 뒤로",
+    "clarifyQ": {
+      "actionable": "이것은 실행 가능한가요?",
+      "notActionable": "어떤 종류의 일인가요?",
+      "steps": "한 단계인가요, 아니면 여러 단계인가요?",
+      "twomin": "2분 이내에 할 수 있나요?",
+      "deferDelegate": "나중에 스스로 할 건가요, 아니면 넘길 건가요?"
+    },
+    "clarifyChoice": {
+      "yesActionable": "네, 실행 가능",
+      "notActionable": "실행 불가능",
+      "trash": "휴지통에 버리기",
+      "someday": "언젠가 / 아마도",
+      "referenceNote": "참고 노트",
+      "oneStep": "한 단계",
+      "severalSteps": "여러 단계 (프로젝트)",
+      "doItNow": "네 — 지금 실행하기",
+      "no": "아니요",
+      "scheduleIt": "일정 잡기",
+      "delegate": "위임하기"
+    },
+    "somedayCreated": "언젠가에 추가됨",
+    "reClarifyLink": "다시 명확히 하기"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1052,7 +1106,8 @@
     "statusUpdated": "상태가 성공적으로 업데이트되었습니다",
     "statusUpdateError": "상태 업데이트에 실패했습니다",
     "updatedAt": "업데이트 날짜",
-    "upcoming": "예정"
+    "upcoming": "예정",
+    "assigneeUpdateError": "담당자 업데이트 실패"
   },
   "projects": {
     "loading": "프로젝트 로딩 중...",
@@ -1116,7 +1171,9 @@
     "focusHint": "이 작업을 진행 중 및 오늘로 이동",
     "noNextAction": "모두 완료 - 미완료 작업 없음.",
     "selectDueDatePlaceholder": "마감일 선택",
-    "goalTitle": "목표"
+    "goalTitle": "목표",
+    "addProject": "프로젝트 추가",
+    "noResults": "프로젝트가 없습니다"
   },
   "projectItem": {
     "edit": "편집",
@@ -1179,7 +1236,11 @@
     "contentPlaceholderMarkdown": "Markdown 형식을 사용하여 내용을 작성하세요...\n\n예시:\n# 제목\n**굵은 텍스트**\n*기울임 텍스트*\n- 목록 항목\n```코드```",
     "pinToSidebar": "사이드바에 고정",
     "unpinFromSidebar": "사이드바에서 고정 해제",
-    "save": "저장"
+    "save": "저장",
+    "addNote": "노트 추가",
+    "tree": {
+      "folders": "폴더"
+    }
   },
   "tags": {
     "loading": "태그 로딩 중...",
@@ -1207,7 +1268,8 @@
     "systemTags": "시스템 태그",
     "systemTagsDescription": "자동으로 관리됨 · 삭제하거나 이름을 변경할 수 없음",
     "system": "시스템",
-    "customize": "사용자 정의"
+    "customize": "사용자 정의",
+    "addTag": "태그 추가"
   },
   "recurrence": {
     "none": "없음",
@@ -1227,7 +1289,11 @@
     "inheritedSettingsMessage": "이 작업은 반복 작업에서 생성되었습니다. 아래에 표시된 반복 설정은 원래 작업에서 상속된 것이며 여기에서 수정할 수 없습니다.",
     "cancelEdit": "수정 취소",
     "editParentRecurrence": "상위 반복 수정",
-    "parentEditWarning": "⚠️ 상위 작업의 반복 설정을 수정하고 있습니다. 변경 사항은 이 반복 작업의 모든 미래 인스턴스에 영향을 미칩니다."
+    "parentEditWarning": "⚠️ 상위 작업의 반복 설정을 수정하고 있습니다. 변경 사항은 이 반복 작업의 모든 미래 인스턴스에 영향을 미칩니다.",
+    "every": "매",
+    "weeks": "주",
+    "months": "개월",
+    "advancedHint": "특정 요일이나 종료 날짜를 위해 전체 작업을 열어보세요."
   },
   "weekdays": {
     "sunday": "일요일",
@@ -1470,7 +1536,43 @@
       "overrideSaved": "예외가 저장되었습니다",
       "overrideCleared": "예외가 제거되었습니다",
       "synced": "결제 제공업체에서 동기화되었습니다"
-    }
+    },
+    "dashboard": {
+      "title": "관리자",
+      "subtitle": "tududi {{version}} · {{env}}",
+      "users": "사용자",
+      "usersHint": "{{verified}} 확인됨 · {{admins}} 관리자 · {{new}} 오늘",
+      "paying": "결제 중",
+      "selfHosted": "자가 호스팅",
+      "waitlist": "대기 목록",
+      "waitlistHint": "{{n}}일 후",
+      "content": "작업",
+      "contentHint": "{{projects}} 프로젝트 · {{notes}} 메모",
+      "regOpen": "등록 열림",
+      "regClosed": "등록 닫힘",
+      "waitlistLatest": "최신 대기 목록 가입",
+      "waitlistEmpty": "아직 아무도 없습니다.",
+      "email": "이메일",
+      "source": "출처",
+      "joined": "가입됨",
+      "waitlistAll": "모두 보기"
+    },
+    "waitlist": {
+      "title": "대기 목록",
+      "export": "CSV 내보내기",
+      "searchPlaceholder": "이메일로 검색",
+      "email": "이메일",
+      "source": "출처",
+      "locale": "언어",
+      "submissions": "제출",
+      "joined": "가입됨",
+      "empty": "아직 등록한 사람이 없습니다",
+      "noMatches": "해당 검색과 일치하는 주소가 없습니다",
+      "showing": "{{from}}-{{to}} / {{total}}"
+    },
+    "passwordInviteHint": "초대 이메일을 보내려면 비워 두세요",
+    "invitationSent": "{{email}}로 초대 이메일이 전송되었습니다",
+    "invitationNotSent": "계정이 생성되었지만 이메일이 비활성화되어 있습니다 - 이 사용자에게 수동으로 비밀번호를 설정하세요."
   },
   "shares": {
     "shareProject": "프로젝트 공유",
@@ -1496,7 +1598,11 @@
     "noShares": "아직 공유되지 않음",
     "noAvailableUsers": "공유할 수 있는 사용자가 없습니다",
     "shared": "공유됨",
-    "sharedWithTeam": "팀과 공유됨"
+    "sharedWithTeam": "팀과 공유됨",
+    "shareArea": "공유 영역",
+    "shareGoal": "공유 목표",
+    "shareNote": "공유 노트",
+    "shareTask": "공유 작업"
   },
   "views": {
     "title": "스마트 뷰",
@@ -1642,14 +1748,16 @@
       "overdueTasks": "연체된 작업",
       "deferUntil": "연기할 때까지",
       "dueProjects": "기한이 있는 프로젝트",
-      "overdueProjects": "연체된 프로젝트"
+      "overdueProjects": "연체된 프로젝트",
+      "taskAssigned": "작업 할당됨"
     },
     "descriptions": {
       "dueTasks": "24시간 이내에 기한이 도래하는 작업",
       "overdueTasks": "기한이 지난 작업",
       "deferUntil": "현재 작업할 수 있는 작업",
       "dueProjects": "24시간 이내에 기한이 도래하는 프로젝트",
-      "overdueProjects": "기한이 지난 프로젝트"
+      "overdueProjects": "기한이 지난 프로젝트",
+      "taskAssigned": "다른 사람이 당신에게 작업을 할당했습니다"
     },
     "telegram": {
       "notConfigured": {
@@ -1779,5 +1887,44 @@
       "backups_import": "백업 가져오기",
       "attachments": "첨부 파일"
     }
+  },
+  "subscription": {
+    "title": "구독",
+    "chooseForCloud": "tududi Cloud를 위한 요금제를 선택하세요",
+    "noActive": "활성 구독이 없습니다",
+    "chooseToContinue": "tududi Cloud를 계속 사용하려면 요금제를 선택하세요.",
+    "monthly": "월간",
+    "yearly": "연간",
+    "priceMonthly": "{{price}} 매월",
+    "priceYearly": "{{price}} 매년",
+    "subscribeMonthly": "월간 구독하기",
+    "subscribeYearly": "연간 구독하기",
+    "perkUnlimited": "무제한 작업, 프로젝트 및 메모",
+    "perkStorage": "첨부파일 및 파일 업로드",
+    "perkFeatures": "AI 어시스턴트, MCP, CalDAV 동기화 및 텔레그램 봇",
+    "perkBackups": "일일 백업 및 관리되는 업데이트",
+    "perkExport": "언제든지 모든 것을 내보내기",
+    "taxNote": "결제는 {{provider}}에서 처리됩니다. 가격은 적용 가능한 세금을 제외합니다. 언제든지 취소할 수 있습니다.",
+    "notConfigured": "이 인스턴스에서는 구독을 사용할 수 없습니다. 지원팀에 문의하세요.",
+    "exportData": "데이터 내보내기"
+  },
+  "demo": {
+    "opening": "데모를 여는 중...",
+    "unavailableTitle": "데모를 사용할 수 없습니다",
+    "unavailableBody": "재구성이 진행 중일 수 있습니다. 잠시 후 다시 시도하세요."
+  },
+  "everyone": {
+    "title": "모두",
+    "subtitle": "모두가 현재 작업 중인 내용",
+    "you": "당신",
+    "people": "사람들",
+    "tasks": "작업",
+    "overdue": "연체",
+    "today": "오늘",
+    "tomorrow": "내일",
+    "upcoming": "이번 주",
+    "noDate": "날짜 없음",
+    "nothing": "현재 아무것도 없음",
+    "empty": "현재 공유된 내용이 없습니다. 영역, 프로젝트 또는 목표를 공유하거나 누군가에게 작업을 할당하여 여기에 표시하세요."
   }
 }

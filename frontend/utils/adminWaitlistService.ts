@@ -1,11 +1,13 @@
 import { handleAuthResponse } from './authUtils';
 import { getApiPath } from '../config/paths';
+import { fetchWithCsrf } from './csrfService';
 
 export interface WaitlistEntry {
     id: number;
     email: string;
     source: string;
     locale: string | null;
+    ip_address: string | null;
     submission_count: number;
     created_at: string;
 }
@@ -51,4 +53,13 @@ export const downloadWaitlistCsv = async (): Promise<void> => {
     link.click();
     link.remove();
     URL.revokeObjectURL(url);
+};
+
+export const deleteWaitlistEntry = async (id: number): Promise<void> => {
+    const response = await fetchWithCsrf(getApiPath(`admin/waitlist/${id}`), {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
+    });
+    await handleAuthResponse(response, 'Failed to remove the entry.');
 };

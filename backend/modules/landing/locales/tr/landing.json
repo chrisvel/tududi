@@ -1,7 +1,9 @@
 {
   "meta": {
     "langSwitcherLabel": "Dili değiştir",
-    "langSwitcherCurrent": "Dil: {{name}}"
+    "langSwitcherCurrent": "Dil: {{name}}",
+    "description": "Alanlar, hedefler, projeler ve görevler, ayrıca notlar ve alışkanlıklar, bir sistemde. Bir dakikada bir tududi Cloud hesabı kurun. {{tools}} araç sunan bir MCP sunucusu, AI aracılarının listenizde çalışmasını sağlar. Sunucuyu kendiniz çalıştırmayı tercih ederseniz kendi kendine barındırma orada.",
+    "title": "tududi: görev yöneticisi ve yaşam yönetim sistemi, AI aracıları için MCP ile"
   },
   "nav": {
     "demo": "Canlı demo",
@@ -12,7 +14,8 @@
     "docs": "Belgeler",
     "changelog": "Değişiklikler",
     "signIn": "Giriş yap",
-    "toggle": "Menüyü aç"
+    "toggle": "Menüyü aç",
+    "selfHostGuide": "Kendi kendine barındırma kılavuzu"
   },
   "hero": {
     "badgeStars": "GitHub yıldızı",
@@ -21,7 +24,12 @@
     "ctaDemo": "Canlı demoyu deneyin",
     "demoNote": "Örnek verilerle dolu gerçek bir barındırılan örnek; paylaşılır ve düzenli olarak sıfırlanır",
     "screenshotAlt": "tududi arayüzü; Bugün görünümü ve planlanmış görevler",
-    "ctaWaitlist": "Bekleme listesine katıl"
+    "ctaWaitlist": "Bekleme listesine katıl",
+    "cloudNote": "Kurulacak sunucu yok. Aylık veya yıllık, ve istediğiniz zaman iptal edebilirsiniz.",
+    "ctaPrimary": "tududi Cloud'da başlayın",
+    "lede": "Alanlar, hedefler, projeler, görevler, notlar ve alışkanlıklar, bir sistemde. Bir dakikada bir Cloud hesabı oluşturun.",
+    "titleLine1": "Basitleştirilmiş verimlilik",
+    "titleLine2": ""
   },
   "proof": {
     "stars": "GitHub yıldızı",
@@ -29,7 +37,8 @@
     "languages": "{{count}} dil",
     "dockerPulls": "Docker indirmesi",
     "discord": "Discord üyesi",
-    "discordAlt": "Discord: {{count}} üye"
+    "discordAlt": "Discord: {{count}} üye",
+    "minute": "Bir dakikada kuruldu"
   },
   "press": {
     "featuredIn": "Hakkımızda yazanlar",
@@ -45,7 +54,10 @@
         "title": "Sohbetten kaydedin ve arayın",
         "body": "Konuşmadan çıkmadan görev ekleyin, bulun ve tamamlayın."
       },
-      "dataStays": {},
+      "dataStays": {
+        "body": "MCP bağlantısı doğrudan kendi tududi örneğinize gider, Cloud'da veya kendi sunucunuzda. Hiçbir şey üçüncü bir tarafın üzerinden geçmez.",
+        "title": "Örneğinizle konuşur"
+      },
       "openProtocol": {
         "title": "Açık protokol, bağımlılık yok",
         "body": "Açık Model Context Protocol üzerine kurulu. Claude ve diğer MCP istemcileriyle çalışır."
@@ -69,7 +81,40 @@
         "title": "Proje analizi",
         "body": "Bir projenin durumuna hızlı bakış: ne ilerliyor, ne takılmış."
       }
-    }
+    },
+    "configCloudTab": "Cloud",
+    "configSelfHostNote": "Bunun yerine TUDUDI_URL'yi kendi örneğinize yönlendirin. Diğer her şey aynıdır.",
+    "configSelfHostTab": "Kendiniz mi barındırıyorsunuz?",
+    "demo": {
+      "answer1Html": "<strong>Faturalama geçişini yayınla</strong> ile başlayın. Bugün son tarih, ve <strong>Ödemeler</strong>'de üç görev onun ardından bekliyor.",
+      "answer2Html": "Tamamlandı. <strong>Yeniden tasarım taslağını gözden geçir</strong> artık Cuma günü son tarihte, ve <strong>Ödemeler kuyruğunun engelini kaldır</strong> Ödemeler projesinde, bugün son tarihte.",
+      "ask1": "Bugün neye odaklanmalıyım, ve gecikeni bir şey var mı?",
+      "ask2": "Yeniden tasarım incelemesini Cuma'ya taşı ve Ödemelerin engelini kaldırmak için bir görev ekle.",
+      "badge": "tududi MCP",
+      "caption": "Bir örnek oturum. Aracınız MCP üzerinden doğrudan kendi örneğinize bağlanır.",
+      "composer": "Claude'a yanıt ver…",
+      "groupTitle": "Bilmekte fayda var",
+      "rows": {
+        "habit": {
+          "label": "Seri risk altında",
+          "text": "Sabah incelemesi, 12 gün üst üste, bugün henüz kaydedilmedi"
+        },
+        "overdue": {
+          "label": "Süresi geçmiş",
+          "text": "Ev'de 2 görev, en eskisi 6 gündür"
+        },
+        "stalled": {
+          "label": "Durmuş",
+          "text": "Web sitesi yeniden tasarımı, 11 gündür etkinlik yok"
+        }
+      },
+      "toolLabel": "tududi kullanıldı",
+      "windowTitle": "Claude Desktop"
+    },
+    "footnoteIncluded": "MCP, tududi Cloud ile ve her kendi barındırılan örnekle birlikte gelir.",
+    "ledeHtml": "tududi, görevleri, projeleri, alanları, hedefleri, alışkanlıkları, notları, kişileri, etiketleri, görünümleri, gelen kutusunu, aramayı ve metrikleri kapsayan <strong>{{tools}} araç</strong> sunan bir MCP sunucusuyla gelir. Claude'u veya MCP ile uyumlu herhangi bir aracıyı doğrudan kendi örneğinize bağlayın, bu ister Cloud hesabınız olsun ister kendinizin yönettiği bir sunucu olsun. Bağlantı, aradaki bir röle üzerinden geçmek yerine örneğinize gider, bu Todoist ve Notion'ın ne söz verseler de sunamayacağı yapısal bir farktır.",
+    "titleLine1": "Gerçek bir sistem",
+    "titleLine2": "AI aracınızın gerçekten kullanabileceği"
   },
   "features": {
     "eyebrow": "Özellikler",
@@ -178,7 +223,8 @@
         "title": "Projelerde iş birliği",
         "body": "Projeleri ayrıntılı erişim izinleriyle paylaşın - yalnızca okuma ya da okuma ve yazma."
       }
-    }
+    },
+    "sub": "tududi, hedefleri, projeleri, görevleri, notları ve akıllı görünümleri sakin, odaklı bir sistemde birleştirir. Bunu sizin için işletmemize izin verin, veya tercih ederseniz kendiniz işletin."
   },
   "selfHost": {
     "eyebrow": "Kendin barındır",
@@ -187,7 +233,12 @@
     "step1": "Docker imajını çekin",
     "step2": "Konteyneri çalıştırın",
     "step3Prefix": "Şu adresten erişin:",
-    "linkGithub": "GitHub'da görüntüle"
+    "linkGithub": "GitHub'da görüntüle",
+    "cardSub": "Zaten Docker çalıştıranlar için",
+    "ctaCloud": "Cloud'da başlayın",
+    "linkDocs": "Kendi kendine barındırma kılavuzunu okuyun",
+    "showCommands": "Kurulum komutlarını göster",
+    "sub": "Kendi kendine barındırma, zaten Docker ve reverse proxy çalıştıranlar içindir. Sistem yöneticisi olmadan tududi isterseniz, Cloud'u kullanın."
   },
   "pricing": {
     "eyebrow": "Fiyatlar",
@@ -196,18 +247,39 @@
     "earlyBird": "ERKEN KAYIT",
     "perYear": "/yıl",
     "plans": {
-      "selfHosted": {},
+      "selfHosted": {
+        "action": "Kendi kendine barındırma kılavuzunu okuyun →",
+        "features": [
+          "Bir sunucu veya NAS'ı siz sağlarsınız",
+          "Docker'ı, güncellemeleri ve geçişleri siz yönetirsiniz",
+          "Bir reverse proxy ve TLS'i siz yapılandırırsınız",
+          "Yedeklemeler size aittir",
+          "Tam özellik seti, koltuk sınırı yok, kendi donanımınızda veri"
+        ],
+        "name": "Kendi kendine barındırılan (ileri düzey)",
+        "priceNote": "Ücretsiz, sunucuyu kendiniz çalıştırırsanız"
+      },
       "cloud": {
         "name": "Cloud",
         "or": "veya",
         "launchNote": "Erken kayıt yıllık fiyatı, abone kaldığınız sürece sizin.",
         "comingSoon": "Birkaç gün içinde açılıyor",
         "comingSoonNote": "Cloud'u yeni altyapıya taşıyoruz. E-posta adresinizi aşağıya bırakın, geri döndüğü anda haber verelim.",
-        "notifySubmit": "Haber ver"
+        "notifySubmit": "Haber ver",
+        "action": "Başlayın →",
+        "features": [
+          "Kurulacak sunucu olmadan bir dakikada çalışır",
+          "Sınırsız görev, proje ve not, ayrıca ekler",
+          "AI asistanı, MCP, CalDAV senkronizasyonu ve Telegram botu",
+          "Sizin için halledilmiş güncellemeler ve günlük yedeklemeler, {{proStorageGb}} GB depolama ile",
+          "Her şeyi istediğiniz zaman dışa aktarın, hesabınızı kendiniz silin"
+        ],
+        "priceNote": "Her şey dahil. İstediğiniz zaman iptal edin."
       }
     },
     "fineprint": "İstediğiniz zaman iptal edin ve her şeyi dışa aktarın. tududi Cloud bir gün kapanırsa verilerinizi ve kendi sunucunuza taşınma rehberini alırsınız. Depolama ve API hacmi için adil kullanım geçerlidir. 30 gün para iade garantisi, soru sorulmaz.",
-    "perMonth": "/ay"
+    "perMonth": "/ay",
+    "sub": "Bir barındırılan plan, veya operasyonla ilgilenmeyi tercih ederseniz kendiniz çalıştırın."
   },
   "compare": {
     "title": "Hızlı karşılaştırma",
@@ -220,12 +292,24 @@
       "noSetup": "Sunucu kurulumu gerekmez",
       "managedUpdates": "Yönetilen güncellemeler",
       "autoBackups": "Otomatik yedeklemeler",
-      "pricing": "Fiyat"
+      "pricing": "Fiyat",
+      "exportAnytime": "Her şeyi istediğiniz zaman dışa aktarın",
+      "proFeatures": "AI asistanı, MCP, CalDAV, Telegram",
+      "startMinute": "Bir dakikada başlayın",
+      "storage": "Ek depolama alanı",
+      "support": "Destek"
     },
     "values": {
       "community": "Topluluk",
-      "email": "E-posta"
-    }
+      "email": "E-posta",
+      "gigabytes": "{{count}} GB",
+      "perMonthOrYear": "{{monthly}}/ay veya {{price}}/yıl",
+      "selfCost": "Ücretsiz, ayrıca kendi barındırma maliyetiniz",
+      "yourDisk": "Kendi diskiniz"
+    },
+    "colCloud": "tududi Cloud",
+    "colSelf": "Kendi kendine barındırma",
+    "sub": "Her iki durumda da aynı uygulama. Farklı olan, onu kimin işlettiği, ve bunun size ne kadara mal olduğu."
   },
   "waitlist": {
     "title": "Henüz hazır değil misiniz?",
@@ -255,7 +339,9 @@
     "subTitle": "E-postayla sürüm notları",
     "subBody": "Ara sıra sürüm notları. Pazarlama yok, istediğiniz zaman abonelikten çıkın.",
     "subSubmit": "Katıl",
-    "rights": "Tüm hakları saklıdır."
+    "rights": "Tüm hakları saklıdır.",
+    "linkLicence": "MIT lisansı",
+    "tagline": "Yaşamı ve işi organize etmek için açık bir sistem. Bizim tarafımızdan barındırılır, veya kendi sunucunuzda."
   },
   "js": {
     "showFewer": "Daha az göster",
@@ -264,11 +350,136 @@
   },
   "faq": {
     "items": {
-      "freePlan": {},
+      "freePlan": {
+        "a": "Hayır. Cloud ayda {{monthly}} veya yılda {{price}}'dır, ve bu tüm fiyat listesi: ücretsiz katman yok, deneme saati yok, daha sonra sessizce faturalandırmaya başlayan bir şey için tahsil edilen kart yok. Size uymadığı ortaya çıkarsa 30 günlük para geri garantisi var, ve önce bakmak isterseniz bu sayfada canlı bir demo var. tududi'yi kullanmanın ücretsiz yolu, aynı uygulama olan kendi sunucunuzda çalıştırmaktır.",
+        "q": "tududi Cloud'da ücretsiz bir plan veya deneme var mı?"
+      },
       "leaving": {
         "q": "Ayrılabilir miyim, verilerime ne olur?",
         "a": "Evet, istediğiniz zaman. Profilinizden her şeyi tek dosya olarak dışa aktarın ve aynı biçimi okuyan kendi barındırdığınız bir tududi'ye içe aktarın. Hesabınızı silmek verilerinizi, eklerinizi ve yedeklerinizi sunucularımızdan kaldırır ve aboneliği iptal eder."
+      },
+      "aiOptional": {
+        "a": "Hayır. Her iki AI katmanı da siz etkinleştirene kadar kapalıdır, ve tududi onlarsız da tam bir sistemdir. Onları hiç etkinleştirmezseniz, hiçbir şey eksik olmaz ve hiçbir şey sizi rahatsız etmez.",
+        "q": "AI özelliklerini kullanmak zorunda mıyım?"
+      },
+      "aiPrivacy": {
+        "a": "Bu, iki katmandan hangisini kastettiğinize bağlı, ve fark önemli. MCP sunucusu kendi örneğinizin içinde çalışır: Claude Desktop gibi bir aracı doğrudan o örneğe bağlanır, dolayısıyla konuşma aracınız ile kendi tududinizin arasındadır, aracı bir taraf değil. AI asistanı farklıdır. OpenAI uyumlu bir sağlayıcıyı çağırır, dolayısıyla onu barındırılan bir sağlayıcıya yönlendirirseniz, o isteklerin içeriği o sağlayıcıya gider. Bunun yerine onu Ollama veya LM Studio gibi yerel bir modele yönlendirin, ve hiçbir şey makinenizden çıkmaz. Bir anahtar verene kadar kapalı kalır, dolayısıyla bu her zaman sizin seçiminizdir, varsayılan değil.",
+        "q": "Verilerim bir AI şirketine mi gönderiliyor?"
+      },
+      "commercialUse": {
+        "a": "Evet, ve önce bir şey satın almanız gerekmiyor. MIT lisansı, bir şirket içinde ve ticari bir üründe de olmak üzere, gelir eşiği olmadan ve bildirilecek bir şey olmadan ticari kullanıma izin verir. Finans ekibinizin bir faturaya ihtiyacı varsa, bir Cloud aboneliği ödeme sağlayıcımız üzerinden faturalanır ve bir tane üretir. Bu sayfadaki hiçbir şey izin satmaz, çünkü o izin zaten sizindir.",
+        "q": "tududi'yi işte, veya şirketimde kullanabilir miyim?"
+      },
+      "dataLocation": {
+        "a": "Her şey, bağladığınız birim içinde tek bir SQLite veritabanı dosyasında yaşar. Onu yedeklemek, o dosyayı güvenli bir yere kopyalamak, geri yüklemek ise onu geri kopyalamak demektir. tududi ayrıca geçişleri uygulamadan önce otomatik olarak veritabanının bir anlık görüntüsünü alır, yakın zamanlı kopyaları korur. Sizinle kendi verileriniz arasında tescilli bir biçim veya dışa aktarma adımı yoktur.",
+        "q": "Verilerim nerede, ve onları nasıl yedeklerim?"
+      },
+      "licence": {
+        "a": "Uygulama MIT lisansı altında açık kaynaktır, dolayısıyla onu kendi sunucunuzda ücretsiz çalıştırabilir, değiştirebilir ve kimseye ödeme yapmadan üzerine inşa edebilirsiniz. Koltuk sayısı sınırı ve geri tutulan özellik yoktur: kendi barındırılan sürüm tam üründür. tududi Cloud ücretli bir hizmettir, çünkü barındırma, yedeklemeler ve e-posta işletmek için para gerektirir. Operasyonel iş için ödersiniz, yazılıma erişim için asla.",
+        "q": "tududi gerçekten ücretsiz mi?"
+      },
+      "maintained": {
+        "a": "Evet. Ağırlıklı olarak bir bakımcı tarafından, topluluk katkılarıyla geliştirilir, ve sık sık yayınlanır. Her sürüm, yukarıdaki menüdeki Değişiklik Günlüğü'nden bağlanan GitHub sürümler sayfasında listelenir, dolayısıyla sözümüze güvenmek yerine hızı kendiniz değerlendirebilirsiniz. Geliştirme açıkça yapılır: sorunlar, herkese açık bir yol haritası, ve soruların yanıtlandığı bir Discord.",
+        "linkLabel": "Tüm sürümleri gör",
+        "q": "tududi aktif olarak bakımı yapılıyor mu?"
+      },
+      "mcp": {
+        "a": "MCP, AI aracılarını gerçek sistemlere bağlamak için açık bir standart olan Model Context Protocol'dür. tududi, görevleri, projeleri, alanları, hedefleri, alışkanlıkları, notları, kişileri, etiketleri, görünümleri, gelen kutusunu, aramayı ve metrikleri kapsayan {{tools}} araç sunan bir MCP sunucusuyla gelir, dolayısıyla bir aracı işi sadece hakkında konuşmak yerine yakalayabilir, bulabilir, güncelleyebilir ve bitirebilir. İsteğe bağlıdır, Cloud ile ve her kendi barındırılan örnekle birlikte gelir, ve Claude Desktop, Cursor, Windsurf, Cline veya başka herhangi bir MCP istemcisiyle çalışır.",
+        "q": "MCP nedir, ve bir aracı gerçekte ne yapabilir?"
+      },
+      "mobile": {
+        "a": "tududi, yerel bir uygulama yerine PWA olarak kurulur. Android veya iOS'ta ana ekranınıza ekleyin, veya masaüstüne kurun, ve bir uygulama gibi davranır: çevrimdışı olduğunuzda önbellekten okur ve yeniden bağlandığınızda değişikliklerinizi senkronize eder. App Store veya Play Store'dan indirilecek bir şey yoktur.",
+        "q": "Mobil uygulama var mı?"
+      },
+      "multiUser": {
+        "a": "Evet. Tek bir örnek birden fazla kullanıcıyı barındırabilir, ve projeler, içindeki görevlerin ve notların devraldığı salt okunur veya okuma-yazma erişimiyle paylaşılabilir. Kendi kendine kayıt varsayılan olarak kapalıdır, dolayısıyla bir yönetici hesap oluşturur veya kayıtları kasıtlı olarak açar. Bir kapıyı kapatmayı unuttuğunuz için kimse içeri giremez.",
+        "q": "Birden fazla kişi bir örneği paylaşabilir mi?"
+      },
+      "requirements": {
+        "a": "Docker, veritabanını depolamak için kalıcı bir yer, önünde TLS'li bir reverse proxy, ve güncellemeleri uygulama ve yedeklemeleri koruma disiplini. Küçük bir VPS'te veya kendi ağınızdaki bir makinede sorunsuz çalışır, ve komutlar Kendi Kendine Barındırma bölümünde ve belgelerde bulunur. Çoğu insan tüm bu iş olmadan aynı uygulama olan Cloud'dan daha iyi hizmet alır.",
+        "linkLabel": "Belgeleri okuyun",
+        "q": "Onu kendim barındırmak için neye ihtiyacım var?"
+      },
+      "reverseProxy": {
+        "a": "Evet, ve onu çalıştırmanın normal yolu budur. Uygulamanın nginx, Caddy veya Traefik tarafından iletilen başlıklara güvenmesi için TUDUDI_TRUST_PROXY'yi ayarlayın. Bunu atlarsanız, girişler ve IP kaydı teşhis edilmesi zor bir şekilde tuhaf davranır, dolayısıyla uygulama sessizce başarısız olmak yerine belirli bir hata verir. Kabul edilen değerler README'de belgelenmiştir.",
+        "q": "Bir reverse proxy'nin arkasında çalışıyor mu?"
+      },
+      "shutdown": {
+        "a": "Uygulama MIT lisanslıdır, ve kaynak kodu herkese açıktır, dolayısıyla sizden alınamaz. Herkes onu çalıştırmaya devam edebilir, ve onu fork edebilirsiniz. tududi Cloud'da verileriniz tescilli bir biçim yerine standart bir tududi veritabanında yaşar, dolayısıyla hizmet bir gün kapanırsa, verilerinizi ve onları kendi sunucunuza taşımak için bir kılavuz alırsınız.",
+        "q": "tududi ortadan kalkarsa verilerime ne olur?"
+      },
+      "whyManaged": {
+        "a": "Altyapıyı işletmemek için ödüyorsunuz. tududi Cloud size sunucu, güncellemeler, yedeklemeler ve e-posta sizin için halledilmiş olarak aynı sistemi verir, ki bu kendi kendine barındırmanın zahmetli, az gösterişli yarısıdır. Cloud, önerdiğimiz yoldur. Kendi kendine barındırma sadece zaten Docker ve reverse proxy çalıştırıyorsanız ve yığını gerçekten işletmek istiyorsanız daha iyi bir seçimdir.",
+        "q": "Kendi kendine barındırma ücretsizken neden Cloud için ödeme yapmalı?"
       }
-    }
+    },
+    "eyebrow": "FAQ",
+    "groups": {
+      "managed": "AI, MCP ve Cloud",
+      "project": "Lisans ve proje",
+      "selfHost": "Kendi kendine barındırma ve veri"
+    },
+    "permalink": "Bu yanıtın bağlantısı",
+    "sub": "Lisans, AI, ve verilerinize ne olduğu. Eksik bir şey varsa, Discord'da sorun.",
+    "title": "Taahhüt etmeden önce yanıtlanmaya değer sorular"
+  },
+  "cloud": {
+    "ctaPricing": "Fiyata bakın",
+    "ctaPrimary": "Başlayın",
+    "includes": [
+      "Sınırsız görev, proje ve not",
+      "Ekler ve dosya yüklemeleri",
+      "AI asistanı, MCP, CalDAV senkronizasyonu ve Telegram botu",
+      "Günlük yedeklemeler ve yönetilen güncellemeler",
+      "E-posta ile destek",
+      "Her şeyi istediğiniz zaman dışa aktarın"
+    ],
+    "lede": "Her iki durumda da aynı sistem. Fark, onu gece üçte çalışır, güncel ve yedeklenmiş tutan kişidir.",
+    "metaDescription": "tududi Cloud, sunucularımızda çalışan, güncellemeleri, yedeklemeleri ve e-postayı sizin için hallettiğimiz aynı açık kaynak sistemdir. Bir plan, aylık veya yıllık, istediğiniz zaman iptal edilebilir.",
+    "metaTitle": "tududi Cloud: sizin için işletilen, barındırılan tududi",
+    "note": "Aynı MIT lisanslı uygulama. Her şeyi istediğiniz zaman dışa aktarın.",
+    "orAnnual": "veya",
+    "priceNote": "Ödeme sağlayıcımız tarafından faturalandırılır. Fiyatlara geçerli vergiler dahil değildir.",
+    "pricingSub": "Her şey dahil. İstediğiniz zaman iptal edin.",
+    "pricingTitle": "Bir plan, iki ödeme yolu",
+    "reasons": {
+      "backups": {
+        "body": "Veritabanı her gece dökülür ve size hizmet veren makinenin dışında saklanır. İstediğiniz zaman her şeyi kendiniz de dışa aktarabilirsiniz.",
+        "title": "Hatırlamanız gerekmeyen yedeklemeler"
+      },
+      "email": {
+        "body": "Doğrulamalar, şifre sıfırlamaları ve hatırlatmalar, kendiniz kurmanın sıkıcı ve zahmetli olacağı ısınmış bir gönderim alanı üzerinden gider.",
+        "title": "Ulaşan e-posta"
+      },
+      "noOps": {
+        "body": "Kiralanacak VPS yok, güncellenecek Docker yok, yenilenecek reverse proxy veya sertifika yok. Giriş yaparsınız, ve orada.",
+        "title": "Yönetilecek sunucu yok"
+      },
+      "sameApp": {
+        "body": "Sadece bulut için özel özellik yok ve kısıtlı kendi barındırılan sürüm yok. Hizmeti bir gün kapatırsak, verilerinizi ve bir geçiş kılavuzu alırsınız.",
+        "title": "Tam olarak aynı uygulama"
+      },
+      "support": {
+        "body": "Kodu bilen bir kişi yanıt verir. Kendi barındırmada topluluğunuz var, ki bu iyi, ama kimse yanıt vermek zorunda değil.",
+        "title": "Yazabileceğiniz biri"
+      },
+      "updates": {
+        "body": "Yeni sürümler hesabınıza pull, yeniden başlatma veya izlemeniz gereken bir geçiş olmadan ulaşır.",
+        "title": "Sizin için uygulanan güncellemeler"
+      }
+    },
+    "selfHostLine": "Sunucuyu kendiniz mi işletmek istersiniz? Bu ücretsizdir, ve aynı uygulamadır.",
+    "title": "Neden tududi Cloud kullanmalı?",
+    "whyEyebrow": "Cloud",
+    "whySub": "Özellikler değil. Her özellik kendi barındırılan sürümde de var.",
+    "whyTitle": "Gerçekte ne için ödüyorsunuz"
+  },
+  "finalCta": {
+    "primary": "Başlayın",
+    "secondary": "Fiyatlara bakın",
+    "selfHostLink": "Kılavuzu okuyun.",
+    "selfHostPrefix": "Kendi sunucunuzda mı çalıştırmayı tercih edersiniz?",
+    "sub": "Sunucuyu, güncellemeleri ve yedeklemeleri biz işletiriz. Siz sistemi alırsınız, ve size uymuyorsa 30 günlük para geri garantisi.",
+    "title": "Bir dakikada organize olun"
   }
 }

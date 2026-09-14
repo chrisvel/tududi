@@ -31,7 +31,11 @@
     "download": "Scarica",
     "exitFocusMode": "Esci dalla modalità di concentrazione",
     "searchTimezones": "Cerca fusi orari...",
-    "dismiss": "Ignora"
+    "dismiss": "Ignora",
+    "search": "Cerca",
+    "previous": "Precedente",
+    "done": "Fatto",
+    "clear": "Pulisci"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -72,7 +76,9 @@
     "boards": "Bacheche",
     "bookmarks": "Segnalibri",
     "reports": "Report",
-    "productivityAssistant": "Assistente alla Produttività"
+    "productivityAssistant": "Assistente alla Produttività",
+    "assignedToMe": "Assegnato a me",
+    "everyone": "Tutti"
   },
   "navigation": {
     "home": "Home",
@@ -86,7 +92,9 @@
     "toggleSearch": "Attiva Ricerca",
     "quickInboxCapture": "Cattura Veloce della Posta in Arrivo",
     "userMenu": "Menu Utente",
-    "search": "Cerca"
+    "search": "Cerca",
+    "admin": "Amministratore",
+    "adminBadge": "Amministratore"
   },
   "settings": {
     "todayPageSettings": "Impostazioni Pagina Oggi",
@@ -201,7 +209,10 @@
       "dropHere": "Trascina qui"
     },
     "chaseUp": "Insegui",
-    "habit": "Abitudine"
+    "habit": "Abitudine",
+    "assignedTo": "Assegnato a",
+    "subtasks": "Sottoattività",
+    "openFullPage": "Apri vista completa"
   },
   "timeline": {
     "activityTimeline": "Timeline delle Attività",
@@ -690,7 +701,8 @@
         "vague": "Prova a iniziare con un verbo d'azione come \"Chiamare\", \"Scrivere\", \"Programmare\", o \"Ricercare\""
       },
       "selectAtLeastOneDay": "Seleziona almeno un giorno",
-      "deferUntilPlaceholder": "Seleziona la data e l'ora di rimando"
+      "deferUntilPlaceholder": "Seleziona la data e l'ora di rimando",
+      "notePlaceholder": "Aggiungi una nota..."
     },
     "noteTitle": "Titolo Nota",
     "noteContent": "Contenuto Nota",
@@ -745,7 +757,9 @@
     },
     "captcha_required": "Completa la verifica e riprova.",
     "registration_successful": "Verifica il tuo indirizzo email",
-    "registration_email_sent": "Verifica il tuo indirizzo email per attivare l'account. Ti abbiamo inviato un link, controlla la tua casella di posta."
+    "registration_email_sent": "Verifica il tuo indirizzo email per attivare l'account. Ti abbiamo inviato un link, controlla la tua casella di posta.",
+    "notify_joined": "Sei nella lista. Ti invieremo un'email il giorno in cui tududi Cloud apre.",
+    "notify_failed": "Non siamo riusciti a salvare il tuo indirizzo. Per favore riprova."
   },
   "dropdown": {
     "createNew": "Crea Nuovo",
@@ -868,7 +882,47 @@
     "rollingMsg3": "Annotalo...",
     "saveAs": "Salva come",
     "shiftEnterHint": "Shift + Enter per una nuova riga",
-    "addToInbox": "Aggiungi come elemento della posta in arrivo (Invio)"
+    "addToInbox": "Aggiungi come elemento della posta in arrivo (Invio)",
+    "emptyItem": "(Elemento vuoto)",
+    "itemQueuedOffline": "Salvato offline. Si sincronizzerà automaticamente una volta che torni online.",
+    "infoShort": "La Posta in arrivo è dove atterrano i pensieri non categorizzati — annota le cose, sistemale dopo.",
+    "recentlyCaptured": "Catturato di recente",
+    "line": "linea",
+    "lines": "linee",
+    "processN": "Elabora {{count}}",
+    "allClarified": "Tutto chiarito",
+    "reClarify": "Richiarire",
+    "trashedRestore": "{{count}} cestinati · ripristina",
+    "restored": "Elementi cestinati ripristinati",
+    "restoreError": "Impossibile ripristinare gli elementi",
+    "trashError": "Impossibile cestinare l'elemento",
+    "clarifyProgress": "Chiarire · {{progress}}",
+    "clarifyDone": "Tutto chiarito. La posta in arrivo è calma.",
+    "clarifyBackToList": "Torna all'elenco",
+    "clarifyExit": "Esci dalla chiarificazione",
+    "clarifyBack": "← Indietro",
+    "clarifyQ": {
+      "actionable": "È azionabile?",
+      "notActionable": "Che tipo di cosa è?",
+      "steps": "Un passo o diversi?",
+      "twomin": "Puoi farlo in meno di 2 minuti?",
+      "deferDelegate": "Più tardi tu stesso, o passarla a qualcun altro?"
+    },
+    "clarifyChoice": {
+      "yesActionable": "Sì, azionabile",
+      "notActionable": "Non azionabile",
+      "trash": "Cestina",
+      "someday": "Un giorno / Forse",
+      "referenceNote": "Nota di riferimento",
+      "oneStep": "Un passo",
+      "severalSteps": "Diversi passi (progetto)",
+      "doItNow": "Sì — fallo ora",
+      "no": "No",
+      "scheduleIt": "Pianificalo",
+      "delegate": "Delega"
+    },
+    "somedayCreated": "Aggiunto a Un giorno",
+    "reClarifyLink": "Riaffermare"
   },
   "dateFormats": {
     "long": "EEEE, d MMMM yyyy",
@@ -1052,7 +1106,8 @@
     "statusUpdated": "Stato aggiornato con successo",
     "statusUpdateError": "Aggiornamento dello stato non riuscito",
     "updatedAt": "Aggiornato il",
-    "upcoming": "imminente"
+    "upcoming": "imminente",
+    "assigneeUpdateError": "Aggiornamento dell'assegnatario non riuscito"
   },
   "projects": {
     "loading": "Caricamento progetti...",
@@ -1116,7 +1171,9 @@
     "focusHint": "Sposta questa attività su in corso e oggi",
     "noNextAction": "Tutto a posto-nessuna attività in sospeso.",
     "selectDueDatePlaceholder": "Seleziona la data di scadenza",
-    "goalTitle": "Obiettivo"
+    "goalTitle": "Obiettivo",
+    "addProject": "Aggiungi Progetto",
+    "noResults": "Nessun progetto"
   },
   "projectItem": {
     "edit": "Modifica",
@@ -1179,7 +1236,11 @@
     "contentPlaceholderMarkdown": "Scrivi il tuo contenuto utilizzando la formattazione Markdown...\n\nEsempi:\n# Intestazione\n**Testo in grassetto**\n*Testo in corsivo*\n- Elemento della lista\n```codice```",
     "pinToSidebar": "Pinna nella barra laterale",
     "unpinFromSidebar": "Rimuovi dalla barra laterale",
-    "save": "Salva"
+    "save": "Salva",
+    "addNote": "Aggiungi Nota",
+    "tree": {
+      "folders": "Cartelle"
+    }
   },
   "tags": {
     "loading": "Caricamento tag...",
@@ -1207,7 +1268,8 @@
     "systemTags": "Tag di sistema",
     "systemTagsDescription": "Gestiti automaticamente · Non possono essere eliminati o rinominati",
     "system": "Sistema",
-    "customize": "Personalizza"
+    "customize": "Personalizza",
+    "addTag": "Aggiungi Tag"
   },
   "recurrence": {
     "none": "Nessuna",
@@ -1227,7 +1289,11 @@
     "inheritedSettingsMessage": "Questo compito è stato generato da un compito ricorrente. Le impostazioni di ricorrenza mostrate di seguito sono ereditate dal compito originale e non possono essere modificate qui.",
     "cancelEdit": "Annulla Modifica",
     "editParentRecurrence": "Modifica Ricorrenza Genitore",
-    "parentEditWarning": "⚠️ Stai modificando le impostazioni di ricorrenza del compito genitore. Le modifiche influenzeranno tutte le future istanze di questo compito ricorrente."
+    "parentEditWarning": "⚠️ Stai modificando le impostazioni di ricorrenza del compito genitore. Le modifiche influenzeranno tutte le future istanze di questo compito ricorrente.",
+    "every": "Ogni",
+    "weeks": "settimane",
+    "months": "mesi",
+    "advancedHint": "Per giorni specifici della settimana o una data di fine, apri il compito completo."
   },
   "weekdays": {
     "sunday": "Dom",
@@ -1470,7 +1536,43 @@
       "overrideSaved": "Eccezione salvata",
       "overrideCleared": "Eccezione rimossa",
       "synced": "Sincronizzato dal fornitore di pagamento"
-    }
+    },
+    "dashboard": {
+      "title": "Amministratore",
+      "subtitle": "tududi {{version}} · {{env}}",
+      "users": "Utenti",
+      "usersHint": "{{verified}} verificati · {{admins}} amministratori · {{new}} oggi",
+      "paying": "Paganti",
+      "selfHosted": "self-hosted",
+      "waitlist": "Lista d'attesa",
+      "waitlistHint": "{{n}} in 7 giorni",
+      "content": "Attività",
+      "contentHint": "{{projects}} progetti · {{notes}} note",
+      "regOpen": "Registrazione aperta",
+      "regClosed": "Registrazione chiusa",
+      "waitlistLatest": "Ultimi iscritti alla lista d'attesa",
+      "waitlistEmpty": "Nessuno ancora.",
+      "email": "Email",
+      "source": "Fonte",
+      "joined": "Iscritto",
+      "waitlistAll": "Vedi tutto"
+    },
+    "waitlist": {
+      "title": "Lista d'attesa",
+      "export": "Esporta CSV",
+      "searchPlaceholder": "Cerca per email",
+      "email": "Email",
+      "source": "Fonte",
+      "locale": "Lingua",
+      "submissions": "Invii",
+      "joined": "Iscritto",
+      "empty": "Nessuno si è ancora registrato",
+      "noMatches": "Nessun indirizzo corrisponde a questa ricerca",
+      "showing": "{{from}}-{{to}} di {{total}}"
+    },
+    "passwordInviteHint": "Lascia vuoto per inviare un'email di invito",
+    "invitationSent": "Email di invito inviata a {{email}}",
+    "invitationNotSent": "Account creato, ma l'email è disabilitata - imposta manualmente una password per questo utente."
   },
   "shares": {
     "shareProject": "Condividi progetto",
@@ -1496,7 +1598,11 @@
     "noShares": "Non ancora condiviso",
     "noAvailableUsers": "Nessun utente disponibile con cui condividere",
     "shared": "Condiviso",
-    "sharedWithTeam": "Condiviso con il team"
+    "sharedWithTeam": "Condiviso con il team",
+    "shareArea": "Area di condivisione",
+    "shareGoal": "Obiettivo di condivisione",
+    "shareNote": "Nota di condivisione",
+    "shareTask": "Compito di condivisione"
   },
   "views": {
     "title": "Visualizzazioni Intelligenti",
@@ -1642,14 +1748,16 @@
       "overdueTasks": "Compiti In Ritardo",
       "deferUntil": "Rimanda Fino a",
       "dueProjects": "Progetti Scaduti",
-      "overdueProjects": "Progetti In Ritardo"
+      "overdueProjects": "Progetti In Ritardo",
+      "taskAssigned": "Compito Assegnato"
     },
     "descriptions": {
       "dueTasks": "Compiti che scadono entro 24 ore",
       "overdueTasks": "Compiti che hanno superato la loro data di scadenza",
       "deferUntil": "Compiti che sono ora disponibili per lavorare",
       "dueProjects": "Progetti che scadono entro 24 ore",
-      "overdueProjects": "Progetti che hanno superato la loro data di scadenza"
+      "overdueProjects": "Progetti che hanno superato la loro data di scadenza",
+      "taskAssigned": "Un compito ti è stato assegnato da qualcun altro"
     },
     "telegram": {
       "notConfigured": {
@@ -1779,5 +1887,44 @@
       "backups_import": "l'importazione dei backup",
       "attachments": "gli allegati"
     }
+  },
+  "subscription": {
+    "title": "Abbonamento",
+    "chooseForCloud": "Scegli un piano per tududi Cloud",
+    "noActive": "Nessuna sottoscrizione attiva",
+    "chooseToContinue": "Scegli un piano per continuare a utilizzare tududi Cloud.",
+    "monthly": "Mensile",
+    "yearly": "Annuale",
+    "priceMonthly": "{{price}} al mese",
+    "priceYearly": "{{price}} all'anno",
+    "subscribeMonthly": "Abbonati mensilmente",
+    "subscribeYearly": "Abbonati annualmente",
+    "perkUnlimited": "Compiti, progetti e note illimitati",
+    "perkStorage": "Allegati e caricamenti di file",
+    "perkFeatures": "Assistente AI, MCP, sincronizzazione CalDAV e il bot di Telegram",
+    "perkBackups": "Backup giornalieri e aggiornamenti gestiti",
+    "perkExport": "Esporta tutto in qualsiasi momento",
+    "taxNote": "I pagamenti sono gestiti da {{provider}}. I prezzi escludono le tasse applicabili. Annulla in qualsiasi momento.",
+    "notConfigured": "Le sottoscrizioni non sono ancora disponibili su questa istanza. Contatta il supporto.",
+    "exportData": "Esporta i tuoi dati"
+  },
+  "demo": {
+    "opening": "Apertura della demo...",
+    "unavailableTitle": "La demo non è disponibile",
+    "unavailableBody": "Potrebbe essere in fase di ricostruzione. Riprova tra un momento."
+  },
+  "everyone": {
+    "title": "Tutti",
+    "subtitle": "Cosa hanno ora tutti coloro con cui condividi il lavoro",
+    "you": "Tu",
+    "people": "Persone",
+    "tasks": "Attività",
+    "overdue": "Scaduto",
+    "today": "Oggi",
+    "tomorrow": "Domani",
+    "upcoming": "Questa settimana",
+    "noDate": "Nessuna data",
+    "nothing": "Niente in questo momento",
+    "empty": "Niente condiviso è attualmente disponibile. Condividi un'area, un progetto o un obiettivo, oppure assegna a qualcuno un'attività per vederlo qui."
   }
 }

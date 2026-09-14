@@ -31,7 +31,11 @@
     "download": "Prenesi",
     "exitFocusMode": "Izhod iz načina osredotočenja",
     "searchTimezones": "Išči časovne pasove...",
-    "dismiss": "Zavrni"
+    "dismiss": "Zavrni",
+    "search": "Iskanje",
+    "previous": "Prejšnji",
+    "done": "Končano",
+    "clear": "Počisti"
   },
   "sidebar": {
     "dashboard": "Nadzorna plošča",
@@ -72,7 +76,9 @@
     "boards": "Deske",
     "bookmarks": "Zaznamki",
     "reports": "Poročila",
-    "productivityAssistant": "Asistent za produktivnost"
+    "productivityAssistant": "Asistent za produktivnost",
+    "assignedToMe": "Dodeljeno meni",
+    "everyone": "Vsi"
   },
   "navigation": {
     "home": "Domov",
@@ -86,7 +92,9 @@
     "toggleSearch": "Preklopi iskanje",
     "quickInboxCapture": "Hiter zajem v nabiralniku",
     "userMenu": "Uporabniški meni",
-    "search": "Išči"
+    "search": "Išči",
+    "admin": "Administrator",
+    "adminBadge": "Administrator"
   },
   "settings": {
     "todayPageSettings": "Nastavitve strani Danes",
@@ -201,7 +209,10 @@
       "dropHere": "Spusti tukaj"
     },
     "chaseUp": "Sledi",
-    "habit": "Navada"
+    "habit": "Navada",
+    "assignedTo": "Dodeljeno",
+    "subtasks": "Podnaloge",
+    "openFullPage": "Odpri celoten pogled"
   },
   "timeline": {
     "activityTimeline": "Časovnica aktivnosti",
@@ -690,7 +701,8 @@
         "vague": "Poskusite začeti z glagolom akcije, kot so \"Pokliči\", \"Napiši\", \"Načrtuj\" ali \"Raziskuj\""
       },
       "selectAtLeastOneDay": "Prosimo, izberite vsaj en dan",
-      "deferUntilPlaceholder": "Izberite datum in čas odloga"
+      "deferUntilPlaceholder": "Izberite datum in čas odloga",
+      "notePlaceholder": "Dodaj opombo..."
     },
     "noteTitle": "Naslov opombe",
     "noteContent": "Vsebina opombe",
@@ -745,7 +757,9 @@
     },
     "captcha_required": "Dokončajte preverjanje in poskusite znova.",
     "registration_successful": "Potrdite svoj e-poštni naslov",
-    "registration_email_sent": "Potrdite svoj e-poštni naslov, da aktivirate račun. Poslali smo vam povezavo, preverite nabiralnik."
+    "registration_email_sent": "Potrdite svoj e-poštni naslov, da aktivirate račun. Poslali smo vam povezavo, preverite nabiralnik.",
+    "notify_joined": "Na seznamu ste. Poslali vam bomo e-pošto, ko se tududi Cloud odpre.",
+    "notify_failed": "Vaš naslov ni bil shranjen. Poskusite znova."
   },
   "dropdown": {
     "createNew": "Ustvari novo",
@@ -868,7 +882,47 @@
     "rollingMsg3": "Zapišite to…",
     "saveAs": "Shrani kot",
     "shiftEnterHint": "Shift + Enter za novo vrstico",
-    "addToInbox": "Dodaj kot element v mapo Prejeto (Enter)"
+    "addToInbox": "Dodaj kot element v mapo Prejeto (Enter)",
+    "emptyItem": "(Prazna postavka)",
+    "itemQueuedOffline": "Shranjeno brez povezave. Sinhroniziralo se bo samodejno, ko se vrnete na splet.",
+    "infoShort": "Prejeto je mesto, kjer pristanejo nekategorizirane misli — zapišite stvari, razvrstite jih pozneje.",
+    "recentlyCaptured": "Nedavno zajeto",
+    "line": "vrsta",
+    "lines": "vrst",
+    "processN": "Obdelaj {{count}}",
+    "allClarified": "Vse pojasnjeno",
+    "reClarify": "Ponovno pojasni",
+    "trashedRestore": "{{count}} izbrisano · obnovi",
+    "restored": "Obnovljeni izbrisani predmeti",
+    "restoreError": "Obnova predmetov ni uspela",
+    "trashError": "Izbris predmeta ni uspelo",
+    "clarifyProgress": "Pojasni · {{progress}}",
+    "clarifyDone": "Vse pojasnjeno. Prejeto je mirno.",
+    "clarifyBackToList": "Nazaj na seznam",
+    "clarifyExit": "Izhod iz pojasnjevanja",
+    "clarifyBack": "← Nazaj",
+    "clarifyQ": {
+      "actionable": "Ali je to izvedljivo?",
+      "notActionable": "Kakšna stvar je to?",
+      "steps": "En korak ali več?",
+      "twomin": "Ali lahko to storiš v manj kot 2 minutah?",
+      "deferDelegate": "Kasneje sam, ali predati?"
+    },
+    "clarifyChoice": {
+      "yesActionable": "Da, izvedljivo",
+      "notActionable": "Ni izvedljivo",
+      "trash": "Izbriši",
+      "someday": "Nekega dne / Mogoče",
+      "referenceNote": "Referenčna opomba",
+      "oneStep": "En korak",
+      "severalSteps": "Več korakov (projekt)",
+      "doItNow": "Da — naredi to zdaj",
+      "no": "Ne",
+      "scheduleIt": "Načrtuj to",
+      "delegate": "Delegiraj"
+    },
+    "somedayCreated": "Dodano v Nekega dne",
+    "reClarifyLink": "Ponovno pojasni"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1052,7 +1106,8 @@
     "statusUpdated": "Status uspešno posodobljen",
     "statusUpdateError": "Posodobitev statusa ni uspela",
     "updatedAt": "Posodobljeno ob",
-    "upcoming": "prihajajoč"
+    "upcoming": "prihajajoč",
+    "assigneeUpdateError": "Posodobitev dodeljenega uporabnika ni uspela"
   },
   "projects": {
     "loading": "Nalagam projekte...",
@@ -1116,7 +1171,9 @@
     "focusHint": "Premakne to nalogo v v teku in danes",
     "noNextAction": "Vse jasno - ni neizpolnjenih nalog.",
     "selectDueDatePlaceholder": "Izberite datum zapadlosti",
-    "goalTitle": "Cilj"
+    "goalTitle": "Cilj",
+    "addProject": "Dodaj projekt",
+    "noResults": "Brez projektov"
   },
   "projectItem": {
     "edit": "Uredi",
@@ -1179,7 +1236,11 @@
     "contentPlaceholderMarkdown": "Napišite svojo vsebino z uporabo Markdown oblikovanja...\n\nPrimeri:\n# Naslov\n**Krepko besedilo**\n*Poševno besedilo*\n- Element seznama\n```koda```",
     "pinToSidebar": "Pripni na stransko vrstico",
     "unpinFromSidebar": "Odpripni s stranske vrstice",
-    "save": "Shrani"
+    "save": "Shrani",
+    "addNote": "Dodaj opombo",
+    "tree": {
+      "folders": "Mape"
+    }
   },
   "tags": {
     "loading": "Nalagam oznake...",
@@ -1207,7 +1268,8 @@
     "systemTags": "Sistemske oznake",
     "systemTagsDescription": "Samodejno upravljane · Ne morejo biti izbrisane ali preimenovane",
     "system": "Sistem",
-    "customize": "Prilagodi"
+    "customize": "Prilagodi",
+    "addTag": "Dodaj oznako"
   },
   "recurrence": {
     "none": "Noben",
@@ -1227,7 +1289,11 @@
     "inheritedSettingsMessage": "Ta naloga je bila ustvarjena iz ponavljajoče se naloge. Nastavitve ponavljanja, prikazane spodaj, so podedovane iz izvirne naloge in jih ni mogoče urediti tukaj.",
     "cancelEdit": "Prekliči urejanje",
     "editParentRecurrence": "Uredi nastavitve ponavljanja starševske naloge",
-    "parentEditWarning": "⚠️ Urejate nastavitve ponavljanja starševske naloge. Spremembe bodo vplivale na vse prihodnje primere te ponavljajoče se naloge."
+    "parentEditWarning": "⚠️ Urejate nastavitve ponavljanja starševske naloge. Spremembe bodo vplivale na vse prihodnje primere te ponavljajoče se naloge.",
+    "every": "Vsak",
+    "weeks": "tedni",
+    "months": "mesece",
+    "advancedHint": "Za določene dni v tednu ali končni datum odprite celotno nalogo."
   },
   "weekdays": {
     "sunday": "Ned",
@@ -1470,7 +1536,43 @@
       "overrideSaved": "Izjema shranjena",
       "overrideCleared": "Izjema odstranjena",
       "synced": "Sinhronizirano od ponudnika plačil"
-    }
+    },
+    "dashboard": {
+      "title": "Administrator",
+      "subtitle": "tududi {{version}} · {{env}}",
+      "users": "Uporabniki",
+      "usersHint": "{{verified}} potrjenih · {{admins}} administrator · {{new}} danes",
+      "paying": "Plačano",
+      "selfHosted": "samo-gostovan",
+      "waitlist": "Čakalna lista",
+      "waitlistHint": "{{n}} v 7 dneh",
+      "content": "Naloge",
+      "contentHint": "{{projects}} projekti · {{notes}} opombe",
+      "regOpen": "Registracija odprta",
+      "regClosed": "Registracija zaprta",
+      "waitlistLatest": "Zadnji prijavljeni na čakalno listo",
+      "waitlistEmpty": "Še nihče.",
+      "email": "Email",
+      "source": "Vir",
+      "joined": "Pridružen",
+      "waitlistAll": "Poglej vse"
+    },
+    "waitlist": {
+      "title": "Čakalna lista",
+      "export": "Izvozi CSV",
+      "searchPlaceholder": "Išči po e-pošti",
+      "email": "E-pošta",
+      "source": "Vir",
+      "locale": "Jezik",
+      "submissions": "Oddaje",
+      "joined": "Pridružen",
+      "empty": "Nihče se še ni prijavil",
+      "noMatches": "Nobeni naslovi se ne ujemajo s to iskanje",
+      "showing": "{{from}}-{{to}} od {{total}}"
+    },
+    "passwordInviteHint": "Pustite prazno, da pošljete vabilo po e-pošti",
+    "invitationSent": "Vabilo po e-pošti poslano na {{email}}",
+    "invitationNotSent": "Račun ustvarjen, vendar je e-pošta onemogočena - ročno nastavite geslo za tega uporabnika."
   },
   "shares": {
     "shareProject": "Deli projekt",
@@ -1496,7 +1598,11 @@
     "noShares": "Še ni deljeno",
     "noAvailableUsers": "Ni uporabnikov, s katerimi bi delili",
     "shared": "Deljeno",
-    "sharedWithTeam": "Deljeno s timom"
+    "sharedWithTeam": "Deljeno s timom",
+    "shareArea": "Območje deljenja",
+    "shareGoal": "Cilj deljenja",
+    "shareNote": "Opomba o deljenju",
+    "shareTask": "Naloga za deljenje"
   },
   "views": {
     "title": "Pametni pogledi",
@@ -1642,14 +1748,16 @@
       "overdueTasks": "Zamujene naloge",
       "deferUntil": "Odloži do",
       "dueProjects": "Projekti, ki zapadejo",
-      "overdueProjects": "Zamujeni projekti"
+      "overdueProjects": "Zamujeni projekti",
+      "taskAssigned": "Naloga dodeljena"
     },
     "descriptions": {
       "dueTasks": "Naloge, ki zapadejo v 24 urah",
       "overdueTasks": "Naloge, ki so prešle rok",
       "deferUntil": "Naloge, ki so zdaj na voljo za delo",
       "dueProjects": "Projekti, ki zapadejo v 24 urah",
-      "overdueProjects": "Projekti, ki so prešli rok"
+      "overdueProjects": "Projekti, ki so prešli rok",
+      "taskAssigned": "Naloga je bila dodeljena vam s strani nekoga drugega"
     },
     "telegram": {
       "notConfigured": {
@@ -1779,5 +1887,44 @@
       "backups_import": "uvoza varnostnih kopij",
       "attachments": "prilog"
     }
+  },
+  "subscription": {
+    "title": "Naročnina",
+    "chooseForCloud": "Izberite načrt za tududi Cloud",
+    "noActive": "Brez aktivne naročnine",
+    "chooseToContinue": "Izberite načrt za nadaljevanje uporabe tududi Cloud.",
+    "monthly": "Mesečno",
+    "yearly": "Letno",
+    "priceMonthly": "{{price}} na mesec",
+    "priceYearly": "{{price}} na leto",
+    "subscribeMonthly": "Naročite se mesečno",
+    "subscribeYearly": "Naročite se letno",
+    "perkUnlimited": "Neomejene naloge, projekti in opombe",
+    "perkStorage": "Priponke in nalaganje datotek",
+    "perkFeatures": "AI asistent, MCP, CalDAV sinhronizacija in Telegram bot",
+    "perkBackups": "Dnevni varnostni kopiji in upravljane posodobitve",
+    "perkExport": "Izvozite vse kadarkoli",
+    "taxNote": "Plačila obravnava {{provider}}. Cene ne vključujejo ustreznih davkov. Prekličite kadarkoli.",
+    "notConfigured": "Naročnine na tej instanci še niso na voljo. Prosimo, kontaktirajte podporo.",
+    "exportData": "Izvozite svoje podatke"
+  },
+  "demo": {
+    "opening": "Odpiranje demota...",
+    "unavailableTitle": "Demonstracija ni na voljo",
+    "unavailableBody": "Morda se obnavlja. Poskusite znova čez trenutek."
+  },
+  "everyone": {
+    "title": "Vsi",
+    "subtitle": "Kaj ima zdaj vsak, s katerim delite delo",
+    "you": "Ti",
+    "people": "Ljudje",
+    "tasks": "Naloge",
+    "overdue": "Zapadlo",
+    "today": "Danes",
+    "tomorrow": "Jutri",
+    "upcoming": "Ta teden",
+    "noDate": "Brez datuma",
+    "nothing": "Trenutno nič",
+    "empty": "Trenutno ni nič deljeno. Delite področje, projekt ali cilj, ali dodelite nalogo nekomu, da ga vidite tukaj."
   }
 }
