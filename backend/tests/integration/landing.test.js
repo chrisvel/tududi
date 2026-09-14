@@ -354,6 +354,67 @@ describe('Landing page', () => {
                 .send({ email: 'x@example.com' });
             expect(res.status).not.toBe(303);
         });
+
+        it('trips the honeypot without showing it', async () => {
+            const email = `hp_${Date.now()}@example.com`;
+            const res = await request(app)
+                .post('/waitlist')
+                .set('Host', 'tududi.com')
+                .type('form')
+                .send({
+                    email,
+                    source: 'hero',
+                    locale: 'en',
+                    company: 'Acme Bots',
+                });
+            // Looks exactly like a real signup from the outside.
+            expect(res.status).toBe(303);
+            expect(res.headers.location).toBe('/?joined=1#waitlist');
+            expect(await WaitlistSubscriber.count({ where: { email } })).toBe(
+                0
+            );
+        });
+
+        describe('rate limiting', () => {
+            const originalEnabled = config.rateLimiting.enabled;
+            beforeAll(() => {
+                config.rateLimiting.enabled = true;
+            });
+            afterAll(() => {
+                config.rateLimiting.enabled = originalEnabled;
+            });
+
+            it('stops taking new addresses past the per-IP limit, without saying so', async () => {
+                const { max } = config.rateLimiting.waitlist;
+                for (let i = 0; i < max; i++) {
+                    const res = await request(app)
+                        .post('/waitlist')
+                        .set('Host', 'tududi.com')
+                        .type('form')
+                        .send({
+                            email: `rl_${Date.now()}_${i}@example.com`,
+                            source: 'hero',
+                        });
+                    expect(res.status).toBe(303);
+                }
+
+                const overflowEmail = `rl_over_${Date.now()}@example.com`;
+                const res = await request(app)
+                    .post('/waitlist')
+                    .set('Host', 'tududi.com')
+                    .type('form')
+                    .send({ email: overflowEmail, source: 'hero' });
+                // Same redirect a real signup gets: status alone can't tell
+                // "throttled" apart from "accepted", by design.
+                expect(res.status).toBe(303);
+                expect(res.headers.location).toBe('/?joined=1#waitlist');
+                expect(
+                    await WaitlistSubscriber.count({
+                        where: { email: overflowEmail },
+                    })
+                ).toBe(0);
+            });
+        });
     });
 
     describe('while Cloud is shut', () => {

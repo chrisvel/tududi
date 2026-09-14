@@ -711,6 +711,7 @@
                     <p class="waitlist-done" style="margin-top:28px;"><%= t('waitlist.joined') %></p>
                     <% } else { %>
                     <form class="waitlist-form" action="/waitlist" method="post" style="margin-top:28px;">
+                        <input type="text" name="company" value="" autocomplete="off" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
                         <input type="email" name="email" placeholder="<%= t('waitlist.placeholder') %>" aria-label="<%= t('waitlist.inputLabel') %>" required>
                         <input type="hidden" name="source" value="pricing">
                         <input type="hidden" name="locale" value="<%= i18n.locale %>">
@@ -1005,6 +1006,7 @@
             <p class="waitlist-done" data-testid="waitlist-joined"><%= t('waitlist.joined') %></p>
             <% } else { %>
             <form class="waitlist-form" action="/waitlist" method="post">
+                <input type="text" name="company" value="" autocomplete="off" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
                 <input type="email" name="email" placeholder="<%= t('waitlist.placeholder') %>" aria-label="<%= t('waitlist.inputLabel') %>" required>
                 <input type="hidden" name="source" value="waitlist">
                 <input type="hidden" name="locale" value="<%= i18n.locale %>">

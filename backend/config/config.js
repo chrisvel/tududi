@@ -377,6 +377,16 @@ const config = {
                 60 * 60 * 1000, // 1 hour
             max: parseInt(process.env.RATE_LIMIT_API_KEY_MAX) || 10, // 10 requests per window
         },
+
+        // The marketing site's waitlist form, per IP. It's a plain HTML post
+        // with no session and no CAPTCHA, so this is the only thing standing
+        // between it and a script flooding the table.
+        waitlist: {
+            windowMs:
+                parseInt(process.env.RATE_LIMIT_WAITLIST_WINDOW_MS) ||
+                10 * 60 * 1000, // 10 minutes
+            max: parseInt(process.env.RATE_LIMIT_WAITLIST_MAX) || 5, // 5 submissions per window
+        },
     },
 };
 
