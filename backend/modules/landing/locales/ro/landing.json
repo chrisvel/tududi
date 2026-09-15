@@ -1,7 +1,9 @@
 {
   "meta": {
     "langSwitcherLabel": "Schimbă limba",
-    "langSwitcherCurrent": "Limba: {{name}}"
+    "langSwitcherCurrent": "Limba: {{name}}",
+    "description": "Arii, obiective, proiecte și sarcini, plus notițe și obiceiuri, într-un singur sistem. Configurează un cont tududi Cloud într-un minut. Un server MCP care expune {{tools}} unelte permite agenților AI să lucreze pe lista ta. Auto-hostarea e disponibilă dacă preferi să rulezi serverul tu însuți.",
+    "title": "tududi: manager de sarcini și sistem de gestionare a vieții, cu MCP pentru agenți AI"
   },
   "nav": {
     "demo": "Demo live",
@@ -12,7 +14,8 @@
     "docs": "Documentație",
     "changelog": "Modificări",
     "signIn": "Autentificare",
-    "toggle": "Deschide meniul"
+    "toggle": "Deschide meniul",
+    "selfHostGuide": "Ghid de auto-hostare"
   },
   "hero": {
     "badgeStars": "stele pe GitHub",
@@ -21,7 +24,12 @@
     "ctaDemo": "Încearcă demo-ul live",
     "demoNote": "O instanță găzduită reală, cu date de exemplu, partajată și resetată periodic",
     "screenshotAlt": "Interfața tududi, cu vizualizarea Astăzi și sarcinile planificate",
-    "ctaWaitlist": "Înscrie-te pe lista de așteptare"
+    "ctaWaitlist": "Înscrie-te pe lista de așteptare",
+    "cloudNote": "Niciun server de configurat. Lunar sau anual, și poți anula oricând.",
+    "ctaPrimary": "Începe pe tududi Cloud",
+    "lede": "Arii, obiective, proiecte, sarcini, notițe și obiceiuri, într-un singur sistem. Creează un cont Cloud într-un minut.",
+    "titleLine1": "Productivitate simplificată",
+    "titleLine2": ""
   },
   "proof": {
     "stars": "stele pe GitHub",
@@ -29,7 +37,8 @@
     "languages": "{{count}} limbi",
     "dockerPulls": "descărcări Docker",
     "discord": "membri pe Discord",
-    "discordAlt": "Discord: {{count}} membri"
+    "discordAlt": "Discord: {{count}} membri",
+    "minute": "Configurat într-un minut"
   },
   "press": {
     "featuredIn": "Am apărut în",
@@ -45,7 +54,10 @@
         "title": "Notează și caută din conversație",
         "body": "Adaugă, găsește și finalizează sarcini fără să părăsești conversația."
       },
-      "dataStays": {},
+      "dataStays": {
+        "body": "Conexiunea MCP merge direct la propria ta instanță tududi, pe Cloud sau pe propriul server. Nimic nu trece printr-un terț.",
+        "title": "Vorbește cu instanța ta"
+      },
       "openProtocol": {
         "title": "Protocol deschis, fără dependență",
         "body": "Construit pe Model Context Protocol, deschis. Funcționează cu Claude și cu alți clienți MCP."
@@ -69,7 +81,40 @@
         "title": "Analiza proiectului",
         "body": "O evaluare rapidă a stării unui proiect: ce avansează și ce s-a blocat."
       }
-    }
+    },
+    "configCloudTab": "Cloud",
+    "configSelfHostNote": "Îndreaptă TUDUDI_URL către propria ta instanță în schimb. Restul este identic.",
+    "configSelfHostTab": "Îl găzduiești tu însuți?",
+    "demo": {
+      "answer1Html": "Începe cu <strong>Publică migrarea de facturare</strong>. Este scadentă azi, iar trei sarcini din <strong>Plăți</strong> așteaptă în urma ei.",
+      "answer2Html": "Făcut. <strong>Revizuiește schița de redesign</strong> este acum scadentă vineri, iar <strong>Deblochează coada Plăți</strong> se află în proiectul Plăți, scadentă azi.",
+      "ask1": "Pe ce ar trebui să mă concentrez azi, și întârzie ceva?",
+      "ask2": "Mută revizuirea redesignului pe vineri și adaugă o sarcină pentru a debloca Plăți.",
+      "badge": "tududi MCP",
+      "caption": "O sesiune exemplu. Agentul tău se conectează direct la propria ta instanță prin MCP.",
+      "composer": "Răspunde lui Claude…",
+      "groupTitle": "Bine de știut",
+      "rows": {
+        "habit": {
+          "label": "Serie în pericol",
+          "text": "Revizuire de dimineață, 12 zile la rând, încă neînregistrată azi"
+        },
+        "overdue": {
+          "label": "Întârziată",
+          "text": "2 sarcini în Casă, cea mai veche de 6 zile"
+        },
+        "stalled": {
+          "label": "Blocată",
+          "text": "Redesign al site-ului, fără activitate de 11 zile"
+        }
+      },
+      "toolLabel": "A folosit tududi",
+      "windowTitle": "Claude Desktop"
+    },
+    "footnoteIncluded": "MCP este inclus cu tududi Cloud și cu fiecare instanță auto-hostată.",
+    "ledeHtml": "tududi vine cu un server MCP care expune <strong>{{tools}} unelte</strong>, acoperind sarcini, proiecte, arii, obiective, obiceiuri, notițe, persoane, etichete, vizualizări, inbox-ul, căutarea și metricile. Conectează Claude sau orice agent compatibil cu MCP direct la propria ta instanță, fie contul tău Cloud, fie un server pe care îl administrezi tu. Conexiunea merge la instanța ta în loc să treacă printr-un releu intermediar, o diferență structurală pe care Todoist și Notion nu o pot oferi, indiferent ce promit.",
+    "titleLine1": "Un sistem real",
+    "titleLine2": "pe care agentul tău AI îl poate folosi cu adevărat"
   },
   "features": {
     "eyebrow": "Funcții",
@@ -178,7 +223,8 @@
         "title": "Colaborare pe proiecte",
         "body": "Partajează proiecte cu drepturi fine - doar citire sau citire și scriere."
       }
-    }
+    },
+    "sub": "tududi combină obiective, proiecte, sarcini, notițe și vizualizări inteligente într-un singur sistem calm și concentrat. Lasă-ne pe noi să-l administrăm pentru tine, sau administrează-l tu, dacă preferi."
   },
   "selfHost": {
     "eyebrow": "Găzduiește singur",
@@ -187,7 +233,12 @@
     "step1": "Descarcă imaginea Docker",
     "step2": "Pornește containerul",
     "step3Prefix": "Accesează la",
-    "linkGithub": "Vezi pe GitHub"
+    "linkGithub": "Vezi pe GitHub",
+    "cardSub": "Pentru cei care rulează deja Docker",
+    "ctaCloud": "Începe pe Cloud",
+    "linkDocs": "Citește ghidul de auto-hostare",
+    "showCommands": "Arată comenzile de instalare",
+    "sub": "Auto-hostarea e pentru cei care rulează deja Docker și un reverse proxy. Dacă vrei tududi fără să devii administratorul de sistem, folosește Cloud."
   },
   "pricing": {
     "eyebrow": "Prețuri",
@@ -196,18 +247,39 @@
     "earlyBird": "PREȚ DE LANSARE",
     "perYear": "/an",
     "plans": {
-      "selfHosted": {},
+      "selfHosted": {
+        "action": "Citește ghidul de auto-hostare →",
+        "features": [
+          "Îți asiguri singur un server sau un NAS",
+          "Te ocupi de Docker, actualizări și migrări",
+          "Configurezi un reverse proxy și TLS",
+          "Backupurile sunt ale tale",
+          "Set complet de funcții, fără limită de locuri, date pe propriul tău hardware"
+        ],
+        "name": "Auto-hostat (avansat)",
+        "priceNote": "Gratuit, dacă rulezi tu însuți serverul"
+      },
       "cloud": {
         "name": "Cloud",
         "or": "sau",
         "launchNote": "Preț anual early bird, al tău atât timp cât rămâi abonat.",
         "comingSoon": "Se deschide în câteva zile",
         "comingSoonNote": "Mutăm Cloud pe o infrastructură nouă. Lasă-ți adresa de e-mail mai jos și te anunțăm imediat ce revine.",
-        "notifySubmit": "Anunță-mă"
+        "notifySubmit": "Anunță-mă",
+        "action": "Începe →",
+        "features": [
+          "Funcțional într-un minut, fără server de configurat",
+          "Sarcini, proiecte și notițe nelimitate, plus atașamente",
+          "Asistent AI, MCP, sincronizare CalDAV și botul de Telegram",
+          "Actualizări și backupuri zilnice gestionate pentru tine, cu {{proStorageGb}} GB de spațiu",
+          "Exportă totul oricând, șterge-ți contul singur"
+        ],
+        "priceNote": "Totul inclus. Anulează oricând."
       }
     },
     "fineprint": "Anulează oricând și exportă tot. Dacă tududi Cloud se va închide vreodată, primești datele tale și un ghid de migrare către găzduire proprie. Pentru stocare și volumul API se aplică utilizarea rezonabilă. Garanție de returnare a banilor în 30 de zile, fără întrebări.",
-    "perMonth": "/lună"
+    "perMonth": "/lună",
+    "sub": "Un plan găzduit, sau rulează-l tu, dacă preferi să te ocupi de operare."
   },
   "compare": {
     "title": "Comparație rapidă",
@@ -220,12 +292,24 @@
       "noSetup": "Fără configurare de server",
       "managedUpdates": "Actualizări administrate",
       "autoBackups": "Copii de siguranță automate",
-      "pricing": "Preț"
+      "pricing": "Preț",
+      "exportAnytime": "Exportă totul oricând",
+      "proFeatures": "Asistent AI, MCP, CalDAV, Telegram",
+      "startMinute": "Începe într-un minut",
+      "storage": "Spațiu pentru atașamente",
+      "support": "Suport"
     },
     "values": {
       "community": "Comunitate",
-      "email": "E-mail"
-    }
+      "email": "E-mail",
+      "gigabytes": "{{count}} GB",
+      "perMonthOrYear": "{{monthly}}/lună sau {{price}}/an",
+      "selfCost": "Gratuit, plus găzduirea ta",
+      "yourDisk": "Propriul tău disc"
+    },
+    "colCloud": "tududi Cloud",
+    "colSelf": "Auto-hostare",
+    "sub": "Aceeași aplicație în ambele cazuri. Ce diferă este cine o administrează, și cât te costă asta."
   },
   "waitlist": {
     "title": "Încă nu te-ai hotărât?",
@@ -255,7 +339,9 @@
     "subTitle": "Note de lansare prin e-mail",
     "subBody": "Note de lansare ocazionale. Fără marketing, dezabonează-te oricând.",
     "subSubmit": "Mă înscriu",
-    "rights": "Toate drepturile rezervate."
+    "rights": "Toate drepturile rezervate.",
+    "linkLicence": "Licență MIT",
+    "tagline": "Un sistem deschis pentru organizarea vieții și a muncii. Găzduit de noi, sau pe propriul tău server."
   },
   "js": {
     "showFewer": "Arată mai puține",
@@ -264,11 +350,136 @@
   },
   "faq": {
     "items": {
-      "freePlan": {},
+      "freePlan": {
+        "a": "Nu. Cloud costă {{monthly}} pe lună sau {{price}} pe an, și aceasta e toată lista de prețuri: fără nivel gratuit, fără ceas de probă, fără card taxat pentru ceva care începe discret să facturaze mai târziu. Există o garanție de rambursare de 30 de zile dacă se dovedește că nu ți se potrivește, și există un demo live pe această pagină dacă vrei să te uiți întâi. Modul gratuit de a folosi tududi este să-l rulezi pe propriul tău server, care e aceeași aplicație.",
+        "q": "Există un plan gratuit sau o probă pe tududi Cloud?"
+      },
       "leaving": {
         "q": "Pot pleca, și ce se întâmplă cu datele mele?",
         "a": "Da, oricând. Exportă tot ca un singur fișier din profilul tău și importă-l într-un tududi găzduit de tine, care citește același format. Ștergerea contului elimină datele, atașamentele și copiile de rezervă de pe serverele noastre și anulează orice abonament."
+      },
+      "aiOptional": {
+        "a": "Nu. Ambele straturi de AI sunt dezactivate până le activezi, iar tududi este un sistem complet și fără ele. Dacă nu le activezi niciodată, nu lipsește nimic și nimic nu te sâcâie.",
+        "q": "Trebuie să folosesc funcțiile AI?"
+      },
+      "aiPrivacy": {
+        "a": "Depinde la care dintre cele două straturi te referi, iar diferența contează. Serverul MCP funcționează în interiorul propriei tale instanțe: un agent precum Claude Desktop se conectează direct la acea instanță, așa că conversația e între agentul tău și propriul tău tududi, nu un intermediar. Asistentul AI e diferit. Apelează un furnizor compatibil cu OpenAI, așa că dacă îl direcționezi către unul găzduit, conținutul acelor cereri ajunge la acel furnizor. Direcționează-l în schimb către un model local, precum Ollama sau LM Studio, și nimic nu-ți iese de pe maşină. Rămâne dezactivat până furnizezi o cheie, așa că e mereu alegerea ta, nu o setare implicită.",
+        "q": "Datele mele sunt trimise unei companii de AI?"
+      },
+      "commercialUse": {
+        "a": "Da, și nu trebuie să cumperi nimic în prealabil. Licența MIT permite utilizarea comercială, inclusiv în interiorul unei companii și într-un produs comercial, fără prag de venituri și fără nimic de raportat. Dacă departamentul tău financiar are nevoie de o factură, un abonament Cloud este facturat prin furnizorul nostru de plăți și produce una. Nimic pe această pagină nu vinde o permisiune, pentru că permisiunea aceea e deja a ta.",
+        "q": "Pot folosi tududi la muncă, sau în firma mea?"
+      },
+      "dataLocation": {
+        "a": "Totul trăiește într-un singur fișier de bază de date SQLite în interiorul volumului montat de tine. A face backup înseamnă a copia acel fișier undeva sigur, iar a-l restaura înseamnă a-l copia înapoi. tududi face și automat un instantaneu al bazei de date înainte de a aplica migrări, păstrând copii recente. Nu există un format proprietar și niciun pas de export între tine și propriile tale date.",
+        "q": "Unde sunt datele mele, și cum le fac backup?"
+      },
+      "licence": {
+        "a": "Aplicația e open source sub licența MIT, așa că poți s-o rulezi pe propriul tău server gratuit, s-o modifici și să construiești pe ea fără să plătești pe nimeni. Nu există limite de locuri și nici funcții reținute: versiunea auto-hostată e produsul complet. tududi Cloud e un serviciu plătit, pentru că găzduirea, backupurile și e-mailul costă bani de întreținut. Plătești pentru munca operațională, niciodată pentru accesul la software.",
+        "q": "Este tududi cu adevărat gratuit?"
+      },
+      "maintained": {
+        "a": "Da. Este dezvoltat în principal de un întreținător, cu contribuții din comunitate, și scoate versiuni frecvent. Fiecare versiune e listată pe pagina de release-uri GitHub, legată din Istoricul modificărilor din meniul de mai sus, așa că poți judeca singur ritmul, nu doar să ne crezi pe cuvânt. Dezvoltarea se face public: probleme, o foaie de parcurs publică, și un Discord unde întrebările primesc răspuns.",
+        "linkLabel": "Vezi toate release-urile",
+        "q": "Este tududi întreținut activ?"
+      },
+      "mcp": {
+        "a": "MCP este Model Context Protocol, un standard deschis pentru a conecta agenți AI la sisteme reale. tududi vine cu un server MCP care expune {{tools}} unelte pentru sarcini, proiecte, arii, obiective, obiceiuri, notițe, persoane, etichete, vizualizări, inbox-ul, căutarea și metricile, ca un agent să poată capta, găsi, actualiza și finaliza munca, nu doar să vorbească despre ea. Este opțional, vine cu Cloud și cu fiecare instanță auto-hostată, și funcționează cu Claude Desktop, Cursor, Windsurf, Cline, sau orice alt client MCP.",
+        "q": "Ce este MCP, și ce poate face de fapt un agent?"
+      },
+      "mobile": {
+        "a": "tududi se instalează ca un PWA, nu ca o aplicație nativă. Adaugă-l pe ecranul de start pe Android sau iOS, sau instalează-l pe desktop, și se comportă ca o aplicație: citește din cache când ești offline și sincronizează modificările tale la reconectare. Nu e nimic de descărcat din App Store sau Play Store.",
+        "q": "Există o aplicație mobilă?"
+      },
+      "multiUser": {
+        "a": "Da. O singură instanță poate găzdui mai mulți utilizatori, iar proiectele pot fi partajate cu acces doar-citire sau citire-scriere, pe care sarcinile și notițele din interior le preiau. Auto-înregistrarea e dezactivată implicit, așa că un admin creează conturile sau deschide deliberat înregistrările. Nimeni nu intră pentru că ai uitat să închizi o ușă.",
+        "q": "Pot mai multe persoane partaja o instanță?"
+      },
+      "requirements": {
+        "a": "Docker, un loc persistent pentru a stoca baza de date, un reverse proxy cu TLS în față, și disciplina de a aplica actualizări și de a păstra backupuri. Funcționează confortabil pe un VPS mic sau pe o maşină din propria ta rețea, iar comenzile sunt în secțiunea Auto-hostare și în documentație. Majoritatea oamenilor sunt mai bine serviți de Cloud, care e aceeași aplicație fără toată acea muncă.",
+        "linkLabel": "Citește documentația",
+        "q": "De ce am nevoie pentru a-l găzdui eu însumi?"
+      },
+      "reverseProxy": {
+        "a": "Da, și acesta e modul normal de a-l rula. Setează TUDUDI_TRUST_PROXY astfel încât aplicația să aibă încredere în headerele retransmise de nginx, Caddy sau Traefik. Dacă omiți asta, autentificările și logarea IP-urilor se comportă ciudat, într-un mod dificil de diagnosticat, așa că aplicația generează o eroare specifică în loc să eșueze silențios. Valorile acceptate sunt documentate în README.",
+        "q": "Funcționează în spatele unui reverse proxy?"
+      },
+      "shutdown": {
+        "a": "Aplicația e licențiată MIT și codul sursă e public, așa că nu îți poate fi retrasă. Oricine poate continua să o ruleze, și poți face un fork. Pe tududi Cloud datele tale trăiesc într-o bază de date tududi standard, nu într-un format proprietar, așa că, dacă serviciul s-ar închide vreodată, ai primi datele tale și un ghid pentru a le muta pe propriul tău server.",
+        "q": "Ce se întâmplă cu datele mele dacă tududi dispare?"
+      },
+      "whyManaged": {
+        "a": "Plătești pentru a nu administra infrastructura. tududi Cloud îți dă același sistem cu serverul, actualizările, backupurile și e-mailul gestionate pentru tine, ceea ce e jumătatea complicată și fără farmec a auto-hostării. Cloud e drumul pe care îl recomandăm. Auto-hostarea e alegerea mai bună doar dacă rulezi deja Docker și un reverse proxy și vrei într-adevăr să operezi stiva.",
+        "q": "De ce să plătesc pentru Cloud când auto-hostarea e gratuită?"
       }
-    }
+    },
+    "eyebrow": "FAQ",
+    "groups": {
+      "managed": "AI, MCP și Cloud",
+      "project": "Licență și proiect",
+      "selfHost": "Auto-hostare și date"
+    },
+    "permalink": "Link către acest răspuns",
+    "sub": "Licența, AI-ul, și ce se întâmplă cu datele tale. Dacă lipsește ceva, întreabă pe Discord.",
+    "title": "Întrebări care merită un răspuns înainte să te angajezi"
+  },
+  "cloud": {
+    "ctaPricing": "Vezi prețul",
+    "ctaPrimary": "Începe",
+    "includes": [
+      "Sarcini, proiecte și notițe nelimitate",
+      "Atașamente și încărcare de fișiere",
+      "Asistent AI, MCP, sincronizare CalDAV și botul de Telegram",
+      "Backupuri zilnice și actualizări administrate",
+      "Suport prin e-mail",
+      "Exportă totul, oricând"
+    ],
+    "lede": "Același sistem în ambele cazuri. Diferența este cine îl ține funcțional, actualizat și cu backup la ora trei dimineața.",
+    "metaDescription": "tududi Cloud este același sistem open source, rulând pe serverele noastre, cu actualizări, backupuri și e-mail gestionate pentru tine. Un singur plan, lunar sau anual, anulabil oricând.",
+    "metaTitle": "tududi Cloud: tududi găzduit, administrat pentru tine",
+    "note": "Aceeași aplicație licențiată MIT. Exportă totul, oricând.",
+    "orAnnual": "sau",
+    "priceNote": "Facturat de furnizorul nostru de plăți. Prețurile exclud taxele aplicabile.",
+    "pricingSub": "Totul inclus. Anulează când vrei.",
+    "pricingTitle": "Un plan, două moduri de a plăti",
+    "reasons": {
+      "backups": {
+        "body": "Baza de date este exportată în fiecare noapte și păstrată în afara maşinii care te deserveşte. Poți exporta și tu singur totul oricând.",
+        "title": "Backupuri pe care nu trebuie să le ții minte"
+      },
+      "email": {
+        "body": "Verificările, resetările de parolă și remindere pleacă printr-un domeniu de trimitere deja încălzit, ceea ce este complicat și plictisitor de configurat singur.",
+        "title": "E-mail care ajunge"
+      },
+      "noOps": {
+        "body": "Niciun VPS de închiriat, niciun Docker de actualizat, niciun reverse proxy sau certificat de reînnoit. Te autentifici și e acolo.",
+        "title": "Niciun server de administrat"
+      },
+      "sameApp": {
+        "body": "Fără funcții exclusive cloud și fără o versiune auto-hostată ciuntită. Dacă vom închide vreodată serviciul, primești datele tale și un ghid de migrare.",
+        "title": "Exact aceeași aplicație"
+      },
+      "support": {
+        "body": "Îți răspunde o persoană care cunoaște codul. Cu auto-hostarea ai comunitatea, ceea ce e bine, dar nimeni nu este obligat să răspundă.",
+        "title": "Pe cineva căruia să-i scrii"
+      },
+      "updates": {
+        "body": "Versiunile noi ajung la contul tău fără un pull, un restart sau o migrare pe care trebuie s-o supraveghezi.",
+        "title": "Actualizări aplicate pentru tine"
+      }
+    },
+    "selfHostLine": "Preferi să administrezi serverul singur? Este gratuit, și este aceeași aplicație.",
+    "title": "De ce să folosești tududi Cloud?",
+    "whyEyebrow": "Cloud",
+    "whySub": "Nu funcții. Fiecare funcție este și în versiunea auto-hostată.",
+    "whyTitle": "Pentru ce plătești de fapt"
+  },
+  "finalCta": {
+    "primary": "Începe",
+    "secondary": "Vezi prețurile",
+    "selfHostLink": "Citește ghidul.",
+    "selfHostPrefix": "Preferi să-l rulezi pe propriul tău server?",
+    "sub": "Noi administrăm serverul, actualizările și backupurile. Tu ai sistemul, și o garanție de rambursare de 30 de zile dacă nu e pentru tine.",
+    "title": "Organizează-te într-un minut"
   }
 }

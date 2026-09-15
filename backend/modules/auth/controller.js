@@ -41,6 +41,7 @@ const authController = {
                 source: 'app',
                 locale: req.body?.locale || null,
                 referrer: req.get('referer'),
+                ip: req.ip,
             });
             res.json({ joined: true });
         } catch (error) {

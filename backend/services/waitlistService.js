@@ -24,12 +24,19 @@ const isValidEmail = (email) =>
 
 // Never throws: a capture failure must not show a stranger a stack trace,
 // and it must not lose the page they were on either.
-async function capture({ email, source = 'unknown', locale = null, referrer }) {
+async function capture({
+    email,
+    source = 'unknown',
+    locale = null,
+    referrer,
+    ip = null,
+}) {
     const address = normalizeEmail(email);
     if (!isValidEmail(address)) return { accepted: false, created: false };
 
     try {
         const { WaitlistSubscriber } = require('../models');
+        const ipAddress = ip ? String(ip).slice(0, 45) : null;
         const [row, created] = await WaitlistSubscriber.findOrCreate({
             where: { email: address },
             // Sliced to the column widths: these arrive from a form, and a
@@ -39,11 +46,15 @@ async function capture({ email, source = 'unknown', locale = null, referrer }) {
                 source: String(source || 'unknown').slice(0, 32),
                 locale: locale ? String(locale).slice(0, 8) : null,
                 referrer: referrer ? String(referrer).slice(0, 512) : null,
+                ip_address: ipAddress,
             },
         });
         // A second submission is not a second person; it is someone checking
         // the form worked.
-        if (!created) await row.increment('submission_count');
+        if (!created) {
+            await row.increment('submission_count');
+            await row.update({ ip_address: ipAddress });
+        }
         return { accepted: true, created };
     } catch (error) {
         logError('Waitlist signup failed:', error);
@@ -69,6 +80,7 @@ async function list({ limit = 50, offset = 0, q = '' } = {}) {
             email: r.email,
             source: r.source,
             locale: r.locale,
+            ip_address: r.ip_address,
             submission_count: r.submission_count,
             created_at: r.created_at,
         })),
@@ -86,9 +98,19 @@ async function all() {
         email: r.email,
         source: r.source,
         locale: r.locale,
+        ip_address: r.ip_address,
         submission_count: r.submission_count,
         created_at: r.created_at,
     }));
+}
+
+// Removing a row is permanent: someone asked to be forgotten, or a bad
+// address was never going to be mailed anyway. Returns whether a row was
+// actually there to remove.
+async function remove(id) {
+    const { WaitlistSubscriber } = require('../models');
+    const destroyed = await WaitlistSubscriber.destroy({ where: { id } });
+    return destroyed > 0;
 }
 
 // RFC 4180: quote every field and double the quotes inside it, so an address
@@ -96,12 +118,20 @@ async function all() {
 const csvCell = (value) => `"${String(value ?? '').replace(/"/g, '""')}"`;
 
 function toCsv(rows) {
-    const header = ['email', 'source', 'locale', 'submissions', 'joined_at'];
+    const header = [
+        'email',
+        'source',
+        'locale',
+        'ip_address',
+        'submissions',
+        'joined_at',
+    ];
     const lines = rows.map((r) =>
         [
             r.email,
             r.source,
             r.locale || '',
+            r.ip_address || '',
             r.submission_count,
             r.created_at instanceof Date
                 ? r.created_at.toISOString()
@@ -113,4 +143,12 @@ function toCsv(rows) {
     return [header.map(csvCell).join(','), ...lines].join('\r\n');
 }
 
-module.exports = { capture, list, all, toCsv, isValidEmail, normalizeEmail };
+module.exports = {
+    capture,
+    list,
+    all,
+    remove,
+    toCsv,
+    isValidEmail,
+    normalizeEmail,
+};

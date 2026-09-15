@@ -12,6 +12,7 @@ interface AIAssistantTabProps {
     formData: ProfileFormData;
     onToggleAi: (field: keyof Features) => void;
     onAiProfileChange: (value: string) => void;
+    hosted?: boolean;
 }
 
 const AIAssistantTab: React.FC<AIAssistantTabProps> = ({
@@ -19,16 +20,17 @@ const AIAssistantTab: React.FC<AIAssistantTabProps> = ({
     formData,
     onToggleAi,
     onAiProfileChange,
+    hosted,
 }) => {
     const { t } = useTranslation();
     const [config, setConfig] = useState<AIConfig | null>(null);
 
     useEffect(() => {
-        if (!isActive) return;
+        if (!isActive || hosted) return;
         fetchAIConfig()
             .then(setConfig)
             .catch(() => setConfig(null));
-    }, [isActive]);
+    }, [isActive, hosted]);
 
     if (!isActive) return null;
 
@@ -46,79 +48,85 @@ const AIAssistantTab: React.FC<AIAssistantTabProps> = ({
                 )}
             </p>
 
-            {/* Server configuration */}
-            <div className="mb-8">
-                <h4 className="text-base font-semibold text-gray-900 dark:text-white mb-3">
-                    {t('profile.aiServerConfig', 'Server Configuration')}
-                </h4>
-                <div className="rounded-lg border border-gray-200 dark:border-gray-700 divide-y divide-gray-200 dark:divide-gray-700">
-                    {/* API Key */}
-                    <div className="flex items-center justify-between px-4 py-3">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">
-                            {t('profile.aiApiKey', 'API Key')}
-                            <span className="ml-2 text-xs text-gray-400 dark:text-gray-500">
-                                LLM_API_KEY
+            {/* Server configuration: describes this instance's own .env, so it
+                is meaningless (and leaks infra details) to a user on a hosted
+                instance who isn't the operator. */}
+            {!hosted && (
+                <div className="mb-8">
+                    <h4 className="text-base font-semibold text-gray-900 dark:text-white mb-3">
+                        {t('profile.aiServerConfig', 'Server Configuration')}
+                    </h4>
+                    <div className="rounded-lg border border-gray-200 dark:border-gray-700 divide-y divide-gray-200 dark:divide-gray-700">
+                        {/* API Key */}
+                        <div className="flex items-center justify-between px-4 py-3">
+                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                                {t('profile.aiApiKey', 'API Key')}
+                                <span className="ml-2 text-xs text-gray-400 dark:text-gray-500">
+                                    LLM_API_KEY
+                                </span>
                             </span>
-                        </span>
-                        {config === null ? (
-                            <span className="text-xs text-gray-400">-</span>
-                        ) : config.api_key_set ? (
-                            <span className="flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400">
-                                <CheckCircleIcon className="w-4 h-4" />
-                                {t('profile.aiKeySet', 'Set')}
-                            </span>
-                        ) : (
-                            <span className="flex items-center gap-1 text-xs font-medium text-red-500 dark:text-red-400">
-                                <ExclamationCircleIcon className="w-4 h-4" />
-                                {t('profile.aiKeyNotSet', 'Not set')}
-                            </span>
-                        )}
-                    </div>
+                            {config === null ? (
+                                <span className="text-xs text-gray-400">
+                                    -
+                                </span>
+                            ) : config.api_key_set ? (
+                                <span className="flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400">
+                                    <CheckCircleIcon className="w-4 h-4" />
+                                    {t('profile.aiKeySet', 'Set')}
+                                </span>
+                            ) : (
+                                <span className="flex items-center gap-1 text-xs font-medium text-red-500 dark:text-red-400">
+                                    <ExclamationCircleIcon className="w-4 h-4" />
+                                    {t('profile.aiKeyNotSet', 'Not set')}
+                                </span>
+                            )}
+                        </div>
 
-                    {/* Base URL */}
-                    <div className="flex items-center justify-between px-4 py-3">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">
-                            {t('profile.aiBaseUrl', 'Base URL')}
-                            <span className="ml-2 text-xs text-gray-400 dark:text-gray-500">
-                                LLM_BASE_URL
+                        {/* Base URL */}
+                        <div className="flex items-center justify-between px-4 py-3">
+                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                                {t('profile.aiBaseUrl', 'Base URL')}
+                                <span className="ml-2 text-xs text-gray-400 dark:text-gray-500">
+                                    LLM_BASE_URL
+                                </span>
                             </span>
-                        </span>
-                        <span className="text-sm font-mono text-gray-700 dark:text-gray-300 text-right max-w-xs truncate">
-                            {config === null
-                                ? '-'
-                                : config.base_url ?? (
-                                      <span className="text-gray-400 dark:text-gray-500 font-sans not-italic">
-                                          {t(
-                                              'profile.aiBaseUrlDefault',
-                                              'OpenAI (default)'
-                                          )}
-                                      </span>
-                                  )}
-                        </span>
-                    </div>
+                            <span className="text-sm font-mono text-gray-700 dark:text-gray-300 text-right max-w-xs truncate">
+                                {config === null
+                                    ? '-'
+                                    : (config.base_url ?? (
+                                          <span className="text-gray-400 dark:text-gray-500 font-sans not-italic">
+                                              {t(
+                                                  'profile.aiBaseUrlDefault',
+                                                  'OpenAI (default)'
+                                              )}
+                                          </span>
+                                      ))}
+                            </span>
+                        </div>
 
-                    {/* Model */}
-                    <div className="flex items-center justify-between px-4 py-3">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">
-                            {t('profile.aiModel', 'Model')}
-                            <span className="ml-2 text-xs text-gray-400 dark:text-gray-500">
-                                LLM_MODEL
+                        {/* Model */}
+                        <div className="flex items-center justify-between px-4 py-3">
+                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                                {t('profile.aiModel', 'Model')}
+                                <span className="ml-2 text-xs text-gray-400 dark:text-gray-500">
+                                    LLM_MODEL
+                                </span>
                             </span>
-                        </span>
-                        <span className="text-sm font-mono text-gray-700 dark:text-gray-300">
-                            {config === null ? '-' : config.model}
-                        </span>
+                            <span className="text-sm font-mono text-gray-700 dark:text-gray-300">
+                                {config === null ? '-' : config.model}
+                            </span>
+                        </div>
                     </div>
+                    {config && !config.api_key_set && (
+                        <p className="mt-2 text-xs text-red-500 dark:text-red-400">
+                            {t(
+                                'profile.aiKeyMissingHint',
+                                'Set LLM_API_KEY (or OPENAI_API_KEY) on the server to enable AI features.'
+                            )}
+                        </p>
+                    )}
                 </div>
-                {config && !config.api_key_set && (
-                    <p className="mt-2 text-xs text-red-500 dark:text-red-400">
-                        {t(
-                            'profile.aiKeyMissingHint',
-                            'Set LLM_API_KEY (or OPENAI_API_KEY) on the server to enable AI features.'
-                        )}
-                    </p>
-                )}
-            </div>
+            )}
 
             {/* Enable toggle */}
             <div className="mb-8">

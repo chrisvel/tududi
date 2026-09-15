@@ -1,6 +1,6 @@
 const request = require('supertest');
 const app = require('../../app');
-const { Task, Notification } = require('../../models');
+const { Task, Notification, Person } = require('../../models');
 const {
     createTestUser,
     acceptAllInvitations,
@@ -129,5 +129,29 @@ describe('Task assignment notifies and surfaces to the assignee', () => {
             where: { user_id: owner.id, type: 'task_assigned' },
         });
         expect(count).toBe(0);
+    });
+});
+
+describe('assigned_to=me filter when the account has no linked person', () => {
+    it('shows no tasks instead of falling back to unassigned tasks', async () => {
+        const orphan = await createTestUser({
+            email: `orphan_${Date.now()}@example.com`,
+            name: 'No Person',
+        });
+        await Person.destroy({
+            where: { user_id: orphan.id, linked_user_id: orphan.id },
+        });
+
+        await Task.create({
+            name: 'Unassigned orphan task',
+            user_id: orphan.id,
+        });
+
+        const agent = await login(orphan);
+        const list = await agent.get('/api/tasks?assigned_to=me&status=active');
+        expect(list.status).toBe(200);
+        expect(
+            list.body.tasks.find((t) => t.name === 'Unassigned orphan task')
+        ).toBeUndefined();
     });
 });

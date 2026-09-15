@@ -7,18 +7,15 @@ import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 import './styles/tailwind.css';
 import ProjectModal from './components/Project/ProjectModal';
-import NoteModal from './components/Note/NoteModal';
 import AreaModal from './components/Area/AreaModal';
 import TagModal from './components/Tag/TagModal';
 import PersonModal from './components/People/PersonModal';
-import { Note } from './entities/Note';
 import { Area } from './entities/Area';
 import { Tag } from './entities/Tag';
 import { Person } from './entities/Person';
 import { Project } from './entities/Project';
 import { User } from './entities/User';
 import { useStore } from './store/useStore';
-import { createNote, updateNote } from './utils/notesService';
 import { createArea, updateArea } from './utils/areasService';
 import { createTag, updateTag } from './utils/tagsService';
 import { createPerson, updatePerson } from './utils/peopleService';
@@ -49,7 +46,7 @@ const Layout: React.FC<LayoutProps> = ({
     children,
 }) => {
     const { t } = useTranslation();
-    const { showSuccessToast, showErrorToast } = useToast();
+    const { showErrorToast } = useToast();
     const navigate = useNavigate();
     const location = useLocation();
     const isUpcomingView = location.pathname === '/upcoming';
@@ -58,12 +55,10 @@ const Layout: React.FC<LayoutProps> = ({
     );
     const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
     const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
-    const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
     const [isAreaModalOpen, setIsAreaModalOpen] = useState(false);
     const [isTagModalOpen, setIsTagModalOpen] = useState(false);
     const [isPersonModalOpen, setIsPersonModalOpen] = useState(false);
 
-    const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const [selectedArea, setSelectedArea] = useState<Area | null>(null);
     const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
     const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
@@ -203,14 +198,13 @@ const Layout: React.FC<LayoutProps> = ({
         }
     }, []);
 
-    const openNoteModal = (note: Note | null = null) => {
-        setSelectedNote(note);
-        setIsNoteModalOpen(true);
-    };
-
-    const closeNoteModal = () => {
-        setIsNoteModalOpen(false);
-        setSelectedNote(null);
+    const openNewNote = () => {
+        // Create notes in the Notes page editor instead of a modal: navigate
+        // with a flag that Notes.tsx consumes to open a blank inline editor.
+        navigate('/notes', { state: { newNote: Date.now() } });
+        if (window.innerWidth < 1024) {
+            setIsSidebarOpen(false);
+        }
     };
 
     const openProjectModal = () => {
@@ -253,52 +247,6 @@ const Layout: React.FC<LayoutProps> = ({
     const closePersonModal = () => {
         setIsPersonModalOpen(false);
         setSelectedPerson(null);
-    };
-
-    const handleSaveNote = async (noteData: Note) => {
-        try {
-            let result: Note;
-            if (noteData.uid) {
-                result = await updateNote(noteData.uid, noteData);
-                // Update existing note in global store
-                const currentNotes = useStore.getState().notesStore.notes;
-                useStore
-                    .getState()
-                    .notesStore.setNotes(
-                        currentNotes.map((note) =>
-                            note.uid === result.uid ? result : note
-                        )
-                    );
-            } else {
-                result = await createNote(noteData);
-                // Add new note to global store
-                const currentNotes = useStore.getState().notesStore.notes;
-                useStore
-                    .getState()
-                    .notesStore.setNotes([result, ...currentNotes]);
-            }
-            closeNoteModal();
-        } catch (error: any) {
-            console.error('Error saving note:', error);
-            // Don't close modal if there's an auth error (user will be redirected)
-            if (isAuthError(error)) {
-                return;
-            }
-            closeNoteModal();
-        }
-    };
-
-    const handleCreateProject = async (name: string): Promise<Project> => {
-        try {
-            const newProject = await createProject({
-                name,
-                status: 'planned',
-            });
-            return newProject;
-        } catch (error) {
-            console.error('Error creating project:', error);
-            throw error;
-        }
     };
 
     const handleSaveProject = async (projectData: Project) => {
@@ -464,7 +412,7 @@ const Layout: React.FC<LayoutProps> = ({
                     toggleDarkMode={toggleDarkMode}
                     openTaskModal={openTaskModal}
                     openProjectModal={openProjectModal}
-                    openNoteModal={openNoteModal}
+                    onCreateNote={openNewNote}
                     openAreaModal={openAreaModal}
                     openTagModal={openTagModal}
                     openPersonModal={openPersonModal}
@@ -504,7 +452,7 @@ const Layout: React.FC<LayoutProps> = ({
                     toggleDarkMode={toggleDarkMode}
                     openTaskModal={openTaskModal}
                     openProjectModal={openProjectModal}
-                    openNoteModal={openNoteModal}
+                    onCreateNote={openNewNote}
                     openAreaModal={openAreaModal}
                     openTagModal={openTagModal}
                     openPersonModal={openPersonModal}
@@ -545,7 +493,7 @@ const Layout: React.FC<LayoutProps> = ({
                     toggleDarkMode={toggleDarkMode}
                     openTaskModal={openTaskModal}
                     openProjectModal={openProjectModal}
-                    openNoteModal={openNoteModal}
+                    onCreateNote={openNewNote}
                     openAreaModal={openAreaModal}
                     openTagModal={openTagModal}
                     openPersonModal={openPersonModal}
@@ -605,31 +553,6 @@ const Layout: React.FC<LayoutProps> = ({
                             }
                         }}
                         areas={areas}
-                    />
-                )}
-
-                {isNoteModalOpen && (
-                    <NoteModal
-                        isOpen={isNoteModalOpen}
-                        onClose={closeNoteModal}
-                        onSave={handleSaveNote}
-                        onDelete={async (noteId) => {
-                            try {
-                                const { deleteNoteWithStoreUpdate } =
-                                    await import('./utils/noteDeleteUtils');
-                                await deleteNoteWithStoreUpdate(
-                                    noteId,
-                                    showSuccessToast,
-                                    t
-                                );
-                                closeNoteModal();
-                            } catch (error) {
-                                console.error('Error deleting note:', error);
-                            }
-                        }}
-                        note={selectedNote}
-                        projects={projects}
-                        onCreateProject={handleCreateProject}
                     />
                 )}
 

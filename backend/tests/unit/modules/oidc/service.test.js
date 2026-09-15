@@ -40,7 +40,7 @@ describe('OIDC Service - handleCallback UserInfo integration', () => {
         };
 
         jest.spyOn(Issuer, 'discover').mockResolvedValue(mockIssuer);
-        providerConfig.getProvider.mockReturnValue(mockProvider);
+        providerConfig.getProvider.mockResolvedValue(mockProvider);
         stateManager.validateState.mockResolvedValue({
             providerSlug: 'test-provider',
             nonce: 'test-nonce',
@@ -192,7 +192,7 @@ describe('OIDC Service - Authorization URL Construction', () => {
                 scope: 'openid profile email',
             };
 
-            providerConfig.getProvider.mockReturnValue(mockProvider);
+            providerConfig.getProvider.mockResolvedValue(mockProvider);
 
             stateManager.createState.mockResolvedValue({
                 state: 'test-state-123',
@@ -227,7 +227,7 @@ describe('OIDC Service - Authorization URL Construction', () => {
                 scope: 'openid+profile+email',
             };
 
-            providerConfig.getProvider.mockReturnValue(mockProvider);
+            providerConfig.getProvider.mockResolvedValue(mockProvider);
 
             stateManager.createState.mockResolvedValue({
                 state: 'test-state-123',
@@ -260,7 +260,7 @@ describe('OIDC Service - Authorization URL Construction', () => {
                 scope: 'openid profile email groups offline_access',
             };
 
-            providerConfig.getProvider.mockReturnValue(mockProvider);
+            providerConfig.getProvider.mockResolvedValue(mockProvider);
 
             stateManager.createState.mockResolvedValue({
                 state: 'test-state-123',
@@ -297,7 +297,7 @@ describe('OIDC Service - Authorization URL Construction', () => {
                 scope: '  openid profile email  ',
             };
 
-            providerConfig.getProvider.mockReturnValue(mockProvider);
+            providerConfig.getProvider.mockResolvedValue(mockProvider);
 
             stateManager.createState.mockResolvedValue({
                 state: 'test-state-123',

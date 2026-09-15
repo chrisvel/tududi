@@ -76,6 +76,96 @@ function validateToggleRegistration(body) {
     return { enabled };
 }
 
+/**
+ * Validate a single OIDC provider entry within an oidc-config request body.
+ * clientSecret is intentionally optional: omitting it means "keep whatever
+ * secret is already stored for this slug" (see oidc/configService.js).
+ */
+function validateOidcProvider(provider, index) {
+    if (!provider || typeof provider !== 'object') {
+        throw new ValidationError(`providers[${index}] must be an object`);
+    }
+
+    const { slug, name, issuer, clientId, clientSecret, scope } = provider;
+
+    if (typeof slug !== 'string' || !slug.trim()) {
+        throw new ValidationError(`providers[${index}].slug is required`);
+    }
+    if (typeof name !== 'string' || !name.trim()) {
+        throw new ValidationError(`providers[${index}].name is required`);
+    }
+    if (typeof issuer !== 'string' || !issuer.trim()) {
+        throw new ValidationError(`providers[${index}].issuer is required`);
+    }
+    if (typeof clientId !== 'string' || !clientId.trim()) {
+        throw new ValidationError(`providers[${index}].clientId is required`);
+    }
+    if (
+        clientSecret !== undefined &&
+        clientSecret !== null &&
+        typeof clientSecret !== 'string'
+    ) {
+        throw new ValidationError(
+            `providers[${index}].clientSecret must be a string when provided`
+        );
+    }
+    if (scope !== undefined && scope !== null && typeof scope !== 'string') {
+        throw new ValidationError(`providers[${index}].scope must be a string`);
+    }
+
+    const autoProvision =
+        provider.autoProvision === undefined ? true : provider.autoProvision;
+    if (typeof autoProvision !== 'boolean') {
+        throw new ValidationError(
+            `providers[${index}].autoProvision must be a boolean`
+        );
+    }
+
+    const adminEmailDomains = provider.adminEmailDomains || [];
+    if (
+        !Array.isArray(adminEmailDomains) ||
+        !adminEmailDomains.every((d) => typeof d === 'string')
+    ) {
+        throw new ValidationError(
+            `providers[${index}].adminEmailDomains must be an array of strings`
+        );
+    }
+
+    return {
+        slug: slug.trim(),
+        name: name.trim(),
+        issuer: issuer.trim(),
+        clientId: clientId.trim(),
+        clientSecret: clientSecret || undefined,
+        scope: scope || undefined,
+        autoProvision,
+        adminEmailDomains,
+    };
+}
+
+/**
+ * Validate the admin OIDC configuration request body.
+ */
+function validateOidcConfig(body) {
+    const { enabled, providers } = body || {};
+
+    if (typeof enabled !== 'boolean') {
+        throw new ValidationError('enabled must be a boolean value');
+    }
+    if (!Array.isArray(providers)) {
+        throw new ValidationError('providers must be an array');
+    }
+
+    const validated = providers.map(validateOidcProvider);
+
+    const slugs = validated.map((p) => p.slug);
+    if (new Set(slugs).size !== slugs.length) {
+        throw new ValidationError('provider slugs must be unique');
+    }
+
+    return { enabled, providers: validated };
+}
+
 module.exports = {
     validateUserId,
     validateEmail,
@@ -83,4 +173,5 @@ module.exports = {
     validateSetAdminRole,
     validateCreateUser,
     validateToggleRegistration,
+    validateOidcConfig,
 };

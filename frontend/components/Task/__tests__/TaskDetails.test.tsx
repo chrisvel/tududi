@@ -100,7 +100,11 @@ jest.mock('../../../utils/tasksService', () => ({
 jest.mock('../TaskDetails/', () => ({
     TaskDetailsHeader: () => null,
     TaskContentCard: () => null,
-    TaskProjectCard: () => null,
+    TaskProjectCard: ({ projects }: any) => (
+        <div data-testid="task-project-card-projects">
+            {projects.map((p: any) => p.name).join(',')}
+        </div>
+    ),
     TaskTagsCard: () => null,
     TaskSubtasksCard: ({ subtasks, onSubtaskUpdate }: any) => (
         <div>
@@ -130,10 +134,14 @@ const mockSetTasks = jest.fn((updated: any[]) => {
     mockTasksInStore = updated;
 });
 
+let mockProjectsInStore: any[] = [];
+
 jest.mock('../../../store/useStore', () => {
     const mockUseStore: any = (selector: any) =>
         selector({
-            projectsStore: { projects: [] },
+            get projectsStore() {
+                return { projects: mockProjectsInStore };
+            },
             tagsStore: {
                 tags: [],
                 hasLoaded: true,
@@ -214,5 +222,33 @@ describe('TaskDetails subtask status updates', () => {
             );
             expect(updatedParent?.subtasks?.[0]?.status).toBe('in_progress');
         });
+    });
+});
+
+describe('TaskDetails project selection', () => {
+    beforeEach(() => {
+        mockTasksInStore = [
+            {
+                ...mockParentTaskInStore,
+                subtasks: [{ ...mockSubtaskInStore }],
+            },
+        ];
+        mockProjectsInStore = [
+            { id: 1, uid: 'p1', name: 'Active Project', status: 'in_progress' },
+            { id: 2, uid: 'p2', name: 'Done Project', status: 'done' },
+            {
+                id: 3,
+                uid: 'p3',
+                name: 'Cancelled Project',
+                status: 'cancelled',
+            },
+        ];
+    });
+
+    it('excludes done and cancelled projects from the project picker', async () => {
+        render(<TaskDetails />);
+
+        const list = await screen.findByTestId('task-project-card-projects');
+        expect(list.textContent).toBe('Active Project');
     });
 });

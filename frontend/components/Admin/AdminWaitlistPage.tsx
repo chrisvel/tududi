@@ -1,21 +1,27 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { EnvelopeIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
+import {
+    EnvelopeIcon,
+    ArrowDownTrayIcon,
+    TrashIcon,
+} from '@heroicons/react/24/outline';
 import { useToast } from '../Shared/ToastContext';
+import ConfirmDialog from '../Shared/ConfirmDialog';
 import {
     fetchWaitlist,
     downloadWaitlistCsv,
+    deleteWaitlistEntry,
     WaitlistEntry,
 } from '../../utils/adminWaitlistService';
 
 const PAGE_SIZE = 50;
 
 // Everyone waiting for Cloud to open, which is the list that gets mailed on
-// launch day. Read-only on purpose: rows arrive from the marketing page and
-// the register page, and nothing here should be able to edit them.
+// launch day. Rows arrive from the marketing page and the register page;
+// removing one here is the only edit this page allows.
 const AdminWaitlistPage: React.FC = () => {
     const { t } = useTranslation();
-    const { showErrorToast } = useToast();
+    const { showSuccessToast, showErrorToast } = useToast();
     const [entries, setEntries] = useState<WaitlistEntry[]>([]);
     const [total, setTotal] = useState(0);
     const [query, setQuery] = useState('');
@@ -23,6 +29,9 @@ const AdminWaitlistPage: React.FC = () => {
     const [page, setPage] = useState(0);
     const [loading, setLoading] = useState(true);
     const [exporting, setExporting] = useState(false);
+    const [entryToDelete, setEntryToDelete] = useState<WaitlistEntry | null>(
+        null
+    );
 
     const load = useCallback(async () => {
         setLoading(true);
@@ -53,6 +62,27 @@ const AdminWaitlistPage: React.FC = () => {
             showErrorToast(err.message || 'Failed to export the waitlist');
         } finally {
             setExporting(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!entryToDelete) return;
+        try {
+            await deleteWaitlistEntry(entryToDelete.id);
+            setEntries((prev) =>
+                prev.filter((e) => e.id !== entryToDelete.id)
+            );
+            setTotal((prev) => Math.max(0, prev - 1));
+            showSuccessToast(
+                t('admin.waitlist.removed', 'Removed from the waitlist')
+            );
+        } catch (err: any) {
+            showErrorToast(
+                err.message ||
+                    t('admin.waitlist.removeFailed', 'Failed to remove entry')
+            );
+        } finally {
+            setEntryToDelete(null);
         }
     };
 
@@ -125,6 +155,12 @@ const AdminWaitlistPage: React.FC = () => {
                             <th className="px-4 py-2">
                                 {t('admin.waitlist.joined', 'Joined')}
                             </th>
+                            <th className="px-4 py-2">
+                                {t('admin.waitlist.ipAddress', 'IP Address')}
+                            </th>
+                            <th className="px-4 py-2 text-right">
+                                {t('common.actions', 'Actions')}
+                            </th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -132,7 +168,7 @@ const AdminWaitlistPage: React.FC = () => {
                             <tr>
                                 <td
                                     className="px-4 py-3 text-gray-500"
-                                    colSpan={5}
+                                    colSpan={7}
                                 >
                                     {t('common.loading', 'Loading...')}
                                 </td>
@@ -141,7 +177,7 @@ const AdminWaitlistPage: React.FC = () => {
                             <tr>
                                 <td
                                     className="px-4 py-3 text-gray-500"
-                                    colSpan={5}
+                                    colSpan={7}
                                     data-testid="admin-waitlist-empty"
                                 >
                                     {search
@@ -175,6 +211,22 @@ const AdminWaitlistPage: React.FC = () => {
                                         {new Date(
                                             entry.created_at
                                         ).toLocaleString()}
+                                    </td>
+                                    <td className="px-4 py-2 text-gray-500 dark:text-gray-400 font-mono text-xs">
+                                        {entry.ip_address || '-'}
+                                    </td>
+                                    <td className="px-4 py-2 text-right">
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setEntryToDelete(entry)
+                                            }
+                                            className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                                            title={t('common.delete', 'Delete')}
+                                            data-testid="admin-waitlist-delete"
+                                        >
+                                            <TrashIcon className="h-5 w-5" />
+                                        </button>
                                     </td>
                                 </tr>
                             ))
@@ -216,6 +268,19 @@ const AdminWaitlistPage: React.FC = () => {
                     </button>
                 </div>
             </div>
+
+            {entryToDelete && (
+                <ConfirmDialog
+                    title={t('admin.waitlist.removeTitle', 'Remove Address')}
+                    message={t(
+                        'admin.waitlist.confirmRemove',
+                        'Remove {{email}} from the waitlist? This cannot be undone.',
+                        { email: entryToDelete.email }
+                    )}
+                    onConfirm={handleDelete}
+                    onCancel={() => setEntryToDelete(null)}
+                />
+            )}
         </div>
     );
 };

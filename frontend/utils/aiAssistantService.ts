@@ -3,8 +3,10 @@ import { getPostHeadersWithCsrf, handleAuthResponse } from './authUtils';
 
 export interface AIConfig {
     api_key_set: boolean;
-    base_url: string | null;
-    model: string;
+    // Omitted on a hosted instance: they describe the operator's own server
+    // config (LLM provider/network, model choice), not the caller's.
+    base_url?: string | null;
+    model?: string;
 }
 
 export const fetchAIConfig = async (): Promise<AIConfig | null> => {

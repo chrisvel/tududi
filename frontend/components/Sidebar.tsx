@@ -29,7 +29,7 @@ interface SidebarProps {
     toggleDarkMode: () => void;
     openTaskModal: () => void;
     openProjectModal: () => void;
-    openNoteModal: (note: Note | null) => void;
+    onCreateNote: () => void;
     openAreaModal: (area: Area | null) => void;
     openTagModal: (tag: Tag | null) => void;
     openPersonModal: (person: Person | null) => void;
@@ -48,7 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     toggleDarkMode,
     openTaskModal,
     openProjectModal,
-    openNoteModal,
+    onCreateNote,
     openAreaModal,
     openTagModal,
     openPersonModal,
@@ -127,7 +127,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                         <div className="mb-[6px]">
                             <SidebarNotes
                                 handleNavClick={handleNavClick}
-                                openNoteModal={openNoteModal}
+                                onCreateNote={onCreateNote}
                                 notes={notes}
                                 location={location}
                                 isDarkMode={isDarkMode}
@@ -197,7 +197,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                         toggleDropdown={toggleDropdown}
                         openTaskModal={openTaskModal}
                         openProjectModal={openProjectModal}
-                        openNoteModal={openNoteModal}
+                        onCreateNote={onCreateNote}
                         openAreaModal={openAreaModal}
                         openTagModal={openTagModal}
                         keyboardShortcuts={keyboardShortcuts}

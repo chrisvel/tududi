@@ -1,10 +1,14 @@
 const path = require('path');
 const express = require('express');
 const ejs = require('ejs');
+const rateLimit = require('express-rate-limit');
+const { ipKeyGenerator } = require('express-rate-limit');
 const { getPlans } = require('../../config/plans');
+const { getConfig } = require('../../config/config');
 const { logError } = require('../../services/logService');
 const { getStats } = require('./stats');
 const waitlist = require('../../services/waitlistService');
+const { createRateLimitStore } = require('../../middleware/rateLimitStore');
 
 // Whether to offer the demo, refreshed in the background so a page render
 // never waits on a query. Null until the first check, which reads as "no".
@@ -64,12 +68,40 @@ function buildCsp() {
     ].join('; ');
 }
 
+// Per-IP limit on the waitlist post, backed by the same persistent store the
+// rest of the app's rate limiters use so it survives restarts and holds
+// across processes. Kept local to this file rather than in
+// middleware/rateLimiter.js because its handler needs this route's own
+// redirect, not a JSON error body: a request over the limit gets the exact
+// same "you're on the list" redirect a real signup gets, just without a row
+// to show for it, so a script hammering the form never learns it's being
+// throttled (the same rule the capture handler below follows).
+function buildWaitlistLimiter() {
+    const { rateLimiting } = getConfig();
+    return rateLimit({
+        store: createRateLimitStore('waitlist'),
+        windowMs: rateLimiting.waitlist.windowMs,
+        max: rateLimiting.waitlist.max,
+        standardHeaders: true,
+        legacyHeaders: false,
+        skip: () => !rateLimiting.enabled,
+        keyGenerator: (req) => ipKeyGenerator(req.ip),
+        handler: (req, res) => {
+            const locale = isSupportedLocale(req.body?.locale)
+                ? req.body.locale
+                : DEFAULT_LOCALE;
+            res.redirect(303, `${localePath(locale)}?joined=1#waitlist`);
+        },
+    });
+}
+
 function createLandingRouter(landing) {
     const router = express.Router();
     const siteOrigin = landing.siteUrl;
     const localeUrl = makeLocaleUrl(siteOrigin);
     const appUrl = landing.appUrl.replace(/\/$/, '');
     const csp = buildCsp();
+    const waitlistLimiter = buildWaitlistLimiter();
     const cacheRenders = process.env.NODE_ENV === 'production';
     const rendered = new Map();
     const secureCookie = /^https:/.test(siteOrigin);
@@ -252,23 +284,40 @@ function createLandingRouter(landing) {
         'pricing',
     ]);
 
-    router.post('/waitlist', waitlistBody, async (req, res) => {
-        const locale = isSupportedLocale(req.body?.locale)
-            ? req.body.locale
-            : DEFAULT_LOCALE;
-        const back = `${localePath(locale)}?joined=1#waitlist`;
-        const source = WAITLIST_SOURCES.has(req.body?.source)
-            ? req.body.source
-            : 'unknown';
+    router.post(
+        '/waitlist',
+        waitlistBody,
+        waitlistLimiter,
+        async (req, res) => {
+            const locale = isSupportedLocale(req.body?.locale)
+                ? req.body.locale
+                : DEFAULT_LOCALE;
+            const back = `${localePath(locale)}?joined=1#waitlist`;
+            const source = WAITLIST_SOURCES.has(req.body?.source)
+                ? req.body.source
+                : 'unknown';
 
-        await waitlist.capture({
-            email: req.body?.email,
-            source,
-            locale,
-            referrer: req.get('referer'),
-        });
-        return res.redirect(303, back);
-    });
+            // A bait field no real visitor sees or fills; a script that fills
+            // every input in the form trips it. Same "always looks like
+            // success" rule as the limiter above: skip the capture, not the
+            // redirect.
+            const honeypot =
+                typeof req.body?.company === 'string'
+                    ? req.body.company.trim()
+                    : '';
+
+            if (!honeypot) {
+                await waitlist.capture({
+                    email: req.body?.email,
+                    source,
+                    locale,
+                    referrer: req.get('referer'),
+                    ip: req.ip,
+                });
+            }
+            return res.redirect(303, back);
+        }
+    );
 
     // The base language lives at the root, so /en is not a real URL.
     router.get('/en', (req, res) => res.redirect(301, '/'));

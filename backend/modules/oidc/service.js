@@ -30,7 +30,7 @@ function getRedirectUri(providerSlug, baseUrl) {
 }
 
 async function initiateAuthFlow(providerSlug, linkMode = false) {
-    const config = providerConfig.getProvider(providerSlug);
+    const config = await providerConfig.getProvider(providerSlug);
     if (!config) {
         throw new Error(`OIDC provider not found: ${providerSlug}`);
     }
@@ -59,7 +59,7 @@ async function initiateAuthFlow(providerSlug, linkMode = false) {
 }
 
 async function handleCallback(providerSlug, callbackParams) {
-    const config = providerConfig.getProvider(providerSlug);
+    const config = await providerConfig.getProvider(providerSlug);
     if (!config) {
         throw new Error(`OIDC provider not found: ${providerSlug}`);
     }
@@ -117,7 +117,7 @@ async function handleCallback(providerSlug, callbackParams) {
 }
 
 async function validateIdToken(idToken, nonce, providerSlug) {
-    const config = providerConfig.getProvider(providerSlug);
+    const config = await providerConfig.getProvider(providerSlug);
     if (!config) {
         throw new Error(`OIDC provider not found: ${providerSlug}`);
     }
@@ -134,7 +134,7 @@ async function validateIdToken(idToken, nonce, providerSlug) {
 }
 
 async function refreshAccessToken(providerSlug, refreshToken) {
-    const config = providerConfig.getProvider(providerSlug);
+    const config = await providerConfig.getProvider(providerSlug);
     if (!config) {
         throw new Error(`OIDC provider not found: ${providerSlug}`);
     }

@@ -31,7 +31,11 @@
     "download": "İndir",
     "exitFocusMode": "Odak modundan çık",
     "searchTimezones": "Saat dilimlerini ara...",
-    "dismiss": "Kapat"
+    "dismiss": "Kapat",
+    "search": "Ara",
+    "previous": "Önceki",
+    "done": "Tamamlandı",
+    "clear": "Temizle"
   },
   "sidebar": {
     "dashboard": "Gösterge Paneli",
@@ -72,7 +76,9 @@
     "boards": "Panolar",
     "bookmarks": "Yer İşaretleri",
     "reports": "Raporlar",
-    "productivityAssistant": "Verimlilik Asistanı"
+    "productivityAssistant": "Verimlilik Asistanı",
+    "assignedToMe": "Bana atanmış",
+    "everyone": "Herkes"
   },
   "navigation": {
     "home": "Ana Sayfa",
@@ -86,7 +92,9 @@
     "toggleSearch": "Aramayı Aç/Kapat",
     "quickInboxCapture": "Hızlı Gelen Kutusu Yakalama",
     "userMenu": "Kullanıcı Menüsü",
-    "search": "Ara"
+    "search": "Ara",
+    "admin": "Yönetici",
+    "adminBadge": "Yönetici"
   },
   "settings": {
     "todayPageSettings": "Bugün Sayfası Ayarları",
@@ -201,7 +209,10 @@
       "dropHere": "Buraya bırak"
     },
     "chaseUp": "Takip et",
-    "habit": "Alışkanlık"
+    "habit": "Alışkanlık",
+    "assignedTo": "Atanan",
+    "subtasks": "Alt görevler",
+    "openFullPage": "Tam görünümü aç"
   },
   "timeline": {
     "activityTimeline": "Etkinlik Zaman Çizelgesi",
@@ -690,7 +701,8 @@
         "vague": "\"Ara\", \"Yaz\", \"Planla\" veya \"Araştır\" gibi bir eylem fiili ile başlamayı deneyin"
       },
       "selectAtLeastOneDay": "Lütfen en az bir gün seçin",
-      "deferUntilPlaceholder": "Erteleme tarihi ve saatini seçin"
+      "deferUntilPlaceholder": "Erteleme tarihi ve saatini seçin",
+      "notePlaceholder": "Not ekle..."
     },
     "noteTitle": "Not Başlığı",
     "noteContent": "Not İçeriği",
@@ -745,7 +757,9 @@
     },
     "captcha_required": "Lütfen doğrulamayı tamamlayıp tekrar deneyin.",
     "registration_successful": "E-posta adresinizi doğrulayın",
-    "registration_email_sent": "Hesabınızı etkinleştirmek için e-posta adresinizi doğrulayın. Size bir bağlantı gönderdik, gelen kutunuzu kontrol edin."
+    "registration_email_sent": "Hesabınızı etkinleştirmek için e-posta adresinizi doğrulayın. Size bir bağlantı gönderdik, gelen kutunuzu kontrol edin.",
+    "notify_joined": "Listedesiniz. Tududi Cloud açıldığında size e-posta göndereceğiz.",
+    "notify_failed": "Adresinizi kaydedemedik. Lütfen tekrar deneyin."
   },
   "dropdown": {
     "createNew": "Yeni Oluştur",
@@ -868,7 +882,47 @@
     "rollingMsg3": "Not al…",
     "saveAs": "Farklı kaydet",
     "shiftEnterHint": "Yeni satır için Shift + Enter",
-    "addToInbox": "Gelen kutusu öğesi olarak ekle (Enter)"
+    "addToInbox": "Gelen kutusu öğesi olarak ekle (Enter)",
+    "emptyItem": "(Boş öğe)",
+    "itemQueuedOffline": "Çevrimdışı kaydedildi. Çevrimiçi olduğunuzda otomatik olarak senkronize edilecek.",
+    "infoShort": "Gelen kutusu, kategorize edilmemiş düşüncelerin toplandığı yerdir — not alın, sonra sıralayın.",
+    "recentlyCaptured": "Son zamanlarda yakalanan",
+    "line": "satır",
+    "lines": "satırlar",
+    "processN": "İşle {{count}}",
+    "allClarified": "Hepsi netleştirildi",
+    "reClarify": "Tekrar netleştir",
+    "trashedRestore": "{{count}} çöp · geri yükle",
+    "restored": "Çöp öğeleri geri yüklendi",
+    "restoreError": "Öğeleri geri yükleme başarısız oldu",
+    "trashError": "Öğeyi çöp kutusuna atma başarısız oldu",
+    "clarifyProgress": "Netleştir · {{progress}}",
+    "clarifyDone": "Hepsi netleştirildi. Gelen kutusu sakin.",
+    "clarifyBackToList": "Listeye geri dön",
+    "clarifyExit": "Netleştirmeden çık",
+    "clarifyBack": "← Geri",
+    "clarifyQ": {
+      "actionable": "Bu eyleme geçirilebilir mi?",
+      "notActionable": "Bu ne tür bir şey?",
+      "steps": "Bir adım mı, yoksa birkaç mı?",
+      "twomin": "Bunu 2 dakikadan kısa sürede yapabilir misin?",
+      "deferDelegate": "Sonra kendin mi, yoksa devredip mi?"
+    },
+    "clarifyChoice": {
+      "yesActionable": "Evet, eyleme geçirilebilir",
+      "notActionable": "Eyleme geçirilemez",
+      "trash": "Çöp",
+      "someday": "Bir gün / Belki",
+      "referenceNote": "Referans notu",
+      "oneStep": "Bir adım",
+      "severalSteps": "Birden fazla adım (proje)",
+      "doItNow": "Evet — şimdi yap",
+      "no": "Hayır",
+      "scheduleIt": "Planla",
+      "delegate": "Devret"
+    },
+    "somedayCreated": "Bir güne eklendi",
+    "reClarifyLink": "Yeniden netleştir"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1052,7 +1106,8 @@
     "statusUpdated": "Durum başarıyla güncellendi",
     "statusUpdateError": "Durum güncellenemedi",
     "updatedAt": "Güncellenme zamanı",
-    "upcoming": "yaklaşan"
+    "upcoming": "yaklaşan",
+    "assigneeUpdateError": "Atanan kişiyi güncelleme başarısız oldu"
   },
   "projects": {
     "loading": "Projeler yükleniyor...",
@@ -1116,7 +1171,9 @@
     "focusHint": "Bu görevi devam ediyor ve bugün'e taşır",
     "noNextAction": "Her şey açık - bekleyen görev yok.",
     "selectDueDatePlaceholder": "Son tarihi seç",
-    "goalTitle": "Hedef"
+    "goalTitle": "Hedef",
+    "addProject": "Proje Ekle",
+    "noResults": "Proje yok"
   },
   "projectItem": {
     "edit": "Düzenle",
@@ -1179,7 +1236,11 @@
     "contentPlaceholderMarkdown": "İçeriğinizi Markdown formatında yazın...\n\nÖrnekler:\n# Başlık\n**Kalın metin**\n*İtalik metin*\n- Liste maddesi\n```kod```",
     "pinToSidebar": "Yan Menüyü Sabitle",
     "unpinFromSidebar": "Yan Menüden Sıkıştırmayı Kaldır",
-    "save": "Kaydet"
+    "save": "Kaydet",
+    "addNote": "Not Ekle",
+    "tree": {
+      "folders": "Klasörler"
+    }
   },
   "tags": {
     "loading": "Etiketler yükleniyor...",
@@ -1207,7 +1268,8 @@
     "systemTags": "Sistem Etiketleri",
     "systemTagsDescription": "Otomatik olarak yönetilir · Silinemez veya yeniden adlandırılamaz",
     "system": "Sistem",
-    "customize": "Özelleştir"
+    "customize": "Özelleştir",
+    "addTag": "Etiket Ekle"
   },
   "recurrence": {
     "none": "Yok",
@@ -1227,7 +1289,11 @@
     "inheritedSettingsMessage": "Bu görev, tekrarlayan bir görevden oluşturulmuştur. Aşağıda gösterilen tekrar ayarları, orijinal görevden miras alınmıştır ve burada düzenlenemez.",
     "cancelEdit": "Düzenlemeyi İptal Et",
     "editParentRecurrence": "Ana Tekrarı Düzenle",
-    "parentEditWarning": "⚠️ Ana görevin tekrar ayarlarını düzenliyorsunuz. Değişiklikler, bu tekrarlayan görevin tüm gelecekteki örneklerini etkileyecektir."
+    "parentEditWarning": "⚠️ Ana görevin tekrar ayarlarını düzenliyorsunuz. Değişiklikler, bu tekrarlayan görevin tüm gelecekteki örneklerini etkileyecektir.",
+    "every": "Her",
+    "weeks": "hafta",
+    "months": "ay",
+    "advancedHint": "Belirli günler veya bir bitiş tarihi için tam görevi açın."
   },
   "weekdays": {
     "sunday": "Paz",
@@ -1470,7 +1536,43 @@
       "overrideSaved": "İstisna kaydedildi",
       "overrideCleared": "İstisna kaldırıldı",
       "synced": "Ödeme sağlayıcısından eşitlendi"
-    }
+    },
+    "dashboard": {
+      "title": "Yönetici",
+      "subtitle": "tududi {{version}} · {{env}}",
+      "users": "Kullanıcılar",
+      "usersHint": "{{verified}} onaylı · {{admins}} yönetici · {{new}} bugün",
+      "paying": "Ödeyen",
+      "selfHosted": "kendi barındırdığı",
+      "waitlist": "Bekleme Listesi",
+      "waitlistHint": "{{n}} içinde 7 gün",
+      "content": "Görevler",
+      "contentHint": "{{projects}} projeler · {{notes}} notlar",
+      "regOpen": "Kayıt açık",
+      "regClosed": "Kayıt kapalı",
+      "waitlistLatest": "En son bekleme listesi kayıtları",
+      "waitlistEmpty": "Henüz kimse yok.",
+      "email": "E-posta",
+      "source": "Kaynak",
+      "joined": "Katıldı",
+      "waitlistAll": "Hepsini gör"
+    },
+    "waitlist": {
+      "title": "Bekleme Listesi",
+      "export": "CSV Dışa Aktar",
+      "searchPlaceholder": "E-posta ile ara",
+      "email": "E-posta",
+      "source": "Kaynak",
+      "locale": "Dil",
+      "submissions": "Başvurular",
+      "joined": "Katıldı",
+      "empty": "Henüz kimse kaydolmadı",
+      "noMatches": "Bu arama ile eşleşen adres yok",
+      "showing": "{{from}}-{{to}} / {{total}}"
+    },
+    "passwordInviteHint": "Bir davet e-postası göndermek için boş bırakın",
+    "invitationSent": "{{email}} adresine davet e-postası gönderildi",
+    "invitationNotSent": "Hesap oluşturuldu, ancak e-posta devre dışı - bu kullanıcı için şifreyi manuel olarak ayarlayın."
   },
   "shares": {
     "shareProject": "Projeyi paylaş",
@@ -1496,7 +1598,11 @@
     "noShares": "Henüz paylaşılmadı",
     "noAvailableUsers": "Paylaşılacak kullanıcı yok",
     "shared": "Paylaşıldı",
-    "sharedWithTeam": "Takımla paylaşıldı"
+    "sharedWithTeam": "Takımla paylaşıldı",
+    "shareArea": "Paylaşım alanı",
+    "shareGoal": "Paylaşım hedefi",
+    "shareNote": "Paylaşım notu",
+    "shareTask": "Paylaşım görevi"
   },
   "views": {
     "title": "Akıllı Görünümler",
@@ -1642,14 +1748,16 @@
       "overdueTasks": "Vadesi Geçmiş Görevler",
       "deferUntil": "Ertele",
       "dueProjects": "Vadesi Gelen Projeler",
-      "overdueProjects": "Vadesi Geçmiş Projeler"
+      "overdueProjects": "Vadesi Geçmiş Projeler",
+      "taskAssigned": "Görev Atandı"
     },
     "descriptions": {
       "dueTasks": "24 saat içinde vadesi gelen görevler",
       "overdueTasks": "Vade tarihini geçmiş görevler",
       "deferUntil": "Şu anda çalışılabilir olan görevler",
       "dueProjects": "24 saat içinde vadesi gelen projeler",
-      "overdueProjects": "Vade tarihini geçmiş projeler"
+      "overdueProjects": "Vade tarihini geçmiş projeler",
+      "taskAssigned": "Bir görev başka biri tarafından size atandı"
     },
     "telegram": {
       "notConfigured": {
@@ -1779,5 +1887,44 @@
       "backups_import": "yedek içe aktarmayı",
       "attachments": "ekleri"
     }
+  },
+  "subscription": {
+    "title": "Abonelik",
+    "chooseForCloud": "Tududi Cloud için bir plan seçin",
+    "noActive": "Aktif abonelik yok",
+    "chooseToContinue": "tududi Cloud'u kullanmaya devam etmek için bir plan seçin.",
+    "monthly": "Aylık",
+    "yearly": "Yıllık",
+    "priceMonthly": "{{price}} ayda",
+    "priceYearly": "{{price}} yılda",
+    "subscribeMonthly": "Aylık abone ol",
+    "subscribeYearly": "Yıllık abone ol",
+    "perkUnlimited": "Sınırsız görev, proje ve not",
+    "perkStorage": "Ekler ve dosya yüklemeleri",
+    "perkFeatures": "Yapay zeka asistanı, MCP, CalDAV senkronizasyonu ve Telegram botu",
+    "perkBackups": "Günlük yedeklemeler ve yönetilen güncellemeler",
+    "perkExport": "Her zaman her şeyi dışa aktar",
+    "taxNote": "Ödemeler {{provider}} tarafından işlenir. Fiyatlar geçerli vergileri hariç tutar. İstediğiniz zaman iptal edin.",
+    "notConfigured": "Bu örnekte abonelikler henüz mevcut değil. Lütfen destekle iletişime geçin.",
+    "exportData": "Verilerinizi dışa aktarın"
+  },
+  "demo": {
+    "opening": "Demoyu açıyor...",
+    "unavailableTitle": "Demo mevcut değil",
+    "unavailableBody": "Kendini yeniden inşa ediyor olabilir. Birazdan tekrar deneyin."
+  },
+  "everyone": {
+    "title": "Herkes",
+    "subtitle": "Herkesin şu anda paylaştığı işler",
+    "you": "Sen",
+    "people": "İnsanlar",
+    "tasks": "Görevler",
+    "overdue": "Gecikmiş",
+    "today": "Bugün",
+    "tomorrow": "Yarın",
+    "upcoming": "Bu hafta",
+    "noDate": "Tarih yok",
+    "nothing": "Şu anda hiçbir şey yok",
+    "empty": "Şu anda paylaşılan hiçbir şey yok. Burada görmek için bir alan, proje veya hedef paylaşın veya birine görev atayın."
   }
 }

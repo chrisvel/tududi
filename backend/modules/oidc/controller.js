@@ -7,7 +7,7 @@ const { User } = require('../../models');
 
 async function listProviders(req, res) {
     try {
-        const providers = providerConfig.getAllProviders();
+        const providers = await providerConfig.getAllProviders();
 
         const publicProviders = providers.map((p) => ({
             slug: p.slug,
@@ -188,7 +188,7 @@ async function getUserIdentities(req, res) {
         );
 
         const providersMap = {};
-        providerConfig.getAllProviders().forEach((p) => {
+        (await providerConfig.getAllProviders()).forEach((p) => {
             providersMap[p.slug] = p;
         });
 

@@ -15,14 +15,14 @@ interface SidebarNotesProps {
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
     location: Location;
     isDarkMode: boolean;
-    openNoteModal: (note: Note | null) => void;
+    onCreateNote: () => void;
     notes: Note[];
 }
 
 const SidebarNotes: React.FC<SidebarNotesProps> = ({
     handleNavClick,
     location,
-    openNoteModal,
+    onCreateNote,
 }) => {
     const { t } = useTranslation();
     const [isExpanded, setIsExpanded] = useState(false);
@@ -77,7 +77,7 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
-                            openNoteModal(null);
+                            onCreateNote();
                         }}
                         className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
                         aria-label={t('notes.addNote', 'Add Note')}

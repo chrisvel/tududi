@@ -31,7 +31,11 @@
     "download": "Downloaden",
     "exitFocusMode": "Verlaat de focusmodus",
     "searchTimezones": "Zoek tijdzones...",
-    "dismiss": "Afwijzen"
+    "dismiss": "Afwijzen",
+    "search": "Zoeken",
+    "previous": "Vorige",
+    "done": "Klaar",
+    "clear": "Wissen"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -72,7 +76,9 @@
     "boards": "Borden",
     "bookmarks": "Bladwijzers",
     "reports": "Rapporten",
-    "productivityAssistant": "Productiviteitsassistent"
+    "productivityAssistant": "Productiviteitsassistent",
+    "assignedToMe": "Aan mij toegewezen",
+    "everyone": "Iedereen"
   },
   "navigation": {
     "home": "Home",
@@ -86,7 +92,9 @@
     "toggleSearch": "Schakel Zoeken In",
     "quickInboxCapture": "Snelle Inbox Vastlegging",
     "userMenu": "Gebruikersmenu",
-    "search": "Zoeken"
+    "search": "Zoeken",
+    "admin": "Beheerder",
+    "adminBadge": "Beheerder"
   },
   "settings": {
     "todayPageSettings": "Instellingen Vandaag Pagina",
@@ -201,7 +209,10 @@
       "dropHere": "Hier neerzetten"
     },
     "chaseUp": "Opvolgen",
-    "habit": "Gewoonte"
+    "habit": "Gewoonte",
+    "assignedTo": "Toegewezen aan",
+    "subtasks": "Subtaken",
+    "openFullPage": "Volledige weergave openen"
   },
   "timeline": {
     "activityTimeline": "Activiteit Tijdlijn",
@@ -690,7 +701,8 @@
         "vague": "Probeer te beginnen met een actie werkwoord zoals \"Bel\", \"Schrijf\", \"Plan\" of \"Onderzoek\""
       },
       "selectAtLeastOneDay": "Selecteer alstublieft minimaal één dag",
-      "deferUntilPlaceholder": "Selecteer uitstel tot datum en tijd"
+      "deferUntilPlaceholder": "Selecteer uitstel tot datum en tijd",
+      "notePlaceholder": "Voeg een notitie toe..."
     },
     "noteTitle": "Notitietitel",
     "noteContent": "Notitie-inhoud",
@@ -745,7 +757,9 @@
     },
     "captcha_required": "Voltooi de verificatie en probeer het opnieuw.",
     "registration_successful": "Bevestig je e-mailadres",
-    "registration_email_sent": "Bevestig je e-mailadres om je account te activeren. We hebben je een link gestuurd, controleer je inbox."
+    "registration_email_sent": "Bevestig je e-mailadres om je account te activeren. We hebben je een link gestuurd, controleer je inbox.",
+    "notify_joined": "Je staat op de lijst. We sturen je een e-mail op de dag dat tududi Cloud opent.",
+    "notify_failed": "We konden je adres niet opslaan. Probeer het opnieuw."
   },
   "dropdown": {
     "createNew": "Nieuw Aanmaken",
@@ -868,7 +882,47 @@
     "rollingMsg3": "Schrijf het op…",
     "saveAs": "Opslaan als",
     "shiftEnterHint": "Shift + Enter voor een nieuwe regel",
-    "addToInbox": "Toevoegen als inbox-item (Enter)"
+    "addToInbox": "Toevoegen als inbox-item (Enter)",
+    "emptyItem": "(Leeg item)",
+    "itemQueuedOffline": "Offline opgeslagen. Het synchroniseert automatisch zodra je weer online bent.",
+    "infoShort": "Inbox is waar ongecategoriseerde gedachten landen — schrijf dingen op, sorteer ze later.",
+    "recentlyCaptured": "Onlangs vastgelegd",
+    "line": "regel",
+    "lines": "regels",
+    "processN": "Verwerk {{count}}",
+    "allClarified": "Alle verduidelijkt",
+    "reClarify": "Herverduidelijken",
+    "trashedRestore": "{{count}} verwijderd · herstellen",
+    "restored": "Verwijderde items hersteld",
+    "restoreError": "Herstellen van items mislukt",
+    "trashError": "Verwijderen van item mislukt",
+    "clarifyProgress": "Verduidelijken · {{progress}}",
+    "clarifyDone": "Alle verduidelijkt. Inbox is rustig.",
+    "clarifyBackToList": "Terug naar lijst",
+    "clarifyExit": "Verlaat verduidelijking",
+    "clarifyBack": "← Terug",
+    "clarifyQ": {
+      "actionable": "Is dit uitvoerbaar?",
+      "notActionable": "Wat voor soort ding is het?",
+      "steps": "Eén stap, of meerdere?",
+      "twomin": "Kun je het in minder dan 2 minuten doen?",
+      "deferDelegate": "Later zelf, of doorgeven?"
+    },
+    "clarifyChoice": {
+      "yesActionable": "Ja, uitvoerbaar",
+      "notActionable": "Niet uitvoerbaar",
+      "trash": "Verwijderen",
+      "someday": "Ooit / Misschien",
+      "referenceNote": "Referentienotitie",
+      "oneStep": "Één stap",
+      "severalSteps": "Meerdere stappen (project)",
+      "doItNow": "Ja — doe het nu",
+      "no": "Nee",
+      "scheduleIt": "Plan het",
+      "delegate": "Delegeer"
+    },
+    "somedayCreated": "Toegevoegd aan Ooit",
+    "reClarifyLink": "Herbevestigen"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -1052,7 +1106,8 @@
     "statusUpdated": "Status succesvol bijgewerkt",
     "statusUpdateError": "Status bijwerken mislukt",
     "updatedAt": "Bijgewerkt op",
-    "upcoming": "komend"
+    "upcoming": "komend",
+    "assigneeUpdateError": "Bijwerken van de toegewezen persoon mislukt"
   },
   "projects": {
     "loading": "Projecten laden...",
@@ -1116,7 +1171,9 @@
     "focusHint": "Verplaatst deze taak naar lopend en vandaag",
     "noNextAction": "Alles klaar - geen openstaande taken.",
     "selectDueDatePlaceholder": "Selecteer vervaldatum",
-    "goalTitle": "Doel"
+    "goalTitle": "Doel",
+    "addProject": "Project Toevoegen",
+    "noResults": "Geen projecten"
   },
   "projectItem": {
     "edit": "Bewerken",
@@ -1179,7 +1236,11 @@
     "contentPlaceholderMarkdown": "Schrijf je inhoud met Markdown-opmaak...\n\nVoorbeelden:\n# Kop\n**Vetgedrukte tekst**\n*Schuingedrukte tekst*\n- Lijstitem\n```code```",
     "pinToSidebar": "Vastpinnen aan zijbalk",
     "unpinFromSidebar": "Losmaken van zijbalk",
-    "save": "Opslaan"
+    "save": "Opslaan",
+    "addNote": "Notitie Toevoegen",
+    "tree": {
+      "folders": "Mappen"
+    }
   },
   "tags": {
     "loading": "Tags laden...",
@@ -1207,7 +1268,8 @@
     "systemTags": "Systeem Tags",
     "systemTagsDescription": "Automatisch beheerd · Kan niet worden verwijderd of hernoemd",
     "system": "Systeem",
-    "customize": "Aanpassen"
+    "customize": "Aanpassen",
+    "addTag": "Label Toevoegen"
   },
   "recurrence": {
     "none": "Geen",
@@ -1227,7 +1289,11 @@
     "inheritedSettingsMessage": "Deze taak is gegenereerd vanuit een terugkerende taak. De hieronder weergegeven terugkerende instellingen zijn geërfd van de oorspronkelijke taak en kunnen hier niet worden bewerkt.",
     "cancelEdit": "Annuleer Bewerking",
     "editParentRecurrence": "Bewerk Ouder Terugkeer",
-    "parentEditWarning": "⚠️ U bewerkt de terugkerende instellingen van de oudertaak. Wijzigingen hebben invloed op alle toekomstige instanties van deze terugkerende taak."
+    "parentEditWarning": "⚠️ U bewerkt de terugkerende instellingen van de oudertaak. Wijzigingen hebben invloed op alle toekomstige instanties van deze terugkerende taak.",
+    "every": "Elke",
+    "weeks": "weken",
+    "months": "maanden",
+    "advancedHint": "Voor specifieke weekdagen of een einddatum, open de volledige taak."
   },
   "weekdays": {
     "sunday": "Zo",
@@ -1470,7 +1536,43 @@
       "overrideSaved": "Uitzondering opgeslagen",
       "overrideCleared": "Uitzondering verwijderd",
       "synced": "Gesynchroniseerd vanuit de betaalprovider"
-    }
+    },
+    "dashboard": {
+      "title": "Beheerder",
+      "subtitle": "tududi {{version}} · {{env}}",
+      "users": "Gebruikers",
+      "usersHint": "{{verified}} geverifieerd · {{admins}} beheerder · {{new}} vandaag",
+      "paying": "Betaald",
+      "selfHosted": "zelf-gehost",
+      "waitlist": "Wachtlijst",
+      "waitlistHint": "{{n}} in 7 dagen",
+      "content": "Taken",
+      "contentHint": "{{projects}} projecten · {{notes}} notities",
+      "regOpen": "Registratie open",
+      "regClosed": "Registratie gesloten",
+      "waitlistLatest": "Laatste aanmeldingen voor de wachtlijst",
+      "waitlistEmpty": "Nog niemand.",
+      "email": "E-mail",
+      "source": "Bron",
+      "joined": "Aangesloten",
+      "waitlistAll": "Bekijk alles"
+    },
+    "waitlist": {
+      "title": "Wachtlijst",
+      "export": "Exporteer CSV",
+      "searchPlaceholder": "Zoeken op e-mailadres",
+      "email": "E-mail",
+      "source": "Bron",
+      "locale": "Taal",
+      "submissions": "Inzendingen",
+      "joined": "Aangemeld",
+      "empty": "Niemand heeft zich nog aangemeld",
+      "noMatches": "Geen adressen die overeenkomen met die zoekopdracht",
+      "showing": "{{from}}-{{to}} van {{total}}"
+    },
+    "passwordInviteHint": "Laat leeg om een uitnodigingsmail te sturen",
+    "invitationSent": "Uitnodigingsmail verzonden naar {{email}}",
+    "invitationNotSent": "Account aangemaakt, maar e-mail is uitgeschakeld - stel handmatig een wachtwoord in voor deze gebruiker."
   },
   "shares": {
     "shareProject": "Project delen",
@@ -1496,7 +1598,11 @@
     "noShares": "Nog niet gedeeld",
     "noAvailableUsers": "Geen gebruikers beschikbaar om mee te delen",
     "shared": "Gedeeld",
-    "sharedWithTeam": "Gedeeld met het team"
+    "sharedWithTeam": "Gedeeld met het team",
+    "shareArea": "Deelgebied",
+    "shareGoal": "Deeldoel",
+    "shareNote": "Deelnotitie",
+    "shareTask": "Deeltaak"
   },
   "views": {
     "title": "Slimme Weergaven",
@@ -1642,14 +1748,16 @@
       "overdueTasks": "Te Laat Taken",
       "deferUntil": "Uitstellen Tot",
       "dueProjects": "Vervaldagen Projecten",
-      "overdueProjects": "Te Laat Projecten"
+      "overdueProjects": "Te Laat Projecten",
+      "taskAssigned": "Taak Toegewezen"
     },
     "descriptions": {
       "dueTasks": "Taken die binnen 24 uur vervallen",
       "overdueTasks": "Taken die hun vervaldatum hebben overschreden",
       "deferUntil": "Taken die nu beschikbaar zijn om aan te werken",
       "dueProjects": "Projecten die binnen 24 uur vervallen",
-      "overdueProjects": "Projecten die hun vervaldatum hebben overschreden"
+      "overdueProjects": "Projecten die hun vervaldatum hebben overschreden",
+      "taskAssigned": "Een taak is aan jou toegewezen door iemand anders"
     },
     "telegram": {
       "notConfigured": {
@@ -1779,5 +1887,44 @@
       "backups_import": "back-upimport",
       "attachments": "bijlagen"
     }
+  },
+  "subscription": {
+    "title": "Abonnement",
+    "chooseForCloud": "Kies een plan voor tududi Cloud",
+    "noActive": "Geen actieve abonnement",
+    "chooseToContinue": "Kies een plan om tududi Cloud te blijven gebruiken.",
+    "monthly": "Maandelijks",
+    "yearly": "Jaarlijks",
+    "priceMonthly": "{{price}} per maand",
+    "priceYearly": "{{price}} per jaar",
+    "subscribeMonthly": "Maandelijks abonnement",
+    "subscribeYearly": "Jaarlijks abonnement",
+    "perkUnlimited": "Onbeperkte taken, projecten en notities",
+    "perkStorage": "Bijlagen en bestandsuploads",
+    "perkFeatures": "AI-assistent, MCP, CalDAV-synchronisatie en de Telegram-bot",
+    "perkBackups": "Dagelijkse back-ups en beheerde updates",
+    "perkExport": "Exporteer alles op elk moment",
+    "taxNote": "Betalingen worden afgehandeld door {{provider}}. Prijzen zijn exclusief toepasselijke belastingen. Annuleer op elk moment.",
+    "notConfigured": "Abonnementen zijn nog niet beschikbaar op deze instantie. Neem contact op met de ondersteuning.",
+    "exportData": "Exporteer uw gegevens"
+  },
+  "demo": {
+    "opening": "De demo wordt geopend...",
+    "unavailableTitle": "De demo is niet beschikbaar",
+    "unavailableBody": "Het kan zichzelf opnieuw opbouwen. Probeer het over een moment opnieuw."
+  },
+  "everyone": {
+    "title": "Iedereen",
+    "subtitle": "Wat iedereen met wie je samenwerkt nu heeft",
+    "you": "Jij",
+    "people": "Mensen",
+    "tasks": "Taken",
+    "overdue": "Te laat",
+    "today": "Vandaag",
+    "tomorrow": "Morgen",
+    "upcoming": "Deze week",
+    "noDate": "Geen datum",
+    "nothing": "Niets op dit moment",
+    "empty": "Er is momenteel niets gedeeld. Deel een gebied, project of doel, of wijs iemand een taak toe, om het hier te zien."
   }
 }

@@ -31,7 +31,11 @@
     "download": "ダウンロード",
     "exitFocusMode": "フォーカスモードを終了",
     "searchTimezones": "タイムゾーンを検索...",
-    "dismiss": "閉じる"
+    "dismiss": "閉じる",
+    "search": "検索",
+    "previous": "前へ",
+    "done": "完了",
+    "clear": "クリア"
   },
   "sidebar": {
     "dashboard": "ダッシュボード",
@@ -72,7 +76,9 @@
     "boards": "ボード",
     "bookmarks": "ブックマーク",
     "reports": "レポート",
-    "productivityAssistant": "生産性アシスタント"
+    "productivityAssistant": "生産性アシスタント",
+    "assignedToMe": "私に割り当てられた",
+    "everyone": "全員"
   },
   "navigation": {
     "home": "ホーム",
@@ -86,7 +92,9 @@
     "toggleSearch": "検索を切り替え",
     "quickInboxCapture": "クイックインボックスキャプチャ",
     "userMenu": "ユーザーメニュー",
-    "search": "検索"
+    "search": "検索",
+    "admin": "管理者",
+    "adminBadge": "管理者"
   },
   "settings": {
     "todayPageSettings": "今日のページ設定",
@@ -201,7 +209,10 @@
       "dropHere": "ここにドロップ"
     },
     "chaseUp": "フォローアップ",
-    "habit": "習慣"
+    "habit": "習慣",
+    "assignedTo": "割り当て先",
+    "subtasks": "サブタスク",
+    "openFullPage": "全画面表示を開く"
   },
   "timeline": {
     "activityTimeline": "アクティビティタイムライン",
@@ -676,7 +687,8 @@
         "vague": "\"電話する\"、\"書く\"、\"予定する\"、\"調査する\"などの動詞で始めてみてください"
       },
       "selectAtLeastOneDay": "少なくとも1日を選択してください",
-      "deferUntilPlaceholder": "延期する日付と時間を選択"
+      "deferUntilPlaceholder": "延期する日付と時間を選択",
+      "notePlaceholder": "メモを追加..."
     },
     "areaName": "エリア名",
     "areaDescription": "エリアの説明",
@@ -727,7 +739,9 @@
     },
     "captcha_required": "認証を完了してから、もう一度お試しください。",
     "registration_successful": "メールアドレスを確認してください",
-    "registration_email_sent": "アカウントを有効にするには、メールアドレスを確認してください。リンクをお送りしましたので、受信トレイをご確認ください。"
+    "registration_email_sent": "アカウントを有効にするには、メールアドレスを確認してください。リンクをお送りしましたので、受信トレイをご確認ください。",
+    "notify_joined": "リストに載っています。tududi Cloudがオープンする日にはメールをお送りします。",
+    "notify_failed": "アドレスを保存できませんでした。もう一度お試しください。"
   },
   "dropdown": {
     "createNew": "新規作成",
@@ -878,7 +892,9 @@
     "focusHint": "このタスクを進行中と今日に移動",
     "noNextAction": "すべて完了-未処理のタスクはありません。",
     "selectDueDatePlaceholder": "期限日を選択",
-    "goalTitle": "目標"
+    "goalTitle": "目標",
+    "addProject": "プロジェクトを追加",
+    "noResults": "プロジェクトはありません"
   },
   "projectItem": {
     "edit": "編集",
@@ -941,7 +957,11 @@
     "contentPlaceholderMarkdown": "Markdown形式で内容を書いてください...\n\n例:\n# 見出し\n**太字テキスト**\n*斜体テキスト*\n- リスト項目\n```コード```",
     "pinToSidebar": "サイドバーにピン留め",
     "unpinFromSidebar": "サイドバーからピン留め解除",
-    "save": "保存"
+    "save": "保存",
+    "addNote": "ノートを追加",
+    "tree": {
+      "folders": "フォルダー"
+    }
   },
   "tags": {
     "loading": "タグを読み込み中...",
@@ -969,7 +989,8 @@
     "systemTags": "システムタグ",
     "systemTagsDescription": "自動管理 · 削除または名前変更できません",
     "system": "システム",
-    "customize": "カスタマイズ"
+    "customize": "カスタマイズ",
+    "addTag": "タグを追加"
   },
   "recurrence": {
     "none": "なし",
@@ -989,7 +1010,11 @@
     "inheritedSettingsMessage": "このタスクは定期的なタスクから生成されました。以下に示す定期設定は元のタスクから継承されており、ここでは編集できません。",
     "cancelEdit": "編集をキャンセル",
     "editParentRecurrence": "親の定期設定を編集",
-    "parentEditWarning": "⚠️ あなたは親タスクの定期設定を編集しています。変更はこの定期タスクの今後のすべてのインスタンスに影響します。"
+    "parentEditWarning": "⚠️ あなたは親タスクの定期設定を編集しています。変更はこの定期タスクの今後のすべてのインスタンスに影響します。",
+    "every": "毎",
+    "weeks": "週間",
+    "months": "月",
+    "advancedHint": "特定の曜日や終了日については、タスクの詳細を開いてください。"
   },
   "weekdays": {
     "monday": "月",
@@ -1039,7 +1064,47 @@
     "rollingMsg3": "メモしておきましょう…",
     "saveAs": "名前を付けて保存",
     "shiftEnterHint": "新しい行のために Shift + Enter",
-    "addToInbox": "受信トレイアイテムとして追加 (Enter)"
+    "addToInbox": "受信トレイアイテムとして追加 (Enter)",
+    "emptyItem": "(空のアイテム)",
+    "itemQueuedOffline": "オフラインで保存されました。オンラインに戻ると自動的に同期されます。",
+    "infoShort": "受信トレイは、カテゴライズされていない考えが集まる場所です — メモを取り、後で整理しましょう。",
+    "recentlyCaptured": "最近キャプチャされた",
+    "line": "行",
+    "lines": "行",
+    "processN": "処理 {{count}}",
+    "allClarified": "すべて明確化済み",
+    "reClarify": "再明確化",
+    "trashedRestore": "{{count}} 件をゴミ箱から復元",
+    "restored": "ゴミ箱のアイテムが復元されました",
+    "restoreError": "アイテムの復元に失敗しました",
+    "trashError": "アイテムのゴミ箱への移動に失敗しました",
+    "clarifyProgress": "明確化 · {{progress}}",
+    "clarifyDone": "すべて明確化されました。受信トレイは落ち着いています。",
+    "clarifyBackToList": "リストに戻る",
+    "clarifyExit": "明確化を終了",
+    "clarifyBack": "← 戻る",
+    "clarifyQ": {
+      "actionable": "これは実行可能ですか？",
+      "notActionable": "どのようなものですか？",
+      "steps": "一つのステップ、それとも複数のステップ？",
+      "twomin": "2分以内にできますか？",
+      "deferDelegate": "後で自分でやる、それとも他の人に任せる？"
+    },
+    "clarifyChoice": {
+      "yesActionable": "はい、実行可能",
+      "notActionable": "実行不可能",
+      "trash": "ゴミ箱に入れる",
+      "someday": "いつか / もしかしたら",
+      "referenceNote": "参照ノート",
+      "oneStep": "1ステップ",
+      "severalSteps": "複数のステップ（プロジェクト）",
+      "doItNow": "はい — 今すぐ実行",
+      "no": "いいえ",
+      "scheduleIt": "スケジュールする",
+      "delegate": "委任する"
+    },
+    "somedayCreated": "いつかに追加されました",
+    "reClarifyLink": "再確認"
   },
   "project": {
     "projectImage": "プロジェクト画像",
@@ -1184,7 +1249,8 @@
     "statusUpdated": "ステータスが正常に更新されました",
     "statusUpdateError": "ステータスの更新に失敗しました",
     "updatedAt": "更新日時",
-    "upcoming": "今後"
+    "upcoming": "今後",
+    "assigneeUpdateError": "担当者の更新に失敗しました"
   },
   "calendar": {
     "month": "月",
@@ -1470,7 +1536,43 @@
       "overrideSaved": "特例を保存しました",
       "overrideCleared": "特例を解除しました",
       "synced": "決済プロバイダーから同期しました"
-    }
+    },
+    "dashboard": {
+      "title": "管理者",
+      "subtitle": "tududi {{version}} · {{env}}",
+      "users": "ユーザー",
+      "usersHint": "{{verified}} 確認済み · {{admins}} 管理者 · {{new}} 今日",
+      "paying": "支払い中",
+      "selfHosted": "セルフホスティング",
+      "waitlist": "ウェイトリスト",
+      "waitlistHint": "{{n}} で 7 日",
+      "content": "タスク",
+      "contentHint": "{{projects}} プロジェクト · {{notes}} ノート",
+      "regOpen": "登録オープン",
+      "regClosed": "登録クローズ",
+      "waitlistLatest": "最新のウェイトリストサインアップ",
+      "waitlistEmpty": "まだ誰もいません。",
+      "email": "メール",
+      "source": "ソース",
+      "joined": "参加済み",
+      "waitlistAll": "すべてを見る"
+    },
+    "waitlist": {
+      "title": "ウェイトリスト",
+      "export": "CSVをエクスポート",
+      "searchPlaceholder": "メールで検索",
+      "email": "メールアドレス",
+      "source": "ソース",
+      "locale": "言語",
+      "submissions": "提出物",
+      "joined": "参加済み",
+      "empty": "まだ誰もサインアップしていません",
+      "noMatches": "その検索に一致するアドレスはありません",
+      "showing": "{{from}}-{{to}} / {{total}}"
+    },
+    "passwordInviteHint": "招待メールを送信するには空白のままにしてください",
+    "invitationSent": "{{email}}に招待メールを送信しました",
+    "invitationNotSent": "アカウントが作成されましたが、メールが無効です - このユーザーのパスワードを手動で設定してください。"
   },
   "shares": {
     "shareProject": "プロジェクトを共有",
@@ -1496,7 +1598,11 @@
     "noShares": "まだ共有されていません",
     "noAvailableUsers": "共有できるユーザーがいません",
     "shared": "共有済み",
-    "sharedWithTeam": "チームと共有済み"
+    "sharedWithTeam": "チームと共有済み",
+    "shareArea": "共有エリア",
+    "shareGoal": "共有目標",
+    "shareNote": "共有ノート",
+    "shareTask": "共有タスク"
   },
   "views": {
     "title": "スマートビュー",
@@ -1642,14 +1748,16 @@
       "overdueTasks": "期限切れのタスク",
       "deferUntil": "延期するまで",
       "dueProjects": "期限内のプロジェクト",
-      "overdueProjects": "期限切れのプロジェクト"
+      "overdueProjects": "期限切れのプロジェクト",
+      "taskAssigned": "タスクが割り当てられました"
     },
     "descriptions": {
       "dueTasks": "24時間以内に期限が来るタスク",
       "overdueTasks": "期限を過ぎたタスク",
       "deferUntil": "作業可能になったタスク",
       "dueProjects": "24時間以内に期限が来るプロジェクト",
-      "overdueProjects": "期限を過ぎたプロジェクト"
+      "overdueProjects": "期限を過ぎたプロジェクト",
+      "taskAssigned": "他の誰かからあなたにタスクが割り当てられました"
     },
     "telegram": {
       "notConfigured": {
@@ -1779,5 +1887,44 @@
       "backups_import": "バックアップのインポート",
       "attachments": "添付ファイル"
     }
+  },
+  "subscription": {
+    "title": "サブスクリプション",
+    "chooseForCloud": "tududi Cloudのプランを選択してください",
+    "noActive": "アクティブなサブスクリプションはありません",
+    "chooseToContinue": "tududi Cloudを引き続き使用するためのプランを選択してください。",
+    "monthly": "月額",
+    "yearly": "年額",
+    "priceMonthly": "{{price}} / 月",
+    "priceYearly": "{{price}} / 年",
+    "subscribeMonthly": "月額で購読",
+    "subscribeYearly": "年額で購読",
+    "perkUnlimited": "無制限のタスク、プロジェクト、ノート",
+    "perkStorage": "添付ファイルとファイルアップロード",
+    "perkFeatures": "AIアシスタント、MCP、CalDAV同期、Telegramボット",
+    "perkBackups": "毎日のバックアップと管理された更新",
+    "perkExport": "いつでもすべてをエクスポート",
+    "taxNote": "支払いは{{provider}}によって処理されます。価格には適用される税金は含まれていません。いつでもキャンセルできます。",
+    "notConfigured": "このインスタンスではまだサブスクリプションは利用できません。サポートにお問い合わせください。",
+    "exportData": "データをエクスポート"
+  },
+  "demo": {
+    "opening": "デモを開いています...",
+    "unavailableTitle": "デモは利用できません",
+    "unavailableBody": "再構築中かもしれません。しばらくしてから再試行してください。"
+  },
+  "everyone": {
+    "title": "みんな",
+    "subtitle": "現在、あなたが共有している作業に関する全員の状況",
+    "you": "あなた",
+    "people": "人々",
+    "tasks": "タスク",
+    "overdue": "期限切れ",
+    "today": "今日",
+    "tomorrow": "明日",
+    "upcoming": "今週",
+    "noDate": "日付なし",
+    "nothing": "今は何もありません",
+    "empty": "現在共有されているものはありません。ここに表示するために、エリア、プロジェクト、または目標を共有するか、誰かにタスクを割り当ててください。"
   }
 }

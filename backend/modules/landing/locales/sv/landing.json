@@ -1,7 +1,9 @@
 {
   "meta": {
     "langSwitcherLabel": "Byt språk",
-    "langSwitcherCurrent": "Språk: {{name}}"
+    "langSwitcherCurrent": "Språk: {{name}}",
+    "description": "Områden, mål, projekt och uppgifter, plus anteckningar och vanor, i ett system. Sätt upp ett tududi Cloud-konto på en minut. En MCP-server som exponerar {{tools}} verktyg låter AI-agenter arbeta med din lista. Självhosting finns om du föredrar att köra servern själv.",
+    "title": "tududi: uppgiftshanterare och livshanteringssystem, med MCP för AI-agenter"
   },
   "nav": {
     "demo": "Livedemo",
@@ -12,7 +14,8 @@
     "docs": "Dokumentation",
     "changelog": "Ändringar",
     "signIn": "Logga in",
-    "toggle": "Öppna menyn"
+    "toggle": "Öppna menyn",
+    "selfHostGuide": "Självhostningsguide"
   },
   "hero": {
     "badgeStars": "stjärnor på GitHub",
@@ -21,7 +24,12 @@
     "ctaDemo": "Prova livedemon",
     "demoNote": "En riktig hostad instans med exempeldata, delad och återställs regelbundet",
     "screenshotAlt": "tududis gränssnitt med vyn Idag och de planerade uppgifterna",
-    "ctaWaitlist": "Gå med i väntelistan"
+    "ctaWaitlist": "Gå med i väntelistan",
+    "cloudNote": "Ingen server att sätta upp. Månadsvis eller årsvis, och du kan avsluta när du vill.",
+    "ctaPrimary": "Kom igång på tududi Cloud",
+    "lede": "Områden, mål, projekt, uppgifter, anteckningar och vanor, i ett system. Skapa ett Cloud-konto på en minut.",
+    "titleLine1": "Produktivitet gjort enkel",
+    "titleLine2": ""
   },
   "proof": {
     "stars": "stjärnor på GitHub",
@@ -29,7 +37,8 @@
     "languages": "{{count}} språk",
     "dockerPulls": "Docker-nedladdningar",
     "discord": "Discord-medlemmar",
-    "discordAlt": "Discord: {{count}} medlemmar"
+    "discordAlt": "Discord: {{count}} medlemmar",
+    "minute": "Uppsatt på en minut"
   },
   "press": {
     "featuredIn": "Omnämnda i",
@@ -45,7 +54,10 @@
         "title": "Fånga upp och sök från chatten",
         "body": "Lägg till, hitta och slutför uppgifter utan att lämna samtalet."
       },
-      "dataStays": {},
+      "dataStays": {
+        "body": "MCP-anslutningen går direkt till din egen tududi-instans, på Cloud eller på din egen server. Ingenting går via en tredje part.",
+        "title": "Den pratar med din instans"
+      },
       "openProtocol": {
         "title": "Öppet protokoll, ingen inlåsning",
         "body": "Byggt på det öppna Model Context Protocol. Fungerar med Claude och andra MCP-klienter."
@@ -69,7 +81,40 @@
         "title": "Projektinsikter",
         "body": "En snabb bedömning av ett projekts hälsa: vad som rör sig och vad som står stilla."
       }
-    }
+    },
+    "configCloudTab": "Cloud",
+    "configSelfHostNote": "Peka istället TUDUDI_URL mot din egen instans. Allt annat är identiskt.",
+    "configSelfHostTab": "Driver du det själv?",
+    "demo": {
+      "answer1Html": "Börja med <strong>Släpp faktureringsmigreringen</strong>. Den ska vara klar idag, och tre uppgifter i <strong>Betalningar</strong> väntar bakom den.",
+      "answer2Html": "Klart. <strong>Granska omdesign-utkast</strong> ska nu vara klart på fredag, och <strong>Lås upp Betalningar-kön</strong> ligger i projektet Betalningar, klart idag.",
+      "ask1": "Vad bör jag fokusera på idag, och ligger något efter?",
+      "ask2": "Flytta omdesign-granskningen till fredag och lägg till en uppgift för att låsa upp Betalningar.",
+      "badge": "tududi MCP",
+      "caption": "En exempelsession. Din agent ansluter direkt till din egen instans via MCP.",
+      "composer": "Svara Claude…",
+      "groupTitle": "Värt att veta",
+      "rows": {
+        "habit": {
+          "label": "Serie i riskzonen",
+          "text": "Morgongenomgång, 12 dagar i rad, inte loggad ännu idag"
+        },
+        "overdue": {
+          "label": "Försenad",
+          "text": "2 uppgifter i Hem, den äldsta sedan 6 dagar"
+        },
+        "stalled": {
+          "label": "Avstannad",
+          "text": "Omdesign av webbplatsen, ingen aktivitet på 11 dagar"
+        }
+      },
+      "toolLabel": "Använde tududi",
+      "windowTitle": "Claude Desktop"
+    },
+    "footnoteIncluded": "MCP ingår i tududi Cloud och i varje självhostad instans.",
+    "ledeHtml": "tududi levererar en MCP-server som exponerar <strong>{{tools}} verktyg</strong>, som täcker uppgifter, projekt, områden, mål, vanor, anteckningar, personer, taggar, vyer, inkorgen, sökning och mätvärden. Anslut Claude eller vilken MCP-kompatibel agent som helst direkt till din egen instans, oavsett om det är ditt Cloud-konto eller en server du kör själv. Anslutningen går till din instans istället för via en mellanliggande relä, en strukturell skillnad som Todoist och Notion inte kan erbjuda, oavsett vad de lovar.",
+    "titleLine1": "Ett riktigt system",
+    "titleLine2": "som din AI-agent faktiskt kan använda"
   },
   "features": {
     "eyebrow": "Funktioner",
@@ -178,7 +223,8 @@
         "title": "Samarbete i projekt",
         "body": "Dela projekt med detaljerade behörigheter - endast läsa eller läsa och skriva."
       }
-    }
+    },
+    "sub": "tududi kombinerar mål, projekt, uppgifter, anteckningar och smarta vyer i ett lugnt, fokuserat system. Låt oss driva det för dig, eller driv det själv om du föredrar det."
   },
   "selfHost": {
     "eyebrow": "Hosta själv",
@@ -187,7 +233,12 @@
     "step1": "Hämta Docker-avbildningen",
     "step2": "Starta containern",
     "step3Prefix": "Nå den på",
-    "linkGithub": "Se på GitHub"
+    "linkGithub": "Se på GitHub",
+    "cardSub": "För personer som redan kör Docker",
+    "ctaCloud": "Kom igång på Cloud",
+    "linkDocs": "Läs självhostningsguiden",
+    "showCommands": "Visa installationskommandon",
+    "sub": "Självhosting är för personer som redan kör Docker och en reverse proxy. Om du vill ha tududi utan att bli systemadministratören, använd Cloud."
   },
   "pricing": {
     "eyebrow": "Priser",
@@ -196,18 +247,39 @@
     "earlyBird": "LANSERINGSPRIS",
     "perYear": "/år",
     "plans": {
-      "selfHosted": {},
+      "selfHosted": {
+        "action": "Läs självhostningsguiden →",
+        "features": [
+          "Du sätter upp en server eller ett NAS",
+          "Du hanterar Docker, uppdateringar och migreringar",
+          "Du konfigurerar en reverse proxy och TLS",
+          "Säkerhetskopiorna är dina att äga",
+          "Fullt funktionsset, ingen platsgräns, data på din egen hårdvara"
+        ],
+        "name": "Självhostad (avancerad)",
+        "priceNote": "Gratis, om du kör servern själv"
+      },
       "cloud": {
         "name": "Cloud",
         "or": "eller",
         "launchNote": "Early bird-årspris, ditt så länge du är prenumerant.",
         "comingSoon": "Öppnar om några dagar",
         "comingSoonNote": "Vi flyttar Cloud till ny infrastruktur. Lämna din e-postadress nedan så hör vi av oss så snart den är tillbaka.",
-        "notifySubmit": "Meddela mig"
+        "notifySubmit": "Meddela mig",
+        "action": "Kom igång →",
+        "features": [
+          "Igång på en minut, utan server att sätta upp",
+          "Obegränsat med uppgifter, projekt och anteckningar, plus bilagor",
+          "AI-assistent, MCP, CalDAV-synk och Telegram-boten",
+          "Uppdateringar och dagliga säkerhetskopior skötta för dig, med {{proStorageGb}} GB lagring",
+          "Exportera allt när du vill, ta bort ditt konto själv"
+        ],
+        "priceNote": "Allt ingår. Avsluta när du vill."
       }
     },
     "fineprint": "Avsluta när som helst och exportera allt. Om tududi Cloud någonsin stänger får du dina data och en guide för att hosta själv. Skälig användning gäller för lagring och API-volym. 30 dagars pengarna-tillbaka-garanti, inga frågor.",
-    "perMonth": "/månad"
+    "perMonth": "/månad",
+    "sub": "Ett hostat paket, eller kör det själv om du föredrar att sköta driften."
   },
   "compare": {
     "title": "Snabb jämförelse",
@@ -220,12 +292,24 @@
       "noSetup": "Ingen serveruppsättning krävs",
       "managedUpdates": "Hanterade uppdateringar",
       "autoBackups": "Automatiska säkerhetskopior",
-      "pricing": "Pris"
+      "pricing": "Pris",
+      "exportAnytime": "Exportera allt när du vill",
+      "proFeatures": "AI-assistent, MCP, CalDAV, Telegram",
+      "startMinute": "Kom igång på en minut",
+      "storage": "Lagring för bilagor",
+      "support": "Support"
     },
     "values": {
       "community": "Community",
-      "email": "E-post"
-    }
+      "email": "E-post",
+      "gigabytes": "{{count}} GB",
+      "perMonthOrYear": "{{monthly}}/mån eller {{price}}/år",
+      "selfCost": "Gratis, plus din hosting",
+      "yourDisk": "Din egen disk"
+    },
+    "colCloud": "tududi Cloud",
+    "colSelf": "Självhosta",
+    "sub": "Samma applikation i båda fallen. Vad som skiljer är vem som driver den, och vad det kostar dig."
   },
   "waitlist": {
     "title": "Inte redo än?",
@@ -255,7 +339,9 @@
     "subTitle": "Versionsnoteringar via e-post",
     "subBody": "Versionsnoteringar då och då. Ingen marknadsföring, avsluta när som helst.",
     "subSubmit": "Anmäl mig",
-    "rights": "Alla rättigheter förbehållna."
+    "rights": "Alla rättigheter förbehållna.",
+    "linkLicence": "MIT-licens",
+    "tagline": "Ett öppet system för att organisera liv och arbete. Hostat av oss, eller på din egen server."
   },
   "js": {
     "showFewer": "Visa färre",
@@ -264,11 +350,136 @@
   },
   "faq": {
     "items": {
-      "freePlan": {},
+      "freePlan": {
+        "a": "Nej. Cloud kostar {{monthly}} i månaden eller {{price}} om året, och det är hela prislistan: ingen gratisnivå, ingen provklocka, inget kort debiterat för något som senare tyst börjar fakturera. Det finns en 30-dagars pengarna-tillbaka-garanti om det visar sig inte passa, och det finns en livedemo på denna sida om du vill titta runt först. Det gratis sättet att använda tududi är att köra det på din egen server, vilket är samma applikation.",
+        "q": "Finns det en gratisnivå eller provperiod på tududi Cloud?"
+      },
       "leaving": {
         "q": "Kan jag lämna, och vad händer med mina data?",
         "a": "Ja, när som helst. Exportera allt som en enda fil från din profil och importera den i en självhostad tududi, som läser samma format. Att ta bort kontot raderar dina data, bilagor och säkerhetskopior från våra servrar och avslutar alla prenumerationer."
+      },
+      "aiOptional": {
+        "a": "Nej. Båda AI-lagren är avstängda tills du aktiverar dem, och tududi är ett komplett system utan dem. Om du aldrig aktiverar dem saknas ingenting och ingenting tjatar på dig.",
+        "q": "Måste jag använda AI-funktionerna?"
+      },
+      "aiPrivacy": {
+        "a": "Det beror på vilket av de två lagren du menar, och skillnaden spelar roll. MCP-servern körs inuti din egen instans: en agent som Claude Desktop ansluter direkt till den instansen, så samtalet sker mellan din agent och din egen tududi snarare än en mellanhand. AI-assistenten är annorlunda. Den anropar en OpenAI-kompatibel leverantör, så om du pekar den mot en hostad leverantör går innehållet i dessa förfrågningar till den leverantören. Peka den istället mot en lokal modell, som Ollama eller LM Studio, och ingenting lämnar din maskin. Den förblir avstängd tills du anger en nyckel, så det är alltid ditt val, inte ett standardläge.",
+        "q": "Skickas mina data till ett AI-företag?"
+      },
+      "commercialUse": {
+        "a": "Ja, och du behöver inte köpa något först. MIT-licensen tillåter kommersiell användning, även inom ett företag och i en kommersiell produkt, utan intäktsgräns och utan något att rapportera. Om din ekonomiavdelning behöver en faktura faktureras ett Cloud-abonnemang via vår betalningsleverantör och ger en. Ingenting på denna sida säljer ett tillstånd, för det tillståndet är redan ditt.",
+        "q": "Kan jag använda tududi på jobbet, eller i mitt företag?"
+      },
+      "dataLocation": {
+        "a": "Allt finns i en enda SQLite-databasfil inuti volymen du monterade. Att säkerhetskopiera den innebär att kopiera filen någonstans säkert, och att återställa den innebär att kopiera den tillbaka. tududi tar också automatiskt en ögonblicksbild av databasen innan migreringar tillämpas, och behåller nyliga kopior. Det finns inget proprietärt format och inget exportsteg mellan dig och dina egna data.",
+        "q": "Var finns mina data, och hur säkerhetskopierar jag dem?"
+      },
+      "licence": {
+        "a": "Applikationen är öppen källkod under MIT-licensen, så du kan köra den på din egen server gratis, ändra den och bygga vidare på den utan att betala någon. Det finns inga platsantal och inga funktioner som hålls tillbaka: den självhostade byggen är hela produkten. tududi Cloud är en betaltjänst, eftersom hosting, säkerhetskopior och e-post kostar pengar att driva. Du betalar för driftarbetet, aldrig för åtkomst till mjukvaran.",
+        "q": "Är tududi verkligen gratis?"
+      },
+      "maintained": {
+        "a": "Ja. Det utvecklas huvudsakligen av en underhållare, med bidrag från communityn, och släpps ofta. Varje version listas på GitHubs releasesida, länkad från ändringsloggen i menyn ovan, så att du kan bedöma takten själv snarare än att lita på vårt ord. Utvecklingen sker öppet: ärenden, en offentlig färdplan, och en Discord där frågor besvaras.",
+        "linkLabel": "Se alla releaser",
+        "q": "Underhålls tududi aktivt?"
+      },
+      "mcp": {
+        "a": "MCP är Model Context Protocol, en öppen standard för att koppla AI-agenter till verkliga system. tududi levererar en MCP-server som exponerar {{tools}} verktyg för uppgifter, projekt, områden, mål, vanor, anteckningar, personer, taggar, vyer, inkorgen, sökning och mätvärden, så att en agent kan fånga, hitta, uppdatera och avsluta arbete istället för att bara prata om det. Det är valfritt, ingår i Cloud och i varje självhostad instans, och fungerar med Claude Desktop, Cursor, Windsurf, Cline, eller vilken annan MCP-klient som helst.",
+        "q": "Vad är MCP, och vad kan en agent faktiskt göra?"
+      },
+      "mobile": {
+        "a": "tududi installeras som en PWA istället för en nativ app. Lägg till den på hemskärmen på Android eller iOS, eller installera den på skrivbordet, och den beter sig som en app: den läser från cachen när du är offline och synkroniserar dina ändringar när du återansluter. Det finns ingenting att ladda ner från App Store eller Play Store.",
+        "q": "Finns det en mobilapp?"
+      },
+      "multiUser": {
+        "a": "Ja. En enda instans kan hosta flera användare, och projekt kan delas med skrivskyddad eller läs-skrivåtkomst, som uppgifterna och anteckningarna i dem ärver. Självregistrering är avstängd som standard, så en administratör skapar antingen konton eller öppnar registreringen medvetet. Ingen kommer in bara för att du glömde stänga en dörr.",
+        "q": "Kan flera personer dela en instans?"
+      },
+      "requirements": {
+        "a": "Docker, en beständig plats att lagra databasen, en reverse proxy med TLS framför, och disciplinen att tillämpa uppdateringar och behålla säkerhetskopior. Det går bekvämt på en liten VPS eller en maskin i ditt eget nätverk, och kommandona finns i avsnittet Självhosting och i dokumentationen. De flesta människor blir bättre betjänade av Cloud, som är samma applikation utan allt det arbetet.",
+        "linkLabel": "Läs dokumentationen",
+        "q": "Vad behöver jag för att köra det själv?"
+      },
+      "reverseProxy": {
+        "a": "Ja, och det är det normala sättet att köra det. Ställ in TUDUDI_TRUST_PROXY så att appen litar på headers vidarebefordrade av nginx, Caddy eller Traefik. Om du hoppar över det beter sig inloggningar och IP-loggning konstigt på ett sätt som är svårt att diagnostisera, så appen kastar ett specifikt fel istället för att misslyckas tyst. De accepterade värdena finns dokumenterade i README.",
+        "q": "Fungerar det bakom en reverse proxy?"
+      },
+      "shutdown": {
+        "a": "Appen är MIT-licensierad och källkoden är offentlig, så den kan inte tas ifrån dig. Vem som helst kan fortsätta köra den, och du kan forka den. På tududi Cloud lever dina data i en standard tududi-databas istället för ett proprietärt format, så om tjänsten någonsin skulle stänga ner skulle du få dina data och en guide för att flytta dem till din egen server.",
+        "q": "Vad händer med mina data om tududi försvinner?"
+      },
+      "whyManaged": {
+        "a": "Du betalar för att inte driva infrastruktur. tududi Cloud ger dig samma system med servern, uppdateringarna, säkerhetskopiorna och e-posten skötta för dig, vilket är den krångliga, oglamorösa halvan av självhosting. Cloud är vägen vi rekommenderar. Självhosting är bara den bättre affären om du redan kör Docker och en reverse proxy och aktivt vill driva stacken.",
+        "q": "Varför betala för Cloud när självhosting är gratis?"
       }
-    }
+    },
+    "eyebrow": "FAQ",
+    "groups": {
+      "managed": "AI, MCP & Cloud",
+      "project": "Licens & projekt",
+      "selfHost": "Självhosting & data"
+    },
+    "permalink": "Länk till detta svar",
+    "sub": "Licensen, AI:n, och vad som händer med dina data. Om något saknas, fråga på Discord.",
+    "title": "Frågor värda att besvara innan du bestämmer dig"
+  },
+  "cloud": {
+    "ctaPricing": "Se priset",
+    "ctaPrimary": "Kom igång",
+    "includes": [
+      "Obegränsat med uppgifter, projekt och anteckningar",
+      "Bilagor och filuppladdningar",
+      "AI-assistent, MCP, CalDAV-synk och Telegram-boten",
+      "Dagliga säkerhetskopior och hanterade uppdateringar",
+      "Support via e-post",
+      "Exportera allt, när du vill"
+    ],
+    "lede": "Samma system i båda fallen. Skillnaden är vem som håller det igång, patchat och säkerhetskopierat vid tre på natten.",
+    "metaDescription": "tududi Cloud är samma öppna källkodssystem, som körs på våra servrar med uppdateringar, säkerhetskopior och e-post skötta för dig. Ett paket, månadsvis eller årsvis, avslutas när du vill.",
+    "metaTitle": "tududi Cloud: det hostade tududi, driftat för dig",
+    "note": "Samma MIT-licensierade app. Exportera allt, när du vill.",
+    "orAnnual": "eller",
+    "priceNote": "Debiteras av vår betalningsleverantör. Priserna exkluderar tillämpliga skatter.",
+    "pricingSub": "Allt ingår. Avsluta när du vill.",
+    "pricingTitle": "Ett paket, två sätt att betala",
+    "reasons": {
+      "backups": {
+        "body": "Databasen dumpas varje natt och förvaras utanför den maskin som betjänar dig. Du kan också exportera allt själv när du vill.",
+        "title": "Säkerhetskopior du inte behöver komma ihåg"
+      },
+      "email": {
+        "body": "Verifieringar, lösenordsåterställningar och påminnelser skickas via en uppvärmd sändningsdomän, vilket är krångligt och tråkigt att ställa in själv.",
+        "title": "E-post som kommer fram"
+      },
+      "noOps": {
+        "body": "Ingen VPS att hyra, ingen Docker att uppdatera, ingen reverse proxy eller certifikat att förnya. Du loggar in och det är där.",
+        "title": "Ingen server att driva"
+      },
+      "sameApp": {
+        "body": "Inga cloud-exklusiva funktioner och ingen stympad självhostad build. Om vi någonsin lägger ner tjänsten får du dina data och en migreringsguide.",
+        "title": "Exakt samma app"
+      },
+      "support": {
+        "body": "En person som känner koden svarar. Med självhosting har du communityn, vilket är bra, men ingen är skyldig att svara.",
+        "title": "Någon att mejla"
+      },
+      "updates": {
+        "body": "Nya versioner når ditt konto utan en pull, en omstart eller en migrering du måste bevaka.",
+        "title": "Uppdateringar tillämpade för dig"
+      }
+    },
+    "selfHostLine": "Föredrar du att köra servern själv? Det är gratis, och det är samma applikation.",
+    "title": "Varför använda tududi Cloud?",
+    "whyEyebrow": "Cloud",
+    "whySub": "Inte funktioner. Varje funktion finns även i den självhostade byggen.",
+    "whyTitle": "Vad du egentligen betalar för"
+  },
+  "finalCta": {
+    "primary": "Kom igång",
+    "secondary": "Se priser",
+    "selfHostLink": "Läs guiden.",
+    "selfHostPrefix": "Föredrar du att köra det på din egen server?",
+    "sub": "Vi driver servern, uppdateringarna och säkerhetskopiorna. Du får systemet, och en 30-dagars pengarna-tillbaka-garanti om det inte är för dig.",
+    "title": "Bli organiserad på en minut"
   }
 }

@@ -8,6 +8,7 @@ const {
     validateSetAdminRole,
     validateCreateUser,
     validateToggleRegistration,
+    validateOidcConfig,
 } = require('./validation');
 const {
     NotFoundError,
@@ -389,6 +390,22 @@ class AdminService {
         return waitlist.toCsv(await waitlist.all());
     }
 
+    // Removing an address someone asked to be forgotten, or a bad row that
+    // will never be mailed anyway.
+    async deleteWaitlistEntry(requesterId, id) {
+        await this.verifyAdmin(requesterId);
+        const numericId = Number(id);
+        if (!Number.isInteger(numericId) || numericId <= 0) {
+            throw new ValidationError('Invalid id');
+        }
+
+        const waitlist = require('../../services/waitlistService');
+        const removed = await waitlist.remove(numericId);
+        if (!removed) {
+            throw new NotFoundError('Waitlist entry not found');
+        }
+    }
+
     async toggleRegistration(requesterId, body) {
         await this.verifyAdmin(requesterId);
 
@@ -400,6 +417,29 @@ class AdminService {
         await setRegistrationEnabled(enabled);
 
         return { enabled };
+    }
+
+    /**
+     * Get the current OIDC/SSO provider configuration (masked secrets),
+     * for the admin panel in Profile Settings -> OIDC/SSO.
+     */
+    async getOidcConfig(requesterId) {
+        await this.verifyAdmin(requesterId);
+
+        const oidcConfigService = require('../oidc/configService');
+        return oidcConfigService.getMaskedConfig();
+    }
+
+    /**
+     * Replace the OIDC/SSO provider configuration.
+     */
+    async updateOidcConfig(requesterId, body) {
+        await this.verifyAdmin(requesterId);
+
+        const validated = validateOidcConfig(body);
+
+        const oidcConfigService = require('../oidc/configService');
+        return oidcConfigService.saveConfig(validated);
     }
 }
 

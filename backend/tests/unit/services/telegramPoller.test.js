@@ -215,7 +215,7 @@ describe('Multiple Telegram Allowed Users', () => {
             // Simulate successful response
             const mockResponse = {
                 on: jest.fn((event, handler) => {
-                    if (event === 'data') handler(JSON.stringify({}));
+                    if (event === 'data') handler(JSON.stringify({ ok: true }));
                     if (event === 'end') handler();
                     return mockResponse;
                 }),

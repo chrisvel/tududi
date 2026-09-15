@@ -1,7 +1,9 @@
 {
   "meta": {
     "langSwitcherLabel": "Ganti bahasa",
-    "langSwitcherCurrent": "Bahasa: {{name}}"
+    "langSwitcherCurrent": "Bahasa: {{name}}",
+    "description": "Area, tujuan, proyek, dan tugas, plus catatan dan kebiasaan, dalam satu sistem. Siapkan akun tududi Cloud dalam satu menit. Server MCP yang mengekspos {{tools}} alat memungkinkan agen AI mengerjakan daftar Anda. Hosting sendiri tersedia jika Anda lebih suka menjalankan server sendiri.",
+    "title": "tududi: manajer tugas dan sistem manajemen hidup, dengan MCP untuk agen AI"
   },
   "nav": {
     "demo": "Demo langsung",
@@ -12,7 +14,8 @@
     "docs": "Dokumentasi",
     "changelog": "Perubahan",
     "signIn": "Masuk",
-    "toggle": "Buka menu"
+    "toggle": "Buka menu",
+    "selfHostGuide": "Panduan hosting sendiri"
   },
   "hero": {
     "badgeStars": "bintang di GitHub",
@@ -21,7 +24,12 @@
     "ctaDemo": "Coba demo langsung",
     "demoNote": "Instance terkelola sungguhan dengan data contoh, dipakai bersama dan direset secara berkala",
     "screenshotAlt": "Antarmuka tududi, menampilkan tampilan Hari Ini dengan tugas yang direncanakan",
-    "ctaWaitlist": "Gabung daftar tunggu"
+    "ctaWaitlist": "Gabung daftar tunggu",
+    "cloudNote": "Tidak ada server yang perlu disiapkan. Bulanan atau tahunan, dan Anda bisa membatalkan kapan saja.",
+    "ctaPrimary": "Mulai di tududi Cloud",
+    "lede": "Area, tujuan, proyek, tugas, catatan, dan kebiasaan, dalam satu sistem. Buat akun Cloud dalam satu menit.",
+    "titleLine1": "Produktivitas dibuat sederhana",
+    "titleLine2": ""
   },
   "proof": {
     "stars": "bintang di GitHub",
@@ -29,7 +37,8 @@
     "languages": "{{count}} bahasa",
     "dockerPulls": "unduhan Docker",
     "discord": "anggota Discord",
-    "discordAlt": "Discord: {{count}} anggota"
+    "discordAlt": "Discord: {{count}} anggota",
+    "minute": "Disiapkan dalam satu menit"
   },
   "press": {
     "featuredIn": "Diliput oleh",
@@ -45,7 +54,10 @@
         "title": "Catat dan cari dari percakapan",
         "body": "Tambah, temukan, dan selesaikan tugas tanpa keluar dari percakapan."
       },
-      "dataStays": {},
+      "dataStays": {
+        "body": "Koneksi MCP langsung menuju instans tududi Anda sendiri, di Cloud atau di server Anda sendiri. Tidak ada yang melewati pihak ketiga.",
+        "title": "Ia berbicara dengan instans Anda"
+      },
       "openProtocol": {
         "title": "Protokol terbuka, tanpa terkunci",
         "body": "Dibangun di atas Model Context Protocol yang terbuka. Bekerja dengan Claude dan klien MCP lainnya."
@@ -69,7 +81,40 @@
         "title": "Wawasan proyek",
         "body": "Penilaian cepat atas kondisi proyek: apa yang bergerak dan apa yang macet."
       }
-    }
+    },
+    "configCloudTab": "Cloud",
+    "configSelfHostNote": "Arahkan TUDUDI_URL ke instans Anda sendiri sebagai gantinya. Semua yang lain identik.",
+    "configSelfHostTab": "Anda menghostingnya sendiri?",
+    "demo": {
+      "answer1Html": "Mulailah dengan <strong>Rilis migrasi penagihan</strong>. Ini jatuh tempo hari ini, dan tiga tugas di <strong>Pembayaran</strong> menunggu di belakangnya.",
+      "answer2Html": "Selesai. <strong>Tinjau draf desain ulang</strong> sekarang jatuh tempo Jumat, dan <strong>Buka blokir antrean Pembayaran</strong> ada di proyek Pembayaran, jatuh tempo hari ini.",
+      "ask1": "Apa yang harus saya fokuskan hari ini, dan adakah sesuatu yang terlambat?",
+      "ask2": "Pindahkan tinjauan desain ulang ke Jumat dan tambahkan tugas untuk membuka blokir Pembayaran.",
+      "badge": "tududi MCP",
+      "caption": "Sesi contoh. Agen Anda terhubung langsung ke instans Anda sendiri melalui MCP.",
+      "composer": "Balas Claude…",
+      "groupTitle": "Perlu diketahui",
+      "rows": {
+        "habit": {
+          "label": "Rangkaian berisiko",
+          "text": "Tinjauan pagi, 12 hari berturut-turut, belum tercatat hari ini"
+        },
+        "overdue": {
+          "label": "Terlambat",
+          "text": "2 tugas di Rumah, yang tertua sudah 6 hari"
+        },
+        "stalled": {
+          "label": "Terhenti",
+          "text": "Desain ulang situs web, tidak ada aktivitas selama 11 hari"
+        }
+      },
+      "toolLabel": "tududi digunakan",
+      "windowTitle": "Claude Desktop"
+    },
+    "footnoteIncluded": "MCP disertakan dengan tududi Cloud, dan dengan setiap instans yang dihosting sendiri.",
+    "ledeHtml": "tududi menyediakan server MCP yang mengekspos <strong>{{tools}} alat</strong>, mencakup tugas, proyek, area, tujuan, kebiasaan, catatan, orang, tag, tampilan, kotak masuk, pencarian, dan metrik. Hubungkan Claude atau agen apa pun yang kompatibel dengan MCP langsung ke instans Anda sendiri, baik itu akun Cloud Anda maupun server yang Anda jalankan sendiri. Koneksi langsung menuju instans Anda daripada melewati relai perantara, sebuah perbedaan struktural yang tidak dapat ditawarkan Todoist dan Notion, apa pun yang mereka janjikan.",
+    "titleLine1": "Sistem yang nyata",
+    "titleLine2": "yang benar-benar dapat digunakan agen AI Anda"
   },
   "features": {
     "eyebrow": "Fitur",
@@ -178,7 +223,8 @@
         "title": "Kolaborasi proyek",
         "body": "Bagikan proyek dengan hak akses terperinci - hanya baca atau baca dan tulis."
       }
-    }
+    },
+    "sub": "tududi menggabungkan tujuan, proyek, tugas, catatan, dan tampilan cerdas ke dalam satu sistem yang tenang dan terfokus. Biarkan kami menjalankannya untuk Anda, atau jalankan sendiri jika Anda lebih suka."
   },
   "selfHost": {
     "eyebrow": "Hosting sendiri",
@@ -187,7 +233,12 @@
     "step1": "Tarik image Docker",
     "step2": "Jalankan kontainer",
     "step3Prefix": "Akses di",
-    "linkGithub": "Lihat di GitHub"
+    "linkGithub": "Lihat di GitHub",
+    "cardSub": "Untuk orang yang sudah menjalankan Docker",
+    "ctaCloud": "Mulai di Cloud",
+    "linkDocs": "Baca panduan hosting sendiri",
+    "showCommands": "Tampilkan perintah instalasi",
+    "sub": "Hosting sendiri untuk orang yang sudah menjalankan Docker dan reverse proxy. Jika Anda ingin tududi tanpa menjadi administrator sistem, gunakan Cloud."
   },
   "pricing": {
     "eyebrow": "Harga",
@@ -196,18 +247,39 @@
     "earlyBird": "HARGA PERDANA",
     "perYear": "/tahun",
     "plans": {
-      "selfHosted": {},
+      "selfHosted": {
+        "action": "Baca panduan hosting sendiri →",
+        "features": [
+          "Anda menyediakan server atau NAS",
+          "Anda menangani Docker, pembaruan, dan migrasi",
+          "Anda mengonfigurasi reverse proxy dan TLS",
+          "Cadangan menjadi milik Anda",
+          "Set fitur lengkap, tanpa batas kursi, data di perangkat keras Anda sendiri"
+        ],
+        "name": "Hosting sendiri (lanjutan)",
+        "priceNote": "Gratis, jika Anda menjalankan server sendiri"
+      },
       "cloud": {
         "name": "Cloud",
         "or": "atau",
         "launchNote": "Harga tahunan early bird, tetap milik Anda selama berlangganan.",
         "comingSoon": "Dibuka dalam beberapa hari",
         "comingSoonNote": "Kami sedang memindahkan Cloud ke infrastruktur baru. Tinggalkan email Anda di bawah dan kami akan mengabari begitu kembali aktif.",
-        "notifySubmit": "Beri tahu saya"
+        "notifySubmit": "Beri tahu saya",
+        "action": "Mulai →",
+        "features": [
+          "Berjalan dalam satu menit, tanpa server yang perlu disiapkan",
+          "Tugas, proyek, dan catatan tak terbatas, plus lampiran",
+          "Asisten AI, MCP, sinkronisasi CalDAV, dan bot Telegram",
+          "Pembaruan dan cadangan harian yang diurus untuk Anda, dengan {{proStorageGb}} GB penyimpanan",
+          "Ekspor semuanya kapan saja, hapus akun Anda sendiri"
+        ],
+        "priceNote": "Semuanya termasuk. Batalkan kapan saja."
       }
     },
     "fineprint": "Batalkan kapan saja dan ekspor semuanya. Jika tududi Cloud suatu saat ditutup, Anda mendapat data Anda dan panduan migrasi ke self-host. Penggunaan wajar berlaku untuk penyimpanan dan volume API. Garansi uang kembali 30 hari, tanpa pertanyaan.",
-    "perMonth": "/bulan"
+    "perMonth": "/bulan",
+    "sub": "Satu paket yang dihosting, atau jalankan sendiri jika Anda lebih suka mengurus operasionalnya."
   },
   "compare": {
     "title": "Perbandingan singkat",
@@ -220,12 +292,24 @@
       "noSetup": "Tanpa perlu menyiapkan server",
       "managedUpdates": "Pembaruan terkelola",
       "autoBackups": "Pencadangan otomatis",
-      "pricing": "Harga"
+      "pricing": "Harga",
+      "exportAnytime": "Ekspor semuanya kapan saja",
+      "proFeatures": "Asisten AI, MCP, CalDAV, Telegram",
+      "startMinute": "Mulai dalam satu menit",
+      "storage": "Penyimpanan lampiran",
+      "support": "Dukungan"
     },
     "values": {
       "community": "Komunitas",
-      "email": "Email"
-    }
+      "email": "Email",
+      "gigabytes": "{{count}} GB",
+      "perMonthOrYear": "{{monthly}}/bln atau {{price}}/thn",
+      "selfCost": "Gratis, ditambah hosting Anda",
+      "yourDisk": "Disk Anda sendiri"
+    },
+    "colCloud": "tududi Cloud",
+    "colSelf": "Hosting sendiri",
+    "sub": "Aplikasi yang sama pada kedua kasus. Yang berbeda adalah siapa yang menjalankannya, dan berapa biayanya bagi Anda."
   },
   "waitlist": {
     "title": "Belum siap?",
@@ -255,7 +339,9 @@
     "subTitle": "Catatan rilis lewat email",
     "subBody": "Catatan rilis sesekali. Tanpa pemasaran, berhenti berlangganan kapan saja.",
     "subSubmit": "Daftar",
-    "rights": "Hak cipta dilindungi undang-undang."
+    "rights": "Hak cipta dilindungi undang-undang.",
+    "linkLicence": "Lisensi MIT",
+    "tagline": "Sistem terbuka untuk mengatur hidup dan pekerjaan. Dihosting oleh kami, atau di server Anda sendiri."
   },
   "js": {
     "showFewer": "Tampilkan lebih sedikit",
@@ -264,11 +350,136 @@
   },
   "faq": {
     "items": {
-      "freePlan": {},
+      "freePlan": {
+        "a": "Tidak. Cloud berharga {{monthly}} per bulan atau {{price}} per tahun, dan itulah seluruh daftar harganya: tidak ada tingkat gratis, tidak ada jam percobaan, tidak ada kartu yang dikenai biaya untuk sesuatu yang diam-diam mulai menagih nanti. Ada garansi uang kembali 30 hari jika ternyata tidak sesuai untuk Anda, dan ada demo langsung di halaman ini jika Anda ingin melihat-lihat dulu. Cara gratis untuk menggunakan tududi adalah menjalankannya di server Anda sendiri, yang merupakan aplikasi yang sama.",
+        "q": "Apakah ada paket gratis atau percobaan di tududi Cloud?"
+      },
       "leaving": {
         "q": "Bisakah saya pergi, dan apa yang terjadi pada data saya?",
         "a": "Bisa, kapan saja. Ekspor semuanya sebagai satu berkas dari profil Anda dan impor ke tududi yang Anda host sendiri, yang membaca format yang sama. Menghapus akun akan menghapus data, lampiran, dan cadangan Anda dari server kami serta membatalkan langganan apa pun."
+      },
+      "aiOptional": {
+        "a": "Tidak. Kedua lapisan AI dimatikan sampai Anda mengaktifkannya, dan tududi adalah sistem lengkap tanpa keduanya. Jika Anda tidak pernah mengaktifkannya, tidak ada yang hilang dan tidak ada yang merepotkan Anda.",
+        "q": "Apakah saya harus menggunakan fitur AI?"
+      },
+      "aiPrivacy": {
+        "a": "Itu bergantung pada lapisan mana dari dua lapisan yang Anda maksud, dan perbedaannya penting. Server MCP berjalan di dalam instans Anda sendiri: agen seperti Claude Desktop terhubung langsung ke instans itu, sehingga percakapan terjadi antara agen Anda dan tududi Anda sendiri, bukan melalui perantara. Asisten AI berbeda. Ia memanggil penyedia yang kompatibel dengan OpenAI, jadi jika Anda mengarahkannya ke penyedia yang dihosting, isi permintaan itu akan pergi ke penyedia tersebut. Sebaliknya, arahkan ke model lokal, seperti Ollama atau LM Studio, dan tidak ada yang keluar dari mesin Anda. Ia tetap mati sampai Anda memberikan kunci, jadi ini selalu pilihan Anda, bukan default.",
+        "q": "Apakah data saya dikirim ke perusahaan AI?"
+      },
+      "commercialUse": {
+        "a": "Ya, dan Anda tidak perlu membeli apa pun terlebih dahulu. Lisensi MIT mengizinkan penggunaan komersial, termasuk di dalam perusahaan dan dalam produk komersial, tanpa ambang batas pendapatan dan tanpa apa pun yang harus dilaporkan. Jika tim keuangan Anda membutuhkan faktur, langganan Cloud ditagih melalui penyedia pembayaran kami dan menghasilkan faktur. Tidak ada apa pun di halaman ini yang menjual izin, karena izin itu sudah milik Anda.",
+        "q": "Bisakah saya menggunakan tududi di tempat kerja, atau di perusahaan saya?"
+      },
+      "dataLocation": {
+        "a": "Semuanya berada dalam satu file basis data SQLite di dalam volume yang Anda pasang. Membuat cadangan berarti menyalin file itu ke tempat yang aman, dan memulihkannya berarti menyalinnya kembali. tududi juga secara otomatis mengambil snapshot basis data sebelum menerapkan migrasi, menyimpan salinan terbaru. Tidak ada format proprietary dan tidak ada langkah ekspor antara Anda dan data Anda sendiri.",
+        "q": "Di mana data saya, dan bagaimana saya mencadangkannya?"
+      },
+      "licence": {
+        "a": "Aplikasi ini adalah sumber terbuka di bawah lisensi MIT, jadi Anda dapat menjalankannya di server Anda sendiri secara gratis, mengubahnya, dan membangun di atasnya tanpa membayar siapa pun. Tidak ada batas jumlah kursi dan tidak ada fitur yang ditahan: build hosting sendiri adalah produk lengkap. tududi Cloud adalah layanan berbayar, karena hosting, cadangan, dan email membutuhkan biaya untuk dijalankan. Anda membayar untuk pekerjaan operasional, bukan untuk akses ke perangkat lunak.",
+        "q": "Apakah tududi benar-benar gratis?"
+      },
+      "maintained": {
+        "a": "Ya. Ini dikembangkan terutama oleh satu maintainer, dengan kontribusi dari komunitas, dan sering merilis versi baru. Setiap versi terdaftar di halaman rilis GitHub, yang tertaut dari Changelog di menu di atas, sehingga Anda dapat menilai sendiri kecepatannya daripada hanya mempercayai kata-kata kami. Pengembangan dilakukan secara terbuka: isu, peta jalan publik, dan Discord tempat pertanyaan dijawab.",
+        "linkLabel": "Lihat semua rilis",
+        "q": "Apakah tududi dirawat secara aktif?"
+      },
+      "mcp": {
+        "a": "MCP adalah Model Context Protocol, standar terbuka untuk menghubungkan agen AI ke sistem nyata. tududi menyediakan server MCP yang mengekspos {{tools}} alat mencakup tugas, proyek, area, tujuan, kebiasaan, catatan, orang, tag, tampilan, kotak masuk, pencarian, dan metrik, sehingga agen dapat menangkap, menemukan, memperbarui, dan menyelesaikan pekerjaan daripada hanya membicarakannya. Ini opsional, disertakan dengan Cloud dan dengan setiap instans hosting sendiri, dan berfungsi dengan Claude Desktop, Cursor, Windsurf, Cline, atau klien MCP lainnya.",
+        "q": "Apa itu MCP, dan apa yang benar-benar bisa dilakukan agen?"
+      },
+      "mobile": {
+        "a": "tududi terinstal sebagai PWA bukan sebagai aplikasi native. Tambahkan ke layar utama Anda di Android atau iOS, atau instal di desktop, dan ia berperilaku seperti aplikasi: membaca dari cache saat Anda offline dan menyinkronkan perubahan Anda saat terhubung kembali. Tidak ada yang perlu diunduh dari App Store atau Play Store.",
+        "q": "Apakah ada aplikasi mobile?"
+      },
+      "multiUser": {
+        "a": "Ya. Satu instans dapat menghosting beberapa pengguna, dan proyek dapat dibagikan dengan akses hanya-baca atau baca-tulis, yang diwarisi oleh tugas dan catatan di dalamnya. Pendaftaran mandiri dimatikan secara default, sehingga admin akan membuat akun atau membuka pendaftaran secara sengaja. Tidak ada yang masuk hanya karena Anda lupa menutup pintu.",
+        "q": "Bisakah beberapa orang berbagi satu instans?"
+      },
+      "requirements": {
+        "a": "Docker, tempat yang persisten untuk menyimpan basis data, reverse proxy dengan TLS di depannya, dan disiplin untuk menerapkan pembaruan dan menjaga cadangan. Ini berjalan nyaman di VPS kecil atau mesin di jaringan Anda sendiri, dan perintahnya ada di bagian Hosting Sendiri dan dokumentasi. Kebanyakan orang lebih baik dilayani oleh Cloud, yang merupakan aplikasi yang sama tanpa semua pekerjaan itu.",
+        "linkLabel": "Baca dokumentasi",
+        "q": "Apa yang saya perlukan untuk menghostingnya sendiri?"
+      },
+      "reverseProxy": {
+        "a": "Ya, dan itu cara normal untuk menjalankannya. Atur TUDUDI_TRUST_PROXY agar aplikasi mempercayai header yang diteruskan oleh nginx, Caddy, atau Traefik. Jika Anda melewatkan ini, login dan pencatatan IP berperilaku aneh dengan cara yang sulit didiagnosis, sehingga aplikasi melempar kesalahan spesifik daripada gagal secara diam-diam. Nilai yang diterima didokumentasikan di README.",
+        "q": "Apakah ini berfungsi di belakang reverse proxy?"
+      },
+      "shutdown": {
+        "a": "Aplikasi ini berlisensi MIT, dan kode sumbernya publik, sehingga tidak dapat diambil dari Anda. Siapa pun dapat terus menjalankannya, dan Anda bisa mem-fork-nya. Di tududi Cloud data Anda hidup dalam basis data tududi standar bukan format proprietary, sehingga jika layanan suatu saat ditutup, Anda akan mendapatkan data Anda dan panduan untuk memindahkannya ke server Anda sendiri.",
+        "q": "Apa yang terjadi pada data saya jika tududi menghilang?"
+      },
+      "whyManaged": {
+        "a": "Anda membayar agar tidak perlu menjalankan infrastruktur. tududi Cloud memberi Anda sistem yang sama dengan server, pembaruan, cadangan, dan email yang diurus untuk Anda, yang merupakan separuh hosting sendiri yang merepotkan dan kurang menarik. Cloud adalah jalur yang kami rekomendasikan. Hosting sendiri hanya menjadi pilihan yang lebih baik jika Anda sudah menjalankan Docker dan reverse proxy dan benar-benar ingin mengoperasikan stack tersebut.",
+        "q": "Mengapa membayar untuk Cloud padahal hosting sendiri gratis?"
       }
-    }
+    },
+    "eyebrow": "FAQ",
+    "groups": {
+      "managed": "AI, MCP & Cloud",
+      "project": "Lisensi & proyek",
+      "selfHost": "Hosting sendiri & data"
+    },
+    "permalink": "Tautan ke jawaban ini",
+    "sub": "Lisensi, AI, dan apa yang terjadi pada data Anda. Jika ada yang kurang, tanyakan di Discord.",
+    "title": "Pertanyaan yang layak dijawab sebelum Anda berkomitmen"
+  },
+  "cloud": {
+    "ctaPricing": "Lihat harganya",
+    "ctaPrimary": "Mulai",
+    "includes": [
+      "Tugas, proyek, dan catatan tak terbatas",
+      "Lampiran dan unggahan file",
+      "Asisten AI, MCP, sinkronisasi CalDAV, dan bot Telegram",
+      "Cadangan harian dan pembaruan yang dikelola",
+      "Dukungan melalui email",
+      "Ekspor semuanya, kapan saja"
+    ],
+    "lede": "Sistem yang sama pada kedua kasus. Bedanya adalah siapa yang menjaganya tetap berjalan, ditambal, dan dicadangkan pada pukul tiga pagi.",
+    "metaDescription": "tududi Cloud adalah sistem sumber terbuka yang sama, berjalan di server kami dengan pembaruan, cadangan, dan email yang diurus untuk Anda. Satu paket, bulanan atau tahunan, dapat dibatalkan kapan saja.",
+    "metaTitle": "tududi Cloud: tududi yang dihosting, dijalankan untuk Anda",
+    "note": "Aplikasi berlisensi MIT yang sama. Ekspor semuanya, kapan saja.",
+    "orAnnual": "atau",
+    "priceNote": "Ditagih oleh penyedia pembayaran kami. Harga belum termasuk pajak yang berlaku.",
+    "pricingSub": "Semuanya termasuk. Batalkan kapan pun Anda mau.",
+    "pricingTitle": "Satu paket, dua cara membayar",
+    "reasons": {
+      "backups": {
+        "body": "Basis data di-dump setiap malam dan disimpan di luar mesin yang melayani Anda. Anda juga bisa mengekspor semuanya sendiri kapan saja.",
+        "title": "Cadangan yang tidak perlu Anda ingat"
+      },
+      "email": {
+        "body": "Verifikasi, pengaturan ulang kata sandi, dan pengingat dikirim melalui domain pengirim yang sudah dihangatkan, yang merepotkan dan membosankan untuk disiapkan sendiri.",
+        "title": "Email yang sampai"
+      },
+      "noOps": {
+        "body": "Tidak ada VPS untuk disewa, tidak ada Docker untuk diperbarui, tidak ada reverse proxy atau sertifikat untuk diperpanjang. Anda masuk, dan itu sudah ada.",
+        "title": "Tidak ada server untuk dijalankan"
+      },
+      "sameApp": {
+        "body": "Tidak ada fitur eksklusif cloud dan tidak ada build hosting sendiri yang dipotong. Jika kami suatu saat menutup layanan, Anda mendapatkan data Anda dan panduan migrasi.",
+        "title": "Tepat aplikasi yang sama"
+      },
+      "support": {
+        "body": "Seseorang yang mengenal kodenya akan menjawab. Dengan hosting sendiri Anda memiliki komunitas, yang baik, tetapi tidak ada yang wajib menjawab.",
+        "title": "Seseorang untuk dihubungi via email"
+      },
+      "updates": {
+        "body": "Rilis baru mencapai akun Anda tanpa pull, restart, atau migrasi yang harus Anda awasi.",
+        "title": "Pembaruan diterapkan untuk Anda"
+      }
+    },
+    "selfHostLine": "Lebih suka menjalankan server sendiri? Itu gratis, dan itu aplikasi yang sama.",
+    "title": "Mengapa menggunakan tududi Cloud?",
+    "whyEyebrow": "Cloud",
+    "whySub": "Bukan fitur. Setiap fitur juga ada di build hosting sendiri.",
+    "whyTitle": "Yang sebenarnya Anda bayar"
+  },
+  "finalCta": {
+    "primary": "Mulai",
+    "secondary": "Lihat harga",
+    "selfHostLink": "Baca panduannya.",
+    "selfHostPrefix": "Lebih suka menjalankannya di server Anda sendiri?",
+    "sub": "Kami menjalankan server, pembaruan, dan cadangan. Anda mendapatkan sistemnya, dan garansi uang kembali 30 hari jika tidak cocok untuk Anda.",
+    "title": "Terorganisir dalam satu menit"
   }
 }

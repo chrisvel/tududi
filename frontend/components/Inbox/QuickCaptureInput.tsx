@@ -187,6 +187,12 @@ const QuickCaptureInput = React.forwardRef<
         useEffect(() => {
             if (autoFocus && inputRef.current) {
                 inputRef.current.focus();
+                // Prefilled text (e.g. handed over by the OS share sheet)
+                // should leave the caret ready to keep typing
+                const caret = inputRef.current.value.length;
+                if (caret > 0) {
+                    inputRef.current.setSelectionRange(caret, caret);
+                }
             }
         }, [autoFocus]);
 
@@ -1475,6 +1481,7 @@ const QuickCaptureInput = React.forwardRef<
                                         ref={(el) => {
                                             inputRef.current = el;
                                         }}
+                                        data-testid="quick-capture-input"
                                         value={inputText}
                                         rows={3}
                                         onChange={handleChange}
