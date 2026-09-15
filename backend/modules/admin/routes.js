@@ -17,5 +17,7 @@ router.post('/admin/users', adminController.createUser);
 router.put('/admin/users/:id', adminController.updateUser);
 router.delete('/admin/users/:id', adminController.deleteUser);
 router.post('/admin/toggle-registration', adminController.toggleRegistration);
+router.get('/admin/oidc-config', adminController.getOidcConfig);
+router.put('/admin/oidc-config', adminController.updateOidcConfig);
 
 module.exports = router;

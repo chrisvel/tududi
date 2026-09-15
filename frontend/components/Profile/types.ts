@@ -1,7 +1,7 @@
 import type { KeyboardShortcutsConfig } from '../../utils/keyboardShortcutsService';
 
 export interface ProfileSettingsProps {
-    currentUser: { uid: string; email: string };
+    currentUser: { uid: string; email: string; is_admin?: boolean };
     isDarkMode?: boolean;
     toggleDarkMode?: () => void;
     setAppearance?: (theme: 'light' | 'dark' | 'system') => void;

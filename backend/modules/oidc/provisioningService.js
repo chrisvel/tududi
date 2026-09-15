@@ -30,7 +30,7 @@ async function findOrCreateIdentity(providerSlug, claims) {
 }
 
 async function provisionUser(providerSlug, claims, req) {
-    const config = providerConfig.getProvider(providerSlug);
+    const config = await providerConfig.getProvider(providerSlug);
     if (!config) {
         throw new Error(`Provider not found: ${providerSlug}`);
     }
@@ -154,7 +154,7 @@ async function provisionUser(providerSlug, claims, req) {
 }
 
 async function linkIdentityToUser(userId, providerSlug, claims) {
-    const config = providerConfig.getProvider(providerSlug);
+    const config = await providerConfig.getProvider(providerSlug);
     if (!config) {
         throw new Error(`Provider not found: ${providerSlug}`);
     }

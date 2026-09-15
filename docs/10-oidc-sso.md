@@ -15,6 +15,7 @@ This guide explains how to configure and use OpenID Connect (OIDC) Single Sign-O
   - [Single Provider Setup](#single-provider-setup)
   - [Multiple Providers Setup](#multiple-providers-setup)
   - [Environment Variables Reference](#environment-variables-reference)
+  - [Admin UI Configuration](#admin-ui-configuration)
 - [Provider Setup Guides](#provider-setup-guides)
   - [Google](#google)
   - [Okta](#okta)
@@ -222,6 +223,18 @@ This is required for:
 Without this setting, you may experience:
 - Session loss after SSO login (401 errors)
 - Rate limiter errors: `ValidationError: The 'X-Forwarded-For' header is set but the Express 'trust proxy' setting is false`
+
+---
+
+### Admin UI Configuration
+
+Everything above can also be configured from **Profile Settings → OIDC/SSO**, in a "Provider Configuration" panel visible to admins. This is the only way to configure OIDC on a hosted instance, where nobody has shell access to edit `.env` and restart — but it works for self-hosted instances too.
+
+Opening the panel for the first time shows whatever is currently loaded from `.env` as a starting point; nothing is written to the database until you click **Save changes**. Once saved, that configuration **fully replaces** the `OIDC_*` / `OIDC_PROVIDER_N_*` environment variables — it is an override, not a merge, so editing `.env` afterwards has no effect until you either update the same panel or delete the saved configuration. Changes made in the panel take effect within about 30 seconds, with no restart required.
+
+A provider's client secret is never shown back in full — only whether one is set and its last four characters. Leaving the secret field blank when editing a provider keeps the secret that's already stored; type a new value only to replace it. Client secrets saved this way are encrypted at rest, using `TUDUDI_SESSION_SECRET` (or a dedicated `TUDUDI_OIDC_SECRET_ENCRYPTION_KEY`, see `.env.example`) as key material — at least one of those must be set before a secret can be saved from the panel.
+
+`PASSWORD_AUTH_ENABLED` is not part of this panel and remains `.env`-only.
 
 ---
 

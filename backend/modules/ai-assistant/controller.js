@@ -2,6 +2,7 @@
 
 const { getAuthenticatedUserId } = require('../../utils/request-utils');
 const aiAssistantService = require('./service');
+const { getConfig } = require('../../config/config');
 
 const controller = {
     getConfig(req, res) {
@@ -9,6 +10,15 @@ const controller = {
         if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
         const apiKeySet = aiAssistantService.isAIConfigured();
+
+        // base_url and model describe this instance's own server config
+        // (operator's LLM provider/network, model choice). On a hosted
+        // instance the caller isn't the operator, so that's not theirs to
+        // see; only whether AI is usable at all matters to them.
+        if (getConfig().hosted?.enabled === true) {
+            return res.json({ api_key_set: apiKeySet });
+        }
+
         const baseUrl =
             process.env.LLM_BASE_URL || process.env.OPENAI_BASE_URL || null;
         const model =

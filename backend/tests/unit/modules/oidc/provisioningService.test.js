@@ -25,7 +25,7 @@ describe('OIDC Provisioning Service', () => {
         await Role.destroy({ where: {}, force: true });
         await User.destroy({ where: {}, force: true });
 
-        providerConfig.getProvider.mockReturnValue({
+        providerConfig.getProvider.mockResolvedValue({
             slug: 'test-provider',
             name: 'Test Provider',
             autoProvision: true,
@@ -131,7 +131,7 @@ describe('OIDC Provisioning Service', () => {
         });
 
         it('should throw error when auto-provision is disabled and user does not exist', async () => {
-            providerConfig.getProvider.mockReturnValue({
+            providerConfig.getProvider.mockResolvedValue({
                 slug: 'test-provider',
                 name: 'Test Provider',
                 autoProvision: false,

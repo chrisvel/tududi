@@ -81,6 +81,7 @@ const formatFrequency = (frequency: string): string => {
 };
 
 const ProfileSettings: React.FC<ProfileSettingsProps> = ({
+    currentUser,
     isDarkMode,
     toggleDarkMode,
     setAppearance,
@@ -1482,6 +1483,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                 <OIDCTab
                                     isActive={activeTab === 'oidc'}
                                     hasPassword={profile?.has_password ?? false}
+                                    isAdmin={currentUser?.is_admin === true}
                                 />
 
                                 <ApiKeysTab
@@ -1617,6 +1619,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                 <AIAssistantTab
                                     isActive={activeTab === 'ai-assistant'}
                                     formData={formData}
+                                    hosted={featureFlags.hosted}
                                     onToggleAi={(field) =>
                                         setFormData((prev) => ({
                                             ...prev,
