@@ -49,8 +49,7 @@ function sendOnce(url, rawBody, headers) {
             // Drain the response body so the socket is released back to the pool.
             res.on('data', () => {});
             res.on('end', () => {
-                const success =
-                    res.statusCode >= 200 && res.statusCode < 300;
+                const success = res.statusCode >= 200 && res.statusCode < 300;
                 resolve({
                     success,
                     statusCode: res.statusCode,

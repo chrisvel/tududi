@@ -213,9 +213,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
     const [webhooksLoaded, setWebhooksLoaded] = useState(false);
     const [newWebhookName, setNewWebhookName] = useState('');
     const [newWebhookUrl, setNewWebhookUrl] = useState('');
-    const [newWebhookEventTypes, setNewWebhookEventTypes] = useState<
-        string[]
-    >([]);
+    const [newWebhookEventTypes, setNewWebhookEventTypes] = useState<string[]>(
+        []
+    );
     const [newWebhookAuthType, setNewWebhookAuthType] =
         useState<WebhookAuthType>('none');
     const [newWebhookAuthHeaderName, setNewWebhookAuthHeaderName] =
@@ -562,10 +562,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             );
             return;
         }
-        if (
-            newWebhookAuthType === 'header' &&
-            !newWebhookAuthSecret.trim()
-        ) {
+        if (newWebhookAuthType === 'header' && !newWebhookAuthSecret.trim()) {
             showErrorToast(
                 t(
                     'profile.webhooks.authHeaderValueRequired',
@@ -1947,9 +1944,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                     generatedSecret={generatedWebhookSecret}
                                     newWebhookName={newWebhookName}
                                     newWebhookUrl={newWebhookUrl}
-                                    newWebhookEventTypes={
-                                        newWebhookEventTypes
-                                    }
+                                    newWebhookEventTypes={newWebhookEventTypes}
                                     newWebhookAuthType={newWebhookAuthType}
                                     newWebhookAuthHeaderName={
                                         newWebhookAuthHeaderName
@@ -1957,17 +1952,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                     newWebhookAuthUsername={
                                         newWebhookAuthUsername
                                     }
-                                    newWebhookAuthSecret={
-                                        newWebhookAuthSecret
-                                    }
+                                    newWebhookAuthSecret={newWebhookAuthSecret}
                                     isCreatingWebhook={isCreatingWebhook}
                                     testInFlightUid={webhookTestInFlightUid}
-                                    rotateInFlightUid={
-                                        webhookRotateInFlightUid
-                                    }
-                                    deleteInFlightUid={
-                                        webhookDeleteInFlightUid
-                                    }
+                                    rotateInFlightUid={webhookRotateInFlightUid}
+                                    deleteInFlightUid={webhookDeleteInFlightUid}
                                     onCreateWebhook={handleCreateWebhook}
                                     onCopyGeneratedSecret={
                                         handleCopyGeneratedWebhookSecret

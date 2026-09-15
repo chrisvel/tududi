@@ -36,9 +36,7 @@ function normalizeEventTypes(eventTypes) {
         (type) => !VALID_EVENT_TYPES.includes(type)
     );
     if (invalid.length > 0) {
-        throw new ValidationError(
-            `Invalid event types: ${invalid.join(', ')}`
-        );
+        throw new ValidationError(`Invalid event types: ${invalid.join(', ')}`);
     }
     return eventTypes;
 }
@@ -55,7 +53,12 @@ const VALID_AUTH_TYPES = ['none', 'basic', 'header'];
 // persist. Mirrors what n8n's Webhook trigger node supports (None, Basic
 // Auth, Header Auth) so an endpoint can authenticate against receivers that
 // require it, on top of the HMAC signature every delivery already carries.
-function normalizeAuth({ auth_type, auth_header_name, auth_username, auth_secret }) {
+function normalizeAuth({
+    auth_type,
+    auth_header_name,
+    auth_username,
+    auth_secret,
+}) {
     const type = auth_type === undefined ? 'none' : auth_type;
     if (!VALID_AUTH_TYPES.includes(type)) {
         throw new ValidationError(`Invalid auth_type: ${type}`);

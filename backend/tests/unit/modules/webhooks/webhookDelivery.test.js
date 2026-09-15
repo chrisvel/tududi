@@ -35,9 +35,7 @@ describe('webhookDelivery', () => {
             const signature = signPayload('secret', '{"a":1}');
             expect(signature).toMatch(/^[0-9a-f]{64}$/);
             expect(signPayload('secret', '{"a":1}')).toBe(signature);
-            expect(signPayload('other-secret', '{"a":1}')).not.toBe(
-                signature
-            );
+            expect(signPayload('other-secret', '{"a":1}')).not.toBe(signature);
         });
     });
 
@@ -104,13 +102,11 @@ describe('webhookDelivery', () => {
         let server;
         let received;
 
-        afterEach((done) => {
+        afterEach(async () => {
             received = [];
             if (server) {
-                server.close(done);
+                await new Promise((resolve) => server.close(resolve));
                 server = null;
-            } else {
-                done();
             }
         });
 
@@ -155,9 +151,7 @@ describe('webhookDelivery', () => {
             expect(received[0].headers['x-tududi-signature']).toBe(
                 `sha256=${expectedSignature}`
             );
-            expect(received[0].headers['x-tududi-event']).toBe(
-                'task_due_soon'
-            );
+            expect(received[0].headers['x-tududi-event']).toBe('task_due_soon');
 
             await endpoint.reload();
             expect(endpoint.last_delivery_status).toBe('success');

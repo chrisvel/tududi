@@ -127,7 +127,7 @@ describe('Webhooks Routes', () => {
             expect(response.body[0].secret_preview).toMatch(/^\.\.\./);
         });
 
-        it('only returns the requesting user\'s endpoints', async () => {
+        it("only returns the requesting user's endpoints", async () => {
             const otherUser = await createTestUser({
                 email: 'other@example.com',
             });
@@ -168,7 +168,7 @@ describe('Webhooks Routes', () => {
             expect(response.body.event_types).toEqual(['task_overdue']);
         });
 
-        it('returns 404 for another user\'s endpoint', async () => {
+        it("returns 404 for another user's endpoint", async () => {
             const created = await agent.post('/api/webhooks').send({
                 name: 'My endpoint',
                 url: 'https://example.com/hook',

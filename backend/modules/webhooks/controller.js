@@ -50,10 +50,7 @@ const webhooksController = {
     async remove(req, res, next) {
         try {
             const userId = requireUserId(req);
-            const result = await webhooksService.remove(
-                userId,
-                req.params.uid
-            );
+            const result = await webhooksService.remove(userId, req.params.uid);
             res.json(result);
         } catch (error) {
             next(error);

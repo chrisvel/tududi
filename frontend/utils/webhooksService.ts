@@ -106,16 +106,13 @@ export async function deleteWebhook(uid: string): Promise<void> {
 export async function rotateWebhookSecret(
     uid: string
 ): Promise<WebhookEndpointSummary> {
-    const response = await fetch(
-        getApiPath(`webhooks/${uid}/rotate-secret`),
-        {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'x-csrf-token': await getCsrfToken(),
-            },
-        }
-    );
+    const response = await fetch(getApiPath(`webhooks/${uid}/rotate-secret`), {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'x-csrf-token': await getCsrfToken(),
+        },
+    });
     return handleResponse<WebhookEndpointSummary>(response);
 }
 
@@ -129,7 +126,5 @@ export async function testWebhook(
             'x-csrf-token': await getCsrfToken(),
         },
     });
-    return handleResponse<{ success: boolean; error: string | null }>(
-        response
-    );
+    return handleResponse<{ success: boolean; error: string | null }>(response);
 }

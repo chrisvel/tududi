@@ -194,9 +194,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                             data.some((webhook) => webhook.active)
                     )
                 )
-                .catch((err) =>
-                    console.error('Failed to fetch webhooks', err)
-                );
+                .catch((err) => console.error('Failed to fetch webhooks', err));
         }
     }, [isActive]);
 
@@ -333,10 +331,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 )}
                             </th>
                             <th className="py-3 px-4 text-center text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                {t(
-                                    'notifications.channels.webhook',
-                                    'Webhook'
-                                )}
+                                {t('notifications.channels.webhook', 'Webhook')}
                             </th>
                         </tr>
                     </thead>

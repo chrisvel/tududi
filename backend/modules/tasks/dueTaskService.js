@@ -137,9 +137,7 @@ async function checkDueTasks() {
                     );
 
                     const sources = [];
-                    if (
-                        shouldSendWebhookNotification(user, notificationType)
-                    ) {
+                    if (shouldSendWebhookNotification(user, notificationType)) {
                         sources.push('webhook');
                     }
 

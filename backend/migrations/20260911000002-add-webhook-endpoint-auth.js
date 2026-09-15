@@ -43,10 +43,7 @@ module.exports = {
             'webhook_endpoints',
             'auth_header_name'
         );
-        await queryInterface.removeColumn(
-            'webhook_endpoints',
-            'auth_username'
-        );
+        await queryInterface.removeColumn('webhook_endpoints', 'auth_username');
         await queryInterface.removeColumn('webhook_endpoints', 'auth_secret');
     },
 };

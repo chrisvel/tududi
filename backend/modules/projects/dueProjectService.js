@@ -142,9 +142,7 @@ async function checkDueProjects() {
                     );
 
                     const sources = [];
-                    if (
-                        shouldSendWebhookNotification(user, notificationType)
-                    ) {
+                    if (shouldSendWebhookNotification(user, notificationType)) {
                         sources.push('webhook');
                     }
 
