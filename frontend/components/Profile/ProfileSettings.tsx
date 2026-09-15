@@ -1619,6 +1619,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                 <AIAssistantTab
                                     isActive={activeTab === 'ai-assistant'}
                                     formData={formData}
+                                    hosted={featureFlags.hosted}
                                     onToggleAi={(field) =>
                                         setFormData((prev) => ({
                                             ...prev,
