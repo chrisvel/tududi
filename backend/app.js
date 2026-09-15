@@ -547,7 +547,7 @@ async function startServer() {
 
         // Validate authentication configuration
         const { validateAuthConfiguration } = require('./config/authConfig');
-        validateAuthConfiguration();
+        await validateAuthConfiguration();
 
         // A hosted instance must not come up half-configured
         const { assertHostedConfig } = require('./config/hostedConfig');

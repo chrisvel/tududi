@@ -112,33 +112,73 @@ function loadProvidersFromEnv() {
     return providers;
 }
 
-let cachedProviders = null;
+// Providers can also live in the database (see configService.js), set by an
+// admin through Profile Settings -> OIDC/SSO instead of .env -- the only way
+// to configure OIDC on a hosted instance, where nobody has shell access to
+// edit .env and restart. A DB row, once saved, fully replaces the .env
+// config (not merged with it); with no row, .env keeps working exactly as
+// before. Resolution is cached briefly so the login/callback paths and the
+// boot-time isOidcEnabled() check aren't a database hit on every call, while
+// still picking up an admin's change without a restart.
+const CACHE_TTL_MS = 30 * 1000;
+let cache = null; // { value: { enabled, providers }, expires }
 
-function getAllProviders() {
-    if (!cachedProviders) {
-        cachedProviders = loadProvidersFromEnv();
+async function resolveConfig() {
+    if (cache && cache.expires > Date.now()) {
+        return cache.value;
     }
-    return cachedProviders;
-}
 
-function getProvider(slug) {
-    const providers = getAllProviders();
-    const provider = providers.find((p) => p.slug === slug);
-
-    if (!provider) {
-        return null;
+    let value;
+    try {
+        // Required lazily: configService requires this module too, and this
+        // keeps that circular require safe (see configService.js).
+        const configService = require('./configService');
+        const dbConfig = await configService.getDbConfig();
+        value = dbConfig
+            ? {
+                  enabled: dbConfig.enabled,
+                  providers: dbConfig.enabled ? dbConfig.providers : [],
+              }
+            : {
+                  enabled: isEnvTrue(process.env.OIDC_ENABLED),
+                  providers: loadProvidersFromEnv(),
+              };
+    } catch (error) {
+        console.error(
+            'Failed to resolve OIDC config from the database, falling back to environment variables:',
+            error.message
+        );
+        value = {
+            enabled: isEnvTrue(process.env.OIDC_ENABLED),
+            providers: loadProvidersFromEnv(),
+        };
     }
 
-    return provider;
+    cache = { value, expires: Date.now() + CACHE_TTL_MS };
+    return value;
 }
 
-function isOidcEnabled() {
-    return isEnvTrue(process.env.OIDC_ENABLED) && getAllProviders().length > 0;
+async function getAllProviders() {
+    return (await resolveConfig()).providers;
 }
 
+async function getProvider(slug) {
+    const providers = await getAllProviders();
+    return providers.find((p) => p.slug === slug) || null;
+}
+
+async function isOidcEnabled() {
+    const config = await resolveConfig();
+    return config.enabled && config.providers.length > 0;
+}
+
+// Clears the cache so the next call re-resolves (DB then env). Synchronous
+// and cheap on purpose: it's called un-awaited from the admin save path and
+// from ~15 existing test call sites. In a multi-process hosted deployment
+// only the process that saved the change picks it up immediately; the
+// others catch up within the cache TTL above.
 function reloadProviders() {
-    cachedProviders = null;
-    return getAllProviders();
+    cache = null;
 }
 
 module.exports = {
@@ -146,4 +186,8 @@ module.exports = {
     getProvider,
     isOidcEnabled,
     reloadProviders,
+    loadProvidersFromEnv,
+    isEnvTrue,
+    normalizeScope,
+    parseCommaSeparated,
 };
