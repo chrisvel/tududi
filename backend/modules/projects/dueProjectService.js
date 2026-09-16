@@ -20,7 +20,7 @@ async function checkDueProjects() {
                     [Op.lte]: tomorrow,
                 },
                 status: {
-                    [Op.notIn]: ['completed'],
+                    [Op.notIn]: ['done', 'cancelled'],
                 },
             },
             include: [

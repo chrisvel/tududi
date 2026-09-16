@@ -20,7 +20,11 @@ async function checkDueTasks() {
                     [Op.lte]: tomorrow,
                 },
                 status: {
-                    [Op.ne]: 2,
+                    [Op.notIn]: [
+                        Task.STATUS.DONE,
+                        Task.STATUS.ARCHIVED,
+                        Task.STATUS.CANCELLED,
+                    ],
                 },
             },
             include: [
