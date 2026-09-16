@@ -1,11 +1,28 @@
 'use strict';
 
 const crypto = require('crypto');
-const { URL } = require('url');
+const { assertSafeUrl } = require('../url/ssrfGuard');
+const secretCipher = require('../../shared/crypto/secretCipher');
 const { logError } = require('../../services/logService');
 
 const DELIVERY_TIMEOUT_MS = 5000;
 const MAX_FAILURES_BEFORE_DISABLE = 10;
+
+// Fixed headers every delivery sets itself. An auth header sharing one of
+// these names would otherwise silently overwrite it (most importantly the
+// HMAC signature, which breaks receiver-side verification with no error
+// surfaced) - both endpoint config and delivery guard against it.
+const RESERVED_HEADER_NAMES = new Set([
+    'content-type',
+    'content-length',
+    'x-tududi-event',
+    'x-tududi-delivery',
+    'x-tududi-signature',
+]);
+
+function isReservedHeaderName(name) {
+    return RESERVED_HEADER_NAMES.has(String(name).toLowerCase());
+}
 
 function signPayload(secret, rawBody) {
     return crypto.createHmac('sha256', secret).update(rawBody).digest('hex');
@@ -23,16 +40,18 @@ function buildPayload(notification) {
     };
 }
 
-function sendOnce(url, rawBody, headers) {
-    return new Promise((resolve) => {
-        let parsed;
-        try {
-            parsed = new URL(url);
-        } catch (error) {
-            resolve({ success: false, error: 'Invalid webhook URL' });
-            return;
-        }
+async function sendOnce(url, rawBody, headers) {
+    let parsed;
+    try {
+        // Re-validated on every delivery, not just at endpoint creation: the
+        // hostname can resolve to a private/internal address by the time a
+        // notification actually fires even if it didn't when it was saved.
+        parsed = await assertSafeUrl(url);
+    } catch (error) {
+        return { success: false, error: error.message };
+    }
 
+    return new Promise((resolve) => {
         const client =
             parsed.protocol === 'http:' ? require('http') : require('https');
         const options = {
@@ -97,27 +116,73 @@ function isRetryable(result) {
 
 async function recordDeliveryResult(endpoint, result) {
     try {
-        const updates = {
-            last_delivery_at: new Date(),
-            last_delivery_status: result.success ? 'success' : 'failed',
-            last_delivery_error: result.success
-                ? null
-                : result.error || 'Unknown error',
-        };
-
         if (result.success) {
-            updates.failure_count = 0;
-        } else {
-            updates.failure_count = endpoint.failure_count + 1;
-            if (updates.failure_count >= MAX_FAILURES_BEFORE_DISABLE) {
-                updates.active = false;
-            }
+            await endpoint.update({
+                last_delivery_at: new Date(),
+                last_delivery_status: 'success',
+                last_delivery_error: null,
+                failure_count: 0,
+            });
+            return;
         }
 
+        // Atomic UPDATE ... SET failure_count = failure_count + 1, rather
+        // than a JS read-modify-write off the (possibly stale) in-memory
+        // value, so concurrent deliveries to the same endpoint can't lose a
+        // failure count.
+        await endpoint.increment('failure_count');
+        await endpoint.reload({ attributes: ['failure_count'] });
+
+        const updates = {
+            last_delivery_at: new Date(),
+            last_delivery_status: 'failed',
+            last_delivery_error: result.error || 'Unknown error',
+        };
+        if (endpoint.failure_count >= MAX_FAILURES_BEFORE_DISABLE) {
+            updates.active = false;
+        }
         await endpoint.update(updates);
     } catch (error) {
         logError('Failed to record webhook delivery result:', error);
     }
+}
+
+// Signs and sends the payload once (with one retry on a retryable failure).
+// Shared by deliver() (real dispatch, result persisted on the endpoint) and
+// sendTestDelivery() (manual test send, result never persisted) so a test
+// click can't count toward failure_count / auto-disable the endpoint.
+async function attemptDelivery(endpoint, payload) {
+    const rawBody = JSON.stringify(payload);
+    const secret = secretCipher.decrypt(endpoint.secret);
+    const signature = signPayload(secret, rawBody);
+    const authSecret = endpoint.auth_secret
+        ? secretCipher.decrypt(endpoint.auth_secret)
+        : endpoint.auth_secret;
+
+    const authHeaders = buildAuthHeaders({
+        auth_type: endpoint.auth_type,
+        auth_header_name: endpoint.auth_header_name,
+        auth_username: endpoint.auth_username,
+        auth_secret: authSecret,
+    });
+    const safeAuthHeaders = Object.fromEntries(
+        Object.entries(authHeaders).filter(
+            ([name]) => !isReservedHeaderName(name)
+        )
+    );
+
+    const headers = {
+        'X-Tududi-Event': payload.type,
+        'X-Tududi-Delivery': crypto.randomUUID(),
+        'X-Tududi-Signature': `sha256=${signature}`,
+        ...safeAuthHeaders,
+    };
+
+    let result = await sendOnce(endpoint.url, rawBody, headers);
+    if (isRetryable(result)) {
+        result = await sendOnce(endpoint.url, rawBody, headers);
+    }
+    return result;
 }
 
 // Delivers a signed notification payload to a single webhook endpoint.
@@ -125,20 +190,7 @@ async function recordDeliveryResult(endpoint, result) {
 // so a broken endpoint can't take down notification creation.
 async function deliver(endpoint, payload) {
     try {
-        const rawBody = JSON.stringify(payload);
-        const signature = signPayload(endpoint.secret, rawBody);
-        const headers = {
-            'X-Tududi-Event': payload.type,
-            'X-Tududi-Delivery': crypto.randomUUID(),
-            'X-Tududi-Signature': `sha256=${signature}`,
-            ...buildAuthHeaders(endpoint),
-        };
-
-        let result = await sendOnce(endpoint.url, rawBody, headers);
-        if (isRetryable(result)) {
-            result = await sendOnce(endpoint.url, rawBody, headers);
-        }
-
+        const result = await attemptDelivery(endpoint, payload);
         await recordDeliveryResult(endpoint, result);
         return result;
     } catch (error) {
@@ -147,4 +199,24 @@ async function deliver(endpoint, payload) {
     }
 }
 
-module.exports = { signPayload, buildPayload, buildAuthHeaders, deliver };
+// Manual "send test" from the webhook settings UI. Exercises the exact same
+// signing/auth/send path as deliver(), but never touches last_delivery_*,
+// failure_count, or active - a failing test send must not auto-disable an
+// endpoint before it has handled a real notification.
+async function sendTestDelivery(endpoint, payload) {
+    try {
+        return await attemptDelivery(endpoint, payload);
+    } catch (error) {
+        logError('Unexpected error delivering test webhook:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+module.exports = {
+    signPayload,
+    buildPayload,
+    buildAuthHeaders,
+    isReservedHeaderName,
+    deliver,
+    sendTestDelivery,
+};

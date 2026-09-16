@@ -29,8 +29,10 @@ module.exports = {
             },
             {
                 name: 'auth_secret',
+                // Stores the encrypted form (see secretCipher.js), which is
+                // longer than the plaintext value it wraps.
                 definition: {
-                    type: Sequelize.STRING(500),
+                    type: Sequelize.TEXT,
                     allowNull: true,
                 },
             },

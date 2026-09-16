@@ -31,7 +31,9 @@ module.exports = {
                 allowNull: false,
             },
             secret: {
-                type: Sequelize.STRING,
+                // Stores the encrypted form (see secretCipher.js), which is
+                // longer than the plaintext HMAC secret it wraps.
+                type: Sequelize.TEXT,
                 allowNull: false,
             },
             event_types: {

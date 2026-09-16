@@ -3,8 +3,7 @@
 const { Person, User, Notification } = require('../../../models');
 const {
     shouldSendInAppNotification,
-    shouldSendTelegramNotification,
-    shouldSendWebhookNotification,
+    resolveNotificationSources,
 } = require('../../../utils/notificationPreferences');
 const { logError } = require('../../../services/logService');
 
@@ -47,13 +46,9 @@ async function notifyAssignee(task, previousAssignedTo, actingUserId) {
         });
         const actorLabel = actor?.name || actor?.email || 'Someone';
 
-        const sources = [];
-        if (shouldSendTelegramNotification(assignee, 'task_assigned')) {
-            sources.push('telegram');
-        }
-        if (shouldSendWebhookNotification(assignee, 'task_assigned')) {
-            sources.push('webhook');
-        }
+        const sources = resolveNotificationSources(assignee, 'task_assigned', {
+            telegram: true,
+        });
 
         await Notification.createNotification({
             userId: assignee.id,

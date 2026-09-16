@@ -10,9 +10,6 @@ const {
     NotFoundError,
     ForbiddenError,
 } = require('../../shared/errors');
-const {
-    shouldSendWebhookNotification,
-} = require('../../utils/notificationPreferences');
 
 const SHAREABLE_TYPES = new Set(['project', 'task', 'note', 'area', 'goal']);
 const ACCESS_LEVELS = new Set(['ro', 'rw']);
@@ -128,10 +125,13 @@ class SharesService {
             const accessLabel =
                 accessLevel === 'rw' ? 'read & write' : 'read only';
 
-            const sources = [];
-            if (shouldSendWebhookNotification(target, 'share_invitation')) {
-                sources.push('webhook');
-            }
+            // 'share_invitation' has no entry in the category preference
+            // table (no UI toggle exists for it), so - unlike the other
+            // notification types - webhook dispatch isn't gated behind
+            // shouldSendWebhookNotification here. Whether it actually
+            // reaches an endpoint is decided entirely by that endpoint's own
+            // event_types subscription (see WebhookEndpoint#matchesType).
+            const sources = ['webhook'];
 
             await Notification.createNotification({
                 userId: target.id,

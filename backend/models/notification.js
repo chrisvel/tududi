@@ -183,7 +183,11 @@ module.exports = (sequelize) => {
         }
 
         if (sources.includes('webhook')) {
-            await sendWebhookNotifications(userId, notification);
+            // Fire-and-forget: a single delivery can take up to ~10s (5s
+            // timeout, doubled by one retry on 5xx), which would otherwise
+            // stall the calling request (e.g. PATCH /tasks/:id) for that
+            // long. sendWebhookNotifications never throws.
+            sendWebhookNotifications(userId, notification);
         }
 
         return notification;

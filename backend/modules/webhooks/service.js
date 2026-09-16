@@ -2,7 +2,13 @@
 
 const crypto = require('crypto');
 const repository = require('./repository');
-const { deliver, buildPayload } = require('./webhookDelivery');
+const {
+    sendTestDelivery,
+    buildPayload,
+    isReservedHeaderName,
+} = require('./webhookDelivery');
+const { assertSafeUrl, UnsafeUrlError } = require('../url/ssrfGuard');
+const secretCipher = require('../../shared/crypto/secretCipher');
 const { NotFoundError, ValidationError } = require('../../shared/errors');
 
 // Keep in sync with the `type` enum validated on the Notification model
@@ -41,10 +47,35 @@ function normalizeEventTypes(eventTypes) {
     return eventTypes;
 }
 
-function validateUrl(url) {
+// Rejects malformed URLs up front, then defers to the shared SSRF guard so a
+// webhook can't be pointed at a private/internal address (cloud metadata
+// endpoint, LAN service, etc) that the server would then fetch on its own
+// network. Delivery re-checks the same guard, since a hostname can resolve
+// somewhere different by the time a notification actually fires.
+async function validateUrl(url) {
     if (!url || !/^https?:\/\//i.test(url)) {
         throw new ValidationError('A valid http(s) URL is required');
     }
+    try {
+        await assertSafeUrl(url);
+    } catch (error) {
+        if (error instanceof UnsafeUrlError) {
+            throw new ValidationError(error.message);
+        }
+        throw new ValidationError('A valid http(s) URL is required');
+    }
+}
+
+// Encrypts a secret before it enters the database, mirroring how OIDC client
+// secrets are protected (see secretCipher.js). Requires key material to be
+// configured server-side; callers must not fall back to storing plaintext.
+function encryptSecretOrThrow(plaintext) {
+    if (!secretCipher.hasKeyMaterial()) {
+        throw new ValidationError(
+            'Webhook secrets cannot be stored securely: set TUDUDI_SESSION_SECRET (or TUDUDI_OIDC_SECRET_ENCRYPTION_KEY) on the server'
+        );
+    }
+    return secretCipher.encrypt(plaintext);
 }
 
 const VALID_AUTH_TYPES = ['none', 'basic', 'header'];
@@ -79,11 +110,17 @@ function normalizeAuth({
                 'auth_secret is required for header auth'
             );
         }
+        const headerName = auth_header_name || 'Authorization';
+        if (isReservedHeaderName(headerName)) {
+            throw new ValidationError(
+                `"${headerName}" is a reserved header and can't be used for auth`
+            );
+        }
         return {
             auth_type: 'header',
-            auth_header_name: auth_header_name || 'Authorization',
+            auth_header_name: headerName,
             auth_username: null,
-            auth_secret,
+            auth_secret: encryptSecretOrThrow(auth_secret),
         };
     }
 
@@ -97,13 +134,17 @@ function normalizeAuth({
         auth_type: 'basic',
         auth_header_name: null,
         auth_username,
-        auth_secret,
+        auth_secret: encryptSecretOrThrow(auth_secret),
     };
 }
 
 // Full `secret` is only included right after create/rotate — everywhere
 // else callers get `secret_preview` (last 4 chars), never the value itself.
+// `secret` is encrypted at rest, so both need the decrypted plaintext.
 function serialize(endpoint, { includeSecret = false } = {}) {
+    const plainSecret = endpoint.secret
+        ? secretCipher.decrypt(endpoint.secret)
+        : null;
     return {
         uid: endpoint.uid,
         name: endpoint.name,
@@ -116,10 +157,8 @@ function serialize(endpoint, { includeSecret = false } = {}) {
         failure_count: endpoint.failure_count,
         created_at: endpoint.created_at,
         updated_at: endpoint.updated_at,
-        secret_preview: endpoint.secret
-            ? `...${endpoint.secret.slice(-4)}`
-            : null,
-        ...(includeSecret ? { secret: endpoint.secret } : {}),
+        secret_preview: plainSecret ? `...${plainSecret.slice(-4)}` : null,
+        ...(includeSecret ? { secret: plainSecret } : {}),
         auth_type: endpoint.auth_type,
         auth_header_name: endpoint.auth_header_name,
         auth_username: endpoint.auth_username,
@@ -138,13 +177,13 @@ class WebhooksService {
         if (!name || !name.trim()) {
             throw new ValidationError('Name is required');
         }
-        validateUrl(url);
+        await validateUrl(url);
 
         const endpoint = await repository.create({
             user_id: userId,
             name: name.trim(),
             url,
-            secret: generateSecret(),
+            secret: encryptSecretOrThrow(generateSecret()),
             event_types: normalizeEventTypes(event_types),
             active: true,
             ...normalizeAuth(payload),
@@ -168,7 +207,7 @@ class WebhooksService {
             updates.name = name.trim();
         }
         if (url !== undefined) {
-            validateUrl(url);
+            await validateUrl(url);
             updates.url = url;
         }
         if (event_types !== undefined) {
@@ -202,7 +241,9 @@ class WebhooksService {
         if (!endpoint) {
             throw new NotFoundError('Webhook endpoint not found');
         }
-        await endpoint.update({ secret: generateSecret() });
+        await endpoint.update({
+            secret: encryptSecretOrThrow(generateSecret()),
+        });
         return serialize(endpoint, { includeSecret: true });
     }
 
@@ -223,7 +264,7 @@ class WebhooksService {
             created_at: new Date().toISOString(),
         });
 
-        const result = await deliver(endpoint, payload);
+        const result = await sendTestDelivery(endpoint, payload);
         return { success: result.success, error: result.error || null };
     }
 }

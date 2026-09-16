@@ -39,7 +39,10 @@ module.exports = (sequelize) => {
                 },
             },
             secret: {
-                type: DataTypes.STRING,
+                // Encrypted at rest (see shared/crypto/secretCipher.js);
+                // callers get the plaintext back only right after
+                // create/rotate, via WebhooksService#serialize.
+                type: DataTypes.TEXT,
                 allowNull: false,
             },
             event_types: {
@@ -96,7 +99,8 @@ module.exports = (sequelize) => {
                 allowNull: true,
             },
             auth_secret: {
-                type: DataTypes.STRING(500),
+                // Encrypted at rest (see shared/crypto/secretCipher.js).
+                type: DataTypes.TEXT,
                 allowNull: true,
             },
         },

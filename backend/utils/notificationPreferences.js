@@ -140,6 +140,31 @@ function shouldSendWebhookNotification(user, notificationType) {
 }
 
 /**
+ * Build the `sources` array for Notification.createNotification from a
+ * user's channel preferences, so call sites don't each re-implement the
+ * same "check preference, push channel name" duplication.
+ * @param {Object} user - User model instance with notification_preferences field
+ * @param {string} notificationType - Backend notification type
+ * @param {Object} [options]
+ * @param {boolean} [options.telegram] - Whether to evaluate the telegram channel too (callers that dispatch Telegram separately, e.g. as a batched digest, leave this false)
+ * @returns {string[]} - e.g. ['telegram', 'webhook']
+ */
+function resolveNotificationSources(
+    user,
+    notificationType,
+    { telegram = false } = {}
+) {
+    const sources = [];
+    if (telegram && shouldSendTelegramNotification(user, notificationType)) {
+        sources.push('telegram');
+    }
+    if (shouldSendWebhookNotification(user, notificationType)) {
+        sources.push('webhook');
+    }
+    return sources;
+}
+
+/**
  * Get default notification preferences
  * @returns {Object} - Default preferences object
  */
@@ -200,6 +225,7 @@ module.exports = {
     shouldSendInAppNotification,
     shouldSendTelegramNotification,
     shouldSendWebhookNotification,
+    resolveNotificationSources,
     getDefaultNotificationPreferences,
     ensureNotificationPreferences,
     NOTIFICATION_TYPE_MAPPING,

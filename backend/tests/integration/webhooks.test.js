@@ -3,9 +3,14 @@ const app = require('../../app');
 const { createTestUser } = require('../helpers/testUtils');
 
 describe('Webhooks Routes', () => {
-    let user, agent;
+    let user, agent, originalEnv;
 
     beforeEach(async () => {
+        // Webhook secrets are encrypted at rest (secretCipher.js), which
+        // requires key material to be configured server-side.
+        originalEnv = { ...process.env };
+        process.env.TUDUDI_SESSION_SECRET = 'x'.repeat(64);
+
         user = await createTestUser({
             email: 'test@example.com',
         });
@@ -15,6 +20,10 @@ describe('Webhooks Routes', () => {
             email: 'test@example.com',
             password: 'password123',
         });
+    });
+
+    afterEach(() => {
+        process.env = originalEnv;
     });
 
     describe('POST /api/webhooks', () => {

@@ -4,7 +4,7 @@ const { logError } = require('../../services/logService');
 const {
     shouldSendInAppNotification,
     shouldSendTelegramNotification,
-    shouldSendWebhookNotification,
+    resolveNotificationSources,
 } = require('../../utils/notificationPreferences');
 const telegramPoller = require('../telegram/telegramPoller');
 
@@ -136,10 +136,10 @@ async function checkDueTasks() {
                         isOverdue
                     );
 
-                    const sources = [];
-                    if (shouldSendWebhookNotification(user, notificationType)) {
-                        sources.push('webhook');
-                    }
+                    const sources = resolveNotificationSources(
+                        user,
+                        notificationType
+                    );
 
                     const notification = await Notification.createNotification({
                         userId: task.user_id,

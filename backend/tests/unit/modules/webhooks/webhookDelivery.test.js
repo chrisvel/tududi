@@ -1,5 +1,13 @@
 const http = require('http');
 const bcrypt = require('bcrypt');
+
+// These tests exercise real delivery mechanics (signing, headers, retries,
+// failure counting) against a local HTTP server, which the SSRF guard would
+// otherwise reject as a private/loopback address. ssrfGuard itself has its
+// own dedicated test coverage (tests/unit/modules/url/ssrfGuard.test.js).
+jest.mock('../../../../modules/url/ssrfGuard');
+
+const { assertSafeUrl } = require('../../../../modules/url/ssrfGuard');
 const { WebhookEndpoint, User } = require('../../../../models');
 const {
     signPayload,
@@ -7,6 +15,14 @@ const {
     buildAuthHeaders,
     deliver,
 } = require('../../../../modules/webhooks/webhookDelivery');
+
+// jest.config.js sets resetMocks: true, which wipes any implementation set
+// on module load, so it has to be (re)installed before every test instead.
+beforeEach(() => {
+    assertSafeUrl.mockImplementation(async (urlLike) =>
+        typeof urlLike === 'string' ? new URL(urlLike) : urlLike
+    );
+});
 
 function startServer(handler) {
     return new Promise((resolve) => {
