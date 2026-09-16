@@ -5,6 +5,8 @@ Notable changes to tududi. Versions match the git tags and the
 
 ## Unreleased
 
+## 1.5.0
+
 ### Security
 
 - Sharing a project, task, or note now creates an invitation that the
