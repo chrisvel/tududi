@@ -99,6 +99,45 @@ async function calculateNextIterations(task, startFromDate, userTimezone) {
     // Parse start date using start-of-day in user timezone (used for weekly/daily logic)
     let startDate = dateStringToUTC(todayLocalStr, safeTimezone, 'start');
 
+    // Daily and weekly recurrence repeat on a fixed cadence measured from the
+    // task's own due date (e.g. "every 14 days"), so the due date - not
+    // "today" - determines which dates are valid occurrences. Anchor on it
+    // and fast-forward through real occurrences (via calculateNextDueDate,
+    // the same stepping logic used to generate the next real instance) until
+    // we reach today. Recalculating the pattern from "today" instead loses
+    // that phase and produces the wrong days whenever the interval is
+    // greater than 1 (#1489).
+    if (
+        (task.recurrence_type === 'daily' ||
+            task.recurrence_type === 'weekly') &&
+        task.due_date
+    ) {
+        let cursor = new Date(task.due_date);
+        if (!isNaN(cursor.getTime())) {
+            while (cursor < startDate) {
+                const next = calculateNextDueDate(task, cursor, safeTimezone);
+                if (!next) break;
+                cursor = next;
+            }
+
+            for (let i = 0; i < 6 && cursor; i++) {
+                if (task.recurrence_end_date) {
+                    const endDate = new Date(task.recurrence_end_date);
+                    if (cursor > endDate) break;
+                }
+
+                iterations.push({
+                    date: processDueDateForResponse(cursor, safeTimezone),
+                    utc_date: cursor.toISOString(),
+                });
+
+                cursor = calculateNextDueDate(task, cursor, safeTimezone);
+            }
+
+            return iterations;
+        }
+    }
+
     let nextDate = new Date(startDate);
     let includesToday = false;
 
