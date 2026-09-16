@@ -28,6 +28,10 @@ import { isUrl } from '../../utils/urlService';
 import { takeSharedText } from '../../utils/shareTargetService';
 import { fetchAreas } from '../../utils/areasService';
 import { fetchProjects } from '../../utils/projectsService';
+import {
+    getInboxRecentlyCapturedExpanded,
+    updateUiSettings,
+} from '../../utils/profileService';
 import { useStore } from '../../store/useStore';
 import ClarifyOverlay, { ClarifyStep, ClarifyOutcome } from './ClarifyOverlay';
 import { ENABLE_INBOX_CLARIFY } from '../../config/featureFlags';
@@ -136,6 +140,9 @@ const InboxItems: React.FC = () => {
             }
         };
         loadInitialTags();
+
+        getInboxRecentlyCapturedExpanded().then(setInboxListExpanded);
+
         const handleForceReload = () => {
             setTimeout(() => {
                 const currentInboxStore = useStore.getState().inboxStore;
@@ -685,7 +692,15 @@ const InboxItems: React.FC = () => {
                     <>
                         {/* Recently captured – collapsible header */}
                         <button
-                            onClick={() => setInboxListExpanded(prev => !prev)}
+                            onClick={() =>
+                                setInboxListExpanded((prev) => {
+                                    const next = !prev;
+                                    updateUiSettings({
+                                        inbox: { recentlyCapturedExpanded: next },
+                                    }).catch(() => {});
+                                    return next;
+                                })
+                            }
                             className="flex items-center gap-2.5 w-full px-4 py-2.5 mt-1 rounded-lg text-left hover:bg-gray-100/60 dark:hover:bg-white/[0.04] transition-colors"
                         >
                             <span className="text-[10.5px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500">

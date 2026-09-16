@@ -21,6 +21,17 @@ interface Profile {
         pomodoro_enabled?: boolean;
         eisenhower_enabled?: boolean;
     };
+    ui_settings?: {
+        project?: {
+            details?: {
+                showMetrics?: boolean;
+            };
+        };
+        appearance?: Record<string, unknown>;
+        inbox?: {
+            recentlyCapturedExpanded?: boolean;
+        };
+    };
 }
 
 interface SchedulerStatus {
@@ -102,6 +113,34 @@ export const updateProfile = async (
     }
 
     return updatedProfile;
+};
+
+export const updateUiSettings = async (
+    settings: NonNullable<Profile['ui_settings']>
+): Promise<{ success: boolean; ui_settings: Profile['ui_settings'] }> => {
+    const response = await fetch(getApiPath('profile/ui-settings'), {
+        method: 'PUT',
+        credentials: 'include',
+        headers: await getPostHeadersWithCsrf(),
+        body: JSON.stringify(settings),
+    });
+    await handleAuthResponse(response, 'Failed to update UI settings.');
+    const result = await response.json();
+    invalidateProfileCache();
+    return result;
+};
+
+export const getInboxRecentlyCapturedExpanded = async (): Promise<boolean> => {
+    try {
+        const profile = await fetchProfile();
+        return profile.ui_settings?.inbox?.recentlyCapturedExpanded ?? false;
+    } catch (error) {
+        console.error(
+            'Error fetching inbox recently captured setting:',
+            error
+        );
+        return false;
+    }
 };
 
 export const fetchSchedulerStatus = async (): Promise<SchedulerStatus> => {

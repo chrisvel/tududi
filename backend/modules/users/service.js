@@ -675,7 +675,7 @@ class UsersService {
             throw new NotFoundError('User not found.');
         }
 
-        const { project, appearance } = data;
+        const { project, appearance, inbox } = data;
 
         const currentSettings =
             user.ui_settings && typeof user.ui_settings === 'object'
@@ -700,6 +700,13 @@ class UsersService {
             newSettings.appearance = {
                 ...(currentSettings.appearance || {}),
                 ...appearance,
+            };
+        }
+
+        if (inbox !== undefined) {
+            newSettings.inbox = {
+                ...(currentSettings.inbox || {}),
+                ...inbox,
             };
         }
 
