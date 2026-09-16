@@ -220,6 +220,8 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                 isOverdue: false,
             };
         }
+        const isFinished =
+            project.status === 'done' || project.status === 'cancelled';
         const dueDate = new Date(project.due_date_at);
         if (Number.isNaN(dueDate.getTime())) {
             return {
@@ -255,9 +257,9 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                 count: Math.abs(diff),
                 unit,
             }),
-            isOverdue: true,
+            isOverdue: !isFinished,
         };
-    }, [project.due_date_at, t]);
+    }, [project.due_date_at, project.status, t]);
 
     const shareAvatars = useMemo(() => {
         if (!project.is_shared) {
