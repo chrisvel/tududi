@@ -6,6 +6,7 @@ export interface PlanLimits {
     max_notes: number | null;
     storage_mb: number | null;
     ai_requests_per_day: number | null;
+    ai_credits_per_month: number | null;
 }
 
 export interface PlanFeatures {
@@ -26,6 +27,7 @@ export interface BillingUsage {
     // Recorded, not capped: real token spend, so Cloud pricing can be set
     // from what usage actually costs rather than from a request count.
     ai_tokens_today: number;
+    ai_credits_used_this_month: number;
 }
 
 export interface BillingStatus {

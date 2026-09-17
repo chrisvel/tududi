@@ -4,6 +4,7 @@ import {
     RectangleStackIcon,
     UsersIcon,
     CreditCardIcon,
+    SparklesIcon,
 } from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
 import { useTranslation } from 'react-i18next';
@@ -86,6 +87,20 @@ const SidebarAdmin: React.FC<SidebarAdminProps> = ({
                 >
                     <CreditCardIcon className="h-[14px] w-[14px] mr-[6px] shrink-0" />
                     {t('admin.billing.title', 'Billing')}
+                </li>
+            )}
+            {currentUser?.is_admin === true && hosted && (
+                <li
+                    className={linkClass('/admin/ai-usage')}
+                    onClick={() =>
+                        handleNavClick(
+                            '/admin/ai-usage',
+                            t('admin.aiUsage.title', 'AI Usage')
+                        )
+                    }
+                >
+                    <SparklesIcon className="h-[14px] w-[14px] mr-[6px] shrink-0" />
+                    {t('admin.aiUsage.title', 'AI Usage')}
                 </li>
             )}
         </ul>

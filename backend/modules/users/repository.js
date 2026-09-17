@@ -108,6 +108,15 @@ class UsersRepository extends BaseRepository {
             order: [['created_at', 'DESC']],
         });
     }
+
+    /**
+     * Find per-user AI provider settings, including the encrypted API key.
+     */
+    async findAiSettings(userId) {
+        return this.model.findByPk(userId, {
+            attributes: ['id', 'ai_api_key', 'ai_base_url', 'ai_model'],
+        });
+    }
 }
 
 module.exports = new UsersRepository();

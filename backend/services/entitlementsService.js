@@ -265,6 +265,14 @@ function todayKey(now = new Date()) {
     return now.toISOString().slice(0, 10);
 }
 
+// 'YYYY-MM', e.g. '2026-09'. Calendar-month, not billing-cycle-anchored:
+// simpler to explain ("resets on the 1st") and avoids reading
+// account.current_period_end for accounts in trial/grace/admin-override
+// with no real subscription period.
+function monthKey(now = new Date()) {
+    return now.toISOString().slice(0, 7);
+}
+
 // Atomically records one use of a per-day metric and throws when the
 // day's budget is exhausted. Returns the new count.
 async function consumeUsage(userId, metric, n = 1) {
@@ -291,22 +299,48 @@ async function consumeUsage(userId, metric, n = 1) {
     return row.count;
 }
 
+// Same as consumeUsage, but scoped to the calendar month rather than the
+// day - for allowances meant to reset with a monthly subscription (e.g.
+// ai_credits_per_month) rather than a daily anti-abuse rate limit.
+async function consumeMonthlyUsage(userId, metric, n = 1) {
+    if (!isHostedMode()) return 0;
+    const ent = await getEntitlements(userId);
+    const limitKey = `${metric}_per_month`;
+    const limit = ent.limits[limitKey];
+
+    const { UsageCounter } = models();
+    const period = monthKey();
+    const [row] = await UsageCounter.findOrCreate({
+        where: { user_id: userId, metric, period_key: period },
+        defaults: { user_id: userId, metric, period_key: period, count: 0 },
+    });
+
+    if (limit !== null && limit !== undefined && row.count + n > limit) {
+        throw new PlanLimitError(metric, limit, row.count, ent.plan);
+    }
+
+    await row.increment('count', { by: n });
+    await row.reload();
+    return row.count;
+}
+
 async function getUsage(userId) {
     const { UsageCounter } = models();
-    const counter = (metric) =>
+    const counter = (metric, period_key) =>
         UsageCounter.findOne({
-            where: { user_id: userId, metric, period_key: todayKey() },
+            where: { user_id: userId, metric, period_key },
             attributes: ['count'],
             raw: true,
         });
-    const [tasks, projects, notes, storage_bytes, ai, aiTokens] =
+    const [tasks, projects, notes, storage_bytes, ai, aiTokens, aiCredits] =
         await Promise.all([
             countResource(userId, 'task'),
             countResource(userId, 'project'),
             countResource(userId, 'note'),
             storageBytesUsed(userId),
-            counter('ai_requests'),
-            counter('ai_tokens'),
+            counter('ai_requests', todayKey()),
+            counter('ai_tokens', todayKey()),
+            counter('ai_credits', monthKey()),
         ]);
     return {
         tasks,
@@ -317,6 +351,7 @@ async function getUsage(userId) {
         // Unlimited by design: recorded so hosted pricing can be set from
         // real spend rather than a request count. No plan caps it.
         ai_tokens_today: aiTokens ? aiTokens.count : 0,
+        ai_credits_used_this_month: aiCredits ? aiCredits.count : 0,
     };
 }
 
@@ -333,5 +368,7 @@ module.exports = {
     assertCanCreate,
     assertStorage,
     consumeUsage,
+    consumeMonthlyUsage,
+    monthKey,
     getUsage,
 };

@@ -18,9 +18,29 @@ All three features call an OpenAI-compatible API and cache results in the databa
 
 ## Setup
 
-### Required
+Setup differs by mode. **Self-hosted** installs let each user bring their own provider. **Hosted** (`TUDUDI_HOSTED_MODE=true`) installs use one operator-configured provider shared by every subscriber, who instead gets a monthly AI Credits allowance.
 
-Set an API key before starting the server. Use the generic `LLM_API_KEY` for any provider, or `OPENAI_API_KEY` if you're using OpenAI directly (both are supported; `LLM_API_KEY` takes precedence):
+### Self-hosted: per-user provider (Profile → AI Assistant)
+
+Each user can configure their own provider from **Profile → AI Assistant → AI Provider**: API key, base URL (for any OpenAI-compatible provider — Ollama, LM Studio, Groq, Azure OpenAI, etc.), and model. Values are stored per-user in the database (the API key encrypted at rest — see `backend/shared/crypto/secretCipher.js`) and take priority over `.env`, field by field. Leaving a field blank falls back to the corresponding `.env` value below, if the operator has set one.
+
+The API key is never sent back to the browser in full — the UI shows only that a key is set, plus its last 4 characters, and a "Clear" action to remove it.
+
+A per-user base URL must resolve to a public address (the same guard `modules/url/service.js` uses for link previews — see `modules/url/ssrfGuard.js`); it can't point at localhost, a private/internal IP range, or the cloud metadata endpoint, since the server itself makes the outbound request. This restriction doesn't apply to an operator's own `LLM_BASE_URL` in `.env` below, which is how a self-hosted local Ollama setup is meant to work.
+
+`PUT /api/profile/ai-settings` (and its `GET` counterpart) return `403` in hosted mode — see the next section.
+
+### Hosted mode: shared provider + AI Credits
+
+When `TUDUDI_HOSTED_MODE=true`, `resolveAIConfig()` (`backend/modules/ai-assistant/service.js`) never applies a per-user override — every subscriber uses the operator's own `.env` provider (below), and **`LLM_API_KEY` is required** for AI features to work at all. Profile → AI Assistant shows no provider fields for a hosted account; instead it shows an **AI Credits** balance for the current calendar month.
+
+One credit is consumed per daily brief, task insight, or project insight generated — enforced pre-flight via `entitlements.consumeMonthlyUsage(userId, 'ai_credits')` (`backend/services/entitlementsService.js`), which throws the same `PlanLimitError` (`402`, `PLAN_LIMIT_REACHED`) used by every other plan limit once a plan's `ai_credits_per_month` (`backend/config/plans.js`) is exhausted. The balance resets on the 1st of each month (calendar-month, not anchored to the subscription's billing cycle).
+
+An admin can see every subscriber's credit usage, plus the combined total across all accounts, at **/admin/ai-usage** (`GET /api/admin/ai-usage`).
+
+### Optional: server-wide `.env` defaults (self-hosted)
+
+Self-hosters can still set instance-wide defaults in `.env`; any user without their own Profile → AI Assistant settings uses these:
 
 ```bash
 # Generic: works with any provider
@@ -28,15 +48,7 @@ LLM_API_KEY=sk-...
 
 # OpenAI legacy name: still works as a fallback
 OPENAI_API_KEY=sk-...
-```
 
-Without a key, the generation endpoints return HTTP `503` with `{ "error": "AI assistant is not configured...", "code": "AI_NOT_CONFIGURED" }`. `GET /api/ai-assistant/config` still responds with `api_key_set: false`, and the frontend uses it to skip auto-generation and show a calm "AI is not configured" state instead of an error.
-
-### Optional: custom provider or model
-
-The service uses the [OpenAI Node.js SDK](https://github.com/openai/openai-node), which is compatible with any provider that implements the OpenAI chat completions API (Ollama, LM Studio, Groq, Azure OpenAI, etc.).
-
-```bash
 # Base URL of the provider (defaults to OpenAI)
 LLM_BASE_URL=http://localhost:11434/v1  # e.g. local Ollama
 # OPENAI_BASE_URL is still accepted as a fallback
@@ -45,6 +57,10 @@ LLM_BASE_URL=http://localhost:11434/v1  # e.g. local Ollama
 LLM_MODEL=llama3.2
 # TUDUDI_AI_MODEL is still accepted as a fallback
 ```
+
+Without a key (from either the DB or `.env`), the generation endpoints return HTTP `503` with `{ "error": "AI assistant is not configured...", "code": "AI_NOT_CONFIGURED" }`. `GET /api/ai-assistant/config` still responds with `api_key_set: false`, and the frontend uses it to skip auto-generation and show a calm "AI is not configured" state instead of an error.
+
+On a hosted instance, `base_url`/`model` sourced from `.env` are never returned to a caller who isn't the operator (they describe the operator's own infra); a value the caller configured themselves in Profile → AI Assistant is always returned to them.
 
 > **Note on reasoning models:** reasoning models (e.g. DeepSeek-R1, o1-mini) consume hidden tokens before producing output. The daily brief allows up to 1500 completion tokens to accommodate this; task and project insights allow 1000 and 600 respectively. If a reasoning model still exhausts its budget before writing the final answer (cached result comes back with empty fields and `usage.completion_tokens` pinned at the cap), raise the relevant limit below rather than switching models.
 
@@ -199,12 +215,16 @@ Appears in the project detail panel. Generated on demand and cached per project.
 | `GET` | `/api/ai-assistant/project-insights/:projectUid` | Return cached project insights (or null) |
 | `POST` | `/api/ai-assistant/project-insights` | Generate project insights (body: `ProjectInsightsRequest`) |
 | `PATCH` | `/api/ai-assistant/project-insights/:projectUid/dismissed` | Set `dismissed` flag on project insights |
+| `GET` | `/api/profile/ai-settings` | Return the caller's AI provider settings (API key masked) |
+| `PUT` | `/api/profile/ai-settings` | Set/clear the caller's `ai_api_key`/`ai_base_url`/`ai_model` |
 
 All endpoints require an authenticated session. Unauthenticated requests return `401`.
 
 ---
 
 ## Model and Provider
+
+Resolution order for every setting below is: the user's own Profile → AI Assistant value, then the matching `.env` variable, then the default.
 
 | Setting | Primary variable | Fallback variable | Default |
 |---------|-----------------|-------------------|---------|
@@ -215,7 +235,9 @@ All endpoints require an authenticated session. Unauthenticated requests return 
 | Task Insights max tokens | `LLM_MAX_TOKENS_TASK_INSIGHTS` | — | `1000` |
 | Project Insights max tokens | `LLM_MAX_TOKENS_PROJECT_INSIGHTS` | — | `600` |
 
-The client is initialized in `service.js:getOpenAIClient()`. Any provider that speaks the OpenAI chat completions protocol works: set `LLM_BASE_URL` to the provider's endpoint and `LLM_MODEL` to the model name that provider expects.
+Max-token limits are operator-only `.env` settings; they have no per-user override.
+
+The per-user/env resolution happens in `service.js:resolveAIConfig()`, and the client is initialized in `service.js:getOpenAIClient()`. Any provider that speaks the OpenAI chat completions protocol works: set the base URL to the provider's endpoint and the model to the name that provider expects.
 
 All three LLM calls request `response_format: { type: 'json_object' }` for structured output. If your backend does not support this parameter, the response parser will still attempt to extract JSON from raw text (including code-fenced output).
 
@@ -223,7 +245,7 @@ All three LLM calls request `response_format: { type: 'json_object' }` for struc
 
 ## User Profile Context
 
-Users can set an "About You" text in **Profile → Features → Intelligence → About You**. This text is injected into the daily brief prompt as an `## About This User` section, allowing the AI to tailor its language and framing to the user's actual domain (e.g. academic research, healthcare, design) rather than defaulting to software development metaphors.
+Users can set an "About You" text in **Profile → AI Assistant → About You**. This text is injected into the daily brief prompt as an `## About This User` section, allowing the AI to tailor its language and framing to the user's actual domain (e.g. academic research, healthcare, design) rather than defaulting to software development metaphors.
 
 The field is stored in `users.ai_profile` (TEXT, max 500 chars in the UI).
 

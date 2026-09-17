@@ -532,9 +532,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     appearance: (data.ui_settings?.appearance?.theme ??
                         data.appearance ??
                         (isDarkMode ? 'dark' : 'light')) as
-                        | 'light'
-                        | 'dark'
-                        | 'system',
+                        'light' | 'dark' | 'system',
                     language: data.language || 'en',
                     timezone: data.timezone || 'UTC',
                     first_day_of_week:
@@ -607,9 +605,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                             theme: (data.ui_settings?.appearance?.theme ??
                                 data.appearance ??
                                 (isDarkMode ? 'dark' : 'light')) as
-                                | 'light'
-                                | 'dark'
-                                | 'system',
+                                'light' | 'dark' | 'system',
                             showTaskContextMenu:
                                 data.ui_settings?.appearance
                                     ?.showTaskContextMenu ?? false,
@@ -1105,6 +1101,51 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 }
             }
 
+            // Save AI provider settings (API key/base URL/model) via their
+            // own endpoint so the key is never part of the generic profile
+            // payload. Only sent once the AI Assistant tab has been visited
+            // (loaded) or edited.
+            let aiSettingsResult: {
+                ai_base_url: string | null;
+                ai_model: string | null;
+                ai_api_key_set: boolean;
+                ai_api_key_last4: string | null;
+            } | null = null;
+            if (
+                formData.ai_api_key !== undefined ||
+                formData.ai_base_url !== undefined ||
+                formData.ai_model !== undefined
+            ) {
+                const aiPayload: Record<string, string | null> = {};
+                if (formData.ai_api_key !== undefined)
+                    aiPayload.ai_api_key = formData.ai_api_key || null;
+                if (formData.ai_base_url !== undefined)
+                    aiPayload.ai_base_url = formData.ai_base_url || null;
+                if (formData.ai_model !== undefined)
+                    aiPayload.ai_model = formData.ai_model || null;
+
+                const aiResponse = await fetch(
+                    getApiPath('profile/ai-settings'),
+                    {
+                        method: 'PUT',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-csrf-token': await getCsrfToken(),
+                            Accept: 'application/json',
+                        },
+                        body: JSON.stringify(aiPayload),
+                    }
+                );
+                if (!aiResponse.ok) {
+                    const data = await aiResponse.json();
+                    throw new Error(
+                        data.error || 'Failed to update AI provider settings.'
+                    );
+                }
+                aiSettingsResult = await aiResponse.json();
+            }
+
             if (avatarFile) {
                 const avatarUrl = await uploadAvatar(avatarFile);
                 updatedProfile.avatar_image = avatarUrl;
@@ -1161,6 +1202,16 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                         ...(updatedProfile.ui_settings?.appearance || {}),
                     },
                 },
+                ...(aiSettingsResult
+                    ? {
+                          ai_base_url: aiSettingsResult.ai_base_url,
+                          ai_model: aiSettingsResult.ai_model,
+                          ai_api_key_set: aiSettingsResult.ai_api_key_set,
+                          ai_api_key_last4: aiSettingsResult.ai_api_key_last4,
+                          // Clear the write-only input now that it's saved.
+                          ai_api_key: undefined,
+                      }
+                    : {}),
             }));
 
             if (setAppearance && updatedProfile.appearance) {
@@ -1545,7 +1596,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                     }
                                     habitsEnabled={Boolean(
                                         formData.features?.habits_enabled ??
-                                            true
+                                        true
                                     )}
                                     onToggleHabits={() =>
                                         setFormData((prev) => ({
@@ -1574,7 +1625,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                     }
                                     templatesEnabled={Boolean(
                                         formData.features?.templates_enabled ??
-                                            true
+                                        true
                                     )}
                                     onToggleTemplates={() =>
                                         setFormData((prev) => ({
@@ -1634,6 +1685,31 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                         setFormData((prev) => ({
                                             ...prev,
                                             ai_profile: value,
+                                        }))
+                                    }
+                                    onAiProviderFieldChange={(field, value) =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            [field]: value,
+                                        }))
+                                    }
+                                    onClearAiApiKey={() =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            ai_api_key: '',
+                                            ai_api_key_set: false,
+                                            ai_api_key_last4: null,
+                                        }))
+                                    }
+                                    onLoadAiProviderSettings={(settings) =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            ai_base_url: settings.ai_base_url,
+                                            ai_model: settings.ai_model,
+                                            ai_api_key_set:
+                                                settings.ai_api_key_set,
+                                            ai_api_key_last4:
+                                                settings.ai_api_key_last4,
                                         }))
                                     }
                                 />

@@ -27,6 +27,24 @@ function sanitizeFeatures(raw) {
     return result;
 }
 
+function maskAiSettings(user) {
+    const encrypted = user.ai_api_key || '';
+    let plaintext = '';
+    if (encrypted) {
+        try {
+            plaintext = secretCipher.decrypt(encrypted) || '';
+        } catch (error) {
+            logError('Failed to decrypt stored AI API key for masking', error);
+        }
+    }
+    return {
+        ai_base_url: user.ai_base_url || null,
+        ai_model: user.ai_model || null,
+        ai_api_key_set: encrypted.length > 0,
+        ai_api_key_last4: plaintext.length >= 4 ? plaintext.slice(-4) : null,
+    };
+}
+
 const usersRepository = require('./repository');
 const {
     validateFirstDayOfWeek,
@@ -36,6 +54,7 @@ const {
     validateApiKeyName,
     validateExpiresAt,
     validateSidebarSettings,
+    validateAiSettings,
 } = require('./validation');
 const {
     NotFoundError,
@@ -46,6 +65,7 @@ const { User, Role } = require('../../models');
 const { isAdmin } = require('../../services/rolesService');
 const entitlements = require('../../services/entitlementsService');
 const { eraseUserAccount } = require('../../services/accountErasureService');
+const secretCipher = require('../../shared/crypto/secretCipher');
 const {
     createApiToken,
     revokeApiToken,
@@ -713,6 +733,61 @@ class UsersService {
         await usersRepository.update(user, { ui_settings: newSettings });
 
         return { success: true, ui_settings: newSettings };
+    }
+
+    /**
+     * Get per-user AI provider settings, API key masked.
+     */
+    async getAiSettings(userId) {
+        const user = await usersRepository.findAiSettings(userId);
+        if (!user) {
+            throw new NotFoundError('User not found.');
+        }
+
+        return maskAiSettings(user);
+    }
+
+    /**
+     * Update per-user AI provider settings (API key, base URL, model).
+     * An omitted ai_api_key leaves the stored key untouched; an explicit
+     * null/'' clears it.
+     */
+    async updateAiSettings(userId, data) {
+        if (entitlements.isHostedMode()) {
+            throw new ForbiddenError(
+                'AI provider settings are managed by the operator on the hosted plan.'
+            );
+        }
+
+        const user = await usersRepository.findAiSettings(userId);
+        if (!user) {
+            throw new NotFoundError('User not found.');
+        }
+
+        const { ai_api_key, ai_base_url, ai_model } = data;
+        await validateAiSettings({ ai_base_url, ai_model });
+
+        const updates = {};
+        if (ai_api_key !== undefined) {
+            if (ai_api_key) {
+                if (!secretCipher.hasKeyMaterial()) {
+                    throw new ValidationError(
+                        'Cannot save an AI API key: set TUDUDI_SESSION_SECRET (or TUDUDI_OIDC_SECRET_ENCRYPTION_KEY) on the server first',
+                        'ai_api_key'
+                    );
+                }
+                updates.ai_api_key = secretCipher.encrypt(ai_api_key);
+            } else {
+                updates.ai_api_key = null;
+            }
+        }
+        if (ai_base_url !== undefined)
+            updates.ai_base_url = ai_base_url || null;
+        if (ai_model !== undefined) updates.ai_model = ai_model || null;
+
+        await usersRepository.update(user, updates);
+        const updated = await usersRepository.findAiSettings(userId);
+        return maskAiSettings(updated);
     }
 }
 

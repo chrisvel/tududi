@@ -237,6 +237,23 @@ module.exports = (sequelize) => {
                 allowNull: true,
                 defaultValue: null,
             },
+            ai_api_key: {
+                type: DataTypes.TEXT,
+                allowNull: true,
+                defaultValue: null,
+                comment:
+                    'Encrypted per-user LLM API key, overrides LLM_API_KEY/.env',
+            },
+            ai_base_url: {
+                type: DataTypes.STRING,
+                allowNull: true,
+                defaultValue: null,
+            },
+            ai_model: {
+                type: DataTypes.STRING,
+                allowNull: true,
+                defaultValue: null,
+            },
             email_verified: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,

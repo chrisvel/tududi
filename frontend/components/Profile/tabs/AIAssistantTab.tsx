@@ -1,17 +1,24 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 import {
-    CheckCircleIcon,
-    ExclamationCircleIcon,
-} from '@heroicons/react/24/outline';
-import { fetchAIConfig, AIConfig } from '../../../utils/aiAssistantService';
+    fetchAiProviderSettings,
+    AiProviderSettings,
+} from '../../../utils/aiAssistantService';
+import { fetchBillingStatus } from '../../../utils/billingService';
+import UsageBar from '../../Shared/UsageBar';
 import type { ProfileFormData, Features } from '../types';
+
+type AiProviderField = 'ai_api_key' | 'ai_base_url' | 'ai_model';
 
 interface AIAssistantTabProps {
     isActive: boolean;
     formData: ProfileFormData;
     onToggleAi: (field: keyof Features) => void;
     onAiProfileChange: (value: string) => void;
+    onAiProviderFieldChange: (field: AiProviderField, value: string) => void;
+    onClearAiApiKey: () => void;
+    onLoadAiProviderSettings: (settings: AiProviderSettings) => void;
     hosted?: boolean;
 }
 
@@ -20,21 +27,53 @@ const AIAssistantTab: React.FC<AIAssistantTabProps> = ({
     formData,
     onToggleAi,
     onAiProfileChange,
+    onAiProviderFieldChange,
+    onClearAiApiKey,
+    onLoadAiProviderSettings,
     hosted,
 }) => {
     const { t } = useTranslation();
-    const [config, setConfig] = useState<AIConfig | null>(null);
+    const [loaded, setLoaded] = useState(false);
+    const hasFetched = useRef(false);
+    const [credits, setCredits] = useState<{
+        used: number;
+        limit: number | null;
+    } | null>(null);
 
     useEffect(() => {
-        if (!isActive || hosted) return;
-        fetchAIConfig()
-            .then(setConfig)
-            .catch(() => setConfig(null));
-    }, [isActive, hosted]);
+        if (!isActive || hasFetched.current) return;
+        hasFetched.current = true;
+
+        // Hosted subscribers don't pick their own provider - they get a
+        // monthly AI Credits balance instead (see the hosted branch below).
+        // Fetching/populating provider-settings formData in hosted mode
+        // would also make ProfileSettings' generic Save PUT them, which the
+        // server now rejects for hosted accounts.
+        if (hosted) {
+            fetchBillingStatus()
+                .then((status) => {
+                    setCredits({
+                        used: status.usage?.ai_credits_used_this_month ?? 0,
+                        limit: status.limits.ai_credits_per_month,
+                    });
+                })
+                .catch(() => setCredits(null))
+                .finally(() => setLoaded(true));
+            return;
+        }
+
+        fetchAiProviderSettings()
+            .then((settings) => {
+                if (settings) onLoadAiProviderSettings(settings);
+            })
+            .finally(() => setLoaded(true));
+    }, [isActive, hosted, onLoadAiProviderSettings]);
 
     if (!isActive) return null;
 
     const aiEnabled = Boolean(formData.features?.ai_assistant_enabled);
+    const apiKeySet = Boolean(formData.ai_api_key_set);
+    const apiKeyLast4 = formData.ai_api_key_last4;
 
     return (
         <div>
@@ -48,80 +87,146 @@ const AIAssistantTab: React.FC<AIAssistantTabProps> = ({
                 )}
             </p>
 
-            {/* Server configuration: describes this instance's own .env, so it
-                is meaningless (and leaks infra details) to a user on a hosted
-                instance who isn't the operator. */}
-            {!hosted && (
+            {hosted ? (
+                /* Hosted subscribers share the operator's own provider and
+                   get a monthly AI Credits allowance bundled with their
+                   plan instead of picking a service/model themselves. */
                 <div className="mb-8">
-                    <h4 className="text-base font-semibold text-gray-900 dark:text-white mb-3">
-                        {t('profile.aiServerConfig', 'Server Configuration')}
+                    <h4 className="text-base font-semibold text-gray-900 dark:text-white mb-1">
+                        {t('profile.aiCreditsSection', 'AI Credits')}
                     </h4>
-                    <div className="rounded-lg border border-gray-200 dark:border-gray-700 divide-y divide-gray-200 dark:divide-gray-700">
-                        {/* API Key */}
-                        <div className="flex items-center justify-between px-4 py-3">
-                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+                        {t(
+                            'profile.aiCreditsDescription',
+                            'One credit is used for each daily brief, task insight, or project insight you generate. Your balance resets on the 1st of each month.'
+                        )}
+                    </p>
+                    {credits ? (
+                        <UsageBar
+                            label={t(
+                                'profile.aiCreditsLabel',
+                                'Credits this month'
+                            )}
+                            used={credits.used}
+                            limit={credits.limit}
+                        />
+                    ) : (
+                        <p className="text-sm text-gray-400 dark:text-gray-500">
+                            {loaded ? '—' : '…'}
+                        </p>
+                    )}
+                </div>
+            ) : (
+                /* AI Provider: per-user API key/base URL/model, stored (and
+                   encrypted) in the database. Falls back to the server's own
+                   LLM_API_KEY/.env when left blank, so nothing changes for a
+                   self-hoster who never sets these. */
+                <div className="mb-8">
+                    <h4 className="text-base font-semibold text-gray-900 dark:text-white mb-1">
+                        {t('profile.aiProviderSection', 'AI Provider')}
+                    </h4>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+                        {t(
+                            'profile.aiProviderDescription',
+                            'Bring your own API key for any OpenAI-compatible provider. Leave blank to use the server default, if one is configured.'
+                        )}
+                    </p>
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 {t('profile.aiApiKey', 'API Key')}
-                                <span className="ml-2 text-xs text-gray-400 dark:text-gray-500">
-                                    LLM_API_KEY
-                                </span>
-                            </span>
-                            {config === null ? (
-                                <span className="text-xs text-gray-400">
-                                    -
-                                </span>
-                            ) : config.api_key_set ? (
-                                <span className="flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400">
-                                    <CheckCircleIcon className="w-4 h-4" />
-                                    {t('profile.aiKeySet', 'Set')}
-                                </span>
+                            </label>
+                            {apiKeySet && formData.ai_api_key === undefined ? (
+                                <div className="flex items-center justify-between rounded-md border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 px-3 py-2">
+                                    <span className="text-sm font-mono text-gray-600 dark:text-gray-300">
+                                        ••••••••
+                                        {apiKeyLast4 || ''}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={onClearAiApiKey}
+                                        className="flex items-center gap-1 text-xs font-medium text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300"
+                                    >
+                                        <XMarkIcon className="w-4 h-4" />
+                                        {t('profile.aiApiKeyClear', 'Clear')}
+                                    </button>
+                                </div>
                             ) : (
-                                <span className="flex items-center gap-1 text-xs font-medium text-red-500 dark:text-red-400">
-                                    <ExclamationCircleIcon className="w-4 h-4" />
-                                    {t('profile.aiKeyNotSet', 'Not set')}
-                                </span>
+                                <input
+                                    type="password"
+                                    name="ai_api_key"
+                                    autoComplete="off"
+                                    value={formData.ai_api_key || ''}
+                                    onChange={(
+                                        e: ChangeEvent<HTMLInputElement>
+                                    ) =>
+                                        onAiProviderFieldChange(
+                                            'ai_api_key',
+                                            e.target.value
+                                        )
+                                    }
+                                    placeholder={
+                                        loaded
+                                            ? t(
+                                                  'profile.aiApiKeyPlaceholder',
+                                                  'sk-...'
+                                              )
+                                            : '…'
+                                    }
+                                    className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm text-gray-900 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
                             )}
                         </div>
 
-                        {/* Base URL */}
-                        <div className="flex items-center justify-between px-4 py-3">
-                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 {t('profile.aiBaseUrl', 'Base URL')}
-                                <span className="ml-2 text-xs text-gray-400 dark:text-gray-500">
-                                    LLM_BASE_URL
-                                </span>
-                            </span>
-                            <span className="text-sm font-mono text-gray-700 dark:text-gray-300 text-right max-w-xs truncate">
-                                {config === null
-                                    ? '-'
-                                    : (config.base_url ?? (
-                                          <span className="text-gray-400 dark:text-gray-500 font-sans not-italic">
-                                              {t(
-                                                  'profile.aiBaseUrlDefault',
-                                                  'OpenAI (default)'
-                                              )}
-                                          </span>
-                                      ))}
-                            </span>
+                            </label>
+                            <input
+                                type="text"
+                                name="ai_base_url"
+                                value={formData.ai_base_url || ''}
+                                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                    onAiProviderFieldChange(
+                                        'ai_base_url',
+                                        e.target.value
+                                    )
+                                }
+                                placeholder={t(
+                                    'profile.aiBaseUrlPlaceholder',
+                                    'https://api.openai.com/v1 (default)'
+                                )}
+                                className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-mono text-gray-900 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
                         </div>
 
-                        {/* Model */}
-                        <div className="flex items-center justify-between px-4 py-3">
-                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 {t('profile.aiModel', 'Model')}
-                                <span className="ml-2 text-xs text-gray-400 dark:text-gray-500">
-                                    LLM_MODEL
-                                </span>
-                            </span>
-                            <span className="text-sm font-mono text-gray-700 dark:text-gray-300">
-                                {config === null ? '-' : config.model}
-                            </span>
+                            </label>
+                            <input
+                                type="text"
+                                name="ai_model"
+                                value={formData.ai_model || ''}
+                                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                    onAiProviderFieldChange(
+                                        'ai_model',
+                                        e.target.value
+                                    )
+                                }
+                                placeholder={t(
+                                    'profile.aiModelPlaceholder',
+                                    'gpt-4o-mini (default)'
+                                )}
+                                className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-mono text-gray-900 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
                         </div>
                     </div>
-                    {config && !config.api_key_set && (
-                        <p className="mt-2 text-xs text-red-500 dark:text-red-400">
+                    {loaded && !apiKeySet && !formData.ai_api_key && (
+                        <p className="mt-2 text-xs text-amber-500 dark:text-amber-400">
                             {t(
                                 'profile.aiKeyMissingHint',
-                                'Set LLM_API_KEY (or OPENAI_API_KEY) on the server to enable AI features.'
+                                'Set an API key above to enable AI features.'
                             )}
                         </p>
                     )}
@@ -145,7 +250,7 @@ const AIAssistantTab: React.FC<AIAssistantTabProps> = ({
                             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                 {t(
                                     'profile.aiAssistantDescription',
-                                    'Enable AI-powered daily briefs, task insights, and project insights. Requires LLM_API_KEY (or OPENAI_API_KEY) on the server.'
+                                    'Enable AI-powered daily briefs, task insights, and project insights.'
                                 )}
                             </p>
                         </div>

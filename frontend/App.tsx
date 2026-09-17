@@ -468,9 +468,7 @@ const App: React.FC = () => {
                                             {React.createElement(
                                                 React.lazy(
                                                     () =>
-                                                        import(
-                                                            './components/Admin/AdminBillingPage'
-                                                        )
+                                                        import('./components/Admin/AdminBillingPage')
                                                 )
                                             )}
                                         </React.Suspense>
@@ -493,9 +491,30 @@ const App: React.FC = () => {
                                             {React.createElement(
                                                 React.lazy(
                                                     () =>
-                                                        import(
-                                                            './components/Admin/AdminDashboardPage'
-                                                        )
+                                                        import('./components/Admin/AdminDashboardPage')
+                                                )
+                                            )}
+                                        </React.Suspense>
+                                    ) : (
+                                        <Navigate to="/today" replace />
+                                    )
+                                }
+                            />
+                            <Route
+                                path="/admin/ai-usage"
+                                element={
+                                    currentUser?.is_admin === true ? (
+                                        <React.Suspense
+                                            fallback={
+                                                <div className="p-4">
+                                                    Loading...
+                                                </div>
+                                            }
+                                        >
+                                            {React.createElement(
+                                                React.lazy(
+                                                    () =>
+                                                        import('./components/Admin/AdminAiUsagePage')
                                                 )
                                             )}
                                         </React.Suspense>
@@ -518,9 +537,7 @@ const App: React.FC = () => {
                                             {React.createElement(
                                                 React.lazy(
                                                     () =>
-                                                        import(
-                                                            './components/Admin/AdminWaitlistPage'
-                                                        )
+                                                        import('./components/Admin/AdminWaitlistPage')
                                                 )
                                             )}
                                         </React.Suspense>
@@ -543,9 +560,7 @@ const App: React.FC = () => {
                                             {React.createElement(
                                                 React.lazy(
                                                     () =>
-                                                        import(
-                                                            './components/Admin/AdminUsersPage'
-                                                        )
+                                                        import('./components/Admin/AdminUsersPage')
                                                 )
                                             )}
                                         </React.Suspense>
