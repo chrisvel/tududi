@@ -4,6 +4,7 @@ const { logError } = require('../../services/logService');
 const {
     shouldSendInAppNotification,
     shouldSendTelegramNotification,
+    resolveNotificationSources,
 } = require('../../utils/notificationPreferences');
 const telegramPoller = require('../telegram/telegramPoller');
 
@@ -140,13 +141,18 @@ async function checkDueProjects() {
                         isOverdue
                     );
 
+                    const sources = resolveNotificationSources(
+                        user,
+                        notificationType
+                    );
+
                     const notification = await Notification.createNotification({
                         userId: project.user_id,
                         type: notificationType,
                         title,
                         message,
                         level,
-                        sources: [],
+                        sources,
                         data: {
                             projectUid: project.uid,
                             projectName: project.name,

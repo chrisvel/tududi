@@ -10,6 +10,7 @@ import {
 } from '@heroicons/react/24/outline';
 import type { NotificationPreferences } from '../types';
 import { getCsrfToken } from '../../../utils/csrfService';
+import { fetchWebhooks } from '../../../utils/webhooksService';
 
 interface NotificationsTabProps {
     isActive: boolean;
@@ -18,17 +19,48 @@ interface NotificationsTabProps {
 }
 
 const DEFAULT_PREFERENCES: NotificationPreferences = {
-    dueTasks: { inApp: true, email: false, push: false, telegram: false },
-    overdueTasks: { inApp: true, email: false, push: false, telegram: false },
-    dueProjects: { inApp: true, email: false, push: false, telegram: false },
+    dueTasks: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+        webhook: false,
+    },
+    overdueTasks: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+        webhook: false,
+    },
+    dueProjects: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+        webhook: false,
+    },
     overdueProjects: {
         inApp: true,
         email: false,
         push: false,
         telegram: false,
+        webhook: false,
     },
-    deferUntil: { inApp: true, email: false, push: false, telegram: false },
-    taskAssigned: { inApp: true, email: false, push: false, telegram: false },
+    deferUntil: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+        webhook: false,
+    },
+    taskAssigned: {
+        inApp: true,
+        email: false,
+        push: false,
+        telegram: false,
+        webhook: false,
+    },
 };
 
 interface NotificationTypeRowProps {
@@ -40,12 +72,14 @@ interface NotificationTypeRowProps {
         email: boolean;
         push: boolean;
         telegram: boolean;
+        webhook: boolean;
     };
     onToggle: (
-        channel: 'inApp' | 'email' | 'push' | 'telegram',
+        channel: 'inApp' | 'email' | 'push' | 'telegram' | 'webhook',
         value: boolean
     ) => void;
     telegramConfigured: boolean;
+    webhookConfigured: boolean;
 }
 
 const NotificationTypeRow: React.FC<NotificationTypeRowProps> = ({
@@ -55,9 +89,10 @@ const NotificationTypeRow: React.FC<NotificationTypeRowProps> = ({
     preferences,
     onToggle,
     telegramConfigured,
+    webhookConfigured,
 }) => {
     const renderToggle = (
-        channel: 'inApp' | 'email' | 'push' | 'telegram',
+        channel: 'inApp' | 'email' | 'push' | 'telegram' | 'webhook',
         isEnabled: boolean,
         isAvailable: boolean
     ) => (
@@ -114,6 +149,13 @@ const NotificationTypeRow: React.FC<NotificationTypeRowProps> = ({
                     telegramConfigured
                 )}
             </td>
+            <td className="py-4 px-4 text-center">
+                {renderToggle(
+                    'webhook',
+                    preferences.webhook,
+                    webhookConfigured
+                )}
+            </td>
         </tr>
     );
 };
@@ -125,6 +167,8 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
 }) => {
     const { t } = useTranslation();
     const [profile, setProfile] = React.useState<any>(null);
+    const [hasActiveWebhook, setHasActiveWebhook] =
+        React.useState<boolean>(false);
     const [selectedTestType, setSelectedTestType] =
         React.useState<string>('task_due_soon');
     const [testLoading, setTestLoading] = React.useState<boolean>(false);
@@ -137,6 +181,20 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                 .then((res) => res.json())
                 .then((data) => setProfile(data))
                 .catch((err) => console.error('Failed to fetch profile', err));
+        }
+    }, [isActive]);
+
+    // Fetch webhooks to check whether the webhook column can be enabled
+    React.useEffect(() => {
+        if (isActive) {
+            fetchWebhooks()
+                .then((data) =>
+                    setHasActiveWebhook(
+                        Array.isArray(data) &&
+                            data.some((webhook) => webhook.active)
+                    )
+                )
+                .catch((err) => console.error('Failed to fetch webhooks', err));
         }
     }, [isActive]);
 
@@ -155,7 +213,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
 
     const handleToggle = (
         notificationType: keyof NotificationPreferences,
-        channel: 'inApp' | 'email' | 'push' | 'telegram',
+        channel: 'inApp' | 'email' | 'push' | 'telegram' | 'webhook',
         value: boolean
     ) => {
         const updatedPreferences = {
@@ -272,6 +330,9 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                     'Telegram'
                                 )}
                             </th>
+                            <th className="py-3 px-4 text-center text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                {t('notifications.channels.webhook', 'Webhook')}
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -290,6 +351,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 handleToggle('dueTasks', channel, value)
                             }
                             telegramConfigured={telegramConfigured}
+                            webhookConfigured={hasActiveWebhook}
                         />
                         <NotificationTypeRow
                             icon={ExclamationTriangleIcon}
@@ -306,6 +368,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 handleToggle('overdueTasks', channel, value)
                             }
                             telegramConfigured={telegramConfigured}
+                            webhookConfigured={hasActiveWebhook}
                         />
                         <NotificationTypeRow
                             icon={ClockIcon}
@@ -322,6 +385,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 handleToggle('deferUntil', channel, value)
                             }
                             telegramConfigured={telegramConfigured}
+                            webhookConfigured={hasActiveWebhook}
                         />
                         <NotificationTypeRow
                             icon={BellIcon}
@@ -338,6 +402,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 handleToggle('taskAssigned', channel, value)
                             }
                             telegramConfigured={telegramConfigured}
+                            webhookConfigured={hasActiveWebhook}
                         />
                         <NotificationTypeRow
                             icon={FolderIcon}
@@ -354,6 +419,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 handleToggle('dueProjects', channel, value)
                             }
                             telegramConfigured={telegramConfigured}
+                            webhookConfigured={hasActiveWebhook}
                         />
                         <NotificationTypeRow
                             icon={FolderOpenIcon}
@@ -370,6 +436,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({
                                 handleToggle('overdueProjects', channel, value)
                             }
                             telegramConfigured={telegramConfigured}
+                            webhookConfigured={hasActiveWebhook}
                         />
                     </tbody>
                 </table>

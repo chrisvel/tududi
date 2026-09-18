@@ -23,6 +23,7 @@ import {
     SparklesIcon,
     SwatchIcon,
     CreditCardIcon,
+    BoltIcon,
 } from '@heroicons/react/24/outline';
 import { Squares2X2Icon } from '@heroicons/react/24/solid';
 import TelegramIcon from '../Shared/Icons/TelegramIcon';
@@ -42,6 +43,18 @@ import {
     revokeApiKey,
     deleteApiKey,
 } from '../../utils/apiKeysService';
+import type {
+    WebhookEndpointSummary,
+    WebhookAuthType,
+} from '../../utils/webhooksService';
+import {
+    fetchWebhooks,
+    createWebhook,
+    updateWebhook,
+    deleteWebhook,
+    rotateWebhookSecret,
+    testWebhook,
+} from '../../utils/webhooksService';
 import TabsNav, { type TabConfig } from './tabs/TabsNav';
 import AppearanceTab from './tabs/AppearanceTab';
 import GeneralTab from './tabs/GeneralTab';
@@ -51,6 +64,7 @@ import ApiKeysTab from './tabs/ApiKeysTab';
 import FeaturesTab from './tabs/FeaturesTab';
 import TelegramTab from './tabs/TelegramTab';
 import NotificationsTab from './tabs/NotificationsTab';
+import WebhooksTab from './tabs/WebhooksTab';
 import KeyboardShortcutsTab from './tabs/KeyboardShortcutsTab';
 import McpTab from './tabs/McpTab';
 import CalDAVTab from './tabs/CalDAVTab';
@@ -104,6 +118,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             'productivity',
             'notifications',
             'telegram',
+            'webhooks',
             'keyboard-shortcuts',
             'caldav',
             'mcp',
@@ -193,6 +208,35 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
     const [deleteInFlightId, setDeleteInFlightId] = useState<number | null>(
         null
     );
+    const [webhooks, setWebhooks] = useState<WebhookEndpointSummary[]>([]);
+    const [webhooksLoading, setWebhooksLoading] = useState(false);
+    const [webhooksLoaded, setWebhooksLoaded] = useState(false);
+    const [newWebhookName, setNewWebhookName] = useState('');
+    const [newWebhookUrl, setNewWebhookUrl] = useState('');
+    const [newWebhookEventTypes, setNewWebhookEventTypes] = useState<string[]>(
+        []
+    );
+    const [newWebhookAuthType, setNewWebhookAuthType] =
+        useState<WebhookAuthType>('none');
+    const [newWebhookAuthHeaderName, setNewWebhookAuthHeaderName] =
+        useState('');
+    const [newWebhookAuthUsername, setNewWebhookAuthUsername] = useState('');
+    const [newWebhookAuthSecret, setNewWebhookAuthSecret] = useState('');
+    const [isCreatingWebhook, setIsCreatingWebhook] = useState(false);
+    const [generatedWebhookSecret, setGeneratedWebhookSecret] = useState<
+        string | null
+    >(null);
+    const [webhookTestInFlightUid, setWebhookTestInFlightUid] = useState<
+        string | null
+    >(null);
+    const [webhookRotateInFlightUid, setWebhookRotateInFlightUid] = useState<
+        string | null
+    >(null);
+    const [webhookDeleteInFlightUid, setWebhookDeleteInFlightUid] = useState<
+        string | null
+    >(null);
+    const [webhookToDelete, setWebhookToDelete] =
+        useState<WebhookEndpointSummary | null>(null);
     // Update URL query parameter when tab changes (not on mount)
     const isInitialMount = React.useRef(true);
     useEffect(() => {
@@ -266,6 +310,25 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             loadApiKeys();
         }
     }, [activeTab, apiKeysLoaded, loadApiKeys]);
+
+    const loadWebhooks = useCallback(async () => {
+        setWebhooksLoading(true);
+        try {
+            const endpoints = await fetchWebhooks();
+            setWebhooks(endpoints);
+        } catch (error) {
+            showErrorToast((error as Error).message);
+        } finally {
+            setWebhooksLoading(false);
+            setWebhooksLoaded(true);
+        }
+    }, [showErrorToast]);
+
+    useEffect(() => {
+        if (activeTab === 'webhooks' && !webhooksLoaded) {
+            loadWebhooks();
+        }
+    }, [activeTab, webhooksLoaded, loadWebhooks]);
 
     const validatePasswordForm = (): {
         valid: boolean;
@@ -473,6 +536,195 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
     const closeDeleteDialog = () => {
         if (deleteInFlightId) return;
         setApiKeyToDelete(null);
+    };
+
+    const handleToggleNewWebhookEventType = (eventType: string) => {
+        setNewWebhookEventTypes((prev) =>
+            prev.includes(eventType)
+                ? prev.filter((value) => value !== eventType)
+                : [...prev, eventType]
+        );
+    };
+
+    const handleCreateWebhook = async () => {
+        if (!newWebhookName.trim()) {
+            showErrorToast(
+                t('profile.webhooks.nameRequired', 'Webhook name is required.')
+            );
+            return;
+        }
+        if (!/^https?:\/\//i.test(newWebhookUrl.trim())) {
+            showErrorToast(
+                t(
+                    'profile.webhooks.urlRequired',
+                    'A valid http(s) URL is required.'
+                )
+            );
+            return;
+        }
+        if (newWebhookAuthType === 'header' && !newWebhookAuthSecret.trim()) {
+            showErrorToast(
+                t(
+                    'profile.webhooks.authHeaderValueRequired',
+                    'A header value is required for header auth.'
+                )
+            );
+            return;
+        }
+        if (
+            newWebhookAuthType === 'basic' &&
+            (!newWebhookAuthUsername.trim() || !newWebhookAuthSecret.trim())
+        ) {
+            showErrorToast(
+                t(
+                    'profile.webhooks.authBasicRequired',
+                    'A username and password are required for basic auth.'
+                )
+            );
+            return;
+        }
+
+        setIsCreatingWebhook(true);
+        try {
+            const created = await createWebhook({
+                name: newWebhookName.trim(),
+                url: newWebhookUrl.trim(),
+                event_types: newWebhookEventTypes,
+                auth_type: newWebhookAuthType,
+                ...(newWebhookAuthType === 'header'
+                    ? {
+                          auth_header_name:
+                              newWebhookAuthHeaderName.trim() ||
+                              'Authorization',
+                          auth_secret: newWebhookAuthSecret,
+                      }
+                    : {}),
+                ...(newWebhookAuthType === 'basic'
+                    ? {
+                          auth_username: newWebhookAuthUsername.trim(),
+                          auth_secret: newWebhookAuthSecret,
+                      }
+                    : {}),
+            });
+            setGeneratedWebhookSecret(created.secret || null);
+            setWebhooks((prev) => [created, ...prev]);
+            setNewWebhookName('');
+            setNewWebhookUrl('');
+            setNewWebhookEventTypes([]);
+            setNewWebhookAuthType('none');
+            setNewWebhookAuthHeaderName('');
+            setNewWebhookAuthUsername('');
+            setNewWebhookAuthSecret('');
+            showSuccessToast(
+                t('profile.webhooks.created', 'Webhook created successfully.')
+            );
+        } catch (error) {
+            showErrorToast((error as Error).message);
+        } finally {
+            setIsCreatingWebhook(false);
+        }
+    };
+
+    const handleCopyGeneratedWebhookSecret = async () => {
+        if (!generatedWebhookSecret) return;
+
+        try {
+            await navigator.clipboard.writeText(generatedWebhookSecret);
+            showSuccessToast(
+                t('profile.webhooks.copied', 'Secret copied to clipboard.')
+            );
+        } catch {
+            showErrorToast(
+                t(
+                    'profile.webhooks.copyFailed',
+                    'Unable to copy secret to clipboard.'
+                )
+            );
+        }
+    };
+
+    const handleToggleWebhookActive = async (
+        webhook: WebhookEndpointSummary
+    ) => {
+        try {
+            const updated = await updateWebhook(webhook.uid, {
+                active: !webhook.active,
+            });
+            setWebhooks((prev) =>
+                prev.map((item) =>
+                    item.uid === webhook.uid ? { ...item, ...updated } : item
+                )
+            );
+        } catch (error) {
+            showErrorToast((error as Error).message);
+        }
+    };
+
+    const handleTestWebhook = async (webhook: WebhookEndpointSummary) => {
+        setWebhookTestInFlightUid(webhook.uid);
+        try {
+            const result = await testWebhook(webhook.uid);
+            if (result.success) {
+                showSuccessToast(
+                    t('profile.webhooks.testSuccess', 'Test delivery sent.')
+                );
+            } else {
+                showErrorToast(
+                    result.error ||
+                        t(
+                            'profile.webhooks.testFailed',
+                            'Test delivery failed.'
+                        )
+                );
+            }
+        } catch (error) {
+            showErrorToast((error as Error).message);
+        } finally {
+            setWebhookTestInFlightUid(null);
+        }
+    };
+
+    const handleRotateWebhookSecret = async (
+        webhook: WebhookEndpointSummary
+    ) => {
+        setWebhookRotateInFlightUid(webhook.uid);
+        try {
+            const updated = await rotateWebhookSecret(webhook.uid);
+            setGeneratedWebhookSecret(updated.secret || null);
+            setWebhooks((prev) =>
+                prev.map((item) =>
+                    item.uid === webhook.uid ? { ...item, ...updated } : item
+                )
+            );
+            showSuccessToast(
+                t('profile.webhooks.rotated', 'Secret rotated successfully.')
+            );
+        } catch (error) {
+            showErrorToast((error as Error).message);
+        } finally {
+            setWebhookRotateInFlightUid(null);
+        }
+    };
+
+    const confirmDeleteWebhook = async () => {
+        if (!webhookToDelete) return;
+        const uid = webhookToDelete.uid;
+        setWebhookDeleteInFlightUid(uid);
+        try {
+            await deleteWebhook(uid);
+            setWebhooks((prev) => prev.filter((item) => item.uid !== uid));
+            showSuccessToast(t('profile.webhooks.deleted', 'Webhook deleted.'));
+            setWebhookToDelete(null);
+        } catch (error) {
+            showErrorToast((error as Error).message);
+        } finally {
+            setWebhookDeleteInFlightUid(null);
+        }
+    };
+
+    const closeWebhookDeleteDialog = () => {
+        if (webhookDeleteInFlightUid) return;
+        setWebhookToDelete(null);
     };
 
     const getApiKeyStatus = (apiKey: ApiKeySummary) => {
@@ -1322,6 +1574,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             icon: <TelegramIcon className="w-5 h-5" />,
         },
         {
+            id: 'webhooks',
+            name: t('profile.tabs.webhooks', 'Webhooks'),
+            icon: <BoltIcon className="w-5 h-5" />,
+        },
+        {
             id: 'keyboard-shortcuts',
             name: t('profile.tabs.keyboardShortcuts', 'Shortcuts'),
             icon: <CommandLineIcon className="w-5 h-5" />,
@@ -1680,6 +1937,54 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                     formatFrequency={formatFrequency}
                                 />
 
+                                <WebhooksTab
+                                    isActive={activeTab === 'webhooks'}
+                                    webhooks={webhooks}
+                                    webhooksLoading={webhooksLoading}
+                                    generatedSecret={generatedWebhookSecret}
+                                    newWebhookName={newWebhookName}
+                                    newWebhookUrl={newWebhookUrl}
+                                    newWebhookEventTypes={newWebhookEventTypes}
+                                    newWebhookAuthType={newWebhookAuthType}
+                                    newWebhookAuthHeaderName={
+                                        newWebhookAuthHeaderName
+                                    }
+                                    newWebhookAuthUsername={
+                                        newWebhookAuthUsername
+                                    }
+                                    newWebhookAuthSecret={newWebhookAuthSecret}
+                                    isCreatingWebhook={isCreatingWebhook}
+                                    testInFlightUid={webhookTestInFlightUid}
+                                    rotateInFlightUid={webhookRotateInFlightUid}
+                                    deleteInFlightUid={webhookDeleteInFlightUid}
+                                    onCreateWebhook={handleCreateWebhook}
+                                    onCopyGeneratedSecret={
+                                        handleCopyGeneratedWebhookSecret
+                                    }
+                                    onUpdateNewName={setNewWebhookName}
+                                    onUpdateNewUrl={setNewWebhookUrl}
+                                    onToggleNewEventType={
+                                        handleToggleNewWebhookEventType
+                                    }
+                                    onUpdateNewAuthType={setNewWebhookAuthType}
+                                    onUpdateNewAuthHeaderName={
+                                        setNewWebhookAuthHeaderName
+                                    }
+                                    onUpdateNewAuthUsername={
+                                        setNewWebhookAuthUsername
+                                    }
+                                    onUpdateNewAuthSecret={
+                                        setNewWebhookAuthSecret
+                                    }
+                                    onToggleActive={handleToggleWebhookActive}
+                                    onTest={handleTestWebhook}
+                                    onRotateSecret={handleRotateWebhookSecret}
+                                    onRequestDelete={(webhook) =>
+                                        setWebhookToDelete(webhook)
+                                    }
+                                    formatDateTime={formatDateTime}
+                                />
+
                                 <KeyboardShortcutsTab
                                     isActive={
                                         activeTab === 'keyboard-shortcuts'
@@ -1729,6 +2034,17 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     )}
                     onConfirm={confirmDeleteApiKey}
                     onCancel={closeDeleteDialog}
+                />
+            )}
+            {webhookToDelete && (
+                <ConfirmDialog
+                    title={t('profile.webhooks.deleteTitle', 'Delete webhook')}
+                    message={t(
+                        'profile.webhooks.deleteConfirm',
+                        'Delete this webhook? This action cannot be undone.'
+                    )}
+                    onConfirm={confirmDeleteWebhook}
+                    onCancel={closeWebhookDeleteDialog}
                 />
             )}
         </>

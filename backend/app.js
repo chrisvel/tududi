@@ -358,6 +358,7 @@ const telegramModule = require('./modules/telegram');
 const urlModule = require('./modules/url');
 const usersModule = require('./modules/users');
 const viewsModule = require('./modules/views');
+const webhooksModule = require('./modules/webhooks');
 const mcpModule = require('./modules/mcp');
 const oidcModule = require('./modules/oidc');
 const aiAssistantModule = require('./modules/ai-assistant');
@@ -470,6 +471,7 @@ const registerApiRoutes = (basePath) => {
     app.use(basePath, searchModule.routes);
     app.use(basePath, viewsModule.routes);
     app.use(basePath, notificationsModule.routes);
+    app.use(basePath, webhooksModule.routes);
     app.use(basePath, mcpModule.routes);
     app.use(basePath, aiAssistantModule.routes);
     app.use(basePath, peopleModule.routes);

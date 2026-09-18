@@ -74,7 +74,12 @@ module.exports = (sequelize) => {
                         if (!Array.isArray(value)) {
                             throw new Error('Sources must be an array');
                         }
-                        const validSources = ['telegram', 'mobile', 'email'];
+                        const validSources = [
+                            'telegram',
+                            'mobile',
+                            'email',
+                            'webhook',
+                        ];
                         const invalidSources = value.filter(
                             (s) => !validSources.includes(s)
                         );
@@ -177,6 +182,14 @@ module.exports = (sequelize) => {
             );
         }
 
+        if (sources.includes('webhook')) {
+            // Fire-and-forget: a single delivery can take up to ~10s (5s
+            // timeout, doubled by one retry on 5xx), which would otherwise
+            // stall the calling request (e.g. PATCH /tasks/:id) for that
+            // long. sendWebhookNotifications never throws.
+            sendWebhookNotifications(userId, notification);
+        }
+
         return notification;
     };
 
@@ -266,6 +279,20 @@ module.exports = (sequelize) => {
             }
         } catch (error) {
             console.error('Failed to send Telegram notification:', error);
+        }
+    }
+
+    async function sendWebhookNotifications(userId, notificationInstance) {
+        try {
+            const {
+                webhookNotificationService,
+            } = require('../modules/webhooks');
+            await webhookNotificationService.dispatchForNotification(
+                userId,
+                notificationInstance
+            );
+        } catch (error) {
+            console.error('Failed to send webhook notifications:', error);
         }
     }
 

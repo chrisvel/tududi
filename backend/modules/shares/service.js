@@ -125,6 +125,14 @@ class SharesService {
             const accessLabel =
                 accessLevel === 'rw' ? 'read & write' : 'read only';
 
+            // 'share_invitation' has no entry in the category preference
+            // table (no UI toggle exists for it), so - unlike the other
+            // notification types - webhook dispatch isn't gated behind
+            // shouldSendWebhookNotification here. Whether it actually
+            // reaches an endpoint is decided entirely by that endpoint's own
+            // event_types subscription (see WebhookEndpoint#matchesType).
+            const sources = ['webhook'];
+
             await Notification.createNotification({
                 userId: target.id,
                 type: 'share_invitation',
@@ -139,6 +147,7 @@ class SharesService {
                     accessLevel,
                     inviterEmail: actor?.email || null,
                 },
+                sources,
             });
         } catch (error) {
             // The share itself is recorded; a failed notification must not
