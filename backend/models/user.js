@@ -160,6 +160,9 @@ module.exports = (sequelize) => {
                 allowNull: true,
                 defaultValue: {
                     pinnedViewsOrder: [],
+                    visibleSections: {
+                        upcomingTasks: true,
+                    },
                 },
             },
             ui_settings: {

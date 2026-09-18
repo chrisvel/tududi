@@ -124,6 +124,8 @@ interface UserSettingsStore {
     setAiAssistantEnabled: (enabled: boolean) => void;
     showTaskContextMenu: boolean;
     setShowTaskContextMenu: (enabled: boolean) => void;
+    upcomingTasksVisible: boolean;
+    setUpcomingTasksVisible: (enabled: boolean) => void;
 }
 
 interface GoalsStore {
@@ -1046,6 +1048,14 @@ export const useStore = create<StoreState>((set: any) => ({
                 userSettingsStore: {
                     ...state.userSettingsStore,
                     showTaskContextMenu: enabled,
+                },
+            })),
+        upcomingTasksVisible: true,
+        setUpcomingTasksVisible: (enabled) =>
+            set((state) => ({
+                userSettingsStore: {
+                    ...state.userSettingsStore,
+                    upcomingTasksVisible: enabled,
                 },
             })),
     },

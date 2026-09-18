@@ -32,6 +32,9 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
     const hasCollaborators = useStore(
         (state) => state.userSettingsStore.hasCollaborators
     );
+    const upcomingTasksVisible = useStore(
+        (state) => state.userSettingsStore.upcomingTasksVisible
+    );
 
     const inboxItemsCount = store.inboxStore.pagination.total;
 
@@ -55,6 +58,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
             path: '/upcoming?status=active',
             title: t('sidebar.upcoming', 'Upcoming'),
             icon: <ClockIcon className="h-[15px] w-[15px]" />,
+            userFlag: 'upcomingTasks',
         },
         {
             path: '/calendar',
@@ -88,6 +92,9 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
         }
         if (link.userFlag === 'everyone') {
             return hasCollaborators;
+        }
+        if (link.userFlag === 'upcomingTasks') {
+            return upcomingTasksVisible;
         }
         return true;
     });

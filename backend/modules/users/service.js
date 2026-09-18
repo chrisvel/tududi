@@ -150,6 +150,17 @@ class UsersService {
                 user.ui_settings = null;
             }
         }
+        if (
+            user.sidebar_settings &&
+            typeof user.sidebar_settings === 'string'
+        ) {
+            try {
+                user.sidebar_settings = JSON.parse(user.sidebar_settings);
+            } catch (error) {
+                logError('Error parsing sidebar_settings:', error);
+                user.sidebar_settings = null;
+            }
+        }
 
         const profile = user.toJSON();
         profile.has_password = !!user.password_digest;
@@ -676,8 +687,24 @@ class UsersService {
             throw new NotFoundError('User not found.');
         }
 
-        const { pinnedViewsOrder } = validateSidebarSettings(data);
-        const sidebarSettings = { pinnedViewsOrder };
+        const updates = validateSidebarSettings(data);
+        const currentSettings =
+            user.sidebar_settings && typeof user.sidebar_settings === 'object'
+                ? user.sidebar_settings
+                : {};
+
+        const sidebarSettings = {
+            ...currentSettings,
+            ...updates,
+            ...(updates.visibleSections !== undefined
+                ? {
+                      visibleSections: {
+                          ...(currentSettings.visibleSections || {}),
+                          ...updates.visibleSections,
+                      },
+                  }
+                : {}),
+        };
 
         await usersRepository.update(user, {
             sidebar_settings: sidebarSettings,
