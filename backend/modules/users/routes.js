@@ -127,5 +127,7 @@ router.get(
 router.put('/profile/today-settings', usersController.updateTodaySettings);
 router.put('/profile/sidebar-settings', usersController.updateSidebarSettings);
 router.put('/profile/ui-settings', usersController.updateUiSettings);
+router.get('/profile/ai-settings', usersController.getAiSettings);
+router.put('/profile/ai-settings', usersController.updateAiSettings);
 
 module.exports = router;

@@ -261,7 +261,11 @@ async function assertStorage(userId, additionalBytes) {
     }
 }
 
-function currentMonthKey(now = new Date()) {
+// 'YYYY-MM', e.g. '2026-09'. Calendar-month, not billing-cycle-anchored:
+// simpler to explain ("resets on the 1st") and avoids reading
+// account.current_period_end for accounts in trial/grace/admin-override
+// with no real subscription period.
+function monthKey(now = new Date()) {
     return now.toISOString().slice(0, 7);
 }
 
@@ -274,7 +278,7 @@ async function consumeUsage(userId, metric, n = 1) {
     const limit = ent.limits[limitKey];
 
     const { UsageCounter } = models();
-    const period = currentMonthKey();
+    const period = monthKey();
     const [row] = await UsageCounter.findOrCreate({
         where: { user_id: userId, metric, period_key: period },
         defaults: { user_id: userId, metric, period_key: period, count: 0 },
@@ -291,15 +295,22 @@ async function consumeUsage(userId, metric, n = 1) {
     return row.count;
 }
 
+// Same as consumeUsage: kept as a separate name for call sites (e.g.
+// ai_credits_per_month) that are conceptually a monthly subscription
+// allowance rather than an anti-abuse rate limit.
+async function consumeMonthlyUsage(userId, metric, n = 1) {
+    return consumeUsage(userId, metric, n);
+}
+
 async function getUsage(userId) {
     const { UsageCounter } = models();
     const counter = (metric) =>
         UsageCounter.findOne({
-            where: { user_id: userId, metric, period_key: currentMonthKey() },
+            where: { user_id: userId, metric, period_key: monthKey() },
             attributes: ['count'],
             raw: true,
         });
-    const [tasks, projects, notes, storage_bytes, ai, aiTokens] =
+    const [tasks, projects, notes, storage_bytes, ai, aiTokens, aiCredits] =
         await Promise.all([
             countResource(userId, 'task'),
             countResource(userId, 'project'),
@@ -307,6 +318,7 @@ async function getUsage(userId) {
             storageBytesUsed(userId),
             counter('ai_requests'),
             counter('ai_tokens'),
+            counter('ai_credits'),
         ]);
     return {
         tasks,
@@ -317,6 +329,7 @@ async function getUsage(userId) {
         // Unlimited by design: recorded so hosted pricing can be set from
         // real spend rather than a request count. No plan caps it.
         ai_tokens_this_month: aiTokens ? aiTokens.count : 0,
+        ai_credits_used_this_month: aiCredits ? aiCredits.count : 0,
     };
 }
 
@@ -329,7 +342,7 @@ async function getUsageForUsers(userIds, metric) {
         where: {
             user_id: userIds,
             metric,
-            period_key: currentMonthKey(),
+            period_key: monthKey(),
         },
         attributes: ['user_id', 'count'],
         raw: true,
@@ -354,6 +367,8 @@ module.exports = {
     assertCanCreate,
     assertStorage,
     consumeUsage,
+    consumeMonthlyUsage,
+    monthKey,
     getUsage,
     getUsageForUsers,
 };

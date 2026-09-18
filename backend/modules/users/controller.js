@@ -324,6 +324,37 @@ const usersController = {
             next(error);
         }
     },
+
+    /**
+     * GET /api/profile/ai-settings
+     * Get per-user AI provider settings (API key masked).
+     */
+    async getAiSettings(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const result = await usersService.getAiSettings(userId);
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    /**
+     * PUT /api/profile/ai-settings
+     * Update per-user AI provider settings.
+     */
+    async updateAiSettings(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const result = await usersService.updateAiSettings(
+                userId,
+                req.body
+            );
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    },
 };
 
 module.exports = usersController;

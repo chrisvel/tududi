@@ -1,6 +1,8 @@
 const { getConfig } = require('../../../config/config');
 const plans = require('../../../config/plans');
-const { resolvePlan } = require('../../../services/entitlementsService');
+const entitlements = require('../../../services/entitlementsService');
+const { resolvePlan } = entitlements;
+const { createTestUser } = require('../../helpers/testUtils');
 
 const config = getConfig();
 const DAY = 24 * 60 * 60 * 1000;
@@ -157,5 +159,74 @@ describe('resolvePlan', () => {
         expect(
             resolve({ status: 'canceled' }, { isAdmin: true }).plan.key
         ).toBe('free');
+    });
+});
+
+describe('consumeMonthlyUsage', () => {
+    beforeEach(() => {
+        config.hosted.enabled = true;
+        // A fresh account otherwise gets a trial-period 'pro' plan (see
+        // ensureAccount/resolvePlan), not 'free' - pin it to 0 so these
+        // tests exercise the plan/limit they actually set below.
+        config.hosted.trialDays = 0;
+        process.env.TUDUDI_PLANS_JSON = JSON.stringify({
+            free: { limits: { ai_credits_per_month: 2 } },
+        });
+        plans._resetCache();
+        entitlements.invalidate();
+    });
+
+    afterEach(() => {
+        config.hosted.enabled = false;
+        config.hosted.trialDays = 14;
+        delete process.env.TUDUDI_PLANS_JSON;
+        plans._resetCache();
+        entitlements.invalidate();
+    });
+
+    it('is a no-op returning 0 when hosted mode is off', async () => {
+        config.hosted.enabled = false;
+        const user = await createTestUser({
+            email: `credits_off_${Date.now()}@example.com`,
+        });
+        expect(
+            await entitlements.consumeMonthlyUsage(user.id, 'ai_credits')
+        ).toBe(0);
+    });
+
+    it('accumulates within the same month and throws once the limit is hit', async () => {
+        const user = await createTestUser({
+            email: `credits_${Date.now()}@example.com`,
+        });
+
+        expect(
+            await entitlements.consumeMonthlyUsage(user.id, 'ai_credits')
+        ).toBe(1);
+        expect(
+            await entitlements.consumeMonthlyUsage(user.id, 'ai_credits')
+        ).toBe(2);
+        await expect(
+            entitlements.consumeMonthlyUsage(user.id, 'ai_credits')
+        ).rejects.toMatchObject({ code: 'PLAN_LIMIT_REACHED' });
+    });
+
+    it('tracks a separate counter per user', async () => {
+        const a = await createTestUser({
+            email: `credits_a_${Date.now()}@example.com`,
+        });
+        const b = await createTestUser({
+            email: `credits_b_${Date.now()}@example.com`,
+        });
+
+        await entitlements.consumeMonthlyUsage(a.id, 'ai_credits');
+        await entitlements.consumeMonthlyUsage(a.id, 'ai_credits');
+        expect(await entitlements.consumeMonthlyUsage(b.id, 'ai_credits')).toBe(
+            1
+        );
+    });
+
+    it("monthKey uses 'YYYY-MM', independent of the daily period key", () => {
+        const now = new Date('2026-09-16T12:00:00Z');
+        expect(entitlements.monthKey(now)).toBe('2026-09');
     });
 });

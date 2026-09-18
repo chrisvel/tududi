@@ -5,28 +5,33 @@ const aiAssistantService = require('./service');
 const { getConfig } = require('../../config/config');
 
 const controller = {
-    getConfig(req, res) {
-        const userId = getAuthenticatedUserId(req);
-        if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    async getConfig(req, res, next) {
+        try {
+            const userId = getAuthenticatedUserId(req);
+            if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
-        const apiKeySet = aiAssistantService.isAIConfigured();
+            const resolved = await aiAssistantService.resolveAIConfig(userId);
+            const apiKeySet = !!resolved.apiKey;
+            const hosted = getConfig().hosted?.enabled === true;
 
-        // base_url and model describe this instance's own server config
-        // (operator's LLM provider/network, model choice). On a hosted
-        // instance the caller isn't the operator, so that's not theirs to
-        // see; only whether AI is usable at all matters to them.
-        if (getConfig().hosted?.enabled === true) {
-            return res.json({ api_key_set: apiKeySet });
+            const response = { api_key_set: apiKeySet };
+
+            // base_url and model sourced from this instance's own .env
+            // describe the operator's server config (network, model choice).
+            // On a hosted instance the caller isn't the operator, so that's
+            // not theirs to see; a value the caller configured themselves in
+            // Profile -> AI Assistant is always theirs to see.
+            if (!hosted || resolved.baseUrlSource === 'user') {
+                response.base_url = resolved.baseURL;
+            }
+            if (!hosted || resolved.modelSource === 'user') {
+                response.model = resolved.model;
+            }
+
+            res.json(response);
+        } catch (error) {
+            next(error);
         }
-
-        const baseUrl =
-            process.env.LLM_BASE_URL || process.env.OPENAI_BASE_URL || null;
-        const model =
-            process.env.LLM_MODEL ||
-            process.env.TUDUDI_AI_MODEL ||
-            'gpt-4o-mini';
-
-        res.json({ api_key_set: apiKeySet, base_url: baseUrl, model });
     },
 
     async getCachedBrief(req, res, next) {
