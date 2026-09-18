@@ -6,8 +6,16 @@ const { getConfig } = require('../../config/config');
 
 describe('Profile AI settings', () => {
     let agent;
+    // Encrypting ai_api_key (see usersService.updateAiSettings /
+    // secretCipher) requires key material - TUDUDI_SESSION_SECRET or
+    // TUDUDI_OIDC_SECRET_ENCRYPTION_KEY - which isn't guaranteed to be set
+    // in every environment this suite runs in (e.g. CI has no .env file).
+    // Set it explicitly rather than relying on ambient config.
+    const savedSessionSecret = process.env.TUDUDI_SESSION_SECRET;
 
     beforeEach(async () => {
+        process.env.TUDUDI_SESSION_SECRET = 'x'.repeat(64);
+
         // ai_base_url goes through the SSRF guard (DNS lookup + private-range
         // check, see modules/url/ssrfGuard.js), so tests that set one need a
         // resolvable, non-private address without depending on real DNS.
@@ -24,6 +32,11 @@ describe('Profile AI settings', () => {
     });
 
     afterEach(() => {
+        if (savedSessionSecret === undefined) {
+            delete process.env.TUDUDI_SESSION_SECRET;
+        } else {
+            process.env.TUDUDI_SESSION_SECRET = savedSessionSecret;
+        }
         jest.restoreAllMocks();
     });
 
