@@ -16,6 +16,8 @@ export interface AdminBillingAccount {
     provider: string | null;
     provider_customer_id: string | null;
     provider_subscription_id: string | null;
+    ai_requests_this_month: number;
+    ai_tokens_this_month: number;
 }
 
 export interface AdminBillingSummaryRow {

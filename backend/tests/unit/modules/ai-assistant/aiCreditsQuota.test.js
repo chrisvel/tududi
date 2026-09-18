@@ -27,7 +27,7 @@ describe('AI Assistant - AI Credits monthly quota', () => {
         process.env.LLM_API_KEY = 'test-key';
         process.env.TUDUDI_PLANS_JSON = JSON.stringify({
             free: {
-                limits: { ai_credits_per_month: 2, ai_requests_per_day: 999 },
+                limits: { ai_credits_per_month: 2, ai_requests_per_month: 999 },
             },
         });
         plans._resetCache();

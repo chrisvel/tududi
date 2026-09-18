@@ -262,10 +262,10 @@ const BillingTab: React.FC<BillingTabProps> = ({ isActive }) => {
                             <UsageBar
                                 label={t(
                                     'billing.resource.ai',
-                                    'AI requests today'
+                                    'AI requests this month'
                                 )}
-                                used={status.usage.ai_requests_today}
-                                limit={status.limits.ai_requests_per_day}
+                                used={status.usage.ai_requests_this_month}
+                                limit={status.limits.ai_requests_per_month}
                             />
                             <UsageBar
                                 label={t(

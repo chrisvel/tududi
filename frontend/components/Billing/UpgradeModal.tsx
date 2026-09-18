@@ -33,7 +33,7 @@ const UpgradeModal: React.FC = () => {
             case 'storage':
                 return t('billing.resource.storage', 'attachment storage');
             case 'ai_requests':
-                return t('billing.resource.ai', 'AI requests today');
+                return t('billing.resource.ai', 'AI requests this month');
             default:
                 return resource || '';
         }

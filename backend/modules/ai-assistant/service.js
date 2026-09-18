@@ -188,13 +188,13 @@ function buildResponseFormat(name, schema) {
     };
 }
 
-// What the call actually cost, banked per user per day. The request
+// What the call actually cost, banked per user per month. The request
 // counter that gates the plan says nothing about spend: two daily briefs
 // differ by an order of magnitude in tokens depending on how much of
 // someone's list fits in the prompt, so a plan priced on request counts
 // under-prices whoever has the most in tududi. No plan defines
-// `ai_tokens_per_day`, so consumeUsage records this without ever throwing;
-// give it a limit later and the same call starts enforcing one.
+// `ai_tokens_per_month`, so consumeUsage records this without ever
+// throwing; give it a limit later and the same call starts enforcing one.
 async function recordTokenUsage(userId, response) {
     const total = response?.usage?.total_tokens;
     if (!userId || !Number.isFinite(total) || total <= 0) return;
