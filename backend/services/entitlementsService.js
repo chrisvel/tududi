@@ -261,20 +261,20 @@ async function assertStorage(userId, additionalBytes) {
     }
 }
 
-function todayKey(now = new Date()) {
-    return now.toISOString().slice(0, 10);
+function currentMonthKey(now = new Date()) {
+    return now.toISOString().slice(0, 7);
 }
 
-// Atomically records one use of a per-day metric and throws when the
-// day's budget is exhausted. Returns the new count.
+// Atomically records one use of a per-month metric and throws when the
+// month's budget is exhausted. Returns the new count.
 async function consumeUsage(userId, metric, n = 1) {
     if (!isHostedMode()) return 0;
     const ent = await getEntitlements(userId);
-    const limitKey = `${metric}_per_day`;
+    const limitKey = `${metric}_per_month`;
     const limit = ent.limits[limitKey];
 
     const { UsageCounter } = models();
-    const period = todayKey();
+    const period = currentMonthKey();
     const [row] = await UsageCounter.findOrCreate({
         where: { user_id: userId, metric, period_key: period },
         defaults: { user_id: userId, metric, period_key: period, count: 0 },
@@ -295,7 +295,7 @@ async function getUsage(userId) {
     const { UsageCounter } = models();
     const counter = (metric) =>
         UsageCounter.findOne({
-            where: { user_id: userId, metric, period_key: todayKey() },
+            where: { user_id: userId, metric, period_key: currentMonthKey() },
             attributes: ['count'],
             raw: true,
         });
@@ -313,11 +313,32 @@ async function getUsage(userId) {
         projects,
         notes,
         storage_bytes,
-        ai_requests_today: ai ? ai.count : 0,
+        ai_requests_this_month: ai ? ai.count : 0,
         // Unlimited by design: recorded so hosted pricing can be set from
         // real spend rather than a request count. No plan caps it.
-        ai_tokens_today: aiTokens ? aiTokens.count : 0,
+        ai_tokens_this_month: aiTokens ? aiTokens.count : 0,
     };
+}
+
+// Batch version of getUsage's AI counters, for the admin account list
+// where per-row queries would mean one round trip per account.
+async function getUsageForUsers(userIds, metric) {
+    if (!userIds.length) return {};
+    const { UsageCounter } = models();
+    const rows = await UsageCounter.findAll({
+        where: {
+            user_id: userIds,
+            metric,
+            period_key: currentMonthKey(),
+        },
+        attributes: ['user_id', 'count'],
+        raw: true,
+    });
+    const map = {};
+    rows.forEach((r) => {
+        map[r.user_id] = r.count;
+    });
+    return map;
 }
 
 module.exports = {
@@ -334,4 +355,5 @@ module.exports = {
     assertStorage,
     consumeUsage,
     getUsage,
+    getUsageForUsers,
 };

@@ -26,7 +26,7 @@ The catalog lives in `backend/config/plans.js`:
 | Projects | 10 | unlimited |
 | Notes | 50 | unlimited |
 | Attachment storage | 50 MB | 5 GB |
-| AI requests per day | 0 | 200 |
+| AI requests per month | 0 | 200 |
 | AI assistant, MCP, CalDAV, Telegram, backup import | no | yes |
 
 `null` means unlimited. Override any number with `TUDUDI_PLANS_JSON`, a JSON
@@ -80,7 +80,7 @@ and `details: { resource, limit, current, plan }`; plan-only features answer
 `402` with `code: FEATURE_NOT_IN_PLAN`.
 
 Stock limits (tasks, projects, notes, storage) are counted live, so
-completing tasks or deleting attachments frees quota immediately. Per-day
+completing tasks or deleting attachments frees quota immediately. Per-month
 budgets (AI requests) use the `usage_counters` table.
 
 ## Tables
@@ -89,7 +89,7 @@ budgets (AI requests) use the `usage_counters` table.
   state as reported by Stripe, the local trial end, and the admin override.
 - `billing_events`: every Stripe webhook event id, so redeliveries are
   applied once.
-- `usage_counters`: `(user, metric, day)` counters.
+- `usage_counters`: `(user, metric, month)` counters.
 
 All three are removed with the account by `services/accountErasureService.js`.
 
@@ -155,7 +155,7 @@ Endpoints (all 404 on a self-hosted instance):
 | `POST /api/billing/checkout` `{ interval: "month" \| "year" }` | checkout URL |
 | `POST /api/billing/portal` | customer portal URL |
 | `POST /api/billing/sync` `{ session_id? }` | re-read the subscription from the provider (the checkout redirect can beat the webhook) |
-| `GET /api/admin/billing` | overview and account list (admin) |
+| `GET /api/admin/billing` | overview and account list, each with this month's AI request/token usage (admin) |
 | `PUT /api/admin/billing/:userId/override` `{ plan, expires_at?, reason? }` | comp or restrict an account (admin) |
 | `DELETE /api/admin/billing/:userId/override` | remove the override (admin) |
 | `POST /api/admin/billing/:userId/sync` | force a re-read from the provider (admin) |

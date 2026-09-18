@@ -297,6 +297,11 @@ class BillingService {
                 limit: Math.min(Number(query.limit) || 50, 200),
             }),
         ]);
+        const userIds = list.rows.map((a) => a.user_id);
+        const [aiRequests, aiTokens] = await Promise.all([
+            entitlements.getUsageForUsers(userIds, 'ai_requests'),
+            entitlements.getUsageForUsers(userIds, 'ai_tokens'),
+        ]);
         return {
             summary,
             total: list.count,
@@ -314,6 +319,8 @@ class BillingService {
                 provider: a.provider,
                 provider_customer_id: a.provider_customer_id,
                 provider_subscription_id: a.provider_subscription_id,
+                ai_requests_this_month: aiRequests[a.user_id] || 0,
+                ai_tokens_this_month: aiTokens[a.user_id] || 0,
             })),
         };
     }

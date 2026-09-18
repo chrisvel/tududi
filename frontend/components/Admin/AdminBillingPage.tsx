@@ -54,6 +54,12 @@ const AdminBillingPage: React.FC = () => {
     const formatDate = (value: string | null) =>
         value ? new Date(value).toLocaleDateString() : '';
 
+    const formatTokens = (value: number) => {
+        if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
+        if (value >= 1_000) return `${(value / 1_000).toFixed(1)}k`;
+        return String(value);
+    };
+
     const openOverride = (account: AdminBillingAccount) => {
         setEditing(account);
         setOverridePlan(account.override_plan || 'pro');
@@ -204,6 +210,9 @@ const AdminBillingPage: React.FC = () => {
                                 {t('admin.billing.until', 'Until')}
                             </th>
                             <th className="px-4 py-2">
+                                {t('admin.billing.aiUsage', 'AI usage (month)')}
+                            </th>
+                            <th className="px-4 py-2">
                                 {t('admin.billing.override', 'Override')}
                             </th>
                             <th className="px-4 py-2"></th>
@@ -214,7 +223,7 @@ const AdminBillingPage: React.FC = () => {
                             <tr>
                                 <td
                                     className="px-4 py-3 text-gray-500"
-                                    colSpan={6}
+                                    colSpan={7}
                                 >
                                     {t('common.loading', 'Loading...')}
                                 </td>
@@ -223,7 +232,7 @@ const AdminBillingPage: React.FC = () => {
                             <tr>
                                 <td
                                     className="px-4 py-3 text-gray-500"
-                                    colSpan={6}
+                                    colSpan={7}
                                 >
                                     {t(
                                         'admin.billing.empty',
@@ -275,6 +284,13 @@ const AdminBillingPage: React.FC = () => {
                                             a.current_period_end ||
                                                 a.trial_ends_at
                                         )}
+                                    </td>
+                                    <td className="px-4 py-2 text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                                        {a.ai_requests_this_month}{' '}
+                                        {t('admin.billing.requestsAbbr', 'reqs')}
+                                        {' · '}
+                                        {formatTokens(a.ai_tokens_this_month)}{' '}
+                                        {t('admin.billing.tokensAbbr', 'tok')}
                                     </td>
                                     <td className="px-4 py-2">
                                         {a.override_plan ? (
