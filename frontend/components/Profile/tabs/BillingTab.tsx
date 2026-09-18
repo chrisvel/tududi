@@ -16,46 +16,11 @@ import {
     formatBytes,
 } from '../../../utils/billingService';
 import { useToast } from '../../Shared/ToastContext';
+import UsageBar from '../../Shared/UsageBar';
 
 interface BillingTabProps {
     isActive: boolean;
 }
-
-const UsageBar: React.FC<{
-    label: string;
-    used: number;
-    limit: number | null;
-    format?: (n: number) => string;
-}> = ({ label, used, limit, format = (n) => String(n) }) => {
-    const { t } = useTranslation();
-    const pct =
-        limit && limit > 0
-            ? Math.min(100, Math.round((used / limit) * 100))
-            : 0;
-    const tone =
-        pct >= 100 ? 'bg-red-500' : pct >= 80 ? 'bg-amber-500' : 'bg-blue-500';
-    return (
-        <div>
-            <div className="flex justify-between text-sm text-gray-700 dark:text-gray-300 mb-1">
-                <span>{label}</span>
-                <span>
-                    {format(used)}
-                    {limit === null
-                        ? ` / ${t('billing.unlimited', 'unlimited')}`
-                        : ` / ${format(limit)}`}
-                </span>
-            </div>
-            {limit !== null && (
-                <div className="h-2 rounded bg-gray-200 dark:bg-gray-700 overflow-hidden">
-                    <div
-                        className={`h-2 ${tone}`}
-                        style={{ width: `${pct}%` }}
-                    />
-                </div>
-            )}
-        </div>
-    );
-};
 
 const BillingTab: React.FC<BillingTabProps> = ({ isActive }) => {
     const { t } = useTranslation();
@@ -297,10 +262,18 @@ const BillingTab: React.FC<BillingTabProps> = ({ isActive }) => {
                             <UsageBar
                                 label={t(
                                     'billing.resource.ai',
-                                    'AI requests today'
+                                    'AI requests this month'
                                 )}
-                                used={status.usage.ai_requests_today}
-                                limit={status.limits.ai_requests_per_day}
+                                used={status.usage.ai_requests_this_month}
+                                limit={status.limits.ai_requests_per_month}
+                            />
+                            <UsageBar
+                                label={t(
+                                    'billing.resource.aiCredits',
+                                    'AI credits this month'
+                                )}
+                                used={status.usage.ai_credits_used_this_month}
+                                limit={status.limits.ai_credits_per_month}
                             />
                         </div>
                     )}

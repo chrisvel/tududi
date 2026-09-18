@@ -7,6 +7,8 @@ const { User, Goal, Project, Area } = require('../../models');
 const { computeTaskMetrics } = require('../tasks/queries/metrics-computation');
 const { AppError } = require('../../shared/errors');
 const { logError } = require('../../services/logService');
+const secretCipher = require('../../shared/crypto/secretCipher');
+const { assertSafeUrl } = require('../url/ssrfGuard');
 
 const PRIORITY_LABELS = { 0: 'low', 1: 'medium', 2: 'high' };
 const STATUS_LABELS = {
@@ -19,31 +21,113 @@ const STATUS_LABELS = {
     6: 'planned',
 };
 
-function isAIConfigured() {
-    return !!(process.env.LLM_API_KEY || process.env.OPENAI_API_KEY);
+// Resolves the effective AI provider config for a user: their own
+// Profile -> AI Assistant settings (backend/modules/users) take priority
+// field-by-field, falling back to this instance's own .env exactly like
+// oidc/providerConfig.js falls back to .env when no DB config is saved.
+// userId is null for internal/test callers with no request context, which
+// resolves to .env-only, matching the pre-per-user-settings behavior.
+//
+// Hosted mode never applies a per-user override: subscribers don't pick
+// their own provider there (see Profile -> AI Assistant, which only shows
+// an AI Credits balance in hosted mode, not provider fields) - every
+// hosted account shares the operator's own .env-configured provider.
+async function resolveAIConfig(userId) {
+    let dbApiKey = null;
+    let dbBaseUrl = null;
+    let dbModel = null;
+
+    if (userId && !entitlements.isHostedMode()) {
+        const user = await User.findByPk(userId, {
+            attributes: ['ai_api_key', 'ai_base_url', 'ai_model'],
+        });
+        if (user) {
+            if (user.ai_api_key) {
+                try {
+                    dbApiKey = secretCipher.decrypt(user.ai_api_key);
+                } catch (error) {
+                    logError('Failed to decrypt stored AI API key', error);
+                }
+            }
+            dbBaseUrl = user.ai_base_url || null;
+            dbModel = user.ai_model || null;
+        }
+    }
+
+    const envApiKey = process.env.LLM_API_KEY || process.env.OPENAI_API_KEY;
+    const envBaseUrl = process.env.LLM_BASE_URL || process.env.OPENAI_BASE_URL;
+    const envModel = process.env.LLM_MODEL || process.env.TUDUDI_AI_MODEL;
+
+    return {
+        apiKey: dbApiKey || envApiKey || null,
+        apiKeySource: dbApiKey ? 'user' : envApiKey ? 'env' : null,
+        baseURL: dbBaseUrl || envBaseUrl || null,
+        baseUrlSource: dbBaseUrl ? 'user' : envBaseUrl ? 'env' : null,
+        model: dbModel || envModel || 'gpt-4o-mini',
+        modelSource: dbModel ? 'user' : envModel ? 'env' : 'default',
+    };
 }
 
-function getOpenAIClient() {
-    const apiKey = process.env.LLM_API_KEY || process.env.OPENAI_API_KEY;
+async function isAIConfigured(userId) {
+    const { apiKey } = await resolveAIConfig(userId);
+    return !!apiKey;
+}
+
+// A user-configured ai_base_url is untrusted input driving a server-side
+// outbound request (SSRF), unlike an operator's own LLM_BASE_URL in .env
+// (trusted config -- it's how the documented local-Ollama setup reaches
+// http://localhost:11434 on purpose), so only the former is guarded.
+// Re-checked here, not just at save time in users/validation.js, to close
+// the DNS-rebinding gap between when the URL was saved and when it's
+// actually connected to; refusing to follow redirects closes the same gap
+// for a redirect target, since a chat-completions endpoint has no
+// legitimate reason to issue one.
+function createSsrfSafeFetch() {
+    return async (url, init) => {
+        await assertSafeUrl(url);
+        const response = await fetch(url, { ...init, redirect: 'manual' });
+        if (response.status >= 300 && response.status < 400) {
+            throw new AppError(
+                'The configured AI base URL redirected, which is not allowed.',
+                502,
+                'AI_BASE_URL_UNSAFE'
+            );
+        }
+        return response;
+    };
+}
+
+async function getOpenAIClient(userId) {
+    const { apiKey, baseURL, baseUrlSource } = await resolveAIConfig(userId);
     if (!apiKey) {
         throw new AppError(
-            'AI assistant is not configured. Set LLM_API_KEY (or OPENAI_API_KEY) on the server to enable it.',
+            'AI assistant is not configured. Set LLM_API_KEY (or OPENAI_API_KEY) on the server, or add your own key in Profile → AI Assistant.',
             503,
             'AI_NOT_CONFIGURED'
         );
     }
     const options = { apiKey };
-    const baseURL = process.env.LLM_BASE_URL || process.env.OPENAI_BASE_URL;
     if (baseURL) {
         options.baseURL = baseURL;
+        if (baseUrlSource === 'user') {
+            try {
+                await assertSafeUrl(baseURL);
+            } catch {
+                throw new AppError(
+                    'Your configured AI base URL is not allowed. Use a public http(s) endpoint in Profile → AI Assistant.',
+                    400,
+                    'AI_BASE_URL_UNSAFE'
+                );
+            }
+            options.fetch = createSsrfSafeFetch();
+        }
     }
     return new OpenAI(options);
 }
 
-function getAIModel() {
-    return (
-        process.env.LLM_MODEL || process.env.TUDUDI_AI_MODEL || 'gpt-4o-mini'
-    );
+async function getAIModel(userId) {
+    const { model } = await resolveAIConfig(userId);
+    return model;
 }
 
 function getMaxTokens(envVar, defaultValue) {
@@ -104,13 +188,13 @@ function buildResponseFormat(name, schema) {
     };
 }
 
-// What the call actually cost, banked per user per day. The request
+// What the call actually cost, banked per user per month. The request
 // counter that gates the plan says nothing about spend: two daily briefs
 // differ by an order of magnitude in tokens depending on how much of
 // someone's list fits in the prompt, so a plan priced on request counts
 // under-prices whoever has the most in tududi. No plan defines
-// `ai_tokens_per_day`, so consumeUsage records this without ever throwing;
-// give it a limit later and the same call starts enforcing one.
+// `ai_tokens_per_month`, so consumeUsage records this without ever
+// throwing; give it a limit later and the same call starts enforcing one.
 async function recordTokenUsage(userId, response) {
     const total = response?.usage?.total_tokens;
     if (!userId || !Number.isFinite(total) || total <= 0) return;
@@ -395,7 +479,7 @@ function buildEntityMaps({ metrics, projects }) {
 }
 
 async function generateDailyBrief(userId) {
-    const client = getOpenAIClient();
+    const client = await getOpenAIClient(userId);
 
     const context = await fetchUserContext(userId);
     const contextSummary = buildContextSummary(context);
@@ -404,6 +488,7 @@ async function generateDailyBrief(userId) {
     // the context is a database read that can fail on its own, and losing a
     // day's allowance to our own error is not the user's mistake.
     await entitlements.consumeUsage(userId, 'ai_requests');
+    await entitlements.consumeMonthlyUsage(userId, 'ai_credits');
 
     const systemPrompt = `You are a productivity assistant in Tududi. Return a daily brief as JSON. Keep every field very short — no full sentences, no filler words.
 
@@ -431,7 +516,7 @@ Rules:
 - Return only the JSON object, no other text`;
 
     const response = await callWithFallback(client, userId, {
-        model: getAIModel(),
+        model: await getAIModel(userId),
         messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: contextSummary },
@@ -567,8 +652,9 @@ async function updateTaskInsightsDismissed(taskUid, userId, dismissed) {
 }
 
 async function generateTaskInsights(taskContext, userId) {
-    const client = getOpenAIClient();
+    const client = await getOpenAIClient(userId);
     await entitlements.consumeUsage(userId, 'ai_requests');
+    await entitlements.consumeMonthlyUsage(userId, 'ai_credits');
 
     const {
         taskUid,
@@ -669,7 +755,7 @@ Rules:
 - Return only the JSON object, no other text`;
 
     const response = await callWithFallback(client, userId, {
-        model: getAIModel(),
+        model: await getAIModel(userId),
         messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: lines.join('\n') },
@@ -774,8 +860,9 @@ async function updateProjectInsightsDismissed(projectUid, userId, dismissed) {
 }
 
 async function generateProjectInsights(projectContext, userId) {
-    const client = getOpenAIClient();
+    const client = await getOpenAIClient(userId);
     await entitlements.consumeUsage(userId, 'ai_requests');
+    await entitlements.consumeMonthlyUsage(userId, 'ai_credits');
 
     const {
         projectUid,
@@ -829,7 +916,7 @@ Rules:
 - Return only the JSON object, no other text`;
 
     const response = await callWithFallback(client, userId, {
-        model: getAIModel(),
+        model: await getAIModel(userId),
         messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: lines.join('\n') },
@@ -878,6 +965,7 @@ Rules:
 }
 
 module.exports = {
+    resolveAIConfig,
     isAIConfigured,
     generateDailyBrief,
     getCachedBrief,

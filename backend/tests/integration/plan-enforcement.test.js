@@ -30,7 +30,7 @@ const tinyPlans = (extra = {}) =>
                 max_projects: 1,
                 max_notes: 1,
                 storage_mb: 1,
-                ai_requests_per_day: 0,
+                ai_requests_per_month: 0,
             },
             ...extra,
         },

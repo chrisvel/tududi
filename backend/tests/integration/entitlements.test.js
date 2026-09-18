@@ -49,7 +49,7 @@ describe('entitlementsService with hosted mode on', () => {
                     max_projects: 1,
                     max_notes: 1,
                     storage_mb: 1,
-                    ai_requests_per_day: 2,
+                    ai_requests_per_month: 2,
                 },
             },
         });
@@ -87,8 +87,9 @@ describe('entitlementsService with hosted mode on', () => {
             projects: 0,
             notes: 0,
             storage_bytes: 0,
-            ai_requests_today: 0,
-            ai_tokens_today: 0,
+            ai_requests_this_month: 0,
+            ai_tokens_this_month: 0,
+            ai_credits_used_this_month: 0,
         });
         expect(
             await BillingAccount.count({ where: { user_id: user.id } })
@@ -153,7 +154,7 @@ describe('entitlementsService with hosted mode on', () => {
         });
     });
 
-    it('gates features and counts daily AI usage', async () => {
+    it('gates features and counts monthly AI usage', async () => {
         await expect(
             entitlements.assertFeature(user.id, 'mcp')
         ).rejects.toMatchObject({
@@ -172,7 +173,7 @@ describe('entitlementsService with hosted mode on', () => {
         ).rejects.toMatchObject({ code: 'PLAN_LIMIT_REACHED' });
 
         const usage = await entitlements.getUsage(user.id);
-        expect(usage.ai_requests_today).toBe(2);
+        expect(usage.ai_requests_this_month).toBe(2);
     });
 
     it('lifts limits through an admin override and drops the cache', async () => {

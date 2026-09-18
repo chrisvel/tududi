@@ -106,6 +106,10 @@ export interface Profile {
     notification_preferences?: NotificationPreferences | null;
     keyboard_shortcuts?: KeyboardShortcutsConfig | null;
     ai_profile?: string | null;
+    ai_base_url?: string | null;
+    ai_model?: string | null;
+    ai_api_key_set?: boolean;
+    ai_api_key_last4?: string | null;
 }
 
 export interface TelegramBotInfo {
@@ -120,5 +124,8 @@ export type ProfileFormData = Partial<
         currentPassword: string;
         newPassword: string;
         confirmPassword: string;
+        // Write-only: a new key to set on save. Never populated from a GET
+        // response (the server never returns the plaintext key).
+        ai_api_key: string;
     }
 >;

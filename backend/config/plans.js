@@ -13,7 +13,8 @@ const DEFAULT_PLANS = {
             max_projects: 10,
             max_notes: 50,
             storage_mb: 50,
-            ai_requests_per_day: 0,
+            ai_requests_per_month: 0,
+            ai_credits_per_month: 0,
         },
         features: {
             ai: false,
@@ -31,7 +32,8 @@ const DEFAULT_PLANS = {
             max_projects: null,
             max_notes: null,
             storage_mb: 5000,
-            ai_requests_per_day: 200,
+            ai_requests_per_month: 200,
+            ai_credits_per_month: 50,
         },
         features: {
             ai: true,

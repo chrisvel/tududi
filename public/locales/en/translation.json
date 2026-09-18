@@ -1488,6 +1488,9 @@
       "plan": "Plan",
       "status": "Status",
       "until": "Until",
+      "aiUsage": "AI usage (month)",
+      "requestsAbbr": "reqs",
+      "tokensAbbr": "tok",
       "override": "Override",
       "empty": "No billing accounts yet",
       "cancelling": "cancelling",
@@ -1602,7 +1605,7 @@
       "project": "projects",
       "note": "notes",
       "storage": "attachment storage",
-      "ai": "AI requests today"
+      "ai": "AI requests this month"
     },
     "feature": {
       "ai": "the AI assistant",
