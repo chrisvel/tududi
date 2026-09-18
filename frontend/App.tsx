@@ -141,6 +141,12 @@ const App: React.FC = () => {
                         data.user.ui_settings?.appearance
                             ?.showTaskContextMenu === true
                     );
+                useStore
+                    .getState()
+                    .userSettingsStore.setUpcomingTasksVisible(
+                        data.user.sidebar_settings?.visibleSections
+                            ?.upcomingTasks !== false
+                    );
             } else {
                 setCurrentUser(null);
                 setUserInStorage(null);

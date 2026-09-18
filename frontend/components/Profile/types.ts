@@ -36,6 +36,15 @@ export interface UiSettings {
     [key: string]: unknown;
 }
 
+export interface SidebarVisibleSections {
+    upcomingTasks?: boolean;
+}
+
+export interface SidebarSettings {
+    pinnedViewsOrder?: string[];
+    visibleSections?: SidebarVisibleSections;
+}
+
 export interface NotificationPreferences {
     dueTasks: {
         inApp: boolean;
@@ -93,6 +102,7 @@ export interface Profile {
     task_summary_frequency: string;
     features: Features;
     ui_settings?: UiSettings | null;
+    sidebar_settings?: SidebarSettings | null;
     notification_preferences?: NotificationPreferences | null;
     keyboard_shortcuts?: KeyboardShortcutsConfig | null;
     ai_profile?: string | null;

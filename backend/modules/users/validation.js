@@ -90,11 +90,35 @@ function validateExpiresAt(expires_at) {
  * Validate sidebar settings.
  */
 function validateSidebarSettings(body) {
-    const { pinnedViewsOrder } = body;
-    if (!Array.isArray(pinnedViewsOrder)) {
-        throw new ValidationError('pinnedViewsOrder must be an array');
+    const { pinnedViewsOrder, visibleSections } = body;
+    const result = {};
+
+    if (pinnedViewsOrder !== undefined) {
+        if (!Array.isArray(pinnedViewsOrder)) {
+            throw new ValidationError('pinnedViewsOrder must be an array');
+        }
+        result.pinnedViewsOrder = pinnedViewsOrder;
     }
-    return { pinnedViewsOrder };
+
+    if (visibleSections !== undefined) {
+        if (
+            typeof visibleSections !== 'object' ||
+            visibleSections === null ||
+            Array.isArray(visibleSections)
+        ) {
+            throw new ValidationError('visibleSections must be an object');
+        }
+        for (const value of Object.values(visibleSections)) {
+            if (typeof value !== 'boolean') {
+                throw new ValidationError(
+                    'visibleSections values must be booleans'
+                );
+            }
+        }
+        result.visibleSections = visibleSections;
+    }
+
+    return result;
 }
 
 module.exports = {

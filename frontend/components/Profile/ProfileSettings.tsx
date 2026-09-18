@@ -23,6 +23,7 @@ import {
     SparklesIcon,
     SwatchIcon,
     CreditCardIcon,
+    ViewColumnsIcon,
 } from '@heroicons/react/24/outline';
 import { Squares2X2Icon } from '@heroicons/react/24/solid';
 import TelegramIcon from '../Shared/Icons/TelegramIcon';
@@ -49,6 +50,7 @@ import SecurityTab from './tabs/SecurityTab';
 import OIDCTab from './tabs/OIDCTab';
 import ApiKeysTab from './tabs/ApiKeysTab';
 import FeaturesTab from './tabs/FeaturesTab';
+import SidebarTab from './tabs/SidebarTab';
 import TelegramTab from './tabs/TelegramTab';
 import NotificationsTab from './tabs/NotificationsTab';
 import KeyboardShortcutsTab from './tabs/KeyboardShortcutsTab';
@@ -110,6 +112,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             'ai-assistant',
             'features',
             'billing',
+            'sidebar',
         ];
         return section && validTabs.includes(section) ? section : 'general';
     }, [location.search]);
@@ -620,6 +623,14 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     keyboard_shortcuts:
                         data.keyboard_shortcuts || getDefaultConfig(),
                     ai_profile: data.ai_profile || '',
+                    sidebar_settings: {
+                        ...(data.sidebar_settings || {}),
+                        visibleSections: {
+                            upcomingTasks:
+                                data.sidebar_settings?.visibleSections
+                                    ?.upcomingTasks !== false,
+                        },
+                    },
                 });
 
                 if (data.telegram_bot_token) {
@@ -1105,6 +1116,32 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 }
             }
 
+            // Save sidebar_settings via its own dedicated endpoint, which
+            // merges rather than replacing the whole column.
+            if (formData.sidebar_settings?.visibleSections !== undefined) {
+                const sidebarResponse = await fetch(
+                    getApiPath('profile/sidebar-settings'),
+                    {
+                        method: 'PUT',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-csrf-token': await getCsrfToken(),
+                            Accept: 'application/json',
+                        },
+                        body: JSON.stringify({
+                            visibleSections:
+                                formData.sidebar_settings.visibleSections,
+                        }),
+                    }
+                );
+                if (sidebarResponse.ok) {
+                    const sidebarData = await sidebarResponse.json();
+                    updatedProfile.sidebar_settings =
+                        sidebarData.sidebar_settings;
+                }
+            }
+
             if (avatarFile) {
                 const avatarUrl = await uploadAvatar(avatarFile);
                 updatedProfile.avatar_image = avatarUrl;
@@ -1159,6 +1196,15 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     appearance: {
                         ...(prev.ui_settings?.appearance || {}),
                         ...(updatedProfile.ui_settings?.appearance || {}),
+                    },
+                },
+                sidebar_settings: {
+                    ...(prev.sidebar_settings || {}),
+                    ...(updatedProfile.sidebar_settings || {}),
+                    visibleSections: {
+                        ...(prev.sidebar_settings?.visibleSections || {}),
+                        ...(updatedProfile.sidebar_settings?.visibleSections ||
+                            {}),
                     },
                 },
             }));
@@ -1245,6 +1291,18 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                             updatedProfile.ui_settings.appearance
                                 .showTaskContextMenu
                         )
+                    );
+            }
+
+            if (
+                updatedProfile.sidebar_settings?.visibleSections
+                    ?.upcomingTasks !== undefined
+            ) {
+                useStore
+                    .getState()
+                    .userSettingsStore.setUpcomingTasksVisible(
+                        updatedProfile.sidebar_settings.visibleSections
+                            .upcomingTasks !== false
                     );
             }
 
@@ -1354,13 +1412,20 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             name: t('profile.tabs.features', 'Features & Add-ons'),
             icon: <Squares2X2Icon className="w-5 h-5" />,
         },
+        {
+            id: 'sidebar',
+            name: t('profile.tabs.sidebar', 'Sidebar'),
+            icon: <ViewColumnsIcon className="w-5 h-5" />,
+        },
     ];
 
-    // Filter tabs based on feature flags
-    const visibleTabs = tabs.filter((tab) => {
-        if (!tab.featureFlag) return true;
-        return featureFlags[tab.featureFlag as keyof FeatureFlags];
-    });
+    // Filter tabs based on feature flags, then sort alphabetically by name
+    const visibleTabs = tabs
+        .filter((tab) => {
+            if (!tab.featureFlag) return true;
+            return featureFlags[tab.featureFlag as keyof FeatureFlags];
+        })
+        .sort((a, b) => a.name.localeCompare(b.name));
 
     return (
         <>
@@ -1611,6 +1676,31 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                                 ...prev.features,
                                                 [field]:
                                                     !prev.features?.[field],
+                                            },
+                                        }))
+                                    }
+                                />
+
+                                <SidebarTab
+                                    isActive={activeTab === 'sidebar'}
+                                    visibleSections={
+                                        formData.sidebar_settings
+                                            ?.visibleSections || {}
+                                    }
+                                    onToggleSection={(key) =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            sidebar_settings: {
+                                                ...prev.sidebar_settings,
+                                                visibleSections: {
+                                                    ...prev.sidebar_settings
+                                                        ?.visibleSections,
+                                                    [key]: !(prev
+                                                        .sidebar_settings
+                                                        ?.visibleSections?.[
+                                                        key
+                                                    ] !== false),
+                                                },
                                             },
                                         }))
                                     }

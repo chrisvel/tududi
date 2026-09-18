@@ -182,6 +182,7 @@ class AuthService {
                     'avatar_image',
                     'features',
                     'ui_settings',
+                    'sidebar_settings',
                 ],
             });
             if (user) {
@@ -213,6 +214,14 @@ class AuthService {
                         uiSettings = null;
                     }
                 }
+                let sidebarSettings = user.sidebar_settings;
+                if (sidebarSettings && typeof sidebarSettings === 'string') {
+                    try {
+                        sidebarSettings = JSON.parse(sidebarSettings);
+                    } catch {
+                        sidebarSettings = null;
+                    }
+                }
                 return {
                     user: {
                         uid: user.uid,
@@ -225,6 +234,7 @@ class AuthService {
                         avatar_image: user.avatar_image,
                         features: features || {},
                         ui_settings: uiSettings || null,
+                        sidebar_settings: sidebarSettings || null,
                         is_admin: admin,
                         has_collaborators: hasCollaborators,
                     },
