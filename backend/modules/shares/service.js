@@ -1,7 +1,9 @@
 'use strict';
 
 const sharesRepository = require('./repository');
+const groupsRepository = require('../groups/repository');
 const { execAction } = require('../../services/execAction');
+const groupSharing = require('../../services/groupSharing');
 const { isAdmin } = require('../../services/rolesService');
 const { logError } = require('../../services/logService');
 const { Notification } = require('../../models');
@@ -13,6 +15,12 @@ const {
 
 const SHAREABLE_TYPES = new Set(['project', 'task', 'note', 'area', 'goal']);
 const ACCESS_LEVELS = new Set(['ro', 'rw']);
+const GROUP_INVITATION_ID = /^g(\d+)$/;
+
+function parseGroupInvitationId(idParam) {
+    const match = GROUP_INVITATION_ID.exec(String(idParam));
+    return match ? Number(match[1]) : null;
+}
 
 class SharesService {
     async isResourceOwner(userId, resourceType, resourceUid) {
@@ -37,18 +45,29 @@ class SharesService {
 
     // Sharing is an invitation: the recipient sees nothing until they accept.
     // The response is the same whether or not the email belongs to an account,
-    // so this endpoint cannot be used to check who has signed up.
+    // so this endpoint cannot be used to check who has signed up. A share
+    // targets either one user by email or a whole group by uid.
     async createShare(userId, data) {
-        const { resource_type, resource_uid, target_user_email, access_level } =
-            data;
+        const {
+            resource_type,
+            resource_uid,
+            target_user_email,
+            target_group_uid,
+            access_level,
+        } = data;
 
         if (
             !resource_type ||
             !resource_uid ||
-            !target_user_email ||
-            !access_level
+            !access_level ||
+            (!target_user_email && !target_group_uid)
         ) {
             throw new ValidationError('Missing parameters');
+        }
+        if (target_user_email && target_group_uid) {
+            throw new ValidationError(
+                'Share with either a user or a group, not both'
+            );
         }
         if (!SHAREABLE_TYPES.has(resource_type)) {
             throw new ValidationError('Unsupported resource type');
@@ -65,6 +84,22 @@ class SharesService {
         );
         if (!resource) {
             throw new NotFoundError('Resource not found');
+        }
+
+        if (target_group_uid) {
+            const group = await groupsRepository.findByUid(target_group_uid);
+            if (!group) {
+                throw new NotFoundError('Group not found');
+            }
+            await groupSharing.grantToGroup({
+                actorUserId: userId,
+                group,
+                resourceType: resource_type,
+                resourceUid: resource_uid,
+                accessLevel: access_level,
+                ownerUserId: resource.user_id,
+            });
+            return null; // 204 No Content
         }
 
         const target =
@@ -148,13 +183,40 @@ class SharesService {
     }
 
     async deleteShare(userId, data) {
-        const { resource_type, resource_uid, target_user_id } = data;
+        const {
+            resource_type,
+            resource_uid,
+            target_user_id,
+            target_group_uid,
+        } = data;
 
-        if (!resource_type || !resource_uid || !target_user_id) {
+        if (
+            !resource_type ||
+            !resource_uid ||
+            (!target_user_id && !target_group_uid)
+        ) {
             throw new ValidationError('Missing parameters');
+        }
+        if (target_user_id && target_group_uid) {
+            throw new ValidationError(
+                'Revoke from either a user or a group, not both'
+            );
         }
 
         await this.assertCanManage(userId, resource_type, resource_uid);
+
+        if (target_group_uid) {
+            const group = await groupsRepository.findByUid(target_group_uid);
+            if (!group) {
+                throw new NotFoundError('Group not found');
+            }
+            await groupSharing.revokeFromGroup({
+                group,
+                resourceType: resource_type,
+                resourceUid: resource_uid,
+            });
+            return null; // 204 No Content
+        }
 
         const resource = await sharesRepository.findResourceOwner(
             resource_type,
@@ -231,13 +293,49 @@ class SharesService {
 
         const allShares = ownerInfo ? [ownerInfo, ...withEmails] : withEmails;
 
-        return { shares: allShares };
+        const groupShares = await groupSharing.listForResource(
+            resourceType,
+            resourceUid
+        );
+
+        return { shares: allShares, group_shares: groupShares };
     }
 
     async listInvitations(userId) {
-        const rows = await sharesRepository.findPendingInvitations(userId);
+        const [rows, groupRows] = await Promise.all([
+            sharesRepository.findPendingInvitations(userId),
+            sharesRepository.findPendingGroupInvitations(userId),
+        ]);
 
         const invitations = [];
+        for (const row of groupRows) {
+            const resource = await sharesRepository.findResourceSummary(
+                row.resource_type,
+                row.resource_uid
+            );
+            if (!resource) continue;
+
+            const inviter = await sharesRepository.findUserById(
+                row.granted_by_user_id,
+                ['id', 'email', 'name']
+            );
+
+            invitations.push({
+                id: `g${row.id}`,
+                resource_type: row.resource_type,
+                resource_uid: row.resource_uid,
+                resource_name: resource.name,
+                access_level: row.access_level,
+                created_at: row.created_at,
+                inviter_email: inviter?.email || null,
+                inviter_name: inviter?.name || null,
+                via_group: {
+                    uid: row.GroupShare.Group.uid,
+                    name: row.GroupShare.Group.name,
+                },
+            });
+        }
+
         for (const row of rows) {
             const resource = await sharesRepository.findResourceSummary(
                 row.resource_type,
@@ -262,35 +360,69 @@ class SharesService {
             });
         }
 
+        invitations.sort(
+            (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        );
+
         return { invitations };
     }
 
-    async acceptInvitation(userId, permissionId) {
-        const invitation = await sharesRepository.findPendingInvitation(
-            userId,
-            permissionId
-        );
-        if (!invitation) {
+    // Invitation ids are the row id for a direct share and "g<row id>" for a
+    // group grant.
+    async findInvitation(userId, invitationId) {
+        const groupRowId = parseGroupInvitationId(invitationId);
+        const directId = Number(invitationId);
+        if (
+            groupRowId === null &&
+            !(Number.isInteger(directId) && directId > 0)
+        ) {
             throw new NotFoundError('Invitation not found');
         }
 
-        await sharesRepository.acceptInvitationSet(invitation);
+        const invitation =
+            groupRowId !== null
+                ? await sharesRepository.findPendingGroupInvitation(
+                      userId,
+                      groupRowId
+                  )
+                : await sharesRepository.findPendingInvitation(
+                      userId,
+                      directId
+                  );
+        if (!invitation) {
+            throw new NotFoundError('Invitation not found');
+        }
+        return { invitation, viaGroup: groupRowId !== null };
+    }
+
+    async acceptInvitation(userId, invitationId) {
+        const { invitation, viaGroup } = await this.findInvitation(
+            userId,
+            invitationId
+        );
+
+        if (viaGroup) {
+            await sharesRepository.acceptGroupInvitationSet(invitation);
+        } else {
+            await sharesRepository.acceptInvitationSet(invitation);
+        }
         return {
             resource_type: invitation.resource_type,
             resource_uid: invitation.resource_uid,
         };
     }
 
-    async declineInvitation(userId, permissionId) {
-        const invitation = await sharesRepository.findPendingInvitation(
+    async declineInvitation(userId, invitationId) {
+        const { invitation, viaGroup } = await this.findInvitation(
             userId,
-            permissionId
+            invitationId
         );
-        if (!invitation) {
-            throw new NotFoundError('Invitation not found');
-        }
 
-        await sharesRepository.deleteInvitationSet(invitation);
+        if (viaGroup) {
+            await sharesRepository.deleteGroupInvitationSet(invitation);
+        } else {
+            await sharesRepository.deleteInvitationSet(invitation);
+        }
         return null;
     }
 }
