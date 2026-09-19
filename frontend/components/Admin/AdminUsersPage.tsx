@@ -322,6 +322,12 @@ const AddUserModal: React.FC<{
                     <div>
                         <label className="block text-sm text-gray-700 dark:text-gray-300 mb-1">
                             {t('admin.email', 'Email')}
+                            <span
+                                className="text-red-500 dark:text-red-400 ml-1"
+                                aria-hidden="true"
+                            >
+                                *
+                            </span>
                         </label>
                         <input
                             type="email"
