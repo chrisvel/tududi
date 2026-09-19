@@ -1,27 +1,15 @@
 const { Op } = require('sequelize');
-const {
-    Project,
-    Task,
-    Note,
-    Area,
-    Goal,
-    Person,
-    Permission,
-} = require('../models');
+const { Project, Task, Note, Area, Goal, Person } = require('../models');
 const { isAdmin } = require('./rolesService');
+const permissionSources = require('./permissionSources');
 
 const ACCESS = { NONE: 'none', RO: 'ro', RW: 'rw', ADMIN: 'admin' };
 
 async function getSharedUidsForUser(resourceType, userId) {
-    const rows = await Permission.findAll({
-        where: {
-            user_id: userId,
-            resource_type: resourceType,
-            status: 'accepted',
-        },
-        attributes: ['resource_uid'],
-        raw: true,
-    });
+    const rows = await permissionSources.findAccepted(
+        { user_id: userId, resource_type: resourceType },
+        ['resource_uid']
+    );
     const set = new Set(rows.map((r) => r.resource_uid));
     return Array.from(set);
 }
@@ -173,17 +161,12 @@ async function getAccess(userId, resourceType, resourceUid) {
     }
 
     // shared
-    const perm = await Permission.findOne({
-        where: {
-            user_id: userId,
-            resource_type: resourceType,
-            resource_uid: resourceUid,
-            status: 'accepted',
-        },
-        attributes: ['access_level'],
-        raw: true,
-    });
-    return perm ? perm.access_level : ACCESS.NONE;
+    const level = await permissionSources.findAcceptedAccessLevel(
+        userId,
+        resourceType,
+        resourceUid
+    );
+    return level || ACCESS.NONE;
 }
 
 async function ownershipOrPermissionWhere(resourceType, userId, cache = null) {

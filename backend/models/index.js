@@ -64,6 +64,10 @@ const TaskEvent = require('./task_event')(sequelize);
 const Role = require('./role')(sequelize);
 const Action = require('./action')(sequelize);
 const Permission = require('./permission')(sequelize);
+const UserGroup = require('./userGroup')(sequelize);
+const UserGroupMember = require('./userGroupMember')(sequelize);
+const GroupShare = require('./groupShare')(sequelize);
+const GroupPermission = require('./groupPermission')(sequelize);
 const View = require('./view')(sequelize);
 const ApiToken = require('./api_token')(sequelize);
 const Setting = require('./setting')(sequelize);
@@ -203,6 +207,37 @@ Permission.belongsTo(User, {
     foreignKey: 'granted_by_user_id',
     as: 'GrantedBy',
 });
+UserGroup.belongsTo(User, {
+    foreignKey: 'created_by_user_id',
+    as: 'CreatedBy',
+});
+UserGroup.hasMany(UserGroupMember, {
+    foreignKey: 'group_id',
+    as: 'Members',
+    onDelete: 'CASCADE',
+});
+UserGroupMember.belongsTo(UserGroup, { foreignKey: 'group_id', as: 'Group' });
+UserGroupMember.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+UserGroup.hasMany(GroupShare, {
+    foreignKey: 'group_id',
+    as: 'Shares',
+    onDelete: 'CASCADE',
+});
+GroupShare.belongsTo(UserGroup, { foreignKey: 'group_id', as: 'Group' });
+GroupShare.belongsTo(User, {
+    foreignKey: 'granted_by_user_id',
+    as: 'GrantedBy',
+});
+GroupShare.hasMany(GroupPermission, {
+    foreignKey: 'group_share_id',
+    as: 'Permissions',
+    onDelete: 'CASCADE',
+});
+GroupPermission.belongsTo(GroupShare, {
+    foreignKey: 'group_share_id',
+    as: 'GroupShare',
+});
+GroupPermission.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 Action.belongsTo(User, { foreignKey: 'actor_user_id', as: 'Actor' });
 Action.belongsTo(User, { foreignKey: 'target_user_id', as: 'Target' });
 
@@ -468,6 +503,10 @@ module.exports = {
     Role,
     Action,
     Permission,
+    UserGroup,
+    UserGroupMember,
+    GroupShare,
+    GroupPermission,
     View,
     ApiToken,
     Setting,

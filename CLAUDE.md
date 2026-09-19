@@ -286,6 +286,12 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - Common patterns to remember
     - Known issues and solutions
 
+27. **[User Groups](docs/18-user-groups.md)**
+    - Admin-managed groups shared across the instance
+    - Sharing any item with a whole group, with an invitation per member
+    - Live membership, overlap with direct shares, and how access is revoked
+    - Group API and the `permissionSources` rule for reading shared access
+
 ---
 
 ## Project Overview

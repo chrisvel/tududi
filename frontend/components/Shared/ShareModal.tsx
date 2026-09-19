@@ -2,12 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     AccessLevel,
+    GroupShareRow,
     ListSharesResponseRow,
     ShareGrantRequest,
     grantShare,
-    listShares,
+    listShareDetails,
+    revokeGroupShare,
     revokeShare,
 } from '../../utils/sharesService';
+import { GroupSummary, fetchGroups } from '../../utils/groupsService';
+import { clearProjectShareCache } from '../../utils/projectShareCache';
 import { getCurrentUser } from '../../utils/userUtils';
 
 export type ShareResourceType = ShareGrantRequest['resource_type'];
@@ -19,6 +23,8 @@ interface ShareModalProps {
     resourceUid: string | null;
     resourceName?: string | null;
 }
+
+type ShareTarget = 'user' | 'group';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -38,36 +44,63 @@ const ShareModal: React.FC<ShareModalProps> = ({
     resourceName,
 }) => {
     const { t } = useTranslation();
+    const [target, setTarget] = useState<ShareTarget>('user');
     const [email, setEmail] = useState('');
+    const [groupUid, setGroupUid] = useState('');
     const [access, setAccess] = useState<AccessLevel>('ro');
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [notice, setNotice] = useState<string | null>(null);
     const [rows, setRows] = useState<ListSharesResponseRow[] | null>(null);
+    const [groupShares, setGroupShares] = useState<GroupShareRow[]>([]);
+    const [groups, setGroups] = useState<GroupSummary[]>([]);
     const [loadingList, setLoadingList] = useState(false);
     const currentUser = getCurrentUser();
 
     const refreshShares = async (uid: string) => {
         setLoadingList(true);
         try {
-            const data = await listShares(resourceType, uid);
-            setRows(data);
+            const data = await listShareDetails(resourceType, uid);
+            setRows(data.shares);
+            setGroupShares(data.group_shares);
         } catch (err: any) {
             setError(err.message || 'Failed to load shares');
             setRows([]);
+            setGroupShares([]);
         } finally {
             setLoadingList(false);
         }
     };
 
+    // Shares changed: project cards and the "Everyone" sidebar item both read
+    // from what was just written.
+    const notifySharesChanged = (uid: string) => {
+        if (resourceType === 'project') clearProjectShareCache(uid);
+        window.dispatchEvent(new CustomEvent('collaboratorsChanged'));
+    };
+
     useEffect(() => {
         if (!isOpen) return;
+        setTarget('user');
         setEmail('');
+        setGroupUid('');
         setAccess('ro');
         setError(null);
         setNotice(null);
         if (!resourceUid) return;
         refreshShares(resourceUid);
+
+        let cancelled = false;
+        fetchGroups()
+            .then((list) => {
+                if (!cancelled) setGroups(list);
+            })
+            .catch(() => {
+                if (!cancelled) setGroups([]);
+            });
+        return () => {
+            cancelled = true;
+        };
     }, [isOpen, resourceUid, resourceType]);
 
     if (!isOpen) return null;
@@ -75,6 +108,64 @@ const ShareModal: React.FC<ShareModalProps> = ({
     const title = TITLE_KEYS[resourceType] || {
         key: 'shares.share',
         fallback: 'Share',
+    };
+
+    const sharedGroupUids = new Set(groupShares.map((g) => g.group_uid));
+    const showTargetToggle = groups.length > 0;
+
+    const switchTarget = (next: ShareTarget) => {
+        setTarget(next);
+        setError(null);
+        setNotice(null);
+    };
+
+    const shareWithUser = async (uid: string) => {
+        const trimmed = email.trim().toLowerCase();
+        if (!EMAIL_PATTERN.test(trimmed)) {
+            setError(t('shares.invalidEmail', 'Enter a valid email address'));
+            return false;
+        }
+        if (currentUser && trimmed === currentUser.email?.toLowerCase()) {
+            setError(
+                t(
+                    'shares.cannotShareWithSelf',
+                    'You already have full access to this'
+                )
+            );
+            return false;
+        }
+
+        await grantShare({
+            resource_type: resourceType,
+            resource_uid: uid,
+            target_user_email: trimmed,
+            access_level: access,
+        });
+        setEmail('');
+        setNotice(t('shares.invitationSent', 'Invitation sent.'));
+        return true;
+    };
+
+    const shareWithGroup = async (uid: string) => {
+        if (!groupUid) {
+            setError(t('shares.selectGroupError', 'Choose a group'));
+            return false;
+        }
+
+        await grantShare({
+            resource_type: resourceType,
+            resource_uid: uid,
+            target_group_uid: groupUid,
+            access_level: access,
+        });
+        setGroupUid('');
+        setNotice(
+            t(
+                'shares.groupInvitationsSent',
+                'Invitations sent to the group members.'
+            )
+        );
+        return true;
     };
 
     const onSubmit = async (e: React.FormEvent) => {
@@ -86,32 +177,16 @@ const ShareModal: React.FC<ShareModalProps> = ({
             return;
         }
 
-        const trimmed = email.trim().toLowerCase();
-        if (!EMAIL_PATTERN.test(trimmed)) {
-            setError(t('shares.invalidEmail', 'Enter a valid email address'));
-            return;
-        }
-        if (currentUser && trimmed === currentUser.email?.toLowerCase()) {
-            setError(
-                t(
-                    'shares.cannotShareWithSelf',
-                    'You already have full access to this'
-                )
-            );
-            return;
-        }
-
         setSubmitting(true);
         try {
-            await grantShare({
-                resource_type: resourceType,
-                resource_uid: resourceUid,
-                target_user_email: trimmed,
-                access_level: access,
-            });
-            setEmail('');
-            setNotice(t('shares.invitationSent', 'Invitation sent.'));
-            await refreshShares(resourceUid);
+            const shared =
+                target === 'group'
+                    ? await shareWithGroup(resourceUid)
+                    : await shareWithUser(resourceUid);
+            if (shared) {
+                await refreshShares(resourceUid);
+                notifySharesChanged(resourceUid);
+            }
         } catch (err: any) {
             setError(err.message || 'Failed to share');
         } finally {
@@ -124,8 +199,18 @@ const ShareModal: React.FC<ShareModalProps> = ({
         try {
             await revokeShare(resourceType, resourceUid, userId);
             await refreshShares(resourceUid);
-            // Removing the last collaborator hides the "Everyone" sidebar item.
-            window.dispatchEvent(new CustomEvent('collaboratorsChanged'));
+            notifySharesChanged(resourceUid);
+        } catch (err: any) {
+            setError(err.message || 'Failed to revoke share');
+        }
+    };
+
+    const onRevokeGroup = async (uid: string) => {
+        if (!resourceUid) return;
+        try {
+            await revokeGroupShare(resourceType, resourceUid, uid);
+            await refreshShares(resourceUid);
+            notifySharesChanged(resourceUid);
         } catch (err: any) {
             setError(err.message || 'Failed to revoke share');
         }
@@ -137,6 +222,16 @@ const ShareModal: React.FC<ShareModalProps> = ({
             : al === 'rw'
               ? t('shares.readWrite', 'Read & write')
               : t('shares.readOnly', 'Read only');
+
+    const toggleClass = (active: boolean) =>
+        `flex-1 px-3 py-1.5 text-sm rounded ${
+            active
+                ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
+                : 'text-gray-600 dark:text-gray-300'
+        }`;
+
+    const submitDisabled =
+        submitting || (target === 'group' ? !groupUid : !email.trim());
 
     return (
         <div
@@ -158,32 +253,100 @@ const ShareModal: React.FC<ShareModalProps> = ({
                     )}
                 </div>
                 <form onSubmit={onSubmit} className="px-6 py-4 space-y-4">
-                    <div>
-                        <label
-                            htmlFor="share-email"
-                            className="block text-sm text-gray-700 dark:text-gray-300 mb-1"
+                    {showTargetToggle && (
+                        <div
+                            role="tablist"
+                            className="flex p-1 rounded-md bg-gray-100 dark:bg-gray-700"
                         >
-                            {t('shares.targetUser', 'Invite by email')}
-                        </label>
-                        <input
-                            id="share-email"
-                            type="email"
-                            autoComplete="off"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder={t(
-                                'shares.emailPlaceholder',
-                                'name@example.com'
-                            )}
-                            className="w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                            {t(
-                                'shares.inviteHint',
-                                'They will get an invitation and see it after accepting.'
-                            )}
-                        </p>
-                    </div>
+                            <button
+                                type="button"
+                                role="tab"
+                                aria-selected={target === 'user'}
+                                data-testid="share-target-user"
+                                onClick={() => switchTarget('user')}
+                                className={toggleClass(target === 'user')}
+                            >
+                                {t('shares.targetUserTab', 'User')}
+                            </button>
+                            <button
+                                type="button"
+                                role="tab"
+                                aria-selected={target === 'group'}
+                                data-testid="share-target-group"
+                                onClick={() => switchTarget('group')}
+                                className={toggleClass(target === 'group')}
+                            >
+                                {t('shares.targetGroupTab', 'Group')}
+                            </button>
+                        </div>
+                    )}
+                    {target === 'user' ? (
+                        <div>
+                            <label
+                                htmlFor="share-email"
+                                className="block text-sm text-gray-700 dark:text-gray-300 mb-1"
+                            >
+                                {t('shares.targetUser', 'Invite by email')}
+                            </label>
+                            <input
+                                id="share-email"
+                                type="email"
+                                autoComplete="off"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder={t(
+                                    'shares.emailPlaceholder',
+                                    'name@example.com'
+                                )}
+                                className="w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                {t(
+                                    'shares.inviteHint',
+                                    'They will get an invitation and see it after accepting.'
+                                )}
+                            </p>
+                        </div>
+                    ) : (
+                        <div>
+                            <label
+                                htmlFor="share-group"
+                                className="block text-sm text-gray-700 dark:text-gray-300 mb-1"
+                            >
+                                {t('shares.targetGroup', 'Share with a group')}
+                            </label>
+                            <select
+                                id="share-group"
+                                value={groupUid}
+                                onChange={(e) => setGroupUid(e.target.value)}
+                                className="w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
+                            >
+                                <option value="">
+                                    {t('shares.selectGroup', 'Select a group')}
+                                </option>
+                                {groups.map((group) => (
+                                    <option
+                                        key={group.uid}
+                                        value={group.uid}
+                                        disabled={sharedGroupUids.has(
+                                            group.uid
+                                        )}
+                                    >
+                                        {group.name} ({group.member_count})
+                                        {sharedGroupUids.has(group.uid)
+                                            ? ` - ${t('shares.groupAlreadyShared', 'already shared')}`
+                                            : ''}
+                                    </option>
+                                ))}
+                            </select>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                {t(
+                                    'shares.groupHint',
+                                    'Every member gets an invitation, and people added to the group later are invited too.'
+                                )}
+                            </p>
+                        </div>
+                    )}
                     <div>
                         <label className="block text-sm text-gray-700 dark:text-gray-300 mb-1">
                             {t('shares.permission', 'Permission')}
@@ -221,7 +384,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
                         </button>
                         <button
                             type="submit"
-                            disabled={submitting || !email.trim()}
+                            disabled={submitDisabled}
                             className="px-4 py-2 rounded bg-blue-600 text-white disabled:opacity-60"
                         >
                             {submitting
@@ -230,63 +393,122 @@ const ShareModal: React.FC<ShareModalProps> = ({
                         </button>
                     </div>
                 </form>
-                <div className="px-6 pb-5">
-                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        {t('shares.currentShares', 'Users with access')}
-                    </div>
-                    <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md max-h-56 overflow-auto">
-                        {loadingList ? (
-                            <div className="p-3 text-sm text-gray-500">
-                                {t('common.loading', 'Loading...')}
-                            </div>
-                        ) : !rows || rows.length === 0 ? (
-                            <div className="p-3 text-sm text-gray-500">
-                                {t('shares.noShares', 'Not shared yet')}
-                            </div>
-                        ) : (
-                            <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-                                {rows.map((r) => (
-                                    <li
-                                        key={`${r.user_id}-${r.created_at || 'owner'}`}
-                                        className="flex items-center justify-between px-3 py-2"
-                                    >
-                                        <div>
-                                            <div
-                                                className={`text-sm ${r.is_owner ? 'font-semibold' : ''} text-gray-900 dark:text-gray-100`}
-                                            >
-                                                {r.email || `#${r.user_id}`}
+                <div className="px-6 pb-5 space-y-4">
+                    <div>
+                        <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            {t('shares.currentShares', 'Users with access')}
+                        </div>
+                        <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md max-h-56 overflow-auto">
+                            {loadingList ? (
+                                <div className="p-3 text-sm text-gray-500">
+                                    {t('common.loading', 'Loading...')}
+                                </div>
+                            ) : !rows || rows.length === 0 ? (
+                                <div className="p-3 text-sm text-gray-500">
+                                    {t('shares.noShares', 'Not shared yet')}
+                                </div>
+                            ) : (
+                                <ul className="divide-y divide-gray-200 dark:divide-gray-700">
+                                    {rows.map((r) => (
+                                        <li
+                                            key={`${r.user_id}-${r.created_at || 'owner'}`}
+                                            className="flex items-center justify-between px-3 py-2"
+                                        >
+                                            <div>
+                                                <div
+                                                    className={`text-sm ${r.is_owner ? 'font-semibold' : ''} text-gray-900 dark:text-gray-100`}
+                                                >
+                                                    {r.email || `#${r.user_id}`}
+                                                </div>
+                                                <div className="text-xs text-gray-500">
+                                                    {accessLabel(
+                                                        r.access_level
+                                                    )}
+                                                    {r.status === 'pending' && (
+                                                        <span className="ml-2 px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200 dark:bg-transparent dark:text-amber-400 dark:border-amber-500">
+                                                            {t(
+                                                                'shares.pending',
+                                                                'Pending'
+                                                            )}
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </div>
-                                            <div className="text-xs text-gray-500">
-                                                {accessLabel(r.access_level)}
-                                                {r.status === 'pending' && (
-                                                    <span className="ml-2 px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200 dark:bg-transparent dark:text-amber-400 dark:border-amber-500">
+                                            {r.is_owner ? (
+                                                <span className="px-2 py-1 text-xs rounded bg-blue-50 text-blue-600 border border-blue-200 dark:bg-transparent dark:text-blue-400 dark:border-blue-500">
+                                                    {t('shares.owner', 'Owner')}
+                                                </span>
+                                            ) : (
+                                                <button
+                                                    onClick={() =>
+                                                        onRevoke(r.user_id)
+                                                    }
+                                                    className="px-2 py-1 text-xs rounded bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 dark:bg-transparent dark:text-red-400 dark:border-red-500"
+                                                >
+                                                    {t(
+                                                        'shares.revoke',
+                                                        'Revoke'
+                                                    )}
+                                                </button>
+                                            )}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
+                    </div>
+                    {groupShares.length > 0 && (
+                        <div data-testid="share-group-list">
+                            <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                {t(
+                                    'shares.sharedWithGroups',
+                                    'Shared with groups'
+                                )}
+                            </div>
+                            <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md max-h-40 overflow-auto">
+                                <ul className="divide-y divide-gray-200 dark:divide-gray-700">
+                                    {groupShares.map((g) => (
+                                        <li
+                                            key={g.group_uid}
+                                            className="flex items-center justify-between px-3 py-2"
+                                        >
+                                            <div>
+                                                <div className="text-sm text-gray-900 dark:text-gray-100">
+                                                    {g.group_name}
+                                                </div>
+                                                <div className="text-xs text-gray-500">
+                                                    {accessLabel(
+                                                        g.access_level
+                                                    )}
+                                                    <span className="ml-2">
                                                         {t(
-                                                            'shares.pending',
-                                                            'Pending'
+                                                            'shares.groupCounts',
+                                                            '{{accepted}} accepted, {{pending}} pending',
+                                                            {
+                                                                accepted:
+                                                                    g.accepted_count,
+                                                                pending:
+                                                                    g.pending_count,
+                                                            }
                                                         )}
                                                     </span>
-                                                )}
+                                                </div>
                                             </div>
-                                        </div>
-                                        {r.is_owner ? (
-                                            <span className="px-2 py-1 text-xs rounded bg-blue-50 text-blue-600 border border-blue-200 dark:bg-transparent dark:text-blue-400 dark:border-blue-500">
-                                                {t('shares.owner', 'Owner')}
-                                            </span>
-                                        ) : (
                                             <button
                                                 onClick={() =>
-                                                    onRevoke(r.user_id)
+                                                    onRevokeGroup(g.group_uid)
                                                 }
+                                                data-testid={`share-group-revoke-${g.group_uid}`}
                                                 className="px-2 py-1 text-xs rounded bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 dark:bg-transparent dark:text-red-400 dark:border-red-500"
                                             >
                                                 {t('shares.revoke', 'Revoke')}
                                             </button>
-                                        )}
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                    </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

@@ -417,7 +417,7 @@ Every user has exactly one role record that determines admin status. Created aut
 
 ### Permission Record
 
-Grants access to a specific resource (project, task, note) with a specific access level (ro, rw). Multiple permission records enable sharing resources across users.
+Grants access to a specific resource (project, task, note) with a specific access level (ro, rw). Multiple permission records enable sharing resources across users. Access that comes through a user group is stored separately, see [User Groups](18-user-groups.md).
 
 ### API Token
 

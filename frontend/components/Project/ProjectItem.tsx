@@ -21,6 +21,10 @@ import { getCurrentUser } from '../../utils/userUtils';
 import Tooltip from '../Shared/Tooltip';
 import { differenceInCalendarDays } from 'date-fns';
 import { listShares, ListSharesResponseRow } from '../../utils/sharesService';
+import {
+    failedShareCache,
+    projectShareCache,
+} from '../../utils/projectShareCache';
 import { getApiPath } from '../../config/paths';
 
 interface ProjectItemProps {
@@ -90,8 +94,6 @@ const getStatusLabel = (status: ProjectStatus | undefined, t: any): string => {
     }
 };
 
-const projectShareCache = new Map<string, ListSharesResponseRow[]>();
-const failedShareCache = new Set<string>();
 const MAX_SHARE_AVATARS = 4;
 
 const getShareInitials = (value?: string | null) => {
@@ -271,8 +273,12 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
 
         const knownShares = sharedUsers ?? [];
         const avatars = knownShares.slice(0, MAX_SHARE_AVATARS);
-        const totalCount =
-            (sharedUsers?.length ?? project.share_count ?? avatars.length) || 0;
+        // The share list only names people invited directly, while
+        // share_count also includes members who got access through a group.
+        const totalCount = Math.max(
+            sharedUsers?.length ?? 0,
+            project.share_count ?? 0
+        );
         const remaining = Math.max(0, totalCount - avatars.length);
 
         return { avatars, remaining };

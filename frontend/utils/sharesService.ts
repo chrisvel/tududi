@@ -6,7 +6,8 @@ export type AccessLevel = 'ro' | 'rw';
 export interface ShareGrantRequest {
     resource_type: 'project' | 'task' | 'note' | 'area' | 'goal' | 'tag';
     resource_uid: string;
-    target_user_email: string;
+    target_user_email?: string;
+    target_group_uid?: string;
     access_level: AccessLevel;
 }
 
@@ -45,10 +46,25 @@ export interface ListSharesResponseRow {
     is_owner?: boolean;
 }
 
-export async function listShares(
+export interface GroupShareRow {
+    group_uid: string;
+    group_name: string;
+    access_level: AccessLevel;
+    member_count: number;
+    accepted_count: number;
+    pending_count: number;
+    created_at: string | null;
+}
+
+export interface ListSharesDetails {
+    shares: ListSharesResponseRow[];
+    group_shares: GroupShareRow[];
+}
+
+export async function listShareDetails(
     resource_type: ShareGrantRequest['resource_type'],
     resource_uid: string
-): Promise<ListSharesResponseRow[]> {
+): Promise<ListSharesDetails> {
     const params = new URLSearchParams({ resource_type, resource_uid });
     const res = await fetch(getApiPath(`shares?${params.toString()}`), {
         method: 'GET',
@@ -66,14 +82,23 @@ export async function listShares(
         throw new Error(message);
     }
     const data = await res.json();
-    return data.shares || [];
+    return {
+        shares: data.shares || [],
+        group_shares: data.group_shares || [],
+    };
 }
 
-export async function revokeShare(
+// Direct shares only (owner and invited users). Use listShareDetails for the
+// groups a resource is shared with.
+export async function listShares(
     resource_type: ShareGrantRequest['resource_type'],
-    resource_uid: string,
-    target_user_id: number
-): Promise<void> {
+    resource_uid: string
+): Promise<ListSharesResponseRow[]> {
+    const { shares } = await listShareDetails(resource_type, resource_uid);
+    return shares;
+}
+
+async function sendRevoke(body: Record<string, unknown>): Promise<void> {
     const res = await fetch(getApiPath('shares'), {
         method: 'DELETE',
         credentials: 'include',
@@ -82,7 +107,7 @@ export async function revokeShare(
             Accept: 'application/json',
             'x-csrf-token': await getCsrfToken(),
         },
-        body: JSON.stringify({ resource_type, resource_uid, target_user_id }),
+        body: JSON.stringify(body),
     });
     if (!res.ok) {
         let message = 'Failed to revoke share';
@@ -96,8 +121,27 @@ export async function revokeShare(
     }
 }
 
+export function revokeShare(
+    resource_type: ShareGrantRequest['resource_type'],
+    resource_uid: string,
+    target_user_id: number
+): Promise<void> {
+    return sendRevoke({ resource_type, resource_uid, target_user_id });
+}
+
+export function revokeGroupShare(
+    resource_type: ShareGrantRequest['resource_type'],
+    resource_uid: string,
+    target_group_uid: string
+): Promise<void> {
+    return sendRevoke({ resource_type, resource_uid, target_group_uid });
+}
+
+// A number for a direct share, "g<id>" for one that arrived through a group.
+export type InvitationId = number | string;
+
 export interface ShareInvitation {
-    id: number;
+    id: InvitationId;
     resource_type: ShareGrantRequest['resource_type'];
     resource_uid: string;
     resource_name: string | null;
@@ -105,6 +149,7 @@ export interface ShareInvitation {
     created_at: string;
     inviter_email: string | null;
     inviter_name: string | null;
+    via_group?: { uid: string; name: string };
 }
 
 export async function listInvitations(): Promise<ShareInvitation[]> {
@@ -121,7 +166,7 @@ export async function listInvitations(): Promise<ShareInvitation[]> {
 }
 
 async function answerInvitation(
-    invitationId: number,
+    invitationId: InvitationId,
     answer: 'accept' | 'decline'
 ): Promise<void> {
     const res = await fetch(
@@ -150,10 +195,10 @@ async function answerInvitation(
     }
 }
 
-export function acceptInvitation(invitationId: number): Promise<void> {
+export function acceptInvitation(invitationId: InvitationId): Promise<void> {
     return answerInvitation(invitationId, 'accept');
 }
 
-export function declineInvitation(invitationId: number): Promise<void> {
+export function declineInvitation(invitationId: InvitationId): Promise<void> {
     return answerInvitation(invitationId, 'decline');
 }

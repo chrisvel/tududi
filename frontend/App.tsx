@@ -575,6 +575,29 @@ const App: React.FC = () => {
                                     )
                                 }
                             />
+                            <Route
+                                path="/admin/groups"
+                                element={
+                                    currentUser?.is_admin === true ? (
+                                        <React.Suspense
+                                            fallback={
+                                                <div className="p-4">
+                                                    Loading...
+                                                </div>
+                                            }
+                                        >
+                                            {React.createElement(
+                                                React.lazy(
+                                                    () =>
+                                                        import('./components/Admin/AdminGroupsPage')
+                                                )
+                                            )}
+                                        </React.Suspense>
+                                    ) : (
+                                        <Navigate to="/today" replace />
+                                    )
+                                }
+                            />
                             <Route path="*" element={<NotFound />} />
                         </Route>
                     </>

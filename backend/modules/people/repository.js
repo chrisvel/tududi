@@ -1,6 +1,7 @@
 'use strict';
 
-const { Person, Task, Project, Permission } = require('../../models');
+const { Person, Task, Project } = require('../../models');
+const permissionSources = require('../../services/permissionSources');
 const { Op } = require('sequelize');
 
 class PeopleRepository {
@@ -72,16 +73,14 @@ class PeopleRepository {
     }
 
     async findProjectCollaboratorUserIds(projectUid) {
-        const rows = await Permission.findAll({
-            where: {
+        const rows = await permissionSources.findAccepted(
+            {
                 resource_type: 'project',
                 resource_uid: projectUid,
                 propagation: 'direct',
-                status: 'accepted',
             },
-            attributes: ['user_id'],
-            raw: true,
-        });
+            ['user_id']
+        );
         return Array.from(new Set(rows.map((r) => r.user_id)));
     }
 

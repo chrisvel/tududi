@@ -49,6 +49,9 @@ const sharesController = {
             if (error.statusCode === 403) {
                 return res.status(403).json({ error: error.message });
             }
+            if (error.statusCode === 404) {
+                return res.status(404).json({ error: error.message });
+            }
             logError('Error revoking share:', error);
             res.status(400).json({ error: 'Unable to revoke share' });
         }
@@ -109,7 +112,7 @@ const sharesController = {
 
             const result = await sharesService.acceptInvitation(
                 userId,
-                Number(req.params.id)
+                req.params.id
             );
             res.json(result);
         } catch (error) {
@@ -126,10 +129,7 @@ const sharesController = {
                     .json({ error: 'Authentication required' });
             }
 
-            await sharesService.declineInvitation(
-                userId,
-                Number(req.params.id)
-            );
+            await sharesService.declineInvitation(userId, req.params.id);
             res.status(204).end();
         } catch (error) {
             next(error);
