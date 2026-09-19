@@ -138,25 +138,6 @@ class GroupsRepository {
         return rows.map((r) => r.user_id);
     }
 
-    async addMembers(groupId, userIds, addedByUserId, options = {}) {
-        if (userIds.length === 0) return [];
-        return UserGroupMember.bulkCreate(
-            userIds.map((userId) => ({
-                group_id: groupId,
-                user_id: userId,
-                added_by_user_id: addedByUserId,
-            })),
-            options
-        );
-    }
-
-    async removeMember(groupId, userId, options = {}) {
-        return UserGroupMember.destroy({
-            where: { group_id: groupId, user_id: userId },
-            ...options,
-        });
-    }
-
     async listShares(groupId) {
         const shares = await GroupShare.findAll({
             where: { group_id: groupId },

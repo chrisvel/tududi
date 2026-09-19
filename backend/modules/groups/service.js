@@ -3,6 +3,7 @@
 const { UniqueConstraintError } = require('sequelize');
 const groupsRepository = require('./repository');
 const adminService = require('../admin/service');
+const groupSharing = require('../../services/groupSharing');
 const {
     validateCreateGroup,
     validateUpdateGroup,
@@ -122,7 +123,11 @@ class GroupsService {
             userIds
         );
         const toAdd = userIds.filter((id) => !alreadyMembers.includes(id));
-        await groupsRepository.addMembers(group.id, toAdd, requesterId);
+        await groupSharing.addMembers({
+            group,
+            userIds: toAdd,
+            addedByUserId: requesterId,
+        });
 
         return { added: toAdd, already_members: alreadyMembers };
     }
@@ -131,7 +136,7 @@ class GroupsService {
         await adminService.verifyAdmin(requesterId);
         const group = await this._requireGroup(uid);
         const userId = validateUserId(userIdParam);
-        const removed = await groupsRepository.removeMember(group.id, userId);
+        const removed = await groupSharing.removeMember({ group, userId });
         if (!removed) {
             throw new NotFoundError('User is not a member of this group');
         }

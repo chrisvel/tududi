@@ -19,6 +19,7 @@ const {
     calculateNotePerms,
     calculateAreaPerms,
     calculateGoalPerms,
+    projectSubtreeChanges,
 } = require('./permissionsCalculators');
 const { logError } = require('./logService');
 const { NotFoundError } = require('../shared/errors');
@@ -355,8 +356,160 @@ async function listForResource(resourceType, resourceUid) {
     );
 }
 
+// Adds members and gives each of them access to everything already shared with
+// the group, as invitations unless they already hold that access. The
+// membership and their rows commit together.
+async function addMembers({ group, userIds, addedByUserId }) {
+    if (userIds.length === 0) return;
+
+    const shares = await GroupShare.findAll({
+        where: { group_id: group.id },
+        order: [['id', 'ASC']],
+    });
+
+    const plans = [];
+    for (const share of shares) {
+        const resource = await RESOURCES[share.resource_type].model.findOne({
+            where: { uid: share.resource_uid },
+            attributes: ['user_id'],
+            raw: true,
+        });
+        if (!resource) continue;
+        const eligible = userIds.filter((id) => id !== resource.user_id);
+        plans.push({
+            share,
+            eligible,
+            statuses: await resolveInitialStatuses(share, eligible),
+        });
+    }
+
+    const toNotify = await sequelize.transaction(async (tx) => {
+        await UserGroupMember.bulkCreate(
+            userIds.map((userId) => ({
+                group_id: group.id,
+                user_id: userId,
+                added_by_user_id: addedByUserId,
+            })),
+            { transaction: tx }
+        );
+
+        const pending = [];
+        for (const { share, eligible, statuses } of plans) {
+            const template = await computeGrantRows(tx, share);
+            const notifyUserIds = [];
+            for (const userId of eligible) {
+                const notify = await writeMemberRows(
+                    tx,
+                    share,
+                    userId,
+                    template,
+                    statuses.get(userId)
+                );
+                if (notify) notifyUserIds.push(userId);
+            }
+            pending.push({ share, notifyUserIds });
+        }
+        return pending;
+    });
+
+    for (const { share, notifyUserIds } of toNotify) {
+        await notifyInvitees(share, group, notifyUserIds);
+    }
+}
+
+// Removes a member and only the access that came through this group. Direct
+// shares and other groups keep working. Returns whether they were a member.
+async function removeMember({ group, userId }) {
+    return sequelize.transaction(async (tx) => {
+        const removed = await UserGroupMember.destroy({
+            where: { group_id: group.id, user_id: userId },
+            transaction: tx,
+        });
+        if (!removed) return false;
+
+        const shares = await GroupShare.findAll({
+            where: { group_id: group.id },
+            attributes: ['id'],
+            raw: true,
+            transaction: tx,
+        });
+        await GroupPermission.destroy({
+            where: {
+                user_id: userId,
+                group_share_id: shares.map((s) => s.id),
+            },
+            transaction: tx,
+        });
+        return true;
+    });
+}
+
+// Called when a project lands in an area or goal that is shared with a group:
+// copies each member's container access onto the project and everything in
+// it. Rows keep the container grant's status, so a member who has not
+// accepted the container yet does not see the new project early.
+async function mirrorContainerGrants(tx, project, containers) {
+    const containerRows = [];
+    for (const container of containers) {
+        containerRows.push(
+            ...(await GroupPermission.findAll({
+                where: {
+                    resource_type: container.type,
+                    resource_uid: container.uid,
+                    propagation: 'direct',
+                },
+                transaction: tx,
+                raw: true,
+            }))
+        );
+    }
+
+    const templatesByLevel = new Map();
+    for (const row of containerRows) {
+        if (row.user_id === project.user_id) continue;
+
+        let template = templatesByLevel.get(row.access_level);
+        if (!template) {
+            const changes = { upserts: [], deletes: [] };
+            await projectSubtreeChanges(
+                changes,
+                {
+                    id: project.id,
+                    uid: project.uid,
+                    user_id: project.user_id,
+                },
+                {
+                    verb: 'share_grant',
+                    actorUserId: row.granted_by_user_id,
+                    targetUserId: null,
+                    accessLevel: row.access_level,
+                },
+                'inherited'
+            );
+            template = changes.upserts;
+            templatesByLevel.set(row.access_level, template);
+        }
+
+        await writeMemberRows(
+            tx,
+            {
+                id: row.group_share_id,
+                granted_by_user_id: row.granted_by_user_id,
+                resource_type: 'project',
+                resource_uid: project.uid,
+            },
+            row.user_id,
+            template,
+            row.status
+        );
+    }
+}
+
 module.exports = {
     grantToGroup,
     revokeFromGroup,
     listForResource,
+    addMembers,
+    removeMember,
+    mirrorContainerGrants,
 };
