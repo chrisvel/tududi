@@ -33,6 +33,10 @@ interface TaskStatusControlProps {
     variant?: 'pill' | 'square';
     showQuickActions?: boolean;
     onMenuOpenChange?: (isOpen: boolean) => void;
+    // Hide the text label on the main button, showing only the status icon.
+    // Used in tight layouts (e.g. the Upcoming board's day columns) where the
+    // full label would crowd out the task title.
+    hideLabel?: boolean;
 }
 
 const quickStartStatuses = new Set([
@@ -52,6 +56,7 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
     variant = 'square',
     showQuickActions = true,
     onMenuOpenChange,
+    hideLabel = false,
 }) => {
     const { t } = useTranslation();
     const [completionMenuOpen, setCompletionMenuOpen] =
@@ -378,7 +383,7 @@ const TaskStatusControl: React.FC<TaskStatusControlProps> = ({
                     }
                 >
                     <CompletionIcon className={iconSizeClass} />
-                    {completionButtonLabel}
+                    {!hideLabel && completionButtonLabel}
                 </button>
                 {showQuickStartButton && (
                     <button
