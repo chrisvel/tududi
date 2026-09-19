@@ -28,7 +28,7 @@ describe('Recurring task iterations keep the due date phase (issue #1489)', () =
         expect(createResponse.status).toBe(201);
 
         const iterationsResponse = await agent.get(
-            `/api/task/${createResponse.body.uid}/next-iterations`
+            `/api/task/${createResponse.body.uid}/next-iterations?startFromDate=2026-09-18`
         );
         expect(iterationsResponse.status).toBe(200);
 
@@ -54,7 +54,7 @@ describe('Recurring task iterations keep the due date phase (issue #1489)', () =
         expect(createResponse.status).toBe(201);
 
         const iterationsResponse = await agent.get(
-            `/api/task/${createResponse.body.uid}/next-iterations`
+            `/api/task/${createResponse.body.uid}/next-iterations?startFromDate=2026-09-18`
         );
         expect(iterationsResponse.status).toBe(200);
 
