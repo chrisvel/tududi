@@ -147,6 +147,18 @@ const App: React.FC = () => {
                         data.user.sidebar_settings?.visibleSections
                             ?.upcomingTasks !== false
                     );
+                useStore
+                    .getState()
+                    .userSettingsStore.setAssignedToMeVisible(
+                        data.user.sidebar_settings?.visibleSections
+                            ?.assignedToMe !== false
+                    );
+                useStore
+                    .getState()
+                    .userSettingsStore.setEveryoneVisible(
+                        data.user.sidebar_settings?.visibleSections
+                            ?.everyone !== false
+                    );
             } else {
                 setCurrentUser(null);
                 setUserInStorage(null);

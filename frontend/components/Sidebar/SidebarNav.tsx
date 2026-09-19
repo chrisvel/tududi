@@ -35,6 +35,12 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
     const upcomingTasksVisible = useStore(
         (state) => state.userSettingsStore.upcomingTasksVisible
     );
+    const assignedToMeVisible = useStore(
+        (state) => state.userSettingsStore.assignedToMeVisible
+    );
+    const everyoneVisible = useStore(
+        (state) => state.userSettingsStore.everyoneVisible
+    );
 
     const inboxItemsCount = store.inboxStore.pagination.total;
 
@@ -77,6 +83,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
             title: t('sidebar.assignedToMe', 'Assigned to me'),
             icon: <UserIcon className="h-[15px] w-[15px]" />,
             query: 'assigned_to=me',
+            userFlag: 'assignedToMe',
         },
         {
             path: '/everyone',
@@ -91,10 +98,13 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
             return calendarEnabled;
         }
         if (link.userFlag === 'everyone') {
-            return hasCollaborators;
+            return hasCollaborators && everyoneVisible;
         }
         if (link.userFlag === 'upcomingTasks') {
             return upcomingTasksVisible;
+        }
+        if (link.userFlag === 'assignedToMe') {
+            return assignedToMeVisible;
         }
         return true;
     });
