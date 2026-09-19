@@ -2,8 +2,9 @@
 
 const { Op } = require('sequelize');
 const moment = require('moment-timezone');
-const { Task, Project, Permission } = require('../../models');
+const { Task, Project } = require('../../models');
 const permissionsService = require('../../services/permissionsService');
+const permissionSources = require('../../services/permissionSources');
 const peopleRepository = require('../people/repository');
 const { getTaskIncludeConfig } = require('../tasks/queries/query-builders');
 const { serializeTasks } = require('../tasks/core/serializers');
@@ -23,24 +24,14 @@ const normalizeName = (name) => (name || '').trim().toLowerCase();
 // with (accepted, top-level grants only).
 async function getCollaboratorUserIds(userId) {
     const [sharedToMe, sharedByMe] = await Promise.all([
-        Permission.findAll({
-            where: {
-                user_id: userId,
-                status: 'accepted',
-                propagation: 'direct',
-            },
-            attributes: ['granted_by_user_id'],
-            raw: true,
-        }),
-        Permission.findAll({
-            where: {
-                granted_by_user_id: userId,
-                status: 'accepted',
-                propagation: 'direct',
-            },
-            attributes: ['user_id'],
-            raw: true,
-        }),
+        permissionSources.findAccepted(
+            { user_id: userId, propagation: 'direct' },
+            ['granted_by_user_id']
+        ),
+        permissionSources.findAccepted(
+            { granted_by_user_id: userId, propagation: 'direct' },
+            ['user_id']
+        ),
     ]);
 
     const ids = new Set();
@@ -65,15 +56,13 @@ async function getSharedProjectIds(userId) {
     });
     if (visibleProjects.length === 0) return [];
 
-    const sharedRows = await Permission.findAll({
-        where: {
+    const sharedRows = await permissionSources.findAccepted(
+        {
             resource_type: 'project',
             resource_uid: { [Op.in]: visibleProjects.map((p) => p.uid) },
-            status: 'accepted',
         },
-        attributes: ['resource_uid'],
-        raw: true,
-    });
+        ['resource_uid']
+    );
     const sharedUids = new Set(sharedRows.map((r) => r.resource_uid));
     return visibleProjects
         .filter((p) => sharedUids.has(p.uid))

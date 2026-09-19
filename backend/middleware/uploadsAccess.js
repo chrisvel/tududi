@@ -1,12 +1,7 @@
 const { Op } = require('sequelize');
-const {
-    TaskAttachment,
-    Task,
-    Project,
-    User,
-    Permission,
-} = require('../models');
+const { TaskAttachment, Task, Project, User } = require('../models');
 const permissionsService = require('../services/permissionsService');
+const permissionSources = require('../services/permissionSources');
 const { getAuthenticatedUserId } = require('../utils/request-utils');
 
 const LEVELS = { none: 0, ro: 1, rw: 2, admin: 3 };
@@ -41,30 +36,22 @@ const canAccessProjectFile = async (userId, filename) => {
 // Two users are collaborators when either has accepted a share from the
 // other, or both hold accepted access to the same shared resource.
 const areCollaborators = async (userId, otherUserId) => {
-    const directShare = await Permission.count({
-        where: {
-            status: 'accepted',
-            [Op.or]: [
-                { user_id: userId, granted_by_user_id: otherUserId },
-                { user_id: otherUserId, granted_by_user_id: userId },
-            ],
-        },
+    const directShare = await permissionSources.countAccepted({
+        [Op.or]: [
+            { user_id: userId, granted_by_user_id: otherUserId },
+            { user_id: otherUserId, granted_by_user_id: userId },
+        ],
     });
     if (directShare > 0) return true;
 
-    const mine = await Permission.findAll({
-        where: { user_id: userId, status: 'accepted' },
-        attributes: ['resource_uid'],
-        raw: true,
-    });
+    const mine = await permissionSources.findAccepted({ user_id: userId }, [
+        'resource_uid',
+    ]);
     if (mine.length === 0) return false;
 
-    const common = await Permission.count({
-        where: {
-            user_id: otherUserId,
-            status: 'accepted',
-            resource_uid: { [Op.in]: mine.map((p) => p.resource_uid) },
-        },
+    const common = await permissionSources.countAccepted({
+        user_id: otherUserId,
+        resource_uid: { [Op.in]: mine.map((p) => p.resource_uid) },
     });
     return common > 0;
 };

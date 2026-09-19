@@ -9,11 +9,11 @@ const {
     Goal,
     Note,
     User,
-    Permission,
     TaskAttachment,
     UserProjectArea,
     sequelize,
 } = require('../../models');
+const permissionSources = require('../../services/permissionSources');
 const { Op } = require('sequelize');
 const {
     deleteFileFromDisk,
@@ -87,26 +87,10 @@ class ProjectsRepository extends BaseRepository {
     async getShareCounts(projectUids) {
         if (projectUids.length === 0) return {};
 
-        const shareCounts = await Permission.findAll({
-            attributes: [
-                'resource_uid',
-                [sequelize.fn('COUNT', sequelize.col('id')), 'count'],
-            ],
-            where: {
-                resource_type: 'project',
-                resource_uid: { [Op.in]: projectUids },
-                status: 'accepted',
-            },
-            group: ['resource_uid'],
-            raw: true,
-        });
-
-        const uidToCount = {};
-        shareCounts.forEach((item) => {
-            uidToCount[item.resource_uid] = parseInt(item.count, 10);
-        });
-
-        return uidToCount;
+        return permissionSources.countDistinctUsersByResource(
+            'project',
+            projectUids
+        );
     }
 
     /**
@@ -241,13 +225,11 @@ class ProjectsRepository extends BaseRepository {
      * Get share count for a single project.
      */
     async getShareCount(projectUid) {
-        return Permission.count({
-            where: {
-                resource_type: 'project',
-                resource_uid: projectUid,
-                status: 'accepted',
-            },
-        });
+        const counts = await permissionSources.countDistinctUsersByResource(
+            'project',
+            [projectUid]
+        );
+        return counts[projectUid] || 0;
     }
 
     /**

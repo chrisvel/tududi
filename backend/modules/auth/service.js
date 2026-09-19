@@ -1,8 +1,9 @@
 'use strict';
 
 const { Op } = require('sequelize');
-const { User, Permission, sequelize } = require('../../models');
+const { User, sequelize } = require('../../models');
 const { isAdmin } = require('../../services/rolesService');
+const permissionSources = require('../../services/permissionSources');
 const { logError } = require('../../services/logService');
 const { getConfig } = require('../../config/config');
 const { isPasswordAuthEnabled } = require('../../config/authConfig');
@@ -188,15 +189,12 @@ class AuthService {
             if (user) {
                 const admin = await isAdmin(user.uid);
                 const hasCollaborators =
-                    (await Permission.count({
-                        where: {
-                            status: 'accepted',
-                            propagation: 'direct',
-                            [Op.or]: [
-                                { user_id: session.userId },
-                                { granted_by_user_id: session.userId },
-                            ],
-                        },
+                    (await permissionSources.countAccepted({
+                        propagation: 'direct',
+                        [Op.or]: [
+                            { user_id: session.userId },
+                            { granted_by_user_id: session.userId },
+                        ],
                     })) > 0;
                 let features = user.features;
                 if (features && typeof features === 'string') {
