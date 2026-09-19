@@ -13,6 +13,7 @@ import { useReducedMotion } from '../../../hooks/useReducedMotion';
 import { useStore } from '../../../store/useStore';
 import TagInput from '../../Tag/TagInput';
 import TaskAttachmentsCard from '../TaskDetails/TaskAttachmentsCard';
+import TaskRecurrenceSection from '../TaskForm/TaskRecurrenceSection';
 import { TaskRowSetters } from './useTaskRowSave';
 import TaskRowToolbar, { TaskRowSection } from './TaskRowToolbar';
 
@@ -31,16 +32,27 @@ interface TaskRowExpandedProps {
     fullPagePath: string;
 }
 
-const RECURRENCE_TYPES: {
-    value: RecurrenceType;
-    key: string;
-    label: string;
-}[] = [
-    { value: 'none', key: 'recurrence.none', label: 'No repeat' },
-    { value: 'daily', key: 'recurrence.daily', label: 'Daily' },
-    { value: 'weekly', key: 'recurrence.weekly', label: 'Weekly' },
-    { value: 'monthly', key: 'recurrence.monthly', label: 'Monthly' },
-];
+interface RecurrenceFormState {
+    recurrence_type: RecurrenceType;
+    recurrence_interval: number;
+    recurrence_end_date: string | null;
+    recurrence_weekday: number | null;
+    recurrence_weekdays: number[] | null;
+    recurrence_month_day: number | null;
+    recurrence_week_of_month: number | null;
+    completion_based: boolean;
+}
+
+const recurrenceFormFromTask = (task: Task): RecurrenceFormState => ({
+    recurrence_type: (task.recurrence_type || 'none') as RecurrenceType,
+    recurrence_interval: task.recurrence_interval || 1,
+    recurrence_end_date: task.recurrence_end_date || null,
+    recurrence_weekday: task.recurrence_weekday ?? null,
+    recurrence_weekdays: task.recurrence_weekdays || [],
+    recurrence_month_day: task.recurrence_month_day ?? null,
+    recurrence_week_of_month: task.recurrence_week_of_month ?? null,
+    completion_based: !!task.completion_based,
+});
 
 // The Things-style quick-edit panel that slides open under a task row.
 const TaskRowExpanded: React.FC<TaskRowExpandedProps> = ({
@@ -68,20 +80,26 @@ const TaskRowExpanded: React.FC<TaskRowExpandedProps> = ({
     const [note, setNote] = useState(task.note || '');
     const [projectQuery, setProjectQuery] = useState('');
     const [newSubtask, setNewSubtask] = useState('');
-    const [recurrenceType, setRecurrenceType] = useState<RecurrenceType>(
-        (task.recurrence_type || 'none') as RecurrenceType
-    );
-    const [recurrenceInterval, setRecurrenceInterval] = useState(
-        task.recurrence_interval || 1
+    const [recurrenceForm, setRecurrenceForm] = useState<RecurrenceFormState>(
+        () => recurrenceFormFromTask(task)
     );
 
     useEffect(() => {
         setNote(task.note || '');
     }, [task.uid, task.note]);
     useEffect(() => {
-        setRecurrenceType((task.recurrence_type || 'none') as RecurrenceType);
-        setRecurrenceInterval(task.recurrence_interval || 1);
-    }, [task.uid, task.recurrence_type, task.recurrence_interval]);
+        setRecurrenceForm(recurrenceFormFromTask(task));
+    }, [
+        task.uid,
+        task.recurrence_type,
+        task.recurrence_interval,
+        task.recurrence_end_date,
+        task.recurrence_weekday,
+        task.recurrence_weekdays,
+        task.recurrence_month_day,
+        task.recurrence_week_of_month,
+        task.completion_based,
+    ]);
 
     const toggleSection = (section: TaskRowSection) => {
         const willOpen = openSection !== section;
@@ -161,17 +179,60 @@ const TaskRowExpanded: React.FC<TaskRowExpandedProps> = ({
         }
     };
 
-    const saveRecurrence = (type: RecurrenceType, interval: number) => {
+    const saveRecurrenceForm = (form: RecurrenceFormState) => {
         void setters.setRecurrence({
-            recurrence_type: type,
-            recurrence_interval: interval || 1,
+            recurrence_type: form.recurrence_type,
+            recurrence_interval: form.recurrence_interval || 1,
+            recurrence_end_date: form.recurrence_end_date || null,
+            recurrence_weekday:
+                form.recurrence_type === 'weekly' ||
+                form.recurrence_type === 'monthly_weekday'
+                    ? (form.recurrence_weekday ?? null)
+                    : null,
+            recurrence_weekdays:
+                form.recurrence_type === 'weekly'
+                    ? form.recurrence_weekdays || []
+                    : null,
+            recurrence_month_day:
+                form.recurrence_type === 'monthly'
+                    ? (form.recurrence_month_day ?? null)
+                    : null,
+            recurrence_week_of_month:
+                form.recurrence_type === 'monthly_weekday'
+                    ? (form.recurrence_week_of_month ?? null)
+                    : null,
+            completion_based: form.completion_based,
+        });
+    };
+
+    const handleRecurrenceChange = (field: string, value: any) => {
+        setRecurrenceForm((prev) => {
+            const updated = { ...prev, [field]: value };
+            if (
+                field === 'recurrence_type' &&
+                value === 'monthly' &&
+                !prev.recurrence_month_day
+            ) {
+                updated.recurrence_month_day = new Date().getDate();
+            }
+            saveRecurrenceForm(updated);
+            return updated;
+        });
+    };
+
+    const clearRecurrence = () => {
+        const cleared: RecurrenceFormState = {
+            recurrence_type: 'none',
+            recurrence_interval: 1,
             recurrence_end_date: null,
             recurrence_weekday: null,
-            recurrence_weekdays: null,
+            recurrence_weekdays: [],
             recurrence_month_day: null,
             recurrence_week_of_month: null,
-            completion_based: !!task.completion_based,
-        });
+            completion_based: false,
+        };
+        setRecurrenceForm(cleared);
+        saveRecurrenceForm(cleared);
     };
 
     const selectedProject = useMemo(
@@ -188,19 +249,6 @@ const TaskRowExpanded: React.FC<TaskRowExpandedProps> = ({
             : projects;
         return list.slice(0, 30);
     }, [projectQuery, projects]);
-
-    const intervalUnit = (): string => {
-        switch (recurrenceType) {
-            case 'daily':
-                return t('recurrence.days', 'days');
-            case 'weekly':
-                return t('recurrence.weeks', 'weeks');
-            case 'monthly':
-                return t('recurrence.months', 'months');
-            default:
-                return '';
-        }
-    };
 
     const sectionBox =
         'mt-2 rounded-md border border-gray-200 dark:border-gray-700 p-2';
@@ -222,13 +270,13 @@ const TaskRowExpanded: React.FC<TaskRowExpandedProps> = ({
                         value={note}
                         onChange={(e) => setNote(e.target.value)}
                         onBlur={commitNote}
-                        rows={2}
+                        rows={4}
                         autoFocus
                         placeholder={t(
                             'forms.task.notePlaceholder',
                             'Add a note...'
                         )}
-                        className="mt-2 w-full resize-y rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-2 py-1.5 text-sm text-gray-800 dark:text-gray-200 focus:border-blue-500 focus:outline-none focus:ring-0"
+                        className="mt-2 w-full resize-y rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-2 py-1.5 text-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-0"
                     />
                 )}
 
@@ -305,60 +353,45 @@ const TaskRowExpanded: React.FC<TaskRowExpandedProps> = ({
                 )}
 
                 {openSection === 'recurrence' && (
-                    <div className={`${sectionBox} space-y-2`}>
-                        <div className="flex flex-wrap gap-1">
-                            {RECURRENCE_TYPES.map((opt) => (
+                    <div className={sectionBox}>
+                        {recurrenceForm.recurrence_type !== 'none' && (
+                            <div className="flex justify-end">
                                 <button
-                                    key={opt.value}
                                     type="button"
-                                    onClick={() => {
-                                        setRecurrenceType(opt.value);
-                                        saveRecurrence(
-                                            opt.value,
-                                            recurrenceInterval
-                                        );
-                                    }}
-                                    className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-                                        recurrenceType === opt.value
-                                            ? 'bg-blue-600 text-white'
-                                            : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
-                                    }`}
+                                    onClick={clearRecurrence}
+                                    className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-red-600"
                                 >
-                                    {t(opt.key, opt.label)}
+                                    <XMarkIcon className="h-3.5 w-3.5" />
+                                    {t('common.clear', 'Clear')}
                                 </button>
-                            ))}
-                        </div>
-                        {recurrenceType !== 'none' && (
-                            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-                                <span>{t('recurrence.every', 'Every')}</span>
-                                <input
-                                    type="number"
-                                    min={1}
-                                    value={recurrenceInterval}
-                                    onChange={(e) => {
-                                        const n = Math.max(
-                                            1,
-                                            parseInt(e.target.value, 10) || 1
-                                        );
-                                        setRecurrenceInterval(n);
-                                    }}
-                                    onBlur={() =>
-                                        saveRecurrence(
-                                            recurrenceType,
-                                            recurrenceInterval
-                                        )
-                                    }
-                                    className="w-14 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none focus:ring-0"
-                                />
-                                <span>{intervalUnit()}</span>
                             </div>
                         )}
-                        <p className="text-xs text-gray-400 dark:text-gray-500">
-                            {t(
-                                'recurrence.advancedHint',
-                                'For specific weekdays or an end date, open the full task.'
-                            )}
-                        </p>
+                        <TaskRecurrenceSection
+                            recurrenceType={recurrenceForm.recurrence_type}
+                            recurrenceInterval={
+                                recurrenceForm.recurrence_interval
+                            }
+                            recurrenceEndDate={
+                                recurrenceForm.recurrence_end_date ||
+                                undefined
+                            }
+                            recurrenceWeekday={
+                                recurrenceForm.recurrence_weekday ?? undefined
+                            }
+                            recurrenceWeekdays={
+                                recurrenceForm.recurrence_weekdays || []
+                            }
+                            recurrenceMonthDay={
+                                recurrenceForm.recurrence_month_day ??
+                                undefined
+                            }
+                            recurrenceWeekOfMonth={
+                                recurrenceForm.recurrence_week_of_month ??
+                                undefined
+                            }
+                            completionBased={recurrenceForm.completion_based}
+                            onChange={handleRecurrenceChange}
+                        />
                     </div>
                 )}
 
