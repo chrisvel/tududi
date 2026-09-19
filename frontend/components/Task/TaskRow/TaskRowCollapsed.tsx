@@ -27,6 +27,7 @@ interface TaskRowCollapsedProps {
     project?: Project | null;
     hideProjectName?: boolean;
     hideStatusControl?: boolean;
+    condenseStatusControl?: boolean;
     compact?: boolean;
     onActivate: (e: React.MouseEvent | React.KeyboardEvent) => void;
     onToggleCompletion?: () => void;
@@ -60,6 +61,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
     project,
     hideProjectName = false,
     hideStatusControl = false,
+    condenseStatusControl = false,
     compact = false,
     onActivate,
     onToggleCompletion,
@@ -170,7 +172,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
 
     return (
         <div
-            className={`group flex items-start gap-3 px-4 ${
+            className={`group flex items-center gap-3 px-4 ${
                 hasMeta ? 'py-2' : 'py-3'
             } cursor-pointer`}
             role="button"
@@ -339,6 +341,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                         onTaskUpdate={onTaskUpdate}
                         showMobileVariant={false}
                         onMenuOpenChange={onMenuOpenChange}
+                        hideLabel={condenseStatusControl}
                     />
                 </div>
             )}

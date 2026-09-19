@@ -357,6 +357,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
                     project={project}
                     hideProjectName={hideProjectName}
                     hideStatusControl={hideStatusControl}
+                    condenseStatusControl={isUpcomingView}
                     compact={compact}
                     onActivate={handleActivate}
                     onToggleCompletion={handleToggleCompletion}
