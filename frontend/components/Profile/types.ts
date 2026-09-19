@@ -38,6 +38,8 @@ export interface UiSettings {
 
 export interface SidebarVisibleSections {
     upcomingTasks?: boolean;
+    assignedToMe?: boolean;
+    everyone?: boolean;
 }
 
 export interface SidebarSettings {

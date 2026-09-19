@@ -75,7 +75,24 @@ const SidebarTab: React.FC<SidebarTabProps> = ({
                 'Show the Upcoming Tasks link in the sidebar navigation.'
             ),
         },
+        {
+            key: 'assignedToMe',
+            label: t('sidebar.assignedToMe', 'Assigned to me'),
+            description: t(
+                'profile.assignedToMeDescription',
+                'Show the Assigned to me link in the sidebar navigation.'
+            ),
+        },
+        {
+            key: 'everyone',
+            label: t('sidebar.everyone', 'Everyone'),
+            description: t(
+                'profile.everyoneDescription',
+                'Show the Everyone link in the sidebar navigation.'
+            ),
+        },
     ];
+    sections.sort((a, b) => a.label.localeCompare(b.label));
 
     return (
         <div>

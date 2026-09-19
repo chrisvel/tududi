@@ -625,6 +625,12 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                             upcomingTasks:
                                 data.sidebar_settings?.visibleSections
                                     ?.upcomingTasks !== false,
+                            assignedToMe:
+                                data.sidebar_settings?.visibleSections
+                                    ?.assignedToMe !== false,
+                            everyone:
+                                data.sidebar_settings?.visibleSections
+                                    ?.everyone !== false,
                         },
                     },
                 });
@@ -1354,6 +1360,30 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     .userSettingsStore.setUpcomingTasksVisible(
                         updatedProfile.sidebar_settings.visibleSections
                             .upcomingTasks !== false
+                    );
+            }
+
+            if (
+                updatedProfile.sidebar_settings?.visibleSections
+                    ?.assignedToMe !== undefined
+            ) {
+                useStore
+                    .getState()
+                    .userSettingsStore.setAssignedToMeVisible(
+                        updatedProfile.sidebar_settings.visibleSections
+                            .assignedToMe !== false
+                    );
+            }
+
+            if (
+                updatedProfile.sidebar_settings?.visibleSections?.everyone !==
+                undefined
+            ) {
+                useStore
+                    .getState()
+                    .userSettingsStore.setEveryoneVisible(
+                        updatedProfile.sidebar_settings.visibleSections
+                            .everyone !== false
                     );
             }
 

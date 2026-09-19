@@ -126,6 +126,10 @@ interface UserSettingsStore {
     setShowTaskContextMenu: (enabled: boolean) => void;
     upcomingTasksVisible: boolean;
     setUpcomingTasksVisible: (enabled: boolean) => void;
+    assignedToMeVisible: boolean;
+    setAssignedToMeVisible: (enabled: boolean) => void;
+    everyoneVisible: boolean;
+    setEveryoneVisible: (enabled: boolean) => void;
 }
 
 interface GoalsStore {
@@ -1056,6 +1060,22 @@ export const useStore = create<StoreState>((set: any) => ({
                 userSettingsStore: {
                     ...state.userSettingsStore,
                     upcomingTasksVisible: enabled,
+                },
+            })),
+        assignedToMeVisible: true,
+        setAssignedToMeVisible: (enabled) =>
+            set((state) => ({
+                userSettingsStore: {
+                    ...state.userSettingsStore,
+                    assignedToMeVisible: enabled,
+                },
+            })),
+        everyoneVisible: true,
+        setEveryoneVisible: (enabled) =>
+            set((state) => ({
+                userSettingsStore: {
+                    ...state.userSettingsStore,
+                    everyoneVisible: enabled,
                 },
             })),
     },

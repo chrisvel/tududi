@@ -162,6 +162,8 @@ module.exports = (sequelize) => {
                     pinnedViewsOrder: [],
                     visibleSections: {
                         upcomingTasks: true,
+                        assignedToMe: true,
+                        everyone: true,
                     },
                 },
             },
