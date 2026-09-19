@@ -50,6 +50,10 @@ const CLEANUP_TABLES = [
     'billing_events',
     'billing_accounts',
     'notifications',
+    'group_permissions',
+    'group_shares',
+    'user_group_members',
+    'user_groups',
     'permissions',
     // actions and the audit/identity tables reference users; on PostgreSQL
     // the FK blocks DELETE FROM users when they are left out, and the

@@ -15,6 +15,10 @@ const {
     TaskEvent,
     Action,
     Permission,
+    UserGroup,
+    UserGroupMember,
+    GroupShare,
+    GroupPermission,
     View,
     ApiToken,
     Notification,
@@ -174,6 +178,40 @@ async function eraseUserAccount(userId) {
             },
             ...tx,
         });
+
+        // Group access rows this user received or granted, the group grants
+        // they made, and their group memberships. Groups are instance-wide, so
+        // they outlive the user who created them.
+        const ownGroupShares = await GroupShare.findAll({
+            where: { granted_by_user_id: userId },
+            attributes: ['id'],
+            raw: true,
+            ...tx,
+        });
+        await GroupPermission.destroy({
+            where: {
+                [Op.or]: [
+                    { user_id: userId },
+                    { granted_by_user_id: userId },
+                    { group_share_id: ownGroupShares.map((s) => s.id) },
+                ],
+            },
+            ...tx,
+        });
+        await GroupShare.destroy({
+            where: { granted_by_user_id: userId },
+            ...tx,
+        });
+        await UserGroupMember.destroy({
+            where: {
+                [Op.or]: [{ user_id: userId }, { added_by_user_id: userId }],
+            },
+            ...tx,
+        });
+        await UserGroup.update(
+            { created_by_user_id: null },
+            { where: { created_by_user_id: userId }, ...tx }
+        );
         await Action.destroy({
             where: {
                 [Op.or]: [
