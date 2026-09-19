@@ -307,7 +307,6 @@ const TaskRow: React.FC<TaskRowProps> = ({
         project = { ...project, id: task.project_id };
     }
 
-    const isInProgress = task.status === 'in_progress' || task.status === 1;
     void isTaskOverdueInTodayPlan;
 
     const priorityBorderClass =
@@ -343,10 +342,6 @@ const TaskRow: React.FC<TaskRowProps> = ({
         >
             <div
                 className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 relative overflow-visible transition-colors duration-200 ease-in-out hover:ring-1 hover:ring-gray-200 dark:hover:ring-gray-700 ${priorityBorderClass} ${
-                    isInProgress
-                        ? 'ring-1 ring-blue-500/60 dark:ring-blue-600/60'
-                        : ''
-                } ${
                     isExpanded
                         ? 'ring-1 ring-blue-400/70 dark:ring-blue-600/70'
                         : ''
