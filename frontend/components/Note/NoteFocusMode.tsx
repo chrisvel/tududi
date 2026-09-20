@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import MarkdownRenderer from '../Shared/MarkdownRenderer';
 import MarkdownEditor from './MarkdownEditor';
 import { Note } from '../../entities/Note';
-import { ENABLE_NOTE_COLOR } from '../../config/featureFlags';
 
 const shouldUseLightText = (hexColor: string | undefined): boolean => {
     if (!hexColor) return false;
@@ -39,7 +38,7 @@ const NoteFocusMode: React.FC<NoteFocusModeProps> = ({
     onClose,
 }) => {
     const { t } = useTranslation();
-    const noteColor = ENABLE_NOTE_COLOR ? note.color : undefined;
+    const noteColor = note.color;
     const lightText = shouldUseLightText(noteColor);
 
     useEffect(() => {

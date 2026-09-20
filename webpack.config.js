@@ -96,7 +96,6 @@ module.exports = {
         new webpack.DefinePlugin(
             Object.fromEntries(
                 Object.entries({
-                    ENABLE_NOTE_COLOR: process.env.ENABLE_NOTE_COLOR,
                     ENABLE_INBOX_CLARIFY: process.env.ENABLE_INBOX_CLARIFY,
                     TUDUDI_BASE_PATH: process.env.TUDUDI_BASE_PATH || '',
                 }).map(([key, value]) => [

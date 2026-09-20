@@ -209,7 +209,6 @@ This document explains how the Notes system works in tududi from a user behavior
 ### Colors
 
 **Note color feature:**
-- **Feature flag:** `ENABLE_NOTE_COLOR` (enabled by default)
 - **10 predefined colors:** Red, Orange, Amber, Green, Teal, Blue, Indigo, Purple, Pink, Grey
 - **None option:** Default white/dark background
 
@@ -817,11 +816,9 @@ luminance = (0.299 * R + 0.587 * G + 0.114 * B) / 255
 ### "Color not appearing"
 
 **Check:**
-1. Is `ENABLE_NOTE_COLOR` feature flag enabled?
-   - Check with admin/developer
-2. Browser caching issue?
+1. Browser caching issue?
    - Hard refresh: `Ctrl+Shift+R` or `Cmd+Shift+R`
-3. Dark mode conflict?
+2. Dark mode conflict?
    - Try switching theme
 
 ---
