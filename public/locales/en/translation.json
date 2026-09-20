@@ -1619,6 +1619,45 @@
       "shares": "Shared items",
       "title": "Groups",
       "updated": "Group updated"
+    },
+    "access": {
+      "title": "Access",
+      "subtitle": "Who can sign in, what they can do, and how they are grouped"
+    },
+    "roles": {
+      "title": "Roles",
+      "intro": "Every account has one role. A role decides what an account can create and manage. The roles are fixed for now. You can give one user more or fewer permissions from the Users tab.",
+      "permission": "Permission",
+      "permissions": "Permissions",
+      "allowed": "Allowed",
+      "notAllowed": "Not allowed",
+      "loading": "Loading roles...",
+      "failedToLoad": "Failed to load roles",
+      "manageAccounts": "Manage users, roles and groups",
+      "manageAccountsHint": "Create and remove accounts, change roles, manage groups",
+      "adminHint": "Admins can do everything.",
+      "memberCount_one": "{{count}} account",
+      "memberCount_other": "{{count}} accounts",
+      "names": {
+        "admin": "Admin",
+        "user": "User",
+        "guest": "Guest"
+      },
+      "descriptions": {
+        "admin": "Manages accounts, roles and groups, and can do everything else.",
+        "user": "A regular member. Works with their own items and everything shared with them.",
+        "guest": "Works inside what is shared with them or assigned to them."
+      },
+      "capabilities": {
+        "createPeople": "Add people",
+        "inviteMembers": "Invite members",
+        "createProjects": "Create projects, areas and goals"
+      },
+      "capabilityHints": {
+        "createPeople": "Add contacts and members to the People list",
+        "inviteMembers": "Create accounts, send invitations or sign people up",
+        "createProjects": "Start new projects, areas and goals"
+      }
     }
   },
   "billing": {

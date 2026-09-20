@@ -7,6 +7,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../../store/useStore';
+import { useCan } from '../../hooks/useCan';
 import { Project } from '../../entities/Project';
 
 interface SidebarProjectsProps {
@@ -30,6 +31,7 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
     openProjectModal,
 }) => {
     const { t } = useTranslation();
+    const canCreateProjects = useCan('create_projects');
     const [isExpanded, setIsExpanded] = useState(false);
 
     const projects = useStore((state) => state.projectsStore.projects);
@@ -90,17 +92,19 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
                     {t('sidebar.projects')}
                 </span>
                 <div className="flex items-center gap-1">
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            openProjectModal();
-                        }}
-                        className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
-                        aria-label={t('projects.addProject', 'Add Project')}
-                        title={t('projects.addProject', 'Add Project')}
-                    >
-                        <PlusIcon className="h-3.5 w-3.5" />
-                    </button>
+                    {canCreateProjects && (
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                openProjectModal();
+                            }}
+                            className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
+                            aria-label={t('projects.addProject', 'Add Project')}
+                            title={t('projects.addProject', 'Add Project')}
+                        >
+                            <PlusIcon className="h-3.5 w-3.5" />
+                        </button>
+                    )}
                     {activeProjects.length > 0 && (
                         <>
                             <span className="text-[10.5px] text-gray-400 dark:text-gray-500 tabular-nums">

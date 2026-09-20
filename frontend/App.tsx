@@ -136,6 +136,11 @@ const App: React.FC = () => {
                     );
                 useStore
                     .getState()
+                    .userSettingsStore.setCapabilities(
+                        data.user.capabilities ?? null
+                    );
+                useStore
+                    .getState()
                     .userSettingsStore.setAiAssistantEnabled(
                         data.user.features?.ai_assistant_enabled === true
                     );

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { createPortal } from 'react-dom';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -20,6 +20,16 @@ import { fetchPeople } from '../../utils/peopleService';
 import { Person } from '../../entities/Person';
 import { generatePassword } from '../../utils/passwordPolicy';
 import AdminGroupsPanel from './AdminGroupsPanel';
+import AdminRolesPanel from './AdminRolesPanel';
+import { capabilityHint, capabilityName, roleName } from './roleLabels';
+import { fetchRoles } from '../../utils/rolesService';
+import {
+    Capabilities,
+    CAPABILITY_IDS,
+    ROLE_IDS,
+    RoleId,
+    RolesOverview,
+} from '../../entities/Role';
 
 interface AdminUserItem {
     id: number;
@@ -27,7 +37,8 @@ interface AdminUserItem {
     name?: string;
     surname?: string;
     created_at: string;
-    role: 'admin' | 'user';
+    role: RoleId;
+    capabilities?: Capabilities;
     invited?: boolean;
     verification_requested?: boolean;
     email_sent?: boolean;
@@ -54,9 +65,10 @@ const createAdminUser = async (
     t: any,
     name?: string,
     surname?: string,
-    role?: 'admin' | 'user',
+    role?: RoleId,
     linked_person_uid?: string,
-    require_verification?: boolean
+    require_verification?: boolean,
+    capabilities?: Capabilities
 ): Promise<AdminUserItem> => {
     const body: any = {
         email,
@@ -65,6 +77,7 @@ const createAdminUser = async (
         role,
         linked_person_uid,
         require_verification,
+        capabilities,
     };
     if (password) body.password = password;
     const res = await fetchWithCsrf(getApiPath('admin/users'), {
@@ -102,10 +115,11 @@ const updateAdminUser = async (
     t: any,
     name?: string,
     surname?: string,
-    role?: 'admin' | 'user',
-    password?: string
+    role?: RoleId,
+    password?: string,
+    capabilities?: Capabilities
 ): Promise<AdminUserItem> => {
-    const body: any = { email, name, surname, role };
+    const body: any = { email, name, surname, role, capabilities };
     if (password) body.password = password;
 
     const res = await fetchWithCsrf(getApiPath(`admin/users/${id}`), {
@@ -168,7 +182,8 @@ const AddUserModal: React.FC<{
     onCreated: (user: AdminUserItem) => void;
     onUpdated: (user: AdminUserItem) => void;
     editingUser?: AdminUserItem | null;
-}> = ({ isOpen, onClose, onCreated, onUpdated, editingUser }) => {
+    roleDefaults?: Partial<Record<RoleId, Capabilities>> | null;
+}> = ({ isOpen, onClose, onCreated, onUpdated, editingUser, roleDefaults }) => {
     const { t } = useTranslation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -176,7 +191,8 @@ const AddUserModal: React.FC<{
     const [passwordCopied, setPasswordCopied] = useState(false);
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
-    const [role, setRole] = useState<'user' | 'admin'>('user');
+    const [role, setRole] = useState<RoleId>('user');
+    const [capabilities, setCapabilities] = useState<Capabilities | null>(null);
     const [requireVerification, setRequireVerification] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -189,6 +205,13 @@ const AddUserModal: React.FC<{
         return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value);
     };
 
+    // What the switches show: everything for an admin, otherwise the toggles
+    // being edited, falling back to the role's defaults.
+    const shownCapabilities: Capabilities | null =
+        role === 'admin'
+            ? (roleDefaults?.admin ?? null)
+            : (capabilities ?? roleDefaults?.[role] ?? null);
+
     useEffect(() => {
         if (isOpen) {
             if (editingUser) {
@@ -197,6 +220,7 @@ const AddUserModal: React.FC<{
                 setName(editingUser.name || '');
                 setSurname(editingUser.surname || '');
                 setRole(editingUser.role);
+                setCapabilities(editingUser.capabilities ?? null);
                 setUnlinkedPeople([]);
                 setSelectedPersonUid('');
             } else {
@@ -205,6 +229,7 @@ const AddUserModal: React.FC<{
                 setName('');
                 setSurname('');
                 setRole('user');
+                setCapabilities(roleDefaults?.user ?? null);
                 setRequireVerification(false);
                 setSelectedPersonUid('');
                 fetchPeople({ unlinked: true })
@@ -292,7 +317,8 @@ const AddUserModal: React.FC<{
                     name,
                     surname,
                     role,
-                    password || undefined
+                    password || undefined,
+                    capabilities ?? undefined
                 );
                 onUpdated(user);
             } else {
@@ -304,7 +330,8 @@ const AddUserModal: React.FC<{
                     surname,
                     role,
                     selectedPersonUid || undefined,
-                    requireVerification && !!password
+                    requireVerification && !!password,
+                    capabilities ?? undefined
                 );
                 onCreated(user);
             }
@@ -505,11 +532,7 @@ const AddUserModal: React.FC<{
                                     setIsRoleDropdownOpen(!isRoleDropdownOpen)
                                 }
                             >
-                                <span>
-                                    {role === 'admin'
-                                        ? t('admin.admin', 'admin')
-                                        : t('admin.user', 'user')}
-                                </span>
+                                <span>{roleName(t, role)}</span>
                                 <ChevronDownIcon
                                     className={`h-4 w-4 text-gray-500 dark:text-gray-300 transition-transform ${
                                         isRoleDropdownOpen ? 'rotate-180' : ''
@@ -519,47 +542,111 @@ const AddUserModal: React.FC<{
                             {isRoleDropdownOpen && (
                                 <div className="absolute mt-1 w-full rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none z-50">
                                     <div className="p-1">
-                                        <button
-                                            type="button"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setRole('user');
-                                                setIsRoleDropdownOpen(false);
-                                            }}
-                                            className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
-                                        >
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-gray-900 dark:text-gray-100">
-                                                    {t('admin.user', 'user')}
-                                                </span>
-                                                {role === 'user' && (
-                                                    <CheckIcon className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
-                                                )}
-                                            </div>
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setRole('admin');
-                                                setIsRoleDropdownOpen(false);
-                                            }}
-                                            className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
-                                        >
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-gray-900 dark:text-gray-100">
-                                                    {t('admin.admin', 'admin')}
-                                                </span>
-                                                {role === 'admin' && (
-                                                    <CheckIcon className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
-                                                )}
-                                            </div>
-                                        </button>
+                                        {ROLE_IDS.map((id) => (
+                                            <button
+                                                key={id}
+                                                type="button"
+                                                data-testid={`role-option-${id}`}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setRole(id);
+                                                    setCapabilities(
+                                                        roleDefaults?.[id] ??
+                                                            null
+                                                    );
+                                                    setIsRoleDropdownOpen(
+                                                        false
+                                                    );
+                                                }}
+                                                className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                                            >
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-gray-900 dark:text-gray-100">
+                                                        {roleName(t, id)}
+                                                    </span>
+                                                    {role === id && (
+                                                        <CheckIcon className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                                                    )}
+                                                </div>
+                                            </button>
+                                        ))}
                                     </div>
                                 </div>
                             )}
                         </div>
                     </div>
+                    {shownCapabilities && (
+                        <div data-testid="permissions-section">
+                            <div className="text-sm text-gray-700 dark:text-gray-300 mb-2">
+                                {t('admin.roles.permissions', 'Permissions')}
+                            </div>
+                            <div className="space-y-3">
+                                {CAPABILITY_IDS.map((capability) => {
+                                    const on =
+                                        shownCapabilities[capability] === true;
+                                    return (
+                                        <div
+                                            key={capability}
+                                            className="flex items-start justify-between gap-4"
+                                        >
+                                            <div>
+                                                <label
+                                                    id={`capability-${capability}-label`}
+                                                    className="block text-sm text-gray-700 dark:text-gray-300"
+                                                >
+                                                    {capabilityName(
+                                                        t,
+                                                        capability
+                                                    )}
+                                                </label>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                    {capabilityHint(
+                                                        t,
+                                                        capability
+                                                    )}
+                                                </p>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                role="switch"
+                                                aria-checked={on}
+                                                aria-labelledby={`capability-${capability}-label`}
+                                                data-testid={`capability-switch-${capability}`}
+                                                disabled={role === 'admin'}
+                                                onClick={() =>
+                                                    setCapabilities({
+                                                        ...shownCapabilities,
+                                                        [capability]: !on,
+                                                    })
+                                                }
+                                                className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed ${
+                                                    on
+                                                        ? 'bg-blue-600'
+                                                        : 'bg-gray-200 dark:bg-gray-600'
+                                                }`}
+                                            >
+                                                <span
+                                                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                                                        on
+                                                            ? 'translate-x-5'
+                                                            : 'translate-x-0'
+                                                    }`}
+                                                />
+                                            </button>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                            {role === 'admin' && (
+                                <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                                    {t(
+                                        'admin.roles.adminHint',
+                                        'Admins can do everything.'
+                                    )}
+                                </p>
+                            )}
+                        </div>
+                    )}
                     {!editingUser && (
                         <div className="flex items-start justify-between gap-4">
                             <div>
@@ -641,7 +728,10 @@ const AddUserModal: React.FC<{
     );
 };
 
-const AdminUsersPanel: React.FC = () => {
+const AdminUsersPanel: React.FC<{
+    roleDefaults?: Partial<Record<RoleId, Capabilities>> | null;
+    onChanged?: () => void;
+}> = ({ roleDefaults, onChanged }) => {
     const { t } = useTranslation();
     const { showSuccessToast, showErrorToast } = useToast();
     const [users, setUsers] = useState<AdminUserItem[] | null>(null);
@@ -688,6 +778,7 @@ const AdminUsersPanel: React.FC = () => {
                 t('admin.userDeletedSuccessfully', 'User deleted successfully')
             );
             setUserToDelete(null);
+            onChanged?.();
         } catch (err: any) {
             setError(
                 err.message ||
@@ -793,11 +884,16 @@ const AdminUsersPanel: React.FC = () => {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span
-                                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${u.role === 'admin' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'}`}
+                                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                                    u.role === 'admin'
+                                                        ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
+                                                        : u.role === 'guest'
+                                                          ? 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'
+                                                          : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+                                                }`}
+                                                data-testid={`user-role-${u.id}`}
                                             >
-                                                {u.role === 'admin'
-                                                    ? t('admin.admin', 'admin')
-                                                    : t('admin.user', 'user')}
+                                                {roleName(t, u.role)}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -844,6 +940,7 @@ const AdminUsersPanel: React.FC = () => {
                                 setEditingUser(null);
                             }}
                             onCreated={(user) => {
+                                onChanged?.();
                                 setUsers((prev) =>
                                     prev ? [user, ...prev] : [user]
                                 );
@@ -885,16 +982,18 @@ const AdminUsersPanel: React.FC = () => {
                                     );
                                 }
                             }}
-                            onUpdated={(user) =>
+                            onUpdated={(user) => {
+                                onChanged?.();
                                 setUsers((prev) =>
                                     prev
                                         ? prev.map((u) =>
                                               u.id === user.id ? user : u
                                           )
                                         : [user]
-                                )
-                            }
+                                );
+                            }}
                             editingUser={editingUser}
+                            roleDefaults={roleDefaults}
                         />
 
                         {userToDelete && (
@@ -917,13 +1016,45 @@ const AdminUsersPanel: React.FC = () => {
     );
 };
 
-type AdminTab = 'users' | 'groups';
+type AdminTab = 'users' | 'groups' | 'roles';
+
+const isAdminTab = (value: string | null): value is AdminTab =>
+    value === 'groups' || value === 'roles';
 
 const AdminUsersPage: React.FC = () => {
     const { t } = useTranslation();
     const [searchParams, setSearchParams] = useSearchParams();
-    const activeTab: AdminTab =
-        searchParams.get('tab') === 'groups' ? 'groups' : 'users';
+    const activeTab: AdminTab = isAdminTab(searchParams.get('tab'))
+        ? (searchParams.get('tab') as AdminTab)
+        : 'users';
+
+    const [roles, setRoles] = useState<RolesOverview | null>(null);
+    const [rolesLoading, setRolesLoading] = useState(true);
+    const [rolesError, setRolesError] = useState<string | null>(null);
+
+    const loadRoles = useCallback(async () => {
+        try {
+            setRoles(await fetchRoles());
+            setRolesError(null);
+        } catch (err: any) {
+            setRolesError(
+                err?.message ||
+                    t('admin.roles.failedToLoad', 'Failed to load roles')
+            );
+        } finally {
+            setRolesLoading(false);
+        }
+    }, [t]);
+
+    useEffect(() => {
+        loadRoles();
+    }, [loadRoles]);
+
+    const roleDefaults = roles
+        ? (Object.fromEntries(
+              roles.roles.map((role) => [role.id, role.capabilities])
+          ) as Partial<Record<RoleId, Capabilities>>)
+        : null;
 
     const selectTab = (tab: AdminTab) => {
         setSearchParams(tab === 'users' ? {} : { tab }, { replace: true });
@@ -932,14 +1063,23 @@ const AdminUsersPage: React.FC = () => {
     const tabs: { id: AdminTab; label: string }[] = [
         { id: 'users', label: t('admin.users.title', 'Users') },
         { id: 'groups', label: t('admin.groups.title', 'Groups') },
+        { id: 'roles', label: t('admin.roles.title', 'Roles') },
     ];
 
     return (
         <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">
             <div className="w-full space-y-6">
-                <h2 className="text-2xl font-light">
-                    {t('admin.usersAndGroups', 'Users and Groups')}
-                </h2>
+                <div>
+                    <h2 className="text-2xl font-light">
+                        {t('admin.access.title', 'Access')}
+                    </h2>
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        {t(
+                            'admin.access.subtitle',
+                            'Who can sign in, what they can do, and how they are grouped'
+                        )}
+                    </p>
+                </div>
 
                 <div
                     role="tablist"
@@ -972,8 +1112,17 @@ const AdminUsersPage: React.FC = () => {
                 >
                     {activeTab === 'groups' ? (
                         <AdminGroupsPanel />
+                    ) : activeTab === 'roles' ? (
+                        <AdminRolesPanel
+                            overview={roles}
+                            loading={rolesLoading}
+                            error={rolesError}
+                        />
                     ) : (
-                        <AdminUsersPanel />
+                        <AdminUsersPanel
+                            roleDefaults={roleDefaults}
+                            onChanged={loadRoles}
+                        />
                     )}
                 </div>
             </div>

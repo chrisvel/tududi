@@ -67,12 +67,12 @@ const SidebarAdmin: React.FC<SidebarAdminProps> = ({
                     onClick={() =>
                         handleNavClick(
                             '/admin/users',
-                            t('admin.usersAndGroups', 'Users and Groups')
+                            t('admin.access.title', 'Access')
                         )
                     }
                 >
                     <UsersIcon className="h-[14px] w-[14px] mr-[6px] shrink-0" />
-                    {t('admin.usersAndGroups', 'Users and Groups')}
+                    {t('admin.access.title', 'Access')}
                 </li>
             )}
             {currentUser?.is_admin === true && hosted && (
