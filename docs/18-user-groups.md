@@ -16,7 +16,7 @@ Groups are managed by admins and belong to the instance, not to a user. Any sign
 
 ### Managing groups (admin only)
 
-Admin > Groups lists every group with its member and shared-item counts. An admin can create, rename and delete groups and add or remove members. The page is served at `/admin/groups`.
+Admin > User Management has a **Users** tab and a **Groups** tab on one page, served at `/admin/users`. The Groups tab (`/admin/users?tab=groups`) lists every group with its member and shared-item counts. An admin can create, rename and delete groups and add or remove members. The old `/admin/groups` URL redirects to the Groups tab.
 
 ### Sharing with a group
 
@@ -103,5 +103,5 @@ Anything that goes through `permissionsService.getAccess`, `getSharedUidsForUser
 - Group grants and membership: `/backend/services/groupSharing.js`
 - Reading shared access: `/backend/services/permissionSources.js`
 - Container mirroring: `/backend/services/containerShareSync.js`
-- Admin page: `/frontend/components/Admin/AdminGroupsPage.tsx`
+- Admin page: `/frontend/components/Admin/AdminUsersPage.tsx` (tab shell), `/frontend/components/Admin/AdminGroupsPanel.tsx` (Groups tab)
 - Share dialog: `/frontend/components/Shared/ShareModal.tsx`
