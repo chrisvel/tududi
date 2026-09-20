@@ -1,10 +1,13 @@
 'use strict';
 
 const peopleRepository = require('./repository');
+const { isAdmin } = require('../../services/rolesService');
+const { getWorkspaceUserIds } = require('../../services/workspaceMembers');
 const {
     NotFoundError,
     ValidationError,
     ConflictError,
+    ForbiddenError,
 } = require('../../shared/errors');
 
 const VALID_RELATIONSHIP_TYPES = ['family', 'work', 'friend', 'other'];
@@ -27,35 +30,83 @@ class PeopleService {
         return this.markSelf(userId, people);
     }
 
+    // A collaborator's self-person is theirs to edit, so other people only get
+    // what an assignee picker needs, never the phone, notes or email.
+    toAssignee(userId, person) {
+        const plain = this.markSelf(userId, [person])[0];
+        if (plain.user_id === userId) return plain;
+        delete plain.phone;
+        delete plain.notes;
+        delete plain.email;
+        return plain;
+    }
+
+    // The viewer's own cards plus the given members' self-persons. A card of
+    // the viewer's that stands in for a member with a self-person is dropped,
+    // so one human is never offered twice.
+    mergeAssignable(userId, ownPeople, memberSelfPeople) {
+        const memberUserIds = new Set(
+            memberSelfPeople.map((p) => p.linked_user_id)
+        );
+        const ownUids = new Set(ownPeople.map((p) => p.uid));
+
+        const kept = ownPeople.filter(
+            (p) =>
+                p.user_id === p.linked_user_id ||
+                !p.linked_user_id ||
+                !memberUserIds.has(p.linked_user_id)
+        );
+        const added = memberSelfPeople.filter((p) => !ownUids.has(p.uid));
+
+        return [...kept, ...added].map((p) => this.toAssignee(userId, p));
+    }
+
+    async getAssignableForUsers(userId, memberUserIds, filters) {
+        const ownPeople = await peopleRepository.findAllByUser(userId, filters);
+        const otherUserIds = Array.from(new Set(memberUserIds)).filter(
+            (id) => id !== userId
+        );
+        const memberSelfPeople =
+            await peopleRepository.findSelfPeopleByUserIds(otherUserIds);
+        return this.mergeAssignable(userId, ownPeople, memberSelfPeople);
+    }
+
+    // Everyone the caller works with, for tasks that are not in a project:
+    // their own people plus the self-person of every account they share with
+    // or are in a group with.
+    async getAssignable(userId, filters = {}) {
+        const memberUserIds = await getWorkspaceUserIds(userId);
+        return this.getAssignableForUsers(userId, memberUserIds, filters);
+    }
+
     // Own people plus the self-person of the project owner and any
     // collaborators the project is shared with, so a task in a shared
     // project can be assigned to anyone who actually has access to it.
     async getAssignableForProject(userId, projectUid, filters = {}) {
-        const people = await peopleRepository.findAllByUser(userId, filters);
-
         const ownerUserId =
             await peopleRepository.findProjectOwnerUserId(projectUid);
-        if (!ownerUserId) return this.markSelf(userId, people);
+        const collaboratorUserIds = ownerUserId
+            ? await peopleRepository.findProjectCollaboratorUserIds(projectUid)
+            : [];
 
-        const collaboratorUserIds =
-            await peopleRepository.findProjectCollaboratorUserIds(projectUid);
-        const otherUserIds = Array.from(
-            new Set([ownerUserId, ...collaboratorUserIds])
-        ).filter((id) => id !== userId);
+        return this.getAssignableForUsers(
+            userId,
+            ownerUserId ? [ownerUserId, ...collaboratorUserIds] : [],
+            filters
+        );
+    }
 
-        if (!otherUserIds.length) return this.markSelf(userId, people);
-
-        const selfPeople =
-            await peopleRepository.findSelfPeopleByUserIds(otherUserIds);
-        const existingUids = new Set(people.map((p) => p.uid));
-        const merged = [...people];
-        for (const person of selfPeople) {
-            if (!existingUids.has(person.uid)) {
-                merged.push(person);
-                existingUids.add(person.uid);
-            }
+    // Linking a card to an account makes that account count as the person, so
+    // it must be someone the caller works with (admins may link anyone).
+    async assertCanLink(userId, linkedUserId) {
+        if (linkedUserId === userId) return;
+        if (await isAdmin(userId)) return;
+        const workspaceUserIds = await getWorkspaceUserIds(userId);
+        if (!workspaceUserIds.includes(linkedUserId)) {
+            throw new ForbiddenError(
+                'You can only link a person to someone you share with'
+            );
         }
-        return this.markSelf(userId, merged);
     }
 
     async getUnlinked(userId) {
@@ -118,6 +169,7 @@ class PeopleService {
                     'A person already linked to that user account exists'
                 );
             }
+            await this.assertCanLink(userId, linked_user_id);
             validatedLinkedUserId = linked_user_id;
         }
 
@@ -199,6 +251,9 @@ class PeopleService {
                     throw new ConflictError(
                         'A person already linked to that user account exists'
                     );
+                }
+                if (person.linked_user_id !== linked_user_id) {
+                    await this.assertCanLink(userId, linked_user_id);
                 }
                 updates.linked_user_id = linked_user_id;
             }

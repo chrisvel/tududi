@@ -5,6 +5,7 @@ const moment = require('moment-timezone');
 const { Task, Project } = require('../../models');
 const permissionsService = require('../../services/permissionsService');
 const permissionSources = require('../../services/permissionSources');
+const { getWorkspaceUserIds } = require('../../services/workspaceMembers');
 const peopleRepository = require('../people/repository');
 const { getTaskIncludeConfig } = require('../tasks/queries/query-builders');
 const { serializeTasks } = require('../tasks/core/serializers');
@@ -19,27 +20,6 @@ const HIDDEN_STATUSES = [
 const BUCKET_KEYS = ['overdue', 'today', 'tomorrow', 'upcoming', 'no_date'];
 
 const normalizeName = (name) => (name || '').trim().toLowerCase();
-
-// The set of user ids that share something with me or that I share something
-// with (accepted, top-level grants only).
-async function getCollaboratorUserIds(userId) {
-    const [sharedToMe, sharedByMe] = await Promise.all([
-        permissionSources.findAccepted(
-            { user_id: userId, propagation: 'direct' },
-            ['granted_by_user_id']
-        ),
-        permissionSources.findAccepted(
-            { granted_by_user_id: userId, propagation: 'direct' },
-            ['user_id']
-        ),
-    ]);
-
-    const ids = new Set();
-    sharedToMe.forEach((r) => ids.add(r.granted_by_user_id));
-    sharedByMe.forEach((r) => ids.add(r.user_id));
-    ids.delete(userId);
-    return Array.from(ids);
-}
 
 // Projects that are visible to me AND shared with at least one other person.
 // Phase A writes inherited project Permission rows for area/goal shares, so
@@ -94,7 +74,7 @@ function bucketForDue(dueDate, tz) {
 async function getEveryoneDashboard(userId, timezone) {
     const tz = getSafeTimezone(timezone);
 
-    const collaboratorUserIds = await getCollaboratorUserIds(userId);
+    const collaboratorUserIds = await getWorkspaceUserIds(userId);
     const allUserIds = [userId, ...collaboratorUserIds];
 
     // Canonical self-person per user (user_id === linked_user_id).

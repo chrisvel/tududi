@@ -28,6 +28,20 @@ const peopleController = {
         }
     },
 
+    async listWorkspaceAssignable(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const { archived, sort } = req.query;
+            const people = await peopleService.getAssignable(userId, {
+                archived,
+                sort,
+            });
+            res.json({ people });
+        } catch (err) {
+            next(err);
+        }
+    },
+
     async listAssignable(req, res, next) {
         try {
             const userId = requireUserId(req);
