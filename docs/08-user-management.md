@@ -293,7 +293,7 @@ to an account, so it cannot be used to discover who has signed up - Declining re
 
 30. **Admins can create new users directly**
     - Bypasses the registration flow
-    - Requires: email. Optional: name, surname, role (admin, user or guest), capabilities
+    - Requires: an email, or a name when there is no email. Optional: surname, role (admin, user or guest), capabilities
     - **With a password:** the account is verified and can log in immediately,
       unless the admin turns on **Request email verification** in the form
       (`require_verification: true`). The account is then created unverified, a
@@ -307,9 +307,19 @@ to an account, so it cannot be used to discover who has signed up - Declining re
       Using the link sets the password and verifies the email. The response
       carries `invited: true` and `email_sent`; if email is disabled the account
       is still kept and the admin sets a password via update.
+    - **Without an email:** a member such as a child or another household
+      member can be added with just a name. The email is optional and a blank
+      one counts as none. The account has no password and cannot sign in yet, no
+      invitation or verification email is sent, and a password without an email
+      is refused (`400`), since there would be nothing to sign in with. It gets
+      its own person, named after the account (`Member` if it has no name), so
+      it can join groups, receive shares and be assigned tasks like anyone
+      else. Any number of accounts can have no email, while emails that are set
+      stay unique. Signing in without an email is not supported yet.
 
 31. **Admins can list all users**
-    - Shows email, name, surname, role, creation date
+    - Shows email (empty for a member added without one), name, surname, role, creation date
+    - `account_status` says whether the account can sign in: `active` (has a password or signs in through SSO), `invited` (an invitation is waiting to be used) or `no_sign_in` (no way to sign in yet, for example no email)
     - Includes role and the effective capabilities of each account
     - `GET /api/admin/roles` lists the three roles with their default
       capabilities and how many accounts hold each
@@ -317,6 +327,7 @@ to an account, so it cannot be used to discover who has signed up - Declining re
 32. **Admins can update any user's details**
     - Can change: email, password, name, surname, role, capabilities
     - Email must remain unique across all users
+    - An email can be added to a member that has none, or changed, but not taken away (a blank email leaves the current one alone)
     - Password change doesn't require current password (admin privilege)
 
 33. **Admins can delete users**

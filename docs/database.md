@@ -604,6 +604,19 @@ Every new migration runs on both engines. Checklist:
 - Branch with `queryInterface.sequelize.getDialect()` only when unavoidable; `20251228000001-update-project-state-enum.js` shows the pattern.
 - Application code that must differ per engine goes through `backend/utils/db-dialect.js` (`isPostgres()`, `ciLike()`, `withForeignKeyChecksDisabled()`), nowhere else.
 
+### Changing a column SQLite cannot alter (rebuilding a table)
+
+SQLite cannot drop `NOT NULL` or change a column in place, so a few migrations rebuild the table. Avoid it when you can. When you cannot, `20260920000002-make-user-email-nullable.js` is the pattern to copy. It rebuilds `users`, the table every other table points at, and it is the one place the checklist above is deliberately broken:
+
+- **Never write the columns out by hand.** Read the stored `CREATE TABLE` from `sqlite_master`, change only what has to change, and copy every column that `PRAGMA table_info` reports. An earlier rebuild that hard-coded the columns lost data on installs that had extra ones.
+- **Use SQLite's documented order:** create the new table under a temporary name, copy the rows, drop the old table, rename the new one, then recreate the indexes and triggers you saved beforehand. Never rename the old table out of the way, because that rewrites the foreign keys of every table that points at it.
+- **Switch foreign keys off before the transaction and back on afterwards.** The switch does nothing inside a transaction. Run it on the default connection: a Sequelize `{ transaction }` option gets its own connection, so the switch would not apply.
+- **Do the whole rebuild in one transaction** and roll back if the copied row count differs or `PRAGMA foreign_key_check` reports more problems than it did before.
+- **Keep the id counter.** Copying rows resets the `sqlite_sequence` value of an `AUTOINCREMENT` table to the highest id in use, so restore the old value or the id of a deleted row can be handed out again.
+- **Snapshot first** with `VACUUM INTO` (see [Backups](backups.md#migration-snapshots)), and make the migration a no-op when the change is already there.
+- **Test it on the real legacy fixtures**, not a hand-made table: `backend/tests/unit/migrations/make-user-email-nullable.test.js` runs the migration on a copy of every fixture in `backend/tests/fixtures/legacy/` and checks every row, column, index, foreign key and the id counter, plus a failure part way.
+- Do not use `safeChangeColumn` on a table with foreign keys or indexes: it rebuilds from column info alone and drops both.
+
 ### Location
 
 `/backend/config/database.js` (sequelize-cli), `/backend/config/db.js` (shared options)
