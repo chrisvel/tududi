@@ -208,8 +208,12 @@ class UsersService {
             validateFirstDayOfWeek(first_day_of_week);
             allowedUpdates.first_day_of_week = first_day_of_week;
         }
-        if (avatar_image !== undefined)
-            allowedUpdates.avatar_image = avatar_image;
+        // The avatar path is only ever set by the upload endpoint. Accepting a
+        // client-supplied path would let a user claim another user's avatar
+        // file (and have it deleted on their next upload), so this field can
+        // only be cleared here; any other value is ignored.
+        if (avatar_image === null || avatar_image === '')
+            allowedUpdates.avatar_image = null;
         if (telegram_bot_token !== undefined) {
             if (telegram_bot_token) {
                 await entitlements.assertFeature(userId, 'telegram');

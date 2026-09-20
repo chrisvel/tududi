@@ -45,8 +45,12 @@ describe('OIDC Service - handleCallback UserInfo integration', () => {
             providerSlug: 'test-provider',
             nonce: 'test-nonce',
             redirectUri: null,
+            codeVerifier: 'test-code-verifier',
+            bindingHash: 'test-binding-hash',
+            userId: null,
         });
-        stateManager.consumeState.mockResolvedValue();
+        stateManager.consumeState.mockResolvedValue(true);
+        stateManager.bindingMatches.mockReturnValue(true);
 
         oidcService.clearIssuerCache();
     });
@@ -55,6 +59,110 @@ describe('OIDC Service - handleCallback UserInfo integration', () => {
         process.env = originalEnv;
         jest.restoreAllMocks();
         oidcService.clearIssuerCache();
+    });
+
+    describe('browser binding and PKCE', () => {
+        const callbackParams = { code: 'auth-code', state: 'test-state' };
+
+        beforeEach(() => {
+            mockClient.callback.mockResolvedValue({
+                claims: () => ({ sub: 'user-sub-123' }),
+            });
+        });
+
+        it('refuses a callback that does not carry the binding cookie', async () => {
+            stateManager.bindingMatches.mockReturnValue(false);
+
+            await expect(
+                oidcService.handleCallback(
+                    'test-provider',
+                    callbackParams,
+                    undefined
+                )
+            ).rejects.toThrow('Sign-in session mismatch');
+
+            expect(mockClient.callback).not.toHaveBeenCalled();
+        });
+
+        it('checks the binding against the token from the browser', async () => {
+            await oidcService.handleCallback(
+                'test-provider',
+                callbackParams,
+                'browser-token'
+            );
+
+            expect(stateManager.bindingMatches).toHaveBeenCalledWith(
+                'test-binding-hash',
+                'browser-token'
+            );
+        });
+
+        it('consumes the state before exchanging the code, even when the exchange fails', async () => {
+            mockClient.callback.mockRejectedValue(new Error('idp says no'));
+
+            await expect(
+                oidcService.handleCallback(
+                    'test-provider',
+                    callbackParams,
+                    'browser-token'
+                )
+            ).rejects.toThrow('idp says no');
+
+            expect(stateManager.consumeState).toHaveBeenCalledWith(
+                'test-state'
+            );
+        });
+
+        it('rejects a state that was already used', async () => {
+            stateManager.consumeState.mockResolvedValue(false);
+
+            await expect(
+                oidcService.handleCallback(
+                    'test-provider',
+                    callbackParams,
+                    'browser-token'
+                )
+            ).rejects.toThrow('Invalid state parameter');
+
+            expect(mockClient.callback).not.toHaveBeenCalled();
+        });
+
+        it('sends the PKCE verifier with the code exchange', async () => {
+            await oidcService.handleCallback(
+                'test-provider',
+                callbackParams,
+                'browser-token'
+            );
+
+            expect(mockClient.callback).toHaveBeenCalledWith(
+                expect.any(String),
+                callbackParams,
+                expect.objectContaining({
+                    code_verifier: 'test-code-verifier',
+                    nonce: 'test-nonce',
+                })
+            );
+        });
+
+        it('returns the user who started a link flow', async () => {
+            stateManager.validateState.mockResolvedValue({
+                providerSlug: 'test-provider',
+                nonce: 'test-nonce',
+                redirectUri: 'link',
+                codeVerifier: 'v',
+                bindingHash: 'h',
+                userId: 7,
+            });
+
+            const result = await oidcService.handleCallback(
+                'test-provider',
+                callbackParams,
+                'browser-token'
+            );
+
+            expect(result.linkMode).toBe(true);
+            expect(result.linkUserId).toBe(7);
+        });
     });
 
     it('should merge UserInfo claims with ID token claims, ID token taking precedence', async () => {
@@ -73,10 +181,14 @@ describe('OIDC Service - handleCallback UserInfo integration', () => {
             name: 'Test User',
         });
 
-        const result = await oidcService.handleCallback('test-provider', {
-            code: 'auth-code',
-            state: 'test-state',
-        });
+        const result = await oidcService.handleCallback(
+            'test-provider',
+            {
+                code: 'auth-code',
+                state: 'test-state',
+            },
+            'test-binding-token'
+        );
 
         expect(mockClient.userinfo).toHaveBeenCalledWith('access-token-123');
         expect(result.claims.sub).toBe('user-sub-123');
@@ -98,10 +210,14 @@ describe('OIDC Service - handleCallback UserInfo integration', () => {
             new Error('UserInfo endpoint unavailable')
         );
 
-        const result = await oidcService.handleCallback('test-provider', {
-            code: 'auth-code',
-            state: 'test-state',
-        });
+        const result = await oidcService.handleCallback(
+            'test-provider',
+            {
+                code: 'auth-code',
+                state: 'test-state',
+            },
+            'test-binding-token'
+        );
 
         expect(result.claims.sub).toBe('user-sub-123');
         expect(result.claims.email).toBe('fallback@example.com');
@@ -113,10 +229,14 @@ describe('OIDC Service - handleCallback UserInfo integration', () => {
             claims: () => ({ sub: 'user-sub-123', email: 'user@example.com' }),
         });
 
-        const result = await oidcService.handleCallback('test-provider', {
-            code: 'auth-code',
-            state: 'test-state',
-        });
+        const result = await oidcService.handleCallback(
+            'test-provider',
+            {
+                code: 'auth-code',
+                state: 'test-state',
+            },
+            'test-binding-token'
+        );
 
         expect(mockClient.userinfo).not.toHaveBeenCalled();
         expect(result.claims.sub).toBe('user-sub-123');
@@ -136,10 +256,14 @@ describe('OIDC Service - handleCallback UserInfo integration', () => {
             name: 'Authelia User',
         });
 
-        const result = await oidcService.handleCallback('test-provider', {
-            code: 'auth-code',
-            state: 'test-state',
-        });
+        const result = await oidcService.handleCallback(
+            'test-provider',
+            {
+                code: 'auth-code',
+                state: 'test-state',
+            },
+            'test-binding-token'
+        );
 
         expect(result.claims.email).toBe('user@authelia.example.com');
         expect(result.claims.name).toBe('Authelia User');
@@ -210,6 +334,8 @@ describe('OIDC Service - Authorization URL Construction', () => {
                 scope: 'openid profile email',
                 state: 'test-state-123',
                 nonce: 'test-nonce-456',
+                code_challenge: expect.any(String),
+                code_challenge_method: 'S256',
             });
 
             expect(result.authUrl).toContain('scope=openid%20profile%20email');
@@ -245,6 +371,8 @@ describe('OIDC Service - Authorization URL Construction', () => {
                 scope: 'openid+profile+email',
                 state: 'test-state-123',
                 nonce: 'test-nonce-456',
+                code_challenge: expect.any(String),
+                code_challenge_method: 'S256',
             });
 
             expect(result.authUrl).toBeDefined();
@@ -278,6 +406,8 @@ describe('OIDC Service - Authorization URL Construction', () => {
                 scope: 'openid profile email groups offline_access',
                 state: 'test-state-123',
                 nonce: 'test-nonce-456',
+                code_challenge: expect.any(String),
+                code_challenge_method: 'S256',
             });
 
             expect(result.authUrl).toContain(

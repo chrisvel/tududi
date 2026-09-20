@@ -216,5 +216,6 @@ async function assertSafeUrl(urlLike) {
 module.exports = {
     UnsafeUrlError,
     assertSafeUrl,
+    assertPublicHostname,
     isPrivateOrReservedIp,
 };

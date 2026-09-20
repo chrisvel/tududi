@@ -2,9 +2,28 @@
 
 const goalsRepository = require('./repository');
 const { Area } = require('../../models');
+const permissionsService = require('../../services/permissionsService');
 const { NotFoundError, ValidationError } = require('../../shared/errors');
 
 class GoalsService {
+    // A goal can only be placed in an area the caller owns or can edit.
+    // Nonexistent and inaccessible areas get the same error so area ids
+    // cannot be probed.
+    async resolveAreaId(userId, areaId) {
+        if (areaId === undefined || areaId === null || areaId === '') {
+            return null;
+        }
+
+        const area = await Area.findByPk(areaId, { attributes: ['id', 'uid'] });
+        const access = area
+            ? await permissionsService.getAccess(userId, 'area', area.uid)
+            : 'none';
+        if (access !== 'rw' && access !== 'admin') {
+            throw new ValidationError('Invalid area');
+        }
+        return area.id;
+    }
+
     async getAll(userId, areaId, areaUid) {
         if (areaUid) {
             const area = await Area.findOne({ where: { uid: areaUid } });
@@ -31,9 +50,10 @@ class GoalsService {
         if (!title || !title.trim()) {
             throw new ValidationError('Goal title is required');
         }
+        const resolvedAreaId = await this.resolveAreaId(userId, area_id);
         return goalsRepository.create({
             user_id: userId,
-            area_id: area_id || null,
+            area_id: resolvedAreaId,
             title: title.trim(),
             why: why || null,
             horizon: horizon || 'season',
@@ -51,7 +71,9 @@ class GoalsService {
             data;
         const updates = {};
         if (title !== undefined) updates.title = title.trim();
-        if (area_id !== undefined) updates.area_id = area_id;
+        if (area_id !== undefined) {
+            updates.area_id = await this.resolveAreaId(userId, area_id);
+        }
         if (why !== undefined) updates.why = why;
         if (horizon !== undefined) updates.horizon = horizon;
         if (target_date !== undefined)

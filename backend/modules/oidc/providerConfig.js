@@ -49,6 +49,9 @@ function loadProvidersFromEnv() {
             adminEmailDomains: parseCommaSeparated(
                 process.env[`OIDC_PROVIDER_${i}_ADMIN_EMAIL_DOMAINS`]
             ),
+            trustUnverifiedEmail: isEnvTrue(
+                process.env[`OIDC_PROVIDER_${i}_TRUST_UNVERIFIED_EMAIL`]
+            ),
         };
 
         const missingFields = [];
@@ -84,6 +87,9 @@ function loadProvidersFromEnv() {
             autoProvision: process.env.OIDC_AUTO_PROVISION !== 'false',
             adminEmailDomains: parseCommaSeparated(
                 process.env.OIDC_ADMIN_EMAIL_DOMAINS
+            ),
+            trustUnverifiedEmail: isEnvTrue(
+                process.env.OIDC_TRUST_UNVERIFIED_EMAIL
             ),
         };
 

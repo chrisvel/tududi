@@ -1,4 +1,4 @@
-const axios = require('axios');
+const { safeRequest } = require('../services/safe-request');
 const { AppError } = require('../../../shared/errors');
 const logger = require('../../../services/logService');
 const { Task } = require('../../../models');
@@ -174,7 +174,7 @@ class PushPhase {
                 headers['If-Match'] = syncState.etag;
             }
 
-            const response = await axios({
+            const response = await safeRequest({
                 method: 'PUT',
                 url: taskUrl,
                 headers,
@@ -264,7 +264,7 @@ class PushPhase {
         );
 
         try {
-            await axios({
+            await safeRequest({
                 method: 'DELETE',
                 url: taskUrl,
                 auth: {

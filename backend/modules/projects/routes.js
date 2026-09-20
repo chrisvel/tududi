@@ -13,6 +13,10 @@ const { hasAccess } = require('../../middleware/authorize');
 const { requireAuth } = require('../../middleware/auth');
 const { numericIdParam } = require('../../middleware/numericIdParam');
 const { Project } = require('../../models');
+const {
+    imageFileFilter,
+    randomUploadName,
+} = require('../../utils/image-upload');
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -24,8 +28,7 @@ const storage = multer.diskStorage({
         cb(null, uploadDir);
     },
     filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        cb(null, 'project-' + uniqueSuffix + path.extname(file.originalname));
+        cb(null, randomUploadName('project', file.mimetype));
     },
 });
 
@@ -34,19 +37,7 @@ const upload = multer({
     limits: {
         fileSize: config.fileUploadLimitMB * 1024 * 1024,
     },
-    fileFilter: function (req, file, cb) {
-        const allowedTypes = /jpeg|jpg|png|gif|webp/;
-        const extname = allowedTypes.test(
-            path.extname(file.originalname).toLowerCase()
-        );
-        const mimetype = allowedTypes.test(file.mimetype);
-
-        if (mimetype && extname) {
-            return cb(null, true);
-        } else {
-            cb(new Error('Only image files are allowed!'));
-        }
-    },
+    fileFilter: imageFileFilter('Only image files are allowed!'),
 });
 
 // All routes require authentication (handled by app.js middleware)

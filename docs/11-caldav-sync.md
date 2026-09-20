@@ -271,6 +271,7 @@ npm start              # For standalone
 | `FF_ENABLE_CALDAV` | Yes | `false` | Enable the CalDAV feature: the `/caldav/*` endpoints, the sync scheduler, and the profile tab. `CALDAV_ENABLED=true` is accepted as an older spelling. While off, the protocol endpoints answer 404. |
 | `CALDAV_PROJECTS_AS_CALENDARS` | No | `false` | Serve one CalDAV calendar **per project** (plus a "(No Project)" calendar) instead of a single combined `tasks/` calendar. With it on, clients such as Apple Reminders show one list per project. |
 | `ENCRYPTION_KEY` | Recommended | `SECRET_KEY` | AES-256-GCM encryption key for passwords |
+| `CALDAV_ALLOW_PRIVATE_HOSTS` | No | `false` | Allow remote calendars on private, loopback or LAN addresses, and plain `http`. By default a remote calendar must use HTTPS and resolve to a public address (checked before every sync and on every redirect). |
 | `CALDAV_DEFAULT_SYNC_INTERVAL` | No | `15` | Default sync interval in minutes |
 | `CALDAV_REQUEST_TIMEOUT` | No | `30000` | Request timeout in milliseconds |
 

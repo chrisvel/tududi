@@ -30,6 +30,19 @@ module.exports = (sequelize) => {
                 type: DataTypes.STRING,
                 allowNull: true,
             },
+            // SHA-256 of a random cookie value set in the browser that started
+            // the flow. The callback must present the same cookie, so a
+            // callback URL captured by someone else is useless in another
+            // browser.
+            binding_hash: {
+                type: DataTypes.STRING(64),
+                allowNull: true,
+            },
+            // The signed-in user who started an account-link flow.
+            user_id: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+            },
             expires_at: {
                 type: DataTypes.DATE,
                 allowNull: false,

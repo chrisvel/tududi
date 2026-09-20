@@ -7,14 +7,25 @@ const {
 const peopleService = require('../people/service');
 const { logError } = require('../../services/logService');
 const { getConfig } = require('../../config/config');
+const { OidcUserError } = require('./errors');
 
 function shouldBeAdmin(config, email) {
     if (!config.adminEmailDomains || config.adminEmailDomains.length === 0) {
         return false;
     }
 
-    const domain = (email || '').split('@')[1];
-    return config.adminEmailDomains.includes(domain);
+    const domain = String(email || '').split('@')[1];
+    if (!domain) return false;
+
+    const wanted = domain.trim().toLowerCase();
+    return config.adminEmailDomains.some(
+        (allowed) => String(allowed).trim().toLowerCase() === wanted
+    );
+}
+
+// Some providers send the claim as the string "true".
+function isEmailVerified(claims) {
+    return claims.email_verified === true || claims.email_verified === 'true';
 }
 
 async function findOrCreateIdentity(providerSlug, claims) {
@@ -65,12 +76,27 @@ async function provisionUser(providerSlug, claims, req) {
 
         if (!config.autoProvision) {
             await transaction.rollback();
-            throw new Error('Auto-provisioning is disabled for this provider');
+            throw new OidcUserError(
+                'Auto-provisioning is disabled for this provider'
+            );
         }
 
         if (!claims.email) {
             await transaction.rollback();
-            throw new Error('Email claim is required for provisioning');
+            throw new OidcUserError('Email claim is required for provisioning');
+        }
+
+        // An email the provider has not verified proves nothing about who
+        // holds it. Linking it to an existing account, or creating an account
+        // that later receives share invitations sent to that address, would
+        // let anyone who can type an address into the provider sign in as its
+        // owner. Operators whose provider never sends the claim can opt out
+        // per provider (trustUnverifiedEmail).
+        if (!config.trustUnverifiedEmail && !isEmailVerified(claims)) {
+            await transaction.rollback();
+            throw new OidcUserError(
+                'Your identity provider has not verified this email address'
+            );
         }
 
         let user = await User.findOne({
@@ -91,7 +117,7 @@ async function provisionUser(providerSlug, claims, req) {
                 } = require('../auth/registrationService');
                 if (!(await isRegistrationEnabled())) {
                     await transaction.rollback();
-                    throw new Error('Registration is not enabled');
+                    throw new OidcUserError('Registration is not enabled');
                 }
             }
 
@@ -177,7 +203,7 @@ async function linkIdentityToUser(userId, providerSlug, claims) {
             }
 
             await transaction.rollback();
-            throw new Error(
+            throw new OidcUserError(
                 'This OIDC identity is already linked to another user'
             );
         }
@@ -220,4 +246,5 @@ module.exports = {
     linkIdentityToUser,
     findOrCreateIdentity,
     shouldBeAdmin,
+    isEmailVerified,
 };

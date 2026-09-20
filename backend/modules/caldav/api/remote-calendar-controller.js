@@ -1,72 +1,11 @@
-const axios = require('axios');
-const { URL } = require('url');
 const { AppError } = require('../../../shared/errors');
 const RemoteCalendarRepository = require('../repositories/remote-calendar-repository');
 const CalendarRepository = require('../repositories/calendar-repository');
 const encryptionService = require('../services/encryption-service');
-
-function isPrivateOrLocalhost(hostname) {
-    if (!hostname) return true;
-
-    const lower = hostname.toLowerCase();
-
-    if (lower === 'localhost' || lower === '127.0.0.1' || lower === '::1') {
-        return true;
-    }
-
-    if (lower.startsWith('192.168.') || lower.startsWith('10.')) {
-        return true;
-    }
-
-    if (lower.startsWith('172.')) {
-        const parts = lower.split('.');
-        const second = parseInt(parts[1], 10);
-        if (second >= 16 && second <= 31) {
-            return true;
-        }
-    }
-
-    if (lower.startsWith('169.254.')) {
-        return true;
-    }
-
-    if (
-        lower.startsWith('[::1]') ||
-        lower.startsWith('[fc') ||
-        lower.startsWith('[fd')
-    ) {
-        return true;
-    }
-
-    return false;
-}
-
-function validateCalDAVUrl(urlString) {
-    try {
-        const url = new URL(urlString);
-
-        if (!['http:', 'https:'].includes(url.protocol)) {
-            throw new AppError(
-                'Only HTTP and HTTPS protocols are allowed',
-                400
-            );
-        }
-
-        if (isPrivateOrLocalhost(url.hostname)) {
-            throw new AppError(
-                'Cannot connect to private, local, or internal network addresses',
-                400
-            );
-        }
-
-        return url.href;
-    } catch (error) {
-        if (error instanceof AppError) {
-            throw error;
-        }
-        throw new AppError('Invalid URL format', 400);
-    }
-}
+const {
+    assertSafeCalDavUrl,
+    safeRequest,
+} = require('../services/safe-request');
 
 class RemoteCalendarController {
     async listRemoteCalendars(req, res, next) {
@@ -190,7 +129,7 @@ class RemoteCalendarController {
                 : `/${calendar_path}`;
             const fullUrl = `${baseUrl}${path}`;
 
-            validateCalDAVUrl(fullUrl);
+            await assertSafeCalDavUrl(fullUrl, { requireHttps: true });
 
             const passwordEncrypted = encryptionService.encrypt(password);
 
@@ -265,7 +204,7 @@ class RemoteCalendarController {
                     newCalendarPath || remoteCalendar.calendar_path;
                 const fullUrl = `${finalServerUrl}${finalCalendarPath}`;
 
-                validateCalDAVUrl(fullUrl);
+                await assertSafeCalDavUrl(fullUrl, { requireHttps: true });
 
                 if (newServerUrl) updates.server_url = newServerUrl;
                 if (newCalendarPath) updates.calendar_path = newCalendarPath;
@@ -361,15 +300,9 @@ class RemoteCalendarController {
                 : `/${calendar_path}`;
             const testUrl = `${baseUrl}${path}`;
 
-            const validatedUrl = validateCalDAVUrl(testUrl);
-
-            const parsedUrl = new URL(validatedUrl);
-            if (isPrivateOrLocalhost(parsedUrl.hostname)) {
-                throw new AppError(
-                    'Cannot connect to private, local, or internal network addresses',
-                    400
-                );
-            }
+            const validatedUrl = (
+                await assertSafeCalDavUrl(testUrl, { requireHttps: true })
+            ).href;
 
             const authConfig =
                 auth_type === 'bearer'
@@ -377,19 +310,21 @@ class RemoteCalendarController {
                     : { auth: { username, password } };
 
             // lgtm[js/request-forgery]
-            // SSRF protection implemented: URL validated via validateCalDAVUrl() and
-            // isPrivateOrLocalhost(), only HTTP/HTTPS allowed, redirects disabled
-            //
-            const response = await axios({
-                method: 'OPTIONS',
-                url: validatedUrl,
-                ...authConfig,
-                timeout: parseInt(
-                    process.env.CALDAV_REQUEST_TIMEOUT || '30000',
-                    10
-                ),
-                maxRedirects: 0,
-            });
+            // The URL is checked by assertSafeCalDavUrl before the request and
+            // for every redirect hop, and the socket address is re-checked at
+            // connect time (see services/safe-request.js).
+            const response = await safeRequest(
+                {
+                    method: 'OPTIONS',
+                    url: validatedUrl,
+                    ...authConfig,
+                    timeout: parseInt(
+                        process.env.CALDAV_REQUEST_TIMEOUT || '30000',
+                        10
+                    ),
+                },
+                { requireHttps: true }
+            );
 
             const davHeader = response.headers.dav || '';
             const supportsCalDAV =

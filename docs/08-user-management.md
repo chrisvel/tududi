@@ -211,6 +211,12 @@ to an account, so it cannot be used to discover who has signed up - Declining re
     - Login and reset requests are rate limited per email address as well as
       per IP (`RATE_LIMIT_AUTH_EMAIL_MAX`, default 10 per 15 minutes), and
       password logins (success and failure) are written to `auth_audit_log`
+    - Only failed logins count towards the login limits, and login has its own
+      counters separate from registration and password reset
+    - Changing the password or deleting the account is limited per user
+      (`RATE_LIMIT_PASSWORD_CONFIRM_MAX`, default 10 per 15 minutes), and
+      repeated invalid API tokens from one IP are throttled
+      (`RATE_LIMIT_BEARER_FAILURE_MAX`, default 50 per 15 minutes)
 
 23. **Password storage is secure**
     - Passwords are hashed using bcrypt (10 rounds)

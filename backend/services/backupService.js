@@ -16,6 +16,7 @@ const {
 const fs = require('fs').promises;
 const path = require('path');
 const zlib = require('zlib');
+const { gunzipWithLimit } = require('../utils/safe-gunzip');
 const { promisify } = require('util');
 const { getConfig } = require('../config/config');
 const config = getConfig();
@@ -23,7 +24,6 @@ const packageJson = require('../../package.json');
 
 // Promisify zlib functions
 const gzip = promisify(zlib.gzip);
-const gunzip = promisify(zlib.gunzip);
 
 /**
  * Compare two semantic versions
@@ -287,7 +287,7 @@ async function getBackup(userId, backupUid) {
         let backupJson;
         if (backup.file_path.endsWith('.gz')) {
             // Decompress gzip
-            const decompressed = await gunzip(fileBuffer);
+            const decompressed = await gunzipWithLimit(fileBuffer);
             backupJson = decompressed.toString('utf8');
         } else {
             // Legacy uncompressed backup

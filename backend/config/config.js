@@ -317,6 +317,14 @@ const config = {
     secretKey: process.env.SECRET_KEY,
 
     // Rate limiting configuration
+    caldav: {
+        // Remote calendars on loopback, LAN or other private addresses are
+        // refused unless the operator opts in (self-hosted Nextcloud or
+        // Radicale on the same network is the usual reason). Opting in also
+        // allows plain http, since such servers rarely have certificates.
+        allowPrivateHosts: process.env.CALDAV_ALLOW_PRIVATE_HOSTS === 'true',
+    },
+
     rateLimiting: {
         // Disable rate limiting in test environment
         enabled:
@@ -360,6 +368,27 @@ const config = {
                 parseInt(process.env.RATE_LIMIT_AUTH_API_WINDOW_MS) ||
                 15 * 60 * 1000, // 15 minutes
             max: parseInt(process.env.RATE_LIMIT_AUTH_API_MAX) || 1000, // 1000 requests per window
+        },
+
+        // Failed (401) Bearer authentications per IP, per auth window
+        bearerFailure: {
+            max: parseInt(process.env.RATE_LIMIT_BEARER_FAILURE_MAX) || 50,
+        },
+
+        // Endpoints that verify or change account credentials
+        passwordConfirm: {
+            windowMs:
+                parseInt(process.env.RATE_LIMIT_PASSWORD_CONFIRM_WINDOW_MS) ||
+                15 * 60 * 1000, // 15 minutes
+            max: parseInt(process.env.RATE_LIMIT_PASSWORD_CONFIRM_MAX) || 10,
+        },
+
+        // Uploaded file requests (avatars, project images, attachments)
+        uploads: {
+            windowMs:
+                parseInt(process.env.RATE_LIMIT_UPLOADS_WINDOW_MS) ||
+                15 * 60 * 1000, // 15 minutes
+            max: parseInt(process.env.RATE_LIMIT_UPLOADS_MAX) || 3000,
         },
 
         // Resource creation endpoints

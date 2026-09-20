@@ -47,6 +47,21 @@ describe('Auth Routes', () => {
             expect(response.body.error).toBe('Invalid login parameters.');
         });
 
+        it.each([
+            ['an array email', { email: ['test@example.com'], password: 'x' }],
+            ['an object email', { email: { a: 1 }, password: 'x' }],
+            ['a numeric password', { email: 'test@example.com', password: 1 }],
+            [
+                'an array password',
+                { email: 'test@example.com', password: ['x'] },
+            ],
+        ])('should return 400 for %s', async (_label, body) => {
+            const response = await request(app).post('/api/login').send(body);
+
+            expect(response.status).toBe(400);
+            expect(response.body.error).toBe('Invalid login parameters.');
+        });
+
         it('should return 401 for non-existent user', async () => {
             const response = await request(app).post('/api/login').send({
                 email: 'nonexistent@example.com',

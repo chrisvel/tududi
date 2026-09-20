@@ -17,13 +17,56 @@ const REDACT = [
     'req.headers.cookie',
     'password',
     'password_digest',
+    'password_encrypted',
     'token',
     'telegram_bot_token',
+    'ai_api_key',
+    '*.password',
+    '*.password_digest',
+    '*.password_encrypted',
+    '*.token',
+    '*.telegram_bot_token',
+    '*.ai_api_key',
 ];
 
-function buildLogger() {
-    const options = { level, redact: { paths: REDACT, censor: '[redacted]' } };
-    if (format === 'pretty') {
+// pino's default error serializer copies every enumerable property of the
+// error. For an axios failure that includes config.auth.password and the
+// outgoing Authorization header, and for a Sequelize error it includes the
+// SQL and its bound parameters (note text, task names, password digests).
+// Only the fields needed to diagnose the failure are kept.
+function serializeError(err) {
+    if (!(err instanceof Error)) return err;
+
+    const serialized = {
+        type: err.name || err.constructor?.name || 'Error',
+        message: err.message,
+        stack: err.stack,
+    };
+    if (err.code) serialized.code = err.code;
+    if (err.errno) serialized.errno = err.errno;
+    if (err.syscall) serialized.syscall = err.syscall;
+    const status = err.response?.status || err.status;
+    if (status) serialized.status = status;
+    if (err.cause instanceof Error)
+        serialized.cause = serializeError(err.cause);
+    return serialized;
+}
+
+// Verification links, password reset links and OIDC callbacks carry secrets
+// in the query string (token, code, state), so request logs keep the path only.
+function stripQuery(url) {
+    if (typeof url !== 'string') return url;
+    const queryStart = url.indexOf('?');
+    return queryStart === -1 ? url : url.slice(0, queryStart);
+}
+
+function buildLogger({ destination, logLevel = level } = {}) {
+    const options = {
+        level: logLevel,
+        redact: { paths: REDACT, censor: '[redacted]' },
+        serializers: { err: serializeError },
+    };
+    if (!destination && format === 'pretty') {
         try {
             options.transport = {
                 target: 'pino-pretty',
@@ -33,7 +76,7 @@ function buildLogger() {
             // pino-pretty is a dev dependency; fall back to JSON without it
         }
     }
-    return pino(options);
+    return destination ? pino(options, destination) : pino(options);
 }
 
 const logger = buildLogger();
@@ -78,6 +121,10 @@ const logDebug = (...args) => {
 
 module.exports = {
     logger,
+    buildLogger,
+    serializeError,
+    stripQuery,
+    REDACT,
     logError,
     logInfo,
     logDebug,

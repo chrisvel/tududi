@@ -41,6 +41,12 @@ router.delete(
 );
 
 // Get backlinks — notes that reference this note via [[title]]
-router.get('/note/:uid/backlinks', notesController.backlinks);
+router.get(
+    '/note/:uid/backlinks',
+    hasAccess('ro', 'note', (req) => notesController.getNoteUidForAuth(req), {
+        notFoundMessage: 'Note not found.',
+    }),
+    notesController.backlinks
+);
 
 module.exports = router;

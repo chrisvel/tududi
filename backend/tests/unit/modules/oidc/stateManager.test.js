@@ -76,6 +76,54 @@ describe('OIDC State Manager', () => {
         });
     });
 
+    describe('binding', () => {
+        it('returns a binding token and stores only its hash', async () => {
+            const { state, bindingToken } =
+                await stateManager.createState('google');
+
+            expect(bindingToken).toHaveLength(64);
+            const record = await OIDCStateNonce.findOne({ where: { state } });
+            expect(record.binding_hash).toHaveLength(64);
+            expect(record.binding_hash).not.toBe(bindingToken);
+        });
+
+        it('stores the PKCE verifier and the linking user', async () => {
+            const { state } = await stateManager.createState('google', 'link', {
+                userId: 42,
+                codeVerifier: 'verifier-value',
+            });
+
+            const result = await stateManager.validateState(state);
+
+            expect(result.userId).toBe(42);
+            expect(result.codeVerifier).toBe('verifier-value');
+        });
+
+        it('matches only the token the state was issued to', async () => {
+            const { state, bindingToken } =
+                await stateManager.createState('google');
+            const { bindingHash } = await stateManager.validateState(state);
+
+            expect(stateManager.bindingMatches(bindingHash, bindingToken)).toBe(
+                true
+            );
+            expect(
+                stateManager.bindingMatches(bindingHash, 'other-token')
+            ).toBe(false);
+            expect(stateManager.bindingMatches(bindingHash, null)).toBe(false);
+            expect(stateManager.bindingMatches(null, bindingToken)).toBe(false);
+        });
+
+        it('rejects a state that is not a single string', async () => {
+            await expect(
+                stateManager.validateState(['a', 'b'])
+            ).rejects.toThrow('Invalid state parameter');
+            await expect(stateManager.validateState(undefined)).rejects.toThrow(
+                'Invalid state parameter'
+            );
+        });
+    });
+
     describe('validateState', () => {
         it('should return nonce and provider for valid state', async () => {
             const { state, nonce } = await stateManager.createState('google');

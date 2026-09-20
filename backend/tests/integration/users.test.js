@@ -83,7 +83,6 @@ describe('Users Routes', () => {
                 appearance: 'dark',
                 language: 'es',
                 timezone: 'UTC',
-                avatar_image: 'new-avatar.png',
                 telegram_bot_token: 'new-token',
             };
 
@@ -95,10 +94,53 @@ describe('Users Routes', () => {
             expect(response.body.appearance).toBe(updateData.appearance);
             expect(response.body.language).toBe(updateData.language);
             expect(response.body.timezone).toBe(updateData.timezone);
-            expect(response.body.avatar_image).toBe(updateData.avatar_image);
             expect(response.body.telegram_bot_token).toBe(
                 updateData.telegram_bot_token
             );
+        });
+
+        describe('avatar_image', () => {
+            it('ignores a client-supplied avatar path', async () => {
+                const response = await agent.patch('/api/profile').send({
+                    avatar_image: '/uploads/avatars/someone-else.png',
+                });
+
+                expect(response.status).toBe(200);
+                expect(response.body.avatar_image).toBeNull();
+
+                const stored = await User.findByPk(user.id);
+                expect(stored.avatar_image).toBeNull();
+            });
+
+            it('keeps the uploaded avatar when the client echoes another path', async () => {
+                await User.update(
+                    { avatar_image: '/uploads/avatars/mine.png' },
+                    { where: { id: user.id } }
+                );
+
+                const response = await agent.patch('/api/profile').send({
+                    avatar_image: '/uploads/avatars/someone-else.png',
+                });
+
+                expect(response.status).toBe(200);
+                expect(response.body.avatar_image).toBe(
+                    '/uploads/avatars/mine.png'
+                );
+            });
+
+            it('clears the avatar when the client sends an empty value', async () => {
+                await User.update(
+                    { avatar_image: '/uploads/avatars/mine.png' },
+                    { where: { id: user.id } }
+                );
+
+                const response = await agent
+                    .patch('/api/profile')
+                    .send({ avatar_image: '' });
+
+                expect(response.status).toBe(200);
+                expect(response.body.avatar_image).toBeNull();
+            });
         });
 
         it('should allow partial updates', async () => {
