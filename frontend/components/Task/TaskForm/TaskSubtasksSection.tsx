@@ -48,7 +48,6 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
         const newSubtask: Task = {
             name: newSubtaskName.trim(),
             status: 'not_started',
-            priority: 'low',
             today: false,
             parent_task_id: parentTaskId,
             isNew: true,

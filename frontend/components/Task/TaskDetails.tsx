@@ -780,7 +780,6 @@ const TaskDetails: React.FC = () => {
         const newSubtask = {
             name,
             status: 'not_started',
-            priority: 'low',
             today: false,
             parent_task_id: task.id,
             _isNew: true,

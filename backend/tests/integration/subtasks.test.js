@@ -319,6 +319,92 @@ describe('Subtasks API', () => {
         });
     });
 
+    describe('Subtask priority (#1546)', () => {
+        const addSubtask = async (parent, subtask) => {
+            await agent
+                .patch(`/api/task/${parent.uid}`)
+                .send({ subtasks: [{ isNew: true, ...subtask }] })
+                .expect(200);
+            return Task.findOne({
+                where: { parent_task_id: parent.id, name: subtask.name },
+            });
+        };
+
+        it('creates a subtask with no priority when the parent has none', async () => {
+            const parent = await Task.create({
+                name: 'Parent',
+                user_id: testUser.id,
+                priority: null,
+            });
+
+            const subtask = await addSubtask(parent, { name: 'Child' });
+
+            expect(subtask.priority).toBeNull();
+        });
+
+        it("inherits the parent's priority when none is sent", async () => {
+            const parent = await Task.create({
+                name: 'Parent',
+                user_id: testUser.id,
+                priority: Task.PRIORITY.HIGH,
+            });
+
+            const subtask = await addSubtask(parent, { name: 'Child' });
+
+            expect(subtask.priority).toBe(Task.PRIORITY.HIGH);
+        });
+
+        it('keeps an explicit priority over the parent priority', async () => {
+            const parent = await Task.create({
+                name: 'Parent',
+                user_id: testUser.id,
+                priority: Task.PRIORITY.HIGH,
+            });
+
+            const low = await addSubtask(parent, {
+                name: 'Low child',
+                priority: 'low',
+            });
+            const medium = await addSubtask(parent, {
+                name: 'Medium child',
+                priority: 'medium',
+            });
+
+            expect(low.priority).toBe(Task.PRIORITY.LOW);
+            expect(medium.priority).toBe(Task.PRIORITY.MEDIUM);
+        });
+
+        it('does not turn a null priority into low when updating an existing subtask', async () => {
+            const parent = await Task.create({
+                name: 'Parent',
+                user_id: testUser.id,
+            });
+            const child = await Task.create({
+                name: 'Child',
+                user_id: testUser.id,
+                parent_task_id: parent.id,
+                priority: Task.PRIORITY.MEDIUM,
+            });
+
+            await agent
+                .patch(`/api/task/${parent.uid}`)
+                .send({
+                    subtasks: [
+                        {
+                            id: child.id,
+                            name: 'Child',
+                            isEdited: true,
+                            priority: null,
+                        },
+                    ],
+                })
+                .expect(200);
+
+            await child.reload();
+            expect(child.priority).toBeNull();
+        });
+    });
+
     describe('Task Completion Logic', () => {
         it('should complete all subtasks when parent is completed', async () => {
             const parentTask = await Task.create({
