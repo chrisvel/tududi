@@ -28,8 +28,8 @@ const MAX_SUGGESTIONS = 8;
 const displayName = (user: {
     name?: string | null;
     surname?: string | null;
-    email: string;
-}) => [user.name, user.surname].filter(Boolean).join(' ') || user.email;
+    email: string | null;
+}) => [user.name, user.surname].filter(Boolean).join(' ') || user.email || '';
 
 interface GroupModalProps {
     group: AdminGroup | null;
@@ -205,7 +205,7 @@ const MembersModal: React.FC<MembersModalProps> = ({
             .filter(
                 (u) =>
                     !needle ||
-                    u.email.toLowerCase().includes(needle) ||
+                    (u.email ?? '').toLowerCase().includes(needle) ||
                     displayName(u).toLowerCase().includes(needle)
             )
             .slice(0, MAX_SUGGESTIONS);
@@ -300,7 +300,11 @@ const MembersModal: React.FC<MembersModalProps> = ({
                                                             {displayName(m)}
                                                         </div>
                                                         <div className="text-xs text-gray-500 truncate">
-                                                            {m.email}
+                                                            {m.email ??
+                                                                t(
+                                                                    'admin.noEmail',
+                                                                    'No email'
+                                                                )}
                                                         </div>
                                                     </div>
                                                     <button
@@ -365,7 +369,11 @@ const MembersModal: React.FC<MembersModalProps> = ({
                                                             {displayName(u)}
                                                         </div>
                                                         <div className="text-xs text-gray-500 truncate">
-                                                            {u.email}
+                                                            {u.email ??
+                                                                t(
+                                                                    'admin.noEmail',
+                                                                    'No email'
+                                                                )}
                                                         </div>
                                                     </div>
                                                     <button

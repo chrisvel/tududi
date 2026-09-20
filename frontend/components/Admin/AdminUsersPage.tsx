@@ -31,9 +31,12 @@ import {
     RolesOverview,
 } from '../../entities/Role';
 
+type AccountStatus = 'active' | 'invited' | 'no_sign_in';
+
 interface AdminUserItem {
     id: number;
-    email: string;
+    email: string | null;
+    account_status?: AccountStatus;
     name?: string;
     surname?: string;
     created_at: string;
@@ -43,6 +46,13 @@ interface AdminUserItem {
     verification_requested?: boolean;
     email_sent?: boolean;
 }
+
+const accountLabel = (u: {
+    email: string | null;
+    name?: string;
+    surname?: string;
+}) =>
+    u.email || [u.name, u.surname].filter(Boolean).join(' ') || 'this account';
 
 const fetchAdminUsers = async (t: any): Promise<AdminUserItem[]> => {
     const res = await fetch(getApiPath('admin/users'), {
@@ -71,7 +81,7 @@ const createAdminUser = async (
     capabilities?: Capabilities
 ): Promise<AdminUserItem> => {
     const body: any = {
-        email,
+        email: email || undefined,
         name,
         surname,
         role,
@@ -119,7 +129,13 @@ const updateAdminUser = async (
     password?: string,
     capabilities?: Capabilities
 ): Promise<AdminUserItem> => {
-    const body: any = { email, name, surname, role, capabilities };
+    const body: any = {
+        email: email || undefined,
+        name,
+        surname,
+        role,
+        capabilities,
+    };
     if (password) body.password = password;
 
     const res = await fetchWithCsrf(getApiPath(`admin/users/${id}`), {
@@ -205,6 +221,10 @@ const AddUserModal: React.FC<{
         return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value);
     };
 
+    // A member can be added without an email. There is then nothing to sign
+    // in with, so no password or invitation.
+    const hasEmail = email.trim() !== '';
+
     // What the switches show: everything for an admin, otherwise the toggles
     // being edited, falling back to the role's defaults.
     const shownCapabilities: Capabilities | null =
@@ -215,7 +235,7 @@ const AddUserModal: React.FC<{
     useEffect(() => {
         if (isOpen) {
             if (editingUser) {
-                setEmail(editingUser.email);
+                setEmail(editingUser.email ?? '');
                 setPassword('');
                 setName(editingUser.name || '');
                 setSurname(editingUser.surname || '');
@@ -297,14 +317,20 @@ const AddUserModal: React.FC<{
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
-        if (!email) {
-            setError(t('errors.required', 'This field is required'));
-            return;
-        }
-        if (!isValidEmail(email)) {
+        if (hasEmail && !isValidEmail(email)) {
             setError(t('errors.invalidEmail', 'Invalid email address'));
             return;
         }
+        if (!hasEmail && !name.trim() && !surname.trim()) {
+            setError(
+                t(
+                    'admin.nameRequiredWithoutEmail',
+                    'Enter a name when there is no email'
+                )
+            );
+            return;
+        }
+        const passwordToSend = hasEmail ? password : '';
         // Password is optional for new users: leaving it blank sends an
         // invitation email so the member sets their own.
         setSubmitting(true);
@@ -317,20 +343,20 @@ const AddUserModal: React.FC<{
                     name,
                     surname,
                     role,
-                    password || undefined,
+                    passwordToSend || undefined,
                     capabilities ?? undefined
                 );
                 onUpdated(user);
             } else {
                 const user = await createAdminUser(
-                    email,
-                    password,
+                    email.trim(),
+                    passwordToSend,
                     t,
                     name,
                     surname,
                     role,
                     selectedPersonUid || undefined,
-                    requireVerification && !!password,
+                    requireVerification && !!passwordToSend,
                     capabilities ?? undefined
                 );
                 onCreated(user);
@@ -391,11 +417,8 @@ const AddUserModal: React.FC<{
                     <div>
                         <label className="block text-sm text-gray-700 dark:text-gray-300 mb-1">
                             {t('admin.email', 'Email')}
-                            <span
-                                className="text-red-500 dark:text-red-400 ml-1"
-                                aria-hidden="true"
-                            >
-                                *
+                            <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
+                                ({t('admin.emailOptional', 'optional')})
                             </span>
                         </label>
                         <input
@@ -403,8 +426,24 @@ const AddUserModal: React.FC<{
                             className="w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            required
+                            data-testid="admin-user-email"
                         />
+                        {!hasEmail && (
+                            <p
+                                className="mt-1 text-xs text-gray-500 dark:text-gray-400"
+                                data-testid="no-email-hint"
+                            >
+                                {editingUser
+                                    ? t(
+                                          'admin.noEmailHintEdit',
+                                          'This member has no email, so cannot sign in yet. Add one to invite them.'
+                                      )
+                                    : t(
+                                          'admin.noEmailHint',
+                                          'Without an email this member cannot sign in yet, but can still be in groups and be assigned tasks. You can add one later.'
+                                      )}
+                            </p>
+                        )}
                     </div>
                     <div>
                         <label className="block text-sm text-gray-700 dark:text-gray-300 mb-1">
@@ -428,98 +467,102 @@ const AddUserModal: React.FC<{
                             onChange={(e) => setSurname(e.target.value)}
                         />
                     </div>
-                    <div>
-                        <label className="block text-sm text-gray-700 dark:text-gray-300 mb-1">
-                            {t('admin.password', 'Password')}
-                            <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
-                                (
-                                {editingUser
-                                    ? t(
-                                          'admin.passwordOptional',
-                                          'Leave blank to keep current'
-                                      )
-                                    : t(
-                                          'admin.passwordInviteHint',
-                                          'Leave blank to send an invitation email'
-                                      )}
-                                )
-                            </span>
-                        </label>
-                        <div className="flex items-center gap-2">
-                            <div className="relative flex-1">
-                                <input
-                                    type={showPassword ? 'text' : 'password'}
-                                    className="w-full rounded border pl-3 pr-16 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
-                                    value={password}
-                                    onChange={(e) => {
-                                        setPassword(e.target.value);
-                                        setPasswordCopied(false);
-                                    }}
-                                    minLength={8}
-                                    autoComplete="new-password"
-                                    data-testid="admin-user-password"
-                                />
-                                <div className="absolute inset-y-0 right-2 flex items-center gap-1">
-                                    <button
-                                        type="button"
-                                        onClick={() =>
-                                            setShowPassword(!showPassword)
+                    {hasEmail && (
+                        <div>
+                            <label className="block text-sm text-gray-700 dark:text-gray-300 mb-1">
+                                {t('admin.password', 'Password')}
+                                <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
+                                    (
+                                    {editingUser
+                                        ? t(
+                                              'admin.passwordOptional',
+                                              'Leave blank to keep current'
+                                          )
+                                        : t(
+                                              'admin.passwordInviteHint',
+                                              'Leave blank to send an invitation email'
+                                          )}
+                                    )
+                                </span>
+                            </label>
+                            <div className="flex items-center gap-2">
+                                <div className="relative flex-1">
+                                    <input
+                                        type={
+                                            showPassword ? 'text' : 'password'
                                         }
-                                        aria-label={
-                                            showPassword
-                                                ? t(
-                                                      'admin.hidePassword',
-                                                      'Hide password'
-                                                  )
-                                                : t(
-                                                      'admin.showPassword',
-                                                      'Show password'
-                                                  )
-                                        }
-                                        aria-pressed={showPassword}
-                                        data-testid="toggle-password-visibility"
-                                        className="p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none"
-                                    >
-                                        {showPassword ? (
-                                            <EyeSlashIcon className="h-4 w-4" />
-                                        ) : (
-                                            <EyeIcon className="h-4 w-4" />
-                                        )}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={handleCopyPassword}
-                                        disabled={!password}
-                                        aria-label={t(
-                                            'admin.copyPassword',
-                                            'Copy password'
-                                        )}
-                                        data-testid="copy-password"
-                                        className="p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed"
-                                    >
-                                        {passwordCopied ? (
-                                            <CheckIcon className="h-4 w-4 text-green-600 dark:text-green-400" />
-                                        ) : (
-                                            <ClipboardDocumentIcon className="h-4 w-4" />
-                                        )}
-                                    </button>
+                                        className="w-full rounded border pl-3 pr-16 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
+                                        value={password}
+                                        onChange={(e) => {
+                                            setPassword(e.target.value);
+                                            setPasswordCopied(false);
+                                        }}
+                                        minLength={8}
+                                        autoComplete="new-password"
+                                        data-testid="admin-user-password"
+                                    />
+                                    <div className="absolute inset-y-0 right-2 flex items-center gap-1">
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setShowPassword(!showPassword)
+                                            }
+                                            aria-label={
+                                                showPassword
+                                                    ? t(
+                                                          'admin.hidePassword',
+                                                          'Hide password'
+                                                      )
+                                                    : t(
+                                                          'admin.showPassword',
+                                                          'Show password'
+                                                      )
+                                            }
+                                            aria-pressed={showPassword}
+                                            data-testid="toggle-password-visibility"
+                                            className="p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none"
+                                        >
+                                            {showPassword ? (
+                                                <EyeSlashIcon className="h-4 w-4" />
+                                            ) : (
+                                                <EyeIcon className="h-4 w-4" />
+                                            )}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={handleCopyPassword}
+                                            disabled={!password}
+                                            aria-label={t(
+                                                'admin.copyPassword',
+                                                'Copy password'
+                                            )}
+                                            data-testid="copy-password"
+                                            className="p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed"
+                                        >
+                                            {passwordCopied ? (
+                                                <CheckIcon className="h-4 w-4 text-green-600 dark:text-green-400" />
+                                            ) : (
+                                                <ClipboardDocumentIcon className="h-4 w-4" />
+                                            )}
+                                        </button>
+                                    </div>
                                 </div>
+                                <button
+                                    type="button"
+                                    onClick={handleGeneratePassword}
+                                    title={t(
+                                        'admin.generatePasswordTitle',
+                                        'Generate a secure random password'
+                                    )}
+                                    data-testid="generate-password"
+                                    className="inline-flex items-center gap-1 px-3 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors whitespace-nowrap"
+                                >
+                                    <KeyIcon className="h-4 w-4" />
+                                    {t('admin.generatePassword', 'Generate')}
+                                </button>
                             </div>
-                            <button
-                                type="button"
-                                onClick={handleGeneratePassword}
-                                title={t(
-                                    'admin.generatePasswordTitle',
-                                    'Generate a secure random password'
-                                )}
-                                data-testid="generate-password"
-                                className="inline-flex items-center gap-1 px-3 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors whitespace-nowrap"
-                            >
-                                <KeyIcon className="h-4 w-4" />
-                                {t('admin.generatePassword', 'Generate')}
-                            </button>
                         </div>
-                    </div>
+                    )}
                     <div>
                         <label className="block text-sm text-gray-700 dark:text-gray-300 mb-1">
                             {t('admin.role', 'Role')}
@@ -647,7 +690,7 @@ const AddUserModal: React.FC<{
                             )}
                         </div>
                     )}
-                    {!editingUser && (
+                    {!editingUser && hasEmail && (
                         <div className="flex items-start justify-between gap-4">
                             <div>
                                 <label
@@ -869,7 +912,37 @@ const AdminUsersPanel: React.FC<{
                                         className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-150"
                                     >
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-                                            {u.email}
+                                            {u.email ?? (
+                                                <span className="italic font-normal text-gray-400 dark:text-gray-500">
+                                                    {t(
+                                                        'admin.noEmail',
+                                                        'No email'
+                                                    )}
+                                                </span>
+                                            )}
+                                            {u.account_status ===
+                                                'no_sign_in' && (
+                                                <div
+                                                    className="text-xs font-normal text-gray-500 dark:text-gray-400"
+                                                    data-testid={`user-status-${u.id}`}
+                                                >
+                                                    {t(
+                                                        'admin.status.noSignIn',
+                                                        "Can't sign in yet"
+                                                    )}
+                                                </div>
+                                            )}
+                                            {u.account_status === 'invited' && (
+                                                <div
+                                                    className="text-xs font-normal text-gray-500 dark:text-gray-400"
+                                                    data-testid={`user-status-${u.id}`}
+                                                >
+                                                    {t(
+                                                        'admin.status.invited',
+                                                        'Invitation pending'
+                                                    )}
+                                                </div>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                             {u.name || '-'}
@@ -1002,7 +1075,7 @@ const AdminUsersPanel: React.FC<{
                                 message={t(
                                     'admin.confirmDeleteUser',
                                     'Are you sure you want to delete {{email}}? This will permanently delete all associated data including tasks, projects, notes, tags, and other user content. This action cannot be undone.',
-                                    { email: userToDelete.email }
+                                    { email: accountLabel(userToDelete) }
                                 )}
                                 onConfirm={handleDeleteUser}
                                 onCancel={() => setUserToDelete(null)}

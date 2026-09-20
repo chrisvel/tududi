@@ -178,10 +178,14 @@ describe('Admin users and groups page', () => {
             (fetchWithCsrf as jest.Mock).mockReset();
         });
 
+        // The password and verification controls appear once there is an email.
         const openAddForm = async () => {
             renderPage();
             await screen.findByTestId('admin-users-panel');
             fireEvent.click(screen.getByText('Add user'));
+            fireEvent.change(await screen.findByTestId('admin-user-email'), {
+                target: { value: 'new@example.com' },
+            });
             return await screen.findByTestId('require-verification-switch');
         };
 
@@ -612,6 +616,228 @@ describe('Admin users and groups page', () => {
             expect(
                 screen.getByTestId('capability-switch-create_projects')
             ).toHaveAttribute('aria-checked', 'false');
+        });
+    });
+
+    describe('members without an email', () => {
+        beforeEach(() => {
+            (fetchWithCsrf as jest.Mock).mockReset();
+        });
+
+        const openPlainForm = async () => {
+            mockAdminApi();
+            renderPage();
+            await screen.findByTestId('admin-users-panel');
+            fireEvent.click(screen.getByText('Add user'));
+            return await screen.findByTestId('admin-user-email');
+        };
+
+        const created = (over: Record<string, unknown> = {}) =>
+            jsonResponse(
+                {
+                    id: 20,
+                    email: null,
+                    name: 'Emma',
+                    created_at: new Date().toISOString(),
+                    role: 'user',
+                    account_status: 'no_sign_in',
+                    invited: false,
+                    email_sent: false,
+                    ...over,
+                },
+                201
+            );
+
+        it('does not require an email', async () => {
+            const email = await openPlainForm();
+
+            expect(email).not.toBeRequired();
+            expect(screen.getByText('(optional)')).toBeInTheDocument();
+        });
+
+        it('explains what having no email means', async () => {
+            await openPlainForm();
+
+            expect(screen.getByTestId('no-email-hint')).toHaveTextContent(
+                'cannot sign in yet'
+            );
+        });
+
+        it('offers no password or verification without an email', async () => {
+            await openPlainForm();
+
+            expect(screen.queryByTestId('admin-user-password')).toBeNull();
+            expect(screen.queryByTestId('generate-password')).toBeNull();
+            expect(
+                screen.queryByTestId('require-verification-switch')
+            ).toBeNull();
+        });
+
+        it('shows the password and verification once an email is typed', async () => {
+            const email = await openPlainForm();
+
+            fireEvent.change(email, { target: { value: 'a@example.com' } });
+
+            expect(screen.getByTestId('admin-user-password')).toBeVisible();
+            expect(
+                screen.getByTestId('require-verification-switch')
+            ).toBeVisible();
+            expect(screen.queryByTestId('no-email-hint')).toBeNull();
+        });
+
+        it('takes them away again when the email is cleared', async () => {
+            const email = await openPlainForm();
+            fireEvent.change(email, { target: { value: 'a@example.com' } });
+            fireEvent.change(screen.getByTestId('admin-user-password'), {
+                target: { value: 'password123' },
+            });
+
+            fireEvent.change(email, { target: { value: '' } });
+
+            expect(screen.queryByTestId('admin-user-password')).toBeNull();
+            expect(screen.getByTestId('no-email-hint')).toBeVisible();
+        });
+
+        it('creates a member from just a name', async () => {
+            (fetchWithCsrf as jest.Mock).mockResolvedValue(created());
+            await openPlainForm();
+            fireEvent.change(
+                document.querySelector('input[type="text"]') as Element,
+                {
+                    target: { value: 'Emma' },
+                }
+            );
+
+            fireEvent.click(screen.getByText('Create'));
+
+            await waitFor(() => expect(fetchWithCsrf).toHaveBeenCalled());
+            const body = JSON.parse(
+                (fetchWithCsrf as jest.Mock).mock.calls[0][1].body
+            );
+            expect(body.name).toBe('Emma');
+            expect(body.email).toBeUndefined();
+            expect(body.password).toBeUndefined();
+        });
+
+        it('does not send a password that was typed before the email was cleared', async () => {
+            (fetchWithCsrf as jest.Mock).mockResolvedValue(created());
+            const email = await openPlainForm();
+            fireEvent.change(email, { target: { value: 'a@example.com' } });
+            fireEvent.change(screen.getByTestId('admin-user-password'), {
+                target: { value: 'password123' },
+            });
+            fireEvent.change(email, { target: { value: '' } });
+            fireEvent.change(
+                document.querySelector('input[type="text"]') as Element,
+                {
+                    target: { value: 'Emma' },
+                }
+            );
+
+            fireEvent.click(screen.getByText('Create'));
+
+            await waitFor(() => expect(fetchWithCsrf).toHaveBeenCalled());
+            const body = JSON.parse(
+                (fetchWithCsrf as jest.Mock).mock.calls[0][1].body
+            );
+            expect(body.password).toBeUndefined();
+        });
+
+        it('asks for a name when there is neither a name nor an email', async () => {
+            await openPlainForm();
+
+            fireEvent.click(screen.getByText('Create'));
+
+            expect(
+                await screen.findByText('Enter a name when there is no email')
+            ).toBeVisible();
+            expect(fetchWithCsrf).not.toHaveBeenCalled();
+        });
+
+        it('does not send an email that is not valid', async () => {
+            const email = await openPlainForm();
+            fireEvent.change(email, { target: { value: 'nope' } });
+
+            fireEvent.click(screen.getByText('Create'));
+
+            // The browser's own check on the email field stops the form.
+            expect(fetchWithCsrf).not.toHaveBeenCalled();
+        });
+
+        it('shows a member without an email in the list, and that they cannot sign in', async () => {
+            mockAdminApi([
+                {
+                    id: 5,
+                    email: null,
+                    name: 'Emma',
+                    created_at: new Date().toISOString(),
+                    role: 'user',
+                    account_status: 'no_sign_in',
+                },
+                {
+                    id: 6,
+                    email: 'wife@example.com',
+                    created_at: new Date().toISOString(),
+                    role: 'user',
+                    account_status: 'active',
+                },
+                {
+                    id: 7,
+                    email: 'pending@example.com',
+                    created_at: new Date().toISOString(),
+                    role: 'user',
+                    account_status: 'invited',
+                },
+            ]);
+            renderPage();
+
+            expect(await screen.findByText('No email')).toBeVisible();
+            expect(screen.getByTestId('user-status-5')).toHaveTextContent(
+                "Can't sign in yet"
+            );
+            expect(screen.getByTestId('user-status-7')).toHaveTextContent(
+                'Invitation pending'
+            );
+            expect(screen.queryByTestId('user-status-6')).toBeNull();
+        });
+
+        it('lets an email be added to a member that has none', async () => {
+            (fetchWithCsrf as jest.Mock).mockResolvedValue(
+                jsonResponse({
+                    id: 5,
+                    email: 'emma@example.com',
+                    name: 'Emma',
+                    created_at: new Date().toISOString(),
+                    role: 'user',
+                    account_status: 'no_sign_in',
+                })
+            );
+            mockAdminApi([
+                {
+                    id: 5,
+                    email: null,
+                    name: 'Emma',
+                    created_at: new Date().toISOString(),
+                    role: 'user',
+                    account_status: 'no_sign_in',
+                },
+            ]);
+            renderPage();
+            fireEvent.click(await screen.findByTitle('Edit'));
+
+            const email = await screen.findByTestId('admin-user-email');
+            expect(email).toHaveValue('');
+            expect(screen.getByTestId('no-email-hint')).toHaveTextContent(
+                'Add one to invite them'
+            );
+            fireEvent.change(email, { target: { value: 'emma@example.com' } });
+            fireEvent.click(screen.getByText('Save'));
+
+            await waitFor(() => expect(fetchWithCsrf).toHaveBeenCalled());
+            const body = JSON.parse(
+                (fetchWithCsrf as jest.Mock).mock.calls[0][1].body
+            );
+            expect(body.email).toBe('emma@example.com');
         });
     });
 });

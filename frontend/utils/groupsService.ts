@@ -19,7 +19,7 @@ export interface AdminGroup {
 
 export interface GroupMember {
     user_id: number;
-    email: string;
+    email: string | null;
     name?: string | null;
     surname?: string | null;
     avatar_image?: string | null;
@@ -160,7 +160,7 @@ export async function removeGroupMember(
 
 export interface UserOption {
     id: number;
-    email: string;
+    email: string | null;
     name?: string | null;
     surname?: string | null;
 }
