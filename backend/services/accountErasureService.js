@@ -38,6 +38,7 @@ const {
     UsageCounter,
 } = require('../models');
 const { getConfig } = require('../config/config');
+const { assertAnotherAdminRemains } = require('./rolesService');
 const { getBackupsDirectory } = require('./backupService');
 const { destroyUserSessions } = require('./sessionService');
 const { logError } = require('./logService');
@@ -75,6 +76,17 @@ async function eraseUserAccount(userId) {
         if (!user) {
             await transaction.rollback();
             return false;
+        }
+
+        const targetRole = await Role.findOne({
+            where: { user_id: userId },
+            transaction,
+        });
+        if (targetRole?.is_admin) {
+            await assertAnotherAdminRemains(
+                transaction,
+                'Cannot delete the last remaining admin'
+            );
         }
 
         const tx = { transaction };

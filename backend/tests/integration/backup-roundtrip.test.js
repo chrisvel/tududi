@@ -9,6 +9,7 @@ const {
     Note,
     Person,
     RecurringCompletion,
+    Role,
     TaskAttachment,
 } = require('../../models');
 const { getConfig } = require('../../config/config');
@@ -177,6 +178,11 @@ describe('Backup export and import round trip (format 2)', () => {
         await peopleService.createSelfPerson(target);
         // Cross-instance case: the source account is gone, so the backup's
         // uids are free and are kept.
+        // The source is the only admin, and the last admin cannot be erased.
+        await Role.update(
+            { role: 'admin', is_admin: true },
+            { where: { user_id: target.id } }
+        );
         await eraseUserAccount(source.id);
 
         const stats = await importUserData(target.id, backup);

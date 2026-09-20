@@ -4,6 +4,11 @@ const { getWorkspaceUserIds } = require('../../services/workspaceMembers');
 const { createTestUser } = require('../helpers/testUtils');
 
 describe('erasing the account that created another', () => {
+    // The first account is the admin, and the last admin cannot be erased.
+    beforeEach(async () => {
+        await createTestUser({ email: 'root@example.com' });
+    });
+
     afterAll(async () => {
         await sequelize.close();
     });

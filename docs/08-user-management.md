@@ -96,7 +96,10 @@ This document explains how user management works in tududi from a user behavior 
     - Every user has exactly one role record
     - Roles are created automatically when a user account is created (as `user`)
     - The role names and their defaults are fixed in code for now
-    - The last remaining admin cannot be demoted (or deleted)
+    - The last remaining admin cannot be demoted (or deleted), even when two admins try to remove each other at the same moment
+    - Editing an account in the admin page is all or nothing: if the role change is refused, the name, email or password in the same request are not saved
+    - Setting a new password for an account signs it out everywhere (the admin changing their own password stays signed in)
+    - Names and surnames must be text of at most 100 characters without control characters
 
 11. **Admin capabilities:**
     - Create, update, and delete user accounts

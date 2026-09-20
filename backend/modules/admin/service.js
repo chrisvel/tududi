@@ -6,6 +6,7 @@ const membersService = require('../members/service');
 const {
     validateRoleChange,
     validateUserId,
+    validatePersonName,
     validateEmail,
     validatePassword,
     validateSetAdminRole,
@@ -21,6 +22,8 @@ const {
 } = require('../../shared/errors');
 const rolesService = require('../../services/rolesService');
 const { isAdmin } = rolesService;
+const { sequelize } = require('../../models');
+const { destroyUserSessions } = require('../../services/sessionService');
 const { getConfig } = require('../../config/config');
 
 class AdminService {
@@ -149,7 +152,7 @@ class AdminService {
     /**
      * Update a user.
      */
-    async updateUser(requesterId, userId, body) {
+    async updateUser(requesterId, userId, body, { sessionId = null } = {}) {
         await this.verifyAdmin(requesterId);
 
         const id = validateUserId(userId);
@@ -174,17 +177,36 @@ class AdminService {
             user.email = email;
         }
 
-        if (password && password.trim() !== '') {
+        const changesPassword =
+            password !== undefined &&
+            password !== null &&
+            !(typeof password === 'string' && password.trim() === '');
+        if (changesPassword) {
             validatePassword(password);
             user.password = password;
             user.changed('password_digest', true);
         }
 
-        if (name !== undefined) user.name = name || null;
-        if (surname !== undefined) user.surname = surname || null;
+        if (name !== undefined) user.name = validatePersonName(name, 'Name');
+        if (surname !== undefined) {
+            user.surname = validatePersonName(surname, 'Surname');
+        }
 
+        // The account, its role and its permissions change together or not at
+        // all, so refusing a demotion (the last admin) cannot leave a rename
+        // or a new password behind.
         try {
-            await user.save();
+            await sequelize.transaction(async (transaction) => {
+                await user.save({ transaction });
+                if (role !== undefined) {
+                    await rolesService.setRole(user.id, role, { transaction });
+                }
+                if (capabilities !== undefined) {
+                    await rolesService.setCapabilities(user.id, capabilities, {
+                        transaction,
+                    });
+                }
+            });
         } catch (err) {
             if (err?.name === 'SequelizeUniqueConstraintError') {
                 throw new ConflictError('Email already exists');
@@ -192,11 +214,13 @@ class AdminService {
             throw err;
         }
 
-        if (role !== undefined) {
-            await rolesService.setRole(user.id, role);
-        }
-        if (capabilities !== undefined) {
-            await rolesService.setCapabilities(user.id, capabilities);
+        // A new password signs the account out everywhere, the way a reset
+        // does, so a session opened with the old one stops working. The admin
+        // changing their own password keeps the session they are using.
+        if (changesPassword) {
+            await destroyUserSessions(user.id, {
+                exceptSid: user.id === requesterId ? sessionId : null,
+            });
         }
 
         const userRole = await adminRepository.findRoleByUserId(user.id);

@@ -34,11 +34,35 @@ function validateRoleChange(role, capabilities) {
  * Validate user ID parameter.
  */
 function validateUserId(id) {
-    const parsed = parseInt(id, 10);
-    if (!Number.isFinite(parsed)) {
+    // parseInt would read "12abc" as 12 and delete the wrong account.
+    const text = typeof id === 'number' ? String(id) : id;
+    if (typeof text !== 'string' || !/^[1-9]\d{0,14}$/.test(text)) {
         throw new ValidationError('Invalid user id');
     }
-    return parsed;
+    return Number(text);
+}
+
+const NAME_MAX_LENGTH = 100;
+// eslint-disable-next-line no-control-regex
+const CONTROL_CHARACTERS = /[\u0000-\u001f\u007f]/;
+
+// A first name or surname: text, of a sensible length, without control
+// characters. Blank means none.
+function validatePersonName(value, label) {
+    if (value === undefined || value === null) return null;
+    if (typeof value !== 'string') {
+        throw new ValidationError(`${label} must be text`);
+    }
+    const text = value.trim();
+    if (CONTROL_CHARACTERS.test(text)) {
+        throw new ValidationError(`${label} contains invalid characters`);
+    }
+    if (text.length > NAME_MAX_LENGTH) {
+        throw new ValidationError(
+            `${label} must be at most ${NAME_MAX_LENGTH} characters`
+        );
+    }
+    return text || null;
 }
 
 /**
@@ -93,14 +117,13 @@ function validateCreateUser(body) {
     // A blank email means the account has none. A member without an email
     // still needs a name, and cannot have a password since there is nothing to
     // sign in with.
+    const cleanName = validatePersonName(name, 'Name');
+    const cleanSurname = validatePersonName(surname, 'Surname');
     const cleanEmail = typeof email === 'string' ? email.trim() : email;
     if (cleanEmail) {
         validateEmail(cleanEmail);
     } else {
-        const hasName = [name, surname].some(
-            (value) => typeof value === 'string' && value.trim() !== ''
-        );
-        if (!hasName) {
+        if (!cleanName && !cleanSurname) {
             throw new ValidationError(
                 'A name is required when there is no email'
             );
@@ -122,8 +145,8 @@ function validateCreateUser(body) {
     return {
         email: cleanEmail || null,
         password: password || null,
-        name,
-        surname,
+        name: cleanName,
+        surname: cleanSurname,
         role,
         capabilities,
         requireVerification: require_verification === true,
@@ -245,6 +268,7 @@ function validateOidcConfig(body) {
 module.exports = {
     validateRoleChange,
     validateUserId,
+    validatePersonName,
     validateEmail,
     validatePassword,
     validateSetAdminRole,
