@@ -170,12 +170,15 @@
 ├── middleware/          # Global middleware
 │   ├── auth.js         # Authentication (session + Bearer token)
 │   ├── authorize.js    # Authorization (permission checking)
+│   ├── roles.js        # requireCapability: what a role may create
 │   ├── rateLimiter.js  # Rate limiting config (5 different limiters)
 │   ├── queryLogger.js  # Development query logging
 │   └── permissionCache.js
 │
 ├── services/            # Cross-cutting services
 │   ├── permissionsService.js      # Main permissions service
+│   ├── rolesService.js            # Roles and capabilities (who may create what)
+│   ├── workspaceMembers.js        # Who you share with or are in a group with
 │   ├── backupService.js           # Backup/restore operations
 │   ├── emailService.js            # Email notifications
 │   ├── logService.js              # Error logging

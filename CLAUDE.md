@@ -292,6 +292,12 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - Live membership, overlap with direct shares, and how access is revoked
     - Group API and the `permissionSources` rule for reading shared access
 
+28. **[People, Members & Roles](docs/19-people-and-roles.md)**
+    - Vocabulary: member, contact, person, group, share, workspace, role, capability
+    - Who a task can be assigned to, and what assigning does
+    - Members without an email (no sign-in yet), and the Everyone board
+    - Admin, user and guest roles with capabilities, and the admin Access page
+
 ---
 
 ## Project Overview
@@ -379,5 +385,5 @@ Tududi is a self-hosted task management system designed around hierarchical orga
 ---
 
 **Document Version:** 1.0.0
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-09-20
 **Maintainer:** Update when architecture changes or patterns evolve
