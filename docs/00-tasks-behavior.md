@@ -427,6 +427,12 @@ This document explains how tasks work in tududi from a user behavior perspective
       can open and complete it, even if you don't otherwise have access to its
       project.
 
+54b. **Who a task can be assigned to:**
+    - A task in a project can be assigned to your own people, the project owner and everyone the project is shared with (directly, through an area or goal, or through a group)
+    - A task that is not in a project can be assigned to your own people and everyone you share with or are in a group with
+    - Assigning to a member notifies them and gives them access to that task. Assigning to a contact (someone without an account) is only a label
+    - See [People, Members and Roles](19-people-and-roles.md)
+
 55. **Notification channels:**
     - In-app notifications (navbar indicator)
     - Email (configurable per notification type)

@@ -37,6 +37,16 @@ A member who already holds accepted access at that level or higher (from a direc
 - **Deleting a group** removes every grant it made. The shared items themselves are untouched.
 - **Projects added to a shared area or goal** are mirrored to members with the container grant's status, so a member who has not accepted the area yet does not see the new project early.
 
+### Groups and assigning tasks
+
+Being in a group with someone makes you part of each other's workspace, even when nothing has been shared yet:
+
+- Members of a group appear in each other's assignee list for tasks that are not in a project, so a parent can assign a chore to anyone in a "Family" group.
+- They appear as columns on each other's Everyone board, and the "Everyone" sidebar link shows up.
+- A member added without an email (see [People, Members and Roles](19-people-and-roles.md)) can be in a group like anyone else. The member lists show their name and "No email".
+
+Assigning a task still gives the assignee access to that task only. The group does not share anything by itself.
+
 ### Overlap rules
 
 - Access is the highest level across a direct share and every group grant.
