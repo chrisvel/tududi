@@ -51,10 +51,12 @@ function validateSetAdminRole(body) {
 /**
  * Validate create user request body. Password is optional: when it is omitted
  * the account is created without one and an invite email is sent so the member
- * can set their own.
+ * can set their own. require_verification asks a user created with a password
+ * to confirm their email before they can sign in.
  */
 function validateCreateUser(body) {
-    const { email, password, name, surname, role } = body || {};
+    const { email, password, name, surname, role, require_verification } =
+        body || {};
     if (!email) {
         throw new ValidationError('Email is required');
     }
@@ -62,7 +64,20 @@ function validateCreateUser(body) {
     if (password) {
         validatePassword(password);
     }
-    return { email, password: password || null, name, surname, role };
+    if (
+        require_verification !== undefined &&
+        typeof require_verification !== 'boolean'
+    ) {
+        throw new ValidationError('require_verification must be a boolean');
+    }
+    return {
+        email,
+        password: password || null,
+        name,
+        surname,
+        role,
+        requireVerification: require_verification === true,
+    };
 }
 
 /**

@@ -96,4 +96,82 @@ describe('Admin member invite', () => {
             .send({ email, password: 'password123' });
         expect(login.status).toBe(200);
     });
+
+    describe('require_verification', () => {
+        it('creates an unverified account and emails a verification link', async () => {
+            const email = `verify_${Date.now()}@example.com`;
+            const res = await adminAgent.post('/api/admin/users').send({
+                email,
+                password: 'password123',
+                require_verification: true,
+            });
+
+            expect(res.status).toBe(201);
+            expect(res.body.invited).toBe(false);
+            expect(res.body.verification_requested).toBe(true);
+            expect(res.body.email_sent).toBe(true);
+
+            const created = await User.findOne({ where: { email } });
+            expect(created.email_verified).toBe(false);
+            expect(created.email_verification_token).toBeTruthy();
+
+            expect(sentEmails).toHaveLength(1);
+            expect(sentEmails[0].to).toBe(email);
+            expect(sentEmails[0].text).toContain('/api/verify-email?token=');
+
+            const blocked = await request(app)
+                .post('/api/login')
+                .send({ email, password: 'password123' });
+            expect(blocked.status).toBe(403);
+
+            const token = tokenFromLastEmail();
+            const verified = await request(app).get(
+                `/api/verify-email?token=${token}`
+            );
+            expect(verified.status).toBeLessThan(400);
+
+            const login = await request(app)
+                .post('/api/login')
+                .send({ email, password: 'password123' });
+            expect(login.status).toBe(200);
+        });
+
+        it('leaves the account verified when the switch is off', async () => {
+            const email = `noverify_${Date.now()}@example.com`;
+            const res = await adminAgent.post('/api/admin/users').send({
+                email,
+                password: 'password123',
+                require_verification: false,
+            });
+
+            expect(res.status).toBe(201);
+            expect(res.body.verification_requested).toBe(false);
+            expect(sentEmails).toHaveLength(0);
+
+            const created = await User.findOne({ where: { email } });
+            expect(created.email_verified).toBe(true);
+        });
+
+        it('sends only the invitation when no password is given', async () => {
+            const email = `invitever_${Date.now()}@example.com`;
+            const res = await adminAgent
+                .post('/api/admin/users')
+                .send({ email, require_verification: true });
+
+            expect(res.status).toBe(201);
+            expect(res.body.invited).toBe(true);
+            expect(res.body.verification_requested).toBe(false);
+            expect(sentEmails).toHaveLength(1);
+        });
+
+        it('rejects a non-boolean require_verification', async () => {
+            const res = await adminAgent.post('/api/admin/users').send({
+                email: `bad_${Date.now()}@example.com`,
+                password: 'password123',
+                require_verification: 'yes',
+            });
+
+            expect(res.status).toBe(400);
+        });
+    });
 });

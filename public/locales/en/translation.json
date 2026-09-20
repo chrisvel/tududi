@@ -1569,6 +1569,17 @@
     "passwordInviteHint": "Leave blank to send an invitation email",
     "invitationSent": "Invitation email sent to {{email}}",
     "invitationNotSent": "Account created, but email is disabled - set a password for this user manually.",
+    "generatePassword": "Generate",
+    "generatePasswordTitle": "Generate a secure random password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "copyPassword": "Copy password",
+    "failedToCopyPassword": "Failed to copy to clipboard",
+    "requireVerification": "Request email verification",
+    "requireVerificationHint": "The user must confirm their email before signing in",
+    "requireVerificationInviteHint": "Not needed without a password: the invitation link already verifies the email",
+    "verificationSent": "Verification email sent to {{email}}",
+    "verificationNotSent": "Account created, but email is disabled - the user cannot sign in until their email is verified manually.",
     "users": {
       "title": "Users"
     },

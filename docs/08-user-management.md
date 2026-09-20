@@ -10,7 +10,7 @@ This document explains how user management works in tududi from a user behavior 
 
 1. **Registration is controlled by admins**
     - By default, registration is disabled
-    - Admins can toggle registration on/off via the Admin panel
+    - Admins toggle registration on/off through `POST /api/admin/toggle-registration` (the Users and Groups page no longer has a switch for it)
     - When disabled, only admins can create new user accounts
 
 2. **Email verification is required**
@@ -267,7 +267,13 @@ to an account, so it cannot be used to discover who has signed up - Declining re
 30. **Admins can create new users directly**
     - Bypasses the registration flow
     - Requires: email. Optional: name, surname, role (admin or user)
-    - **With a password:** the account is verified and can log in immediately
+    - **With a password:** the account is verified and can log in immediately,
+      unless the admin turns on **Request email verification** in the form
+      (`require_verification: true`). The account is then created unverified, a
+      verification email is sent (same link and expiry as self-registration),
+      and login is blocked until it is used. The response carries
+      `verification_requested: true` and `email_sent`; if email is disabled the
+      account is still kept and must be verified manually.
     - **Without a password (invite):** the account is created unverified with no
       password, and an email is sent with a set-password link (reuses the
       password-reset token; expiry `INVITE_TOKEN_EXPIRY_HOURS`, default 168).
@@ -356,7 +362,7 @@ to an account, so it cannot be used to discover who has signed up - Declining re
     Registration → Email Verification → First Login → Profile Setup → Active User
     ```
 
-    - Or: Admin creates user with a password → Active user (no verification needed)
+    - Or: Admin creates user with a password → Active user (no verification needed), or, with Request email verification on → Verification email → Active user
     - Or: Admin creates user without a password → Invite email → user sets password → Active user
 
 40. **User deletion flow:**
