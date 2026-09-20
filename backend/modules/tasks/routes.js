@@ -13,6 +13,7 @@ const {
     Project,
     sequelize,
 } = require('../../models');
+const { numericIdParam } = require('../../middleware/numericIdParam');
 const taskRepository = require('./repository');
 const { deleteAttachmentFiles } = require('../../utils/attachment-utils');
 const { withForeignKeyChecksDisabled } = require('../../utils/db-dialect');
@@ -530,6 +531,8 @@ router.post(
         }
     }
 );
+
+router.param('uid', numericIdParam('task', Task));
 
 router.get('/task/:uid', requireTaskReadAccess, async (req, res) => {
     try {

@@ -3,8 +3,12 @@
 const express = require('express');
 const router = express.Router();
 const areasController = require('./controller');
+const { numericIdParam } = require('../../middleware/numericIdParam');
+const { Area } = require('../../models');
 
 // All routes require authentication (handled by app.js middleware)
+
+router.param('uid', numericIdParam('area', Area));
 
 router.get('/areas', areasController.list);
 router.get('/areas/:uid', areasController.getOne);

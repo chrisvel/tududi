@@ -9,7 +9,10 @@ const {
     getTaskActivitySummary,
 } = require('./taskEventService');
 const { logError } = require('../../services/logService');
+const { numericIdParam } = require('../../middleware/numericIdParam');
 const router = express.Router();
+
+router.param('uid', numericIdParam('task', Task));
 
 // GET /api/task/:uid/timeline - Get task event timeline
 router.get('/task/:uid/timeline', async (req, res) => {
