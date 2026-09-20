@@ -69,6 +69,10 @@ import {
 } from './utils/shareTargetService';
 // Lazy load Tasks component to prevent issues with tags loading
 const Tasks = lazy(() => import('./components/Tasks'));
+// Declared at module scope: the users page switches tabs through the query
+// string, and a lazy component created inside render would remount and
+// re-suspend on every navigation.
+const AdminUsersPage = lazy(() => import('./components/Admin/AdminUsersPage'));
 
 const App: React.FC = () => {
     const { i18n } = useTranslation();
@@ -575,12 +579,7 @@ const App: React.FC = () => {
                                                 </div>
                                             }
                                         >
-                                            {React.createElement(
-                                                React.lazy(
-                                                    () =>
-                                                        import('./components/Admin/AdminUsersPage')
-                                                )
-                                            )}
+                                            <AdminUsersPage />
                                         </React.Suspense>
                                     ) : (
                                         <Navigate to="/today" replace />
@@ -590,24 +589,10 @@ const App: React.FC = () => {
                             <Route
                                 path="/admin/groups"
                                 element={
-                                    currentUser?.is_admin === true ? (
-                                        <React.Suspense
-                                            fallback={
-                                                <div className="p-4">
-                                                    Loading...
-                                                </div>
-                                            }
-                                        >
-                                            {React.createElement(
-                                                React.lazy(
-                                                    () =>
-                                                        import('./components/Admin/AdminGroupsPage')
-                                                )
-                                            )}
-                                        </React.Suspense>
-                                    ) : (
-                                        <Navigate to="/today" replace />
-                                    )
+                                    <Navigate
+                                        to="/admin/users?tab=groups"
+                                        replace
+                                    />
                                 }
                             />
                             <Route path="*" element={<NotFound />} />

@@ -436,7 +436,7 @@ const MembersModal: React.FC<MembersModalProps> = ({
     );
 };
 
-const AdminGroupsPage: React.FC = () => {
+const AdminGroupsPanel: React.FC = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { showSuccessToast, showErrorToast } = useToast();
@@ -501,186 +501,169 @@ const AdminGroupsPage: React.FC = () => {
         'px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider';
 
     return (
-        <div
-            className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8"
-            data-testid="admin-groups-page"
-        >
-            <div className="w-full space-y-6">
-                <div className="flex items-center justify-between mb-2">
-                    <h2 className="text-2xl font-light">
-                        {t('admin.groups.title', 'Groups')}
-                    </h2>
-                    <button
-                        onClick={() => setCreating(true)}
-                        data-testid="add-group-button"
-                        className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none transition duration-150 ease-in-out text-sm"
-                    >
-                        {t('admin.groups.addGroup', 'Add group')}
-                    </button>
-                </div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+        <div className="w-full space-y-6" data-testid="admin-groups-panel">
+            <div className="flex items-start justify-between gap-4">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                     {t(
                         'admin.groups.intro',
                         'Groups let people share a project, area, goal, note or task with several users at once. Members are invited to everything shared with the group.'
                     )}
                 </p>
-
-                {error && (
-                    <div className="p-4 rounded-md bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800">
-                        {error}
-                    </div>
-                )}
-
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead className="bg-gray-50 dark:bg-gray-900">
-                            <tr>
-                                <th className={headerCell}>
-                                    {t('admin.groups.name', 'Name')}
-                                </th>
-                                <th className={headerCell}>
-                                    {t('admin.groups.members', 'Members')}
-                                </th>
-                                <th className={headerCell}>
-                                    {t('admin.groups.shares', 'Shared items')}
-                                </th>
-                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {t('admin.actions', 'Actions')}
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                            {loading && (
-                                <tr>
-                                    <td
-                                        colSpan={4}
-                                        className="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400"
-                                    >
-                                        {t(
-                                            'admin.groups.loading',
-                                            'Loading groups...'
-                                        )}
-                                    </td>
-                                </tr>
-                            )}
-                            {!loading && groups && groups.length === 0 && (
-                                <tr>
-                                    <td
-                                        colSpan={4}
-                                        className="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400"
-                                        data-testid="groups-empty"
-                                    >
-                                        {t(
-                                            'admin.groups.empty',
-                                            'No groups yet. Create one to start sharing with several people at once.'
-                                        )}
-                                    </td>
-                                </tr>
-                            )}
-                            {!loading &&
-                                groups &&
-                                groups.map((g) => (
-                                    <tr
-                                        key={g.uid}
-                                        data-testid={`group-row-${g.uid}`}
-                                        className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-150"
-                                    >
-                                        <td className="px-6 py-4 text-sm">
-                                            <div className="font-medium text-gray-900 dark:text-gray-100">
-                                                {g.name}
-                                            </div>
-                                            {g.description && (
-                                                <div className="text-gray-500 dark:text-gray-400 line-clamp-1">
-                                                    {g.description}
-                                                </div>
-                                            )}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                            {g.member_count}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                            {g.share_count}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <div className="flex items-center justify-end space-x-3">
-                                                <button
-                                                    onClick={() =>
-                                                        setManaging(g)
-                                                    }
-                                                    className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
-                                                    title={t(
-                                                        'admin.groups.manageMembers',
-                                                        'Manage members'
-                                                    )}
-                                                >
-                                                    <UserPlusIcon className="h-5 w-5" />
-                                                </button>
-                                                <button
-                                                    onClick={() =>
-                                                        setEditing(g)
-                                                    }
-                                                    className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
-                                                    title={t(
-                                                        'common.edit',
-                                                        'Edit'
-                                                    )}
-                                                >
-                                                    <PencilIcon className="h-5 w-5" />
-                                                </button>
-                                                <button
-                                                    onClick={() =>
-                                                        setToDelete(g)
-                                                    }
-                                                    className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
-                                                    title={t(
-                                                        'common.delete',
-                                                        'Delete'
-                                                    )}
-                                                >
-                                                    <TrashIcon className="h-5 w-5" />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                        </tbody>
-                    </table>
-                </div>
-
-                {(creating || editing) && (
-                    <GroupModal
-                        group={editing}
-                        onClose={() => {
-                            setCreating(false);
-                            setEditing(null);
-                        }}
-                        onSaved={handleSaved}
-                    />
-                )}
-
-                {managing && (
-                    <MembersModal
-                        group={managing}
-                        onClose={() => setManaging(null)}
-                        onChanged={load}
-                    />
-                )}
-
-                {toDelete && (
-                    <ConfirmDialog
-                        title={t('admin.groups.deleteGroup', 'Delete group')}
-                        message={t(
-                            'admin.groups.confirmDelete',
-                            'Delete "{{name}}"? Members lose the access they got through this group. Projects and other items shared with it are not deleted.',
-                            { name: toDelete.name }
-                        )}
-                        onConfirm={handleDelete}
-                        onCancel={() => setToDelete(null)}
-                    />
-                )}
+                <button
+                    onClick={() => setCreating(true)}
+                    data-testid="add-group-button"
+                    className="shrink-0 px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none transition duration-150 ease-in-out text-sm"
+                >
+                    {t('admin.groups.addGroup', 'Add group')}
+                </button>
             </div>
+
+            {error && (
+                <div className="p-4 rounded-md bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800">
+                    {error}
+                </div>
+            )}
+
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead className="bg-gray-50 dark:bg-gray-900">
+                        <tr>
+                            <th className={headerCell}>
+                                {t('admin.groups.name', 'Name')}
+                            </th>
+                            <th className={headerCell}>
+                                {t('admin.groups.members', 'Members')}
+                            </th>
+                            <th className={headerCell}>
+                                {t('admin.groups.shares', 'Shared items')}
+                            </th>
+                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                {t('admin.actions', 'Actions')}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        {loading && (
+                            <tr>
+                                <td
+                                    colSpan={4}
+                                    className="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400"
+                                >
+                                    {t(
+                                        'admin.groups.loading',
+                                        'Loading groups...'
+                                    )}
+                                </td>
+                            </tr>
+                        )}
+                        {!loading && groups && groups.length === 0 && (
+                            <tr>
+                                <td
+                                    colSpan={4}
+                                    className="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400"
+                                    data-testid="groups-empty"
+                                >
+                                    {t(
+                                        'admin.groups.empty',
+                                        'No groups yet. Create one to start sharing with several people at once.'
+                                    )}
+                                </td>
+                            </tr>
+                        )}
+                        {!loading &&
+                            groups &&
+                            groups.map((g) => (
+                                <tr
+                                    key={g.uid}
+                                    data-testid={`group-row-${g.uid}`}
+                                    className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-150"
+                                >
+                                    <td className="px-6 py-4 text-sm">
+                                        <div className="font-medium text-gray-900 dark:text-gray-100">
+                                            {g.name}
+                                        </div>
+                                        {g.description && (
+                                            <div className="text-gray-500 dark:text-gray-400 line-clamp-1">
+                                                {g.description}
+                                            </div>
+                                        )}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                        {g.member_count}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                        {g.share_count}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <div className="flex items-center justify-end space-x-3">
+                                            <button
+                                                onClick={() => setManaging(g)}
+                                                className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                                                title={t(
+                                                    'admin.groups.manageMembers',
+                                                    'Manage members'
+                                                )}
+                                            >
+                                                <UserPlusIcon className="h-5 w-5" />
+                                            </button>
+                                            <button
+                                                onClick={() => setEditing(g)}
+                                                className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                                                title={t('common.edit', 'Edit')}
+                                            >
+                                                <PencilIcon className="h-5 w-5" />
+                                            </button>
+                                            <button
+                                                onClick={() => setToDelete(g)}
+                                                className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                                                title={t(
+                                                    'common.delete',
+                                                    'Delete'
+                                                )}
+                                            >
+                                                <TrashIcon className="h-5 w-5" />
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                    </tbody>
+                </table>
+            </div>
+
+            {(creating || editing) && (
+                <GroupModal
+                    group={editing}
+                    onClose={() => {
+                        setCreating(false);
+                        setEditing(null);
+                    }}
+                    onSaved={handleSaved}
+                />
+            )}
+
+            {managing && (
+                <MembersModal
+                    group={managing}
+                    onClose={() => setManaging(null)}
+                    onChanged={load}
+                />
+            )}
+
+            {toDelete && (
+                <ConfirmDialog
+                    title={t('admin.groups.deleteGroup', 'Delete group')}
+                    message={t(
+                        'admin.groups.confirmDelete',
+                        'Delete "{{name}}"? Members lose the access they got through this group. Projects and other items shared with it are not deleted.',
+                        { name: toDelete.name }
+                    )}
+                    onConfirm={handleDelete}
+                    onCancel={() => setToDelete(null)}
+                />
+            )}
         </div>
     );
 };
 
-export default AdminGroupsPage;
+export default AdminGroupsPanel;

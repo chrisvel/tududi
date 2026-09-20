@@ -8,7 +8,7 @@ import {
 } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { MemoryRouter } from 'react-router-dom';
-import AdminGroupsPage from '../AdminGroupsPage';
+import AdminGroupsPanel from '../AdminGroupsPanel';
 
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({
@@ -59,11 +59,11 @@ const group = (uid: string, name: string, members = 0, shares = 0) => ({
 const renderPage = () =>
     render(
         <MemoryRouter>
-            <AdminGroupsPage />
+            <AdminGroupsPanel />
         </MemoryRouter>
     );
 
-describe('Admin groups page', () => {
+describe('Admin groups panel', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         fetchAdminGroups.mockResolvedValue([

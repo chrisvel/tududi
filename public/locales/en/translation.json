@@ -1569,6 +1569,10 @@
     "passwordInviteHint": "Leave blank to send an invitation email",
     "invitationSent": "Invitation email sent to {{email}}",
     "invitationNotSent": "Account created, but email is disabled - set a password for this user manually.",
+    "users": {
+      "title": "Users"
+    },
+    "usersAndGroups": "Users and Groups",
     "groups": {
       "addGroup": "Add group",
       "addMember": "Add",

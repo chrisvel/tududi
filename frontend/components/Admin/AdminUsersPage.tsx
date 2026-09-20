@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     ChevronDownIcon,
     CheckIcon,
@@ -13,6 +13,7 @@ import { useToast } from '../Shared/ToastContext';
 import { fetchWithCsrf } from '../../utils/csrfService';
 import { fetchPeople } from '../../utils/peopleService';
 import { Person } from '../../entities/Person';
+import AdminGroupsPanel from './AdminGroupsPanel';
 
 interface AdminUserItem {
     id: number;
@@ -482,7 +483,7 @@ const AddUserModal: React.FC<{
     );
 };
 
-const AdminUsersPage: React.FC = () => {
+const AdminUsersPanel: React.FC = () => {
     const { t } = useTranslation();
     const { showSuccessToast, showErrorToast } = useToast();
     const [users, setUsers] = useState<AdminUserItem[] | null>(null);
@@ -600,12 +601,9 @@ const AdminUsersPage: React.FC = () => {
     };
 
     return (
-        <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">
+        <div className="w-full space-y-6" data-testid="admin-users-panel">
             <div className="w-full space-y-6">
-                <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-2xl font-light">
-                        {t('admin.userManagement', 'User Management')}
-                    </h2>
+                <div className="flex items-center justify-end">
                     <button
                         onClick={() => {
                             setEditingUser(null);
@@ -820,6 +818,70 @@ const AdminUsersPage: React.FC = () => {
                         onCancel={() => setUserToDelete(null)}
                     />
                 )}
+            </div>
+        </div>
+    );
+};
+
+type AdminTab = 'users' | 'groups';
+
+const AdminUsersPage: React.FC = () => {
+    const { t } = useTranslation();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const activeTab: AdminTab =
+        searchParams.get('tab') === 'groups' ? 'groups' : 'users';
+
+    const selectTab = (tab: AdminTab) => {
+        setSearchParams(tab === 'users' ? {} : { tab }, { replace: true });
+    };
+
+    const tabs: { id: AdminTab; label: string }[] = [
+        { id: 'users', label: t('admin.users.title', 'Users') },
+        { id: 'groups', label: t('admin.groups.title', 'Groups') },
+    ];
+
+    return (
+        <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">
+            <div className="w-full space-y-6">
+                <h2 className="text-2xl font-light">
+                    {t('admin.usersAndGroups', 'Users and Groups')}
+                </h2>
+
+                <div
+                    role="tablist"
+                    className="flex space-x-6 border-b border-gray-200 dark:border-gray-700"
+                >
+                    {tabs.map((tab) => (
+                        <button
+                            key={tab.id}
+                            role="tab"
+                            id={`admin-tab-${tab.id}`}
+                            aria-selected={activeTab === tab.id}
+                            aria-controls={`admin-tabpanel-${tab.id}`}
+                            data-testid={`admin-tab-${tab.id}`}
+                            onClick={() => selectTab(tab.id)}
+                            className={`-mb-px pb-3 text-sm font-medium border-b-2 focus:outline-none transition-colors ${
+                                activeTab === tab.id
+                                    ? 'border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+                            }`}
+                        >
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
+
+                <div
+                    role="tabpanel"
+                    id={`admin-tabpanel-${activeTab}`}
+                    aria-labelledby={`admin-tab-${activeTab}`}
+                >
+                    {activeTab === 'groups' ? (
+                        <AdminGroupsPanel />
+                    ) : (
+                        <AdminUsersPanel />
+                    )}
+                </div>
             </div>
         </div>
     );

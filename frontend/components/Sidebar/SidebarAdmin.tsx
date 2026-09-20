@@ -3,7 +3,6 @@ import { Location } from 'react-router-dom';
 import {
     RectangleStackIcon,
     UsersIcon,
-    UserGroupIcon,
     CreditCardIcon,
     SparklesIcon,
 } from '@heroicons/react/24/outline';
@@ -68,26 +67,12 @@ const SidebarAdmin: React.FC<SidebarAdminProps> = ({
                     onClick={() =>
                         handleNavClick(
                             '/admin/users',
-                            t('admin.userManagement', 'User Management')
+                            t('admin.usersAndGroups', 'Users and Groups')
                         )
                     }
                 >
                     <UsersIcon className="h-[14px] w-[14px] mr-[6px] shrink-0" />
-                    {t('admin.userManagement', 'User Management')}
-                </li>
-            )}
-            {currentUser?.is_admin === true && (
-                <li
-                    className={linkClass('/admin/groups')}
-                    onClick={() =>
-                        handleNavClick(
-                            '/admin/groups',
-                            t('admin.groups.title', 'Groups')
-                        )
-                    }
-                >
-                    <UserGroupIcon className="h-[14px] w-[14px] mr-[6px] shrink-0" />
-                    {t('admin.groups.title', 'Groups')}
+                    {t('admin.usersAndGroups', 'Users and Groups')}
                 </li>
             )}
             {currentUser?.is_admin === true && hosted && (
