@@ -6,6 +6,10 @@ const {
     processDeferUntilForStorage,
 } = require('../../../utils/timezone-utils');
 
+function resolveNote(body) {
+    return body.note !== undefined ? body.note : body.description;
+}
+
 function calculateInitialDueDate(body, timezone = 'UTC') {
     const recurrenceType = body.recurrence_type;
     // Build "today" as a calendar-only UTC Date from the user's LOCAL date
@@ -150,7 +154,7 @@ function buildTaskAttributes(body, userId, timezone, isUpdate = false) {
         due_date: processDueDateForStorage(dueDate, timezone),
         defer_until: processDeferUntilForStorage(body.defer_until, timezone),
         status: parseStatus(body.status),
-        note: body.note,
+        note: resolveNote(body),
         recurrence_type: recurrenceType,
         recurrence_interval: body.recurrence_interval || null,
         recurrence_end_date: body.recurrence_end_date || null,
@@ -200,6 +204,8 @@ function buildUpdateAttributes(body, task, timezone) {
         body.recurrence_type !== 'none' &&
         (task.recurrence_type === 'none' || !task.recurrence_type);
 
+    const incomingNote = resolveNote(body);
+
     const attrs = {
         name: body.name !== undefined ? body.name : task.name,
         priority:
@@ -208,7 +214,7 @@ function buildUpdateAttributes(body, task, timezone) {
                 : task.priority,
         status:
             body.status !== undefined ? parseStatus(body.status) : task.status,
-        note: body.note !== undefined ? body.note : task.note,
+        note: incomingNote !== undefined ? incomingNote : task.note,
         recurrence_type: recurrenceType,
         recurrence_interval:
             body.recurrence_interval !== undefined

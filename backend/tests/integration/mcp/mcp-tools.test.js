@@ -343,6 +343,21 @@ describe('MCP Tools Integration', () => {
                 expect(content.task.note).toBe('This is a detailed note');
             });
 
+            it('should create a task with note', async () => {
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'create_task',
+                    {
+                        name: 'Task with Note Param',
+                        note: 'Written as note',
+                    }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.task.note).toBe('Written as note');
+            });
+
             it('should create a task with due date', async () => {
                 const dueDate = new Date(Date.now() + 86400000).toISOString();
                 const response = await callMcpTool(
@@ -590,6 +605,50 @@ describe('MCP Tools Integration', () => {
                 expect(response.status).toBe(200);
                 const { content } = getToolContent(response);
                 expect(content.task.name).toBe('New Name');
+            });
+
+            it('should update task note', async () => {
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Note Task',
+                    note: 'original',
+                    status: 0,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'update_task',
+                    {
+                        id: task.id,
+                        note: 'via note',
+                    }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.task.note).toBe('via note');
+            });
+
+            it('should update task note when sent as description', async () => {
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Description Alias Task',
+                    note: 'original',
+                    status: 0,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'update_task',
+                    {
+                        id: task.id,
+                        description: 'via description',
+                    }
+                );
+
+                expect(response.status).toBe(200);
+                const { content } = getToolContent(response);
+                expect(content.task.note).toBe('via description');
             });
 
             it('should update task status', async () => {
