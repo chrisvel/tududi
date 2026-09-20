@@ -5,6 +5,7 @@ const router = express.Router();
 const peopleController = require('./controller');
 const { hasAccess } = require('../../middleware/authorize');
 const projectsService = require('../projects/service');
+const { requireCapability } = require('../../middleware/roles');
 
 // People assignable to tasks in a project: the caller's own people plus the
 // self-person of the project owner and any collaborators it's shared with.
@@ -22,7 +23,11 @@ router.get(
 
 router.get('/people', peopleController.list);
 router.get('/people/:uid', peopleController.getOne);
-router.post('/people', peopleController.create);
+router.post(
+    '/people',
+    requireCapability('create_people'),
+    peopleController.create
+);
 router.patch('/people/:uid', peopleController.update);
 router.delete('/people/:uid', peopleController.delete);
 

@@ -3,6 +3,32 @@
 const { PASSWORD_MIN_LENGTH } = require('../users/userService');
 
 const { ValidationError } = require('../../shared/errors');
+const { ROLES, CAPABILITIES } = require('../../services/rolesService');
+
+// Checked before anything is saved so a bad role or capability cannot leave
+// an update half applied.
+function validateRoleChange(role, capabilities) {
+    if (role !== undefined && !ROLES.includes(role)) {
+        throw new ValidationError(`Unknown role: ${role}`);
+    }
+    if (capabilities === undefined) return;
+
+    if (
+        capabilities === null ||
+        typeof capabilities !== 'object' ||
+        Array.isArray(capabilities)
+    ) {
+        throw new ValidationError('capabilities must be an object');
+    }
+    for (const [capability, value] of Object.entries(capabilities)) {
+        if (!CAPABILITIES.includes(capability)) {
+            throw new ValidationError(`Unknown capability: ${capability}`);
+        }
+        if (typeof value !== 'boolean') {
+            throw new ValidationError(`${capability} must be true or false`);
+        }
+    }
+}
 
 /**
  * Validate user ID parameter.
@@ -55,8 +81,15 @@ function validateSetAdminRole(body) {
  * to confirm their email before they can sign in.
  */
 function validateCreateUser(body) {
-    const { email, password, name, surname, role, require_verification } =
-        body || {};
+    const {
+        email,
+        password,
+        name,
+        surname,
+        role,
+        capabilities,
+        require_verification,
+    } = body || {};
     if (!email) {
         throw new ValidationError('Email is required');
     }
@@ -70,12 +103,14 @@ function validateCreateUser(body) {
     ) {
         throw new ValidationError('require_verification must be a boolean');
     }
+    validateRoleChange(role, capabilities);
     return {
         email,
         password: password || null,
         name,
         surname,
         role,
+        capabilities,
         requireVerification: require_verification === true,
     };
 }
@@ -182,6 +217,7 @@ function validateOidcConfig(body) {
 }
 
 module.exports = {
+    validateRoleChange,
     validateUserId,
     validateEmail,
     validatePassword,

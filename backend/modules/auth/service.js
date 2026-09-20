@@ -22,6 +22,7 @@ const {
 const { MIN_LENGTH_POLICY_MESSAGE } = require('../users/userService');
 const peopleService = require('../people/service');
 const packageJson = require('../../../package.json');
+const { getRoleInfo } = require('../../services/rolesService');
 const {
     ValidationError,
     NotFoundError,
@@ -234,6 +235,7 @@ class AuthService {
                         ui_settings: uiSettings || null,
                         sidebar_settings: sidebarSettings || null,
                         is_admin: admin,
+                        ...(await getRoleInfo(user.uid)),
                         has_collaborators: hasCollaborators,
                     },
                 };
@@ -312,6 +314,7 @@ class AuthService {
                 timezone: user.timezone,
                 avatar_image: user.avatar_image,
                 is_admin: admin,
+                ...(await getRoleInfo(user.uid)),
             },
         };
     }
