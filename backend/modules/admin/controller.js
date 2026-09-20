@@ -125,7 +125,8 @@ const adminController = {
             const user = await adminService.updateUser(
                 requesterId,
                 req.params.id,
-                req.body
+                req.body,
+                { sessionId: req.sessionID }
             );
             res.json(user);
         } catch (error) {

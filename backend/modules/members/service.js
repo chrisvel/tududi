@@ -12,6 +12,7 @@ const {
     NotFoundError,
     ConflictError,
     ForbiddenError,
+    ValidationError,
 } = require('../../shared/errors');
 
 // The parts of a contact's name, as the first name and the rest, the same way
@@ -62,6 +63,9 @@ class MembersService {
         assertMayGrant(actorIsAdmin, input);
 
         const personUid = input.person_uid || input.linked_person_uid;
+        if (personUid !== undefined && typeof personUid !== 'string') {
+            throw new ValidationError('person_uid must be text');
+        }
         const contact = personUid
             ? await findContactToConvert(actorId, personUid)
             : null;
@@ -117,16 +121,32 @@ class MembersService {
 
                 if (contact) {
                     // The private notes were written about the contact by
-                    // someone else, and the account now owns this record.
-                    await contact.update(
+                    // someone else, and the account now owns this record. The
+                    // update only matches a contact that is still free, so of
+                    // two requests converting the same contact one wins and
+                    // the other rolls its new account back.
+                    const [adopted] = await Person.update(
                         {
                             user_id: user.id,
                             linked_user_id: user.id,
                             email: user.email || null,
                             notes: null,
+                            archived: false,
                         },
-                        { transaction }
+                        {
+                            where: {
+                                id: contact.id,
+                                user_id: actorId,
+                                linked_user_id: null,
+                            },
+                            transaction,
+                        }
                     );
+                    if (adopted === 0) {
+                        throw new ConflictError(
+                            'That person already has an account'
+                        );
+                    }
                     person = contact;
                 }
             });

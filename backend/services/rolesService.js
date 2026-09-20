@@ -104,6 +104,22 @@ async function assertCan(userUidOrId, capability) {
     }
 }
 
+// Counts the admins inside the caller's transaction and locks their rows, so
+// two people demoting or deleting the last two admins at the same moment
+// cannot both pass the check (SQLite has one writer, so it needs no lock).
+async function assertAnotherAdminRemains(transaction, message) {
+    const admins = await Role.findAll({
+        where: { is_admin: true },
+        attributes: ['id'],
+        order: [['id', 'ASC']],
+        lock: transaction.LOCK.UPDATE,
+        transaction,
+    });
+    if (admins.length <= 1) {
+        throw new ValidationError(message);
+    }
+}
+
 async function setRole(userUidOrId, role, options = {}) {
     if (!ROLES.includes(role)) {
         throw new ValidationError(`Unknown role: ${role}`);
@@ -123,13 +139,10 @@ async function setRole(userUidOrId, role, options = {}) {
         });
 
         if (row && row.is_admin && role !== 'admin') {
-            const otherAdmins = await Role.count({
-                where: { is_admin: true },
+            await assertAnotherAdminRemains(
                 transaction,
-            });
-            if (otherAdmins <= 1) {
-                throw new ValidationError('Cannot remove the last admin');
-            }
+                'Cannot remove the last admin'
+            );
         }
 
         const values = { role, is_admin: role === 'admin' };
@@ -205,6 +218,7 @@ async function describeRoles() {
 }
 
 module.exports = {
+    assertAnotherAdminRemains,
     ROLES,
     CAPABILITIES,
     ROLE_DEFAULTS,
