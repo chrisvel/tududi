@@ -3,6 +3,7 @@
 const peopleRepository = require('./repository');
 const { isAdmin } = require('../../services/rolesService');
 const { getWorkspaceUserIds } = require('../../services/workspaceMembers');
+const { selfPersonName } = require('../../utils/selfPersonName');
 const {
     NotFoundError,
     ValidationError,
@@ -291,11 +292,7 @@ class PeopleService {
         );
         if (existing) return existing;
 
-        const nameParts = [user.name, user.surname].filter(Boolean);
-        let name =
-            nameParts.length > 0
-                ? nameParts.join(' ').trim()
-                : user.email.split('@')[0];
+        let name = selfPersonName(user);
 
         const nameConflict = await peopleRepository.nameExists(user.id, name);
         if (nameConflict) name = `${name} (me)`;

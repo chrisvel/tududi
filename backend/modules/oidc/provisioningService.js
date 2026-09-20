@@ -13,7 +13,7 @@ function shouldBeAdmin(config, email) {
         return false;
     }
 
-    const domain = email.split('@')[1];
+    const domain = (email || '').split('@')[1];
     return config.adminEmailDomains.includes(domain);
 }
 

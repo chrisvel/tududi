@@ -1,6 +1,7 @@
 'use strict';
 
 const adminRepository = require('./repository');
+const { accountStatusOf } = require('./accountStatus');
 const {
     validateRoleChange,
     validateUserId,
@@ -128,13 +129,15 @@ class AdminService {
         const users = await adminRepository.findAllUsers();
         const roles = await adminRepository.findAllRoles();
         const userIdToRole = new Map(roles.map((r) => [r.user_id, r]));
+        const identityUserIds = await adminRepository.findIdentityUserIds();
 
         return users.map((u) => ({
             id: u.id,
-            email: u.email,
+            email: u.email ?? null,
             name: u.name,
             surname: u.surname,
             created_at: u.created_at,
+            account_status: accountStatusOf(u, identityUserIds.has(u.id)),
             ...this.describeRole(userIdToRole.get(u.id)),
         }));
     }
@@ -155,19 +158,21 @@ class AdminService {
             requireVerification,
         } = validateCreateUser(body);
         const { linked_person_uid } = body || {};
-        const invite = !password;
+        const hasEmail = Boolean(email);
+        // Only an account with an email can be invited or asked to verify.
+        const invite = !password && hasEmail;
         // An invite already verifies the email when its link is used, so the
         // switch only matters for accounts that are given a password.
-        const verify = requireVerification && !invite;
+        const verify = requireVerification && !invite && hasEmail;
 
         const userData = {
-            email,
             notification_preferences: getDefaultNotificationPreferences(),
         };
+        if (hasEmail) userData.email = email;
         if (password) {
             userData.password = password;
             if (verify) userData.email_verified = false;
-        } else {
+        } else if (invite) {
             // No password yet: the account is inert until the invite link is
             // used, which also verifies the email.
             userData.email_verified = false;
@@ -240,10 +245,11 @@ class AdminService {
 
         return {
             id: user.id,
-            email: user.email,
+            email: user.email ?? null,
             name: user.name,
             surname: user.surname,
             created_at: user.created_at,
+            account_status: accountStatusOf(user),
             ...(await rolesService.getRoleInfo(user.id)),
             invited: invite,
             verification_requested: verify,
@@ -267,7 +273,14 @@ class AdminService {
             body || {};
         validateRoleChange(role, capabilities);
 
-        if (email !== undefined && email !== null) {
+        // A blank email leaves the current one alone: an email can be added or
+        // changed here, but not taken away, since the account could then no
+        // longer be reached.
+        if (
+            email !== undefined &&
+            email !== null &&
+            String(email).trim() !== ''
+        ) {
             validateEmail(email);
             user.email = email;
         }
@@ -299,12 +312,17 @@ class AdminService {
 
         const userRole = await adminRepository.findRoleByUserId(user.id);
 
+        const identityUserIds = await adminRepository.findIdentityUserIds([
+            user.id,
+        ]);
+
         return {
             id: user.id,
-            email: user.email,
+            email: user.email ?? null,
             name: user.name,
             surname: user.surname,
             created_at: user.created_at,
+            account_status: accountStatusOf(user, identityUserIds.has(user.id)),
             ...this.describeRole(userRole),
         };
     }

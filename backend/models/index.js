@@ -93,6 +93,7 @@ const BillingAccount = require('./billing_account')(sequelize);
 const BillingEvent = require('./billing_event')(sequelize);
 const WaitlistSubscriber = require('./waitlist_subscriber')(sequelize);
 const UsageCounter = require('./usage_counter')(sequelize);
+const { selfPersonName } = require('../utils/selfPersonName');
 
 User.hasOne(BillingAccount, { foreignKey: 'user_id', as: 'BillingAccount' });
 BillingAccount.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
@@ -381,11 +382,7 @@ User.addHook('afterCreate', async (user, options) => {
             });
             if (existing) return;
 
-            const nameParts = [user.name, user.surname].filter(Boolean);
-            let personName =
-                nameParts.length > 0
-                    ? nameParts.join(' ').trim()
-                    : user.email.split('@')[0];
+            let personName = selfPersonName(user);
 
             const nameConflict = await Person.findOne({
                 where: { user_id: user.id, name: personName },
@@ -428,11 +425,7 @@ User.addHook('afterUpdate', async (user, options) => {
 
             const updates = {};
             if (user.changed('name') || user.changed('surname')) {
-                const nameParts = [user.name, user.surname].filter(Boolean);
-                updates.name =
-                    nameParts.length > 0
-                        ? nameParts.join(' ').trim()
-                        : user.email.split('@')[0];
+                updates.name = selfPersonName(user);
             }
             if (user.changed('email')) updates.email = user.email || null;
 
