@@ -50,7 +50,7 @@ For the thinking behind tududi, read:
     - **End Date Control**: Optional end dates for recurring series
 - **Project Sharing & Collaboration**: Share projects with team members and collaborate effectively
 - **Families & Small Teams**: One workspace for a household or a team, described in [People, Members and Roles](docs/19-people-and-roles.md):
-    - **Roles**: Admin, user and guest, with permissions an admin can adjust per account
+    - **Roles**: Admin, user and guest, each with a list of what it can do
     - **Groups**: Share a project, area or goal with several people at once
     - **Members without an email**: Add a child or another household member who has no email, put them in a group and assign them tasks
     - **One People list**: Members and contacts in one list. Add members yourself with the invite permission, or turn a contact into a member without losing the tasks assigned to them

@@ -23,7 +23,7 @@ For sign-up, login, profiles and API tokens see [User Management](08-user-manage
 | **Share** | Giving a member or a group access to a project, area, goal, note or task. |
 | **Workspace** | Informal: the people you share something with, in either direction, everyone who is in a group with you, and the accounts you created or that created you. |
 | **Role** | Admin, user or guest. A role decides what an account can create and manage. |
-| **Capability** | One thing a role allows, such as adding people. A single account can have more or fewer than its role. |
+| **Capability** | One thing a role allows, such as adding people. The role decides which an account has. |
 
 ---
 
@@ -83,9 +83,9 @@ For sign-up, login, profiles and API tokens see [User Management](08-user-manage
 
 15. **There are three roles: admin, user and guest.** Admin manages accounts, roles and groups and can do everything. A user can add people and create projects, areas and goals. A guest works inside what is shared with them or assigned to them and creates none of those.
 
-16. **The capabilities are `create_people`, `invite_members` and `create_projects`.** `invite_members` lets an account add members (see above). An admin can give one account more or fewer than its role, for example letting one user invite others. The role table, how overrides are stored, and where the server enforces them are in [User Management](08-user-management.md#user-roles--permissions).
+16. **The capabilities are `create_people`, `invite_members` and `create_projects`.** `invite_members` lets an account add members (see above). An account gets them from its role: an admin has all three, a user can add people and create projects, and a guest has none. The role table and where the server enforces them are in [User Management](08-user-management.md#user-roles--permissions).
 
-17. **The Roles tab in Admin > Access shows each role, how many accounts hold it and what it may do.** The role and permissions of an account are set in the Users tab when adding or editing it. The roles themselves are fixed for now.
+17. **The Roles tab in Admin > Access shows each role, how many accounts hold it and what it may do.** The role of an account is chosen in the Users tab when adding or editing it. That form lists what the chosen role allows, but cannot change it for one account. The roles themselves are fixed for now.
 
 ### The Everyone board
 
@@ -118,4 +118,4 @@ For sign-up, login, profiles and API tokens see [User Management](08-user-manage
 - A member without an email cannot sign in. There is no login link or PIN yet.
 - Your People list only shows your workspace. An admin sees every account in Admin > Access, but not on the People page, unless they share something with it, are in a group with it, or created it.
 - Contacts and members are separate records. Turning a contact into a member merges them. Linking a contact to an existing account keeps both, and assignee lists show that person only once.
-- The Roles tab is read only. The set of roles and their defaults live in code.
+- The Roles tab is read only. The set of roles and their defaults live in code, so no permission can be given to a user or guest yet. That means only an admin can add members for now, since the invite permission belongs to the admin role.

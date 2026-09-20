@@ -355,6 +355,17 @@ describe('Admin users and groups page', () => {
             );
         });
 
+        it('says the roles are fixed and does not promise per-account permissions', async () => {
+            mockAdminApi();
+            renderPage('/admin/users?tab=roles');
+
+            const panel = await screen.findByTestId('admin-roles-panel');
+
+            expect(panel).toHaveTextContent('The roles are fixed for now.');
+            expect(panel).not.toHaveTextContent('more or fewer permissions');
+            expect(panel).not.toHaveTextContent('from the Users tab');
+        });
+
         it('shows how many accounts hold each role', async () => {
             mockAdminApi();
             renderPage('/admin/users?tab=roles');
@@ -486,24 +497,49 @@ describe('Admin users and groups page', () => {
             return await screen.findByTestId('permissions-section');
         };
 
-        it('starts a new account as a user who cannot invite', async () => {
+        const allowed = (capability: string) =>
+            screen
+                .getByTestId(`permission-${capability}`)
+                .getAttribute('data-allowed');
+
+        const pickRole = async (id: string) => {
+            fireEvent.click(screen.getByTestId('role-trigger'));
+            fireEvent.click(await screen.findByTestId(`role-option-${id}`));
+        };
+
+        it('starts a new account as a user, and lists what a user can do', async () => {
+            await openAddForm();
+
+            expect(allowed('create_people')).toBe('true');
+            expect(allowed('invite_members')).toBe('false');
+            expect(allowed('create_projects')).toBe('true');
+        });
+
+        it('says what each permission is for', async () => {
             await openAddForm();
 
             expect(
-                screen.getByTestId('capability-switch-create_people')
-            ).toHaveAttribute('aria-checked', 'true');
+                screen.getByText(
+                    'Create accounts, send invitations or sign people up'
+                )
+            ).toBeVisible();
+            expect(screen.getByText('Add people')).toBeVisible();
+        });
+
+        it('has no way to set a permission for one account', async () => {
+            await openAddForm();
+
             expect(
-                screen.getByTestId('capability-switch-invite_members')
-            ).toHaveAttribute('aria-checked', 'false');
-            expect(
-                screen.getByTestId('capability-switch-create_projects')
-            ).toHaveAttribute('aria-checked', 'true');
+                screen.queryByTestId('capability-switch-invite_members')
+            ).toBeNull();
+            expect(screen.queryAllByRole('switch')).toHaveLength(0);
+            expect(screen.queryByRole('checkbox')).toBeNull();
         });
 
         it('offers all three roles', async () => {
             await openAddForm();
 
-            fireEvent.click(screen.getByText('User', { selector: 'span' }));
+            fireEvent.click(screen.getByTestId('role-trigger'));
 
             expect(
                 await screen.findByTestId('role-option-admin')
@@ -512,75 +548,44 @@ describe('Admin users and groups page', () => {
             expect(screen.getByTestId('role-option-guest')).toBeVisible();
         });
 
-        it('resets the switches to the guest defaults when Guest is picked', async () => {
+        it('lists nothing as allowed when Guest is picked', async () => {
             await openAddForm();
-            fireEvent.click(screen.getByText('User', { selector: 'span' }));
 
-            fireEvent.click(await screen.findByTestId('role-option-guest'));
+            await pickRole('guest');
 
             for (const capability of [
                 'create_people',
                 'invite_members',
                 'create_projects',
             ]) {
-                expect(
-                    screen.getByTestId(`capability-switch-${capability}`)
-                ).toHaveAttribute('aria-checked', 'false');
+                expect(allowed(capability)).toBe('false');
             }
         });
 
-        it('shows every permission on and locked for an admin', async () => {
+        it('lists everything as allowed for an admin', async () => {
             await openAddForm();
-            fireEvent.click(screen.getByText('User', { selector: 'span' }));
 
-            fireEvent.click(await screen.findByTestId('role-option-admin'));
+            await pickRole('admin');
 
-            const invite = screen.getByTestId(
-                'capability-switch-invite_members'
-            );
-            expect(invite).toHaveAttribute('aria-checked', 'true');
-            expect(invite).toBeDisabled();
-            expect(screen.getByText('Admins can do everything.')).toBeVisible();
+            for (const capability of [
+                'create_people',
+                'invite_members',
+                'create_projects',
+            ]) {
+                expect(allowed(capability)).toBe('true');
+            }
         });
 
-        it('sends the role and permissions when a user is allowed to invite', async () => {
+        it('sends the chosen role and no permissions when creating', async () => {
             (fetchWithCsrf as jest.Mock).mockResolvedValue(
-                jsonResponse(account(9, 'helper@example.com', 'user'), 201)
+                jsonResponse(account(9, 'helper@example.com', 'guest'), 201)
             );
             await openAddForm();
             fireEvent.change(
                 document.querySelector('input[type="email"]') as Element,
                 { target: { value: 'helper@example.com' } }
             );
-
-            fireEvent.click(
-                screen.getByTestId('capability-switch-invite_members')
-            );
-            fireEvent.click(screen.getByText('Create'));
-
-            await waitFor(() => expect(fetchWithCsrf).toHaveBeenCalled());
-            const body = JSON.parse(
-                (fetchWithCsrf as jest.Mock).mock.calls[0][1].body
-            );
-            expect(body.role).toBe('user');
-            expect(body.capabilities).toEqual({
-                create_people: true,
-                invite_members: true,
-                create_projects: true,
-            });
-        });
-
-        it('sends the guest role with nothing allowed', async () => {
-            (fetchWithCsrf as jest.Mock).mockResolvedValue(
-                jsonResponse(account(9, 'guest@example.com', 'guest'), 201)
-            );
-            await openAddForm();
-            fireEvent.change(
-                document.querySelector('input[type="email"]') as Element,
-                { target: { value: 'guest@example.com' } }
-            );
-            fireEvent.click(screen.getByText('User', { selector: 'span' }));
-            fireEvent.click(await screen.findByTestId('role-option-guest'));
+            await pickRole('guest');
 
             fireEvent.click(screen.getByText('Create'));
 
@@ -589,14 +594,10 @@ describe('Admin users and groups page', () => {
                 (fetchWithCsrf as jest.Mock).mock.calls[0][1].body
             );
             expect(body.role).toBe('guest');
-            expect(body.capabilities).toEqual({
-                create_people: false,
-                invite_members: false,
-                create_projects: false,
-            });
+            expect(body).not.toHaveProperty('capabilities');
         });
 
-        it('loads an existing account with its own permissions when editing', async () => {
+        it('shows what an account being edited really has', async () => {
             mockAdminApi([
                 {
                     ...account(4, 'helper@example.com', 'user'),
@@ -611,12 +612,48 @@ describe('Admin users and groups page', () => {
             fireEvent.click(await screen.findByTitle('Edit'));
 
             await screen.findByTestId('permissions-section');
-            expect(
-                screen.getByTestId('capability-switch-invite_members')
-            ).toHaveAttribute('aria-checked', 'true');
-            expect(
-                screen.getByTestId('capability-switch-create_projects')
-            ).toHaveAttribute('aria-checked', 'false');
+            expect(allowed('invite_members')).toBe('true');
+            expect(allowed('create_projects')).toBe('false');
+        });
+
+        it("shows the role's own list when the role of an edited account changes", async () => {
+            mockAdminApi([
+                {
+                    ...account(4, 'helper@example.com', 'user'),
+                    capabilities: {
+                        create_people: true,
+                        invite_members: true,
+                        create_projects: false,
+                    },
+                },
+            ]);
+            renderPage();
+            fireEvent.click(await screen.findByTitle('Edit'));
+            await screen.findByTestId('permissions-section');
+
+            await pickRole('guest');
+
+            expect(allowed('invite_members')).toBe('false');
+            expect(allowed('create_people')).toBe('false');
+        });
+
+        it('sends no permissions when saving an edit', async () => {
+            (fetchWithCsrf as jest.Mock).mockResolvedValue(
+                jsonResponse(account(4, 'helper@example.com', 'user'))
+            );
+            mockAdminApi([account(4, 'helper@example.com', 'user')]);
+            renderPage();
+            fireEvent.click(await screen.findByTitle('Edit'));
+            await screen.findByTestId('permissions-section');
+
+            fireEvent.click(screen.getByText('Save'));
+
+            await waitFor(() => expect(fetchWithCsrf).toHaveBeenCalled());
+            const body = JSON.parse(
+                (fetchWithCsrf as jest.Mock).mock.calls[0][1].body
+            );
+            expect(body).not.toHaveProperty('capabilities');
+            expect(body.role).toBe('user');
         });
     });
 
