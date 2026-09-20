@@ -613,6 +613,88 @@ describe('MCP Tools Integration', () => {
                 expect(content.task.status).toBe(1); // in_progress = 1
             });
 
+            it.each(['done', 'completed'])(
+                'should stamp completed_at when status is set to %s',
+                async (status) => {
+                    const task = await Task.create({
+                        user_id: user.id,
+                        name: 'Finish Me',
+                        status: 0,
+                    });
+                    expect(task.completed_at).toBeFalsy();
+
+                    const response = await callMcpTool(
+                        apiTokenValue,
+                        'update_task',
+                        { id: task.id, status }
+                    );
+
+                    expect(response.status).toBe(200);
+                    await task.reload();
+                    expect(task.status).toBe(2);
+                    expect(task.completed_at).toBeInstanceOf(Date);
+                }
+            );
+
+            it('should clear completed_at when a done task is moved back out of done', async () => {
+                const completedAt = new Date('2026-01-01T10:00:00Z');
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Reopen Me',
+                    status: 2,
+                    completed_at: completedAt,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'update_task',
+                    { id: task.id, status: 'pending' }
+                );
+
+                expect(response.status).toBe(200);
+                await task.reload();
+                expect(task.status).toBe(0);
+                expect(task.completed_at).toBeNull();
+            });
+
+            it('should keep the original completed_at when a done task is set to done again', async () => {
+                const completedAt = new Date('2026-01-01T10:00:00Z');
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Already Done',
+                    status: 2,
+                    completed_at: completedAt,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'update_task',
+                    { id: task.id, status: 'done' }
+                );
+
+                expect(response.status).toBe(200);
+                await task.reload();
+                expect(task.completed_at.getTime()).toBe(completedAt.getTime());
+            });
+
+            it('should leave completed_at alone when status is not part of the update', async () => {
+                const completedAt = new Date('2026-01-01T10:00:00Z');
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Rename Done Task',
+                    status: 2,
+                    completed_at: completedAt,
+                });
+
+                await callMcpTool(apiTokenValue, 'update_task', {
+                    id: task.id,
+                    name: 'Renamed',
+                });
+
+                await task.reload();
+                expect(task.completed_at.getTime()).toBe(completedAt.getTime());
+            });
+
             it('should set status to archived (3) not planned (6)', async () => {
                 const task = await Task.create({
                     user_id: user.id,

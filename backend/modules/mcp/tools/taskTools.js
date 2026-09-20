@@ -8,6 +8,7 @@ const {
 } = require('../../tasks/core/serializers');
 const { calculateInitialDueDate } = require('../../tasks/core/builders');
 const { handleRecurrenceUpdate } = require('../../tasks/operations/recurring');
+const { handleCompletionStatus } = require('../../tasks/operations/completion');
 const { Op } = require('sequelize');
 const { Task, Project, Tag } = require('../../../models');
 const {
@@ -542,6 +543,7 @@ function registerTaskTools(server, context, tools) {
                     planned: 6,
                 };
                 updates.status = statusMap[params.status];
+                await handleCompletionStatus(updates, updates.status, task);
             }
             if (params.due_date !== undefined) {
                 // Normalize to end-of-day in the user's timezone, matching
