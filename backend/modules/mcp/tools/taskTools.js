@@ -284,7 +284,11 @@ function registerTaskTools(server, context, tools) {
                 },
                 description: {
                     type: 'string',
-                    description: 'Task description/note',
+                    description: 'Task note (alias of note)',
+                },
+                note: {
+                    type: 'string',
+                    description: 'Task note',
                 },
                 priority: {
                     type: 'string',
@@ -354,7 +358,7 @@ function registerTaskTools(server, context, tools) {
             const taskData = {
                 user_id: context.userId,
                 name: params.name,
-                note: params.description || '',
+                note: params.note ?? params.description ?? '',
                 priority: params.priority ? priorityMap[params.priority] : 1,
                 status: 0, // pending
                 due_date: dueDate,
@@ -437,7 +441,11 @@ function registerTaskTools(server, context, tools) {
             description: 'Task ID or UID',
         },
         name: { type: 'string', description: 'New task name' },
-        description: { type: 'string', description: 'New description' },
+        description: {
+            type: 'string',
+            description: 'New note (alias of note)',
+        },
+        note: { type: 'string', description: 'New note' },
         priority: {
             type: 'string',
             enum: ['low', 'medium', 'high'],
@@ -523,8 +531,8 @@ function registerTaskTools(server, context, tools) {
 
             const updates = {};
             if (params.name !== undefined) updates.name = params.name;
-            if (params.description !== undefined)
-                updates.note = params.description;
+            const incomingNote = params.note ?? params.description;
+            if (incomingNote !== undefined) updates.note = incomingNote;
             if (params.priority) {
                 const priorityMap = { low: 0, medium: 1, high: 2 };
                 updates.priority = priorityMap[params.priority];

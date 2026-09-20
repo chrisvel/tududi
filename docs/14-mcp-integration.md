@@ -236,7 +236,8 @@ Create a new task.
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `name` | string | Yes | Task name |
-| `description` | string | No | Task description/note |
+| `note` | string | No | Task note (the same field REST calls `note`) |
+| `description` | string | No | Alias of `note`; `note` wins if both are sent |
 | `priority` | string | No | `low`, `medium`, or `high` (default: `medium`) |
 | `due_date` | string | No | ISO 8601 date |
 | `defer_until` | string | No | ISO 8601 date/time; task is hidden from view until this point |
@@ -285,7 +286,8 @@ Update an existing task.
 |-----------|------|----------|-------------|
 | `id` | number/string | Yes | Task ID or UID |
 | `name` | string | No | New task name |
-| `description` | string | No | New description |
+| `note` | string | No | New note (the same field REST calls `note`) |
+| `description` | string | No | Alias of `note`; `note` wins if both are sent |
 | `priority` | string | No | `low`, `medium`, `high` |
 | `status` | string | No | `pending`, `in_progress`, `completed`, `archived` |
 | `due_date` | string | No | New due date (ISO 8601) |
