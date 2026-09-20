@@ -255,6 +255,19 @@ async function writeAttachmentFile(attachment) {
     return { storedFilename, size: buffer.length };
 }
 
+const IMPORT_STAT_KEYS = [
+    'tags',
+    'areas',
+    'goals',
+    'people',
+    'projects',
+    'tasks',
+    'notes',
+    'attachments',
+    'inbox_items',
+    'views',
+];
+
 async function importUserData(userId, backupData, options = { merge: true }) {
     if (!backupData || !backupData.version || !backupData.data) {
         throw new Error('Invalid backup data format');
@@ -265,6 +278,9 @@ async function importUserData(userId, backupData, options = { merge: true }) {
     const merge = options.merge !== false;
     const d = backupData.data;
     const stats = {};
+    for (const key of IMPORT_STAT_KEYS) {
+        stats[key] = { created: 0, skipped: 0 };
+    }
     const count = (key, field) => {
         stats[key] = stats[key] || { created: 0, skipped: 0 };
         stats[key][field] += 1;
