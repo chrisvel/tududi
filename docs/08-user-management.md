@@ -10,7 +10,7 @@ This document explains how user management works in tududi from a user behavior 
 
 1. **Registration is controlled by admins**
     - By default, registration is disabled
-    - Admins toggle registration on/off through `POST /api/admin/toggle-registration` (the Users and Groups page no longer has a switch for it)
+    - Admins toggle registration on/off through `POST /api/admin/toggle-registration` (the Access page no longer has a switch for it)
     - When disabled, only admins can create new user accounts
 
 2. **Email verification is required**
@@ -70,21 +70,48 @@ This document explains how user management works in tududi from a user behavior 
 
 ### Role System
 
-9. **Two role types exist: Admin and User**
-    - **Admin:** Full system access, can manage users, toggle registration, access admin panel
-    - **User:** Standard access to their own data and shared resources
+9. **Three roles exist: Admin, User and Guest**
+    - **Admin:** Full system access, manages accounts, roles and groups, and can do everything below
+    - **User:** A regular member with their own data and everything shared with them
+    - **Guest:** Works inside what is shared with them or assigned to them, and creates nothing of their own
+
+    Each role has a set of **capabilities** that decide what an account may create:
+
+    | Capability        | Meaning                                              | Admin | User | Guest |
+    | ----------------- | ---------------------------------------------------- | ----- | ---- | ----- |
+    | `create_people`   | Add people to the People list                        | yes   | yes  | no    |
+    | `invite_members`  | Create accounts, send invitations or sign people up  | yes   | no   | no    |
+    | `create_projects` | Create projects, areas and goals                     | yes   | yes  | no    |
+
+    A single account can be given more or fewer capabilities than its role
+    (for example a user who may invite others). Only the difference from the
+    role's defaults is stored, and an admin has no overrides. Reading what is
+    shared with an account is never restricted by role.
 
 10. **Role assignment:**
     - First user is automatically assigned admin role
-    - Admins can promote/demote other users to/from admin
+    - Admins can change any account's role and capabilities from the Roles and Users tabs
     - Every user has exactly one role record
-    - Roles are created automatically when a user account is created
+    - Roles are created automatically when a user account is created (as `user`)
+    - The role names and their defaults are fixed in code for now
+    - The last remaining admin cannot be demoted (or deleted)
 
 11. **Admin capabilities:**
     - Create, update, and delete user accounts
-    - Promote/demote users to/from admin role
+    - Change roles and capabilities
     - Toggle registration on/off
     - Cannot delete their own account (prevents lockout)
+
+11b. **How restrictions are enforced**
+    - The server refuses the request with `403` when the account's capabilities
+      do not allow it: `POST /api/people`, `POST /api/project`, `POST /api/areas`,
+      `POST /api/goals` and the MCP `create_person` and `create_project` tools
+    - The UI hides the sidebar "add" buttons for what an account cannot create.
+      This only decides what to show, the server is the real gate
+    - The current user (`GET /api/current_user` and the login response) carries
+      `role` and the effective `capabilities` next to `is_admin`
+    - `is_admin` stays the source of truth for admin, so anything that only
+      reads or writes that flag keeps working
 
 ---
 
@@ -266,7 +293,7 @@ to an account, so it cannot be used to discover who has signed up - Declining re
 
 30. **Admins can create new users directly**
     - Bypasses the registration flow
-    - Requires: email. Optional: name, surname, role (admin or user)
+    - Requires: email. Optional: name, surname, role (admin, user or guest), capabilities
     - **With a password:** the account is verified and can log in immediately,
       unless the admin turns on **Request email verification** in the form
       (`require_verification: true`). The account is then created unverified, a
@@ -283,10 +310,12 @@ to an account, so it cannot be used to discover who has signed up - Declining re
 
 31. **Admins can list all users**
     - Shows email, name, surname, role, creation date
-    - Includes role information (admin or user)
+    - Includes role and the effective capabilities of each account
+    - `GET /api/admin/roles` lists the three roles with their default
+      capabilities and how many accounts hold each
 
 32. **Admins can update any user's details**
-    - Can change: email, password, name, surname, role
+    - Can change: email, password, name, surname, role, capabilities
     - Email must remain unique across all users
     - Password change doesn't require current password (admin privilege)
 
