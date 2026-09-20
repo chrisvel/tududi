@@ -316,6 +316,22 @@ to an account, so it cannot be used to discover who has signed up - Declining re
       it can join groups, receive shares and be assigned tasks like anyone
       else. Any number of accounts can have no email, while emails that are set
       stay unique. Signing in without an email is not supported yet.
+    - **From one of the admin's own contacts:** `person_uid` (the older name
+      `linked_person_uid` still works) makes that contact the new account's own
+      person. It keeps its uid, so tasks assigned to it stay assigned and there is
+      no duplicate, its private notes are cleared, and nothing is created if any
+      step fails. See [People, Members and Roles](19-people-and-roles.md)
+
+30b. **Anyone with the `invite_members` capability can add members too**
+    - `POST /api/members` takes the same fields as the admin call and is used by
+      the People page. It is limited by the per-user resource limiter, since it can
+      send email
+    - Only an admin can create an admin (`403` otherwise) or set `capabilities`
+      (`403` otherwise), so the capability cannot be used to hand out more than the
+      caller has
+    - An account records who created it (`users.created_by_user_id`). It is part of
+      that account's workspace and of the ones it created. Erasing the creator
+      leaves the accounts in place and forgets the link
 
 31. **Admins can list all users**
     - Shows email (empty for a member added without one), name, surname, role, creation date

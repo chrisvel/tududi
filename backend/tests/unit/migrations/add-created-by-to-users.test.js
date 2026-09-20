@@ -2,6 +2,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { Sequelize, QueryTypes } = require('sequelize');
+const { sequelize } = require('../../../models');
 const migration = require('../../../migrations/20260920000003-add-created-by-to-users');
 
 const FIXTURE_DIR = path.join(__dirname, '../../fixtures/legacy');
@@ -11,6 +12,67 @@ const FIXTURES = fs
     .sort();
 
 describe('migration 20260920000003-add-created-by-to-users', () => {
+    // The database the tests run on, SQLite or PostgreSQL, so the same steps
+    // are exercised on both engines.
+    describe('on the test database', () => {
+        const qi = () => sequelize.getQueryInterface();
+        const hasColumn = async () =>
+            'created_by_user_id' in (await qi().describeTable('users'));
+        const hasIndex = async () =>
+            (await qi().showIndex('users')).some(
+                (i) => i.name === 'users_created_by_user_id'
+            );
+
+        afterAll(async () => {
+            await migration.up(qi(), Sequelize);
+            await sequelize.close();
+        });
+
+        it('starts from the model, which already has the column and index', async () => {
+            await migration.up(qi(), Sequelize);
+
+            expect(await hasColumn()).toBe(true);
+            expect(await hasIndex()).toBe(true);
+        });
+
+        it('adds them back after they were removed', async () => {
+            await migration.down(qi());
+            expect(await hasColumn()).toBe(false);
+            expect(await hasIndex()).toBe(false);
+
+            await migration.up(qi(), Sequelize);
+
+            expect(await hasColumn()).toBe(true);
+            expect(await hasIndex()).toBe(true);
+        });
+
+        it('does nothing when they are already there', async () => {
+            await migration.up(qi(), Sequelize);
+            const before = await qi().describeTable('users');
+
+            await migration.up(qi(), Sequelize);
+
+            expect(await qi().describeTable('users')).toEqual(before);
+            expect(await hasIndex()).toBe(true);
+        });
+
+        it('leaves the accounts that exist without a creator', async () => {
+            await migration.down(qi());
+            await sequelize.query(
+                `INSERT INTO users (uid, email, created_at, updated_at)
+                 VALUES ('legacy-uid', 'legacy@example.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`
+            );
+
+            await migration.up(qi(), Sequelize);
+
+            const [row] = await sequelize.query(
+                "SELECT created_by_user_id FROM users WHERE uid = 'legacy-uid'",
+                { type: QueryTypes.SELECT }
+            );
+            expect(row.created_by_user_id).toBeNull();
+        });
+    });
+
     describe.each(FIXTURES)('on a copy of %s', (fixture) => {
         let dir, db, qi;
 
