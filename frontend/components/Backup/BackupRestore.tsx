@@ -134,9 +134,9 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({ onImportSuccess }) => {
                     const result = await restoreSavedBackup(backupUid, true);
                     showSuccessToast(
                         t('backup.restoreSuccess', {
-                            tasks: result.stats.tasks.created,
-                            projects: result.stats.projects.created,
-                            notes: result.stats.notes.created,
+                            tasks: result.stats?.tasks?.created ?? 0,
+                            projects: result.stats?.projects?.created ?? 0,
+                            notes: result.stats?.notes?.created ?? 0,
                         })
                     );
                     if (onImportSuccess) {
@@ -222,9 +222,9 @@ const BackupRestore: React.FC<BackupRestoreProps> = ({ onImportSuccess }) => {
             const result = await importBackup(selectedFile, true);
             showSuccessToast(
                 t('backup.importSuccess', {
-                    tasks: result.stats.tasks.created,
-                    projects: result.stats.projects.created,
-                    notes: result.stats.notes.created,
+                    tasks: result.stats?.tasks?.created ?? 0,
+                    projects: result.stats?.projects?.created ?? 0,
+                    notes: result.stats?.notes?.created ?? 0,
                 })
             );
             // Reset file selection

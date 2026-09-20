@@ -282,6 +282,19 @@ describe('Backup export and import round trip (format 2)', () => {
         );
     });
 
+    it('reports zeroed stats for every category when the backup has no rows', async () => {
+        const empty = {
+            version: '2',
+            data: { projects: [], tasks: [], notes: [] },
+        };
+
+        const stats = await importUserData(target.id, empty);
+
+        for (const key of ['tasks', 'projects', 'notes', 'tags', 'areas']) {
+            expect(stats[key]).toEqual({ created: 0, skipped: 0 });
+        }
+    });
+
     it('never links a legacy backup to another user rows by numeric id', async () => {
         // A format-1 backup carries the source's numeric ids and no uids
         const legacy = {
