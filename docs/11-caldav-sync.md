@@ -248,8 +248,6 @@ ENCRYPTION_KEY=$(openssl rand -hex 32)
 
 # Optional: Configure defaults
 CALDAV_DEFAULT_SYNC_INTERVAL=15              # Minutes between syncs
-CALDAV_MAX_RECURRING_INSTANCES=365           # Future recurring instances
-CALDAV_CONFLICT_RESOLUTION=last_write_wins   # Default strategy
 ```
 
 **Restart Tududi:**
@@ -274,17 +272,11 @@ npm start              # For standalone
 | `CALDAV_PROJECTS_AS_CALENDARS` | No | `false` | Serve one CalDAV calendar **per project** (plus a "(No Project)" calendar) instead of a single combined `tasks/` calendar. With it on, clients such as Apple Reminders show one list per project. |
 | `ENCRYPTION_KEY` | Recommended | `SECRET_KEY` | AES-256-GCM encryption key for passwords |
 | `CALDAV_DEFAULT_SYNC_INTERVAL` | No | `15` | Default sync interval in minutes |
-| `CALDAV_MAX_RECURRING_INSTANCES` | No | `365` | Max future recurring instances to expand |
-| `CALDAV_CONFLICT_RESOLUTION` | No | `last_write_wins` | Default conflict strategy |
-| `CALDAV_RATE_LIMIT` | No | `60` | Requests per minute per IP |
-| `CALDAV_MAX_SYNC_TASKS` | No | `1000` | Max tasks per sync operation |
 | `CALDAV_REQUEST_TIMEOUT` | No | `30000` | Request timeout in milliseconds |
-| `CALDAV_LOG_LEVEL` | No | `info` | Log level: error, warn, info, debug |
-| `CALDAV_LOG_REQUESTS` | No | `false` | Log all CalDAV HTTP requests |
 
 **Important:** The `ENCRYPTION_KEY` should be a secure random string (32 bytes). If not set, falls back to `SECRET_KEY`.
 
-**Conflict Resolution Strategies:**
+**Conflict Resolution Strategies** (set per calendar, not by an environment variable):
 - `last_write_wins`: Most recent change wins (default, recommended)
 - `local_wins`: Always keep Tududi's version
 - `remote_wins`: Always keep remote server's version
@@ -617,8 +609,7 @@ Tududi supports CalDAV recurring tasks via RRULE (RFC 5545):
 
 **Solutions:**
 1. Ensure client supports RRULE recurrence
-2. Check that `CALDAV_MAX_RECURRING_INSTANCES` environment variable is set (default: 365)
-3. Some clients require manual refresh to see new instances
+2. Some clients require manual refresh to see new instances
 
 ### Performance Issues
 
@@ -683,17 +674,9 @@ ENCRYPTION_KEY=your-256-bit-encryption-key
 
 # Sync defaults
 CALDAV_DEFAULT_SYNC_INTERVAL=15              # Minutes
-CALDAV_MAX_RECURRING_INSTANCES=365           # Future instances
-CALDAV_CONFLICT_RESOLUTION=last_write_wins   # Strategy
 
 # Performance tuning
-CALDAV_RATE_LIMIT=60                         # Requests per minute
-CALDAV_MAX_SYNC_TASKS=1000                   # Max tasks per sync
 CALDAV_REQUEST_TIMEOUT=30000                 # Milliseconds
-
-# Debugging
-CALDAV_LOG_LEVEL=info                        # error, warn, info, debug
-CALDAV_LOG_REQUESTS=false                    # Log all CalDAV requests
 ```
 
 ---
@@ -706,7 +689,7 @@ CALDAV_LOG_REQUESTS=false                    # Log all CalDAV requests
 4. **Projects:** Association stored in X-TUDUDI-PROJECT-UID, not shown externally
 5. **Status Granularity:** 7 Tududi statuses mapped to 4 CalDAV statuses (some nuance lost)
 6. **Timezone Handling:** All dates stored as UTC; local timezone conversion in clients
-7. **Large Recurring Sequences:** Expanding far into future creates many VTODOs (configurable limit)
+7. **Large Recurring Sequences:** Expanding far into future creates many VTODOs
 
 ---
 

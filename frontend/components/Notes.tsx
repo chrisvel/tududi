@@ -35,7 +35,6 @@ import { deleteNoteWithStoreUpdate } from '../utils/noteDeleteUtils';
 import { useStore } from '../store/useStore';
 import { createProject } from '../utils/projectsService';
 import { sortNotesByOrder } from '../utils/notesTreeUtils';
-import { ENABLE_NOTE_COLOR } from '../config/featureFlags';
 import { COLORS } from './Shared/ColorPicker';
 import NoteFocusMode from './Note/NoteFocusMode';
 import MarkdownEditor from './Note/MarkdownEditor';
@@ -87,10 +86,8 @@ const Notes: React.FC = () => {
         ?.newNote;
     const newNoteSignalRef = useRef<number | null>(null);
 
-    const editingNoteColor =
-        ENABLE_NOTE_COLOR && editingNote ? editingNote.color : undefined;
-    const previewNoteColor =
-        ENABLE_NOTE_COLOR && previewNote ? previewNote.color : undefined;
+    const editingNoteColor = editingNote ? editingNote.color : undefined;
+    const previewNoteColor = previewNote ? previewNote.color : undefined;
     const activeNoteColor =
         (isEditing && editingNoteColor) || previewNoteColor || undefined;
     const noteOptionsDropdownRef = useRef<HTMLDivElement>(null);
@@ -306,7 +303,6 @@ const Notes: React.FC = () => {
     };
 
     const handleColorChange = async (color: string, note: Note) => {
-        if (!ENABLE_NOTE_COLOR) return;
         try {
             const updatedNote = { ...note, color };
 
@@ -712,51 +708,49 @@ const Notes: React.FC = () => {
                                         </button>
                                         {showNoteOptionsDropdown && (
                                             <div className="absolute right-0 mt-1 w-56 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50">
-                                                {ENABLE_NOTE_COLOR && (
-                                                    <div className="px-3 py-3 border-b border-gray-200 dark:border-gray-700">
-                                                        <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">
-                                                            Background Color
-                                                        </div>
-                                                        <div className="grid grid-cols-5 gap-2">
-                                                            {COLORS.map(
-                                                                (
-                                                                    colorOption
-                                                                ) => (
-                                                                    <button
-                                                                        key={
-                                                                            colorOption.value
-                                                                        }
-                                                                        onClick={() =>
-                                                                            handleColorChange(
-                                                                                colorOption.value,
-                                                                                editingNote
-                                                                            )
-                                                                        }
-                                                                        className={`w-8 h-8 rounded-md border-2 transition-all hover:scale-110 flex items-center justify-center ${
-                                                                            editingNote.color ===
-                                                                            colorOption.value
-                                                                                ? 'border-blue-500 dark:border-blue-400 ring-2 ring-blue-200 dark:ring-blue-800'
-                                                                                : 'border-gray-300 dark:border-gray-600'
-                                                                        }`}
-                                                                        style={{
-                                                                            backgroundColor:
-                                                                                colorOption.value ||
-                                                                                '#ffffff',
-                                                                        }}
-                                                                        title={
-                                                                            colorOption.name
-                                                                        }
-                                                                        aria-label={`Set background to ${colorOption.name}`}
-                                                                    >
-                                                                        {!colorOption.value && (
-                                                                            <XMarkIcon className="h-5 w-5 text-gray-400" />
-                                                                        )}
-                                                                    </button>
-                                                                )
-                                                            )}
-                                                        </div>
+                                                <div className="px-3 py-3 border-b border-gray-200 dark:border-gray-700">
+                                                    <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">
+                                                        Background Color
                                                     </div>
-                                                )}
+                                                    <div className="grid grid-cols-5 gap-2">
+                                                        {COLORS.map(
+                                                            (
+                                                                colorOption
+                                                            ) => (
+                                                                <button
+                                                                    key={
+                                                                        colorOption.value
+                                                                    }
+                                                                    onClick={() =>
+                                                                        handleColorChange(
+                                                                            colorOption.value,
+                                                                            editingNote
+                                                                        )
+                                                                    }
+                                                                    className={`w-8 h-8 rounded-md border-2 transition-all hover:scale-110 flex items-center justify-center ${
+                                                                        editingNote.color ===
+                                                                        colorOption.value
+                                                                            ? 'border-blue-500 dark:border-blue-400 ring-2 ring-blue-200 dark:ring-blue-800'
+                                                                            : 'border-gray-300 dark:border-gray-600'
+                                                                    }`}
+                                                                    style={{
+                                                                        backgroundColor:
+                                                                            colorOption.value ||
+                                                                            '#ffffff',
+                                                                    }}
+                                                                    title={
+                                                                        colorOption.name
+                                                                    }
+                                                                    aria-label={`Set background to ${colorOption.name}`}
+                                                                >
+                                                                    {!colorOption.value && (
+                                                                        <XMarkIcon className="h-5 w-5 text-gray-400" />
+                                                                    )}
+                                                                </button>
+                                                            )
+                                                        )}
+                                                    </div>
+                                                </div>
                                                 <div className="py-1">
                                                     <button
                                                         onClick={() => {
@@ -1097,51 +1091,49 @@ const Notes: React.FC = () => {
                                         </button>
                                         {showNoteOptionsDropdown && (
                                             <div className="absolute right-0 mt-1 w-56 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50">
-                                                {ENABLE_NOTE_COLOR && (
-                                                    <div className="px-3 py-3 border-b border-gray-200 dark:border-gray-700">
-                                                        <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">
-                                                            Background Color
-                                                        </div>
-                                                        <div className="grid grid-cols-5 gap-2">
-                                                            {COLORS.map(
-                                                                (
-                                                                    colorOption
-                                                                ) => (
-                                                                    <button
-                                                                        key={
-                                                                            colorOption.value
-                                                                        }
-                                                                        onClick={() =>
-                                                                            handleColorChange(
-                                                                                colorOption.value,
-                                                                                previewNote
-                                                                            )
-                                                                        }
-                                                                        className={`w-8 h-8 rounded-md border-2 transition-all hover:scale-110 flex items-center justify-center ${
-                                                                            previewNote.color ===
-                                                                            colorOption.value
-                                                                                ? 'border-blue-500 dark:border-blue-400 ring-2 ring-blue-200 dark:ring-blue-800'
-                                                                                : 'border-gray-300 dark:border-gray-600'
-                                                                        }`}
-                                                                        style={{
-                                                                            backgroundColor:
-                                                                                colorOption.value ||
-                                                                                '#ffffff',
-                                                                        }}
-                                                                        title={
-                                                                            colorOption.name
-                                                                        }
-                                                                        aria-label={`Set background to ${colorOption.name}`}
-                                                                    >
-                                                                        {!colorOption.value && (
-                                                                            <XMarkIcon className="h-5 w-5 text-gray-400" />
-                                                                        )}
-                                                                    </button>
-                                                                )
-                                                            )}
-                                                        </div>
+                                                <div className="px-3 py-3 border-b border-gray-200 dark:border-gray-700">
+                                                    <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">
+                                                        Background Color
                                                     </div>
-                                                )}
+                                                    <div className="grid grid-cols-5 gap-2">
+                                                        {COLORS.map(
+                                                            (
+                                                                colorOption
+                                                            ) => (
+                                                                <button
+                                                                    key={
+                                                                        colorOption.value
+                                                                    }
+                                                                    onClick={() =>
+                                                                        handleColorChange(
+                                                                            colorOption.value,
+                                                                            previewNote
+                                                                        )
+                                                                    }
+                                                                    className={`w-8 h-8 rounded-md border-2 transition-all hover:scale-110 flex items-center justify-center ${
+                                                                        previewNote.color ===
+                                                                        colorOption.value
+                                                                            ? 'border-blue-500 dark:border-blue-400 ring-2 ring-blue-200 dark:ring-blue-800'
+                                                                            : 'border-gray-300 dark:border-gray-600'
+                                                                    }`}
+                                                                    style={{
+                                                                        backgroundColor:
+                                                                            colorOption.value ||
+                                                                            '#ffffff',
+                                                                    }}
+                                                                    title={
+                                                                        colorOption.name
+                                                                    }
+                                                                    aria-label={`Set background to ${colorOption.name}`}
+                                                                >
+                                                                    {!colorOption.value && (
+                                                                        <XMarkIcon className="h-5 w-5 text-gray-400" />
+                                                                    )}
+                                                                </button>
+                                                            )
+                                                        )}
+                                                    </div>
+                                                </div>
                                                 <div className="py-1">
                                                     <button
                                                         onClick={() => {

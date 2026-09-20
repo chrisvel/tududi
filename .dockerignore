@@ -16,7 +16,6 @@
 **/.env
 **/.env.local
 **/.env.development
-**/.env.test
 
 # Git and version control
 .git/
