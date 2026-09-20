@@ -82,6 +82,15 @@ const adminController = {
         }
     },
 
+    async listRoles(req, res, next) {
+        try {
+            const requesterId = getRequesterId(req);
+            res.json(await adminService.listRoles(requesterId));
+        } catch (error) {
+            next(error);
+        }
+    },
+
     async listUsers(req, res, next) {
         try {
             const requesterId = getRequesterId(req);

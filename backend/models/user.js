@@ -317,6 +317,7 @@ module.exports = (sequelize) => {
                         {
                             user_id: user.id,
                             is_admin: isFirstUser,
+                            role: isFirstUser ? 'admin' : 'user',
                         },
                         { transaction: options.transaction }
                     );

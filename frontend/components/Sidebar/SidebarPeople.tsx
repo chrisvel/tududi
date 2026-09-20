@@ -7,6 +7,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { Person } from '../../entities/Person';
 import { useStore } from '../../store/useStore';
+import { useCan } from '../../hooks/useCan';
 
 interface SidebarPeopleProps {
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
@@ -21,6 +22,7 @@ const SidebarPeople: React.FC<SidebarPeopleProps> = ({
     location,
     openPersonModal,
 }) => {
+    const canCreatePeople = useCan('create_people');
     const [isExpanded, setIsExpanded] = useState(false);
 
     const people = useStore((state) => state.peopleStore.people);
@@ -87,17 +89,19 @@ const SidebarPeople: React.FC<SidebarPeopleProps> = ({
                     People
                 </span>
                 <div className="flex items-center gap-1">
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            openPersonModal(null);
-                        }}
-                        className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
-                        aria-label="Add Person"
-                        title="Add Person"
-                    >
-                        <PlusIcon className="h-3.5 w-3.5" />
-                    </button>
+                    {canCreatePeople && (
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                openPersonModal(null);
+                            }}
+                            className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
+                            aria-label="Add Person"
+                            title="Add Person"
+                        >
+                            <PlusIcon className="h-3.5 w-3.5" />
+                        </button>
+                    )}
                     {sortedPeople.length > 0 && (
                         <>
                             <span className="text-[10.5px] text-gray-400 dark:text-gray-500 tabular-nums">

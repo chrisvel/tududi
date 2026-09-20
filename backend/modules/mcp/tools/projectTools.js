@@ -5,6 +5,7 @@ const { Project, Area, Tag } = require('../../../models');
 const { Op } = require('sequelize');
 const projectsRepository = require('../../projects/repository');
 const permissionsService = require('../../../services/permissionsService');
+const rolesService = require('../../../services/rolesService');
 
 function registerProjectTools(server, context, tools) {
     // 1. list_projects - List projects
@@ -226,6 +227,7 @@ function registerProjectTools(server, context, tools) {
                 image_url: params.image_url || null,
             };
 
+            await rolesService.assertCan(context.userId, 'create_projects');
             await entitlements.assertCanCreate(context.userId, 'project');
             const project = await Project.create(projectData);
 

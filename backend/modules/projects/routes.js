@@ -5,6 +5,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { getConfig } = require('../../config/config');
+const { requireCapability } = require('../../middleware/roles');
 const config = getConfig();
 const router = express.Router();
 const projectsController = require('./controller');
@@ -77,7 +78,11 @@ router.get(
 );
 
 // Create a new project
-router.post('/project', projectsController.create);
+router.post(
+    '/project',
+    requireCapability('create_projects'),
+    projectsController.create
+);
 
 // Update a project (requires write access)
 router.patch(

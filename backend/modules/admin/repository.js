@@ -18,7 +18,7 @@ class AdminRepository {
      */
     async findAllRoles() {
         return Role.findAll({
-            attributes: ['user_id', 'is_admin'],
+            attributes: ['user_id', 'is_admin', 'role', 'capabilities'],
         });
     }
 

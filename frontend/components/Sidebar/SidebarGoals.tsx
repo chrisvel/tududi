@@ -9,6 +9,7 @@ import { Goal } from '../../entities/Goal';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../../store/useStore';
 import { createGoalUrl } from '../../utils/slugUtils';
+import { useCan } from '../../hooks/useCan';
 
 interface SidebarGoalsProps {
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
@@ -20,6 +21,7 @@ const SidebarGoals: React.FC<SidebarGoalsProps> = ({
     location,
 }) => {
     const { t } = useTranslation();
+    const canCreateGoals = useCan('create_projects');
     const [isExpanded, setIsExpanded] = useState(false);
 
     const goals = useStore((state: any) => state.goalsStore.goals);
@@ -72,21 +74,23 @@ const SidebarGoals: React.FC<SidebarGoalsProps> = ({
                     {t('sidebar.goals', 'Goals')}
                 </span>
                 <div className="flex items-center gap-1">
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            handleNavClick(
-                                '/goal/new',
-                                t('goals.newGoal', 'New Goal'),
-                                <FlagIcon className="h-4 w-4 mr-2" />
-                            );
-                        }}
-                        className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
-                        aria-label={t('goals.addGoal', 'Add Goal')}
-                        title={t('goals.addGoal', 'Add Goal')}
-                    >
-                        <PlusIcon className="h-3.5 w-3.5" />
-                    </button>
+                    {canCreateGoals && (
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleNavClick(
+                                    '/goal/new',
+                                    t('goals.newGoal', 'New Goal'),
+                                    <FlagIcon className="h-4 w-4 mr-2" />
+                                );
+                            }}
+                            className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
+                            aria-label={t('goals.addGoal', 'Add Goal')}
+                            title={t('goals.addGoal', 'Add Goal')}
+                        >
+                            <PlusIcon className="h-3.5 w-3.5" />
+                        </button>
+                    )}
                     {activeGoals.length > 0 && (
                         <>
                             <span className="text-[10.5px] text-gray-400 dark:text-gray-500 tabular-nums">

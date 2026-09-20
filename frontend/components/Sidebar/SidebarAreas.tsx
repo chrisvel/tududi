@@ -7,6 +7,7 @@ import {
 import { Location } from 'react-router-dom';
 import { Area } from '../../entities/Area';
 import { useTranslation } from 'react-i18next';
+import { useCan } from '../../hooks/useCan';
 
 interface SidebarAreasProps {
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
@@ -31,6 +32,7 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
     areas,
 }) => {
     const { t } = useTranslation();
+    const canCreateAreas = useCan('create_projects');
     const [isExpanded, setIsExpanded] = useState(false);
 
     useEffect(() => {
@@ -81,17 +83,19 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
                     {t('sidebar.areas')}
                 </span>
                 <div className="flex items-center gap-1">
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            openAreaModal(null);
-                        }}
-                        className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
-                        aria-label={t('areas.addArea', 'Add Area')}
-                        title={t('areas.addArea', 'Add Area')}
-                    >
-                        <PlusIcon className="h-3.5 w-3.5" />
-                    </button>
+                    {canCreateAreas && (
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                openAreaModal(null);
+                            }}
+                            className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white focus:outline-none"
+                            aria-label={t('areas.addArea', 'Add Area')}
+                            title={t('areas.addArea', 'Add Area')}
+                        >
+                            <PlusIcon className="h-3.5 w-3.5" />
+                        </button>
+                    )}
                     {areas.length > 0 && (
                         <>
                             <span className="text-[10.5px] text-gray-400 dark:text-gray-500 tabular-nums">

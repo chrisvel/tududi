@@ -2,6 +2,7 @@
 
 const adminRepository = require('./repository');
 const {
+    validateRoleChange,
     validateUserId,
     validateEmail,
     validatePassword,
@@ -17,7 +18,8 @@ const {
     UnauthorizedError,
     ConflictError,
 } = require('../../shared/errors');
-const { isAdmin } = require('../../services/rolesService');
+const rolesService = require('../../services/rolesService');
+const { isAdmin } = rolesService;
 const {
     getDefaultNotificationPreferences,
 } = require('../../utils/notificationPreferences');
@@ -91,16 +93,30 @@ class AdminService {
             throw new ValidationError('Invalid user_id');
         }
 
-        const [role] = await adminRepository.findOrCreateRole(
-            user_id,
-            makeAdmin
-        );
-        if (role.is_admin !== makeAdmin) {
-            role.is_admin = makeAdmin;
-            await role.save();
+        const current = await rolesService.getRoleInfo(user_id);
+        if (makeAdmin) {
+            await rolesService.setRole(user_id, 'admin');
+        } else if (current.role === 'admin') {
+            await rolesService.setRole(user_id, 'user');
         }
 
-        return { user_id, is_admin: role.is_admin };
+        return { user_id, is_admin: await isAdmin(user_id) };
+    }
+
+    describeRole(row) {
+        const role = rolesService.effectiveRole(row);
+        return {
+            role,
+            capabilities: rolesService.effectiveCapabilities(
+                role,
+                row && row.capabilities
+            ),
+        };
+    }
+
+    async listRoles(requesterId) {
+        await this.verifyAdmin(requesterId);
+        return rolesService.describeRoles();
     }
 
     /**
@@ -111,7 +127,7 @@ class AdminService {
 
         const users = await adminRepository.findAllUsers();
         const roles = await adminRepository.findAllRoles();
-        const userIdToRole = new Map(roles.map((r) => [r.user_id, r.is_admin]));
+        const userIdToRole = new Map(roles.map((r) => [r.user_id, r]));
 
         return users.map((u) => ({
             id: u.id,
@@ -119,7 +135,7 @@ class AdminService {
             name: u.name,
             surname: u.surname,
             created_at: u.created_at,
-            role: userIdToRole.get(u.id) ? 'admin' : 'user',
+            ...this.describeRole(userIdToRole.get(u.id)),
         }));
     }
 
@@ -129,8 +145,15 @@ class AdminService {
     async createUser(requesterId, body) {
         await this.verifyAdmin(requesterId);
 
-        const { email, password, name, surname, role, requireVerification } =
-            validateCreateUser(body);
+        const {
+            email,
+            password,
+            name,
+            surname,
+            role,
+            capabilities,
+            requireVerification,
+        } = validateCreateUser(body);
         const { linked_person_uid } = body || {};
         const invite = !password;
         // An invite already verifies the email when its link is used, so the
@@ -162,14 +185,11 @@ class AdminService {
             throw err;
         }
 
-        const makeAdmin = role === 'admin';
-        if (makeAdmin) {
-            const [userRole, roleCreated] =
-                await adminRepository.findOrCreateRole(user.id, true);
-            if (!roleCreated && !userRole.is_admin) {
-                userRole.is_admin = true;
-                await userRole.save();
-            }
+        if (role && role !== 'user') {
+            await rolesService.setRole(user.id, role);
+        }
+        if (capabilities) {
+            await rolesService.setCapabilities(user.id, capabilities);
         }
 
         if (linked_person_uid) {
@@ -224,7 +244,7 @@ class AdminService {
             name: user.name,
             surname: user.surname,
             created_at: user.created_at,
-            role: makeAdmin ? 'admin' : 'user',
+            ...(await rolesService.getRoleInfo(user.id)),
             invited: invite,
             verification_requested: verify,
             email_sent: emailSent,
@@ -243,7 +263,9 @@ class AdminService {
             throw new NotFoundError('User not found');
         }
 
-        const { email, password, name, surname, role } = body || {};
+        const { email, password, name, surname, role, capabilities } =
+            body || {};
+        validateRoleChange(role, capabilities);
 
         if (email !== undefined && email !== null) {
             validateEmail(email);
@@ -269,15 +291,10 @@ class AdminService {
         }
 
         if (role !== undefined) {
-            const makeAdmin = role === 'admin';
-            const [userRole] = await adminRepository.findOrCreateRole(
-                user.id,
-                makeAdmin
-            );
-            if (userRole.is_admin !== makeAdmin) {
-                userRole.is_admin = makeAdmin;
-                await userRole.save();
-            }
+            await rolesService.setRole(user.id, role);
+        }
+        if (capabilities !== undefined) {
+            await rolesService.setCapabilities(user.id, capabilities);
         }
 
         const userRole = await adminRepository.findRoleByUserId(user.id);
@@ -288,7 +305,7 @@ class AdminService {
             name: user.name,
             surname: user.surname,
             created_at: user.created_at,
-            role: userRole?.is_admin ? 'admin' : 'user',
+            ...this.describeRole(userRole),
         };
     }
 
