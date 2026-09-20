@@ -6,6 +6,7 @@ const { generateToken } = require('../../middleware/csrf');
 const { isPasswordAuthEnabled } = require('../../config/authConfig');
 const { getConfig } = require('../../config/config');
 const auditService = require('../oidc/auditService');
+const { isCloudClosed } = require('./registrationService');
 
 const authController = {
     getVersion(req, res) {
@@ -33,8 +34,14 @@ const authController = {
     // The register page's waitlist capture while Cloud is shut. The answer
     // is the same for a new address, one already on the list and one that
     // was refused, so it cannot be used to find out who has signed up.
+    // Answers 404 everywhere else: a self-hosted instance has no waitlist,
+    // and an open write endpoint on it would only be a way to fill the
+    // database.
     async joinWaitlist(req, res, next) {
         try {
+            if (!isCloudClosed()) {
+                return res.status(404).json({ error: 'Not found' });
+            }
             const waitlist = require('../../services/waitlistService');
             await waitlist.capture({
                 email: req.body?.email,

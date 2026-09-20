@@ -93,6 +93,22 @@ describe('Waitlist on the app host', () => {
         ).toBe(0);
     });
 
+    it('refuses a signup once Cloud is open', async () => {
+        config.pricing.cloudOpen = true;
+        const email = `open_${Date.now()}@example.com`;
+        const res = await request(app).post('/api/waitlist').send({ email });
+        expect(res.status).toBe(404);
+        expect(await WaitlistSubscriber.count({ where: { email } })).toBe(0);
+    });
+
+    it('refuses a signup on a self-hosted instance', async () => {
+        config.hosted.enabled = false;
+        const email = `selfhost_${Date.now()}@example.com`;
+        const res = await request(app).post('/api/waitlist').send({ email });
+        expect(res.status).toBe(404);
+        expect(await WaitlistSubscriber.count({ where: { email } })).toBe(0);
+    });
+
     it('normalizes the address it stores', async () => {
         const email = `MiXeD_${Date.now()}@Example.COM`;
         await request(app)

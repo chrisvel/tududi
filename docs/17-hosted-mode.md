@@ -254,7 +254,9 @@ While it is false:
 
 Every form posts to tududi itself, never to a third party: the marketing
 page's to `POST /waitlist` on the landing host, the register page's to
-`POST /api/waitlist`. Both write one `waitlist_subscribers` row per
+`POST /api/waitlist`. The latter answers `404` and writes nothing unless
+hosted mode is on and Cloud is shut, so a self-hosted instance, or Cloud
+once it opens, exposes no unauthenticated write. Both write one `waitlist_subscribers` row per
 address, counting a repeat submission in `submission_count` rather than
 adding a row, and both answer identically whether the address was new,
 already listed or malformed, so neither can be used to find out who has
