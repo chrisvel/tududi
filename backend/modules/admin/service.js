@@ -129,10 +129,13 @@ class AdminService {
     async createUser(requesterId, body) {
         await this.verifyAdmin(requesterId);
 
-        const { email, password, name, surname, role } =
+        const { email, password, name, surname, role, requireVerification } =
             validateCreateUser(body);
         const { linked_person_uid } = body || {};
         const invite = !password;
+        // An invite already verifies the email when its link is used, so the
+        // switch only matters for accounts that are given a password.
+        const verify = requireVerification && !invite;
 
         const userData = {
             email,
@@ -140,6 +143,7 @@ class AdminService {
         };
         if (password) {
             userData.password = password;
+            if (verify) userData.email_verified = false;
         } else {
             // No password yet: the account is inert until the invite link is
             // used, which also verifies the email.
@@ -189,6 +193,18 @@ class AdminService {
         }
 
         let emailSent = false;
+        if (verify) {
+            const {
+                resendVerificationEmail,
+            } = require('../auth/registrationService');
+            try {
+                const result = await resendVerificationEmail(user.email);
+                emailSent = result.sent;
+            } catch (err) {
+                // The account stays; the admin can verify it by hand.
+                logError(err, 'Failed to send verification email');
+            }
+        }
         if (invite) {
             const {
                 sendMemberInviteEmail,
@@ -210,6 +226,7 @@ class AdminService {
             created_at: user.created_at,
             role: makeAdmin ? 'admin' : 'user',
             invited: invite,
+            verification_requested: verify,
             email_sent: emailSent,
         };
     }

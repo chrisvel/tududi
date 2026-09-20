@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import {
     PencilIcon,
@@ -631,36 +632,44 @@ const AdminGroupsPanel: React.FC = () => {
                 </table>
             </div>
 
-            {(creating || editing) && (
-                <GroupModal
-                    group={editing}
-                    onClose={() => {
-                        setCreating(false);
-                        setEditing(null);
-                    }}
-                    onSaved={handleSaved}
-                />
-            )}
-
-            {managing && (
-                <MembersModal
-                    group={managing}
-                    onClose={() => setManaging(null)}
-                    onChanged={load}
-                />
-            )}
-
-            {toDelete && (
-                <ConfirmDialog
-                    title={t('admin.groups.deleteGroup', 'Delete group')}
-                    message={t(
-                        'admin.groups.confirmDelete',
-                        'Delete "{{name}}"? Members lose the access they got through this group. Projects and other items shared with it are not deleted.',
-                        { name: toDelete.name }
+            {createPortal(
+                <>
+                    {(creating || editing) && (
+                        <GroupModal
+                            group={editing}
+                            onClose={() => {
+                                setCreating(false);
+                                setEditing(null);
+                            }}
+                            onSaved={handleSaved}
+                        />
                     )}
-                    onConfirm={handleDelete}
-                    onCancel={() => setToDelete(null)}
-                />
+
+                    {managing && (
+                        <MembersModal
+                            group={managing}
+                            onClose={() => setManaging(null)}
+                            onChanged={load}
+                        />
+                    )}
+
+                    {toDelete && (
+                        <ConfirmDialog
+                            title={t(
+                                'admin.groups.deleteGroup',
+                                'Delete group'
+                            )}
+                            message={t(
+                                'admin.groups.confirmDelete',
+                                'Delete "{{name}}"? Members lose the access they got through this group. Projects and other items shared with it are not deleted.',
+                                { name: toDelete.name }
+                            )}
+                            onConfirm={handleDelete}
+                            onCancel={() => setToDelete(null)}
+                        />
+                    )}
+                </>,
+                document.body
             )}
         </div>
     );

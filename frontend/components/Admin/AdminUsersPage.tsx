@@ -1,9 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { createPortal } from 'react-dom';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     ChevronDownIcon,
     CheckIcon,
+    ClipboardDocumentIcon,
+    EyeIcon,
+    EyeSlashIcon,
+    KeyIcon,
     PencilIcon,
     TrashIcon,
 } from '@heroicons/react/24/outline';
@@ -13,6 +18,7 @@ import { useToast } from '../Shared/ToastContext';
 import { fetchWithCsrf } from '../../utils/csrfService';
 import { fetchPeople } from '../../utils/peopleService';
 import { Person } from '../../entities/Person';
+import { generatePassword } from '../../utils/passwordPolicy';
 import AdminGroupsPanel from './AdminGroupsPanel';
 
 interface AdminUserItem {
@@ -23,6 +29,7 @@ interface AdminUserItem {
     created_at: string;
     role: 'admin' | 'user';
     invited?: boolean;
+    verification_requested?: boolean;
     email_sent?: boolean;
 }
 
@@ -48,9 +55,17 @@ const createAdminUser = async (
     name?: string,
     surname?: string,
     role?: 'admin' | 'user',
-    linked_person_uid?: string
+    linked_person_uid?: string,
+    require_verification?: boolean
 ): Promise<AdminUserItem> => {
-    const body: any = { email, name, surname, role, linked_person_uid };
+    const body: any = {
+        email,
+        name,
+        surname,
+        role,
+        linked_person_uid,
+        require_verification,
+    };
     if (password) body.password = password;
     const res = await fetchWithCsrf(getApiPath('admin/users'), {
         method: 'POST',
@@ -157,9 +172,12 @@ const AddUserModal: React.FC<{
     const { t } = useTranslation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [passwordCopied, setPasswordCopied] = useState(false);
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
     const [role, setRole] = useState<'user' | 'admin'>('user');
+    const [requireVerification, setRequireVerification] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
@@ -187,6 +205,7 @@ const AddUserModal: React.FC<{
                 setName('');
                 setSurname('');
                 setRole('user');
+                setRequireVerification(false);
                 setSelectedPersonUid('');
                 fetchPeople({ unlinked: true })
                     .then(setUnlinkedPeople)
@@ -194,8 +213,29 @@ const AddUserModal: React.FC<{
             }
             setError(null);
             setIsRoleDropdownOpen(false);
+            setShowPassword(false);
+            setPasswordCopied(false);
         }
     }, [isOpen, editingUser]);
+
+    const handleGeneratePassword = () => {
+        setPassword(generatePassword());
+        // Shown in the clear so the admin can see and hand it over.
+        setShowPassword(true);
+        setPasswordCopied(false);
+    };
+
+    const handleCopyPassword = async () => {
+        try {
+            await navigator.clipboard.writeText(password);
+            setPasswordCopied(true);
+            setTimeout(() => setPasswordCopied(false), 2000);
+        } catch {
+            setError(
+                t('admin.failedToCopyPassword', 'Failed to copy to clipboard')
+            );
+        }
+    };
 
     const handlePersonSelect = (uid: string) => {
         setSelectedPersonUid(uid);
@@ -263,7 +303,8 @@ const AddUserModal: React.FC<{
                     name,
                     surname,
                     role,
-                    selectedPersonUid || undefined
+                    selectedPersonUid || undefined,
+                    requireVerification && !!password
                 );
                 onCreated(user);
             }
@@ -377,13 +418,80 @@ const AddUserModal: React.FC<{
                                 )
                             </span>
                         </label>
-                        <input
-                            type="password"
-                            className="w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            minLength={8}
-                        />
+                        <div className="flex items-center gap-2">
+                            <div className="relative flex-1">
+                                <input
+                                    type={showPassword ? 'text' : 'password'}
+                                    className="w-full rounded border pl-3 pr-16 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
+                                    value={password}
+                                    onChange={(e) => {
+                                        setPassword(e.target.value);
+                                        setPasswordCopied(false);
+                                    }}
+                                    minLength={8}
+                                    autoComplete="new-password"
+                                    data-testid="admin-user-password"
+                                />
+                                <div className="absolute inset-y-0 right-2 flex items-center gap-1">
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setShowPassword(!showPassword)
+                                        }
+                                        aria-label={
+                                            showPassword
+                                                ? t(
+                                                      'admin.hidePassword',
+                                                      'Hide password'
+                                                  )
+                                                : t(
+                                                      'admin.showPassword',
+                                                      'Show password'
+                                                  )
+                                        }
+                                        aria-pressed={showPassword}
+                                        data-testid="toggle-password-visibility"
+                                        className="p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none"
+                                    >
+                                        {showPassword ? (
+                                            <EyeSlashIcon className="h-4 w-4" />
+                                        ) : (
+                                            <EyeIcon className="h-4 w-4" />
+                                        )}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={handleCopyPassword}
+                                        disabled={!password}
+                                        aria-label={t(
+                                            'admin.copyPassword',
+                                            'Copy password'
+                                        )}
+                                        data-testid="copy-password"
+                                        className="p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed"
+                                    >
+                                        {passwordCopied ? (
+                                            <CheckIcon className="h-4 w-4 text-green-600 dark:text-green-400" />
+                                        ) : (
+                                            <ClipboardDocumentIcon className="h-4 w-4" />
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={handleGeneratePassword}
+                                title={t(
+                                    'admin.generatePasswordTitle',
+                                    'Generate a secure random password'
+                                )}
+                                data-testid="generate-password"
+                                className="inline-flex items-center gap-1 px-3 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors whitespace-nowrap"
+                            >
+                                <KeyIcon className="h-4 w-4" />
+                                {t('admin.generatePassword', 'Generate')}
+                            </button>
+                        </div>
                     </div>
                     <div>
                         <label className="block text-sm text-gray-700 dark:text-gray-300 mb-1">
@@ -452,6 +560,56 @@ const AddUserModal: React.FC<{
                             )}
                         </div>
                     </div>
+                    {!editingUser && (
+                        <div className="flex items-start justify-between gap-4">
+                            <div>
+                                <label
+                                    id="require-verification-label"
+                                    className="block text-sm text-gray-700 dark:text-gray-300"
+                                >
+                                    {t(
+                                        'admin.requireVerification',
+                                        'Request email verification'
+                                    )}
+                                </label>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                    {password
+                                        ? t(
+                                              'admin.requireVerificationHint',
+                                              'The user must confirm their email before signing in'
+                                          )
+                                        : t(
+                                              'admin.requireVerificationInviteHint',
+                                              'Not needed without a password: the invitation link already verifies the email'
+                                          )}
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                role="switch"
+                                aria-checked={requireVerification && !!password}
+                                aria-labelledby="require-verification-label"
+                                data-testid="require-verification-switch"
+                                disabled={!password}
+                                onClick={() =>
+                                    setRequireVerification(!requireVerification)
+                                }
+                                className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed ${
+                                    requireVerification && password
+                                        ? 'bg-blue-600'
+                                        : 'bg-gray-200 dark:bg-gray-600'
+                                }`}
+                            >
+                                <span
+                                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                                        requireVerification && password
+                                            ? 'translate-x-5'
+                                            : 'translate-x-0'
+                                    }`}
+                                />
+                            </button>
+                        </div>
+                    )}
                     {error && (
                         <div className="text-sm text-red-600 dark:text-red-400">
                             {error}
@@ -494,64 +652,7 @@ const AdminUsersPanel: React.FC = () => {
     const [userToDelete, setUserToDelete] = useState<AdminUserItem | null>(
         null
     );
-    const [registrationEnabled, setRegistrationEnabled] = useState(false);
-    const [registrationLoading, setRegistrationLoading] = useState(true);
     const navigate = useNavigate();
-
-    // Fetch registration status
-    useEffect(() => {
-        const fetchRegistrationStatus = async () => {
-            try {
-                const res = await fetch(getApiPath('registration-status'), {
-                    credentials: 'include',
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    setRegistrationEnabled(data.enabled);
-                }
-            } catch (err) {
-                console.error('Error fetching registration status:', err);
-            } finally {
-                setRegistrationLoading(false);
-            }
-        };
-        fetchRegistrationStatus();
-    }, []);
-
-    // Toggle registration
-    const toggleRegistration = async () => {
-        try {
-            const res = await fetchWithCsrf(
-                getApiPath('admin/toggle-registration'),
-                {
-                    method: 'POST',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ enabled: !registrationEnabled }),
-                }
-            );
-            if (res.ok) {
-                const data = await res.json();
-                setRegistrationEnabled(data.enabled);
-            } else {
-                setError(
-                    t(
-                        'admin.failedToToggleRegistration',
-                        'Failed to toggle registration'
-                    )
-                );
-            }
-        } catch {
-            setError(
-                t(
-                    'admin.failedToToggleRegistration',
-                    'Failed to toggle registration'
-                )
-            );
-        }
-    };
 
     const load = async () => {
         setLoading(true);
@@ -613,43 +714,6 @@ const AdminUsersPanel: React.FC = () => {
                     >
                         {t('admin.addUser', 'Add user')}
                     </button>
-                </div>
-
-                {/* Registration Toggle */}
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                {t(
-                                    'admin.userRegistration',
-                                    'User Registration'
-                                )}
-                            </h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">
-                                {t(
-                                    'admin.registrationDescription',
-                                    'Allow new users to register via email verification'
-                                )}
-                            </p>
-                        </div>
-                        <button
-                            onClick={toggleRegistration}
-                            disabled={registrationLoading}
-                            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                                registrationEnabled
-                                    ? 'bg-blue-600'
-                                    : 'bg-gray-200 dark:bg-gray-600'
-                            } ${registrationLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                        >
-                            <span
-                                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                                    registrationEnabled
-                                        ? 'translate-x-5'
-                                        : 'translate-x-0'
-                                }`}
-                            />
-                        </button>
-                    </div>
                 </div>
 
                 {error && (
@@ -771,52 +835,82 @@ const AdminUsersPanel: React.FC = () => {
                     </table>
                 </div>
 
-                <AddUserModal
-                    isOpen={addOpen}
-                    onClose={() => {
-                        setAddOpen(false);
-                        setEditingUser(null);
-                    }}
-                    onCreated={(user) => {
-                        setUsers((prev) => (prev ? [user, ...prev] : [user]));
-                        if (user.invited && user.email_sent) {
-                            showSuccessToast(
-                                t(
-                                    'admin.invitationSent',
-                                    'Invitation email sent to {{email}}',
-                                    { email: user.email }
+                {createPortal(
+                    <>
+                        <AddUserModal
+                            isOpen={addOpen}
+                            onClose={() => {
+                                setAddOpen(false);
+                                setEditingUser(null);
+                            }}
+                            onCreated={(user) => {
+                                setUsers((prev) =>
+                                    prev ? [user, ...prev] : [user]
+                                );
+                                if (user.invited && user.email_sent) {
+                                    showSuccessToast(
+                                        t(
+                                            'admin.invitationSent',
+                                            'Invitation email sent to {{email}}',
+                                            { email: user.email }
+                                        )
+                                    );
+                                } else if (
+                                    user.verification_requested &&
+                                    user.email_sent
+                                ) {
+                                    showSuccessToast(
+                                        t(
+                                            'admin.verificationSent',
+                                            'Verification email sent to {{email}}',
+                                            { email: user.email }
+                                        )
+                                    );
+                                } else if (
+                                    user.verification_requested &&
+                                    !user.email_sent
+                                ) {
+                                    showErrorToast(
+                                        t(
+                                            'admin.verificationNotSent',
+                                            'Account created, but email is disabled - the user cannot sign in until their email is verified manually.'
+                                        )
+                                    );
+                                } else if (user.invited && !user.email_sent) {
+                                    showErrorToast(
+                                        t(
+                                            'admin.invitationNotSent',
+                                            'Account created, but email is disabled - set a password for this user manually.'
+                                        )
+                                    );
+                                }
+                            }}
+                            onUpdated={(user) =>
+                                setUsers((prev) =>
+                                    prev
+                                        ? prev.map((u) =>
+                                              u.id === user.id ? user : u
+                                          )
+                                        : [user]
                                 )
-                            );
-                        } else if (user.invited && !user.email_sent) {
-                            showErrorToast(
-                                t(
-                                    'admin.invitationNotSent',
-                                    'Account created, but email is disabled - set a password for this user manually.'
-                                )
-                            );
-                        }
-                    }}
-                    onUpdated={(user) =>
-                        setUsers((prev) =>
-                            prev
-                                ? prev.map((u) => (u.id === user.id ? user : u))
-                                : [user]
-                        )
-                    }
-                    editingUser={editingUser}
-                />
+                            }
+                            editingUser={editingUser}
+                        />
 
-                {userToDelete && (
-                    <ConfirmDialog
-                        title={t('admin.deleteUser', 'Delete User')}
-                        message={t(
-                            'admin.confirmDeleteUser',
-                            'Are you sure you want to delete {{email}}? This will permanently delete all associated data including tasks, projects, notes, tags, and other user content. This action cannot be undone.',
-                            { email: userToDelete.email }
+                        {userToDelete && (
+                            <ConfirmDialog
+                                title={t('admin.deleteUser', 'Delete User')}
+                                message={t(
+                                    'admin.confirmDeleteUser',
+                                    'Are you sure you want to delete {{email}}? This will permanently delete all associated data including tasks, projects, notes, tags, and other user content. This action cannot be undone.',
+                                    { email: userToDelete.email }
+                                )}
+                                onConfirm={handleDeleteUser}
+                                onCancel={() => setUserToDelete(null)}
+                            />
                         )}
-                        onConfirm={handleDeleteUser}
-                        onCancel={() => setUserToDelete(null)}
-                    />
+                    </>,
+                    document.body
                 )}
             </div>
         </div>
