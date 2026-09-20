@@ -69,7 +69,7 @@ For sign-up, login, profiles and API tokens see [User Management](08-user-manage
 
 14b. **Without the admin role a member can only add users and guests, and cannot set permissions.** The invite permission cannot be used to hand out more than the person has. Creating members can send email, so it is rate limited per user.
 
-14c. **An account is part of the workspace of whoever created it, and of the accounts it created.** A new member therefore shows up in your lists straight away, before anything is shared. Two accounts made by the same person are not connected to each other, and erasing the creator leaves its accounts in place.
+14c. **An account is part of the workspace of whoever created it, and of the accounts it created.** A new member therefore shows up in your lists straight away, before anything is shared. Two accounts made by the same person are not connected to each other, and erasing the creator leaves its accounts in place. Accounts that were made before creators were recorded get one from an old contact link when the app updates: an admin who owns a contact card linked to the account is taken as its creator (the oldest card if several admins have one). Accounts with no such card, and cards owned by ordinary users, are left without a creator.
 
 ### Turning a contact into a member
 
