@@ -355,6 +355,17 @@ describe('Admin users and groups page', () => {
             );
         });
 
+        it('says the roles are fixed and does not promise per-account permissions', async () => {
+            mockAdminApi();
+            renderPage('/admin/users?tab=roles');
+
+            const panel = await screen.findByTestId('admin-roles-panel');
+
+            expect(panel).toHaveTextContent('The roles are fixed for now.');
+            expect(panel).not.toHaveTextContent('more or fewer permissions');
+            expect(panel).not.toHaveTextContent('from the Users tab');
+        });
+
         it('shows how many accounts hold each role', async () => {
             mockAdminApi();
             renderPage('/admin/users?tab=roles');

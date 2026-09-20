@@ -64,7 +64,7 @@ const AdminRolesPanel: React.FC<AdminRolesPanelProps> = ({
             <p className="text-sm text-gray-500 dark:text-gray-400">
                 {t(
                     'admin.roles.intro',
-                    'Every account has one role. A role decides what an account can create and manage. The roles are fixed for now. You can give one user more or fewer permissions from the Users tab.'
+                    'Every account has one role. A role decides what an account can create and manage. The roles are fixed for now.'
                 )}
             </p>
 
