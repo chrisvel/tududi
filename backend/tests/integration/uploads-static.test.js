@@ -1,4 +1,5 @@
 const request = require('supertest');
+const http = require('http');
 const app = require('../../app');
 const path = require('path');
 const fs = require('fs').promises;
@@ -357,6 +358,146 @@ describe('GET /api/uploads/:category/:filename', () => {
 
             const response = await otherAgent.get(
                 '/api/uploads/avatars/avatar-static-test.png'
+            );
+
+            expect(response.status).toBe(403);
+        });
+    });
+
+    describe('path traversal inside the uploads root', () => {
+        const taskUploadDir = path.join(uploadsDir, 'tasks');
+        let server;
+        let attackerCookie;
+
+        // HTTP clients normalize dot segments before sending, which hides the
+        // bug, so these requests go over a raw socket with the path untouched.
+        const rawGet = (rawPath) =>
+            new Promise((resolve, reject) => {
+                const req = http.request(
+                    {
+                        host: '127.0.0.1',
+                        port: server.address().port,
+                        path: rawPath,
+                        method: 'GET',
+                        headers: { Cookie: attackerCookie },
+                    },
+                    (res) => {
+                        let body = '';
+                        res.on('data', (chunk) => (body += chunk));
+                        res.on('end', () =>
+                            resolve({ status: res.statusCode, text: body })
+                        );
+                    }
+                );
+                req.on('error', reject);
+                req.end();
+            });
+
+        beforeAll(
+            () =>
+                new Promise((resolve) => {
+                    server = app.listen(0, '127.0.0.1', resolve);
+                })
+        );
+
+        afterAll(() => new Promise((resolve) => server.close(resolve)));
+
+        beforeEach(async () => {
+            await fs.mkdir(taskUploadDir, { recursive: true });
+            await fs.writeFile(
+                path.join(taskUploadDir, 'task-victim-secret.pdf'),
+                'victim private content'
+            );
+            await TaskAttachment.create({
+                task_id: task.id,
+                user_id: owner.id,
+                original_filename: 'victim.pdf',
+                stored_filename: 'task-victim-secret.pdf',
+                file_size: 1024,
+                mime_type: 'application/pdf',
+                file_path: 'tasks/task-victim-secret.pdf',
+            });
+
+            const attacker = await createTestUser({
+                email: `uploads-attacker_${Date.now()}@test.com`,
+            });
+            const attackerTask = await Task.create({
+                name: 'Attacker task',
+                user_id: attacker.id,
+            });
+            await fs.writeFile(
+                path.join(taskUploadDir, 'task-attacker-own.pdf'),
+                'attacker own content'
+            );
+            await TaskAttachment.create({
+                task_id: attackerTask.id,
+                user_id: attacker.id,
+                original_filename: 'own.pdf',
+                stored_filename: 'task-attacker-own.pdf',
+                file_size: 1024,
+                mime_type: 'application/pdf',
+                file_path: 'tasks/task-attacker-own.pdf',
+            });
+
+            const login = await request(app)
+                .post('/api/login')
+                .send({ email: attacker.email, password: 'password123' });
+            attackerCookie = login.headers['set-cookie']
+                .map((cookie) => cookie.split(';')[0])
+                .join('; ');
+        });
+
+        afterEach(async () => {
+            await fs.rm(taskUploadDir, { recursive: true, force: true });
+        });
+
+        it('still serves the attacker their own attachment', async () => {
+            const response = await rawGet(
+                '/api/uploads/tasks/task-attacker-own.pdf'
+            );
+
+            expect(response.status).toBe(200);
+            expect(response.text).toBe('attacker own content');
+        });
+
+        it.each([
+            [
+                'literal dot segments',
+                'task-attacker-own.pdf/../task-victim-secret.pdf',
+            ],
+            [
+                'encoded dot segments',
+                'task-attacker-own.pdf/%2e%2e/task-victim-secret.pdf',
+            ],
+            [
+                'encoded slashes',
+                'task-attacker-own.pdf%2f..%2ftask-victim-secret.pdf',
+            ],
+            [
+                'encoded backslashes',
+                'task-attacker-own.pdf%5c..%5ctask-victim-secret.pdf',
+            ],
+        ])(
+            'should not serve another user file through %s',
+            async (_label, suffix) => {
+                const response = await rawGet(`/api/uploads/tasks/${suffix}`);
+
+                expect(response.status).toBe(403);
+                expect(response.text).not.toContain('victim private content');
+            }
+        );
+
+        it('should reject extra path segments after a valid file', async () => {
+            const response = await rawGet(
+                '/api/uploads/tasks/task-attacker-own.pdf/extra'
+            );
+
+            expect(response.status).toBe(403);
+        });
+
+        it('should reject a malformed percent-encoding', async () => {
+            const response = await rawGet(
+                '/api/uploads/tasks/task-attacker-own.pdf%zz'
             );
 
             expect(response.status).toBe(403);

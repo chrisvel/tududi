@@ -6,6 +6,8 @@ const authController = require('./controller');
 const {
     authLimiter,
     authEmailLimiter,
+    loginLimiter,
+    loginEmailLimiter,
     apiLimiter,
 } = require('../../middleware/rateLimiter');
 const { csrfMiddleware } = require('../../middleware/csrf');
@@ -31,7 +33,7 @@ router.post(
     authController.resendVerification
 );
 router.get('/current_user', authController.getCurrentUser);
-router.post('/login', authLimiter, authEmailLimiter, authController.login);
+router.post('/login', loginLimiter, loginEmailLimiter, authController.login);
 router.post(
     '/forgot-password',
     authLimiter,

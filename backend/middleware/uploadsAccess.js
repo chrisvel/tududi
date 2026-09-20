@@ -75,13 +75,37 @@ const canAccessAvatarFile = async (userId, filename) => {
 // enough to read them - access must be scoped to the resource the file
 // belongs to, matching the checks the /attachments/:uid/download endpoint
 // already performs (GHSA-49fc-pf7x-cj8x).
+//
+// express.static decodes and normalizes the path after this check runs, so
+// the check has to see the same path the static handler will serve. Anything
+// that isn't exactly /<category>/<filename> after one round of decoding is
+// refused, otherwise "/tasks/<my-file>/../<their-file>" passes the check for
+// my file and then resolves to theirs.
+const resolveUploadTarget = (rawPath) => {
+    let decoded;
+    try {
+        decoded = decodeURIComponent(rawPath);
+    } catch (_) {
+        return null;
+    }
+    if (decoded.includes('\0') || decoded.includes('\\')) return null;
+
+    const segments = decoded.split('/').filter(Boolean);
+    if (segments.length !== 2) return null;
+    if (segments.some((segment) => segment === '.' || segment === '..')) {
+        return null;
+    }
+
+    return { category: segments[0], filename: segments[1] };
+};
+
 const uploadsAccessControl = async (req, res, next) => {
     try {
         const userId = getAuthenticatedUserId(req);
-        const segments = req.path.split('/').filter(Boolean);
-        const [category, filename] = segments;
+        const target = resolveUploadTarget(req.path);
 
         let allowed = false;
+        const { category, filename } = target || {};
         if (category === 'tasks' && filename) {
             allowed = await canAccessTaskFile(userId, filename);
         } else if (category === 'projects' && filename) {
@@ -102,4 +126,4 @@ const uploadsAccessControl = async (req, res, next) => {
     }
 };
 
-module.exports = { uploadsAccessControl };
+module.exports = { uploadsAccessControl, resolveUploadTarget };

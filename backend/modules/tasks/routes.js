@@ -48,6 +48,7 @@ const {
     validateDeferUntilAndDueDate,
     validateAreaAccess,
     validateGoalAccess,
+    validateAssignee,
     getRecurringParentEndDate,
 } = require('./utils/validation');
 const {
@@ -464,6 +465,16 @@ router.post(
                 return res.status(400).json({ error: error.message });
             }
 
+            try {
+                await validateAssignee(
+                    taskAttributes.assigned_to,
+                    req.currentUser.id,
+                    { projectId: taskAttributes.project_id }
+                );
+            } catch (error) {
+                return res.status(400).json({ error: error.message });
+            }
+
             const task = await taskRepository.create(taskAttributes);
             await updateTaskTags(task, tagsData, req.currentUser.id);
             await createSubtasks(task.id, subtasks, req.currentUser.id);
@@ -726,6 +737,24 @@ router.patch('/task/:uid', requireTaskWriteAccess, async (req, res) => {
                 }
             } else {
                 taskAttributes.goal_id = null;
+            }
+        }
+
+        if (taskAttributes.assigned_to) {
+            try {
+                await validateAssignee(
+                    taskAttributes.assigned_to,
+                    req.currentUser.id,
+                    {
+                        projectId:
+                            taskAttributes.project_id !== undefined
+                                ? taskAttributes.project_id
+                                : task.project_id,
+                        currentAssignedTo: task.assigned_to,
+                    }
+                );
+            } catch (error) {
+                return res.status(400).json({ error: error.message });
             }
         }
 

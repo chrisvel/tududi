@@ -245,13 +245,20 @@ class AuthService {
             );
         }
 
-        if (!email || !password) {
+        // Non-string values (arrays, objects) would slip past the per-email
+        // limiter, which only keys on string emails, and make bcrypt throw.
+        if (
+            !email ||
+            !password ||
+            typeof email !== 'string' ||
+            typeof password !== 'string'
+        ) {
             throw new ValidationError('Invalid login parameters.');
         }
 
         // Emails are stored lowercased (see the User beforeValidate hook)
         const user = await User.findOne({
-            where: { email: String(email).trim().toLowerCase() },
+            where: { email: email.trim().toLowerCase() },
         });
         if (!user) {
             throw new UnauthorizedError('Invalid credentials');

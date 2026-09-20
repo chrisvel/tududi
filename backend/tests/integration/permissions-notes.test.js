@@ -2,6 +2,7 @@ const request = require('supertest');
 const app = require('../../app');
 const { Note, Project } = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
+const { uid } = require('../../utils/uid');
 
 describe('Notes Permissions', () => {
     let user, otherUser, agent;
@@ -29,6 +30,41 @@ describe('Notes Permissions', () => {
         const res = await agent.get(`/api/note/${otherNote.uid}`);
         expect(res.status).toBe(403);
         expect(res.body.error).toBe('Forbidden');
+    });
+
+    it("GET /api/note/:uid/backlinks should return 403 for other user's note", async () => {
+        const otherNote = await Note.create({
+            title: 'Other Note',
+            user_id: otherUser.id,
+        });
+        await Note.create({
+            title: 'Mentions it',
+            content: 'See [[Other Note]] for details',
+            user_id: user.id,
+        });
+
+        const res = await agent.get(`/api/note/${otherNote.uid}/backlinks`);
+        expect(res.status).toBe(403);
+    });
+
+    it('GET /api/note/:uid/backlinks should return 404 for a note that does not exist', async () => {
+        const res = await agent.get(`/api/note/${uid()}/backlinks`);
+        expect(res.status).toBe(404);
+    });
+
+    it('GET /api/note/:uid/backlinks should still work for the owner', async () => {
+        const myNote = await Note.create({
+            title: 'Target',
+            user_id: user.id,
+        });
+        await Note.create({
+            title: 'Linker',
+            content: 'Points at [[Target]]',
+            user_id: user.id,
+        });
+
+        const res = await agent.get(`/api/note/${myNote.uid}/backlinks`);
+        expect(res.status).toBe(200);
     });
 
     it("POST /api/note should return 403 when assigning to other user's project", async () => {

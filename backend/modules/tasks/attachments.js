@@ -1,6 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
+const crypto = require('crypto');
 const fs = require('fs');
 const { getConfig } = require('../../config/config');
 const config = getConfig();
@@ -44,7 +45,8 @@ const storage = multer.diskStorage({
         cb(null, uploadDir);
     },
     filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        const uniqueSuffix =
+            Date.now() + '-' + crypto.randomBytes(12).toString('hex');
         // Derive the stored extension from the whitelist-validated MIME type,
         // never from the client-supplied original filename, so an attacker
         // can't smuggle a dangerous extension (e.g. .svg, .html) past a
@@ -172,7 +174,6 @@ router.post(
 
             res.status(500).json({
                 error: 'Failed to upload attachment',
-                details: error.message,
             });
         }
     }
@@ -220,7 +221,6 @@ router.get('/tasks/:taskUid/attachments', async (req, res) => {
         logError('Error fetching attachments:', error);
         res.status(500).json({
             error: 'Failed to fetch attachments',
-            details: error.message,
         });
     }
 });
@@ -274,7 +274,6 @@ router.delete(
             logError('Error deleting attachment:', error);
             res.status(500).json({
                 error: 'Failed to delete attachment',
-                details: error.message,
             });
         }
     }
@@ -319,7 +318,6 @@ router.get(
             logError('Error downloading attachment:', error);
             res.status(500).json({
                 error: 'Failed to download attachment',
-                details: error.message,
             });
         }
     }

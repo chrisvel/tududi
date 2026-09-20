@@ -196,6 +196,16 @@ function validateOidcProvider(provider, index) {
         );
     }
 
+    const trustUnverifiedEmail = provider.trustUnverifiedEmail;
+    if (
+        trustUnverifiedEmail !== undefined &&
+        typeof trustUnverifiedEmail !== 'boolean'
+    ) {
+        throw new ValidationError(
+            `providers[${index}].trustUnverifiedEmail must be a boolean`
+        );
+    }
+
     return {
         slug: slug.trim(),
         name: name.trim(),
@@ -205,6 +215,7 @@ function validateOidcProvider(provider, index) {
         scope: scope || undefined,
         autoProvision,
         adminEmailDomains,
+        trustUnverifiedEmail,
     };
 }
 

@@ -75,6 +75,7 @@ describe('OIDC Provisioning Service', () => {
             const claims = {
                 sub: 'sub-456',
                 email: 'newuser@example.com',
+                email_verified: true,
                 name: 'New User',
                 given_name: 'New',
                 family_name: 'User',
@@ -109,6 +110,7 @@ describe('OIDC Provisioning Service', () => {
             const claims = {
                 sub: 'sub-789',
                 email: 'existing@example.com',
+                email_verified: true,
                 name: 'Existing User',
             };
 
@@ -175,7 +177,11 @@ describe('OIDC Provisioning Service', () => {
                 await expect(
                     provisioningService.provisionUser(
                         'test-provider',
-                        { sub: 'sub-hosted-shut', email: 'shut@example.com' },
+                        {
+                            sub: 'sub-hosted-shut',
+                            email: 'shut@example.com',
+                            email_verified: true,
+                        },
                         {}
                     )
                 ).rejects.toThrow('Registration is not enabled');
@@ -195,7 +201,11 @@ describe('OIDC Provisioning Service', () => {
                 await expect(
                     provisioningService.provisionUser(
                         'test-provider',
-                        { sub: 'sub-hosted-1', email: 'closed@example.com' },
+                        {
+                            sub: 'sub-hosted-1',
+                            email: 'closed@example.com',
+                            email_verified: true,
+                        },
                         {}
                     )
                 ).rejects.toThrow('Registration is not enabled');
@@ -214,7 +224,11 @@ describe('OIDC Provisioning Service', () => {
 
                 const result = await provisioningService.provisionUser(
                     'test-provider',
-                    { sub: 'sub-hosted-2', email: 'open@example.com' },
+                    {
+                        sub: 'sub-hosted-2',
+                        email: 'open@example.com',
+                        email_verified: true,
+                    },
                     {}
                 );
 
@@ -242,7 +256,11 @@ describe('OIDC Provisioning Service', () => {
 
                 const result = await provisioningService.provisionUser(
                     'test-provider',
-                    { sub: 'sub-hosted-3', email: 'member@example.com' },
+                    {
+                        sub: 'sub-hosted-3',
+                        email: 'member@example.com',
+                        email_verified: true,
+                    },
                     {}
                 );
 
@@ -262,10 +280,142 @@ describe('OIDC Provisioning Service', () => {
             ).rejects.toThrow('Email claim is required');
         });
 
+        describe('email verification', () => {
+            it('refuses to create an account for an unverified email', async () => {
+                await expect(
+                    provisioningService.provisionUser(
+                        'test-provider',
+                        {
+                            sub: 'sub-unverified',
+                            email: 'unverified@example.com',
+                            email_verified: false,
+                        },
+                        {}
+                    )
+                ).rejects.toThrow('has not verified this email');
+
+                expect(
+                    await User.findOne({
+                        where: { email: 'unverified@example.com' },
+                    })
+                ).toBeNull();
+            });
+
+            it('refuses when the provider sends no email_verified claim', async () => {
+                await expect(
+                    provisioningService.provisionUser(
+                        'test-provider',
+                        { sub: 'sub-noclaim', email: 'noclaim@example.com' },
+                        {}
+                    )
+                ).rejects.toThrow('has not verified this email');
+            });
+
+            it('does not link an unverified email to an existing local account', async () => {
+                const victim = await User.create({
+                    email: 'victim@example.com',
+                    password_digest: 'hashed',
+                });
+
+                await expect(
+                    provisioningService.provisionUser(
+                        'test-provider',
+                        {
+                            sub: 'sub-attacker',
+                            email: 'victim@example.com',
+                            email_verified: false,
+                        },
+                        {}
+                    )
+                ).rejects.toThrow('has not verified this email');
+
+                expect(
+                    await OIDCIdentity.count({ where: { user_id: victim.id } })
+                ).toBe(0);
+            });
+
+            it('accepts the string "true" some providers send', async () => {
+                const result = await provisioningService.provisionUser(
+                    'test-provider',
+                    {
+                        sub: 'sub-string-true',
+                        email: 'stringtrue@example.com',
+                        email_verified: 'true',
+                    },
+                    {}
+                );
+
+                expect(result.isNewUser).toBe(true);
+            });
+
+            it('lets an operator trust a provider that never sends the claim', async () => {
+                providerConfig.getProvider.mockResolvedValue({
+                    slug: 'test-provider',
+                    name: 'Test Provider',
+                    autoProvision: true,
+                    adminEmailDomains: [],
+                    trustUnverifiedEmail: true,
+                });
+
+                const result = await provisioningService.provisionUser(
+                    'test-provider',
+                    { sub: 'sub-trusted', email: 'trusted@example.com' },
+                    {}
+                );
+
+                expect(result.isNewUser).toBe(true);
+            });
+
+            it('still logs in an existing identity without the claim', async () => {
+                const user = await User.create({
+                    email: 'returning@example.com',
+                    password_digest: 'hashed',
+                });
+                await OIDCIdentity.create({
+                    user_id: user.id,
+                    provider_slug: 'test-provider',
+                    subject: 'sub-returning',
+                    email: 'returning@example.com',
+                    first_login_at: new Date(),
+                    last_login_at: new Date(),
+                });
+
+                const result = await provisioningService.provisionUser(
+                    'test-provider',
+                    { sub: 'sub-returning', email: 'returning@example.com' },
+                    {}
+                );
+
+                expect(result.user.id).toBe(user.id);
+            });
+        });
+
+        describe('shouldBeAdmin', () => {
+            it('matches the admin email domain case-insensitively', () => {
+                const config = { adminEmailDomains: ['Admin.com'] };
+
+                expect(
+                    provisioningService.shouldBeAdmin(config, 'a@ADMIN.COM')
+                ).toBe(true);
+                expect(
+                    provisioningService.shouldBeAdmin(config, 'a@other.com')
+                ).toBe(false);
+            });
+
+            it('is false without a usable email', () => {
+                const config = { adminEmailDomains: ['admin.com'] };
+
+                expect(
+                    provisioningService.shouldBeAdmin(config, 'nodomain')
+                ).toBe(false);
+            });
+        });
+
         it('should set admin flag when email domain matches admin domains', async () => {
             const claims = {
                 sub: 'sub-admin',
                 email: 'admin@admin.com',
+                email_verified: true,
                 name: 'Admin User',
             };
 

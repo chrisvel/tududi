@@ -74,6 +74,7 @@ function maskProvider(provider) {
         scope: provider.scope,
         autoProvision: provider.autoProvision,
         adminEmailDomains: provider.adminEmailDomains || [],
+        trustUnverifiedEmail: provider.trustUnverifiedEmail === true,
     };
 }
 
@@ -111,6 +112,22 @@ async function saveConfig({ enabled, providers }) {
     const existingEncryptedBySlug = new Map(
         (rawRow?.providers || []).map((p) => [p.slug, p.clientSecret])
     );
+    // trustUnverifiedEmail has no field in the admin form, so a save that
+    // omits it keeps the stored (or, on the first save, .env) value instead
+    // of silently resetting it.
+    const existingTrustBySlug = new Map(
+        (rawRow?.providers || []).map((p) => [
+            p.slug,
+            p.trustUnverifiedEmail === true,
+        ])
+    );
+    const envTrustBySlug = rawRow
+        ? new Map()
+        : new Map(
+              providerConfig
+                  .loadProvidersFromEnv()
+                  .map((p) => [p.slug, p.trustUnverifiedEmail === true])
+          );
     // Only relevant the first time an admin saves (no DB row yet): carry a
     // matching .env provider's secret over instead of requiring it be
     // retyped.
@@ -156,6 +173,12 @@ async function saveConfig({ enabled, providers }) {
             scope: providerConfig.normalizeScope(provider.scope),
             autoProvision: provider.autoProvision,
             adminEmailDomains: provider.adminEmailDomains || [],
+            trustUnverifiedEmail:
+                provider.trustUnverifiedEmail !== undefined
+                    ? provider.trustUnverifiedEmail
+                    : (existingTrustBySlug.get(provider.slug) ??
+                      envTrustBySlug.get(provider.slug) ??
+                      false),
         };
     });
 

@@ -91,7 +91,7 @@ app.use(
 );
 // Structured request log. Health probes are skipped so a 60-second
 // container healthcheck does not write a line forever.
-const { logger } = require('./services/logService');
+const { logger, stripQuery } = require('./services/logService');
 app.use(
     pinoHttp({
         logger,
@@ -107,7 +107,7 @@ app.use(
             req: (req) => ({
                 id: req.id,
                 method: req.method,
-                url: req.url,
+                url: stripQuery(req.url),
                 remoteAddress: req.remoteAddress,
             }),
             res: (res) => ({ statusCode: res.statusCode }),
@@ -304,10 +304,12 @@ const { INLINE_SAFE_EXTENSIONS } = require('./utils/attachment-utils');
 // can't execute it as a top-level document - this covers any file whose
 // extension predates a MIME allow-list change, regardless of what the DB
 // thinks its type is (GHSA-43p8-ch4p-gqg4).
+const { uploadsLimiter } = require('./middleware/rateLimiter');
 const registerUploadsStatic = (basePath) => {
     app.use(
         `${basePath}/uploads`,
         requireAuth,
+        uploadsLimiter,
         uploadsAccessControl,
         express.static(config.uploadPath, {
             setHeaders: (res, filePath) => {
@@ -331,6 +333,7 @@ const { logError } = require('./services/logService');
 const {
     apiLimiter,
     authenticatedApiLimiter,
+    bearerFailureLimiter,
 } = require('./middleware/rateLimiter');
 
 // Error handler for modular architecture
@@ -435,13 +438,17 @@ healthPaths.forEach(registerHealthCheck);
 // Use both limiters: apiLimiter for unauthenticated, authenticatedApiLimiter for authenticated
 // Each has skip logic to handle their specific use case
 const registerRateLimiting = (basePath) => {
+    app.use(basePath, bearerFailureLimiter);
     app.use(basePath, apiLimiter);
     app.use(basePath, authenticatedApiLimiter);
 };
 
-const rateLimitPath =
-    API_VERSION && API_BASE_PATH !== '/api' ? API_BASE_PATH : '/api';
-registerRateLimiting(rateLimitPath);
+// The web app calls /api while versioned clients call /api/v1, and routes are
+// served under both, so both need the limiters.
+registerRateLimiting('/api');
+if (API_VERSION && API_BASE_PATH !== '/api') {
+    registerRateLimiting(API_BASE_PATH);
+}
 
 const registerApiRoutes = (basePath) => {
     app.use(basePath, authModule.routes);

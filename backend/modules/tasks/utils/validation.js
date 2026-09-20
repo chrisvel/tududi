@@ -1,5 +1,7 @@
-const { Project, Task, Area, Goal } = require('../../../models');
+const { Project, Task, Area, Goal, Person } = require('../../../models');
 const permissionsService = require('../../../services/permissionsService');
+const { getWorkspaceUserIds } = require('../../../services/workspaceMembers');
+const peopleRepository = require('../../people/repository');
 
 function isUid(value) {
     const str = value.toString().trim();
@@ -189,6 +191,49 @@ async function validateGoalAccess(goalIdOrUid, userId) {
     return goal.id;
 }
 
+// Assigning a task hands the assignee's account write access to it and sends
+// them a notification, so the person must be one the caller could pick in the
+// assignee list: one of their own cards, or the self-person of someone they
+// work with (share partners, group members, and members of the task's
+// project). Keeping the assignee a task already has is always allowed.
+async function validateAssignee(
+    assignedTo,
+    userId,
+    { projectId = null, currentAssignedTo = null } = {}
+) {
+    if (!assignedTo) return null;
+    if (assignedTo === currentAssignedTo) return assignedTo;
+
+    const person = await Person.findOne({
+        where: { uid: String(assignedTo) },
+        attributes: ['user_id', 'linked_user_id'],
+        raw: true,
+    });
+    if (!person) throw new Error('Invalid assignee.');
+    if (person.user_id === userId) return assignedTo;
+
+    const isSelfPerson = person.linked_user_id === person.user_id;
+    if (isSelfPerson) {
+        const allowed = new Set(await getWorkspaceUserIds(userId));
+        if (projectId) {
+            const project = await Project.findByPk(projectId, {
+                attributes: ['uid', 'user_id'],
+            });
+            if (project) {
+                allowed.add(project.user_id);
+                (
+                    await peopleRepository.findProjectCollaboratorUserIds(
+                        project.uid
+                    )
+                ).forEach((id) => allowed.add(id));
+            }
+        }
+        if (allowed.has(person.user_id)) return assignedTo;
+    }
+
+    throw new Error('Invalid assignee.');
+}
+
 /**
  * Fetches the recurrence end date for a recurring parent task.
  * Used for validating defer_until dates on recurring task instances.
@@ -222,5 +267,6 @@ module.exports = {
     validateDeferUntilAndDueDate,
     validateAreaAccess,
     validateGoalAccess,
+    validateAssignee,
     getRecurringParentEndDate,
 };
