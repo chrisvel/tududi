@@ -10,6 +10,8 @@ const router = express.Router();
 const projectsController = require('./controller');
 const { hasAccess } = require('../../middleware/authorize');
 const { requireAuth } = require('../../middleware/auth');
+const { numericIdParam } = require('../../middleware/numericIdParam');
+const { Project } = require('../../models');
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -55,6 +57,9 @@ router.post(
     upload.single('image'),
     projectsController.uploadImage
 );
+
+router.param('uid', numericIdParam('project', Project));
+router.param('uidSlug', numericIdParam('project', Project));
 
 // List all projects
 router.get('/projects', projectsController.list);

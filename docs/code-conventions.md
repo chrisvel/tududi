@@ -215,6 +215,8 @@ GET    /api/v1/project/:id/tasks // Tasks for a project
 POST   /api/v1/task/:id/tags     // Add tags to task
 ```
 
+The `:uid` routes for tasks, projects and areas (for example `/api/task/:uid`) also accept the numeric `id` that appears in API payloads. `backend/middleware/numericIdParam.js` swaps it for the row's uid, and only when the caller already has access to that row, so an id that does not exist and one that belongs to someone else both answer 404. The uid stays the canonical identifier: it is what the web UI routes on. To support numeric ids on another resource, register the helper with `router.param` in that module's router.
+
 ---
 
 ## HTTP Status Codes
