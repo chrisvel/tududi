@@ -1635,7 +1635,6 @@
       "failedToLoad": "Failed to load roles",
       "manageAccounts": "Manage users, roles and groups",
       "manageAccountsHint": "Create and remove accounts, change roles, manage groups",
-      "adminHint": "Admins can do everything.",
       "memberCount_one": "{{count}} account",
       "memberCount_other": "{{count}} accounts",
       "names": {
@@ -1657,7 +1656,8 @@
         "createPeople": "Add contacts and members to the People list",
         "inviteMembers": "Create accounts, send invitations or sign people up",
         "createProjects": "Start new projects, areas and goals"
-      }
+      },
+      "permissionsFromRole": "What this role allows."
     },
     "emailOptional": "optional",
     "noEmail": "No email",

@@ -9,6 +9,7 @@ import {
     EyeIcon,
     EyeSlashIcon,
     KeyIcon,
+    MinusIcon,
     PencilIcon,
     TrashIcon,
 } from '@heroicons/react/24/outline';
@@ -77,8 +78,7 @@ const createAdminUser = async (
     surname?: string,
     role?: RoleId,
     person_uid?: string,
-    require_verification?: boolean,
-    capabilities?: Capabilities
+    require_verification?: boolean
 ): Promise<AdminUserItem> => {
     const body: any = {
         email: email || undefined,
@@ -87,7 +87,6 @@ const createAdminUser = async (
         role,
         person_uid,
         require_verification,
-        capabilities,
     };
     if (password) body.password = password;
     const res = await fetchWithCsrf(getApiPath('admin/users'), {
@@ -126,15 +125,13 @@ const updateAdminUser = async (
     name?: string,
     surname?: string,
     role?: RoleId,
-    password?: string,
-    capabilities?: Capabilities
+    password?: string
 ): Promise<AdminUserItem> => {
     const body: any = {
         email: email || undefined,
         name,
         surname,
         role,
-        capabilities,
     };
     if (password) body.password = password;
 
@@ -208,7 +205,6 @@ const AddUserModal: React.FC<{
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
     const [role, setRole] = useState<RoleId>('user');
-    const [capabilities, setCapabilities] = useState<Capabilities | null>(null);
     const [requireVerification, setRequireVerification] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -225,12 +221,12 @@ const AddUserModal: React.FC<{
     // in with, so no password or invitation.
     const hasEmail = email.trim() !== '';
 
-    // What the switches show: everything for an admin, otherwise the toggles
-    // being edited, falling back to the role's defaults.
-    const shownCapabilities: Capabilities | null =
-        role === 'admin'
-            ? (roleDefaults?.admin ?? null)
-            : (capabilities ?? roleDefaults?.[role] ?? null);
+    // What the chosen role allows. An account that is being edited and keeps
+    // its role shows what it really has, otherwise the role's defaults.
+    const permissions: Capabilities | null =
+        editingUser && role === editingUser.role && editingUser.capabilities
+            ? editingUser.capabilities
+            : (roleDefaults?.[role] ?? null);
 
     useEffect(() => {
         if (isOpen) {
@@ -240,7 +236,6 @@ const AddUserModal: React.FC<{
                 setName(editingUser.name || '');
                 setSurname(editingUser.surname || '');
                 setRole(editingUser.role);
-                setCapabilities(editingUser.capabilities ?? null);
                 setUnlinkedPeople([]);
                 setSelectedPersonUid('');
             } else {
@@ -249,7 +244,6 @@ const AddUserModal: React.FC<{
                 setName('');
                 setSurname('');
                 setRole('user');
-                setCapabilities(roleDefaults?.user ?? null);
                 setRequireVerification(false);
                 setSelectedPersonUid('');
                 fetchPeople({ unlinked: true })
@@ -343,8 +337,7 @@ const AddUserModal: React.FC<{
                     name,
                     surname,
                     role,
-                    passwordToSend || undefined,
-                    capabilities ?? undefined
+                    passwordToSend || undefined
                 );
                 onUpdated(user);
             } else {
@@ -356,8 +349,7 @@ const AddUserModal: React.FC<{
                     surname,
                     role,
                     selectedPersonUid || undefined,
-                    requireVerification && !!passwordToSend,
-                    capabilities ?? undefined
+                    requireVerification && !!passwordToSend
                 );
                 onCreated(user);
             }
@@ -591,6 +583,7 @@ const AddUserModal: React.FC<{
                         <div className="relative" ref={roleDropdownRef}>
                             <button
                                 type="button"
+                                data-testid="role-trigger"
                                 className="w-full inline-flex justify-between items-center rounded border border-gray-300 dark:border-gray-600 shadow-sm px-3 py-2 bg-white dark:bg-gray-700 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                                 onClick={() =>
                                     setIsRoleDropdownOpen(!isRoleDropdownOpen)
@@ -614,10 +607,6 @@ const AddUserModal: React.FC<{
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     setRole(id);
-                                                    setCapabilities(
-                                                        roleDefaults?.[id] ??
-                                                            null
-                                                    );
                                                     setIsRoleDropdownOpen(
                                                         false
                                                     );
@@ -639,30 +628,57 @@ const AddUserModal: React.FC<{
                             )}
                         </div>
                     </div>
-                    {shownCapabilities && (
+                    {permissions && (
                         <div data-testid="permissions-section">
-                            <div className="text-sm text-gray-700 dark:text-gray-300 mb-2">
+                            <div className="text-sm text-gray-700 dark:text-gray-300">
                                 {t('admin.roles.permissions', 'Permissions')}
                             </div>
-                            <div className="space-y-3">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                                {t(
+                                    'admin.roles.permissionsFromRole',
+                                    'What this role allows.'
+                                )}
+                            </p>
+                            <ul className="space-y-2">
                                 {CAPABILITY_IDS.map((capability) => {
-                                    const on =
-                                        shownCapabilities[capability] === true;
+                                    const allowed =
+                                        permissions[capability] === true;
                                     return (
-                                        <div
+                                        <li
                                             key={capability}
-                                            className="flex items-start justify-between gap-4"
+                                            data-testid={`permission-${capability}`}
+                                            data-allowed={allowed}
+                                            className="flex items-start gap-2"
                                         >
-                                            <div>
-                                                <label
-                                                    id={`capability-${capability}-label`}
-                                                    className="block text-sm text-gray-700 dark:text-gray-300"
-                                                >
+                                            {allowed ? (
+                                                <CheckIcon className="h-4 w-4 mt-0.5 flex-shrink-0 text-green-600 dark:text-green-400" />
+                                            ) : (
+                                                <MinusIcon className="h-4 w-4 mt-0.5 flex-shrink-0 text-gray-300 dark:text-gray-600" />
+                                            )}
+                                            <div
+                                                className={
+                                                    allowed
+                                                        ? ''
+                                                        : 'text-gray-400 dark:text-gray-500'
+                                                }
+                                            >
+                                                <div className="text-sm text-gray-700 dark:text-gray-300">
                                                     {capabilityName(
                                                         t,
                                                         capability
                                                     )}
-                                                </label>
+                                                    <span className="sr-only">
+                                                        {allowed
+                                                            ? t(
+                                                                  'admin.roles.allowed',
+                                                                  'Allowed'
+                                                              )
+                                                            : t(
+                                                                  'admin.roles.notAllowed',
+                                                                  'Not allowed'
+                                                              )}
+                                                    </span>
+                                                </div>
                                                 <p className="text-xs text-gray-500 dark:text-gray-400">
                                                     {capabilityHint(
                                                         t,
@@ -670,45 +686,10 @@ const AddUserModal: React.FC<{
                                                     )}
                                                 </p>
                                             </div>
-                                            <button
-                                                type="button"
-                                                role="switch"
-                                                aria-checked={on}
-                                                aria-labelledby={`capability-${capability}-label`}
-                                                data-testid={`capability-switch-${capability}`}
-                                                disabled={role === 'admin'}
-                                                onClick={() =>
-                                                    setCapabilities({
-                                                        ...shownCapabilities,
-                                                        [capability]: !on,
-                                                    })
-                                                }
-                                                className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed ${
-                                                    on
-                                                        ? 'bg-blue-600'
-                                                        : 'bg-gray-200 dark:bg-gray-600'
-                                                }`}
-                                            >
-                                                <span
-                                                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                                                        on
-                                                            ? 'translate-x-5'
-                                                            : 'translate-x-0'
-                                                    }`}
-                                                />
-                                            </button>
-                                        </div>
+                                        </li>
                                     );
                                 })}
-                            </div>
-                            {role === 'admin' && (
-                                <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                                    {t(
-                                        'admin.roles.adminHint',
-                                        'Admins can do everything.'
-                                    )}
-                                </p>
-                            )}
+                            </ul>
                         </div>
                     )}
                     {!editingUser && hasEmail && (

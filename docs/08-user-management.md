@@ -83,14 +83,16 @@ This document explains how user management works in tududi from a user behavior 
     | `invite_members`  | Create accounts, send invitations or sign people up  | yes   | no   | no    |
     | `create_projects` | Create projects, areas and goals                     | yes   | yes  | no    |
 
-    A single account can be given more or fewer capabilities than its role
-    (for example a user who may invite others). Only the difference from the
-    role's defaults is stored, and an admin has no overrides. Reading what is
-    shared with an account is never restricted by role.
+    The role decides an account's capabilities. The add and edit user forms
+    list what the chosen role allows, and have no way to change it for one
+    account: changing what a role allows is meant for the Roles tab. The API
+    still accepts a `capabilities` object on the admin user calls, stored as the
+    difference from the role's defaults (an admin has none), but no page sets it.
+    Reading what is shared with an account is never restricted by role.
 
 10. **Role assignment:**
     - First user is automatically assigned admin role
-    - Admins can change any account's role and capabilities from the Roles and Users tabs
+    - Admins choose an account's role in the Users tab when adding or editing it
     - Every user has exactly one role record
     - Roles are created automatically when a user account is created (as `user`)
     - The role names and their defaults are fixed in code for now
