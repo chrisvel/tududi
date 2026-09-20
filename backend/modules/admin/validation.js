@@ -90,10 +90,25 @@ function validateCreateUser(body) {
         capabilities,
         require_verification,
     } = body || {};
-    if (!email) {
-        throw new ValidationError('Email is required');
+    // A blank email means the account has none. A member without an email
+    // still needs a name, and cannot have a password since there is nothing to
+    // sign in with.
+    const cleanEmail = typeof email === 'string' ? email.trim() : email;
+    if (cleanEmail) {
+        validateEmail(cleanEmail);
+    } else {
+        const hasName = [name, surname].some(
+            (value) => typeof value === 'string' && value.trim() !== ''
+        );
+        if (!hasName) {
+            throw new ValidationError(
+                'A name is required when there is no email'
+            );
+        }
+        if (password) {
+            throw new ValidationError('A password needs an email address');
+        }
     }
-    validateEmail(email);
     if (password) {
         validatePassword(password);
     }
@@ -105,7 +120,7 @@ function validateCreateUser(body) {
     }
     validateRoleChange(role, capabilities);
     return {
-        email,
+        email: cleanEmail || null,
         password: password || null,
         name,
         surname,

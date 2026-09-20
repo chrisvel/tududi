@@ -1658,6 +1658,15 @@
         "inviteMembers": "Create accounts, send invitations or sign people up",
         "createProjects": "Start new projects, areas and goals"
       }
+    },
+    "emailOptional": "optional",
+    "noEmail": "No email",
+    "noEmailHint": "Without an email this member cannot sign in yet, but can still be in groups and be assigned tasks. You can add one later.",
+    "noEmailHintEdit": "This member has no email, so cannot sign in yet. Add one to invite them.",
+    "nameRequiredWithoutEmail": "Enter a name when there is no email",
+    "status": {
+      "noSignIn": "Can't sign in yet",
+      "invited": "Invitation pending"
     }
   },
   "billing": {

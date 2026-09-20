@@ -35,6 +35,12 @@ SQLite database file backups are **automatically created** in these scenarios:
 - **Development:** `/backend/db/db-backup-YYYYMMDDHHMMSS.sqlite3`
 - **Docker/Production:** `/app/db/db-backup-YYYYMMDDHHMMSS.sqlite3` (mounted volume)
 
+### Migration Snapshots
+
+A migration that rebuilds a table (currently `20260920000002-make-user-email-nullable.js`) also writes its own snapshot next to the database, before it touches anything: `db-premigrate-<migration name>.sqlite3`. It is made with `VACUUM INTO`, so it is a complete, consistent copy even while the database is in use.
+
+The name deliberately does not start with `db-backup-`, so the retention rules below never delete it. The automatic backup is taken every time the application starts, so a container that keeps restarting after a failed migration can push the good pre-upgrade backup out of the rotation. The snapshot is written once and left alone. It is safe to delete after you have confirmed the upgrade, and it is not written again if it already exists.
+
 ### Backup Retention Policy
 
 The system automatically manages backup retention with these rules:

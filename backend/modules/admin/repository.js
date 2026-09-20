@@ -9,8 +9,26 @@ class AdminRepository {
      */
     async findAllUsers() {
         return User.findAll({
-            attributes: ['id', 'email', 'name', 'surname', 'created_at'],
+            attributes: [
+                'id',
+                'email',
+                'name',
+                'surname',
+                'created_at',
+                'password_digest',
+                'email_verified',
+            ],
         });
+    }
+
+    async findIdentityUserIds(userIds) {
+        const { OIDCIdentity } = require('../../models');
+        const rows = await OIDCIdentity.findAll({
+            attributes: ['user_id'],
+            where: userIds ? { user_id: userIds } : {},
+            raw: true,
+        });
+        return new Set(rows.map((row) => row.user_id));
     }
 
     /**

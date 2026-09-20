@@ -280,6 +280,43 @@ describe('Admin groups panel', () => {
             expect(within(modal).getByText(/Kitchen/)).toBeInTheDocument();
         });
 
+        it('lists a member without an email by name', async () => {
+            fetchAdminGroup.mockResolvedValue({
+                group: group('g1', 'Family', 1, 0),
+                members: [
+                    { user_id: 13, email: null, name: 'Emma', surname: null },
+                ],
+                shares: [],
+            });
+
+            const modal = await openMembers();
+
+            const row = await within(modal).findByTestId('group-member-13');
+            expect(row).toHaveTextContent('Emma');
+            expect(row).toHaveTextContent('No email');
+        });
+
+        it('finds a user without an email when searching', async () => {
+            fetchUserOptions.mockResolvedValue([
+                { id: 13, email: null, name: 'Emma' },
+                { id: 11, email: 'bob@example.com', name: 'Bob' },
+            ]);
+            const modal = await openMembers();
+            await within(modal).findByTestId('group-member-10');
+
+            fireEvent.change(
+                within(modal).getByPlaceholderText('Search by name or email'),
+                { target: { value: 'em' } }
+            );
+
+            expect(
+                await within(modal).findByTestId('group-add-member-13')
+            ).toBeInTheDocument();
+            expect(
+                within(modal).queryByTestId('group-add-member-11')
+            ).toBeNull();
+        });
+
         it('only offers people who are not already members', async () => {
             const modal = await openMembers();
             await within(modal).findByTestId('group-member-10');
