@@ -844,7 +844,7 @@ const AdminUsersPage: React.FC = () => {
         <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">
             <div className="w-full space-y-6">
                 <h2 className="text-2xl font-light">
-                    {t('admin.userManagement', 'User Management')}
+                    {t('admin.usersAndGroups', 'Users and Groups')}
                 </h2>
 
                 <div

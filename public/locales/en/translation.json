@@ -1572,6 +1572,7 @@
     "users": {
       "title": "Users"
     },
+    "usersAndGroups": "Users and Groups",
     "groups": {
       "addGroup": "Add group",
       "addMember": "Add",
