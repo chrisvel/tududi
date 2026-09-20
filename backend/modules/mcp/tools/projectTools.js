@@ -1,10 +1,10 @@
 'use strict';
 
 const entitlements = require('../../../services/entitlementsService');
-const { Project, Area, Tag } = require('../../../models');
-const { Op } = require('sequelize');
+const { sequelize, Project, Area, Tag } = require('../../../models');
 const projectsRepository = require('../../projects/repository');
 const permissionsService = require('../../../services/permissionsService');
+const { resolveTagsForTransaction } = require('./tagResolver');
 
 function registerProjectTools(server, context, tools) {
     // 1. list_projects - List projects
@@ -227,18 +227,22 @@ function registerProjectTools(server, context, tools) {
             };
 
             await entitlements.assertCanCreate(context.userId, 'project');
-            const project = await Project.create(projectData);
+            const project = await sequelize.transaction(async (transaction) => {
+                const project = await Project.create(projectData, {
+                    transaction,
+                });
 
-            if (params.tags && params.tags.length > 0) {
-                const tagInstances = [];
-                for (const tagName of params.tags) {
-                    const [tag] = await Tag.findOrCreate({
-                        where: { name: tagName, user_id: context.userId },
-                    });
-                    tagInstances.push(tag);
+                const tagInstances = await resolveTagsForTransaction(
+                    params.tags,
+                    context.userId,
+                    transaction
+                );
+                if (tagInstances !== undefined) {
+                    await project.setTags(tagInstances, { transaction });
                 }
-                await project.setTags(tagInstances);
-            }
+
+                return project;
+            });
 
             const reloadedProject = await Project.findByPk(project.id, {
                 include: [
