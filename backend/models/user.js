@@ -259,6 +259,11 @@ module.exports = (sequelize) => {
                 allowNull: true,
                 defaultValue: null,
             },
+            created_by_user_id: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                defaultValue: null,
+            },
             email_verified: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,
@@ -283,6 +288,12 @@ module.exports = (sequelize) => {
         },
         {
             tableName: 'users',
+            indexes: [
+                {
+                    fields: ['created_by_user_id'],
+                    name: 'users_created_by_user_id',
+                },
+            ],
             hooks: {
                 beforeValidate: async (user) => {
                     if (user.email) {

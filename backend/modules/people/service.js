@@ -4,6 +4,7 @@ const peopleRepository = require('./repository');
 const { isAdmin } = require('../../services/rolesService');
 const { getWorkspaceUserIds } = require('../../services/workspaceMembers');
 const { selfPersonName } = require('../../utils/selfPersonName');
+const { accountStatusOf } = require('../admin/accountStatus');
 const {
     NotFoundError,
     ValidationError,
@@ -26,9 +27,57 @@ class PeopleService {
         });
     }
 
+    // Says what each entry is: a member (it stands for an account) or a
+    // contact, whether the caller may change it, and for a member whether it
+    // can sign in yet.
+    async describe(userId, people) {
+        const accountIds = people
+            .filter((p) => p.user_id === p.linked_user_id)
+            .map((p) => p.linked_user_id);
+        const { users, identityUserIds } =
+            await peopleRepository.findAccountSignInFacts(accountIds);
+        const status = new Map(
+            users.map((u) => [
+                u.id,
+                accountStatusOf(u, identityUserIds.has(u.id)),
+            ])
+        );
+
+        return people.map((p) => {
+            const isMember = p.user_id === p.linked_user_id;
+            const entry = {
+                ...p,
+                kind: isMember ? 'member' : 'contact',
+                can_edit: p.user_id === userId,
+            };
+            if (isMember) entry.account_status = status.get(p.linked_user_id);
+            return entry;
+        });
+    }
+
+    async describeOne(userId, person) {
+        const [entry] = await this.describe(
+            userId,
+            this.markSelf(userId, [person])
+        );
+        return entry;
+    }
+
+    // The People list: your own person and contacts plus the members of your
+    // workspace. Asking for one relationship, unlinked cards or the archive
+    // is about your own cards, so members are left out of those.
     async getAll(userId, filters = {}) {
+        const ownOnly =
+            filters.relationship_type ||
+            filters.unlinked === true ||
+            filters.unlinked === 'true' ||
+            filters.archived === true ||
+            filters.archived === 'true';
+
+        if (!ownOnly) return this.getAssignable(userId, filters);
+
         const people = await peopleRepository.findAllByUser(userId, filters);
-        return this.markSelf(userId, people);
+        return this.describe(userId, this.markSelf(userId, people));
     }
 
     // A collaborator's self-person is theirs to edit, so other people only get
@@ -69,7 +118,10 @@ class PeopleService {
         );
         const memberSelfPeople =
             await peopleRepository.findSelfPeopleByUserIds(otherUserIds);
-        return this.mergeAssignable(userId, ownPeople, memberSelfPeople);
+        return this.describe(
+            userId,
+            this.mergeAssignable(userId, ownPeople, memberSelfPeople)
+        );
     }
 
     // Everyone the caller works with, for tasks that are not in a project:
@@ -119,8 +171,20 @@ class PeopleService {
 
     async getByUid(userId, uid) {
         const person = await peopleRepository.findByUid(userId, uid);
-        if (!person) throw new NotFoundError('Person not found');
-        return person;
+        if (person) return this.describeOne(userId, person);
+
+        // Another member's person can be looked at, but not changed.
+        const other = await peopleRepository.findAnyByUid(uid);
+        if (other && other.user_id === other.linked_user_id) {
+            const workspaceUserIds = await getWorkspaceUserIds(userId);
+            if (workspaceUserIds.includes(other.user_id)) {
+                const [entry] = await this.describe(userId, [
+                    this.toAssignee(userId, other),
+                ]);
+                return entry;
+            }
+        }
+        throw new NotFoundError('Person not found');
     }
 
     async create(userId, data) {
@@ -174,7 +238,7 @@ class PeopleService {
             validatedLinkedUserId = linked_user_id;
         }
 
-        return peopleRepository.create({
+        const created = await peopleRepository.create({
             user_id: userId,
             name: name.trim(),
             relationship_type: relationship_type || 'other',
@@ -185,6 +249,7 @@ class PeopleService {
             archived: false,
             linked_user_id: validatedLinkedUserId,
         });
+        return this.describeOne(userId, created);
     }
 
     async update(userId, uid, data) {
@@ -260,12 +325,21 @@ class PeopleService {
             }
         }
 
-        return peopleRepository.update(person, updates);
+        return this.describeOne(
+            userId,
+            await peopleRepository.update(person, updates)
+        );
     }
 
     async delete(userId, uid) {
         const person = await peopleRepository.findByUid(userId, uid);
         if (!person) throw new NotFoundError('Person not found');
+
+        if (person.user_id === person.linked_user_id) {
+            throw new ValidationError(
+                'This person stands for your account and cannot be deleted'
+            );
+        }
 
         const assignedCount = await peopleRepository.countAssignedTasks(uid);
         if (assignedCount > 0) {

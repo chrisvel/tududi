@@ -372,6 +372,9 @@ async function runNonFatalHook(parentTransaction, description, body) {
 
 // Auto-create a self-person for every new user
 User.addHook('afterCreate', async (user, options) => {
+    // A caller that turns an existing person into the account's own person
+    // passes skipSelfPerson so no blank one is made next to it.
+    if (options.skipSelfPerson) return;
     await runNonFatalHook(
         options.transaction,
         `Failed to create self-person for user ${user.id}`,

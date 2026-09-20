@@ -1,6 +1,6 @@
 'use strict';
 
-const { Person, Task, Project } = require('../../models');
+const { Person, Task, Project, User, OIDCIdentity } = require('../../models');
 const permissionSources = require('../../services/permissionSources');
 const { Op } = require('sequelize');
 
@@ -30,6 +30,38 @@ class PeopleRepository {
 
     async findByUid(userId, uid) {
         return Person.findOne({ where: { uid, user_id: userId } });
+    }
+
+    // A person whoever owns it, for the callers that decide for themselves
+    // whether it may be shown.
+    async findAnyByUid(uid) {
+        return Person.findOne({ where: { uid } });
+    }
+
+    // What decides whether an account can sign in yet.
+    async findAccountSignInFacts(userIds) {
+        if (!userIds.length) return { users: [], identityUserIds: new Set() };
+        const [users, identities] = await Promise.all([
+            User.findAll({
+                where: { id: userIds },
+                attributes: [
+                    'id',
+                    'email',
+                    'password_digest',
+                    'email_verified',
+                ],
+                raw: true,
+            }),
+            OIDCIdentity.findAll({
+                where: { user_id: userIds },
+                attributes: ['user_id'],
+                raw: true,
+            }),
+        ]);
+        return {
+            users,
+            identityUserIds: new Set(identities.map((i) => i.user_id)),
+        };
     }
 
     async nameExists(userId, name, excludeUid = null) {

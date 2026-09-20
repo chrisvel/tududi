@@ -2,13 +2,13 @@
 
 const adminRepository = require('./repository');
 const { accountStatusOf } = require('./accountStatus');
+const membersService = require('../members/service');
 const {
     validateRoleChange,
     validateUserId,
     validateEmail,
     validatePassword,
     validateSetAdminRole,
-    validateCreateUser,
     validateToggleRegistration,
     validateOidcConfig,
 } = require('./validation');
@@ -21,10 +21,6 @@ const {
 } = require('../../shared/errors');
 const rolesService = require('../../services/rolesService');
 const { isAdmin } = rolesService;
-const {
-    getDefaultNotificationPreferences,
-} = require('../../utils/notificationPreferences');
-const { logError } = require('../../services/logService');
 const { getConfig } = require('../../config/config');
 
 class AdminService {
@@ -147,114 +143,7 @@ class AdminService {
      */
     async createUser(requesterId, body) {
         await this.verifyAdmin(requesterId);
-
-        const {
-            email,
-            password,
-            name,
-            surname,
-            role,
-            capabilities,
-            requireVerification,
-        } = validateCreateUser(body);
-        const { linked_person_uid } = body || {};
-        const hasEmail = Boolean(email);
-        // Only an account with an email can be invited or asked to verify.
-        const invite = !password && hasEmail;
-        // An invite already verifies the email when its link is used, so the
-        // switch only matters for accounts that are given a password.
-        const verify = requireVerification && !invite && hasEmail;
-
-        const userData = {
-            notification_preferences: getDefaultNotificationPreferences(),
-        };
-        if (hasEmail) userData.email = email;
-        if (password) {
-            userData.password = password;
-            if (verify) userData.email_verified = false;
-        } else if (invite) {
-            // No password yet: the account is inert until the invite link is
-            // used, which also verifies the email.
-            userData.email_verified = false;
-        }
-        if (name) userData.name = name;
-        if (surname) userData.surname = surname;
-
-        let user;
-        try {
-            user = await adminRepository.createUser(userData);
-        } catch (err) {
-            if (err?.name === 'SequelizeUniqueConstraintError') {
-                throw new ConflictError('Email already exists');
-            }
-            throw err;
-        }
-
-        if (role && role !== 'user') {
-            await rolesService.setRole(user.id, role);
-        }
-        if (capabilities) {
-            await rolesService.setCapabilities(user.id, capabilities);
-        }
-
-        if (linked_person_uid) {
-            const { Person } = require('../../models');
-            const person = await Person.findOne({
-                where: { uid: linked_person_uid, user_id: requesterId },
-            });
-            if (person && person.linked_user_id == null) {
-                await person.update({ linked_user_id: user.id });
-            }
-        }
-
-        const peopleService = require('../people/service');
-        try {
-            await peopleService.createSelfPerson(user);
-        } catch (err) {
-            logError(
-                err,
-                'Failed to create self-person for admin-created user'
-            );
-        }
-
-        let emailSent = false;
-        if (verify) {
-            const {
-                resendVerificationEmail,
-            } = require('../auth/registrationService');
-            try {
-                const result = await resendVerificationEmail(user.email);
-                emailSent = result.sent;
-            } catch (err) {
-                // The account stays; the admin can verify it by hand.
-                logError(err, 'Failed to send verification email');
-            }
-        }
-        if (invite) {
-            const {
-                sendMemberInviteEmail,
-            } = require('../auth/passwordResetService');
-            try {
-                const result = await sendMemberInviteEmail(user);
-                emailSent = result.sent;
-            } catch (err) {
-                // The account stays; the admin can resend or set a password.
-                logError(err, 'Failed to send member invite email');
-            }
-        }
-
-        return {
-            id: user.id,
-            email: user.email ?? null,
-            name: user.name,
-            surname: user.surname,
-            created_at: user.created_at,
-            account_status: accountStatusOf(user),
-            ...(await rolesService.getRoleInfo(user.id)),
-            invited: invite,
-            verification_requested: verify,
-            email_sent: emailSent,
-        };
+        return membersService.createMember(requesterId, body);
     }
 
     /**
