@@ -149,6 +149,65 @@ describe('TaskRow', () => {
         expect(screen.queryByDisplayValue('Task A')).not.toBeInTheDocument();
     });
 
+    describe('virtual occurrences of a recurring task', () => {
+        const occurrence = (index: number) =>
+            baseTask({
+                id: 7,
+                uid: 'weekly-1',
+                name: `Weekly review ${index}`,
+                virtual_id: `7_occurrence_${index}`,
+                is_virtual_occurrence: true,
+                occurrence_index: index,
+            });
+
+        const renderOccurrences = () =>
+            render(
+                <TaskRowExpansionProvider>
+                    {[0, 1, 2].map((i) => (
+                        <TaskRow
+                            key={i}
+                            task={occurrence(i)}
+                            projects={[]}
+                            onTaskUpdate={jest
+                                .fn()
+                                .mockResolvedValue(undefined)}
+                            onTaskDelete={jest.fn()}
+                        />
+                    ))}
+                </TaskRowExpansionProvider>
+            );
+
+        it('expands only the occurrence that was clicked (#1549)', () => {
+            renderOccurrences();
+            fireEvent.click(screen.getByText('Weekly review 1'));
+
+            expect(
+                screen.getByDisplayValue('Weekly review 1')
+            ).toBeInTheDocument();
+            expect(
+                screen.queryByDisplayValue('Weekly review 0')
+            ).not.toBeInTheDocument();
+            expect(
+                screen.queryByDisplayValue('Weekly review 2')
+            ).not.toBeInTheDocument();
+        });
+
+        it('keeps the clicked occurrence open when pressing inside its panel (#1548)', () => {
+            renderOccurrences();
+            fireEvent.click(screen.getByText('Weekly review 1'));
+
+            const fullViewLink = document.querySelector(
+                'a[href="/task/weekly-1"]'
+            ) as HTMLElement;
+            expect(fullViewLink).not.toBeNull();
+            fireEvent.mouseDown(fullViewLink);
+
+            expect(
+                screen.getByDisplayValue('Weekly review 1')
+            ).toBeInTheDocument();
+        });
+    });
+
     it('navigates to the full page when expansion is disabled', () => {
         renderRow(baseTask(), { disableExpand: true });
         fireEvent.click(screen.getByText('Buy tickets'));

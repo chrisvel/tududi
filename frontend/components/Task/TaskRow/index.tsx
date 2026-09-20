@@ -97,9 +97,12 @@ const TaskRow: React.FC<TaskRowProps> = ({
     const [showSubtasks, setShowSubtasks] = useState(false);
 
     const canExpand = !disableExpand && !task.habit_mode && !!task.uid;
-    const { isExpanded, toggle, collapse } = useTaskRowExpansion(task.uid, {
-        disabled: !canExpand,
-    });
+    // Virtual occurrences of a recurring task share the parent's uid, so
+    // expansion is keyed by the per-occurrence id when there is one.
+    const { isExpanded, toggle, collapse } = useTaskRowExpansion(
+        task.virtual_id ?? task.uid,
+        { disabled: !canExpand }
+    );
     const setters = useTaskRowSave(task, onTaskUpdate);
     const rowRootRef = useRef<HTMLDivElement>(null);
 

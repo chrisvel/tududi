@@ -36,6 +36,9 @@ export interface Task {
     completion_based?: boolean;
     recurring_parent_id?: number;
     recurring_parent_uid?: string;
+    is_virtual_occurrence?: boolean;
+    virtual_id?: string;
+    occurrence_index?: number;
     completed_at: string | null;
     parent_task_id?: number;
     parent_task?: { id: number; uid: string; name: string } | null;
