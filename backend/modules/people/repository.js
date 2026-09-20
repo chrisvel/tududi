@@ -74,22 +74,21 @@ class PeopleRepository {
 
     async findProjectCollaboratorUserIds(projectUid) {
         const rows = await permissionSources.findAccepted(
-            {
-                resource_type: 'project',
-                resource_uid: projectUid,
-                propagation: 'direct',
-            },
+            { resource_type: 'project', resource_uid: projectUid },
             ['user_id']
         );
         return Array.from(new Set(rows.map((r) => r.user_id)));
     }
 
+    // Only each user's canonical self-person. Other users' contact cards that
+    // happen to link the same account are private to their owners.
     async findSelfPeopleByUserIds(userIds) {
         if (!userIds.length) return [];
-        return Person.findAll({
+        const people = await Person.findAll({
             where: { linked_user_id: userIds },
             order: [['name', 'ASC']],
         });
+        return people.filter((p) => p.user_id === p.linked_user_id);
     }
 }
 
